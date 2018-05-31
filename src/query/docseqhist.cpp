@@ -34,21 +34,24 @@ using std::vector;
 // The U distinguishes udi-based entries from older fn+ipath ones
 bool RclDHistoryEntry::encode(string& value)
 {
-    string budi;
+    string budi, bdir;
     base64_encode(udi, budi);
-    value = string("U ") + lltodecstr(unixtime) + " " + budi;
+    base64_encode(dbdir, bdir);
+    value = string("V ") + lltodecstr(unixtime) + " " + budi + " " + bdir;
     return true;
 }
 
 // Decode. We support historical entries which were like "time b64fn [b64ipath]"
-// Current entry format is "U time b64udi"
+// Previous entry format is "U time b64udi"
+// Current entry format "V time b64udi [b64dir]"
 bool RclDHistoryEntry::decode(const string &value)
 {
     vector<string> vall;
     stringToStrings(value, vall);
 
     vector<string>::const_iterator it = vall.begin();
-    udi.erase();
+    udi.clear();
+    dbdir.clear();
     string fn, ipath;
     switch (vall.size()) {
     case 2:
@@ -57,8 +60,8 @@ bool RclDHistoryEntry::decode(const string &value)
         base64_decode(*it++, fn);
         break;
     case 3:
-        if (!it->compare("U")) {
-            // New udi-based entry
+        if (!it->compare("U") || !it->compare("V")) {
+            // New udi-based entry, no dir
             it++;
             unixtime = atoll((*it++).c_str());
             base64_decode(*it++, udi);
@@ -69,6 +72,13 @@ bool RclDHistoryEntry::decode(const string &value)
             base64_decode(*it, ipath);
         }
         break;
+    case 4:
+        // New udi-based entry, with directory
+        it++;
+        unixtime = atoll((*it++).c_str());
+        base64_decode(*it++, udi);
+        base64_decode(*it++, dbdir);
+        break;
     default: 
         return false;
     }
@@ -77,23 +87,31 @@ bool RclDHistoryEntry::decode(const string &value)
         // Old style entry found, make an udi, using the fs udi maker
         make_udi(fn, ipath, udi);
     }
-    LOGDEB1("RclDHistoryEntry::decode: udi ["  << udi << "]\n");
+    LOGDEB1("RclDHistoryEntry::decode: udi ["  << udi << "] dbdir [" <<
+            dbdir << "]\n");
     return true;
 }
 
 bool RclDHistoryEntry::equal(const DynConfEntry& other)
 {
     const RclDHistoryEntry& e = dynamic_cast<const RclDHistoryEntry&>(other);
-    return e.udi == udi;
+    return e.udi == udi && e.dbdir == dbdir;
 }
 
-bool historyEnterDoc(RclDynConf *dncf, const string& udi)
+bool historyEnterDoc(Rcl::Db *db, RclDynConf *dncf, const Rcl::Doc& doc)
 {
-    LOGDEB1("historyEnterDoc: [" << udi << "] into " << dncf->getFilename() <<
-            "\n");
-    RclDHistoryEntry ne(time(0), udi);
-    RclDHistoryEntry scratch;
-    return dncf->insertNew(docHistSubKey, ne, scratch, 200);
+    string udi;
+    if (db && doc.getmeta(Rcl::Doc::keyudi, &udi)) {
+        std::string dbdir =  db->whatIndexForResultDoc(doc);
+        LOGDEB("historyEnterDoc: [" << udi << ", " << dbdir << "] into " <<
+               dncf->getFilename() << "\n");
+        RclDHistoryEntry ne(time(0), udi, dbdir);
+        RclDHistoryEntry scratch;
+        return dncf->insertNew(docHistSubKey, ne, scratch, 200);
+    } else {
+        LOGDEB("historyEnterDoc: doc has no udi\n");
+    }
+    return false;
 }
 
 vector<RclDHistoryEntry> getDocHistory(RclDynConf* dncf)
@@ -111,8 +129,10 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
 
     if (num < 0 || num >= (int)m_history.size())
 	return false;
+
     // We get the history oldest first, but our users expect newest first
     RclDHistoryEntry& hentry = m_history[m_history.size() - 1 - num];
+
     if (sh) {
 	if (m_prevtime < 0 || 
             abs (float(m_prevtime) - float(hentry.unixtime)) > 86400) {
@@ -126,9 +146,7 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
         }
     }
 
-    // For now history does not store an index id. Use empty doc as ref.
-    Rcl::Doc idxdoc;
-    bool ret = m_db->getDoc(hentry.udi, idxdoc, doc);
+    bool ret = m_db->getDoc(hentry.udi, hentry.dbdir, doc);
     if (!ret || doc.pc == -1) {
 	doc.url = "UNKNOWN";
         doc.ipath = "";

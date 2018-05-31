@@ -147,7 +147,7 @@ Container<Type, std::allocator<Type>>
 	    out.push_back(entry);
 	}
     }
-    return std::move(out);
+    return out;
 }
 
 template <template <class, class> class Container>
@@ -159,7 +159,7 @@ Container<std::string, std::allocator<std::string>>
     for (const auto& entry : el) {
 	sl.push_back(entry.value);
     }
-    return std::move(sl);
+    return sl;
 }
 
 // Defined subkeys. Values in dynconf.cpp

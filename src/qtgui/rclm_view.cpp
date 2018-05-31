@@ -310,7 +310,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	}
     }
 
-    bool enterHistory = false;
+    // Can't remember what enterHistory was actually for. Set it to
+    // true always for now
+    bool enterHistory = true;
     bool istempfile = false;
     
     LOGDEB("StartNativeViewer: groksipath " << groksipath << " wantsf " <<
@@ -451,8 +453,8 @@ void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
 	stb->showMessage(msg, 10000);
     }
 
-    if (!enterHistory)
-	historyEnterDoc(g_dynconf, doc.meta[Rcl::Doc::keyudi]);
+    if (enterHistory)
+	historyEnterDoc(rcldb, g_dynconf, doc);
     
     // Do the zeitgeist thing
     zg_send_event(ZGSEND_OPEN, doc);

@@ -98,7 +98,7 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
     n.encode(value);
     LOGDEB1("Encoded value [" << value << "] (" << value.size() << ")\n");
     if (!m_data.set(string(nname), value, sk)) {
-	LOGERR("RclDHistory::insertNew: set failed\n");
+	LOGERR("RclDynConf::insertNew: set failed\n");
 	return false;
     }
     return true;

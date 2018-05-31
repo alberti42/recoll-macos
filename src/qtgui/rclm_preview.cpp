@@ -80,7 +80,7 @@ bool RclMain::containerUpToDate(Rcl::Doc& doc)
     }
 
     // We can only run indexing on the main index (dbidx 0)
-    bool ismainidx = rcldb->whatDbIdx(doc) == 0;
+    bool ismainidx = rcldb->fromMainIndex(doc);
     // Indexer already running?
     bool ixnotact = (m_indexerState == IXST_NOTRUNNING);
 

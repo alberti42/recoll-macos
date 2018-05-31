@@ -336,13 +336,18 @@ public:
     bool addQueryDb(const string &dir);
     /** Remove extra database. if dir == "", remove all. */
     bool rmQueryDb(const string &dir);
-    /** Look where the doc result comes from. 
-     * @param doc must come from a db query so that "opaque" xdocid is set.
-     * @return: 0 main index, (size_t)-1 don't know, 
-     *   other: order of database in add_database() sequence.
-     */
-    size_t whatDbIdx(const Doc& doc);
 
+    /** Check if document comes from the main index (this is used to
+       decide if we can update the index for it */
+    bool fromMainIndex(const Doc& doc);
+
+    /** Retrieve an index designator for the document result. This is used 
+     * by the GUI document history feature for remembering where a
+     * doc comes from and allowing later retrieval (if the ext index
+     * is still active...).
+     */
+    std::string whatIndexForResultDoc(const Doc& doc);
+    
     /** Tell if directory seems to hold xapian db */
     static bool testDbDir(const string &dir, bool *stripped = 0);
 
@@ -391,9 +396,10 @@ public:
     int getAbsLen() const {
         return m_synthAbsLen;
     }
-    /** Get document for given udi
+
+    /** Get document for given udi and db index
      *
-     * Used by the 'history' feature, and to retrieve ancestor documents.
+     * Used to retrieve ancestor documents.
      * @param udi The unique document identifier.
      * @param idxdoc A document from the same database as an opaque way to pass
      *   the database id (e.g.: when looking for parent in a multi-database 
@@ -402,6 +408,20 @@ public:
      * @return True for success.
      */
     bool getDoc(const string &udi, const Doc& idxdoc, Doc &doc);
+
+    /** Get document for given udi and index directory. 
+     *
+     * Used by the 'history' feature. This supposes that the extra db
+     * is still active.
+     * @param udi The unique document identifier.
+     * @param dbdir The index directory, from storage, as returned by 
+     *   whatIndexForResultDoc() at the time of the query. Can be
+     *   empty to mean "main index" (allows the history to avoid
+     *   storing the main dbdir value).
+     * @param[out] doc The output Recoll document.
+     * @return True for success.
+     */
+    bool getDoc(const string &udi, const std::string& dbdir, Doc &doc);
 
     /** Test if documents has sub-documents. 
      *
@@ -547,6 +567,8 @@ private:
     // Flush when idxflushmb is reached
     bool maybeflush(int64_t moretext);
     bool docExists(const string& uniterm);
+
+    bool getDoc(const std::string& udi, int idxi, Doc& doc);
 
     /* Copyconst and assignement private and forbidden */
     Db(const Db &) {}

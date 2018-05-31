@@ -876,10 +876,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
 
     // Enter document in document history
-    string udi;
-    if (idoc.getmeta(Rcl::Doc::keyudi, &udi)) {
-        historyEnterDoc(g_dynconf, udi);
-    }
+    historyEnterDoc(rcldb, g_dynconf, idoc);
 
     editor->setFocus();
     emit(previewExposed(this, m_searchId, docnum));
