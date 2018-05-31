@@ -300,9 +300,8 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
 	sdata->setMaxExpand(maxexp);
     }
 
-    for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
-	 it != prefs.activeExtraDbs.end(); it++) {
-        xml << "  <EX>" << base64_encode(*it) << "</EX>";
+    for (const auto& dbdir : prefs.activeExtraDbs) {
+        xml << "  <EX>" << base64_encode(dbdir) << "</EX>";
     }
 
     xml << "</SD>\n";

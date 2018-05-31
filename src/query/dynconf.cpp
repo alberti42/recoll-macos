@@ -60,13 +60,13 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
     for (it = names.begin(); it != names.end(); it++) {
 	string oval;
 	if (!m_data.get(*it, oval, sk)) {
-	    LOGDEB("No data for "  << ((*it)) << "\n" );
+	    LOGDEB("No data for " << *it << "\n");
 	    continue;
 	}
 	s.decode(oval);
 
 	if (s.equal(n)) {
-	    LOGDEB("Erasing old entry\n" );
+	    LOGDEB("Erasing old entry\n");
 	    m_data.erase(*it, sk);
 	    changed = true;
 	}
@@ -96,9 +96,9 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
 
     string value;
     n.encode(value);
-    LOGDEB1("Encoded value ["  << (value) << "] ("  << (value.size()) << ")\n" );
+    LOGDEB1("Encoded value [" << value << "] (" << value.size() << ")\n");
     if (!m_data.set(string(nname), value, sk)) {
-	LOGERR("RclDHistory::insertNew: set failed\n" );
+	LOGERR("RclDHistory::insertNew: set failed\n");
 	return false;
     }
     return true;
@@ -110,14 +110,11 @@ bool RclDynConf::eraseAll(const string &sk)
         LOGDEB("RclDynConf::eraseAll: not writable\n");
         return false;
     }
-    vector<string> names = m_data.getNames(sk);
-    vector<string>::const_iterator it;
-    for (it = names.begin(); it != names.end(); it++) {
-	m_data.erase(*it, sk);
+    for (const auto& nm : m_data.getNames(sk)) {
+	m_data.erase(nm, sk);
     }
     return true;
 }
-
 
 // Specialization for plain strings ///////////////////////////////////
 
@@ -130,16 +127,6 @@ bool RclDynConf::enterString(const string sk, const string value, int maxlen)
     RclSListEntry ne(value);
     RclSListEntry scratch;
     return insertNew(sk, ne, scratch, maxlen);
-}
-
-list<string> RclDynConf::getStringList(const string sk) 
-{
-    list<RclSListEntry> el = getList<RclSListEntry>(sk);
-    list<string> sl;
-    for (list<RclSListEntry>::const_iterator it = el.begin(); 
-	 it != el.end(); it++) 
-	sl.push_back(it->value);
-    return sl;
 }
 
 #else

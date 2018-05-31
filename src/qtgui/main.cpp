@@ -101,10 +101,9 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
     if (force)
         rcldb->close();
     rcldb->rmQueryDb("");
-    for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
-         it != prefs.activeExtraDbs.end(); it++) {
-        LOGDEB("main: adding ["  << *it << "]\n" );
-        rcldb->addQueryDb(*it);
+    for (const auto& dbdir : prefs.activeExtraDbs) {
+        LOGDEB("main: adding [" << dbdir << "]\n");
+        rcldb->addQueryDb(dbdir);
     }
     Rcl::Db::OpenError error;
     if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO, &error)) {

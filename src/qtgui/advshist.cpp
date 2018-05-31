@@ -79,10 +79,12 @@ bool AdvSearchHist::read()
 {
     if (!g_dynconf)
 	return false;
-    list<string> lxml = g_dynconf->getStringList(advSearchHistSk);
-    
-    for (list<string>::const_iterator it = lxml.begin(); it != lxml.end();
-	 it++) {
+
+    // getStringEntries() return the entries in order (lower key
+    // first), but we want most recent first, so revert
+    vector<string> lxml =
+        g_dynconf->getStringEntries<vector>(advSearchHistSk);
+    for (auto it = lxml.rbegin(); it != lxml.rend(); it++) {
         std::shared_ptr<SearchData> sd = xmlToSearchData(*it);
         if (sd)
             m_entries.push_back(sd);

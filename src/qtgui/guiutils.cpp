@@ -316,19 +316,17 @@ void rwSettings(bool writing)
     // as they are likely to depend on RECOLL_CONFDIR.
     if (writing) {
 	g_dynconf->eraseAll(allEdbsSk);
-	for (list<string>::const_iterator it = prefs.allExtraDbs.begin();
-	     it != prefs.allExtraDbs.end(); it++) {
-	    g_dynconf->enterString(allEdbsSk, *it);
+	for (const auto& dbdir : prefs.allExtraDbs) {
+	    g_dynconf->enterString(allEdbsSk, dbdir);
 	}
 
 	g_dynconf->eraseAll(actEdbsSk);
-	for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
-	     it != prefs.activeExtraDbs.end(); it++) {
-	    g_dynconf->enterString(actEdbsSk, *it);
+	for (const auto& dbdir : prefs.activeExtraDbs) {
+	    g_dynconf->enterString(actEdbsSk, dbdir);
 
 	}
     } else {
-	prefs.allExtraDbs = g_dynconf->getStringList(allEdbsSk);
+	prefs.allExtraDbs = g_dynconf->getStringEntries<vector>(allEdbsSk);
 	const char *cp;
 	if ((cp = getenv("RECOLL_EXTRA_DBS")) != 0) {
 	    vector<string> dbl;
@@ -337,17 +335,18 @@ void rwSettings(bool writing)
 		 dit++) {
 		string dbdir = path_canon(*dit);
 		path_catslash(dbdir);
-		if (std::find(prefs.allExtraDbs.begin(), 
-			      prefs.allExtraDbs.end(), dbdir) != 
+		if (std::find(prefs.allExtraDbs.begin(),
+                              prefs.allExtraDbs.end(), dbdir) != 
 		    prefs.allExtraDbs.end())
 		    continue;
 		bool stripped;
 		if (!Rcl::Db::testDbDir(dbdir, &stripped)) {
-		    LOGERR("Not a xapian index: ["  << (dbdir) << "]\n" );
+		    LOGERR("Not a xapian index: [" << dbdir << "]\n");
 		    continue;
 		}
 		if (stripped != o_index_stripchars) {
-		    LOGERR("Incompatible character stripping: ["  << (dbdir) << "]\n" );
+		    LOGERR("Incompatible character stripping: [" << dbdir <<
+                           "]\n");
 		    continue;
 		}
 		prefs.allExtraDbs.push_back(dbdir);
@@ -355,16 +354,17 @@ void rwSettings(bool writing)
 	}
 
         // Get the remembered "active external indexes":
-        prefs.activeExtraDbs = g_dynconf->getStringList(actEdbsSk);
+        prefs.activeExtraDbs = g_dynconf->getStringEntries<vector>(actEdbsSk);
 
 	// Clean up the list: remove directories which are not
 	// actually there: useful for removable volumes.
-	for (list<string>::iterator it = prefs.activeExtraDbs.begin();
-	     it != prefs.activeExtraDbs.end();) {
+	for (auto it = prefs.activeExtraDbs.begin();
+             it != prefs.activeExtraDbs.end();) {
 	    bool stripped;
 	    if (!Rcl::Db::testDbDir(*it, &stripped) || 
 		stripped != o_index_stripchars) {
-		LOGINFO("Not a Xapian index or char stripping differs: ["  << *it << "]\n" );
+		LOGINFO("Not a Xapian index or char stripping differs: ["  <<
+                        *it << "]\n");
 		it = prefs.activeExtraDbs.erase(it);
 	    } else {
 		it++;
@@ -418,14 +418,14 @@ void rwSettings(bool writing)
 	while (prefs.asearchSubdirHist.size() > 20)
 	    prefs.asearchSubdirHist.pop_back();
 	g_dynconf->eraseAll(asbdSk);
-	for (QStringList::iterator it = prefs.asearchSubdirHist.begin();
-	     it != prefs.asearchSubdirHist.end(); it++) {
-	    g_dynconf->enterString(asbdSk, (const char *)((*it).toUtf8()));
+	for (const auto& qdbd : prefs.asearchSubdirHist) {
+	    g_dynconf->enterString(asbdSk, qs2utf8s(qdbd));
 	}
     } else {
-	list<string> tl = g_dynconf->getStringList(asbdSk);
-	for (list<string>::iterator it = tl.begin(); it != tl.end(); it++)
-	    prefs.asearchSubdirHist.push_front(QString::fromUtf8(it->c_str()));
+	vector<string> tl = g_dynconf->getStringEntries<vector>(asbdSk);
+	for (const auto& dbd: tl) {
+	    prefs.asearchSubdirHist.push_back(u8s2qs(dbd.c_str()));
+        }
     }
     if (!writing)
         havereadsettings = true;

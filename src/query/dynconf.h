@@ -41,6 +41,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 #include "conftree.h"
 #include "base64.h"
@@ -110,34 +111,55 @@ class RclDynConf {
      */
     bool insertNew(const std::string& sk, DynConfEntry &n, DynConfEntry &s, 
                    int maxlen = -1);
-    template<typename Tp> std::list<Tp> getList(const std::string& sk);
 
-    // Specialized methods for simple string lists, designated by the
-    // subkey value
+    // General method to extract entries. Maybe there would be a way to
+    // express the fact that Type should derive from DynConfEntry, not
+    // too sure how. We are just certain (further down) that it does
+    // have a decode() method. It's up to the user that they call
+    // insertNew() and getEntries() for the same type...
+    template <template <class, class> class Container, class Type>
+    Container<Type, std::allocator<Type>> getEntries(const std::string& sk);
+
+    // Specialized methods for simple strings
     bool enterString(const std::string sk, const std::string value,
                      int maxlen = -1);
-    std::list<std::string> getStringList(const std::string sk);
-
+    template <template <class, class> class Container>
+    Container<std::string, std::allocator<std::string>>
+        getStringEntries(const std::string& sk);
+    
  private:
     unsigned int m_mlen;
     ConfSimple   m_data;
 };
 
-template<typename Tp> std::list<Tp> RclDynConf::getList(const std::string &sk)
+template <template <class, class> class Container, class Type>
+Container<Type, std::allocator<Type>>
+    RclDynConf::getEntries(const std::string& sk)
 {
-    std::list<Tp> mlist;
-    Tp entry;
+    Container<Type, std::allocator<Type>> out;
+    Type entry;
     std::vector<std::string> names = m_data.getNames(sk);
-    for (std::vector<std::string>::const_iterator it = names.begin(); 
-	 it != names.end(); it++) {
+    for (const auto& name : names) {
 	std::string value;
-	if (m_data.get(*it, value, sk)) {
+	if (m_data.get(name, value, sk)) {
 	    if (!entry.decode(value))
 		continue;
-	    mlist.push_front(entry);
+	    out.push_back(entry);
 	}
     }
-    return mlist;
+    return std::move(out);
+}
+
+template <template <class, class> class Container>
+Container<std::string, std::allocator<std::string>>
+    RclDynConf::getStringEntries(const std::string& sk) 
+{
+    std::vector<RclSListEntry> el = getEntries<std::vector, RclSListEntry>(sk);
+    Container<std::string, std::allocator<std::string>> sl;
+    for (const auto& entry : el) {
+	sl.push_back(entry.value);
+    }
+    return std::move(sl);
 }
 
 // Defined subkeys. Values in dynconf.cpp

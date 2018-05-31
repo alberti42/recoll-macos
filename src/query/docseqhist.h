@@ -18,6 +18,8 @@
 #define _DOCSEQHIST_H_INCLUDED_
 #include <time.h>
 
+#include <vector>
+
 #include "docseq.h"
 #include "dynconf.h"
 
@@ -45,7 +47,7 @@ class RclDHistoryEntry : public DynConfEntry {
 class DocSequenceHistory : public DocSequence {
  public:
     DocSequenceHistory(Rcl::Db *d, RclDynConf *h, const string &t) 
-	: DocSequence(t), m_db(d), m_hist(h), m_prevnum(-1), m_prevtime(-1) {}
+	: DocSequence(t), m_db(d), m_hist(h) {}
     virtual ~DocSequenceHistory() {}
 
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
@@ -57,11 +59,9 @@ protected:
 private:
     Rcl::Db    *m_db;
     RclDynConf *m_hist;
-    int         m_prevnum;
-    time_t      m_prevtime;
+    time_t      m_prevtime{-1};
     std::string m_description; // This is just an nls translated 'doc history'
-    std::list<RclDHistoryEntry> m_hlist;
-    std::list<RclDHistoryEntry>::const_iterator m_it;
+    std::vector<RclDHistoryEntry> m_history;
 };
 
 extern bool historyEnterDoc(RclDynConf *dncf, const string& udi);
