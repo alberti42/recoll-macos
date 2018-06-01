@@ -1,8 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Extractor for Excel files.
-# Mso-dumper is not compatible with Python3. We use sys.executable to
-# start the actual extractor, so we need to use python2 too.
 
 import rclexecm
 import rclexec1

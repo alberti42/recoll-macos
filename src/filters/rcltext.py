@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Wrapping a text file. Recoll does it internally in most cases, but
 # this is for use by another filter.

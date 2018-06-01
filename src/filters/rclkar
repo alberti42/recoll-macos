@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Read a .kar midi karaoke file and translate to recoll indexable format
 # This does not work with Python3 yet because python:midi doesn't 
