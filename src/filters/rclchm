@@ -1,11 +1,8 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """Extract Html files from a Microsoft Compiled Html Help file (.chm)
 Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
 
 from __future__ import print_function
-
-# Note: this is not converted to Py3, libchm does not have a
-# Py3 wrapper at this point (2018-03)
 
 rclchm_html_mtype = "text/html"
 
@@ -18,16 +15,32 @@ if PY3:
     from urllib.parse import unquote as urllib_unquote
     from urllib.parse import urlparse as urlparse_urlparse
     from html.parser import HTMLParser
+    chmpackname = 'pychm3.egg'
 else:
     from urlparse import urlparse as urlparse_urlparse
     from urllib import unquote as urllib_unquote
     from HTMLParser import HTMLParser
-    
+    chmpackname = 'pychm2.egg'
+
 import subprocess
 
 import rclconfig
 import rclexecm
 
+# pychm has no official port to Python3, hence no package in the
+# standard place.  Recoll bundles a python3 port which we install out
+# of the standard python places. Look for it:
+#  sys.path[0] is for MSW, where we install the egg in the filters
+#  directory? TBD for now
+try:
+    # First try the system version if any
+    from chm import chm,chmlib
+except:
+    for d in ('sys.path[0]', '/usr/lib/recoll', '/usr/local/lib/recoll'):
+        p = os.path.join(d, chmpackname)
+        if os.path.exists(p):
+            sys.path.append(p)
+            break
 try:
     from chm import chm,chmlib
 except:

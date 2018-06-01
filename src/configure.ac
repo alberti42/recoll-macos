@@ -523,5 +523,6 @@ AC_SUBST(RCLLIBVERSION)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(common/rclversion.h)
 AC_CONFIG_FILES(python/recoll/setup.py)
+AC_CONFIG_FILES(python/pychm/setup.py)
 
 AC_OUTPUT

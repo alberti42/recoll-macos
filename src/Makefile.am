@@ -538,7 +538,33 @@ VERSION
 # php/recoll/php_recoll.h php/recoll/recoll.cpp php/sample/shell.php 
 
 if MAKEPYTHON
-all-local: recollpython
+all-local: recollpython rclpychm
+install-exec-local: recollpython-install rclpychm-install
+clean-local: recollpython-clean
+else
+all-local: rclpychm
+install-exec-local: rclpychm-install
+clean-local: rclpychm-clean recollpython-clean
+endif
+
+rclpychm:
+	(cd python/pychm || exit 1; \
+        set -x; \
+        for v in 2 3;do rm -f dist/pychm-*; \
+        test -n "`which python$${v}`" && python$${v} setup.py bdist_egg && \
+        mv -f dist/pychm-*.egg dist/pychm$${v}.egg;\
+        done \
+        )
+rclpychm-install:
+	(cd python/pychm || exit 1; \
+        set -x; \
+        mv dist/pychm*.egg ${librcldir};\
+        )
+rclpychm-clean:
+	rm -rf python/pychm/build
+	rm -r python/pychm/dist/*
+
+if MAKEPYTHON
 recollpython: librecoll.la
 	(cd python/recoll; \
         set -x; \
@@ -546,7 +572,6 @@ recollpython: librecoll.la
         libdir=$(libdir) python$${v} setup.py build; \
         done \
         )
-install-exec-local: recollpython-install
 recollpython-install:
 	(cd python/recoll; \
         if test -f /etc/debian_version ; then \
@@ -558,7 +583,6 @@ recollpython-install:
          --prefix=${prefix} --root=$${DESTDIR:-/} $${OPTSFORPYTHON}; \
         done; \
          )
-clean-local: recollpython-clean
 recollpython-clean:
 	rm -rf python/recoll/build
 	rm -rf python/recoll/__pycache__
