@@ -540,7 +540,12 @@ VERSION
 if MAKEPYTHON
 all-local: recollpython
 recollpython: librecoll.la
-	${MAKE} -C python/recoll libdir=$(libdir)
+	(cd python/recoll; \
+        set -x; \
+        for v in 2 3;do test -n "`which python$${v}`" && \
+        libdir=$(libdir) python$${v} setup.py build; \
+        done \
+        )
 install-exec-local: recollpython-install
 recollpython-install:
 	(cd python/recoll; \
@@ -548,11 +553,16 @@ recollpython-install:
             OPTSFORPYTHON=--install-layout=deb; \
         fi; \
         set -x; \
-        python setup.py install \
-         --prefix=${prefix} --root=$${DESTDIR:-/} $${OPTSFORPYTHON})
+        for v in 2 3;do test -n "`which python$${v}`" && \
+        python$${v} setup.py install \
+         --prefix=${prefix} --root=$${DESTDIR:-/} $${OPTSFORPYTHON}; \
+        done; \
+         )
 clean-local: recollpython-clean
 recollpython-clean:
 	rm -rf python/recoll/build
+	rm -rf python/recoll/__pycache__
+	rm -f python/recoll/*.pyc
 endif
 
 if MAKEQT
