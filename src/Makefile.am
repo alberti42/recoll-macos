@@ -511,6 +511,7 @@ python/recoll/pyrclextract.cpp \
 python/recoll/pyrecoll.cpp \
 python/recoll/pyrecoll.h \
 python/recoll/recoll/__init__.py \
+python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py \
 python/recoll/setup.py.in \
 python/samples/docdups.py \
@@ -681,13 +682,15 @@ filters/ppt-dump.py \
 filters/xls-dump.py \
 filters/xlsxmltocsv.py \
 filters/msodump.zip \
+python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py 
 
 install-data-hook: 
 	(cd $(DESTDIR)/$(filterdir); \
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
 	chmod a+x recoll-we-move-files.py; \
-	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py rclmidi.py)
+	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip \
+        rclconfig.py conftree.py rclmidi.py)
 
 if MAKEUSERDOC
 rdocdir = $(pkgdatadir)/doc

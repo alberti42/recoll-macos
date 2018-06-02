@@ -36,6 +36,8 @@ src/depcomp
 src/doc/user/usermanual.pdf
 src/doc/user/webhelp/docs/*
 src/doc/user/webhelp/xincluded-profiled.xml
+src/filters/conftree.py
+src/filters/rclconfig.py
 src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
 src/install-sh
