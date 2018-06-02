@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import sys
 import datetime
@@ -67,11 +68,11 @@ class RecollQuery(QtCore.QAbstractTableModel):
 
     def rowCount(self, parent):
         ret = len(self.docs)
-        #print "RecollQuery.rowCount(): ", ret
+        #print("RecollQuery.rowCount(): %d"% ret)
         return ret
 
     def columnCount(self, parent):
-        #print "RecollQuery.columnCount()"
+        #print("RecollQuery.columnCount()")
         if parent.isValid():
             return 0
         else:
@@ -79,7 +80,7 @@ class RecollQuery(QtCore.QAbstractTableModel):
 
     def setquery(self, db, q, sortfield="", ascending=True):
         """Parse and execute query on open db"""
-        #print "RecollQuery.setquery():"
+        #print("RecollQuery.setquery():")
         # Get query object
         self.query = db.query()
         if sortfield:
@@ -98,7 +99,7 @@ class RecollQuery(QtCore.QAbstractTableModel):
             return None
 
     def sort(self, col, order):
-        #print "sort", col, order
+        #print("sort %s %s", (col, order))
         self.setquery(self.db, self.qtext, sortfield=self.attrs[col],
                       ascending = order)
 
@@ -108,7 +109,7 @@ class RecollQuery(QtCore.QAbstractTableModel):
         return None
 
     def data(self, index, role):
-        #print "RecollQuery.data: row %d, role: " % (index.row(),), role
+        #print("RecollQuery.data: row %d, role: %s" % (index.row(),role))
         if not index.isValid():
             return QtCore.QVariant()
 
@@ -116,8 +117,8 @@ class RecollQuery(QtCore.QAbstractTableModel):
             return QtCore.QVariant()
 
         if role == QtCore.Qt.DisplayRole:
-            #print "RecollQuery.data: row %d, col %d role: " % \
-             #     (index.row(), index.column()), role
+            #print("RecollQuery.data: row %d, col %d role: %s" % \
+            #     (index.row(), index.column() role))
             attr = self.attrs[index.column()]
             value = getattr(self.docs[index.row()], attr)
             if attr == "mtime":
@@ -128,14 +129,14 @@ class RecollQuery(QtCore.QAbstractTableModel):
             return QtCore.QVariant()
 
     def canFetchMore(self, parent):
-        #print "RecollQuery.canFetchMore:"
+        #print("RecollQuery.canFetchMore:")
         if len(self.docs) < self.totres:
             return True
         else:
             return False
 
     def fetchMore(self, parent):
-        #print "RecollQuery.fetchMore:"
+        #print("RecollQuery.fetchMore:")
         self.beginInsertRows(QtCore.QModelIndex(), len(self.docs), \
                              len(self.docs) + self.pagelen)
         for count in range(self.pagelen):
@@ -155,11 +156,11 @@ class RclGui_Main(QMainWindow):
         self.ui.setupUi(self)
         self.db = db
         self.qmodel = RecollQuery()
-        scq = QShortcut(QKeySequence("Ctrl+Q"), self);
+        scq = QShortcut(QKeySequence("Ctrl+Q"), self)
         scq.activated.connect(self.onexit)
-        header = self.ui.resTable.horizontalHeader();
-	header.setSortIndicatorShown(True);
-	header.setSortIndicator(-1, QtCore.Qt.AscendingOrder);
+        header = self.ui.resTable.horizontalHeader()
+        header.setSortIndicatorShown(True)
+        header.setSortIndicator(-1, QtCore.Qt.AscendingOrder)
         self.ui.resTable.setSortingEnabled(True)
         self.currentindex = -1
         self.currentdoc = None
@@ -172,7 +173,7 @@ class RclGui_Main(QMainWindow):
         self.currentindex = index
         self.currentdoc = doc
         if doc is None:
-            print "NO DoC"
+            print("NO DoC")
             return
         query = self.qmodel.query
         groups = query.getgroups()
@@ -181,7 +182,7 @@ class RclGui_Main(QMainWindow):
         self.ui.resDetail.setText(abs)
         if hasextract:
             ipath = doc.get('ipath')
-            #print "ipath[%s]" % (ipath,)
+            #print("ipath[%s]" % ipath)
             self.ui.previewPB.setEnabled(True)
             if ipath:
                 self.ui.savePB.setEnabled(True)
@@ -190,12 +191,12 @@ class RclGui_Main(QMainWindow):
 
     @pyqtSlot()
     def on_previewPB_clicked(self):
-        print "on_previewPB_clicked(self)"
+        print("on_previewPB_clicked(self)")
         newdoc = textextract(self.currentdoc)
         query = self.qmodel.query;
         groups = query.getgroups()
         meths = HlMeths(groups)
-        #print "newdoc.mimetype:", newdoc.mimetype
+        #print("newdoc.mimetype:", newdoc.mimetype)
         if newdoc.mimetype == 'text/html':
             ishtml = True
         else:
@@ -210,7 +211,7 @@ class RclGui_Main(QMainWindow):
 
     @pyqtSlot()
     def on_savePB_clicked(self):
-        print "on_savePB_clicked(self)"
+        print("on_savePB_clicked(self)")
         doc = self.currentdoc
         ipath = doc.ipath
         if not ipath:
@@ -219,9 +220,9 @@ class RclGui_Main(QMainWindow):
         if fn:
             docitems = doc.items()
             fn = extractofile(doc, str(fn.toLocal8Bit()))
-            print "Saved as", fn
+            print("Saved as %s" % fn)
         else:
-            print >> sys.stderr, "Canceled"
+            print("Canceled", file=sys.stderr)
                 
     def startQuery(self):
         self.qmodel.setquery(self.db, self.ui.searchEntry.text())
@@ -232,7 +233,7 @@ class RclGui_Main(QMainWindow):
 
 
 def Usage():
-    print >> sys.stderr, '''Usage: qt.py [<qword1> [<qword2> ...]]'''
+    print('''Usage: qt.py [<qword1> [<qword2> ...]]''', file=sys.stderr)
     sys.exit(1)
 
 
@@ -254,7 +255,7 @@ def main(args):
         elif opt == "-i":
             extra_dbs.append(val)
         else:
-            print >> sys.stderr, "Bad opt: ", opt
+            print("Bad opt: %s"% opt, file=sys.stderr) 
             Usage()
 
     # The query should be in the remaining arg(s)
