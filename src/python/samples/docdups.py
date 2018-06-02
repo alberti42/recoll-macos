@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import sys
 import xapian
@@ -80,15 +81,18 @@ def print_urlipath(xdb, doclist):
     for docid in doclist:
         url = get_attribute(xdb, docid, "url")
         ipath = get_attribute(xdb, docid, "ipath")
-        print docid, url, ipath
+        print("%s %s %s" % (docid, url, ipath))
 
+def msg(s):
+    print("%s" % s, file = sys.stderr)
+    
 ########## Main program
 
 if len(sys.argv) < 2:
-    print >> sys.stderr, "Usage: %s /path/to/db [docid [docid ...]]" % \
-          sys.argv[0]
-    print >> sys.stderr, " will print all sets of dups if no docid is given"
-    print >> sys.stderr, " else only the duplicates for the given docids"
+    msg("Usage: %s /path/to/db [docid [docid ...]]" % \
+          sys.argv[0])
+    msg(" will print all sets of dups if no docid is given")
+    msg(" else only the duplicates for the given docids")
     
     sys.exit(1)
 
@@ -104,13 +108,13 @@ try:
         alldups = find_all_dups(xdb)
         for dups in alldups:
             print_urlipath(xdb, dups)
-            print
+            print("")
     else:
         for docid in sys.argv[2:]:
             dups = get_dups(xdb, docid)
             if dups is not None and len(dups) > 1:
                 print_urlipath(xdb, dups)
                 
-except Exception, e:
-    print >> sys.stderr, "Xapian error: %s" % str(e)
+except Exception as e:
+    msg("Xapian error: %s" % str(e))
     sys.exit(1)
