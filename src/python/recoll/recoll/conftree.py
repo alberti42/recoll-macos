@@ -251,3 +251,21 @@ class ConfStack(object):
         if v and dodecode:
             v = v.decode('utf-8')
         return v
+
+def stringToStrings(s):
+    '''Parse a string made of space-separated words and C-Style strings
+    (double-quoted with backslash escape). E.g.:
+        word1 word2 "compound \\"quoted\\" string" ->
+        ['word1', 'word2', 'compound "quoted string']'''
+    import shlex
+    lex = shlex.shlex(s, posix=True)
+    lex.quotes = '"'
+    lex.escape = '\\'
+    lex.escapedquotes = '"'
+    l = []
+    while True:
+        tok = lex.get_token()
+        if not tok:
+            break
+        l.append(tok)
+    return l

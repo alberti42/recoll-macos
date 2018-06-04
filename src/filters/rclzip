@@ -28,6 +28,7 @@ from zipfile import ZipFile
 
 try:
     from recoll import rclconfig
+    from recoll import conftree
     hasrclconfig = True
 except:
     hasrclconfig = False
@@ -118,10 +119,14 @@ class ZipExtractor:
         if hasrclconfig:
             config = rclconfig.RclConfig()
             config.setKeyDir(os.path.dirname(filename))
+            usebaseskipped = config.getConfParam("zipUseSkippedNames")
+            if usebaseskipped:
+                skipped = config.getConfParam("skippedNames")
+                self.em.rclog("skippedNames: %s"%self.skiplist)
+                self.skiplist += conftree.stringToStrings(skipped)
             skipped = config.getConfParam("zipSkippedNames")
             if skipped is not None:
-                self.skiplist = skipped.split(" ")
-
+                self.skiplist += conftree.stringToStrings(skipped)
         try:
             if rclexecm.PY3:
                 # Note: py3 ZipFile wants an str file name, which
