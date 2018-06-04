@@ -115,7 +115,7 @@ class SVGExtractor:
             data = open(fn, 'rb').read()
             docdata = rclxslt.apply_sheet_data(stylesheet_all, data)
         except Exception as err:
-            self.em.rclog("%s: bad data: " % (fn, err))
+            self.em.rclog("%s: bad data: %s" % (fn, err))
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
         return (True, docdata, "", rclexecm.RclExecM.eofnext)
