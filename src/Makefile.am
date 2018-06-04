@@ -559,6 +559,7 @@ rclpychm:
 rclpychm-install:
 	(cd python/pychm || exit 1; \
         set -x; \
+        mkdir -p ${librcldir}; \
         mv dist/pychm*.egg ${librcldir};\
         )
 rclpychm-clean:
@@ -636,9 +637,10 @@ filters/rclepub \
 filters/rclepub1 \
 filters/rclexec1.py \
 filters/rclexecm.py \
-filters/rclfb2 \
+filters/rclfb2.py \
 filters/rclgaim \
-filters/rclgnm \
+filters/rclgenxslt.py \
+filters/rclgnm.py \
 filters/rclics \
 filters/rclimg \
 filters/rclimg.py \
@@ -651,7 +653,7 @@ filters/rcllyx \
 filters/rclman \
 filters/rclmidi.py \
 filters/rclpdf.py \
-filters/rclokulnote \
+filters/rclokulnote.py \
 filters/rclopxml.py \
 filters/rclppt.py \
 filters/rclpurple \
@@ -660,7 +662,6 @@ filters/rclrar \
 filters/rclrtf.py \
 filters/rclscribus \
 filters/rclshowinfo \
-filters/rclsiduxman \
 filters/rclsoff.py \
 filters/rclsoff-flat.py \
 filters/rclsvg.py \

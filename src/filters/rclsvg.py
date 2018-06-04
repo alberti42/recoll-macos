@@ -15,12 +15,11 @@
 #   Free Software Foundation, Inc.,
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ######################################
-
 from __future__ import print_function
 
 import sys
 import rclexecm
-import rclxslt
+import rclgenxslt
 
 stylesheet_all = '''<?xml version="1.0"?>
 <xsl:stylesheet version="1.0"
@@ -100,43 +99,7 @@ stylesheet_all = '''<?xml version="1.0"?>
 </xsl:stylesheet>
 '''
 
-class SVGExtractor:
-    def __init__(self, em):
-        self.em = em
-        self.currentindex = 0
-
-    def extractone(self, params):
-        if "filename:" not in params:
-            self.em.rclog("extractone: no mime or file name")
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        fn = params["filename:"]
-
-        try:
-            data = open(fn, 'rb').read()
-            docdata = rclxslt.apply_sheet_data(stylesheet_all, data)
-        except Exception as err:
-            self.em.rclog("%s: bad data: %s" % (fn, err))
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-
-        return (True, docdata, "", rclexecm.RclExecM.eofnext)
-    
-    ###### File type handler api, used by rclexecm ---------->
-    def openfile(self, params):
-        self.currentindex = 0
-        return True
-
-    def getipath(self, params):
-        return self.extractone(params)
-        
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
-
 if __name__ == '__main__':
     proto = rclexecm.RclExecM()
-    extract = SVGExtractor(proto)
+    extract = rclgenxslt.XSLTExtractor(proto, stylesheet_all)
     rclexecm.main(proto, extract)

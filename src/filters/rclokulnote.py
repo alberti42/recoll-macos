@@ -15,6 +15,7 @@
 #   Free Software Foundation, Inc.,
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ######################################
+from __future__ import print_function
 
 import sys
 import rclexecm
@@ -22,41 +23,48 @@ import rclgenxslt
 
 stylesheet_all = '''<?xml version="1.0"?>
 <xsl:stylesheet version="1.0"
-		xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <xsl:output method="html" encoding="UTF-8"/>
+<xsl:output method="html" encoding="UTF-8"/>
+<xsl:strip-space elements="*" />
 
-  <xsl:template match="/">
-    <html>
-      <head>
-	<xsl:if test="//*[local-name() = 'title']">
-	  <title>
-	    <xsl:value-of select="//*[local-name() = 'title'][1]"/>
-	  </title>
-	</xsl:if>
-      </head>
-      <body>
-	<xsl:apply-templates/>
-      </body>
-    </html>
-  </xsl:template>
+<xsl:template match="/">
+<html>
+  <head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <title>
+     Okular notes about: <xsl:value-of select="/documentInfo/@url" />
+   </title>
+  </head>
+  <body>
+    <xsl:apply-templates />
+  </body>
+</html>
+</xsl:template>
 
-  <xsl:template match="text()">
-    <xsl:if test="string-length(normalize-space(.)) &gt; 0">
-      <p><xsl:value-of select="."/></p>
-      <xsl:text>
-      </xsl:text>
-    </xsl:if>
-  </xsl:template>
+<xsl:template match="node()">
+  <xsl:apply-templates select="@* | node() "/>
+</xsl:template>
 
-  <xsl:template match="*">
-    <xsl:apply-templates/>
-  </xsl:template>
+<xsl:template match="text()">
+  <p><xsl:value-of select="."/></p>
+<xsl:text >
+</xsl:text>
+</xsl:template>
+
+<xsl:template match="@contents|@author">
+  <p><xsl:value-of select="." /></p>
+<xsl:text >
+</xsl:text>
+</xsl:template>
+
+<xsl:template match="@*"/>
 
 </xsl:stylesheet>
 '''
 
 if __name__ == '__main__':
-    proto = rclexecm.RclExecM()
-    extract = rclgenxslt.XSLTExtractor(proto, stylesheet_all)
-    rclexecm.main(proto, extract)
+   proto = rclexecm.RclExecM()
+   extract = rclgenxslt.XSLTExtractor(proto, stylesheet_all)
+   rclexecm.main(proto, extract)
+

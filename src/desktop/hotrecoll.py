@@ -1,4 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python2
+#
+# wnck does not have a python3 binding as far as I can see (or at
+# least it's not packaged by, e.g. Debian. So python2 only for now.
 #
 # This script should be linked to a keyboard shortcut. Under gnome,
 # you can do this from the main preferences menu, or directly execute

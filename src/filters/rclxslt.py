@@ -32,7 +32,8 @@ if PY2:
         print("RECFILTERROR HELPERNOTFOUND python:libxml2/python:libxslt1")
         sys.exit(1);
     def _apply_sheet_doc(sheet, doc):
-        styledoc = libxml2.parseMemory(sheet, len(sheet))
+        styledoc = libxml2.readMemory(sheet, len(sheet), '', '',
+                                      options=libxml2.XML_PARSE_NONET)
         style = libxslt.parseStylesheetDoc(styledoc)
         result = style.applyStylesheet(doc, None)
         res = ""
@@ -46,10 +47,11 @@ if PY2:
         result.freeDoc()
         return res
     def apply_sheet_data(sheet, data):
-        doc = libxml2.parseMemory(data, len(data))
+        doc = libxml2.readMemory(data, len(data), '', '',
+                                 options=libxml2.XML_PARSE_NONET)
         return _apply_sheet_doc(sheet, doc)
     def apply_sheet_file(sheet, fn):
-        doc = libxml2.parseFile(fn)
+        doc = libxml2.readFile(fn, '', options=libxml2.XML_PARSE_NONET)
         return _apply_sheet_doc(sheet, doc)
 else:
     try:
