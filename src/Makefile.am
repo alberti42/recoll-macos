@@ -671,7 +671,6 @@ filters/rcltext.py \
 filters/rcluncomp \
 filters/rcluncomp.py \
 filters/rclwar \
-filters/rclwpd \
 filters/rclxls.py \
 filters/rclxml.py \
 filters/rclxmp.py \
