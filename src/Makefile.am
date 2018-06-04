@@ -626,6 +626,7 @@ filters/rcl7z \
 filters/rclabw.py \
 filters/rclaptosidman \
 filters/rclaudio \
+filters/rclbasehandler.py \
 filters/rclbibtex.sh \
 filters/rclcheckneedretry.sh \
 filters/rclchm \
