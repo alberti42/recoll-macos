@@ -622,7 +622,7 @@ filterdir = $(pkgdatadir)/filters
 filter_DATA = \
 desktop/hotrecoll.py \
 filters/rcl7z \
-filters/rclabw \
+filters/rclabw.py \
 filters/rclaptosidman \
 filters/rclaudio \
 filters/rclbibtex.sh \
@@ -654,7 +654,6 @@ filters/rclpdf.py \
 filters/rclokulnote \
 filters/rclopxml.py \
 filters/rclppt.py \
-filters/rclps \
 filters/rclpurple \
 filters/rclpython \
 filters/rclrar \

@@ -75,7 +75,7 @@ application/vnd.ms-office = execm rcldoc.py
 
 application/ogg = execm rclaudio
 application/pdf = execm rclpdf.py
-application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
+application/postscript = exec pstotext;charset=cp1252;mimetype=text/plain
 application/sql = internal text/plain
 application/vnd.ms-excel = execm rclxls.py
 application/vnd.ms-powerpoint = execm rclppt.py
@@ -110,7 +110,7 @@ application/vnd.sun.xml.writer = execm rclsoff.py
 application/vnd.sun.xml.writer.global = execm rclsoff.py
 application/vnd.sun.xml.writer.template = execm rclsoff.py
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
-application/x-abiword = exec rclabw
+application/x-abiword = execm rclabw.py
 application/x-awk = internal text/plain
 application/x-chm = execm rclchm
 application/x-dia-diagram = execm rcldia;mimetype=text/plain
