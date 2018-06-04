@@ -15,51 +15,25 @@
 #   Free Software Foundation, Inc.,
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ######################################
+
+# Base class for simple (one stylesheet) xslt-based handlers
+
 from __future__ import print_function
 
 import sys
-import rclexecm
 import rclxslt
 import gzip
+from rclbasehandler import RclBaseHandler
 
-class XSLTExtractor:
+class XSLTExtractor(RclBaseHandler):
     def __init__(self, em, stylesheet, gzip=False):
-        self.em = em
-        self.currentindex = 0
+        super(XSLTExtractor, self).__init__(em)
         self.stylesheet = stylesheet
         self.dogz = gzip
 
-
-    def extractone(self, params):
-        if "filename:" not in params:
-            self.em.rclog("extractone: no mime or file name")
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        fn = params["filename:"]
-        try:
-            if self.dogz:
-                data = gzip.open(fn, 'rb').read()
-            else:
-                data = open(fn, 'rb').read()
-            docdata = rclxslt.apply_sheet_data(self.stylesheet, data)
-        except Exception as err:
-            self.em.rclog("%s: bad data: %s" % (fn, err))
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-
-        return (True, docdata, "", rclexecm.RclExecM.eofnext)
-    
-
-    ###### File type handler api, used by rclexecm ---------->
-    def openfile(self, params):
-        self.currentindex = 0
-        return True
-
-    def getipath(self, params):
-        return self.extractone(params)
-        
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
+    def html_text(self, fn):
+        if self.dogz:
+            data = gzip.open(fn, 'rb').read()
         else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
+            data = open(fn, 'rb').read()
+        return rclxslt.apply_sheet_data(self.stylesheet, data)
