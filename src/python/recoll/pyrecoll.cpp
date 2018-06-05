@@ -1094,8 +1094,8 @@ Query_fetchone(PyObject *_self)
     // xapian result count estimate are sometimes wrong, we must go on
     // fetching until we fail
     if (!self->query->getDoc(self->next, *result->doc, self->fetchtext)) {
-        PyErr_SetNone(PyExc_StopIteration);
-	return 0;
+        Py_DECREF(result);
+        Py_RETURN_NONE;
     }
     self->next++;
 
@@ -1128,12 +1128,11 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
         return 0;
     }
     int cnt = self->query->getResCnt();
+    PyObject *reslist = PyList_New(0);
     if (cnt <= 0 || self->next < 0) {
-        PyErr_SetString(PyExc_AttributeError, "query: no results");
-        return 0;
+        return (PyObject *)reslist;
     }
 
-    PyObject *reslist = PyList_New(0);
     for (int i = 0; i < size; i++) {
         recoll_DocObject *docobj = (recoll_DocObject *)
 	    PyObject_CallObject((PyObject *)&recoll_DocType, 0);
@@ -1142,7 +1141,7 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
             return 0;
         }
         if (!self->query->getDoc(self->next, *docobj->doc, self->fetchtext)) {
-            PyErr_SetNone(PyExc_StopIteration);
+            Py_DECREF(docobj);
             break;
         }
         self->next++;
