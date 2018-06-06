@@ -1128,16 +1128,19 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
         return 0;
     }
     int cnt = self->query->getResCnt();
-    PyObject *reslist = PyList_New(0);
     if (cnt <= 0 || self->next < 0) {
-        return (PyObject *)reslist;
+        # PEP 249 says to raise exception if no result set
+        PyErr_SetString(PyExc_AttributeError, "query");
+        return 0;
     }
 
+    PyObject *reslist = PyList_New(0);
     for (int i = 0; i < size; i++) {
         recoll_DocObject *docobj = (recoll_DocObject *)
 	    PyObject_CallObject((PyObject *)&recoll_DocType, 0);
         if (!docobj) {
             PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
+            Py_DECREF(reslist);
             return 0;
         }
         if (!self->query->getDoc(self->next, *docobj->doc, self->fetchtext)) {
