@@ -1129,7 +1129,7 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     }
     int cnt = self->query->getResCnt();
     if (cnt <= 0 || self->next < 0) {
-        # PEP 249 says to raise exception if no result set
+        // PEP 249 says to raise exception if no result set
         PyErr_SetString(PyExc_AttributeError, "query");
         return 0;
     }
