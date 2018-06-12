@@ -8,7 +8,7 @@ import sys
 import base64
 import platform
 
-from . import conftree
+import conftree
 
 class RclDynConf:
     def __init__(self, fname):
