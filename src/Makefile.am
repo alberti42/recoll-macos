@@ -551,16 +551,16 @@ endif
 rclpychm:
 	(cd python/pychm || exit 1; \
         set -x; \
-        for v in 2 3;do rm -f dist/pychm-*; \
-        test -n "`which python$${v}`" && python$${v} setup.py bdist_egg && \
-        mv -f dist/pychm-*.egg dist/pychm$${v}.egg;\
+        for v in 2 3;do \
+        test -n "`which python$${v}`" && python$${v} setup.py build;\
         done \
         )
 rclpychm-install:
 	(cd python/pychm || exit 1; \
         set -x; \
-        mkdir -p ${librcldir}; \
-        mv dist/pychm*.egg ${librcldir};\
+        for v in 2 3;do rm -f dist/pychm-*; \
+        test -n "`which python$${v}`" && python$${v} setup.py install;\
+        done \
         )
 rclpychm-clean:
 	rm -rf python/pychm/build
