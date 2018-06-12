@@ -36,16 +36,11 @@ try:
     # First try the system version if any
     from chm import chm,chmlib
 except:
-    for d in ('sys.path[0]', '/usr/lib/recoll', '/usr/local/lib/recoll'):
-        p = os.path.join(d, chmpackname)
-        if os.path.exists(p):
-            sys.path.append(p)
-            break
-try:
-    from chm import chm,chmlib
-except:
-    print("RECFILTERROR HELPERNOTFOUND python:chm")
-    sys.exit(1);
+    try:
+        from recollchm import chm,chmlib
+    except:
+        print("RECFILTERROR HELPERNOTFOUND python:chm")
+        sys.exit(1);
 
 # Small helper routines
 def getfile(chmfile, path):
