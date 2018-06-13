@@ -506,7 +506,25 @@ qtgui/xmltosd.cpp \
 qtgui/xmltosd.h \
 \
 python/README.txt \
-python/recoll/Makefile.in \
+python/pychm/AUTHORS \
+python/pychm/COPYING \
+python/pychm/MANIFEST.in \
+python/pychm/README-RECOLL.txt \
+python/pychm/pychm.egg-info \
+python/pychm/pychm.egg-info/PKG-INFO \
+python/pychm/pychm.egg-info/SOURCES.txt \
+python/pychm/pychm.egg-info/dependency_links.txt \
+python/pychm/pychm.egg-info/top_level.txt \
+python/pychm/recollchm \
+python/pychm/recollchm/__init__.py \
+python/pychm/recollchm/__pycache__ \
+python/pychm/recollchm/chm.py \
+python/pychm/recollchm/chmlib.py \
+python/pychm/recollchm/extra.c \
+python/pychm/recollchm/swig_chm.c \
+python/pychm/recollchm/swig_chm.i \
+python/pychm/setup.py.in \
+python/recoll/Makefile \
 python/recoll/pyrclextract.cpp \
 python/recoll/pyrecoll.cpp \
 python/recoll/pyrecoll.h \

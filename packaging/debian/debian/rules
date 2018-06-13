@@ -27,13 +27,28 @@ build3vers := $(shell py3versions -sv)
 
 override_dh_auto_install:
 	dh_auto_install
-	(cd python/recoll; python setup.py install \
+	(cd python/recoll; libdir=/usr/lib/$${DEB_BUILD_MULTIARCH} python \
+					   ./setup.py install \
 	                                   --install-layout=deb \
-	                                   --prefix=$(CURDIR)/debian/tmp/usr )
+					   --prefix=/usr \
+	                                   --root=$(CURDIR)/debian/tmp/usr )
 	set -e && for i in $(build3vers); do \
 	(cd python/recoll; libdir=/usr/lib/$${DEB_BUILD_MULTIARCH} python$$i \
 					./setup.py install \
 	                                --install-layout=deb \
-	                                --prefix=$(CURDIR)/debian/tmp/usr ) ; \
+					--prefix=/usr \
+	                                --root=$(CURDIR)/debian/tmp/ ) ; \
+	done
+	(cd python/pychm; python ./setup.py install \
+	                                   --install-layout=deb \
+					   --prefix=/usr \
+	                                   --root=$(CURDIR)/debian/tmp/ )
+	set -e && for i in $(build3vers); do \
+	(cd python/pychm; python$$i ./setup.py install \
+	                                --install-layout=deb \
+					--prefix=/usr \
+	                                --root=$(CURDIR)/debian/tmp/ ) ; \
 	done
 	find $(CURDIR) -type f -name '*.la' -exec rm -f '{}' \;
+	find $(CURDIR) -type f -name '*.pyc' -exec rm -f '{}' \;
+	rm -rf $(CURDIR)/debian/tmp/usr/lib/python*/*/*/__pycache__
