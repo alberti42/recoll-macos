@@ -538,28 +538,35 @@ VERSION
 # php/00README.txt php/recoll/config.m4 php/recoll/make.sh 
 # php/recoll/php_recoll.h php/recoll/recoll.cpp php/sample/shell.php 
 
+# MAKEPYTHON decides if we build the recoll API Python package. We always
+# build the chm package
+OPTSFORPYTHON != test -f /etc/debian_version && echo --install-layout=deb
 if MAKEPYTHON
+
 all-local: recollpython rclpychm
 install-exec-local: recollpython-install rclpychm-install
 clean-local: recollpython-clean
+
 else
+
 all-local: rclpychm
 install-exec-local: rclpychm-install
 clean-local: rclpychm-clean recollpython-clean
+
 endif
 
+
 rclpychm:
-	(cd python/pychm || exit 1; \
-        set -x; \
+	(cd python/pychm; set -x; \
         for v in 2 3;do \
         test -n "`which python$${v}`" && python$${v} setup.py build;\
         done \
         )
 rclpychm-install:
-	(cd python/pychm || exit 1; \
-        set -x; \
-        for v in 2 3;do rm -f dist/pychm-*; \
-        test -n "`which python$${v}`" && python$${v} setup.py install;\
+	(cd python/pychm; set -x; \
+        for v in 2 3;do test -n "`which python$${v}`" && \
+        python$${v} setup.py install \
+         --prefix=${prefix} --root=$${DESTDIR:-/} $(OPTSFORPYTHON); \
         done \
         )
 rclpychm-clean:
@@ -568,21 +575,16 @@ rclpychm-clean:
 
 if MAKEPYTHON
 recollpython: librecoll.la
-	(cd python/recoll; \
-        set -x; \
+	(cd python/recoll; set -x; \
         for v in 2 3;do test -n "`which python$${v}`" && \
         libdir=$(libdir) python$${v} setup.py build; \
         done \
         )
 recollpython-install:
-	(cd python/recoll; \
-        if test -f /etc/debian_version ; then \
-            OPTSFORPYTHON=--install-layout=deb; \
-        fi; \
-        set -x; \
+	(cd python/recoll; set -x; \
         for v in 2 3;do test -n "`which python$${v}`" && \
         python$${v} setup.py install \
-         --prefix=${prefix} --root=$${DESTDIR:-/} $${OPTSFORPYTHON}; \
+         --prefix=${prefix} --root=$${DESTDIR:-/} $(OPTSFORPYTHON); \
         done; \
          )
 recollpython-clean:
