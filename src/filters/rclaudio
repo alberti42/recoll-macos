@@ -236,6 +236,7 @@ class AudioTagExtractor:
         filename = params["filename:"]
         mimetype = params["mimetype:"]
         self.filename = filename
+        #self.em.rclog("%s" % filename)
         try:
             mutf = File(filename)
         except Exception as err:
@@ -247,6 +248,7 @@ class AudioTagExtractor:
         ###################
         # Extract audio parameters. Not all file types supply all or
         # even use the same property names...
+        # minf has natural str keys, and encoded values
         minf = {}
         for prop,dflt in [('sample_rate', 44100), ('channels', 2),
                           ('length', 0), ('bitrate', 0)]:
@@ -258,7 +260,7 @@ class AudioTagExtractor:
 
         if minf['bitrate'] == 0 and minf['length'] > 0:
             br = int(os.path.getsize(filename)* 8 / minf['length'])
-            minf['bitrate'] = str(br)
+            minf['bitrate'] = br
 
         minf['duration'] = minf['length']
         del minf['length']
@@ -274,10 +276,11 @@ class AudioTagExtractor:
                 minf['bits_per_sample'] = 16
 
         for tag,val in minf.items():
-            minf[tag] = str(val)
-
-        #self.em.rclog("minf after audio %s\n" % minf)
-        
+            val = str(val)
+            if type(val) == type(u''):
+                val = val.encode('utf-8', errors='replace')
+            minf[tag] = val
+            
         ####################
         # Metadata tags. The names vary depending on the file type. We
         # just have a big translation dictionary for all
@@ -289,25 +292,21 @@ class AudioTagExtractor:
                 ntag = tagdict[tag].lower()
                 #self.em.rclog("New tag: %s" % ntag)
                 try:
-                    if isinstance(val, bool):
-                        val0 = str(val)
-                    else:
-                        try:
-                            val0 = val[0]
-                        except:
-                            val0 = val
-                    if val0:
-                        if type(val0) == type(u""):
-                            val0 = val0.encode('utf-8', errors='replace')
-                        else:
-                            val0 = str(val0)
-                        minf[ntag] = val0
-                        #self.em.rclog("Tag %s -> %s" % (ntag, val0))
+                    if type(val) == type(u''):
+                        val = val.encode('utf-8', errors='replace')
+                    elif type(val) != type(b''):
+                        val = str(val)
+                        if type(val) == type(u''):
+                            val = val.encode('utf-8', errors='replace')
+                    minf[ntag] = val
+                    #self.em.rclog("Tag %s -> %s" % (ntag, val0))
                 except Exception as err:
                     self.em.rclog("Error while extracting tag: %s"%err)
             else:
                 #self.em.rclog("Unprocessed tag: %s, value %s"%(tag,val))
                 pass
+
+        #self.em.rclog("minf after extract %s\n" % minf)
 
         # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
         # TRCK,TRK,trkn TRACKNUMBER/TOTALTRACKS
@@ -322,16 +321,17 @@ class AudioTagExtractor:
                     else:
                         l = l.split(b'/')
                 else:
-                    self.em.rclog("l is tuple: %s" %l)
+                    self.em.rclog("l is tuple: %s tp1 %s tp2 %S" %
+                                  (l, type(l[0]), type(l[1])))
                 if len(l) == 2:
-                    minf[k] = str(l[0])
+                    minf[k] = l[0]
                     #self.em.rclog("minf[%s] = %s" % (k, minf[k]))
                     if l[1] != 0:
-                        minf['total' + what + 's'] = str(l[1])
+                        minf['total' + what + 's'] = l[1]
 
         if 'orchestra' in minf:
             val = minf['orchestra']
-            if val.startswith('orchestra='):
+            if val.startswith(b'orchestra='):
                 minf['orchestra'] = val[10:]
                 
         #self.em.rclog("minf after tags %s\n" % minf)
@@ -340,7 +340,10 @@ class AudioTagExtractor:
         embdimg = self._embeddedImageFormat(mutf)
         if embdimg:
             #self.em.rclog("Embedded image format: %s" % embdimg)
-            minf["embdimg"] = embdimg
+            if type(embdimg) == type(u''):
+                minf["embdimg"] = embdimg.encode('ascii', errors='replace')
+            else:
+                minf["embdimg"] = embdimg
         
         self.em.setmimetype("text/plain")
         self.em.setfield("charset", 'utf-8')
