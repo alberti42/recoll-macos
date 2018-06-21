@@ -164,6 +164,13 @@ tagdict = {
     '\xa9wrt' : 'COMPOSER',
     }
 
+def tobytes(s):
+    if type(s) == type(b''):
+        return s
+    if type(s) != type(u''):
+        s = str(s)
+    return s.encode('utf-8', errors='replace')
+    
 # mp3:      album, title, artist, genre, date, tracknumber
 # flac:     album, title, artist, genre, xxx, tracknumber
 # oggvorbis:album, title, artist, genre, date, tracknumber
@@ -276,30 +283,29 @@ class AudioTagExtractor:
                 minf['bits_per_sample'] = 16
 
         for tag,val in minf.items():
-            val = str(val)
-            if type(val) == type(u''):
-                val = val.encode('utf-8', errors='replace')
-            minf[tag] = val
+            minf[tag] = tobytes(val)
             
         ####################
         # Metadata tags. The names vary depending on the file type. We
         # just have a big translation dictionary for all
         for tag,val in mutf.items():
-            #self.em.rclog("Original tag: <%s>, val <%s>" % (tag, val))
             if tag.upper() in tagdict:
                 tag = tag.upper()
             if tag in tagdict:
+                #self.em.rclog("Original tag: <%s>, type0 %s val <%s>" %
+                #              (tag, type(val), val))
+                # Some file types return lists of value (e.g. FLAC)
+                try:
+                    val = " ".join(val)
+                    #self.em.rclog("Joined tag: <%s>, type0 %s val <%s>" %
+                    #              (tag, type(val), val))
+                except:
+                    pass
                 ntag = tagdict[tag].lower()
                 #self.em.rclog("New tag: %s" % ntag)
                 try:
-                    if type(val) == type(u''):
-                        val = val.encode('utf-8', errors='replace')
-                    elif type(val) != type(b''):
-                        val = str(val)
-                        if type(val) == type(u''):
-                            val = val.encode('utf-8', errors='replace')
-                    minf[ntag] = val
-                    #self.em.rclog("Tag %s -> %s" % (ntag, val0))
+                    minf[ntag] = tobytes(val)
+                    #self.em.rclog("Tag %s -> %s" % (ntag, val))
                 except Exception as err:
                     self.em.rclog("Error while extracting tag: %s"%err)
             else:
@@ -340,10 +346,7 @@ class AudioTagExtractor:
         embdimg = self._embeddedImageFormat(mutf)
         if embdimg:
             #self.em.rclog("Embedded image format: %s" % embdimg)
-            if type(embdimg) == type(u''):
-                minf["embdimg"] = embdimg.encode('ascii', errors='replace')
-            else:
-                minf["embdimg"] = embdimg
+            embdimg = tobytes(embdimg)
         
         self.em.setmimetype("text/plain")
         self.em.setfield("charset", 'utf-8')
@@ -356,7 +359,7 @@ class AudioTagExtractor:
                 self.em.setfield('author', val)    
 
         try:
-            docdata = mutf.pprint().encode('utf-8', errors='replace')
+            docdata = tobytes(mutf.pprint())
         except Exception as err:
             self.em.rclog("Doc pprint error: %s" % err)
 
