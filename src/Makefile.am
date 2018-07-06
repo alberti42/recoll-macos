@@ -556,42 +556,12 @@ VERSION
 # php/00README.txt php/recoll/config.m4 php/recoll/make.sh 
 # php/recoll/php_recoll.h php/recoll/recoll.cpp php/sample/shell.php 
 
-# MAKEPYTHON decides if we build the recoll API Python package. We always
-# build the chm package
 OPTSFORPYTHON != test -f /etc/debian_version && echo --install-layout=deb
-if MAKEPYTHON
-
-all-local: recollpython rclpychm
-install-exec-local: recollpython-install rclpychm-install
-clean-local: recollpython-clean
-
-else
-
-all-local: rclpychm
-install-exec-local: rclpychm-install
-clean-local: rclpychm-clean recollpython-clean
-
-endif
-
-
-rclpychm:
-	(cd python/pychm; set -x; \
-        for v in 2 3;do \
-        test -n "`which python$${v}`" && python$${v} setup.py build;\
-        done \
-        )
-rclpychm-install:
-	(cd python/pychm; set -x; \
-        for v in 2 3;do test -n "`which python$${v}`" && \
-        python$${v} setup.py install \
-         --prefix=${prefix} --root=$${DESTDIR:-/} $(OPTSFORPYTHON); \
-        done \
-        )
-rclpychm-clean:
-	rm -rf python/pychm/build
-	rm -r python/pychm/dist/*
 
 if MAKEPYTHON
+all-local:: recollpython
+install-exec-local:: recollpython-install
+clean-local:: recollpython-clean
 recollpython: librecoll.la
 	(cd python/recoll; set -x; \
         for v in 2 3;do test -n "`which python$${v}`" && \
@@ -611,16 +581,38 @@ recollpython-clean:
 	rm -f python/recoll/*.pyc
 endif
 
+if MAKEPYTHONCHM
+all-local:: rclpychm
+install-exec-local:: rclpychm-install
+clean-local:: rclpychm-clean
+rclpychm:
+	(cd python/pychm; set -x; \
+        for v in 2 3;do \
+        test -n "`which python$${v}`" && python$${v} setup.py build;\
+        done \
+        )
+rclpychm-install:
+	(cd python/pychm; set -x; \
+        for v in 2 3;do test -n "`which python$${v}`" && \
+        python$${v} setup.py install \
+         --prefix=${prefix} --root=$${DESTDIR:-/} $(OPTSFORPYTHON); \
+        done \
+        )
+rclpychm-clean:
+	rm -rf python/pychm/build
+	rm -r python/pychm/dist/*
+endif
+
 if MAKEQT
-all-local: recollqt
+all-local:: recollqt
 recollqt: librecoll.la
 	(cd $(QTGUI); ${QMAKE} PREFIX=${prefix} recoll.pro)
 	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" prefix=$(prefix) \
                 exec_prefix=$(exec_prefix) libdir=$(libdir)
-clean-local: recollqt-clean
+clean-local:: recollqt-clean
 recollqt-clean:
 	-$(MAKE) -C $(QTGUI) clean
-install-exec-local: recollqt-install
+install-exec-local:: recollqt-install
 recollqt-install:
 	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" INSTALL_ROOT=$(DESTDIR) \
                 prefix=$(prefix) exec_prefix=$(exec_prefix) libdir=$(libdir) \
