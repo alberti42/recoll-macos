@@ -112,7 +112,7 @@ class rclEPUB:
         
 
     def getipath(self, params):
-        return self.extractone(params["ipath:"])
+        return self.extractone(params["ipath:"].decode('UTF-8'))
 
     def getnext(self, params):
         if self.catenate:
