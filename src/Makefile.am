@@ -556,7 +556,7 @@ VERSION
 # php/00README.txt php/recoll/config.m4 php/recoll/make.sh 
 # php/recoll/php_recoll.h php/recoll/recoll.cpp php/sample/shell.php 
 
-OPTSFORPYTHON != test -f /etc/debian_version && echo --install-layout=deb
+OPTSFORPYTHON = $(shell test -f /etc/debian_version && echo --install-layout=deb)
 
 if MAKEPYTHON
 all-local:: recollpython
@@ -600,7 +600,7 @@ rclpychm-install:
         )
 rclpychm-clean:
 	rm -rf python/pychm/build
-	rm -r python/pychm/dist/*
+	rm -rf python/pychm/dist/*
 endif
 
 if MAKEQT

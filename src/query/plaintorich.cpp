@@ -155,10 +155,11 @@ bool TextSplitPTR::matchGroups()
 // for validating, or catching things which are probably urls but miss
 // a scheme (e.g. www.xxx.com/index.html), because complicated.
 static const string urlRE = "(https?://[[:alnum:]~_/.%?&=,#@]+)[[:space:]|]";
+static const string urlRep{"<a href=\"$1\">$1</a>"};
 static std::regex url_re(urlRE);
 static string activate_urls(const string& in)
 {
-    return std::regex_replace(in, url_re, "<a href=\"$1\">$1</a>");
+    return std::regex_replace(in, url_re, urlRep);
 }
 
 // Fix result text for display inside the gui text window.

@@ -54,9 +54,10 @@ static const string cstr_nc("\n\r\x0c\\");
 static const string punctcls("[-<>._+,#*=|]");
 static const string punctRE = "(" + punctcls +  " *)(" + punctcls + " *)+";
 static std::regex fixfrag_re(punctRE);
+static const string punctRep{"$2"};
 static string fixfrag(const string& infrag)
 {
-    return std::regex_replace(neutchars(infrag, cstr_nc), fixfrag_re, "$2");
+    return std::regex_replace(neutchars(infrag, cstr_nc), fixfrag_re, punctRep);
 }
 
 
