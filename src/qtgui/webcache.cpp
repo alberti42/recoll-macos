@@ -21,17 +21,6 @@
 #include <memory>
 #include <unordered_map>
 
-#ifdef _WIN32
-#define USING_STD_REGEX
-#endif
-
-#ifndef USING_STD_REGEX
-#include <sys/types.h>
-#include <regex.h>
-#else
-#include <regex>
-#endif
-
 #include <QDebug>
 #include <QSettings>
 #include <QCloseEvent>
@@ -47,6 +36,7 @@
 #include "circache.h"
 #include "conftree.h"
 #include "rclmain_w.h"
+#include "smallut.h"
 
 using namespace std;
 
@@ -158,21 +148,8 @@ QVariant WebcacheModel::data(const QModelIndex& index, int role) const
         return QVariant();
     }
 
-    /* We now read the data on init */
-#if 0
-    string sdic;
-    if (!m->cache->cc()->get(m->disp[row].udi, sdic)) {
-        return QVariant();
-    }
-    ConfSimple dic(sdic);
-    //ostringstream os; dic.write(os);  cerr << "DIC: " << os.str() << endl;
-    string mime, url;
-    dic.get("mimetype", mime);
-    dic.get("url", url);
-#else
     const string& mime = m->disp[row].mimetype;
     const string& url = m->disp[row].url;
-#endif
     
     switch (index.column()) {
     case 0: return QVariant(QString::fromUtf8(mime.c_str()));
@@ -181,35 +158,13 @@ QVariant WebcacheModel::data(const QModelIndex& index, int role) const
     }
 }
 
-#ifndef USING_STD_REGEX
-#define M_regexec(A,B,C,D,E) regexec(&(A),B,C,D,E)
-#else
-#define M_regexec(A,B,C,D,E) (!regex_match(B,A))
-#endif
-
 void WebcacheModel::setSearchFilter(const QString& _txt)
 {
-    string txt = qs2utf8s(_txt);
-    
-#ifndef USING_STD_REGEX
-    regex_t exp;
-    if (regcomp(&exp, txt.c_str(), REG_NOSUB|REG_EXTENDED)) {
-        //qDebug() << "regcomp failed for " << _txt;
-        return;
-    }
-#else
-    basic_regex<char> exp;
-    try {
-        exp = basic_regex<char>(txt, std::regex_constants::nosubs |
-                           std::regex_constants::extended);
-    } catch(...) {
-        return;
-    }
-#endif
+    SimpleRegexp re(qs2utf8s(_txt), SimpleRegexp::SRE_NOSUB);
     
     m->disp.clear();
     for (unsigned int i = 0; i < m->all.size(); i++) {
-        if (!M_regexec(exp, m->all[i].url.c_str(), 0, 0, 0)) {
+        if (re(m->all[i].url)) {
             m->disp.push_back(m->all[i]);
         } else {
             //qDebug() << "match failed. exp" << _txt << "data" <<

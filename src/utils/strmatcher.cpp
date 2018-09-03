@@ -16,14 +16,10 @@
  */
 
 #include "autoconfig.h"
+#include "strmatcher.h"
 
 #include <stdio.h>
 #include <sys/types.h>
-#ifdef _WIN32
-#include <regex>
-#else
-#include <regex.h>
-#endif
 #include <fnmatch.h>
 
 #include <string>
@@ -31,19 +27,19 @@
 #include "cstr.h"
 #include "log.h"
 #include "pathut.h"
-#include "strmatcher.h"
 
 using namespace std;
 
 bool StrWildMatcher::match(const string& val) const
 {
-    LOGDEB2("StrWildMatcher::match: ["  << (m_sexp) << "] against ["  << (val) << "]\n" );
+    LOGDEB2("StrWildMatcher::match ["<< m_sexp<< "] against [" << val << "]\n");
     int ret = fnmatch(m_sexp.c_str(), val.c_str(), FNM_NOESCAPE);
     switch (ret) {
     case 0: return true;
     case FNM_NOMATCH: return false;
     default:
-	LOGINFO("StrWildMatcher::match:err: e ["  << (m_sexp) << "] s ["  << (val) << "] ("  << (url_encode(val)) << ") ret "  << (ret) << "\n" );
+	LOGINFO("StrWildMatcher::match:err: e [" << m_sexp << "] s [" << val
+                << "] (" << url_encode(val) << ") ret " << ret << "\n");
 	return false;
     }
 }
@@ -54,68 +50,22 @@ string::size_type StrWildMatcher::baseprefixlen() const
 }
 
 StrRegexpMatcher::StrRegexpMatcher(const string& exp)
-    : StrMatcher(exp), m_compiled(0), m_errcode(0) 
+    : StrMatcher(exp),
+      m_re(exp, SimpleRegexp::SRE_NOSUB)
 {
-    setExp(exp);
 }
 
 bool StrRegexpMatcher::setExp(const string& exp)
 {
-    if (m_compiled) {
-#ifdef _WIN32
-        delete (regex*)m_compiled;
-#else
-	regfree((regex_t*)m_compiled);
-	delete (regex_t*)m_compiled;
-#endif
-    }
-    m_compiled = 0;
-    
-#ifdef _WIN32
-    try {
-        m_compiled = new regex(exp, std::regex_constants::nosubs | 
-                               std::regex_constants::extended);
-    } catch (...) {
-        m_reason = string("StrRegexpMatcher:regcomp failed for ")
-	    + exp + string("syntax error ?");
-        return false;
-    }
-#else
-    m_compiled = new regex_t;
-    if ((m_errcode = 
-	 regcomp((regex_t*)m_compiled, exp.c_str(), REG_EXTENDED|REG_NOSUB))) {
-	char errbuf[200];
-	regerror(m_errcode, (regex_t*)m_compiled, errbuf, 199);
-	m_reason = string("StrRegexpMatcher:regcomp failed for ")
-	    + exp + string(errbuf);
-	return false;
-    }
-#endif
-    m_sexp = exp;
-    return true;
-}
-
-StrRegexpMatcher::~StrRegexpMatcher()
-{
-    if (m_compiled) {
-#ifdef _WIN32
-        delete (regex *)m_compiled;
-#else
-	regfree((regex_t*)m_compiled);
-	delete (regex_t*)m_compiled;
-#endif
-    }
+    m_re = SimpleRegexp(exp, SimpleRegexp::SRE_NOSUB);
+    return m_re.ok();
 }
 
 bool StrRegexpMatcher::match(const string& val) const
 {
-    if (m_errcode) 
+    if (!m_re.ok()) 
 	return false;
-#ifdef _WIN32
-    return regex_match(val, *((regex *)m_compiled));
-#else
-    return regexec((regex_t*)m_compiled, val.c_str(), 0, 0, 0) != REG_NOMATCH;
-#endif
+    return m_re(val);
 }
 
 string::size_type StrRegexpMatcher::baseprefixlen() const
@@ -125,6 +75,6 @@ string::size_type StrRegexpMatcher::baseprefixlen() const
 
 bool StrRegexpMatcher::ok() const
 {
-    return !m_errcode;
+    return m_re.ok();
 }
 

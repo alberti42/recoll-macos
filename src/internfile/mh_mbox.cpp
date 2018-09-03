@@ -23,16 +23,6 @@
 #include "safesysstat.h"
 #include <time.h>
 
-#if defined(_WIN32)
-#define USING_STD_REGEX
-#endif
-
-#ifdef USING_STD_REGEX
-#include <regex>
-#else
-#include <regex.h>
-#endif
-
 #include <cstring>
 #include <map>
 #include <mutex>
@@ -363,7 +353,7 @@ static inline void stripendnl(line_type& line, int& ll)
 // This was added as an alternative format. By the way it also fools "mail" and
 // emacs-vm, Recoll is not alone
 // Update: 2009-11-27: word after From may be quoted string: From "john bull"
-static const  char *frompat =  
+static const string frompat{
 "^From[ ]+([^ ]+|\"[^\"]+\")[ ]+"    // 'From (toto@tutu|"john bull") '
 "[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Fri Oct 26
 "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?[ ]+"             // Time, seconds optional
@@ -374,45 +364,15 @@ static const  char *frompat =
 "[[:alpha:]]{3},[ ]+[0-3]?[0-9][ ]+[[:alpha:]]{3}[ ]+" // Mon, 8 May
 "[12][0-9][0-9][0-9][ ]+"                              // Year
 "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?"                  // Time, secs optional
-    ;
+    };
 
 // Extreme thunderbird brokiness. Will sometimes use From lines
 // exactly like: From ^M (From followed by space and eol). We only
 // test for this if QUIRKS_TBIRD is set
-static const char *miniTbirdFrom = "^From $";
-#ifndef USING_STD_REGEX
-static regex_t fromregex;
-static regex_t minifromregex;
-#define M_regexec(A,B,C,D,E) regexec(&(A),B,C,D,E)
-#else
-basic_regex<char> fromregex;
-basic_regex<char> minifromregex;
-#define REG_NOSUB std::regex_constants::nosubs
-#define REG_EXTENDED std::regex_constants::extended
-#define M_regexec(A, B, C, D, E) (!regex_match(B,A))
+static const string miniTbirdFrom{"^From $"};
 
-#endif
-
-static bool regcompiled;
-static std::mutex o_regex_mutex;
-
-static void compileregexes()
-{
-    std::unique_lock<std::mutex> locker(o_regex_mutex);
-    // As the initial test of regcompiled is unprotected the value may
-    // have changed while we were waiting for the lock. Test again now
-    // that we are alone.
-    if (regcompiled)
-	return;
-#ifndef USING_STD_REGEX
-    regcomp(&fromregex, frompat, REG_NOSUB|REG_EXTENDED);
-    regcomp(&minifromregex, miniTbirdFrom, REG_NOSUB|REG_EXTENDED);
-#else
-    fromregex = basic_regex<char>(frompat, REG_NOSUB | REG_EXTENDED);
-    minifromregex = basic_regex<char>(miniTbirdFrom, REG_NOSUB | REG_EXTENDED);
-#endif
-    regcompiled = true;
-}
+static SimpleRegexp fromregex(frompat, SimpleRegexp::SRE_NOSUB);
+static SimpleRegexp minifromregex(miniTbirdFrom, SimpleRegexp::SRE_NOSUB);
 
 bool MimeHandlerMbox::next_document()
 {
@@ -432,13 +392,11 @@ bool MimeHandlerMbox::next_document()
 	LOGDEB("MimeHandlerMbox::next_document: can't preview folders!\n");
 	return false;
     }
-    LOGDEB0("MimeHandlerMbox::next_document: fn " << (m_fn) << ", msgnum " << (m_msgnum) << " mtarg " << (mtarg) << " \n");
+    LOGDEB0("MimeHandlerMbox::next_document: fn " << m_fn << ", msgnum " <<
+            m_msgnum << " mtarg " << mtarg << " \n");
     if (mtarg == 0)
 	mtarg = -1;
 
-    if (!regcompiled) {
-	compileregexes();
-    }
 
     // If we are called to retrieve a specific message, seek to bof
     // (then scan up to the message). This is for the case where the
@@ -452,14 +410,14 @@ bool MimeHandlerMbox::next_document()
     if (mtarg > 0) {
         mbhoff_type off;
         line_type line;
-        LOGDEB0("MimeHandlerMbox::next_doc: mtarg " << (mtarg) << " m_udi[" << (m_udi) << "]\n");
+        LOGDEB0("MimeHandlerMbox::next_doc: mtarg " << mtarg << " m_udi[" <<
+                m_udi << "]\n");
         if (!m_udi.empty() && 
             (off = o_mcache.get_offset(m_config, m_udi, mtarg)) >= 0 && 
             fseeko(fp, (off_t)off, SEEK_SET) >= 0 && 
             fgets(line, LL, fp) &&
-            (!M_regexec(fromregex, line, 0, 0, 0) || 
-	     ((m_quirks & MBOXQUIRK_TBIRD) && 
-	      !M_regexec(minifromregex, line, 0, 0, 0)))	) {
+            (fromregex(line) || ((m_quirks & MBOXQUIRK_TBIRD) && 
+                                 minifromregex(line)))	) {
                 LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
                 fseeko(fp, (off_t)off, SEEK_SET);
                 m_msgnum = mtarg -1;
@@ -487,7 +445,8 @@ bool MimeHandlerMbox::next_document()
 	m_lineno++;
 	int ll;
 	stripendnl(line, ll);
-	LOGDEB2("mhmbox:next: hadempty " << (hademptyline) << " lineno " << (m_lineno) << " ll " << (ll) << " Line: [" << (line) << "]\n");
+	LOGDEB2("mhmbox:next: hadempty " << hademptyline << " lineno " <<
+                m_lineno << " ll " << ll << " Line: [" << line << "]\n");
 	if (hademptyline) {
 	    if (ll > 0) {
 		// Non-empty line with empty line flag set, reset flag
@@ -501,11 +460,12 @@ bool MimeHandlerMbox::next_document()
 		/* The 'F' compare is redundant but it improves performance
 		   A LOT */
 		if (line[0] == 'F' && (
-		    !M_regexec(fromregex, line, 0, 0, 0) || 
-		    ((m_quirks & MBOXQUIRK_TBIRD) && 
-		     !M_regexec(minifromregex, line, 0, 0, 0)))
+                        fromregex(line) || 
+                        ((m_quirks & MBOXQUIRK_TBIRD) && minifromregex(line)))
 		    ) {
-		    LOGDEB0("MimeHandlerMbox: msgnum " << (m_msgnum) << ", From_ at line " << (m_lineno) << ": [" << (line) << "]\n");
+		    LOGDEB0("MimeHandlerMbox: msgnum " << m_msgnum <<
+                            ", From_ at line " << m_lineno << ": [" << line
+                            << "]\n");
 		    if (storeoffsets)
 			m_offsets.push_back(message_end);
 		    m_msgnum++;
@@ -528,13 +488,15 @@ bool MimeHandlerMbox::next_document()
 	    line[ll+1] = 0;
 	    msgtxt += line;
 	    if (msgtxt.size() > max_mbox_member_size) {
-		LOGERR("mh_mbox: huge message (more than " << (max_mbox_member_size/(1024*1024)) << " MB) inside " << (m_fn) << ", giving up\n");
+		LOGERR("mh_mbox: huge message (more than " <<
+                       max_mbox_member_size/(1024*1024) << " MB) inside " <<
+                       m_fn << ", giving up\n");
 		return false;
 	    }
 	}
     }
-    LOGDEB2("Message text length " << (msgtxt.size()) << "\n");
-    LOGDEB2("Message text: [" << (msgtxt) << "]\n");
+    LOGDEB2("Message text length " << msgtxt.size() << "\n");
+    LOGDEB2("Message text: [" << msgtxt << "]\n");
     char buf[20];
     // m_msgnum was incremented when hitting the next From_ or eof, so the data
     // is for m_msgnum - 1

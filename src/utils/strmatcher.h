@@ -18,6 +18,7 @@
 #define _STRMATCHER_H_INCLUDED_
 
 #include <string>
+#include "smallut.h"
 
 // Encapsulating simple wildcard/regexp string matching.
 
@@ -25,28 +26,22 @@
 class StrMatcher {
 public:
     StrMatcher(const std::string& exp) 
-    : m_sexp(exp)
-    {
-    }
+        : m_sexp(exp) {}
     virtual ~StrMatcher() {};
     virtual bool match(const std::string &val) const = 0;
     virtual std::string::size_type baseprefixlen() const = 0;
-    virtual bool setExp(const std::string& newexp) 
-    {
+    virtual bool setExp(const std::string& newexp) {
 	m_sexp = newexp;
 	return true;
     }
-    virtual bool ok() const
-    {
+    virtual bool ok() const {
 	return true;
     }
-    virtual const std::string& exp()
-    {
+    virtual const std::string& exp() const {
 	return m_sexp;
     }
-    virtual StrMatcher *clone() = 0;
-    const string& getreason() 
-    {
+    virtual StrMatcher *clone() const = 0;
+    const std::string& getreason() const {
 	return m_reason;
     }
 protected:
@@ -57,16 +52,11 @@ protected:
 class StrWildMatcher : public StrMatcher {
 public:
     StrWildMatcher(const std::string& exp)
-    : StrMatcher(exp)
-    {
-    }
-    virtual ~StrWildMatcher()
-    {
-    }
+        : StrMatcher(exp) {}
+    virtual ~StrWildMatcher() {}
     virtual bool match(const std::string& val) const;
     virtual std::string::size_type baseprefixlen() const;
-    virtual StrWildMatcher *clone()
-    {
+    virtual StrWildMatcher *clone() const {
 	return new StrWildMatcher(m_sexp);
     }
 };
@@ -74,22 +64,16 @@ public:
 class StrRegexpMatcher : public StrMatcher {
 public:
     StrRegexpMatcher(const std::string& exp);
-    virtual bool setExp(const std::string& newexp);
-    virtual ~StrRegexpMatcher();
+    virtual bool setExp(const std::string& newexp) override;
+    virtual ~StrRegexpMatcher() {};
     virtual bool match(const std::string& val) const;
     virtual std::string::size_type baseprefixlen() const;
-    virtual bool ok() const;
-    virtual StrRegexpMatcher *clone()
-    {
+    virtual bool ok() const override;
+    virtual StrRegexpMatcher *clone() const {
 	return new StrRegexpMatcher(m_sexp);
     }
-    const string& getreason() 
-    {
-	return m_reason;
-    }
 private:
-    void *m_compiled;
-    bool m_errcode;
+    SimpleRegexp m_re;
 };
 
 #endif /* _STRMATCHER_H_INCLUDED_ */

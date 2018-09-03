@@ -576,9 +576,13 @@ recollpython-install:
         done; \
          )
 recollpython-clean:
-	rm -rf python/recoll/build
-	rm -rf python/recoll/__pycache__
 	rm -f python/recoll/*.pyc
+	rm -rf python/pychm/build
+	rm -rf python/pychm/recollchm.egg-info
+	rm -rf python/pychm/setup.py
+	rm -rf python/recoll/Recoll.egg-info
+	rm -rf python/recoll/__pycache__
+	rm -rf python/recoll/build
 endif
 
 if MAKEPYTHONCHM
