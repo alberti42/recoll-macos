@@ -1989,11 +1989,15 @@ void Db::setExistingFlags(const string& udi, unsigned int docid)
 
 void Db::i_setExistingFlags(const string& udi, unsigned int docid)
 {
-    // Set the up to date flag for the document and its subdocs
+    // Set the up to date flag for the document and its
+    // subdocs. needUpdate() can also be called at query time (for
+    // preview up to date check), so no error if the updated bitmap is
+    // of size 0
     if (docid >= updated.size()) {
-        LOGERR("needUpdate: existing docid beyond updated.size(). Udi [" <<
-               udi << "], docid " << docid << ", updated.size() " <<
-               updated.size() << "\n");
+        if (updated.size())
+            LOGERR("needUpdate: existing docid beyond updated.size(). Udi [" <<
+                   udi << "], docid " << docid << ", updated.size() " <<
+                   updated.size() << "\n");
         return;
     } else {
         updated[docid] = true;
