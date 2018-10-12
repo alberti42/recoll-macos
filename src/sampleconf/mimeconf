@@ -75,7 +75,7 @@ application/vnd.ms-office = execm rcldoc.py
 
 application/ogg = execm rclaudio
 application/pdf = execm rclpdf.py
-application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
+application/postscript = exec pstotext;charset=cp1252;mimetype=text/plain
 application/sql = internal text/plain
 application/vnd.ms-excel = execm rclxls.py
 application/vnd.ms-powerpoint = execm rclppt.py
@@ -110,7 +110,7 @@ application/vnd.sun.xml.writer = execm rclsoff.py
 application/vnd.sun.xml.writer.global = execm rclsoff.py
 application/vnd.sun.xml.writer.template = execm rclsoff.py
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
-application/x-abiword = exec rclabw
+application/x-abiword = execm rclabw.py
 application/x-awk = internal text/plain
 application/x-chm = execm rclchm
 application/x-dia-diagram = execm rcldia;mimetype=text/plain
@@ -118,12 +118,12 @@ application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
 application/x-gnote = execm rclxml.py
 application/x-gnuinfo = execm rclinfo
-application/x-gnumeric = exec rclgnm
+application/x-gnumeric = execm rclgnm.py
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-mimehtml = internal message/rfc822
 #application/x-mobipocket-ebook = execm rclmobi
-application/x-okular-notes = exec rclokulnote
+application/x-okular-notes = execm rclokulnote.py
 application/x-perl = internal text/plain
 # Returned by xdg-mime for .php. Future-proofing                   
 application/x-php = internal text/plain
@@ -168,9 +168,8 @@ text/css = internal text/plain
 application/javascript = internal text/plain
 text/x-bibtex = exec rclbibtex.sh ; mimetype = text/plain
 text/x-csv = internal text/plain
-text/x-fictionbook = exec rclfb2
+text/x-fictionbook = execm rclfb2.py
 text/x-gaim-log = exec rclgaim
-text/x-html-sidux-man = exec rclsiduxman
 text/x-html-aptosid-man = exec rclaptosidman
 text/x-lua = internal
 text/x-chm-html = internal text/html
@@ -283,7 +282,6 @@ text/x-c++ = source
 text/x-csv = txt
 text/x-fictionbook = document
 text/x-html-aptosid-man = aptosid-book
-text/x-html-sidux-man = sidux-book
 text/x-ini = txt
 text/x-bibtex = txt
 text/x-lua = source

@@ -832,15 +832,15 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         // an ipath, create it.
         if (fn.empty() || !idoc.ipath.empty()) {
             TempFile temp = lthr.tmpimg;
-            if (temp) {
+            if (temp.ok()) {
                 LOGDEB1("Preview: load: got temp file from internfile\n");
             } else if (!FileInterner::idocToFile(temp, string(), 
                                                  theconfig, idoc)) {
-                temp.reset(); // just in case.
+                temp = TempFile(); // just in case.
             }
-            if (temp) {
+            if (temp.ok()) {
                 rememberTempFile(temp);
-                fn = temp->filename();
+                fn = temp.filename();
                 editor->m_tmpfilename = fn;
             } else {
                 editor->m_tmpfilename.erase();
@@ -876,10 +876,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
 
     // Enter document in document history
-    string udi;
-    if (idoc.getmeta(Rcl::Doc::keyudi, &udi)) {
-        historyEnterDoc(g_dynconf, udi);
-    }
+    historyEnterDoc(rcldb, g_dynconf, idoc);
 
     editor->setFocus();
     emit(previewExposed(this, m_searchId, docnum));

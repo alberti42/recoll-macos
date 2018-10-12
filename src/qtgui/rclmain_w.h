@@ -204,7 +204,7 @@ private:
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc{0}; // Indexing process
     bool             m_idxkilled{false}; // Killed my process
-    TempFileInternal *m_idxreasontmp{nullptr};
+    TempFile        *m_idxreasontmp{nullptr};
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
     int               m_catgbutvecidx{0};

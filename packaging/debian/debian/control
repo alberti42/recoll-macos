@@ -19,10 +19,10 @@ X-Python-Version: >= 2.7
 Vcs-Git: https://anonscm.debian.org/cgit/collab-maint/recoll.git
 Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/recoll.git
 Homepage: http://www.lesbonscomptes.com/recoll
-Standards-Version: 3.9.8
+Standards-Version: 4.1.4
 
 Package: recoll
-Architecture: any
+Architecture: all
 Depends: recollgui, recollcmd, ${misc:Depends}
 Description: Personal full text search package with a Qt GUI
  This package is a personal full text search package is based on a very strong
@@ -49,30 +49,40 @@ Description: Personal full text search package with a Qt GUI
 
 Package: recollcmd
 Architecture: any
-Breaks: recoll (<< 1.23.4)
-Replaces: recoll (<< 1.23.4)
-Depends: python, ${misc:Depends}, ${shlibs:Depends}
-Recommends: python-recoll, aspell, xdg-utils, xsltproc,
-            python-libxml2, python-libxslt1
+Breaks: recoll (<< 1.23.9)
+Replaces: recoll (<< 1.23.9)
+Depends: python, python3, ${misc:Depends}, ${shlibs:Depends}
+Recommends: aspell,
+            python-future,
+            python-libxml2,
+            python-libxslt1,
+            python-recoll,
+            python3-recoll,
+            xdg-utils,
+            xsltproc
 Suggests: antiword,
           ghostscript,
+          groff,
           libimage-exiftool-perl,
+          libinotifytools0,
           poppler-utils,
           pstotext,
           python-chm,
+          python-lzma,
+          python-mido,
           python-mutagen,
+          python-rarfile,
           unrtf,
-          untex
+          untex,
+          wv
 Description: Command line programs for recoll
  This package supports indexing and command line querying.
  
 Package: recollgui
 Architecture: any
-Breaks: recoll (<< 1.23.4)
-Replaces: recoll (<< 1.23.4)
-Depends: recollcmd (= ${binary:Version}),
-         ${misc:Depends},
-         ${shlibs:Depends}
+Breaks: recoll (<< 1.23.9)
+Replaces: recoll (<< 1.23.9)
+Depends: recollcmd (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
 Description: GUI program and elements for recoll
  Main recoll GUI for configuring, controlling and querying recoll indexes.
 

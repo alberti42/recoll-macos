@@ -5,7 +5,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html#doctypes'>http://www.recoll.org/features.html</ulink>">
-<!ENTITY RCLVERSION "1.23">
+<!ENTITY RCLVERSION "1.24">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY FAQS "https://www.lesbonscomptes.com/recoll/faqsandhowtos/">
@@ -1470,7 +1470,7 @@
 
       <para>When building &RCL;, the real time indexing support can be
       customised during package <link
-      linkend="RCL.INSTALL.BUILDING.BUILD">configuration</link> with
+      linkend="RCL.INSTALL.BUILDING">configuration</link> with
       the <option>--with[out]-fam</option> or
       <option>--with[out]-inotify</option> options.  The default is
       currently to include <application>inotify</application>
@@ -4817,30 +4817,11 @@ recollindex -c "$confdir"
         paragraph at the end of this section will explain a few differences
         and ways to write code compatible with both versions.</para>
 
-        <para>The Python interface can be found in the source package,
-        under <filename>python/recoll</filename>.</para>
-
-        <para>The <filename>python/recoll/</filename> directory
-        contains the usual <filename>setup.py</filename>. After
-        configuring the main &RCL; code, you can use the script to
-        build and install the Python module:
-        <screen>
-          <userinput>cd recoll-xxx/python/recoll</userinput>
-          <userinput>python setup.py build</userinput>
-          <userinput>python setup.py install</userinput>
-        </screen>
-        </para> 
-
-        <para>As of &RCL; 1.19, the module can be compiled for
-        Python3.</para>
-
-        <para>The normal &RCL; installer installs the Python2
-        API along with the main code. The Python3 version must be
-        explicitely built and installed.</para>
-
-        <para>When installing from a repository, and depending on the
-        distribution, the Python API can sometimes be found in a
-        separate package.</para>
+        <para>There is a good chance that your system repository has
+        packages for the Recoll Python API, sometimes in a package separate
+        from the main one (maybe named something like python-recoll).  Else
+        refer to the <link linkend="RCL.INSTALL.BUILDING">Building from
+        source chapter</link>.</para>
 
         <para>As an introduction, the following small sample will run a
         query and list the title and url for each of the results. It would
@@ -4863,6 +4844,11 @@ recollindex -c "$confdir"
         print(doc.url, doc.title)
         ]]></programlisting>
 
+        <para>You can also take a look at the source for the <ulink
+        url="https://github.com/koniu/recoll-webui">Recoll
+        WebUI</ulink>, or the <ulink url="https://opensourceprojects.eu/p/upmpdcli/code/ci/c8c8e75bd181ad9db2df14da05934e53ca867a06/tree/src/mediaserver/cdplugins/uprcl/uprclfolders.py">upmpdcli local media server</ulink>, which are both
+        based on the Python API.</para>
+        
       </sect2>
       
       <sect2 id="RCL.PROGRAM.PYTHONAPI.ELEMENTS">
@@ -5894,7 +5880,7 @@ for i in range(nres):
 
       </sect2>
 
-      <sect2 id="RCL.INSTALL.BUILDING.BUILD">
+      <sect2 id="RCL.INSTALL.BUILDING.BUILDING">
         <title>Building</title>
 
         <para>&RCL; has been built on Linux, FreeBSD, Mac OS X, and Solaris,
@@ -6010,30 +5996,16 @@ for i in range(nres):
           <userinput>(practices usual hardship-repelling invocations)</userinput>
         </screen>
 
-        <para>When building from source cloned from the BitBucket repository,
+        <para>When building from source cloned from the git repository,
         you also need to install <application>autoconf</application>,
         <application>automake</application>, and
         <application>libtool</application> and you must execute <literal>sh
         autogen.sh</literal> in the top source directory before running
         <literal>configure</literal>.</para>
-        
-        <sect3 id="RCL.INSTALL.BUILDING.BUILD.SOLARIS">
-          <title>Building on Solaris</title>
-
-          <para>We did not test building the GUI on Solaris for recent
-          versions. You will need at least Qt 4.4. There are some hints
-          on <ulink url="http://www.recoll.org/download-1.14.html">an old
-          web site page</ulink>, they may still be valid.</para>
-
-          <para>Someone did test the 1.19 indexer and Python module build,
-          they do work, with a few minor glitches. Be sure to use
-          GNU <command>make</command> and <command>install</command>.</para> 
-        </sect3>
-
       </sect2>
-
+      
       <sect2 id="RCL.INSTALL.BUILDING.INSTALL">
-        <title>Installation</title>
+        <title>Installing</title>
         
         <para>Use <userinput>make install</userinput>
         in the root 
@@ -6045,6 +6017,48 @@ for i in range(nres):
         </para>
 
       </sect2>
+
+      <sect2 id="RCL.INSTALL.BUILDING.PYTHON">
+        <title>Python API package</title>
+
+        <para>The Python interface can be found in the source tree,
+        under the <filename>python/recoll</filename> directory.</para>
+
+        <para>As of &RCL; 1.19, the module can be compiled for
+        Python3.</para>
+
+        <para>The normal &RCL; build procedure (see above) installs the API
+        package for the default system version (python) along with the main
+        code. The package for other Python versions (e.g. python3 if the
+        system default is python2) must be explicitely built and
+        installed.</para>
+
+        <para>The <filename>python/recoll/</filename> directory contains
+        the usual <filename>setup.py</filename>. After configuring and
+        building the main &RCL; code, you can use the script to build and
+        install the Python module:
+        <screen>
+          <userinput>cd recoll-xxx/python/recoll</userinput>
+          <userinput>pythonX setup.py build</userinput>
+          <userinput>sudo pythonX setup.py install</userinput>
+        </screen>
+        </para> 
+
+      </sect2>
+
+      <sect2 id="RCL.INSTALL.BUILDING.SOLARIS">
+        <title>Building on Solaris</title>
+
+        <para>We did not test building the GUI on Solaris for recent
+        versions. You will need at least Qt 4.4. There are some hints
+        on <ulink url="http://www.recoll.org/download-1.14.html">an old
+        web site page</ulink>, they may still be valid.</para>
+
+        <para>Someone did test the 1.19 indexer and Python module build,
+        they do work, with a few minor glitches. Be sure to use
+        GNU <command>make</command> and <command>install</command>.</para> 
+      </sect2>
+
     </sect1>
 
     <sect1 id="RCL.INSTALL.CONFIG">

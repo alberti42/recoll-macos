@@ -80,6 +80,8 @@ application/vnd.sun.xml.writer.global = execm python rclsoff.py
 application/vnd.sun.xml.writer.template = execm python rclsoff.py
 
 application/vnd.wordperfect = exec wpd/wpd2html;mimetype=text/html
+application/x-abiword = execm python rclabw.py
+text/x-fictionbook = execm python rclfb2.py
 
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  execm python rclopxml.py

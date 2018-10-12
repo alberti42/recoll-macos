@@ -16,13 +16,11 @@
  */
 #include "autoconfig.h"
 
-
 #include "log.h"
 #include "rclconfig.h"
-
 #include "fetcher.h"
 #include "fsfetcher.h"
-#include "bglfetcher.h"
+#include "webqueuefetcher.h"
 #include "exefetcher.h"
 
 DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc)
@@ -37,7 +35,7 @@ DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc)
 	return new FSDocFetcher;
 #ifndef DISABLE_WEB_INDEXER
     } else if (!backend.compare("BGL")) {
-	return new BGLDocFetcher;
+	return new WQDocFetcher;
 #endif
     } else {
         DocFetcher *f = exeDocFetcherMake(config, backend);

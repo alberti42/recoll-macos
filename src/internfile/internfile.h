@@ -28,14 +28,15 @@ using std::map;
 using std::set;
 
 #include "mimehandler.h"
-#include "uncomp.h"
 #include "pathut.h"
+#include "rclutil.h"
 
 class RclConfig;
 namespace Rcl {
     class Doc;
 }
 
+class Uncomp;
 struct stat;
 
 /** Storage for missing helper program info. We want to keep this out of the 
@@ -277,7 +278,7 @@ class FileInterner {
     string                 m_reason;
     FIMissingStore        *m_missingdatap{nullptr};
 
-    Uncomp                 m_uncomp;
+    Uncomp                 *m_uncomp{nullptr};
 
     bool                   m_noxattrs; // disable xattrs usage
     bool                   m_direct; // External app did the extraction

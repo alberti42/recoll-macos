@@ -36,7 +36,7 @@ bool getStemLangs(vector<string>& langs);
 
 extern RclConfig *theconfig;
 
-extern void rememberTempFile(TempFile);
+extern TempFile *rememberTempFile(TempFile);
 extern void forgetTempFile(string &fn);
 extern void deleteAllTempFiles();
 

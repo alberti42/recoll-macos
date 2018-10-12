@@ -210,8 +210,8 @@ Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args,
         return 0;
     }
     if (outfile.empty())
-	temp->setnoremove(1);
-    PyObject *result = outfile.empty() ? PyBytes_FromString(temp->filename()) :
+	temp.setnoremove(1);
+    PyObject *result = outfile.empty() ? PyBytes_FromString(temp.filename()) :
 	PyBytes_FromString(outfile.c_str());
     return (PyObject *)result;
 }

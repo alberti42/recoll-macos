@@ -1123,9 +1123,26 @@ bool Db::rmQueryDb(const string &dir)
 // Determining what index a doc result comes from is based on the
 // modulo of the docid against the db count. Ref:
 // http://trac.xapian.org/wiki/FAQ/MultiDatabaseDocumentID
-size_t Db::whatDbIdx(const Doc& doc)
+bool Db::fromMainIndex(const Doc& doc)
 {
-    return m_ndb->whatDbIdx(doc.xdocid);
+    return m_ndb->whatDbIdx(doc.xdocid) == 0;
+}
+
+std::string Db::whatIndexForResultDoc(const Doc& doc)
+{
+    size_t idx = m_ndb->whatDbIdx(doc.xdocid);
+    if (idx == (size_t)-1) {
+        LOGERR("whatIndexForResultDoc: whatDbIdx returned -1 for " <<
+               doc.xdocid << endl);
+        return string();
+    }
+    // idx is [0..m_extraDbs.size()] 0 is for the main index, else
+    // idx-1 indexes into m_extraDbs
+    if (idx == 0) {
+        return m_basedir;
+    } else {
+        return m_extraDbs[idx-1];
+    }
 }
 
 size_t Db::Native::whatDbIdx(Xapian::docid id)
@@ -1972,11 +1989,15 @@ void Db::setExistingFlags(const string& udi, unsigned int docid)
 
 void Db::i_setExistingFlags(const string& udi, unsigned int docid)
 {
-    // Set the up to date flag for the document and its subdocs
+    // Set the up to date flag for the document and its
+    // subdocs. needUpdate() can also be called at query time (for
+    // preview up to date check), so no error if the updated bitmap is
+    // of size 0
     if (docid >= updated.size()) {
-        LOGERR("needUpdate: existing docid beyond updated.size(). Udi [" <<
-               udi << "], docid " << docid << ", updated.size() " <<
-               updated.size() << "\n");
+        if (updated.size())
+            LOGERR("needUpdate: existing docid beyond updated.size(). Udi [" <<
+                   udi << "], docid " << docid << ", updated.size() " <<
+                   updated.size() << "\n");
         return;
     } else {
         updated[docid] = true;
@@ -2352,18 +2373,44 @@ bool Db::dbStats(DbStats& res, bool listfailed)
 //  existence should be tested by looking at doc.pc
 bool Db::getDoc(const string &udi, const Doc& idxdoc, Doc &doc)
 {
-    LOGDEB("Db:getDoc: [" << udi << "]\n");
-    if (m_ndb == 0)
-	return false;
+    LOGDEB1("Db:getDoc: [" << udi << "]\n");
+    int idxi = idxdoc.idxi;
+    return getDoc(udi, idxi, doc);
+}
 
+bool Db::getDoc(const string &udi, const std::string& dbdir, Doc &doc)
+{
+    LOGDEB1("Db::getDoc(udi, dbdir): (" << udi << ", " << dbdir << ")\n");
+    int idxi = -1;
+    if (dbdir.empty() || dbdir == m_basedir) {
+        idxi = 0;
+    } else {
+        for (unsigned int i = 0; i < m_extraDbs.size(); i++) {
+            if (dbdir == m_extraDbs[i]) {
+                idxi = int(i + 1);
+                break;
+            }
+        }
+    }
+    LOGDEB1("Db::getDoc(udi, dbdir): idxi: " << idxi << endl);
+    if (idxi < 0) {
+        LOGERR("Db::getDoc(udi, dbdir): dbdir not in current extra dbs\n");
+        return false;
+    }
+    return getDoc(udi, idxi, doc);
+}
+
+bool Db::getDoc(const string& udi, int idxi, Doc& doc)
+{
     // Initialize what we can in any case. If this is history, caller
     // will make partial display in case of error
+    if (m_ndb == 0)
+	return false;
     doc.meta[Rcl::Doc::keyrr] = "100%";
     doc.pc = 100;
     Xapian::Document xdoc;
     Xapian::docid docid;
-    int idxi = idxdoc.idxi;
-    if ((docid = m_ndb->getDoc(udi, idxi, xdoc))) {
+    if (idxi >= 0 && (docid = m_ndb->getDoc(udi, idxi, xdoc))) {
 	string data = xdoc.get_data();
 	doc.meta[Rcl::Doc::keyudi] = udi;
 	return m_ndb->dbDataToRclDoc(docid, data, doc);
@@ -2373,7 +2420,7 @@ bool Db::getDoc(const string &udi, const Doc& idxdoc, Doc &doc)
 	// other ok docs further) but indicate the error with
 	// pc = -1
 	doc.pc = -1;
-	LOGINFO("Db:getDoc: no such doc in index: [" << udi << "]\n");
+	LOGINFO("Db:getDoc: no such doc in current index: [" << udi << "]\n");
 	return true;
     }
 }

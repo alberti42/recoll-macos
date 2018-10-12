@@ -58,8 +58,8 @@ bincimapmime/mime-printbody.cc \
 bincimapmime/mime-utils.h \
 bincimapmime/mime.cc \
 bincimapmime/mime.h \
-common/beaglequeuecache.cpp \
-common/beaglequeuecache.h \
+common/webstore.cpp \
+common/webstore.h \
 common/conf_post.h \
 common/cstr.cpp \
 common/cstr.h \
@@ -76,10 +76,10 @@ common/unacpp.h \
 common/uproplist.h \
 common/utf8fn.cpp \
 common/utf8fn.h \
-index/beaglequeue.cpp \
-index/beaglequeue.h \
-index/bglfetcher.cpp \
-index/bglfetcher.h \
+index/webqueue.cpp \
+index/webqueue.h \
+index/webqueuefetcher.cpp \
+index/webqueuefetcher.h \
 index/checkretryfailed.cpp \
 index/checkretryfailed.h \
 index/exefetcher.cpp \
@@ -236,7 +236,6 @@ utils/rclutil.h \
 utils/rclutil.cpp \
 utils/readfile.cpp \
 utils/readfile.h \
-utils/refcntr.h \
 utils/smallut.cpp \
 utils/smallut.h \
 utils/strmatcher.cpp \
@@ -507,11 +506,30 @@ qtgui/xmltosd.cpp \
 qtgui/xmltosd.h \
 \
 python/README.txt \
-python/recoll/Makefile.in \
+python/pychm/AUTHORS \
+python/pychm/COPYING \
+python/pychm/MANIFEST.in \
+python/pychm/README-RECOLL.txt \
+python/pychm/pychm.egg-info \
+python/pychm/pychm.egg-info/PKG-INFO \
+python/pychm/pychm.egg-info/SOURCES.txt \
+python/pychm/pychm.egg-info/dependency_links.txt \
+python/pychm/pychm.egg-info/top_level.txt \
+python/pychm/recollchm \
+python/pychm/recollchm/__init__.py \
+python/pychm/recollchm/__pycache__ \
+python/pychm/recollchm/chm.py \
+python/pychm/recollchm/chmlib.py \
+python/pychm/recollchm/extra.c \
+python/pychm/recollchm/swig_chm.c \
+python/pychm/recollchm/swig_chm.i \
+python/pychm/setup.py.in \
+python/recoll/Makefile \
 python/recoll/pyrclextract.cpp \
 python/recoll/pyrecoll.cpp \
 python/recoll/pyrecoll.h \
 python/recoll/recoll/__init__.py \
+python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py \
 python/recoll/setup.py.in \
 python/samples/docdups.py \
@@ -538,34 +556,67 @@ VERSION
 # php/00README.txt php/recoll/config.m4 php/recoll/make.sh 
 # php/recoll/php_recoll.h php/recoll/recoll.cpp php/sample/shell.php 
 
+OPTSFORPYTHON = $(shell test -f /etc/debian_version && echo --install-layout=deb)
+
 if MAKEPYTHON
-all-local: recollpython
+all-local:: recollpython
+install-exec-local:: recollpython-install
+clean-local:: recollpython-clean
 recollpython: librecoll.la
-	${MAKE} -C python/recoll libdir=$(libdir)
-install-exec-local: recollpython-install
+	(cd python/recoll; set -x; \
+        for v in 2 3;do test -n "`which python$${v}`" && \
+        libdir=$(libdir) python$${v} setup.py build; \
+        done \
+        )
 recollpython-install:
-	(cd python/recoll; \
-        if test -f /etc/debian_version ; then \
-            OPTSFORPYTHON=--install-layout=deb; \
-        fi; \
-        set -x; \
-        python setup.py install \
-         --prefix=${prefix} --root=$${DESTDIR:-/} $${OPTSFORPYTHON})
-clean-local: recollpython-clean
+	(cd python/recoll; set -x; \
+        for v in 2 3;do test -n "`which python$${v}`" && \
+        python$${v} setup.py install \
+         --prefix=${prefix} --root=$${DESTDIR:-/} $(OPTSFORPYTHON); \
+        done; \
+         )
 recollpython-clean:
+	rm -f python/recoll/*.pyc
+	rm -rf python/pychm/build
+	rm -rf python/pychm/recollchm.egg-info
+	rm -rf python/pychm/setup.py
+	rm -rf python/recoll/Recoll.egg-info
+	rm -rf python/recoll/__pycache__
 	rm -rf python/recoll/build
 endif
 
+if MAKEPYTHONCHM
+all-local:: rclpychm
+install-exec-local:: rclpychm-install
+clean-local:: rclpychm-clean
+rclpychm:
+	(cd python/pychm; set -x; \
+        for v in 2 3;do \
+        test -n "`which python$${v}`" && python$${v} setup.py build;\
+        done \
+        )
+rclpychm-install:
+	(cd python/pychm; set -x; \
+        for v in 2 3;do test -n "`which python$${v}`" && \
+        python$${v} setup.py install \
+         --prefix=${prefix} --root=$${DESTDIR:-/} $(OPTSFORPYTHON); \
+        done \
+        )
+rclpychm-clean:
+	rm -rf python/pychm/build
+	rm -rf python/pychm/dist/*
+endif
+
 if MAKEQT
-all-local: recollqt
+all-local:: recollqt
 recollqt: librecoll.la
 	(cd $(QTGUI); ${QMAKE} PREFIX=${prefix} recoll.pro)
 	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" prefix=$(prefix) \
                 exec_prefix=$(exec_prefix) libdir=$(libdir)
-clean-local: recollqt-clean
+clean-local:: recollqt-clean
 recollqt-clean:
 	-$(MAKE) -C $(QTGUI) clean
-install-exec-local: recollqt-install
+install-exec-local:: recollqt-install
 recollqt-install:
 	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" INSTALL_ROOT=$(DESTDIR) \
                 prefix=$(prefix) exec_prefix=$(exec_prefix) libdir=$(libdir) \
@@ -588,9 +639,10 @@ filterdir = $(pkgdatadir)/filters
 filter_DATA = \
 desktop/hotrecoll.py \
 filters/rcl7z \
-filters/rclabw \
+filters/rclabw.py \
 filters/rclaptosidman \
 filters/rclaudio \
+filters/rclbasehandler.py \
 filters/rclbibtex.sh \
 filters/rclcheckneedretry.sh \
 filters/rclchm \
@@ -602,9 +654,10 @@ filters/rclepub \
 filters/rclepub1 \
 filters/rclexec1.py \
 filters/rclexecm.py \
-filters/rclfb2 \
+filters/rclfb2.py \
 filters/rclgaim \
-filters/rclgnm \
+filters/rclgenxslt.py \
+filters/rclgnm.py \
 filters/rclics \
 filters/rclimg \
 filters/rclimg.py \
@@ -617,17 +670,15 @@ filters/rcllyx \
 filters/rclman \
 filters/rclmidi.py \
 filters/rclpdf.py \
-filters/rclokulnote \
+filters/rclokulnote.py \
 filters/rclopxml.py \
 filters/rclppt.py \
-filters/rclps \
 filters/rclpurple \
 filters/rclpython \
 filters/rclrar \
 filters/rclrtf.py \
 filters/rclscribus \
 filters/rclshowinfo \
-filters/rclsiduxman \
 filters/rclsoff.py \
 filters/rclsoff-flat.py \
 filters/rclsvg.py \
@@ -637,7 +688,6 @@ filters/rcltext.py \
 filters/rcluncomp \
 filters/rcluncomp.py \
 filters/rclwar \
-filters/rclwpd \
 filters/rclxls.py \
 filters/rclxml.py \
 filters/rclxmp.py \
@@ -648,13 +698,16 @@ filters/ppt-dump.py \
 filters/xls-dump.py \
 filters/xlsxmltocsv.py \
 filters/msodump.zip \
+filters/recollepub.zip \
+python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py 
 
 install-data-hook: 
 	(cd $(DESTDIR)/$(filterdir); \
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
 	chmod a+x recoll-we-move-files.py; \
-	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py rclmidi.py)
+	chmod 0644 msodump.zip recollepub.zip rclexecm.py rcllatinstops.zip \
+        rclconfig.py conftree.py rclmidi.py)
 
 if MAKEUSERDOC
 rdocdir = $(pkgdatadir)/doc

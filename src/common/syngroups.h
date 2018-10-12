@@ -28,14 +28,17 @@ class SynGroups {
 public:
     SynGroups();
     ~SynGroups();
+    SynGroups(const SynGroups&) = delete;
+    SynGroups& operator=(const SynGroups&) = delete;
+    SynGroups(const SynGroups&&) = delete;
+    SynGroups& operator=(const SynGroups&&) = delete;
+
     bool setfile(const std::string& fname);
     std::vector<std::string> getgroup(const std::string& term);
     bool ok();
 private:
     class Internal;
     Internal *m;
-    SynGroups(const SynGroups&);
-    SynGroups& operator=(const SynGroups&);
 };
 
 #endif /* _SYNGROUPS_H_INCLUDED_ */

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Rar file filter for Recoll
 # Adapted from the Zip archive filter by mroark.

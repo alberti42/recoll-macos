@@ -14,11 +14,10 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef _beaglequeuecache_h_included_
-#define _beaglequeuecache_h_included_
+#ifndef _webstore_h_included_
+#define _webstore_h_included_
 
 #include <string>
-using std::string;
 
 class RclConfig;
 namespace Rcl {
@@ -28,23 +27,24 @@ namespace Rcl {
 class CirCache;
 
 /**
- * Manage the CirCache for the Beagle Queue indexer. Separated from the main
+ * Manage the CirCache for the Web Queue indexer. Separated from the main
  * indexer code because it's also used for querying (getting the data for a
  * preview 
  */
-class BeagleQueueCache {
+class WebStore {
 public:
-    BeagleQueueCache(RclConfig *config);
-    ~BeagleQueueCache();
+    WebStore(RclConfig *config);
+    ~WebStore();
 
-    bool getFromCache(const string& udi, Rcl::Doc &doc, string& data,
-                      string *hittype = 0);
+    bool getFromCache(const std::string& udi, Rcl::Doc &doc, std::string& data,
+                      std::string *hittype = 0);
     // We could write proxies for all the circache ops, but why bother?
     CirCache *cc() {return m_cache;}
 
 private:
     CirCache *m_cache;
 };
-extern const string cstr_bgc_mimetype;
 
-#endif /* _beaglequeuecache_h_included_ */
+extern const std::string cstr_bgc_mimetype;
+
+#endif /* _webstore_h_included_ */

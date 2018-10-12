@@ -32,6 +32,7 @@
 #include <qevent.h>
 #include <QTimer>
 #include <QCompleter>
+#include <QAbstractItemView>
 
 #include "log.h"
 #include "guiutils.h"
@@ -300,9 +301,8 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
 	sdata->setMaxExpand(maxexp);
     }
 
-    for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
-	 it != prefs.activeExtraDbs.end(); it++) {
-        xml << "  <EX>" << base64_encode(*it) << "</EX>";
+    for (const auto& dbdir : prefs.activeExtraDbs) {
+        xml << "  <EX>" << base64_encode(dbdir) << "</EX>";
     }
 
     xml << "</SD>\n";
@@ -710,7 +710,7 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
     LOGDEB2("SSearch::eventFilter: target "  << (target) << " ("  << (queryText->lineEdit()) << ") type "  << (eventTypeToStr(event->type())) << "\n" );
 #endif
 
-    if (target == queryText->view()) {
+    if (target == (QObject*)(queryText->view())) {
 	if (event->type() == QEvent::Hide) {
 	    // List was closed. If we were displaying completions, need
 	    // to reset state.

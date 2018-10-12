@@ -14,18 +14,17 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef _beaglequeue_h_included_
-#define _beaglequeue_h_included_
+#ifndef _webqueue_h_included_
+#define _webqueue_h_included_
 
 #include <list>
 
 /**
- * Process the Beagle indexing queue. 
+ * Process the WEB indexing queue. 
  *
- * Beagle MUST NOT be running, else mayhem will ensue. 
- *
- * This is mainly written to reuse the Beagle Firefox plug-in (which
- * copies visited pages and bookmarks to the queue).
+ * This was originally written to reuse the Beagle Firefox plug-in (which
+ * copied visited pages and bookmarks to the queue), long dead and replaced by a
+ * recoll-specific plugin.
  */
 
 #include "fstreewalk.h"
@@ -34,16 +33,16 @@
 class DbIxStatusUpdater;
 class CirCache;
 class RclConfig;
-class BeagleQueueCache;
+class WebStore;
 namespace Rcl {
     class Db;
 }
 
-class BeagleQueueIndexer : public FsTreeWalkerCB {
+class WebQueueIndexer : public FsTreeWalkerCB {
 public:
-    BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
+    WebQueueIndexer(RclConfig *cnf, Rcl::Db *db,
                        DbIxStatusUpdater *updfunc = 0);
-    ~BeagleQueueIndexer();
+    ~WebQueueIndexer();
 
     /** This is called by the top indexer in recollindex. 
      *  Does the walking and the talking */
@@ -68,7 +67,7 @@ public:
 private:
     RclConfig *m_config;
     Rcl::Db   *m_db;
-    BeagleQueueCache  *m_cache;
+    WebStore  *m_cache;
     string     m_queuedir;
     DbIxStatusUpdater *m_updater;
     bool       m_nocacheindex;
@@ -77,4 +76,4 @@ private:
     void updstatus(const string& udi);
 };
 
-#endif /* _beaglequeue_h_included_ */
+#endif /* _webqueue_h_included_ */

@@ -68,11 +68,11 @@ SynGroups::SynGroups()
 
 bool SynGroups::setfile(const string& fn)
 {
-    LOGDEB("SynGroups::setfile("  << (fn) << ")\n" );
+    LOGDEB("SynGroups::setfile(" << fn << ")\n");
     if (!m) {
         m = new Internal;
         if (!m) {
-            LOGERR("SynGroups:setfile:: new Internal failed: no mem ?\n" );
+            LOGERR("SynGroups:setfile:: new Internal failed: no mem ?\n");
             return false;
         }
     }
@@ -86,7 +86,7 @@ bool SynGroups::setfile(const string& fn)
     ifstream input;
     input.open(fn.c_str(), ios::in);
     if (!input.is_open()) {
-	LOGERR("SynGroups:setfile:: could not open "  << (fn) << " errno "  << (errno) << "\n" );
+	LOGSYSERR("SynGroups:setfile", "open", fn);
 	return false;
     }	    
 
@@ -101,7 +101,7 @@ bool SynGroups::setfile(const string& fn)
 	getline(input, cline);
 	if (!input.good()) {
 	    if (input.bad()) {
-                LOGERR("Syngroup::setfile("  << (fn) << "):Parse: input.bad()\n" );
+                LOGERR("Syngroup::setfile(" << fn << "):Parse: input.bad()\n");
 		return false;
 	    }
 	    // Must be eof ? But maybe we have a partial line which
@@ -142,23 +142,25 @@ bool SynGroups::setfile(const string& fn)
 
 	vector<string> words;
 	if (!stringToStrings(line, words)) {
-	    LOGERR("SynGroups:setfile: "  << (fn) << ": bad line "  << (lnum) << ": "  << (line) << "\n" );
+	    LOGERR("SynGroups:setfile: " << fn << ": bad line " << lnum <<
+                   ": " << line << "\n");
 	    continue;
 	}
 
 	if (words.empty())
 	    continue;
 	if (words.size() == 1) {
-	    LOGERR("Syngroup::setfile("  << (fn) << "):single term group at line "  << (lnum) << " ??\n" );
+	    LOGERR("Syngroup::setfile(" << fn << "):single term group at line "
+                   << lnum << " ??\n");
 	    continue;
 	}
 
 	m->groups.push_back(words);
-	for (vector<string>::const_iterator it = words.begin();
-	     it != words.end(); it++) {
-	    m->terms[*it] = m->groups.size()-1;
+	for (const auto& word : words) {
+	    m->terms[word] = m->groups.size()-1;
 	}
-	LOGDEB1("SynGroups::setfile: group: ["  << (stringsToString(m->groups.back())) << "]\n" );
+	LOGDEB1("SynGroups::setfile: group: [" <<
+                stringsToString(m->groups.back()) << "]\n");
     }
     m->ok = true;
     return true;
@@ -170,16 +172,15 @@ vector<string> SynGroups::getgroup(const string& term)
     if (!ok())
 	return ret;
 
-    std::unordered_map<string, unsigned int>::const_iterator it1 =
-        m->terms.find(term);
+    const auto it1 = m->terms.find(term);
     if (it1 == m->terms.end()) {
-	LOGDEB1("SynGroups::getgroup: ["  << (term) << "] not found in direct map\n" );
+	LOGDEB1("SynGroups::getgroup: [" << term<<"] not found in direct map\n");
 	return ret;
     }
 
     unsigned int idx = it1->second;
     if (idx >= m->groups.size()) {
-        LOGERR("SynGroups::getgroup: line index higher than line count !\n" );
+        LOGERR("SynGroups::getgroup: line index higher than line count !\n");
         return ret;
     }
     return m->groups[idx];

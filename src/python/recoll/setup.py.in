@@ -1,4 +1,4 @@
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 import os
 import sys
 
@@ -72,6 +72,7 @@ setup (name = 'Recoll',
        author_email = 'jfd@recoll.org',
        url = 'http://www.recoll.org',
        license = 'GPL',
+       package_dir = {'' : os.path.join(top, 'python', 'recoll')},
        long_description = '''
 ''',
     packages = ['recoll'],

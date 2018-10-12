@@ -38,6 +38,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
+#include <unordered_map>
 
 #include "cstr.h"
 #include "pathut.h"
@@ -69,6 +70,12 @@ bool o_uptodate_test_use_mtime = false;
 
 string RclConfig::o_localecharset; 
 string RclConfig::o_origcwd; 
+
+// We build this once. Used to ensure that the suffix used for a temp
+// file of a given MIME type is the FIRST one from the mimemap config
+// file. Previously it was the first in alphabetic (map) order, with
+// sometimes strange results.
+static unordered_map<string, string> mime_suffixes;
 
 // Compute the difference of 1st to 2nd sets and return as plus/minus
 // sets. Some args are std::set and some others stringToString()
@@ -316,6 +323,27 @@ RclConfig::RclConfig(const string *argcnf)
 	m_reason = string("No or bad mimemap file in: ") + cnferrloc;
 	return;
     }
+
+    // Maybe create the MIME to suffix association reverse map. Do it
+    // in file order so that we can control what suffix is used when
+    // there are several. This only uses the distributed file, not any
+    // local customization (too complicated).
+    if (mime_suffixes.empty()) {
+        ConfSimple mm(
+            path_cat(path_cat(m_datadir, "examples"), "mimemap").c_str());
+        vector<ConfLine> order = mm.getlines();
+        for (const auto& entry: order) {
+            if (entry.m_kind == ConfLine::CFL_VAR) {
+                LOGDEB1("CONFIG: " << entry.m_data << " -> " << entry.m_value <<
+                        endl);
+                // Remember: insert() only does anything for new keys,
+                // so we only have the first value in the map
+                mime_suffixes.insert(
+                    pair<string,string>(entry.m_value, entry.m_data));
+            }
+        }
+    }
+
     mimeconf = new ConfStack<ConfSimple>("mimeconf", m_cdirs, true);
     if (mimeconf == 0 || !mimeconf->ok()) {
 	m_reason = string("No/bad mimeconf in: ") + cnferrloc;
@@ -753,14 +781,20 @@ string RclConfig::getMimeTypeFromSuffix(const string& suff) const
 
 string RclConfig::getSuffixFromMimeType(const string &mt) const
 {
-    string suffix;
-    vector<string>sfs = mimemap->getNames(cstr_null);
-    string mt1;
-    for (vector<string>::const_iterator it = sfs.begin(); 
-	 it != sfs.end(); it++) {
-	if (mimemap->get(*it, mt1, cstr_null))
-	    if (!stringicmp(mt, mt1))
-		return *it;
+    // First try from standard data, ensuring that we can control the value
+    // from the order in the configuration file.
+    auto rclsuff = mime_suffixes.find(mt);
+    if (rclsuff != mime_suffixes.end()) {
+        return rclsuff->second;
+    }
+    // Try again from local data. The map is in the wrong direction,
+    // have to walk it.
+    vector<string> sfs = mimemap->getNames(cstr_null);
+    for (const auto& suff : sfs) {
+        string mt1;
+	if (mimemap->get(suff, mt1, cstr_null) && !stringicmp(mt, mt1)) {
+            return suff;
+        }
     }
     return cstr_null;
 }

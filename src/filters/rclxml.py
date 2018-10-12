@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (C) 2014 J.F.Dockes
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 import sys
 import rclexecm
-import rclxslt
+import rclgenxslt
 
 stylesheet_all = '''<?xml version="1.0"?>
 <xsl:stylesheet version="1.0"
@@ -56,43 +56,7 @@ stylesheet_all = '''<?xml version="1.0"?>
 </xsl:stylesheet>
 '''
 
-class XMLExtractor:
-    def __init__(self, em):
-        self.em = em
-        self.currentindex = 0
-
-    def extractone(self, params):
-        if "filename:" not in params:
-            self.em.rclog("extractone: no mime or file name")
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        fn = params["filename:"]
-
-        try:
-            data = open(fn, 'rb').read()
-            docdata = rclxslt.apply_sheet_data(stylesheet_all, data)
-        except Exception as err:
-            self.em.rclog("%s: bad data: " % (fn, err))
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-
-        return (True, docdata, "", rclexecm.RclExecM.eofnext)
-    
-    ###### File type handler api, used by rclexecm ---------->
-    def openfile(self, params):
-        self.currentindex = 0
-        return True
-
-    def getipath(self, params):
-        return self.extractone(params)
-        
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
-
 if __name__ == '__main__':
     proto = rclexecm.RclExecM()
-    extract = XMLExtractor(proto)
+    extract = rclgenxslt.XSLTExtractor(proto, stylesheet_all)
     rclexecm.main(proto, extract)

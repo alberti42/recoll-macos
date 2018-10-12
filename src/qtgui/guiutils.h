@@ -99,8 +99,8 @@ class PrefsPack {
     bool showResultsAsTable;
 
     // Extra query indexes. This are stored in the history file, not qt prefs
-    list<string> allExtraDbs;
-    list<string> activeExtraDbs;
+    vector<string> allExtraDbs;
+    vector<string> activeExtraDbs;
     // Advanced search subdir restriction: we don't activate the last value
     // but just remember previously entered values
     QStringList asearchSubdirHist;

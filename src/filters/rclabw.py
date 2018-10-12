@@ -1,91 +1,28 @@
-#!/bin/sh
-# @(#$Id: rclabw,v 1.3 2008-10-08 08:27:34 dockes Exp $  (C) 2004 J.F.Dockes
-# Parts taken from Estraier:
-#================================================================
-# Estraier: a personal full-text search system
-# Copyright (C) 2003-2004 Mikio Hirabayashi
-#================================================================
-#================================================================
-# Extract text from an abiword file
-#================================================================
+#!/usr/bin/env python3
+# Copyright (C) 2014 J.F.Dockes
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the
+#   Free Software Foundation, Inc.,
+#   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+######################################
 
-# set variables
-LANG=C ; export LANG
-LC_ALL=C ; export LC_ALL
-progname="rclabw"
-filetype=abiword
+from __future__ import print_function
 
+import sys
+import rclexecm
+import rclgenxslt
 
-#RECFILTCOMMONCODE
-##############################################################################
-# !! Leave the previous line unmodified!! Code imported from the
-# recfiltcommon file
-
-# Utility code common to all shell filters. This could be sourced at run
-# time, but it's slightly more efficient to include the code in the
-# filters at build time (with a sed script).
-
-# Describe error in a way that can be interpreted by our caller
-senderror()
-{
-    echo RECFILTERROR $*
-    # Also alert on stderr just in case
-    echo ":2:$progname::: $*" 1>&2
-    exit 1
-}
-
-iscmd()
-{
-    cmd=$1
-    case $cmd in
-    */*)
-	if test -x $cmd -a ! -d $cmd ; then return 0; else return 1; fi ;;
-    *)
-      oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
-      for d in $*;do test -x $d/$cmd -a ! -d $d/$cmd && return 0;done
-      return 1 ;;
-    esac
-}
-
-checkcmds()
-{
-    for cmd in $*;do
-      if iscmd $cmd 
-      then 
-        a=1
-      else 
-        senderror HELPERNOTFOUND $cmd
-      fi
-    done
-}
-
-# show help message
-if test $# -ne 1 -o "$1" = "--help" 
-then
-  echo "Convert a $filetype file to HTML text for Recoll indexing."
-  echo "Usage: $progname [infile]"
-  exit 1
-fi
-
-infile="$1"
-
-# check the input file existence (may be '-' for stdin)
-if test "X$infile" != X- -a ! -f "$infile"
-then
-  senderror INPUTNOSUCHFILE "$infile"
-fi
-
-# protect access to our temp files and directories
-umask 77
-
-##############################################################################
-# !! Leave the following line unmodified !
-#ENDRECFILTCOMMONCODE
-
-checkcmds xsltproc
-
-xsltproc --nonet --novalid - "$infile" <<EOF
-<?xml version="1.0"?>
+stylesheet_all = '''<?xml version="1.0"?>
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:ab="http://www.abisource.com/awml.dtd" 
@@ -173,7 +110,9 @@ xsltproc --nonet --novalid - "$infile" <<EOF
 </xsl:template>
 
 </xsl:stylesheet>
-EOF
+'''
 
-# exit normally
-exit 0
+if __name__ == '__main__':
+    proto = rclexecm.RclExecM()
+    extract = rclgenxslt.XSLTExtractor(proto, stylesheet_all)
+    rclexecm.main(proto, extract)

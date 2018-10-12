@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="docbook-xsl.css">
   <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
   <meta name="description" content=
-  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.23.">
+  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.24.">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084"
 alink="#0000FF">
@@ -53,7 +53,7 @@ alink="#0000FF">
             and describes the installation and use of the
             <span class="application">Recoll</span> application.
             This version describes <span class=
-            "application">Recoll</span> 1.23.</p>
+            "application">Recoll</span> 1.24.</p>
           </div>
         </div>
       </div>
@@ -376,9 +376,15 @@ alink="#0000FF">
                 <dt><span class="sect2">6.3.1. <a href=
                 "#RCL.INSTALL.BUILDING.PREREQS">Prerequisites</a></span></dt>
                 <dt><span class="sect2">6.3.2. <a href=
-                "#RCL.INSTALL.BUILDING.BUILD">Building</a></span></dt>
+                "#RCL.INSTALL.BUILDING.BUILDING">Building</a></span></dt>
                 <dt><span class="sect2">6.3.3. <a href=
-                "#RCL.INSTALL.BUILDING.INSTALL">Installation</a></span></dt>
+                "#RCL.INSTALL.BUILDING.INSTALL">Installing</a></span></dt>
+                <dt><span class="sect2">6.3.4. <a href=
+                "#RCL.INSTALL.BUILDING.PYTHON">Python API
+                package</a></span></dt>
+                <dt><span class="sect2">6.3.5. <a href=
+                "#RCL.INSTALL.BUILDING.SOLARIS">Building on
+                Solaris</a></span></dt>
               </dl>
             </dd>
             <dt><span class="sect1">6.4. <a href=
@@ -428,7 +434,7 @@ alink="#0000FF">
       <p>This document introduces full text search notions and
       describes the installation and use of the <span class=
       "application">Recoll</span> application. It is updated for
-      <span class="application">Recoll</span> 1.23.</p>
+      <span class="application">Recoll</span> 1.24.</p>
       <p><span class="application">Recoll</span> was for a long
       time dedicated to Unix-like systems. It was only lately
       (2015) ported to <span class="application">MS-Windows</span>.
@@ -2128,8 +2134,8 @@ alink="#0000FF">
         grow quite big, depending on the log level.</p>
         <p>When building <span class="application">Recoll</span>,
         the real time indexing support can be customised during
-        package <a class="link" href="#RCL.INSTALL.BUILDING.BUILD"
-        title="6.3.2.&nbsp;Building">configuration</a> with the
+        package <a class="link" href="#RCL.INSTALL.BUILDING" title=
+        "6.3.&nbsp;Building from source">configuration</a> with the
         <code class="option">--with[out]-fam</code> or <code class=
         "option">--with[out]-inotify</code> options. The default is
         currently to include <span class=
@@ -6170,31 +6176,13 @@ recollindex -c "$confdir"
           here. A paragraph at the end of this section will explain
           a few differences and ways to write code compatible with
           both versions.</p>
-          <p>The Python interface can be found in the source
-          package, under <code class=
-          "filename">python/recoll</code>.</p>
-          <p>The <code class="filename">python/recoll/</code>
-          directory contains the usual <code class=
-          "filename">setup.py</code>. After configuring the main
-          <span class="application">Recoll</span> code, you can use
-          the script to build and install the Python module:</p>
-          <pre class="screen">
-          <strong class=
-"userinput"><code>cd recoll-xxx/python/recoll</code></strong>
-          <strong class=
-"userinput"><code>python setup.py build</code></strong>
-          <strong class=
-"userinput"><code>python setup.py install</code></strong>
-        </pre>
-          <p>As of <span class="application">Recoll</span> 1.19,
-          the module can be compiled for Python3.</p>
-          <p>The normal <span class="application">Recoll</span>
-          installer installs the Python2 API along with the main
-          code. The Python3 version must be explicitely built and
-          installed.</p>
-          <p>When installing from a repository, and depending on
-          the distribution, the Python API can sometimes be found
-          in a separate package.</p>
+          <p>There is a good chance that your system repository has
+          packages for the Recoll Python API, sometimes in a
+          package separate from the main one (maybe named something
+          like python-recoll). Else refer to the <a class="link"
+          href="#RCL.INSTALL.BUILDING" title=
+          "6.3.&nbsp;Building from source">Building from source
+          chapter</a>.</p>
           <p>As an introduction, the following small sample will
           run a query and list the title and url for each of the
           results. It would work with <span class=
@@ -6216,6 +6204,13 @@ recollindex -c "$confdir"
         for doc in results:
         print(doc.url, doc.title)
         </pre>
+          <p>You can also take a look at the source for the
+          <a class="ulink" href=
+          "https://github.com/koniu/recoll-webui" target=
+          "_top">Recoll WebUI</a>, or the <a class="ulink" href=
+          "https://opensourceprojects.eu/p/upmpdcli/code/ci/c8c8e75bd181ad9db2df14da05934e53ca867a06/tree/src/mediaserver/cdplugins/uprcl/uprclfolders.py"
+          target="_top">upmpdcli local media server</a>, which are
+          both based on the Python API.</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -7575,8 +7570,8 @@ for i in range(nres):
             <div>
               <div>
                 <h3 class="title"><a name=
-                "RCL.INSTALL.BUILDING.BUILD" id=
-                "RCL.INSTALL.BUILDING.BUILD"></a>6.3.2.&nbsp;Building</h3>
+                "RCL.INSTALL.BUILDING.BUILDING" id=
+                "RCL.INSTALL.BUILDING.BUILDING"></a>6.3.2.&nbsp;Building</h3>
               </div>
             </div>
           </div>
@@ -7718,7 +7713,7 @@ for i in range(nres):
           <strong class=
 "userinput"><code>(practices usual hardship-repelling invocations)</code></strong>
         </pre>
-          <p>When building from source cloned from the BitBucket
+          <p>When building from source cloned from the git
           repository, you also need to install <span class=
           "application">autoconf</span>, <span class=
           "application">automake</span>, and <span class=
@@ -7726,29 +7721,6 @@ for i in range(nres):
           <code class="literal">sh autogen.sh</code> in the top
           source directory before running <code class=
           "literal">configure</code>.</p>
-          <div class="sect3">
-            <div class="titlepage">
-              <div>
-                <div>
-                  <h4 class="title"><a name=
-                  "RCL.INSTALL.BUILDING.BUILD.SOLARIS" id=
-                  "RCL.INSTALL.BUILDING.BUILD.SOLARIS"></a>6.3.2.1.&nbsp;Building
-                  on Solaris</h4>
-                </div>
-              </div>
-            </div>
-            <p>We did not test building the GUI on Solaris for
-            recent versions. You will need at least Qt 4.4. There
-            are some hints on <a class="ulink" href=
-            "http://www.recoll.org/download-1.14.html" target=
-            "_top">an old web site page</a>, they may still be
-            valid.</p>
-            <p>Someone did test the 1.19 indexer and Python module
-            build, they do work, with a few minor glitches. Be sure
-            to use GNU <span class=
-            "command"><strong>make</strong></span> and <span class=
-            "command"><strong>install</strong></span>.</p>
-          </div>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -7756,7 +7728,7 @@ for i in range(nres):
               <div>
                 <h3 class="title"><a name=
                 "RCL.INSTALL.BUILDING.INSTALL" id=
-                "RCL.INSTALL.BUILDING.INSTALL"></a>6.3.3.&nbsp;Installation</h3>
+                "RCL.INSTALL.BUILDING.INSTALL"></a>6.3.3.&nbsp;Installing</h3>
               </div>
             </div>
           </div>
@@ -7768,6 +7740,66 @@ for i in range(nres):
           sample configuration files, scripts and other shared data
           to <code class="filename"><em class=
           "replaceable"><code>prefix</code></em>/share/recoll</code>.</p>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name=
+                "RCL.INSTALL.BUILDING.PYTHON" id=
+                "RCL.INSTALL.BUILDING.PYTHON"></a>6.3.4.&nbsp;Python
+                API package</h3>
+              </div>
+            </div>
+          </div>
+          <p>The Python interface can be found in the source tree,
+          under the <code class="filename">python/recoll</code>
+          directory.</p>
+          <p>As of <span class="application">Recoll</span> 1.19,
+          the module can be compiled for Python3.</p>
+          <p>The normal <span class="application">Recoll</span>
+          build procedure (see above) installs the API package for
+          the default system version (python) along with the main
+          code. The package for other Python versions (e.g. python3
+          if the system default is python2) must be explicitely
+          built and installed.</p>
+          <p>The <code class="filename">python/recoll/</code>
+          directory contains the usual <code class=
+          "filename">setup.py</code>. After configuring and
+          building the main <span class="application">Recoll</span>
+          code, you can use the script to build and install the
+          Python module:</p>
+          <pre class="screen">
+          <strong class=
+"userinput"><code>cd recoll-xxx/python/recoll</code></strong>
+          <strong class=
+"userinput"><code>pythonX setup.py build</code></strong>
+          <strong class=
+"userinput"><code>sudo pythonX setup.py install</code></strong>
+        </pre>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name=
+                "RCL.INSTALL.BUILDING.SOLARIS" id=
+                "RCL.INSTALL.BUILDING.SOLARIS"></a>6.3.5.&nbsp;Building
+                on Solaris</h3>
+              </div>
+            </div>
+          </div>
+          <p>We did not test building the GUI on Solaris for recent
+          versions. You will need at least Qt 4.4. There are some
+          hints on <a class="ulink" href=
+          "http://www.recoll.org/download-1.14.html" target=
+          "_top">an old web site page</a>, they may still be
+          valid.</p>
+          <p>Someone did test the 1.19 indexer and Python module
+          build, they do work, with a few minor glitches. Be sure
+          to use GNU <span class=
+          "command"><strong>make</strong></span> and <span class=
+          "command"><strong>install</strong></span>.</p>
         </div>
       </div>
       <div class="sect1">

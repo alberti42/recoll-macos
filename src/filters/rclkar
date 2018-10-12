@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Read a .kar midi karaoke file and translate to recoll indexable format
 # This does not work with Python3 yet because python:midi doesn't 
@@ -10,6 +10,7 @@ import os.path
 import string
 import re
 import codecs
+from rclbasehandler import RclBaseHandler
 
 try:
     import rcllatinclass
@@ -51,7 +52,7 @@ if PY3:
 else:
     nullchar = chr(0)
     
-class KarTextExtractor:
+class KarTextExtractor(RclBaseHandler):
     # Afaik, the only charset encodings with null bytes are variations on
     # utf-16 and utf-32 and iso relatives. A hopefully comprehensive
     # list follows, compiled from iconv and python values. This is used for
@@ -66,8 +67,7 @@ class KarTextExtractor:
           'utf_16_le', 'utf_32', 'utf_32_be', 'utf_32_le'))
 
     def __init__(self, em):
-        self.em = em
-        self.currentindex = 0
+        super(KarTextExtractor, self).__init__(em)
         self.encoding = ""
         self.defaultencoding = ""
         self.hadnulls = False
@@ -182,16 +182,7 @@ class KarTextExtractor:
         return (encoding, confidence)
 
     
-    def extractone(self, params):
-        '''Process one file'''
-        docdata = ""
-        ok = False
-
-        if "filename:" not in params:
-            self.em.rclog("extractone: no mime or file name")
-            return (ok, docdata, "", rclexecm.RclExecM.eofnow)
-        filename = params["filename:"]
-
+    def html_text(self, filename):
         # Character encoding from file name ?
         self.encoding = self.encodingfromfilename(filename)
         if self.encoding:
@@ -200,18 +191,8 @@ class KarTextExtractor:
             except:
                 self.encoding = ""
 
-        # Mimetype not used for now
-        if "mimetype:" not in params:
-            mimetype = 'audio/x-midi'
-        else:
-            mimetype = params["mimetype:"]
-
         # Read in and midi-decode the file
-        try:
-            stream = midi.read_midifile(filename)
-        except Exception as err:
-            self.em.rclog("extractone: read_midifile failed: [%s]" % err)
-            return (ok, docdata, "", rclexecm.RclExecM.eofnow)
+        stream = midi.read_midifile(filename)
 
         title = None
         author = None
@@ -262,7 +243,6 @@ class KarTextExtractor:
             lyrics += self.nulltrunc(edata)
             lyricsN += edata
 
-        
         # Try to guess the encoding. First do it with the data
         # possibly containing nulls. If we get one of the accepted
         # nullbyte encodings, go with this, else repeat with the
@@ -305,28 +285,8 @@ class KarTextExtractor:
         lyrics = self.reencode(lyrics)
         language = self.reencode(language)
         
-        self.em.setmimetype("text/html")
-        docdata = htmltemplate % (title, author, language, lyrics)
+        return htmltemplate % (title, author, language, lyrics)
 
-        ok = True
-        return (ok, docdata, "", rclexecm.RclExecM.eofnext)
-
-    ###### File type handler api, used by rclexecm. Some stuff makes little
-    # sense because we only have one doc per file.
-    def openfile(self, params):
-        self.currentindex = 0
-        return True
-
-    def getipath(self, params):
-        return self.extractone(params)
-        
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
 
 proto = rclexecm.RclExecM()
 extract = KarTextExtractor(proto)

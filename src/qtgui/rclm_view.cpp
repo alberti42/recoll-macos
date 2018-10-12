@@ -310,10 +310,12 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	}
     }
 
-    bool enterHistory = false;
+    // Can't remember what enterHistory was actually for. Set it to
+    // true always for now
+    bool enterHistory = true;
     bool istempfile = false;
     
-    LOGDEB("RclMain::startNV: groksipath " << groksipath << " wantsf " <<
+    LOGDEB("StartNativeViewer: groksipath " << groksipath << " wantsf " <<
            wantsfile << " wantsparentf " << wantsparentfile << "\n");
 
     // If the command wants a file but this is not a file url, or
@@ -332,7 +334,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	enterHistory = true;
         istempfile = true;
 	rememberTempFile(temp);
-	fn = temp->filename();
+	fn = temp.filename();
 	url = path_pathtofileurl(fn);
     }
 
@@ -354,10 +356,10 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
                 return;
             }
         }
-        if (temp) {
+        if (temp.ok()) {
             istempfile = true;
 	    rememberTempFile(temp);
-            fn = temp->filename();
+            fn = temp.filename();
             url = path_pathtofileurl(fn);
         }
     }
@@ -451,8 +453,8 @@ void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
 	stb->showMessage(msg, 10000);
     }
 
-    if (!enterHistory)
-	historyEnterDoc(g_dynconf, doc.meta[Rcl::Doc::keyudi]);
+    if (enterHistory)
+	historyEnterDoc(rcldb, g_dynconf, doc);
     
     // Do the zeitgeist thing
     zg_send_event(ZGSEND_OPEN, doc);

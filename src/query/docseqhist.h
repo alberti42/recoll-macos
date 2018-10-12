@@ -18,6 +18,8 @@
 #define _DOCSEQHIST_H_INCLUDED_
 #include <time.h>
 
+#include <vector>
+
 #include "docseq.h"
 #include "dynconf.h"
 
@@ -29,14 +31,15 @@ namespace Rcl {
 class RclDHistoryEntry : public DynConfEntry {
  public:
     RclDHistoryEntry() : unixtime(0) {}
-    RclDHistoryEntry(time_t t, const string& u) 
-	: unixtime(t), udi(u) {}
+    RclDHistoryEntry(time_t t, const std::string& u, const std::string& d) 
+	: unixtime(t), udi(u), dbdir(d) {}
     virtual ~RclDHistoryEntry() {}
-    virtual bool decode(const string &value);
-    virtual bool encode(string& value);
+    virtual bool decode(const std::string &value);
+    virtual bool encode(std::string& value);
     virtual bool equal(const DynConfEntry& other);
     time_t unixtime;
-    string udi;
+    std::string udi;
+    std::string dbdir;
 };
 
 /** A DocSequence coming from the history file. 
@@ -44,26 +47,24 @@ class RclDHistoryEntry : public DynConfEntry {
  *  metadata for an url key */
 class DocSequenceHistory : public DocSequence {
  public:
-    DocSequenceHistory(Rcl::Db *d, RclDynConf *h, const string &t) 
-	: DocSequence(t), m_db(d), m_hist(h), m_prevnum(-1), m_prevtime(-1) {}
+    DocSequenceHistory(Rcl::Db *d, RclDynConf *h, const std::string &t) 
+	: DocSequence(t), m_db(d), m_hist(h) {}
     virtual ~DocSequenceHistory() {}
 
-    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0);
     virtual int getResCnt();
-    virtual string getDescription() {return m_description;}
-    void setDescription(const string& desc) {m_description = desc;}
+    virtual std::string getDescription() {return m_description;}
+    void setDescription(const std::string& desc) {m_description = desc;}
 protected:
     virtual Rcl::Db *getDb();
 private:
     Rcl::Db    *m_db;
     RclDynConf *m_hist;
-    int         m_prevnum;
-    time_t      m_prevtime;
+    time_t      m_prevtime{-1};
     std::string m_description; // This is just an nls translated 'doc history'
-    std::list<RclDHistoryEntry> m_hlist;
-    std::list<RclDHistoryEntry>::const_iterator m_it;
+    std::vector<RclDHistoryEntry> m_history;
 };
 
-extern bool historyEnterDoc(RclDynConf *dncf, const string& udi);
+extern bool historyEnterDoc(Rcl::Db *db, RclDynConf *dncf, const Rcl::Doc& doc);
 
 #endif /* _DOCSEQ_H_INCLUDED_ */

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """Try to guess a text's language and character set by checking how it matches lists of
 common words. This is not a primary method of detection because it's slow and unreliable, but it
 may be a help in discrimating, for exemple, before european languages using relatively close

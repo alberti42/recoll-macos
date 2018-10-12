@@ -42,6 +42,7 @@
 #include "guiutils.h"
 #include "smallut.h"
 #include "readfile.h"
+#include "uncomp.h"
 
 #include "recollq.h"
 
@@ -52,10 +53,11 @@ static vector<TempFile>  o_tempfiles;
 /* Keep an array of temporary files for deletion at exit. It happens that we
    erase some of them before exiting (ie: when closing a preview tab), we don't 
    reuse the array holes for now */
-void rememberTempFile(TempFile temp)
+TempFile *rememberTempFile(TempFile temp)
 {
     std::unique_lock<std::mutex> locker(thetempfileslock);
     o_tempfiles.push_back(temp);
+    return &o_tempfiles.back();
 }    
 
 void forgetTempFile(string &fn)
@@ -63,10 +65,9 @@ void forgetTempFile(string &fn)
     if (fn.empty())
         return;
     std::unique_lock<std::mutex> locker(thetempfileslock);
-    for (vector<TempFile>::iterator it = o_tempfiles.begin();
-         it != o_tempfiles.end(); it++) {
-        if ((*it) && !fn.compare((*it)->filename())) {
-            it->reset();
+    for (auto& entry : o_tempfiles) {
+        if (entry.ok() && !fn.compare(entry.filename())) {
+            entry = TempFile();
         }
     }
     fn.erase();
@@ -76,11 +77,10 @@ void deleteAllTempFiles()
 {
     std::unique_lock<std::mutex> locker(thetempfileslock);
     o_tempfiles.clear();
+    Uncomp::clearcache();
 }
 
 Rcl::Db *rcldb;
-
-
 int recollNeedsExit;
 RclMain *mainWindow;
 
@@ -101,10 +101,9 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
     if (force)
         rcldb->close();
     rcldb->rmQueryDb("");
-    for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
-         it != prefs.activeExtraDbs.end(); it++) {
-        LOGDEB("main: adding ["  << *it << "]\n" );
-        rcldb->addQueryDb(*it);
+    for (const auto& dbdir : prefs.activeExtraDbs) {
+        LOGDEB("main: adding [" << dbdir << "]\n");
+        rcldb->addQueryDb(dbdir);
     }
     Rcl::Db::OpenError error;
     if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO, &error)) {
@@ -151,7 +150,6 @@ static void recollCleanup()
     deleteZ(theconfig);
 
     deleteAllTempFiles();
-    
     LOGDEB2("recollCleanup: done\n" );
 }
 

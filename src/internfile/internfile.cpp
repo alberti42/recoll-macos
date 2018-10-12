@@ -47,6 +47,7 @@ using namespace std;
 #include "copyfile.h"
 #include "fetcher.h"
 #include "extrameta.h"
+#include "uncomp.h"
 
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
@@ -188,7 +189,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 	    int maxkbs = -1;
 	    if (!m_cfg->getConfParam("compressedfilemaxkbs", &maxkbs) ||
 		maxkbs < 0 || !stp || int(stp->st_size / 1024) < maxkbs) {
-		if (!m_uncomp.uncompressfile(m_fn, ucmd, m_tfile)) {
+		if (!m_uncomp->uncompressfile(m_fn, ucmd, m_tfile)) {
 		    return;
 		}
 		LOGDEB1("FileInterner:: after ucomp: tfile " << m_tfile <<"\n");
@@ -293,8 +294,8 @@ void FileInterner::init(const string &data, RclConfig *cnf,
 	result = df->set_document_data(m_mimetype, data.c_str(), data.length());
     } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
 	TempFile temp = dataToTempFile(data, m_mimetype);
-	if (temp && 
-	    (result = df->set_document_file(m_mimetype, temp->filename()))) {
+	if (temp.ok() && 
+	    (result = df->set_document_file(m_mimetype, temp.filename()))) {
 	    m_tmpflgs[m_handlers.size()] = true;
 	    m_tempfiles.push_back(temp);
 	}
@@ -312,7 +313,8 @@ void FileInterner::init(const string &data, RclConfig *cnf,
 void FileInterner::initcommon(RclConfig *cnf, int flags)
 {
     m_cfg = cnf;
-    m_uncomp = m_forPreview = ((flags & FIF_forPreview) != 0);
+    m_forPreview = ((flags & FIF_forPreview) != 0);
+    m_uncomp = new Uncomp(m_forPreview);
     // Initialize handler stack.
     m_handlers.reserve(MAXHANDLERS);
     for (unsigned int i = 0; i < MAXHANDLERS; i++)
@@ -373,10 +375,10 @@ bool FileInterner::makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig)
 
 FileInterner::~FileInterner()
 {
-    for (vector<RecollFilter*>::iterator it = m_handlers.begin();
-	 it != m_handlers.end(); it++) {
-        returnMimeHandler(*it);
+    for (auto& entry: m_handlers) {
+        returnMimeHandler(entry);
     }
+    delete m_uncomp;
     // m_tempfiles will take care of itself
 }
 
@@ -386,14 +388,14 @@ FileInterner::~FileInterner()
 TempFile FileInterner::dataToTempFile(const string& dt, const string& mt)
 {
     // Create temp file with appropriate suffix for mime type
-    TempFile temp(new TempFileInternal(m_cfg->getSuffixFromMimeType(mt)));
-    if (!temp->ok()) {
+    TempFile temp(m_cfg->getSuffixFromMimeType(mt));
+    if (!temp.ok()) {
 	LOGERR("FileInterner::dataToTempFile: cant create tempfile: " <<
-               temp->getreason() << "\n");
+               temp.getreason() << "\n");
 	return TempFile();
     }
     string reason;
-    if (!stringtofile(dt, temp->filename(), reason)) {
+    if (!stringtofile(dt, temp.filename(), reason)) {
 	LOGERR("FileInterner::dataToTempFile: stringtofile: " <<reason << "\n");
 	return TempFile();
     }
@@ -723,8 +725,8 @@ int FileInterner::addHandler()
 	setres = newflt->set_document_data(mimetype,txt->c_str(),txt->length());
     } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
 	TempFile temp = dataToTempFile(*txt, mimetype);
-	if (temp && 
-	    (setres = newflt->set_document_file(mimetype, temp->filename()))) {
+	if (temp.ok() && 
+	    (setres = newflt->set_document_file(mimetype, temp.filename()))) {
 	    m_tmpflgs[m_handlers.size()] = true;
 	    m_tempfiles.push_back(temp);
 	    // Hack here, but really helps perfs: if we happen to
@@ -765,7 +767,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc,const string& ipath)
     LOGDEB("FileInterner::internfile. ipath [" << ipath << "]\n");
 
     // Get rid of possible image tempfile from older call
-    m_imgtmp.reset();
+    m_imgtmp = TempFile();
 
     if (m_handlers.size() < 1) {
 	// Just means the constructor failed
@@ -916,9 +918,8 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc,const string& ipath)
 bool FileInterner::tempFileForMT(TempFile& otemp, RclConfig* cnf, 
                                  const string& mimetype)
 {
-    TempFile temp(new TempFileInternal(
-                      cnf->getSuffixFromMimeType(mimetype)));
-    if (!temp->ok()) {
+    TempFile temp(cnf->getSuffixFromMimeType(mimetype));
+    if (!temp.ok()) {
         LOGERR("FileInterner::tempFileForMT: can't create temp file\n");
         return false;
     }
@@ -970,7 +971,7 @@ bool FileInterner::topdocToFile(
         if (!tempFileForMT(temp, cnf, idoc.mimetype)) {
             return false;
         }
-        filename = temp->filename();
+        filename = temp.filename();
     } else {
         filename = tofile.c_str();
     }
@@ -985,7 +986,7 @@ bool FileInterner::topdocToFile(
                 return false;
             }
         }
-        fn = temp ? temp->filename() : rawdoc.data;
+        fn = temp.ok() ? temp.filename() : rawdoc.data;
         if (!copyfile(fn.c_str(), filename, reason)) {
             LOGERR("FileInterner::idocToFile: copyfile: " << reason << "\n");
             return false;
@@ -1040,7 +1041,7 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
         if (!tempFileForMT(temp, m_cfg, mimetype)) {
             return false;
         }
-	filename = temp->filename();
+	filename = temp.filename();
     } else {
 	filename = tofile.c_str();
     }
@@ -1106,9 +1107,8 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
                 " kbs\n");
         return false;
     }
-    temp = 
-      TempFile(new TempFileInternal(cnf->getSuffixFromMimeType(doc.mimetype)));
-    if (!temp->ok()) {
+    temp = TempFile(cnf->getSuffixFromMimeType(doc.mimetype));
+    if (!temp.ok()) {
         LOGERR("FileInterner: cant create temporary file\n");
         return false;
     }
@@ -1123,9 +1123,9 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
     // reason for this, but it's not nice here. Have to move, the
     // uncompressed file, hopefully staying on the same dev.
     string reason;
-    if (!renameormove(uncomped.c_str(), temp->filename(), reason)) {
+    if (!renameormove(uncomped.c_str(), temp.filename(), reason)) {
         LOGERR("FileInterner::maybeUncompress: move [" << uncomped <<
-               "] -> [" << temp->filename() << "] failed: " << reason << "\n");
+               "] -> [" << temp.filename() << "] failed: " << reason << "\n");
         return false;
     }
     return true;

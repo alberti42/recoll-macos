@@ -26,20 +26,6 @@
 
 using std::string;
 
-// Debug only
-#ifdef PATHHASH_HEX
-static void md5hexprint(const unsigned char hash[16], string &out)
-{
-    out.erase();
-    out.reserve(33);
-    static const char hex[]="0123456789abcdef";
-    for (int i = 0; i < 16; i++) {
-	out.append(1, hex[hash[i] >> 4]);
-	out.append(1, hex[hash[i] & 0x0f]);
-    }
-}
-#endif
-
 // Size of the hashed result (base64 of 16 bytes of md5, minus 2 pad chars)
 #define HASHLEN 22
 
@@ -65,12 +51,6 @@ void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
     MD5Update(&ctx, (const unsigned char *)(path.c_str()+maxlen-HASHLEN), 
 	      path.length() - (maxlen - HASHLEN));
     MD5Final(chash, &ctx);
-
-#ifdef PATHHASH_HEX
-    string hex;
-    md5hexprint(chash, hex);
-    printf("hex  [%s]\n", hex.c_str());
-#endif
 
     // Encode it to ascii. This shouldn't be strictly necessary as
     // xapian terms can be binary

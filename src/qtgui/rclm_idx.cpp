@@ -86,7 +86,7 @@ void RclMain::periodic100()
 	bool exited = m_idxproc->maybereap(&status);
 	if (exited) {
             QString reasonmsg;
-            if (m_idxreasontmp) {
+            if (m_idxreasontmp && m_idxreasontmp->ok()) {
                 string reasons;
                 file_to_string(m_idxreasontmp->filename(), reasons);
                 if (!reasons.empty()) {
@@ -227,11 +227,11 @@ bool RclMain::checkIdxPaths()
 // re-enabled by the indexing status check
 void RclMain::toggleIndexing()
 {
-    if (!m_idxreasontmp) {
+    if (!m_idxreasontmp || !m_idxreasontmp->ok()) {
         // We just store the pointer and let the tempfile cleaner deal
         // with delete on exiting
-        m_idxreasontmp = new TempFileInternal(".txt");
-        rememberTempFile(TempFile(m_idxreasontmp));
+        TempFile temp(".txt");
+        m_idxreasontmp = rememberTempFile(temp);
     }
     
     switch (m_indexerState) {
@@ -281,7 +281,7 @@ void RclMain::toggleIndexing()
             return;
         }
         vector<string> args{"-c", theconfig->getConfDir()};
-        if (m_idxreasontmp) {
+        if (m_idxreasontmp && m_idxreasontmp->ok()) {
             args.push_back("-R");
             args.push_back(m_idxreasontmp->filename());
         }
@@ -377,7 +377,7 @@ void RclMain::rebuildIndex()
             }
             
 	    vector<string> args{"-c", theconfig->getConfDir(), "-z"};
-            if (m_idxreasontmp) {
+            if (m_idxreasontmp && m_idxreasontmp->ok()) {
                 args.push_back("-R");
                 args.push_back(m_idxreasontmp->filename());
             }
@@ -458,7 +458,7 @@ void RclMain::specialIndex()
         return;
 
     vector<string> args{"-c", theconfig->getConfDir()};
-    if (m_idxreasontmp) {
+    if (m_idxreasontmp && m_idxreasontmp->ok()) {
         args.push_back("-R");
         args.push_back(m_idxreasontmp->filename());
     }
@@ -521,7 +521,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
     vector<string> paths;
     if (Rcl::docsToPaths(docs, paths)) {
 	vector<string> args{"-c", theconfig->getConfDir(), "-e", "-i"};
-        if (m_idxreasontmp) {
+        if (m_idxreasontmp && m_idxreasontmp->ok()) {
             args.push_back("-R");
             args.push_back(m_idxreasontmp->filename());
         }

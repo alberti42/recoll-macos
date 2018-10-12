@@ -1094,8 +1094,8 @@ Query_fetchone(PyObject *_self)
     // xapian result count estimate are sometimes wrong, we must go on
     // fetching until we fail
     if (!self->query->getDoc(self->next, *result->doc, self->fetchtext)) {
-        PyErr_SetNone(PyExc_StopIteration);
-	return 0;
+        Py_DECREF(result);
+        Py_RETURN_NONE;
     }
     self->next++;
 
@@ -1129,7 +1129,8 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     }
     int cnt = self->query->getResCnt();
     if (cnt <= 0 || self->next < 0) {
-        PyErr_SetString(PyExc_AttributeError, "query: no results");
+        // PEP 249 says to raise exception if no result set
+        PyErr_SetString(PyExc_AttributeError, "query");
         return 0;
     }
 
@@ -1139,10 +1140,11 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	    PyObject_CallObject((PyObject *)&recoll_DocType, 0);
         if (!docobj) {
             PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
+            Py_DECREF(reslist);
             return 0;
         }
         if (!self->query->getDoc(self->next, *docobj->doc, self->fetchtext)) {
-            PyErr_SetNone(PyExc_StopIteration);
+            Py_DECREF(docobj);
             break;
         }
         self->next++;

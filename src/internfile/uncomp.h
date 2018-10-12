@@ -27,10 +27,7 @@
 /// Uncompression script interface.
 class Uncomp {
 public:
-    Uncomp(bool docache = false)
-	: m_dir(0), m_docache(docache)
-    {
-    }
+    explicit Uncomp(bool docache = false);
     ~Uncomp();
 
     /** Uncompress the input file into a temporary one, by executing the
@@ -41,25 +38,22 @@ public:
     bool uncompressfile(const std::string& ifn, 
 			const std::vector<std::string>& cmdv,
 			std::string& tfile);
-
+    static void clearcache();
+    
 private:
-    TempDir *m_dir;
+    TempDir *m_dir{0};
     std::string   m_tfile;
     std::string   m_srcpath;
     bool m_docache;
 
     class UncompCache {
     public:
-	UncompCache()
-	    : m_dir(0)
-	{
-	}
-	~UncompCache()
-	{
+	UncompCache() {}
+	~UncompCache() {
 	    delete m_dir;
 	}
         std::mutex m_lock;
-	TempDir *m_dir;
+	TempDir *m_dir{0};
 	std::string   m_tfile;
 	std::string   m_srcpath;
     };

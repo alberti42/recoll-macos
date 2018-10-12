@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (C) 2014 J.F.Dockes
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -91,13 +91,12 @@ class PDFExtractor:
                 # error at once
                 return
 
-        cf = rclconfig.RclConfig()
-        self.confdir = cf.getConfDir()
-
+        self.config = rclconfig.RclConfig()
+        self.confdir = self.config.getConfDir()
         # The user can set a list of meta tags to be extracted from
         # the XMP metadata packet. These are specified as
         # (xmltag,rcltag) pairs
-        self.extrameta = cf.getConfParam("pdfextrameta")
+        self.extrameta = self.config.getConfParam("pdfextrameta")
         if self.extrameta:
             self._initextrameta()
 
@@ -119,7 +118,7 @@ class PDFExtractor:
         # either the presence of a file in the config dir (historical)
         # or a set config variable.
         self.ocrpossible = False
-        cf_doocr = cf.getConfParam("pdfocr")
+        cf_doocr = self.config.getConfParam("pdfocr")
         if cf_doocr or os.path.isfile(os.path.join(self.confdir, "ocrpdf")):
             self.tesseract = rclexecm.which("tesseract")
             if self.tesseract:
@@ -134,7 +133,7 @@ class PDFExtractor:
         # so it can be disabled in the configuration.
         self.attextractdone = False
         self.attachlist = []
-        cf_attach = cf.getConfParam("pdfattach")
+        cf_attach = self.config.getConfParam("pdfattach")
         if cf_attach:
             self.pdftk = rclexecm.which("pdftk")
         if self.pdftk:
@@ -224,18 +223,28 @@ class PDFExtractor:
     # environment and hope for the best.
     def guesstesseractlang(self):
         tesseractlang = ""
-        pdflangfile = os.path.join(os.path.dirname(self.filename), ".ocrpdflang")
+
+        # First look for a language def file in the file's directory 
+        pdflangfile = os.path.join(os.path.dirname(self.filename),
+                                   b".ocrpdflang")
         if os.path.isfile(pdflangfile):
             tesseractlang = open(pdflangfile, "r").read().strip()
         if tesseractlang:
             return tesseractlang
 
+        # Then look for a global option. The normal way now that we
+        # have config reading capability in the handlers is to use the
+        # config. Then, for backwards compat, environment variable and
+        # file inside the configuration directory
+        tesseractlang = self.config.getConfParam("pdfocrlang")
+        if tesseractlang:
+            return tesseractlang
         tesseractlang = os.environ.get("RECOLL_TESSERACT_LANG", "");
         if tesseractlang:
             return tesseractlang
-        
-        tesseractlang = \
-                      open(os.path.join(self.confdir, "ocrpdf"), "r").read().strip()
+        pdflangfile = os.path.join(self.confdir, b"ocrpdf")
+        if os.path.isfile(pdflangfile):
+            tesseractlang = open(pdflangfile, "r").read().strip()
         if tesseractlang:
             return tesseractlang
 
@@ -285,7 +294,7 @@ class PDFExtractor:
             except Exception as e:
                 self.em.rclog("tesseract failed: %s" % e)
 
-            errlines = out.split('\n')
+            errlines = out.split(b'\n')
             if len(errlines) > 2:
                 self.em.rclog("Tesseract error: %s" % out)
 

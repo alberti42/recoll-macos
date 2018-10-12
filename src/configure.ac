@@ -252,6 +252,13 @@ fi
 
 AM_CONDITIONAL(MAKEPYTHON, [test X$pythonEnabled = Xyes])
 
+# Disable building the libchm python wrapper
+AC_ARG_ENABLE(python-chm, AC_HELP_STRING([--disable-python-chm],
+    [Do not build the libchm Python wrapper.]),
+    pythonChmEnabled=$enableval, pythonChmEnabled=yes)
+
+AM_CONDITIONAL(MAKEPYTHONCHM, [test X$pythonChmEnabled = Xyes])
+
 
 AC_CHECK_FUNCS(mkdtemp)
 AC_CHECK_LIB([pthread], [pthread_create], [], [])
@@ -523,6 +530,6 @@ AC_SUBST(RCLLIBVERSION)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(common/rclversion.h)
 AC_CONFIG_FILES(python/recoll/setup.py)
-AC_CONFIG_FILES(python/recoll/Makefile)
+AC_CONFIG_FILES(python/pychm/setup.py)
 
 AC_OUTPUT

@@ -231,22 +231,18 @@ void UIPrefsDialog::setFromPrefs()
 
     // Initialize the extra indexes listboxes
     idxLV->clear();
-    for (list<string>::iterator it = prefs.allExtraDbs.begin(); 
-	 it != prefs.allExtraDbs.end(); it++) {
+    for (const auto& dbdir : prefs.allExtraDbs) {
 	QListWidgetItem *item = 
-	    new QListWidgetItem(QString::fromLocal8Bit(it->c_str()), 
-				idxLV);
+	    new QListWidgetItem(QString::fromLocal8Bit(dbdir.c_str()), idxLV);
 	if (item) 
 	    item->setCheckState(Qt::Unchecked);
     }
-    for (list<string>::iterator it = prefs.activeExtraDbs.begin(); 
-	 it != prefs.activeExtraDbs.end(); it++) {
-	QList<QListWidgetItem *>items =
-	     idxLV->findItems (QString::fromLocal8Bit(it->c_str()), 
-			       Qt::MatchFixedString|Qt::MatchCaseSensitive);
-	for (QList<QListWidgetItem *>::iterator it = items.begin(); 
-	     it != items.end(); it++) {
-	    (*it)->setCheckState(Qt::Checked);
+    for (const auto& dbdir : prefs.activeExtraDbs) {
+	auto items =
+            idxLV->findItems (QString::fromLocal8Bit(dbdir.c_str()), 
+                              Qt::MatchFixedString|Qt::MatchCaseSensitive);
+	for (auto& entry : items) {
+	    entry->setCheckState(Qt::Checked);
 	}
     }
     idxLV->sortItems();

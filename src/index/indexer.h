@@ -29,7 +29,7 @@
 #include "idxstatus.h"
 
 class FsIndexer;
-class BeagleQueueIndexer;
+class WebQueueIndexer;
 
 /** Callback to say what we're doing. If the update func returns false, we
  * stop as soon as possible without corrupting state */
@@ -118,7 +118,7 @@ class ConfIndexer {
     Rcl::Db    m_db;
     FsIndexer *m_fsindexer; 
     bool                m_doweb;
-    BeagleQueueIndexer *m_webindexer; 
+    WebQueueIndexer *m_webindexer; 
     DbIxStatusUpdater  *m_updater;
     string              m_reason;
 

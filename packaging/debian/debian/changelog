@@ -1,3 +1,9 @@
+recoll (1.25.0pre0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Not a release: 1.25 development and testing
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 13 Jun 2018 08:38:00 +0200
+
 recoll (1.24.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * New release 1.24.1.

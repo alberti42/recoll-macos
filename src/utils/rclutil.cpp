@@ -43,6 +43,7 @@
 #include "wipedir.h"
 #include "transcode.h"
 #include "md5ut.h"
+#include "log.h"
 
 using namespace std;
 
@@ -281,8 +282,51 @@ bool maketmpdir(string& tdir, string& reason)
     return true;
 }
 
-TempFileInternal::TempFileInternal(const string& suffix)
-    : m_noremove(false)
+
+class TempFile::Internal {
+public:
+    Internal(const std::string& suffix);
+    ~Internal();
+    friend class TempFile;
+private:
+    std::string m_filename;
+    std::string m_reason;
+    bool m_noremove{false};
+};
+
+TempFile::TempFile(const string& suffix)
+    : m(new Internal(suffix))
+{
+}
+
+TempFile::TempFile()
+{
+    m = std::shared_ptr<Internal>();
+}
+
+const char *TempFile::filename() const
+{
+    return m ? m->m_filename.c_str() : "";
+}
+
+const std::string& TempFile::getreason() const
+{
+    static string fatal{"fatal error"};
+    return m ? m->m_reason : fatal;
+}
+
+void TempFile::setnoremove(bool onoff)
+{
+    if (m)
+        m->m_noremove = onoff;
+}
+
+bool TempFile::ok() const
+{
+    return m ? !m->m_filename.empty() : false;
+}
+
+TempFile::Internal::Internal(const string& suffix)
 {
     // Because we need a specific suffix, can't use mkstemp
     // well. There is a race condition between name computation and
@@ -322,7 +366,7 @@ TempFileInternal::TempFileInternal(const string& suffix)
     }
 }
 
-TempFileInternal::~TempFileInternal()
+TempFile::Internal::~Internal()
 {
     if (!m_filename.empty() && !m_noremove) {
         unlink(m_filename.c_str());
@@ -335,11 +379,13 @@ TempDir::TempDir()
         m_dirname.erase();
         return;
     }
+    LOGDEB("TempDir::TempDir: -> " << m_dirname << endl);
 }
 
 TempDir::~TempDir()
 {
     if (!m_dirname.empty()) {
+        LOGDEB("TempDir::~TempDir: erasing " << m_dirname << endl);
         (void)wipedir(m_dirname, true, true);
         m_dirname.erase();
     }

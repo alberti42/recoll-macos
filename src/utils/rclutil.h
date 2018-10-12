@@ -48,29 +48,18 @@ extern const std::string& tmplocation();
 extern bool maketmpdir(std::string& tdir, std::string& reason);
 
 /// Temporary file class
-class TempFileInternal {
+class TempFile {
 public:
-    TempFileInternal(const std::string& suffix);
-    ~TempFileInternal();
-    const char *filename() {
-        return m_filename.c_str();
-    }
-    const std::string& getreason() {
-        return m_reason;
-    }
-    void setnoremove(bool onoff) {
-        m_noremove = onoff;
-    }
-    bool ok() {
-        return !m_filename.empty();
-    }
+    TempFile(const std::string& suffix);
+    TempFile();
+    const char *filename() const;
+    const std::string& getreason() const;
+    void setnoremove(bool onoff);
+    bool ok() const;
+    class Internal;
 private:
-    std::string m_filename;
-    std::string m_reason;
-    bool m_noremove;
+    std::shared_ptr<Internal> m;
 };
-
-typedef std::shared_ptr<TempFileInternal> TempFile;
 
 /// Temporary directory class. Recursively deleted by destructor.
 class TempDir {

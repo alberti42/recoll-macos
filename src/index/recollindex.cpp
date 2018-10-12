@@ -49,7 +49,7 @@ using namespace std;
 #include "cancelcheck.h"
 #include "rcldb.h"
 #ifndef DISABLE_WEB_INDEXER
-#include "beaglequeue.h"
+#include "webqueue.h"
 #endif
 #include "recollindex.h"
 #include "fsindexer.h"

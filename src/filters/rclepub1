@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """Extract Html content from an EPUB file (.chm), concatenating all sections"""
 from __future__ import print_function
 
@@ -8,6 +8,7 @@ import re
 
 import rclexecm
 
+sys.path.append(sys.path[0]+"/recollepub.zip")
 try:
     import epub
 except:

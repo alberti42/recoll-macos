@@ -30,18 +30,18 @@ from __future__ import print_function
 
 import subprocess
 import rclexecm
+from rclbasehandler import RclBaseHandler
 
 # This class has the code to execute the subprocess and call a
 # data-specific post-processor. Command and processor are supplied by
 # the object which we receive as a parameter, which in turn is defined
 # in the actual executable filter (e.g. rcldoc.py)
-class Executor:
+class Executor(RclBaseHandler):
     opt_ignxval = 1
     
     def __init__(self, em, flt):
-        self.em = em
+        super(Executor, self).__init__(em)
         self.flt = flt
-        self.currentindex = 0
 
     def runCmd(self, cmd, filename, postproc, opt):
         ''' Substitute parameters and execute command, process output
@@ -109,19 +109,4 @@ class Executor:
             return (ok, data, "", rclexecm.RclExecM.eofnext)
         else:
             return (ok, "", "", rclexecm.RclExecM.eofnow)
-        
-    ###### File type handler api, used by rclexecm ---------->
-    def openfile(self, params):
-        self.currentindex = 0
-        return True
-
-    def getipath(self, params):
-        return self.extractone(params)
-        
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
+     
