@@ -15,7 +15,7 @@ Build-Depends: autotools-dev,
                python3-all-dev,
                qt5-qmake,
                qtbase5-dev
-X-Python-Version: >= 2.7
+X-Python-Version: >= 3.4
 Vcs-Git: https://anonscm.debian.org/cgit/collab-maint/recoll.git
 Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/recoll.git
 Homepage: http://www.lesbonscomptes.com/recoll
@@ -32,10 +32,10 @@ Description: Personal full text search package with a Qt GUI
  Features:
   * Qt-based GUI
   * Supports the following document types (and their compressed versions)
-   - Natively: text, html, OpenOffice files, maildir and mailbox (Mozilla and
-     IceDove mail) with attachments, pidgin log files
+   - Natively: text, html, OpenOffice files,  excel, ppt, maildir and
+     mailbox (Mozilla and IceDove mail) with attachments, pidgin log files
    - With external helpers:  pdf (pdftotext), postscript (ghostscript), msword
-     (antiword), excel, ppt (catdoc), rtf (unrtf)
+     (antiword), rtf (unrtf). And others...
   * Powerful query facilities, with boolean searches, phrases, filter on file
     types and directory tree
   * Support for multiple charsets, Internal processing and storage uses Unicode
@@ -44,8 +44,7 @@ Description: Personal full text search package with a Qt GUI
     indexing)
   * Easy installation. No database daemon, web server or exotic language
     necessary
-  * An indexer which runs either as a thread inside the GUI or as an external,
-    cron'able program
+  * The indexer can run either continuously or in batch.
 
 Package: recollcmd
 Architecture: any
@@ -53,27 +52,21 @@ Breaks: recoll (<< 1.23.9)
 Replaces: recoll (<< 1.23.9)
 Depends: python, python3, ${misc:Depends}, ${shlibs:Depends}
 Recommends: aspell,
-            python-future,
-            python-libxml2,
-            python-libxslt1,
-            python-recoll,
-            python3-recoll,
-            xdg-utils,
-            xsltproc
+            xdg-utils
 Suggests: antiword,
-          ghostscript,
           groff,
           libimage-exiftool-perl,
-          libinotifytools0,
           poppler-utils,
           pstotext,
-          python-chm,
-          python-lzma,
-          python-mido,
-          python-mutagen,
-          python-rarfile,
+          python3-lxml,
+          python3-six,
+          python3-mutagen,
+          python3-rarfile,
+          python-recoll,
+          python3-recoll,
           unrtf,
           untex,
+          unzip,
           wv
 Description: Command line programs for recoll
  This package supports indexing and command line querying.
