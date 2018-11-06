@@ -17,17 +17,11 @@
 #ifndef _MD5UT_H_
 #define _MD5UT_H_
 
-#include <sys/types.h>
-
 #include "md5.h"
 
-/** md5 utility wrappers */
-#include <string>
-using std::string;
-extern void MD5Final(string& digest, MD5_CTX *);
-extern bool MD5File(const string& filename, string& digest, string *reason);
-extern string& MD5String(const string& data, string& digest);
-extern string& MD5HexPrint(const string& digest, string& xdigest);
-extern string& MD5HexScan(const string& xdigest, string& digest);
+/** md5 utility: compute file md5 */
+
+extern bool MD5File(const std::string& filename, std::string& digest,
+                    std::string *reason);
 
 #endif /* _MD5UT_H_ */

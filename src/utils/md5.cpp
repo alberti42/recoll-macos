@@ -17,9 +17,6 @@
  * will fill a supplied 16-byte array with the digest.
  */
 
-#include "autoconfig.h"
-//#include <compat.h>
-
 #include "md5.h"
 
 #include <string.h>
@@ -46,6 +43,9 @@ static uint8_t PADDING[MD5_BLOCK_LENGTH] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
+
+static void MD5Pad(MD5_CTX *);
+static void MD5Transform(uint32_t [4], const uint8_t [MD5_BLOCK_LENGTH]);
 
 /*
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
@@ -103,7 +103,7 @@ MD5Update(MD5_CTX *ctx, const unsigned char *input, size_t len)
  * Pad pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
-void
+static void
 MD5Pad(MD5_CTX *ctx)
 {
 	uint8_t count[8];
@@ -155,7 +155,7 @@ MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
  */
-void
+static void
 MD5Transform(uint32_t state[4], const uint8_t block[MD5_BLOCK_LENGTH])
 {
 	uint32_t a, b, c, d, in[MD5_BLOCK_LENGTH / 4];
@@ -249,4 +249,53 @@ MD5Transform(uint32_t state[4], const uint8_t block[MD5_BLOCK_LENGTH])
 	state[1] += b;
 	state[2] += c;
 	state[3] += d;
+}
+
+
+// C++ utilities
+using std::string;
+
+void MD5Final(string &digest, MD5_CTX *context)
+{
+    unsigned char d[16];
+    MD5Final (d, context);
+    digest.assign((const char *)d, 16);
+}
+
+string& MD5String(const string& data, string& digest)
+{
+    MD5_CTX ctx;
+    MD5Init(&ctx);
+    MD5Update(&ctx, (const unsigned char*)data.c_str(), data.length());
+    MD5Final(digest, &ctx);
+    return digest;
+}
+
+string& MD5HexPrint(const string& digest, string &out)
+{
+    out.erase();
+    out.reserve(33);
+    static const char hex[]="0123456789abcdef";
+    const unsigned char *hash = (const unsigned char *)digest.c_str();
+    for (int i = 0; i < 16; i++) {
+	out.append(1, hex[hash[i] >> 4]);
+	out.append(1, hex[hash[i] & 0x0f]);
+    }
+    return out;
+}
+string& MD5HexScan(const string& xdigest, string& digest)
+{
+    digest.erase();
+    if (xdigest.length() != 32) {
+	return digest;
+    }
+    for (unsigned int i = 0; i < 16; i++) {
+	unsigned int val;
+	if (sscanf(xdigest.c_str() + 2*i, "%2x", &val) != 1) {
+	    digest.erase();
+	    return digest;
+	}
+	digest.append(1, (unsigned char)val);
+    }
+    return digest;
 }
