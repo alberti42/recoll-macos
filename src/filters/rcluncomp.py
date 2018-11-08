@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# No shebang: this is only used on Windows. We use a shell script on Linux
 from __future__ import print_function
 
 import rclexecm
