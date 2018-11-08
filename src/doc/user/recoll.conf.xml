@@ -60,18 +60,19 @@ list. </para></listitem></varlistentry>
 list. </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHS">
 <term><varname>skippedPaths</varname></term>
-<listitem><para>Paths we should not go into. Space-separated list of
-wildcard expressions for filesystem paths. Can contain files and
-directories. The database and configuration directories will
-automatically be added. The expressions are matched using 'fnmatch(3)'
-with the FNM_PATHNAME flag set by default. This means that '/' characters
-must be matched explicitely. You can set 'skippedPathsFnmPathname' to 0
-to disable the use of FNM_PATHNAME (meaning that '/*/dir3' will match
-'/dir1/dir2/dir3').  The default value contains the usual mount point for
-removable media to remind you that it is a bad idea to have Recoll work
-on these (esp. with the monitor: media gets indexed on mount, all data
-gets erased on unmount).  Explicitely adding '/media/xxx' to the topdirs
-will override this.</para></listitem></varlistentry>
+<listitem><para>Absolute paths we should not go into. Space-separated list of wildcard expressions for absolute
+filesystem paths. Must be defined at the top level of the configuration
+file, not in a subsection. Can contain files and directories. The database and
+configuration directories will automatically be added. The expressions
+are matched using 'fnmatch(3)' with the FNM_PATHNAME flag set by
+default. This means that '/' characters must be matched explicitely. You
+can set 'skippedPathsFnmPathname' to 0 to disable the use of FNM_PATHNAME
+(meaning that '/*/dir3' will match '/dir1/dir2/dir3'). The default value
+contains the usual mount point for removable media to remind you that it
+is a bad idea to have Recoll work on these (esp. with the monitor: media
+gets indexed on mount, all data gets erased on unmount). Explicitely
+adding '/media/xxx' to the 'topdirs' variable will override
+this.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHSFNMPATHNAME">
 <term><varname>skippedPathsFnmPathname</varname></term>
 <listitem><para>Set to 0 to
@@ -83,14 +84,22 @@ paths. </para></listitem></varlistentry>
 real time indexing. This enables having parts of the tree
 which are initially indexed but not monitored. If daemSkippedPaths is
 not set, the daemon uses skippedPaths.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ZIPUSESKIPPEDNAMES">
+<term><varname>zipUseSkippedNames</varname></term>
+<listitem><para>Use skippedNames inside Zip archives. Fetched
+directly by the rclzip handler. Skip the patterns defined by skippedNames
+inside Zip archives. Can be redefined for subdirectories.
+See https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
+</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ZIPSKIPPEDNAMES">
 <term><varname>zipSkippedNames</varname></term>
 <listitem><para>Space-separated list of wildcard expressions for names that should
 be ignored inside zip archives. This is used directly by
-the zip handler, and has a function similar to skippedNames, but works
-independantly. Can be redefined for subdirectories. Supported by recoll
-1.20 and newer. See
-https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
+the zip handler. If zipUseSkippedNames is not set, zipSkippedNames
+defines the patterns to be skipped inside archives. If zipUseSkippedNames
+is set, the two lists are concatenated and used. Can be redefined for
+subdirectories.
+See https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS">
 <term><varname>followLinks</varname></term>

@@ -7919,6 +7919,16 @@ for i in range(nres):
         directory location upwards. Not all parameters can be
         meaningfully redefined, this is specified for each in the
         next section.</p>
+        <div class="important" style=
+        "margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">Important</h3>
+          <p>Global parameters <span class="emphasis"><em>must
+          not</em></span> be defined in a directory subsection,
+          else they will not be found at all by the <span class=
+          "application">Recoll</span> code, which looks for them at
+          the top level (e.g. <code class=
+          "literal">skippedPaths</code>).</p>
+        </div>
         <p>When found at the beginning of a file path, the tilde
         character (~) is expanded to the name of the user's home
         directory, as a shell would do.</p>
@@ -8165,10 +8175,12 @@ for i in range(nres):
                 "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHS" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHS"></a><span class="term"><code class="varname">skippedPaths</code></span></dt>
                 <dd>
-                  <p>Paths we should not go into. Space-separated
-                  list of wildcard expressions for filesystem
-                  paths. Can contain files and directories. The
-                  database and configuration directories will
+                  <p>Absolute paths we should not go into.
+                  Space-separated list of wildcard expressions for
+                  absolute filesystem paths. Must be defined at the
+                  top level of the configuration file, not in a
+                  subsection. Can contain files and directories.
+                  The database and configuration directories will
                   automatically be added. The expressions are
                   matched using 'fnmatch(3)' with the FNM_PATHNAME
                   flag set by default. This means that '/'
@@ -8181,7 +8193,7 @@ for i in range(nres):
                   Recoll work on these (esp. with the monitor:
                   media gets indexed on mount, all data gets erased
                   on unmount). Explicitely adding '/media/xxx' to
-                  the topdirs will override this.</p>
+                  the 'topdirs' variable will override this.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHSFNMPATHNAME"
@@ -8206,16 +8218,28 @@ for i in range(nres):
                   skippedPaths.</p>
                 </dd>
                 <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ZIPUSESKIPPEDNAMES"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ZIPUSESKIPPEDNAMES"></a><span class="term"><code class="varname">zipUseSkippedNames</code></span></dt>
+                <dd>
+                  <p>Use skippedNames inside Zip archives. Fetched
+                  directly by the rclzip handler. Skip the patterns
+                  defined by skippedNames inside Zip archives. Can
+                  be redefined for subdirectories. See
+                  https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html</p>
+                </dd>
+                <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ZIPSKIPPEDNAMES" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ZIPSKIPPEDNAMES"></a><span class="term"><code class="varname">zipSkippedNames</code></span></dt>
                 <dd>
                   <p>Space-separated list of wildcard expressions
                   for names that should be ignored inside zip
                   archives. This is used directly by the zip
-                  handler, and has a function similar to
-                  skippedNames, but works independantly. Can be
-                  redefined for subdirectories. Supported by recoll
-                  1.20 and newer. See
+                  handler. If zipUseSkippedNames is not set,
+                  zipSkippedNames defines the patterns to be
+                  skipped inside archives. If zipUseSkippedNames is
+                  set, the two lists are concatenated and used. Can
+                  be redefined for subdirectories. See
                   https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html</p>
                 </dd>
                 <dt><a name=

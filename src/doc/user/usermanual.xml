@@ -6171,6 +6171,13 @@ for i in range(nres):
       redefined, this is specified for each in the next
       section. </para>
 
+      <important>
+        <para>Global parameters <emphasis>must not</emphasis> be defined in
+        a directory subsection, else they will not be found at all by the
+        &RCL; code, which looks for them at the top level
+        (e.g. <literal>skippedPaths</literal>).</para> 
+      </important>
+
       <para>When found at the beginning of a file path, the tilde
       character (~) is expanded to the name of the user's home
       directory, as a shell would do.</para> 
