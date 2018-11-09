@@ -24,22 +24,28 @@ import sys
 import re
 import rclexecm
 import subprocess
+from rclbasehandler import RclBaseHandler
 
-class DJVUExtractor:
+class DJVUExtractor(RclBaseHandler):
+
     def __init__(self, em):
-        self.currentindex = 0
-        self.djvused = None
-        self.djvutxt = None
-        self.em = em
+        super(DJVUExtractor, self).__init__(em)
+        self.djvutxt = rclexecm.which("djvutxt")
+        if not self.djvutxt:
+            print("RECFILTERROR HELPERNOTFOUND djvutxt")
+            sys.exit(1);
+        self.djvused = rclexecm.which("djvused")
 
-    def extractone(self, params):
+
+    def html_text(self, fn):
         self.em.setmimetype('text/html')
 
         # Extract metadata
+        metadata = b""
         if self.djvused:
             try:
-                metadata = subprocess.check_output([self.djvused, self.filename,
-                                                    "-e", "select 1;print-meta"])
+                metadata = subprocess.check_output(
+                    [self.djvused, fn, "-e", "select 1;print-meta"])
             except Exception as e:
                 self.em.rclog("djvused failed: %s" % e)
         author = ""
@@ -55,14 +61,12 @@ class DJVUExtractor:
                     title = ' '.join(line[1:])
 
         # Main text
-        try:
-            txtdata = subprocess.check_output([self.djvutxt, "--escape", self.filename])
-        except Exception as e:
-            self.em.rclog("djvused failed: %s" % e)
-            return (False, "", "", rclexecm.RclExecM.eofnow)
+        txtdata = subprocess.check_output([self.djvutxt, "-escape", fn])
+
         txtdata = txtdata.decode('UTF-8', 'replace')
 
-        data = '''<html><head><title>''' + self.em.htmlescape(title) + '''</title>'''
+        data = '''<html><head>'''
+        data += '''<title>''' + self.em.htmlescape(title) + '''</title>'''
         data += '''<meta http-equiv="Content-Type" '''
         data += '''content="text/html;charset=UTF-8">'''
         if author:
@@ -72,34 +76,8 @@ class DJVUExtractor:
 
         data += self.em.htmlescape(txtdata)
         data += '''</pre></body></html>'''
-        return (True, data, "", rclexecm.RclExecM.eofnext)
+        return data
 
-    ###### File type handler api, used by rclexecm ---------->
-    def openfile(self, params):
-        self.filename = params["filename:"]
-        self.currentindex = 0
-        #self.em.rclog("openfile: [%s]" % self.filename)
-
-        if not self.djvutxt:
-            self.djvutxt = rclexecm.which("djvutxt")
-            if not self.djvutxt:
-                print("RECFILTERROR HELPERNOTFOUND djvutxt")
-                sys.exit(1);
-            self.djvused = rclexecm.which("djvused")
-
-        return True
-
-    def getipath(self, params):
-        return self.extractone(params)
-        return (ok, data, ipath, eof)
-        
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
 
 # Main program: create protocol handler and extractor and run them
 proto = rclexecm.RclExecM()

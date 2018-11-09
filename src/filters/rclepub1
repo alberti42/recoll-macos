@@ -7,6 +7,7 @@ import os
 import re
 
 import rclexecm
+from rclbasehandler import RclBaseHandler
 
 sys.path.append(sys.path[0]+"/recollepub.zip")
 try:
@@ -15,14 +16,12 @@ except:
     print("RECFILTERROR HELPERNOTFOUND python:epub")
     sys.exit(1);
 
-class rclEPUB:
+class EPUBConcatExtractor(RclBaseHandler):
     """RclExecM slave worker for extracting all text from an EPUB
     file. This version concatenates all nodes."""
 
     def __init__(self, em):
-        self.em = em
-        self.em.setmimetype("text/html")
-        self.currentindex = 0
+        super(EPUBConcatExtractor, self).__init__(em)
 
     def _header(self):
         meta = self.book.opf.metadata
@@ -46,10 +45,12 @@ class rclEPUB:
 
         return data
 
-    def extractone(self, params):
+    def html_text(self, fn):
         """Extract EPUB data as concatenated HTML"""
 
-        ok = True
+        f = open(fn, 'rb')
+        self.book = epub.open_epub(f)
+
         data = self._header()
         ids = []
         if self.book.opf.spine:
@@ -72,36 +73,8 @@ class rclEPUB:
             data += doc
 
         data += b'</body></html>'
-        if ok:
-            return (ok, data, "", rclexecm.RclExecM.eofnext)
-        else:
-            return (ok, "", "", rclexecm.RclExecM.eofnow)
-
-    def openfile(self, params):
-        """Open the EPUB file"""
-        self.currentindex = 0
-        if not "filename:" in params:
-            self.em.rclog("openfile: no file name")
-            return (ok, "", "", rclexecm.RclExecM.eofnow)
-
-        try:
-            self.book = epub.open_epub(params["filename:"].decode('UTF-8'))
-        except Exception as err:
-            self.em.rclog("openfile: epub.open failed: [%s]" % err)
-            return False
-        return True
-
-    def getipath(self, params):
-        return self.extractone(params)
-
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
+        return data
 
 proto = rclexecm.RclExecM()
-extract = rclEPUB(proto)
+extract = EPUBConcatExtractor(proto)
 rclexecm.main(proto, extract)

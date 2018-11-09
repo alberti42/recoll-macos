@@ -18,10 +18,11 @@
 from __future__ import print_function
 
 import sys
-import rclexecm
-import rclxslt
-import fnmatch
 from zipfile import ZipFile
+import fnmatch
+import rclexecm
+from rclbasehandler import RclBaseHandler
+import rclxslt
 
 meta_stylesheet = '''<?xml version="1.0"?>
 <xsl:stylesheet 
@@ -129,10 +130,10 @@ content_stylesheet = '''<?xml version="1.0"?>
 </xsl:stylesheet>
 '''
 
-class OXExtractor:
+class OXExtractor(RclBaseHandler):
     def __init__(self, em):
-        self.em = em
-        self.currentindex = 0
+        super(OXExtractor, self).__init__(em)
+
 
     # Replace values inside data style sheet, depending on type of doc
     def computestylesheet(self, nm):
@@ -145,18 +146,11 @@ class OXExtractor:
 
         return stylesheet
     
-    def extractone(self, params):
-        if "filename:" not in params:
-            self.em.rclog("extractone: no mime or file name")
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        fn = params["filename:"]
 
-        try:
-            f = open(fn, 'rb')
-            zip = ZipFile(f)
-        except Exception as err:
-            self.em.rclog("unzip failed: " + str(err))
-            return (False, "", "", rclexecm.RclExecM.eofnow)
+    def html_text(self, fn):
+
+        f = open(fn, 'rb')
+        zip = ZipFile(f)
 
         docdata = b'<html><head>'
 
@@ -166,9 +160,6 @@ class OXExtractor:
                 res = rclxslt.apply_sheet_data(meta_stylesheet, metadata)
                 docdata += res
         except Exception as err:
-            # To be checked. I'm under the impression that I get this when
-            # nothing matches?
-            self.em.rclog("no/bad metadata in %s: %s" % (fn, err))
             pass
 
         docdata += b'</head><body>'
@@ -200,24 +191,8 @@ class OXExtractor:
 
         docdata += b'</body></html>'
 
-        return (True, docdata, "", rclexecm.RclExecM.eofnext)
+        return docdata
     
-
-    ###### File type handler api, used by rclexecm ---------->
-    def openfile(self, params):
-        self.currentindex = 0
-        return True
-
-    def getipath(self, params):
-        return self.extractone(params)
-        
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
 
 if __name__ == '__main__':
     proto = rclexecm.RclExecM()

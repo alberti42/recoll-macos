@@ -21,6 +21,7 @@ from __future__ import print_function
 import sys
 import rclexecm
 import rclxslt
+from rclbasehandler import RclBaseHandler
 from zipfile import ZipFile
 
 stylesheet_meta = '''<?xml version="1.0"?>
@@ -126,26 +127,21 @@ stylesheet_content  = '''<?xml version="1.0"?>
 </xsl:stylesheet>
 '''
 
-class OOExtractor:
+class OOExtractor(RclBaseHandler):
     def __init__(self, em):
-        self.em = em
-        self.currentindex = 0
+        super(OOExtractor, self).__init__(em)
 
-    def extractone(self, params):
-        if "filename:" not in params:
-            self.em.rclog("extractone: no mime or file name")
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        fn = params["filename:"]
 
-        try:
-            zip = ZipFile(fn.decode('UTF-8'))
-        except Exception as err:
-            self.em.rclog("unzip failed: %s" % err)
-            return (False, "", "", rclexecm.RclExecM.eofnow)
+    def html_text(self, fn):
+
+        f = open(fn, 'rb')
+        zip = ZipFile(f)
 
         docdata = b'<html>\n<head>\n<meta http-equiv="Content-Type"' \
                   b'content="text/html; charset=UTF-8">'
 
+        # Wrap metadata extraction because it can sometimes throw
+        # while the main text will be valid
         try:
             metadata = zip.read("meta.xml")
             if metadata:
@@ -159,33 +155,14 @@ class OOExtractor:
 
         docdata += b'</head>\n<body>\n'
 
-        try:
-            content = zip.read("content.xml")
-            if content:
-                res = rclxslt.apply_sheet_data(stylesheet_content, content)
-                docdata += res
-            docdata += b'</body></html>'
-        except Exception as err:
-            self.em.rclog("bad data in %s: %s" % (fn, err))
-            return (False, "", "", rclexecm.RclExecM.eofnow)
+        content = zip.read("content.xml")
+        if content:
+            res = rclxslt.apply_sheet_data(stylesheet_content, content)
+            docdata += res
+        docdata += b'</body></html>'
 
-        return (True, docdata, "", rclexecm.RclExecM.eofnext)
+        return docdata
     
-    ###### File type handler api, used by rclexecm ---------->
-    def openfile(self, params):
-        self.currentindex = 0
-        return True
-
-    def getipath(self, params):
-        return self.extractone(params)
-        
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
 
 if __name__ == '__main__':
     proto = rclexecm.RclExecM()

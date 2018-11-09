@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-# Audio tag filter for Recoll, using mutagen
+# Audio tag extractor for Recoll, using mutagen
 
 import sys
 import os
 import rclexecm
+from rclbasehandler import RclBaseHandler
 import time
 import datetime
 import re
@@ -174,20 +175,17 @@ def tobytes(s):
 # mp3:      album, title, artist, genre, date, tracknumber
 # flac:     album, title, artist, genre, xxx, tracknumber
 # oggvorbis:album, title, artist, genre, date, tracknumber
-class AudioTagExtractor:
+class AudioTagExtractor(RclBaseHandler):
+
     def __init__(self, em):
-        self.em = em
-        self.currentindex = 0
+        super(AudioTagExtractor, self).__init__(em)
+
 
     def _showMutaInfo(self, mutf):
         self.em.rclog("%s" % mutf.info.pprint())
         for prop in dir(mutf.info):
             self.em.rclog("mutinfo: %s -> %s" %
                           (prop, getattr( mutf.info, prop)))
-
-
-    def _printableFilename(self):
-        return self.filename.decode('utf-8', errors='replace')
 
 
     def _embeddedImageFormat(self, mutf):
@@ -232,24 +230,16 @@ class AudioTagExtractor:
         val = time.mktime(pdt.timetuple())
         return "%d" % val
 
-    def extractone(self, params):
-        #self.em.rclog("extractone %s %s" % (params["filename:"],
-        #              params["mimetype:"]))
-        docdata = ""
-        ok = False
-        if not "mimetype:" in params or not "filename:" in params:
-            self.em.rclog("extractone: no mime or file name")
-            return (ok, docdata, "", rclexecm.RclExecM.eofnow)
-        filename = params["filename:"]
-        mimetype = params["mimetype:"]
-        self.filename = filename
-        #self.em.rclog("%s" % filename)
-        try:
-            mutf = File(filename)
-        except Exception as err:
-            self.em.rclog("extractone: extract failed: [%s]" % err)
-            return (ok, docdata, "", rclexecm.RclExecM.eofnow)
+    def html_text(self, filename):
 
+        if not self.inputmimetype:
+            raise Exception("html_text: input MIME type not set")
+        mimetype = self.inputmimetype
+
+        mutf = File(filename)
+        if not mutf:
+            raise Exception("mutagen failed opening %s" % filename)
+        
         #self._showMutaInfo(mutf)
 
         ###################
@@ -361,29 +351,10 @@ class AudioTagExtractor:
         try:
             docdata = tobytes(mutf.pprint())
         except Exception as err:
+            docdata = ""
             self.em.rclog("Doc pprint error: %s" % err)
 
-        ok = True
-        return (ok, docdata, "", rclexecm.RclExecM.eofnext)
-
-
-    ###### File type handler api, used by rclexecm ---------->
-    def openfile(self, params):
-        self.currentindex = 0
-        return True
-
-
-    def getipath(self, params):
-        return self.extractone(params)
-
-        
-    def getnext(self, params):
-        if self.currentindex >= 1:
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret= self.extractone(params)
-            self.currentindex += 1
-            return ret
+        return docdata
 
 
 def makeObject():

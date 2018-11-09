@@ -25,22 +25,36 @@ import sys
 import rclexecm
 
 class RclBaseHandler(object):
+    '''Base Object for simple extractors.
+
+    This implements the boilerplate code for simple extractors for
+    file types with a single document. The derived class would
+    typically need only to implement the html_text method to return
+    the document text in HTML format'''
+    
     def __init__(self, em):
         self.em = em
 
 
     def extractone(self, params):
-        #self.em.rclog("extractone %s %s" % (params["filename:"], \
-        #params["mimetype:"]))
+        #self.em.rclog("extractone fn %s mt %s" % (params["filename:"], \
+        #                                          params["mimetype:"]))
         if not "filename:" in params:
             self.em.rclog("extractone: no file name")
             return (False, "", "", rclexecm.RclExecM.eofnow)
         fn = params["filename:"]
 
+        if "mimetype:" in params:
+            self.inputmimetype = params["mimetype:"]
+        else:
+            self.inputmimetype = None
+
         try:
             html = self.html_text(fn)
         except Exception as err:
-            self.em.rclog("RclBaseDumper: %s : %s" % (fn, err))
+            import traceback
+            traceback.print_exc()
+            self.em.rclog("RclBaseHandler: %s : %s" % (fn, err))
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
         self.em.setmimetype('text/html')
@@ -52,8 +66,10 @@ class RclBaseHandler(object):
         self.currentindex = 0
         return True
 
+
     def getipath(self, params):
         return self.extractone(params)
+
 
     def getnext(self, params):
         if self.currentindex >= 1:

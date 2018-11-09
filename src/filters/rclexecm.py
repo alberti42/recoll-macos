@@ -388,7 +388,7 @@ def main(proto, extract):
             
     params = {'filename:': makebytes(args[0])}
     # Some filters (e.g. rclaudio) need/get a MIME type from the indexer
-    mimetype = mimetype_with_xdg(args[0])
+    mimetype = mimetype_with_file(args[0])
     params['mimetype:'] = mimetype
 
     if not extract.openfile(params):

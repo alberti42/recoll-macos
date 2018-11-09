@@ -18,6 +18,7 @@ from __future__ import print_function
 
 # Small fixes from jfd: dia files are sometimes not compressed.  
 import rclexecm
+from rclbasehandler import RclBaseHandler
 import re
 from gzip import GzipFile
 import xml.parsers.expat
@@ -58,54 +59,32 @@ class Parser:
         self._parser.ParseFile(fh)
         del self._parser
 
-class DiaExtractor:
+class DiaExtractor(RclBaseHandler):
+
     def __init__(self, em):
-        self.em = em
+        super(DiaExtractor, self).__init__(em)
 
-    def extractdia(self):
-        docdata = ""
-        ipath = ""
-        try:
-            docdata = self.ExtractDiaText()
-            ok = True
-        except Exception as err:
-            self.em.rclog("Dia parse failed: %s"%err)
-            ok = False
-        iseof = rclexecm.RclExecM.eofnext
-        self.em.setmimetype("text/plain")
-        return (ok, docdata, ipath, iseof)
 
-    ###### File type handler api, used by rclexecm ---------->
-    def openfile(self, params):
+    def html_text(self, fn):
         try:
-            self.dia = GzipFile(params["filename:"], 'rb')
+            dia = GzipFile(fn, 'rb')
             # Dia files are sometimes not compressed. Quite weirdly,
-            # GzipFile does not complain until we try to read. Have to do it
-            # here to be able to retry an uncompressed open.
-            data = self.dia.readline()
-            self.dia.seek(0)
-            return True
+            # GzipFile does not complain until we try to read.
+            data = dia.readline()
+            dia.seek(0)
         except:
             # File not compressed ?
-            try:
-                self.dia = open(params["filename:"], 'rb')
-            except:
-                return False
-            return True
+            dia = open(fn, 'rb')
 
-    def getipath(self, params):
-        ok, data, ipath, eof = self.extractdia()
-        return (ok, data, ipath, eof)
-        
-    def getnext(self, params):
-        ok, data, ipath, eof = self.extractdia()
-        return (ok, data, ipath, eof)
-
-    ###### read data
-    def ExtractDiaText(self):
         diap = Parser(self.em)
-        diap.feed(self.dia)
-        return '\n'.join(diap.string)
+        diap.feed(dia)
+
+        html = '<html><head><title></title></head><body><pre>'
+        html += self.em.htmlescape('\n'.join(diap.string))
+        html += '</pre></body></html>'
+
+        return html
+
 
 # Main program: create protocol handler and extractor and run them
 proto = rclexecm.RclExecM()
