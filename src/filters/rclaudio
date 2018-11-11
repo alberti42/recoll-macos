@@ -336,7 +336,7 @@ class AudioTagExtractor(RclBaseHandler):
         embdimg = self._embeddedImageFormat(mutf)
         if embdimg:
             #self.em.rclog("Embedded image format: %s" % embdimg)
-            embdimg = tobytes(embdimg)
+            minf['embdimg'] = tobytes(embdimg)
         
         self.em.setmimetype("text/plain")
         self.em.setfield("charset", 'utf-8')
