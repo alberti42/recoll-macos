@@ -49,7 +49,10 @@ class RclBaseHandler(object):
         else:
             self.inputmimetype = None
 
+        self.outputmimetype = 'text/html'
         try:
+            # Note: "html_text" can change self.outputmimetype and
+            # output text/plain
             html = self.html_text(fn)
         except Exception as err:
             import traceback
@@ -57,7 +60,7 @@ class RclBaseHandler(object):
             self.em.rclog("RclBaseHandler: %s : %s" % (fn, err))
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
-        self.em.setmimetype('text/html')
+        self.em.setmimetype(self.outputmimetype)
         return (True, html, "", rclexecm.RclExecM.eofnext)
         
 

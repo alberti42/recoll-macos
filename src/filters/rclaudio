@@ -19,7 +19,7 @@ except:
     sys.exit(1);
 
 
-re_pairnum = re.compile(b'''\(([0-9]+),\s*([0-9]+)\)''')
+re_pairnum = re.compile(b'''[[(]*([0-9]+),\s*([0-9]+)''')
 
 # The 'Easy' mutagen tags conversions are incomplete. We do it ourselves.
 # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
@@ -230,12 +230,15 @@ class AudioTagExtractor(RclBaseHandler):
         val = time.mktime(pdt.timetuple())
         return "%d" % val
 
-    def html_text(self, filename):
 
+    def html_text(self, filename):
         if not self.inputmimetype:
             raise Exception("html_text: input MIME type not set")
         mimetype = self.inputmimetype
 
+        # We actually output text/plain
+        self.outputmimetype = 'text/plain'
+        
         mutf = File(filename)
         if not mutf:
             raise Exception("mutagen failed opening %s" % filename)
@@ -324,6 +327,7 @@ class AudioTagExtractor(RclBaseHandler):
                     #self.em.rclog("minf[%s] = %s" % (k, minf[k]))
                     if l[1] != 0:
                         minf['total' + what + 's'] = l[1]
+                #self.em.rclog("%s finally: %s" %(k,minf[k]))
 
         if 'orchestra' in minf:
             val = minf['orchestra']
@@ -338,7 +342,6 @@ class AudioTagExtractor(RclBaseHandler):
             #self.em.rclog("Embedded image format: %s" % embdimg)
             minf['embdimg'] = tobytes(embdimg)
         
-        self.em.setmimetype("text/plain")
         self.em.setfield("charset", 'utf-8')
 
         for tag,val in minf.items():
