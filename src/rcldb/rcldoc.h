@@ -32,11 +32,10 @@ namespace Rcl {
  * indexer prior to adding to the index, and for querying, where
  * fields are filled from data stored in the index. Not all fields are
  * in use at both index and query times, and not all field data is
- * stored at index time (for example the "text" field is split and
- * indexed, but not stored as such)
+ * stored at index time.
  */
 class Doc {
- public:
+public:
     ////////////////////////////////////////////////////////////
     // The following fields are stored into the document data record (so they
     // can be accessed after a query without fetching the actual document).
@@ -51,7 +50,7 @@ class Doc {
     // save the original path:
     std::string idxurl;
     // And the originating db. 0 is base, 1 first external etc.
-    int idxi;
+    int idxi{0};
 
     // Internal path for multi-doc files. Ascii
     // Set by FsIndexer::processone    
@@ -85,7 +84,7 @@ class Doc {
     // Attribute for the "abstract" entry. true if it is just the top
     // of doc, not a native document attribute. Not stored directly, but
     // as an indicative prefix at the beginning of the abstract (ugly hack)
-    bool   syntabs;      
+    bool syntabs{false};
     
     // File size. This is the size of the compressed file or of the
     // external containing archive.
@@ -120,94 +119,90 @@ class Doc {
     /////////////////////////////////////////////////
     // Misc stuff
 
-    int pc; // relevancy percentage, used by sortseq, convenience
-    unsigned long xdocid; // Opaque: rcldb doc identifier.
+    int pc{0}; // relevancy percentage, used by sortseq, convenience
+    unsigned long xdocid{0}; // Opaque: rcldb doc identifier.
 
     // Page breaks were stored during indexing.
-    bool haspages; 
+    bool haspages{false};
 
     // Has children, either as content of file-level container or
     // ipath descendants.
-    bool haschildren;
+    bool haschildren{false};
 
     // During indexing: only fields from extended attributes were set, no
     // doc content. Allows for faster reindexing of existing doc
-    bool onlyxattr;
+    bool onlyxattr{false};
 
     ///////////////////////////////////////////////////////////////////
 
     void erase() {
-	url.erase();
+        url.erase();
         idxurl.erase();
         idxi = 0;
-	ipath.erase();
-	mimetype.erase();
-	fmtime.erase();
-	dmtime.erase();
-	origcharset.erase();
-	meta.clear();
-	syntabs = false;
-	pcbytes.erase();
-	fbytes.erase();
-	dbytes.erase();
-	sig.erase();
+        ipath.erase();
+        mimetype.erase();
+        fmtime.erase();
+        dmtime.erase();
+        origcharset.erase();
+        meta.clear();
+        syntabs = false;
+        pcbytes.erase();
+        fbytes.erase();
+        dbytes.erase();
+        sig.erase();
 
-	text.erase();
+        text.erase();
 
-	pc = 0;
-	xdocid = 0;
-	idxi = 0;
-	haspages = false;
-	haschildren = false;
-	onlyxattr = false;
+        pc = 0;
+        xdocid = 0;
+        haspages = false;
+        haschildren = false;
+        onlyxattr = false;
     }
+
     // Copy ensuring no shared string data, for threading issues.
     void copyto(Doc *d) const;
 
-    Doc()
-	: idxi(0), syntabs(false), pc(0), xdocid(0),
-	  haspages(false), haschildren(false), onlyxattr(false) {
-    }
+    Doc() { }
+
     /** Get value for named field. If value pointer is 0, just test existence */
-    bool getmeta(const std::string& nm, std::string *value = 0) const
-    {
-	const auto it = meta.find(nm);
-	if (it != meta.end()) {
-	    if (value)
-		*value = it->second;
-	    return true;
-	} else {
-	    return false;
-	}
+    bool getmeta(const std::string& nm, std::string *value = 0) const {
+        const auto it = meta.find(nm);
+        if (it != meta.end()) {
+            if (value)
+                *value = it->second;
+            return true;
+        } else {
+            return false;
+        }
     }
+
     /** Nocopy getvalue. sets pointer to entry value if exists */
-    bool peekmeta(const std::string& nm, const std::string **value = 0) const
-    {
-	const auto it = meta.find(nm);
-	if (it != meta.end()) {
-	    if (value)
-		*value = &(it->second);
-	    return true;
-	} else {
-	    return false;
-	}
+    bool peekmeta(const std::string& nm, const std::string **value = 0) const {
+        const auto it = meta.find(nm);
+        if (it != meta.end()) {
+            if (value)
+                *value = &(it->second);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // Create entry or append text to existing entry.
-    bool addmeta(const std::string& nm, const std::string& value) 
-    {
-	auto mit = meta.find(nm);
-	if (mit == meta.end()) {
-	    meta[nm] = value;
-	} else if (mit->second.empty()) {
-	    mit->second = value;
-	} else {
-	    // It may happen that the same attr exists several times
-	    // in the internfile stack. Avoid duplicating values.
-	    if (mit->second != value)
-		mit->second += std::string(" - ") + value;
-	}
-	return true;
+    bool addmeta(const std::string& nm, const std::string& value) {
+        auto mit = meta.find(nm);
+        if (mit == meta.end()) {
+            meta[nm] = value;
+        } else if (mit->second.empty()) {
+            mit->second = value;
+        } else {
+            // It may happen that the same attr exists several times
+            // in the internfile stack. Avoid duplicating values.
+            if (mit->second != value)
+                mit->second += std::string(" - ") + value;
+        }
+        return true;
     }
 
     /* Is this document stored as a regular filesystem file ?
@@ -224,6 +219,7 @@ class Doc {
 
     void dump(bool dotext=false) const;
 
+    ////////////////////////////////////////////////////////////////
     // The official names for recoll native fields when used in a text
     // context (ie: the python interface duplicates some of the fixed
     // fields in the meta array, these are the names used). Defined in
@@ -254,7 +250,7 @@ class Doc {
     static const std::string keydmt; // document mtime
     static const std::string keymt;  // mtime dmtime if set else fmtime
     static const std::string keyoc;  // original charset
-    static const std::string keypcs;  // document outer container size
+    static const std::string keypcs; // document outer container size
     static const std::string keyfs;  // document size
     static const std::string keyds;  // document text size
     static const std::string keysz;  // dbytes if set else fbytes else pcbytes
@@ -266,10 +262,10 @@ class Doc {
     static const std::string keytt;  // title
     static const std::string keykw;  // keywords
     static const std::string keymd5; // file md5 checksum
-    static const std::string keybcknd; // backend type for data not from the filesys
+    static const std::string keybcknd; // backend type when not from the fs
     // udi back from index. Only set by Rcl::Query::getdoc().
     static const std::string keyudi;
-    static const std::string keyapptg; // apptag. Set from localfields (fsindexer)
+    static const std::string keyapptg; // apptag. Set from localfields (fs only)
     static const std::string keybght;  // beagle hit type ("beagleHitType")
 };
 
