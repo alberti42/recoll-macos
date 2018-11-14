@@ -581,6 +581,9 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 {
     LOGDEB2("FileInterner::collectIpathAndMT\n");
+
+    // Set to true if any element in the stack sets an ipath. (at least one of
+    // the docs is a compound).
     bool hasipath = false;
 
     if (!m_noxattrs) {
@@ -589,28 +592,27 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 
     docFieldsFromMetaCmds(m_cfg, m_cmdFields, doc);
 
-    // If there is no ipath stack, the mimetype is the one from the file
+    // If there is no ipath stack, the mimetype is the one from the
+    // file, else we'll change it further down.
     doc.mimetype = m_mimetype;
 
-    string ipathel;
-    for (vector<RecollFilter*>::const_iterator hit = m_handlers.begin();
-	 hit != m_handlers.end(); hit++) {
-	const map<string, string>& docdata = (*hit)->get_meta_data();
-        ipathel.clear();
+    for (const auto& handler : m_handlers) {
+	const map<string, string>& docdata = handler->get_meta_data();
+        string ipathel;
 	getKeyValue(docdata, cstr_dj_keyipath, ipathel);
         if (!ipathel.empty()) {
             // Non-empty ipath. This stack element is for an
             // actual embedded document, not a format translation.
             hasipath = true;
+            doc.ipath += colon_hide(ipathel) + cstr_isep;
             getKeyValue(docdata, cstr_dj_keymt, doc.mimetype);
             getKeyValue(docdata, cstr_dj_keyfn, doc.meta[Rcl::Doc::keyfn]);
-        } else {
+       } else {
             if (doc.fbytes.empty()) {
-                lltodecstr((*hit)->get_docsize(), doc.fbytes);
+                lltodecstr(handler->get_docsize(), doc.fbytes);
                 LOGDEB("collectIpath..: fbytes->" << doc.fbytes << endl);
             }
         }
-        doc.ipath += colon_hide(ipathel) + cstr_isep;
         // We set the author field from the innermost doc which has
         // one: allows finding, e.g. an image attachment having no
         // metadata by a search on the sender name. Only do this for
@@ -625,16 +627,12 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
         }
     }
 
-    // Trim empty tail elements in ipath.
     if (hasipath) {
+        // Trim ending ipath separator
 	LOGDEB2("IPATH [" << doc.ipath << "]\n");
-	string::size_type sit = doc.ipath.find_last_not_of(cstr_isep);
-	if (sit == string::npos)
-	    doc.ipath.erase();
-	else if (sit < doc.ipath.length() -1)
-	    doc.ipath.erase(sit+1);
-    } else {
-	doc.ipath.erase();
+        if (doc.ipath.back() ==  cstr_isep[0]) {
+            doc.ipath.erase(doc.ipath.end()-1);
+        }
     }
 }
 
