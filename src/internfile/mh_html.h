@@ -37,14 +37,12 @@ class MimeHandlerHtml : public RecollFilter {
 	return false;
     }
     virtual bool next_document();
-    const std::string& get_html() 
-    {
+    const std::string& get_html() {
 	return m_html;
     }
-    virtual void clear() {
+    virtual void clear_impl() override {
 	m_filename.erase();
 	m_html.erase();
-	RecollFilter::clear(); 
     }
 protected:
     virtual bool set_document_file_impl(const std::string& mt,

@@ -43,12 +43,11 @@ class MimeHandlerText : public RecollFilter {
     }
     virtual bool next_document();
     virtual bool skip_to_document(const std::string& s);
-    virtual void clear() {
+    virtual void clear_impl() override {
         m_paging = false;
 	m_text.erase(); 
         m_fn.erase();
         m_offs = 0;
-	RecollFilter::clear();
     }
     
 protected:

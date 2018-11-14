@@ -66,7 +66,7 @@ MimeHandlerMail::~MimeHandlerMail()
 {
     clear();
 }
-void MimeHandlerMail::clear()
+void MimeHandlerMail::clear_impl()
 {
     delete m_bincdoc; m_bincdoc = 0;
     if (m_fd >= 0) {
@@ -82,7 +82,6 @@ void MimeHandlerMail::clear()
 	delete *it;
     }
     m_attachments.clear();
-    RecollFilter::clear();
 }
 
 bool MimeHandlerMail::set_document_file_impl(const string& mt, const string &fn)

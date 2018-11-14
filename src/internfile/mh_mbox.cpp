@@ -232,7 +232,7 @@ MimeHandlerMbox::~MimeHandlerMbox()
     clear();
 }
 
-void MimeHandlerMbox::clear()
+void MimeHandlerMbox::clear_impl()
 {
     m_fn.erase();
     if (m_vfp) {
@@ -242,7 +242,6 @@ void MimeHandlerMbox::clear()
     m_msgnum =  m_lineno = 0;
     m_ipath.erase();
     m_offsets.clear();
-    RecollFilter::clear();
 }
 
 bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)

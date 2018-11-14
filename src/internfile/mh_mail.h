@@ -46,7 +46,7 @@ public:
     }
     virtual bool next_document();
     virtual bool skip_to_document(const std::string& ipath);
-    virtual void clear();
+    virtual void clear_impl() override;
 
 protected:
     virtual bool set_document_file_impl(const std::string& mt,

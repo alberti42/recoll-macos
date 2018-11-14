@@ -39,7 +39,7 @@ public:
 	m_ipath = ipath;
 	return true;
     }
-    virtual void clear();
+    virtual void clear_impl() override;
     typedef long long mbhoff_type;
 
 protected:

@@ -65,10 +65,9 @@ class MimeHandlerExec : public RecollFilter {
     virtual bool next_document();
     virtual bool skip_to_document(const std::string& ipath); 
 
-    virtual void clear() {
+    virtual void clear_impl() override {
 	m_fn.erase(); 
 	m_ipath.erase();
-	RecollFilter::clear(); 
     }
 
 protected:

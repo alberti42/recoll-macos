@@ -115,15 +115,17 @@ public:
 	return m_id;
     }
 
-    // "Call super" anti-pattern again. Must be called from derived
-    // classes which reimplement clear()
-    virtual void clear() {
+    // Classes which need to do local work in clear() need
+    // to implement clear_impl()
+    virtual void clear() final {
+        clear_impl();
 	Dijon::Filter::clear();
 	m_forPreview = m_havedoc = false;
 	m_dfltInputCharset.clear();
 	m_reason.clear();
     }
-
+    virtual void clear_impl() {}
+    
     // This only makes sense if the contents are currently txt/plain
     // It converts from keyorigcharset to UTF-8 and sets keycharset.
     bool txtdcode(const std::string& who);
