@@ -1947,7 +1947,7 @@ bool Db::maybeflush(int64_t moretext)
     if (m_flushMb > 0) {
 	m_curtxtsz += moretext;
 	if ((m_curtxtsz - m_flushtxtsz) / MB >= m_flushMb) {
-	    LOGDEB("Db::add/delete: txt size >= " << m_flushMb <<
+	    LOGINF("Db::add/delete: txt size >= " << m_flushMb <<
                    " Mb, flushing\n");
 	    return doFlush();
 	}
