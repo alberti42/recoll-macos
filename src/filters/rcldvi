@@ -103,7 +103,11 @@ decodercatdvi()
     catdvi $1
 }
 decoder=""
-if iscmd dvips -a iscmd pstotext ; then
+iscmd dvips
+isdvips=$?
+iscmd pstotext
+ispstotext=$?
+if test $isdvips -eq 0 -a $ispstotext -eq 0; then
   decoder=decoderdvips
 elif iscmd catdvi ; then
   decoder=decodercatdvi
