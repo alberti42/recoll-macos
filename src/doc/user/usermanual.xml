@@ -25,7 +25,7 @@
     </author>
 
     <copyright>
-      <year>2005-2015</year>
+      <year>2005-2018</year>
       <holder role="mailto:jfd@recoll.org">Jean-Francois Dockes</holder>
     </copyright>
 
@@ -89,7 +89,7 @@
         </menuchoice>, then adjust the <guilabel>Top
       directories</guilabel> section).</para>
 
-      <para>Also be aware that, on Unix/Linux, you may need to install the
+      <para>On Unix/Linux, you may need to install the
       appropriate <link linkend="RCL.INSTALL.EXTERNAL"> supporting
       applications</link> for document types that need them (for
       example <application>antiword</application> for
@@ -175,13 +175,13 @@
       <para>In a shorter way, &RCL; does the dirty footwork, &XAP;
       deals with the intelligent parts of the process.</para>
 
-      <para>The &XAP; index can be big (roughly the size of the
-      original document set), but it is not a document
-      archive. &RCL; can only display documents that still exist at
-      the place from which they were indexed. (Actually, there is a
-      way to reconstruct a document from the information in the
-      index, but the result is not nice, as all formatting,
-      punctuation and capitalization are lost).</para>
+      <para>The &XAP; index can be big (roughly the size of the original
+      document set), but it is not a document archive. &RCL; can only
+      display documents that still exist at the place from which they were
+      indexed. (Actually, there is a way to reconstruct a document from the
+      information in the index, but only the pure text is saved, possibly
+      without punctuation and capitalization, depending on &RCL;
+      version).</para>
 
       <para>&RCL; stores all internal data in <application>Unicode
       UTF-8</application> format, and it can index files of many types
@@ -332,9 +332,8 @@
             <formalpara>
               <title><link linkend="RCL.INDEXING.PERIODIC">
               Periodic (or batch) indexing:</link></title>
-              <para>indexing takes place at discrete
-              times, by executing the <command>recollindex</command>
-              command. The typical usage is to have a nightly indexing run 
+              <para><command>recollindex</command> is executed
+              at discrete times. The typical usage is to have a nightly run
               <link linkend="RCL.INDEXING.PERIODIC.AUTOMAT">
                 programmed</link> into
               your <command>cron</command> file.</para>
@@ -342,12 +341,12 @@
           </listitem>
           <listitem>
             <formalpara><title><link linkend="RCL.INDEXING.MONITOR">Real
-            time indexing:</link></title> <para>indexing takes place as
-            soon as a file is created or
-            changed. <command>recollindex</command> runs as a daemon and
-            uses a file system alteration monitor
+            time indexing:</link></title>
+            <para><command>recollindex</command> runs permanently as a
+            daemon and uses a file system alteration monitor
             (e.g. <application>inotify</application>) to detect file
-            changes.</para> </formalpara>
+            changes. New or updated files are indexed at once.</para>
+            </formalpara>
           </listitem>
         </itemizedlist>
         </para>
@@ -359,7 +358,7 @@
         directory). Monitoring a big file system tree can consume
         significant system resources.</para>
 
-        <para>With &RCL; 1.25 and newer, it is also possible to set up an
+        <para>With &RCL; 1.24 and newer, it is also possible to set up an
         index so that only a subset of the tree will be monitored and the
         rest will be covered by batch/incremental indexing.  (See the
         details in the <link linkend="RCL.INDEXING.MONITOR">Real time
@@ -373,7 +372,7 @@
         </menuchoice>
         </para>
 
-        <para>The <menuchoice><guimenu>File</guimenu>
+        <para>The GUI <menuchoice><guimenu>File</guimenu>
         </menuchoice> menu also has entries to start or stop
         the current indexing operation. Stopping indexing is performed by
         killing the <command>recollindex</command> process, which will
@@ -430,10 +429,10 @@
         entirely independant (no parameters are ever shared between
         configurations when indexing).</para>
 
-        <para>Multiple indexes can queryied concurrently, either from the
-        GUI or the command line. When doing this, there is always a main
-        configuration, from which both configuration and index data are
-        used. Only the index data from the additional indexes is used
+        <para>Multiple indexes can be queryied concurrently, either from
+        the GUI or the command line. When doing this, there is always a
+        main configuration, from which both configuration and index data
+        are used. Only the index data from the additional indexes is used
         (their configuration parameters are ignored).</para>
 
         <para>This is important and sometimes confusing, so it will be
@@ -464,8 +463,9 @@
         document stored as an attachment to an email message inside an
         email folder archived in a zip file...</para>
 
-        <para>&RCL; indexing processes plain text, HTML, OpenDocument
-        (Open/LibreOffice), email formats, and a few others internally.</para>
+        <para><command>recollindex</command> processes plain text, HTML,
+        OpenDocument (Open/LibreOffice), email formats, and a few others
+        internally.</para>
 
         <para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
         need external applications for preprocessing. The list is in the
@@ -488,14 +488,15 @@
         indexed. In the latter case, any type not in the list will
         be ignored.</para>
 
-        <para>Excluding file types can be done by adding wildcard name
+        <para>Excluding files by name can be done by adding wildcard name
         patterns to the
         <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">
           skippedNames</link> list, which
-          can be done from the GUI Index configuration menu. For
-          versions 1.20 and later, you can alternatively set the
+          can be done from the GUI Index configuration menu. Excluding by
+          type can be done by setting the 
           <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
-            excludedmimetypes</link> list in the configuration file. This
+            excludedmimetypes</link> list in the configuration file (1.20
+            and later). This
         can be redefined for subdirectories.</para>
 
         <para>You can also define an exclusive list of MIME types to be
@@ -550,7 +551,7 @@
         file because of insufficient disk space).</para>
 
         <para>The indexer in &RCL; versions 1.21 and later does not
-        retry failed file by default. Retrying will only occur if an
+        retry failed files by default. Retrying will only occur if an
         explicit option (<option>-k</option>) is set on the
         <command>recollindex</command> command line, or if a script
         executed when <command>recollindex</command> starts up says
@@ -636,10 +637,9 @@
       example being a set of mp3 files where only the tags would be
       indexed).</para>
 
-      <para>Of course, images, sound and video do not increase the
-      index size, which means that nowadays, typically, even a big
-      index will be negligible against the total amount of data on the
-      computer.</para>
+      <para>Of course, images, sound and video do not increase the index
+      size, which means that typically, even a big index will be negligible
+      against the total amount of data on the computer.</para>
       
       <para>The index data directory (<filename>xapiandb</filename>)
       only contains data that can be completely rebuilt by an index run
@@ -669,10 +669,11 @@
       <sect2 id="RCL.INDEXING.STORAGE.SECURITY">
         <title>Security aspects</title>
 
-        <para>The &RCL; index does not hold copies of the indexed
-        documents. But it does hold enough data to allow for an almost
-        complete reconstruction. If confidential data is indexed,
-        access to the database directory should be restricted. </para>
+        <para>The &RCL; index does not hold complete copies of the indexed
+        documents (it almost does after version 1.24). But it does
+        hold enough data to allow for an almost complete reconstruction. If
+        confidential data is indexed, access to the database directory
+        should be restricted. </para>
 
         <para>&RCL; will create the configuration directory with a mode of
         0700 (access by owner only). As the index data directory is by
@@ -716,10 +717,9 @@
         <refentrytitle>recoll.conf</refentrytitle>
         <manvolnum>5</manvolnum>
       </citerefentry>
-      man page, but the most
-      current information will most likely be the comments inside the
-      sample file. The most immediately useful variable you may
-      interested in is probably 
+      man page, but the most current information will most likely be the
+      comments inside the sample file. The most immediately useful variable
+      is probably
       <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS">
         <varname>topdirs</varname></link>, 
       which determines what subtrees and files get indexed.</para>
@@ -731,7 +731,7 @@
 
       <para>As of Recoll 1.18 there are two incompatible types of Recoll
       indexes, depending on the treatment of character case and
-      diacritics. A <link linkend="RCL.INDEXING.CONFIG.SENS">a further
+      diacritics. A <link linkend="RCL.INDEXING.CONFIG.SENS">further
       section</link> describes the two types in more detail.</para>
 
       <sect2 id="RCL.INDEXING.CONFIG.MULTIPLE">
@@ -757,26 +757,25 @@
         to avoid mistakenly creating additional directories when an
         argument is mistyped.</para>
         
-        <para>A typical usage scenario for the multiple index feature
-        would be for a system administrator to set up a central index
-        for shared data, that you choose to search or not in addition to
-        your personal data. Of course, there are other
-        possibilities. There are many cases where you know the subset of
-        files that should be searched, and where narrowing the search
-        can improve the results. You can achieve approximately the same
-        effect with the directory filter in advanced search, but
-        multiple indexes will have much better performance and may be
-        worth the trouble.</para>
+        <para>A typical usage scenario for the multiple index feature would
+        be for a system administrator to set up a central index for shared
+        data, that you choose to search or not in addition to your personal
+        data. Of course, there are other possibilities. There are many
+        cases where you know the subset of files that should be searched,
+        and where narrowing the search can improve the results. You can
+        achieve approximately the same effect with the directory filter in
+        advanced search, but multiple indexes will have better performance
+        and may be worth the trouble.</para>
 
         <para>A <command>recollindex</command> program instance can only
         update one specific index, and it will only use parameters from a
         single configuration (no parameters are ever shared between
         configurations when indexing).</para>
 
-        <para>Multiple indexes can queryied concurrently, either from the
-        GUI or the command line. When doing this, there is always a main
-        configuration, from which both configuration and index data are
-        used. Only the index data from the additional indexes is used
+        <para>Multiple indexes can be queryied concurrently, either from
+        the GUI or the command line. When doing this, there is always a
+        main configuration, from which both configuration and index data
+        are used. Only the index data from the additional indexes is used
         (their configuration parameters are ignored).</para>
 
         <para>When searching, the current main index (defined by
@@ -1416,68 +1415,6 @@
       from the terminal and become a daemon, permanently monitoring
       file changes and updating the index.</para>
 
-      <para>Under <application>KDE</application>,
-      <application>Gnome</application> and some other desktop
-      environments, the daemon can automatically started when you log
-      in, by creating a desktop file inside the
-      <filename>~/.config/autostart</filename> directory.  This can be
-      done for you by the &RCL; GUI. Use the
-      <guimenu>Preferences->Indexing Schedule</guimenu> menu.</para>
-      
-      <para>With older <application>X11</application> setups, starting
-      the daemon is normally performed as part of the user session
-      script.</para>
-
-      <para>The <filename>rclmon.sh</filename> script can be used to
-      easily start and stop the daemon. It can be found in the
-      <filename>examples</filename> directory (typically
-      <filename>/usr/local/[share/]recoll/examples</filename>).</para>
-
-      <para>For example, my out of fashion
-      <application>xdm</application>-based session has a
-      <filename>.xsession</filename> script with the following lines
-      at the end:</para>
-
-      <programlisting>recollconf=$HOME/.recoll-home
-      recolldata=/usr/local/share/recoll
-      RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
-
-      fvwm 
-
-      </programlisting>
-
-      <para>The indexing daemon gets started, then the window manager,
-      for which the session waits.</para> <para>By default the
-      indexing daemon will monitor the state of the X11 session, and
-      exit when it finishes, it is not necessary to kill it
-      explicitly. (The <application>X11</application> server
-      monitoring can be disabled with option <option>-x</option> to
-      <command>recollindex</command>).</para>
-
-      <para>If you use the daemon completely out of an
-      <application>X11</application> session, you need to add option
-      <option>-x</option> to disable <application>X11</application>
-      session monitoring (else the daemon will not start).</para>
-
-      <para>By default, the messages from the indexing daemon will be
-      sent to the same file as those from the interactive commands
-      (<literal>logfilename</literal>).  You may want to change this
-      by setting the <varname>daemlogfilename</varname> and
-      <varname>daemloglevel</varname> configuration parameters. Also
-      the log file will only be truncated when the daemon starts. If
-      the daemon runs permanently, the log file may grow quite big,
-      depending on the log level.</para>
-
-      <para>When building &RCL;, the real time indexing support can be
-      customised during package <link
-      linkend="RCL.INSTALL.BUILDING">configuration</link> with
-      the <option>--with[out]-fam</option> or
-      <option>--with[out]-inotify</option> options.  The default is
-      currently to include <application>inotify</application>
-      monitoring on systems that support it, and, as of &RCL; 1.17,
-      <application>gamin</application> support on
-      <application>FreeBSD</application>.</para>
-
       <para>While it is convenient that data is indexed in real time,
       repeated indexing can generate a significant load on the
       system when files such as email folders change. Also,
@@ -1486,44 +1423,112 @@
       your system is short on resources. Periodic indexing is
       adequate in most cases.</para>
 
-      <para>As of &RCL; 1.25, you can set the <link
+      <para>As of &RCL; 1.24, you can set the <link
       linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">monitordirs</link>
       configuration variable to specify that only a subset of your indexed
       files will be monitored for instant indexing.  In this situation, an
       incremental pass on the full tree can be triggered by either
-      restarting the indexer, or just running the
+      restarting the indexer, or just running 
       <command>recollindex</command>, which will notify the running
       process. The <command>recoll</command> GUI also has a menu entry for
       this.</para>
 
+      <sect2 id="RCL.INDEXING.MONITOR.START">
+        <title>Real time indexing: automatic daemon start</title>
 
-      <note><title>Increasing resources for inotify</title>
-      <para>On Linux systems, monitoring a big tree may need
-      increasing the resources available to inotify, which are
-      normally defined in <filename>/etc/sysctl.conf</filename>.
-      <programlisting>
-        ### inotify
-        #
-        # cat  /proc/sys/fs/inotify/max_queued_events   - 16384
-        # cat  /proc/sys/fs/inotify/max_user_instances  - 128
-        # cat  /proc/sys/fs/inotify/max_user_watches    - 16384
-        #
-        # -- Change to:
-        #
-        fs.inotify.max_queued_events=32768
-        fs.inotify.max_user_instances=256
-        fs.inotify.max_user_watches=32768
-      </programlisting>
+        <para>Under <application>KDE</application>,
+        <application>Gnome</application> and some other desktop
+        environments, the daemon can automatically started when you log
+        in, by creating a desktop file inside the
+        <filename>~/.config/autostart</filename> directory.  This can be
+        done for you by the &RCL; GUI. Use the
+        <guimenu>Preferences->Indexing Schedule</guimenu> menu.</para>
+        
+        <para>With older <application>X11</application> setups, starting
+        the daemon is normally performed as part of the user session
+        script.</para>
+
+        <para>The <filename>rclmon.sh</filename> script can be used to
+        easily start and stop the daemon. It can be found in the
+        <filename>examples</filename> directory (typically
+        <filename>/usr/local/[share/]recoll/examples</filename>).</para>
+
+        <para>For example, my out of fashion
+        <application>xdm</application>-based session has a
+        <filename>.xsession</filename> script with the following lines
+        at the end:</para>
+
+        <programlisting>recollconf=$HOME/.recoll-home
+        recolldata=/usr/local/share/recoll
+        RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
+
+        fvwm 
+
+        </programlisting>
+
+        <para>The indexing daemon gets started, then the window manager,
+        for which the session waits.</para> <para>By default the
+        indexing daemon will monitor the state of the X11 session, and
+        exit when it finishes, it is not necessary to kill it
+        explicitly. (The <application>X11</application> server
+        monitoring can be disabled with option <option>-x</option> to
+        <command>recollindex</command>).</para>
+
+        <para>If you use the daemon completely out of an
+        <application>X11</application> session, you need to add option
+        <option>-x</option> to disable <application>X11</application>
+        session monitoring (else the daemon will not start).</para>
+      </sect2>
       
-      </para>
-      <para>Especially, you will need to trim your tree or adjust
-      the <literal>max_user_watches</literal> value if indexing exits with
-      a message about errno <literal>ENOSPC</literal> (28) from
-      <function>inotify_add_watch</function>.</para>
-      </note>
+      <sect2 id="RCL.INDEXING.MONITOR.DETAILS">
+        <title>Real time indexing: miscellaneous details</title>
 
-      <sect2 id="RCL.INDEXING.MONITOR.FASTFILES">
-        <title>Slowing down the reindexing rate for fast changing
+        <para>By default, the messages from the indexing daemon will be
+        sent to the same file as those from the interactive commands
+        (<literal>logfilename</literal>).  You may want to change this
+        by setting the <varname>daemlogfilename</varname> and
+        <varname>daemloglevel</varname> configuration parameters. Also
+        the log file will only be truncated when the daemon starts. If
+        the daemon runs permanently, the log file may grow quite big,
+        depending on the log level.</para>
+
+        <para>When building &RCL;, the real time indexing support can be
+        customised during package <link
+        linkend="RCL.INSTALL.BUILDING">configuration</link> with
+        the <option>--with[out]-fam</option> or
+        <option>--with[out]-inotify</option> options.  The default is
+        currently to include <application>inotify</application>
+        monitoring on systems that support it, and, as of &RCL; 1.17,
+        <application>gamin</application> support on
+        <application>FreeBSD</application>.</para>
+
+        <note><title>Increasing resources for inotify</title>
+        <para>On Linux systems, monitoring a big tree may need
+        increasing the resources available to inotify, which are
+        normally defined in <filename>/etc/sysctl.conf</filename>.
+        <programlisting>
+          ### inotify
+          #
+          # cat  /proc/sys/fs/inotify/max_queued_events   - 16384
+          # cat  /proc/sys/fs/inotify/max_user_instances  - 128
+          # cat  /proc/sys/fs/inotify/max_user_watches    - 16384
+          #
+          # -- Change to:
+          #
+          fs.inotify.max_queued_events=32768
+          fs.inotify.max_user_instances=256
+          fs.inotify.max_user_watches=32768
+        </programlisting>
+        
+        </para>
+        <para>Especially, you will need to trim your tree or adjust
+        the <literal>max_user_watches</literal> value if indexing exits with
+        a message about errno <literal>ENOSPC</literal> (28) from
+        <function>inotify_add_watch</function>.</para>
+        </note>
+
+        
+        <note><title>Slowing down the reindexing rate for fast changing
         files</title>
 
         <para>When using the real time monitor, it may happen that some
@@ -1535,8 +1540,10 @@
         reindexed. See the <varname>mondelaypatterns</varname> parameter in
         the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">
         configuration section</link>.</para>
-
+        </note>
+      
       </sect2>
+      
     </sect1>
 
   </chapter>
