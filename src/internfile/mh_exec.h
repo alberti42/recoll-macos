@@ -26,10 +26,18 @@
 class HandlerTimeout {};
     
 /** 
- * Turn external document into internal one by executing an external filter.
+ * Turn external document into internal one by executing an external command.
  *
- * The command to execute, and its parameters, are stored in the "params" 
- * which is built in mimehandler.cpp out of data from the mimeconf file.
+ * The command to execute, and its parameters, are defined in the mimeconf
+ * configuration file, and stored by mimehandler.cpp in the object when it is
+ * built. This data is not reset by a clear() call.
+ *
+ * The output MIME type (typically text/plain or text/html) and output
+ * character set are also defined in mimeconf. The default is text/html, utf-8
+ *
+ * The command will write the document text to stdout. Its only way to
+ * set metadata is through "meta" tags if the output MIME is
+ * text/html.
  *
  * As any RecollFilter, a MimeHandlerExec object can be reset
  * by calling clear(), and will stay initialised for the same mtype
@@ -82,10 +90,14 @@ protected:
     // If md5 not excluded by handler name, allow/forbid depending on mime
     bool m_nomd5;
     
-    // Set up the character set metadata fields and possibly transcode
-    // text/plain output. 
-    // @param charset when called from mh_execm, a possible explicit
-    //       value from the filter (else the data will come from the config)
+    // Set the character set field and possibly transcode text/plain
+    // output.
+    // 
+    // @param mt the MIME type. A constant for mh_exec, but may depend on the
+    //    subdocument entry for mh_execm.
+    // @param charset Document character set. A constant (empty
+    //      parameter) for mh_exec (we use the value defined in mimeconf),
+    //      possibly sent from the command for mh_execm.
     virtual void handle_cs(const std::string& mt, 
                            const std::string& charset = std::string());
 
