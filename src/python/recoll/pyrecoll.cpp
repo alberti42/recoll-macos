@@ -1062,15 +1062,10 @@ static void movedocfields(Rcl::Doc *doc)
     doc->meta[Rcl::Doc::keyds] = doc->dbytes;
 }
 
-PyDoc_STRVAR(doc_Query_fetchone,
-"fetchone(None) -> Doc\n"
-"\n"
-"Fetches the next Doc object in the current search results.\n"
-);
 static PyObject *
-Query_fetchone(PyObject *_self)
+Query_iternext(PyObject *_self)
 {
-    LOGDEB0("Query_fetchone/next\n");
+    LOGDEB0("Query_iternext\n");
     recoll_QueryObject* self = (recoll_QueryObject*)_self;
 
     if (self->query == 0 || 
@@ -1094,12 +1089,28 @@ Query_fetchone(PyObject *_self)
     // xapian result count estimate are sometimes wrong, we must go on
     // fetching until we fail
     if (!self->query->getDoc(self->next, *result->doc, self->fetchtext)) {
-        Py_DECREF(result);
-        Py_RETURN_NONE;
+        return 0;
     }
     self->next++;
 
     movedocfields(result->doc);
+    return (PyObject *)result;
+}
+
+PyDoc_STRVAR(doc_Query_fetchone,
+"fetchone(None) -> Doc\n"
+"\n"
+"Fetches the next Doc object in the current search results.\n"
+);
+static PyObject *
+Query_fetchone(PyObject *_self)
+{
+    LOGDEB0("Query_fetchone/next\n");
+
+    recoll_DocObject *result = (recoll_DocObject *)Query_iternext(_self);
+    if (!result) {
+        Py_RETURN_NONE;
+    }
     return (PyObject *)result;
 }
 
@@ -1109,9 +1120,10 @@ PyDoc_STRVAR(doc_Query_fetchmany,
 	     "Fetches the next Doc objects in the current search results.\n"
     );
 static PyObject *
-Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
+Query_fetchmany(PyObject* _self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Query_fetchmany\n");
+    recoll_QueryObject* self = (recoll_QueryObject*)_self;
     static const char *kwlist[] = {"size", NULL};
     int size = 0;
 
@@ -1122,36 +1134,22 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     if (size == 0)
         size = self->arraysize;
 
-    if (self->query == 0 ||
-        the_queries.find(self->query) == the_queries.end()) {
-        PyErr_SetString(PyExc_AttributeError, "query");
-        return 0;
-    }
-    int cnt = self->query->getResCnt();
-    if (cnt <= 0 || self->next < 0) {
-        // PEP 249 says to raise exception if no result set
-        PyErr_SetString(PyExc_AttributeError, "query");
-        return 0;
-    }
-
     PyObject *reslist = PyList_New(0);
     for (int i = 0; i < size; i++) {
-        recoll_DocObject *docobj = (recoll_DocObject *)
-	    PyObject_CallObject((PyObject *)&recoll_DocType, 0);
+        recoll_DocObject *docobj = (recoll_DocObject *)Query_iternext(_self);
         if (!docobj) {
-            PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
-            Py_DECREF(reslist);
-            return 0;
-        }
-        if (!self->query->getDoc(self->next, *docobj->doc, self->fetchtext)) {
-            Py_DECREF(docobj);
             break;
         }
-        self->next++;
         movedocfields(docobj->doc);
         PyList_Append(reslist,  (PyObject*)docobj);
     }
-    return (PyObject *)reslist;
+
+    if (PyErr_Occurred()) {
+        Py_DECREF(reslist);
+        return NULL;
+    } else {
+        return reslist;
+    }
 }
 
 
@@ -1527,7 +1525,7 @@ static PyTypeObject recoll_QueryType = {
     0,		               /* tp_richcompare */
     0,		               /* tp_weaklistoffset */
     Query_iter,	               /* tp_iter */
-    Query_fetchone,            /* tp_iternext */
+    Query_iternext,            /* tp_iternext */
     Query_methods,             /* tp_methods */
     Query_members,             /* tp_members */
     0,                         /* tp_getset */
