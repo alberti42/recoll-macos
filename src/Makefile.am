@@ -670,6 +670,7 @@ filters/rcllyx \
 filters/rclman \
 filters/rclmidi.py \
 filters/rclpdf.py \
+filters/rclps \
 filters/rclokulnote.py \
 filters/rclopxml.py \
 filters/rclppt.py \

@@ -1,6 +1,5 @@
 #!/bin/sh
-# @(#$Id: rcldvi,v 1.7 2008-10-08 16:15:22 dockes Exp $  (C) 2006 J.F.Dockes
-
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -17,15 +16,11 @@
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #
-# Extract text from a dvi file by either executing dvitops and
-# pstotext or using catdvi.
+# Extract text from a postscript file
 #
-# pstotext does not work any more with gs 9.22-25, so catdvi is always
-# needed now.
-#    Initially dvitops had given better results during tests, and was
-#    chosen first if available, but the dvitops/pstotext combination
-#    is much slower than catdvi set variables. In any case, the
-#    program is not too good with special characters (e.g. ligatures)
+# We used to use pstotext but it does not work any more with gs 9.22-25
+# So we now go through pdf, which seems the only way to obtain non-ascii output
+# 
 
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
@@ -99,66 +94,8 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-decoderdvips()
-{
-    dvips -f $1 2> /dev/null | pstotext | iconv -f cp1252 -t utf-8 -c -s
-}
-decodercatdvi()
-{
-    catdvi --output-encoding=UTF-8 $1
-}
-decoder=""
+checkcmds ps2pdf pdftotext
 
-# pstotext does not work any more
-# iscmd dvips
-# isdvips=$?
-# iscmd pstotext
-# ispstotext=$?
-# if test $isdvips -eq 0 -a $ispstotext -eq 0; then
-#   decoder=decoderdvips
-# elif iscmd catdvi ; then
-#   decoder=decodercatdvi
-# fi
+ps2pdf "$infile" - | pdftotext -htmlmeta -enc UTF-8 -eol unix -q - - | \
+    egrep -v '^<title>.*</title>$'
 
-if iscmd catdvi ; then
-    decoder=decodercatdvi
-fi
- 
-if test X$decoder = X ; then
-   senderror HELPERNOTFOUND catdvi
-fi
-
-# The strange 'BEGIN' setup is to prevent 'file' from thinking this file
-# is an awk program
-$decoder "$infile" |
-awk 'BEGIN'\
-' {
-  printf("<html><head><title></title>\n")
-  printf("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n")
-  printf("</head>\n<body><p>");
-  cont = ""
-}
-{
-    $0 = cont $0
-    cont = ""
-
-    if ($0 == "\f") {
-       print "</p>\n<hr>\n\f<p>"
-       next
-    } else if ($0 ~ /-$/) {
-      match($0, "[ \t][^ \t]+$")
-      line = substr($0, 0, RSTART)
-      cont = substr($0, RSTART, RLENGTH)
-      $0 = line
-      gsub("-", "", cont)
-    }
-
-    gsub(/&/, "\\&amp;", $0)
-    gsub(/</, "\\&lt;", $0)
-    gsub(/>/, "\\&gt;", $0)
-
-    print $0 "<br>"
-}
-END {
-    print "</p></body></html>"
-}'
