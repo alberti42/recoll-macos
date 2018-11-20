@@ -36,10 +36,14 @@ for doc in query:
         print("doc.get(%s) -> [%s]"%(fld,utf8string(doc.get(fld))))
     print("\nfor fld in sorted(doc.keys()):")
     for fld in sorted(doc.keys()):
-        print(utf8string("[%s] -> [%s]" % (fld, getattr(doc, fld))))
+        # Sig keeps changing and makes it impossible to compare test results
+        if fld != 'sig':
+            print(utf8string("[%s] -> [%s]" % (fld, getattr(doc, fld))))
     print("\nfor k,v in sorted(doc.items().items()):")
     for k,v in sorted(doc.items().items(), key=lambda itm: itm[0]):
-        print(utf8string("[%s] -> [%s]" % (k, v)))
+        # Sig keeps changing and makes it impossible to compare test results
+        if k != 'sig':
+            print(utf8string("[%s] -> [%s]" % (k, v)))
 
 print("\nAccented query:")
 uqs = u('title:"\u00e9t\u00e9 \u00e0 no\u00ebl"')
