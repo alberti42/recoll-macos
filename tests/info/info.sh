@@ -14,9 +14,13 @@ initvariables $0
 # it.
 # It seems that later versions of xdg-mime return octet-stream so all back
 # to normal
+# Nope, not always: added mime type clause to fix. Using text/html
+# because the result document is text/html|gnuinfo
 
-recollq '"GPGME is compiled with largefile support by default"' 2> $mystderr | 
-	egrep -v '^Recoll query: ' > $mystdout
+(
+    recollq '"GPGME is compiled with largefile support by default"' \
+            mime:text/html
+)  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 
