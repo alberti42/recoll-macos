@@ -30,24 +30,26 @@
  * Maybe try to guess charset, or use default, then transcode to utf8
  */
 class MimeHandlerText : public RecollFilter {
- public:
+public:
     MimeHandlerText(RclConfig *cnf, const std::string& id) 
         : RecollFilter(cnf, id), m_paging(false), m_offs(0), m_pagesz(0) {
     }
     virtual ~MimeHandlerText() {}
 
     virtual bool is_data_input_ok(DataInput input) const {
-	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
-	    return true;
-	return false;
+        if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
+            return true;
+        return false;
     }
     virtual bool next_document();
     virtual bool skip_to_document(const std::string& s);
     virtual void clear_impl() override {
         m_paging = false;
-	m_text.erase(); 
-        m_fn.erase();
+        m_text.clear(); 
+        m_fn.clear();
         m_offs = 0;
+        m_pagesz = 0;
+        m_charsetfromxattr.clear();
     }
     
 protected:
@@ -57,11 +59,11 @@ protected:
                                           const std::string&);
 
 private:
-    bool   m_paging;
+    bool   m_paging{false};
     std::string m_text;
     std::string m_fn;
-    int64_t  m_offs; // Offset of next read in file if we're paging
-    size_t m_pagesz;
+    int64_t  m_offs{0}; // Offset of next read in file if we're paging
+    size_t m_pagesz{0};
     std::string m_charsetfromxattr; 
 
     bool readnext();
