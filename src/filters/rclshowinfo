@@ -28,5 +28,12 @@ while test $# -gt 1;do
   nodepath="$nodepath '$node'"
 done
 
-set -x
-exec xterm -e "info -f $filename $nodepath"
+for t in x-terminal-emulator gnome-terminal konsole xfce4-terminal xterm ; do
+
+    tp=`which $t`
+    echo "termpath $tp"
+    if test X"$tp" != X ; then
+        set -x
+        exec "$tp" -e "info -f $filename $nodepath"
+    fi
+done
