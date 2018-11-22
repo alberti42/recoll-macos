@@ -24,25 +24,23 @@
 #include "mimehandler.h"
 
 namespace Binc {
-    class MimeDocument;
-    class MimePart;
+class MimeDocument;
+class MimePart;
 }
 
 class MHMailAttach;
 
 /** 
- * Translate a mail folder file into internal documents (also works
- * for maildir files). This has to keep state while parsing a mail folder
- * file. 
+ * Process a mail message (rfc822) into internal documents.
  */
 class MimeHandlerMail : public RecollFilter {
 public:
     MimeHandlerMail(RclConfig *cnf, const std::string &id);
     virtual ~MimeHandlerMail();
     virtual bool is_data_input_ok(DataInput input) const {
-	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
-	    return true;
-	return false;
+        if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
+            return true;
+        return false;
     }
     virtual bool next_document();
     virtual bool skip_to_document(const std::string& ipath);
@@ -76,10 +74,10 @@ private:
 
 class MHMailAttach {
 public:
-    std::string          m_contentType;
-    std::string          m_filename;
-    std::string          m_charset;
-    std::string          m_contentTransferEncoding;
+    std::string m_contentType;
+    std::string m_filename;
+    std::string m_charset;
+    std::string m_contentTransferEncoding;
     Binc::MimePart *m_part;
 };
 
