@@ -51,21 +51,23 @@ static const string cstr_mail_charset("charset");
 MimeHandlerMail::MimeHandlerMail(RclConfig *cnf, const string &id) 
     : RecollFilter(cnf, id), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
 {
-
     // Look for additional headers to be processed as per config:
     vector<string> hdrnames = m_config->getFieldSectNames("mail");
     if (hdrnames.empty())
         return;
-    for (vector<string>::const_iterator it = hdrnames.begin();
-         it != hdrnames.end(); it++) {
-        (void)m_config->getFieldConfParam(*it, "mail", m_addProcdHdrs[*it]);
+    for (const auto& nm : hdrnames) {
+        (void)m_config->getFieldConfParam(nm, "mail", m_addProcdHdrs[nm]);
     }
 }
 
 MimeHandlerMail::~MimeHandlerMail() 
 {
-    clear();
+    if (m_fd >= 0) {
+        close(m_fd);
+        m_fd = -1;
+    }
 }
+
 void MimeHandlerMail::clear_impl()
 {
     delete m_bincdoc; m_bincdoc = 0;
@@ -77,9 +79,8 @@ void MimeHandlerMail::clear_impl()
     m_idx = -1;
     m_startoftext = 0;
     m_subject.erase();
-    for (vector<MHMailAttach*>::iterator it = m_attachments.begin(); 
-         it != m_attachments.end(); it++) {
-        delete *it;
+    for (auto attp : m_attachments) {
+        delete attp;
     }
     m_attachments.clear();
 }
@@ -391,10 +392,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     if (!m_addProcdHdrs.empty()) {
         for (auto& it : m_addProcdHdrs) {
             if (!it.second.empty() && doc->h.getFirstHeader(it.first, hi)) {
-                // Email headers are supposedly ASCII, but we force
-                // transcode to UTF-8 anyway so that at least partial
-                // indexing can be done if there are 8bit chars in there.
-                transcode(hi.getValue(), m_metaData[it.second], "CP1252", "UTF-8");
+                rfc2047_decode(hi.getValue(), m_metaData[it.second]);
             }
         }
     }

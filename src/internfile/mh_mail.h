@@ -68,7 +68,7 @@ private:
     std::string::size_type       m_startoftext; 
     std::string                  m_subject; 
     std::vector<MHMailAttach *>  m_attachments;
-    // Additional headers to be process as per config + field name translation
+    // Additional headers to be processed as per config + field name translation
     std::map<std::string, std::string>      m_addProcdHdrs; 
 };
 
