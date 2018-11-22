@@ -577,7 +577,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
     }
 
     if (value.length() > 0) {
-        transcode(value, utf8, "ISO-8859-1", "UTF-8");
+        transcode(value, utf8, "CP1252", "UTF-8");
         out += utf8;
         value.clear();
     }

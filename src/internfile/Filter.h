@@ -174,10 +174,9 @@ protected:
     /// The MIME type handled by the filter.
     std::string m_mimeType;
 
-    /// Current Metadata dictionary. For multi-document files,
-    /// this may be rebuilt for each sub-document. See
-    /// common/cstr.h for the common key definitions. The document
-    /// text is "content"
+    /// Current Metadata dictionary. For multi-document files, this
+    /// may be rebuilt for each sub-document. See common/cstr.h for
+    /// the common key definitions.
     std::map<std::string, std::string> m_metaData;
 
 };
