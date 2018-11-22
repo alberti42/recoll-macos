@@ -24,6 +24,8 @@
 #include "smallut.h"
 #include "listmem.h"
 
+using std::string;
+
 // Called after decoding from utf-8 failed. Handle the common case
 // where this is a good old 8bit-encoded text document left-over when
 // the locale was switched to utf-8. We try to guess a charset
@@ -33,7 +35,7 @@
 // quite probably binary, so just fail.
 // Note that we could very well get a wrong transcoding (e.g. between
 // iso-8859 variations), there is no way to detect it.
-static bool alternate_decode(const string& in, string& out, const string& ocs)
+static bool alternate_decode(const string& in, string& out, string& ocs)
 {
     int ecnt;
     if (samecharset(ocs, cstr_utf8)) {
@@ -42,7 +44,12 @@ static bool alternate_decode(const string& in, string& out, const string& ocs)
         LOGDEB("RecollFilter::txtdcode: trying alternate decode from " <<
                code << "\n");
         bool ret = transcode(in, out, code, cstr_utf8, &ecnt);
-        return ecnt > 5 ? false : ret;
+        if (ecnt > 5)
+            ret = false;
+        if (ret) {
+            ocs = code;
+        }
+        return ret;
     } else {
         // Give a try to utf-8 anyway, as this is self-detecting. This
         // handles UTF-8 docs in a non-utf-8 environment. Note that
