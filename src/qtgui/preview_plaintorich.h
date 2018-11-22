@@ -34,11 +34,11 @@ public:
     PlainToRichQtPreview();
     void clear();
     bool haveAnchors();
-    virtual string header();
-    virtual string startMatch(unsigned int grpidx);
-    virtual string endMatch();
-    virtual string termAnchorName(int i) const;
-    virtual string startChunk();
+    virtual std::string header();
+    virtual std::string startMatch(unsigned int grpidx);
+    virtual std::string endMatch();
+    virtual std::string termAnchorName(int i) const;
+    virtual std::string startChunk();
     int nextAnchorNum(int grpidx);
     int prevAnchorNum(int grpidx);
     QString curAnchorName() const;
@@ -57,14 +57,14 @@ class ToRichThread : public QThread {
     Q_OBJECT;
     
 public:
-    ToRichThread(const string &i, const HighlightData& hd,
+    ToRichThread(const std::string &i, const HighlightData& hd,
                  std::shared_ptr<PlainToRichQtPreview> ptr,
                  QStringList& qrichlst, // Output
                  QObject *parent = 0);
     virtual void run();
 
 private:
-    const string &m_input;
+    const std::string &m_input;
     const HighlightData &m_hdata;
     std::shared_ptr<PlainToRichQtPreview> m_ptr;
     QStringList &m_output;
