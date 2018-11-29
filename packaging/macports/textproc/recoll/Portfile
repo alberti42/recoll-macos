@@ -34,7 +34,10 @@ depends_run         port:antiword \
                     port:unrtf \
                     port:unzip
 
-patchfiles          patch-sampleconf-mimeview.diff
+patchfiles          patch-sampleconf-mimeview.diff \
+    patch-mkin-no-no-undefined.diff \
+    patch-rclaspell-dylib.diff \
+    patch-netcon-traces.diff
 
 configure.args      --without-x \
                     --disable-x11mon
