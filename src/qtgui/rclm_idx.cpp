@@ -303,7 +303,10 @@ void RclMain::bumpIndexing()
         string cmd("touch ");
         string path = path_cat(theconfig->getConfDir(), "recoll.conf");
         cmd += path;
-        system(cmd.c_str());
+        int status;
+        if ((status = system(cmd.c_str()))) {
+            cerr << cmd << " failed with status " << status << endl;
+        }
     }
 }
 #else

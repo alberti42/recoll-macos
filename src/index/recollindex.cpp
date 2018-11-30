@@ -502,9 +502,13 @@ static void lockorexit(Pidfile *pidfile, RclConfig *config)
                 string cmd("touch ");
                 string path = path_cat(config->getConfDir(), "recoll.conf");
                 cmd += path;
-                system(cmd.c_str());
-                cerr << "Monitoring indexer process was notified of "
-                    "indexing request\n";
+                int status;
+                if ((status = system(cmd.c_str()))) {
+                    cerr << cmd << " failed with status " << status << endl;
+                } else {
+                    cerr << "Monitoring indexer process was notified of "
+                        "indexing request\n";
+                }
             }
 #endif
         } else {
