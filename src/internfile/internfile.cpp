@@ -495,8 +495,7 @@ FIMissingStore::FIMissingStore(const string& in)
 static inline bool getKeyValue(const map<string, string>& docdata, 
 			       const string& key, string& value)
 {
-    map<string,string>::const_iterator it;
-    it = docdata.find(key);
+    auto it = docdata.find(key);
     if (it != docdata.end()) {
 	value = it->second;
 	LOGDEB2("getKeyValue: [" << key << "]->[" << value << "]\n");
@@ -506,6 +505,10 @@ static inline bool getKeyValue(const map<string, string>& docdata,
     return false;
 }
 
+// Copy most metadata fields from the top filter to the recoll
+// doc. Some fields need special processing, because they go into
+// struct fields instead of metadata entry, or because we don't want
+// to copy them.
 bool FileInterner::dijontorcl(Rcl::Doc& doc)
 {
     RecollFilter *df = m_handlers.back();
@@ -514,12 +517,9 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 	LOGERR("FileInterner::dijontorcl: null top handler ??\n");
 	return false;
     }
-    const map<string, string>& docdata = df->get_meta_data();
-
-    for (map<string,string>::const_iterator it = docdata.begin(); 
-	 it != docdata.end(); it++) {
-	if (it->first == cstr_dj_keycontent) {
-	    doc.text = it->second;
+    for (const auto& ent :  df->get_meta_data()) {
+	if (ent.first == cstr_dj_keycontent) {
+	    doc.text = ent.second;
 	    if (doc.fbytes.empty()) {
 		// It's normally set by walking the filter stack, in
 		// collectIpathAndMt, which was called before us.  It
@@ -531,24 +531,24 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
                 LOGDEB("FileInterner::dijontorcl: fbytes->" << doc.fbytes <<
                        endl);
 	    }
-	} else if (it->first == cstr_dj_keymd) {
-	    doc.dmtime = it->second;
-	} else if (it->first == cstr_dj_keyanc) {
+	} else if (ent.first == cstr_dj_keymd) {
+	    doc.dmtime = ent.second;
+	} else if (ent.first == cstr_dj_keyanc) {
 	    doc.haschildren = true;
-	} else if (it->first == cstr_dj_keyorigcharset) {
-	    doc.origcharset = it->second;
-	} else if (it->first == cstr_dj_keyfn) {
+	} else if (ent.first == cstr_dj_keyorigcharset) {
+	    doc.origcharset = ent.second;
+	} else if (ent.first == cstr_dj_keyfn) {
 	    // Only if not set during the stack walk
 	    const string *fnp = 0;
 	    if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
-		doc.meta[Rcl::Doc::keyfn] = it->second;
-	} else if (it->first == cstr_dj_keymt || 
-		   it->first == cstr_dj_keycharset) {
+		doc.meta[Rcl::Doc::keyfn] = ent.second;
+	} else if (ent.first == cstr_dj_keymt || 
+		   ent.first == cstr_dj_keycharset) {
 	    // don't need/want these.
 	} else {
-            LOGDEB2("dijontorcl: " << m_cfg->fieldCanon(it->first) << " -> " <<
-                    it->second << endl);
-	    doc.addmeta(m_cfg->fieldCanon(it->first), it->second);
+            LOGDEB2("dijontorcl: " << m_cfg->fieldCanon(ent.first) << " -> " <<
+                    ent.second << endl);
+	    doc.addmeta(m_cfg->fieldCanon(ent.first), ent.second);
 	}
     }
     if (doc.meta[Rcl::Doc::keyabs].empty() && 
@@ -559,7 +559,21 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
     return true;
 }
 
-// Collect the ipath from the current path in the document tree.
+const set<string> nocopyfields{cstr_dj_keycontent, cstr_dj_keymd,
+        cstr_dj_keyanc, cstr_dj_keyorigcharset, cstr_dj_keyfn,
+	cstr_dj_keymt, cstr_dj_keycharset, cstr_dj_keyds};
+
+static void copymeta(const RclConfig *cfg,Rcl::Doc& doc, const RecollFilter* hp)
+{
+    for (const auto& entry : hp->get_meta_data()) {
+        if (nocopyfields.find(entry.first) == nocopyfields.end()) {
+            doc.addmeta(cfg->fieldCanon(entry.first), entry.second);
+        }
+    }
+}
+
+
+// Collect the ipath from the filter stack.
 // While we're at it, we also set the mimetype and filename,
 // which are special properties: we want to get them from the topmost
 // doc with an ipath, not the last one which is usually text/plain We
@@ -567,8 +581,8 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 // has them.
 // 
 // The stack can contain objects with an ipath element (corresponding
-// to actual embedded documents), and, at the top, elements without an
-// ipath element, corresponding to format translations of the last doc.
+// to actual embedded documents), and, towards the top, elements
+// without an ipath element, for format translations of the last doc.
 //
 // The docsize is fetched from the first element without an ipath
 // (first non container). If the last element directly returns
@@ -596,8 +610,9 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
     // file, else we'll change it further down.
     doc.mimetype = m_mimetype;
 
-    for (const auto& handler : m_handlers) {
-	const map<string, string>& docdata = handler->get_meta_data();
+    string pathelprev;
+    for (unsigned int i = 0; i < m_handlers.size(); i++) {
+	const map<string, string>& docdata = m_handlers[i]->get_meta_data();
         string ipathel;
 	getKeyValue(docdata, cstr_dj_keyipath, ipathel);
         if (!ipathel.empty()) {
@@ -608,8 +623,17 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
             getKeyValue(docdata, cstr_dj_keymt, doc.mimetype);
             getKeyValue(docdata, cstr_dj_keyfn, doc.meta[Rcl::Doc::keyfn]);
        } else {
+            // We copy all the metadata from the topmost actual
+            // document: either the first if it has no ipath, or the
+            // last one with an ipath (before pure format
+            // translations). This would allow, for example mh_execm
+            // handlers to use setfield() instead of embedding
+            // metadata in the HTML meta tags.
+            if (i == 0 || !pathelprev.empty()) {
+                copymeta(m_cfg, doc, m_handlers[i]);
+            }
             if (doc.fbytes.empty()) {
-                lltodecstr(handler->get_docsize(), doc.fbytes);
+                lltodecstr(m_handlers[i]->get_docsize(), doc.fbytes);
                 LOGDEB("collectIpath..: fbytes->" << doc.fbytes << endl);
             }
         }
@@ -625,6 +649,7 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
             getKeyValue(docdata, cstr_dj_keyauthor, doc.meta[Rcl::Doc::keyau]);
             getKeyValue(docdata, cstr_dj_keymd, doc.dmtime);
         }
+        pathelprev = ipathel;
     }
 
     if (hasipath) {
@@ -661,7 +686,7 @@ int FileInterner::addHandler()
     getKeyValue(docdata, cstr_dj_keycharset, charset);
     getKeyValue(docdata, cstr_dj_keymt, mimetype);
 
-    LOGDEB("FileInterner::addHandler: next_doc is " << mimetype <<
+    LOGDEB("FileInterner::addHandler: back()  is " << mimetype <<
            " target [" << m_targetMType << "]\n");
 
     // If we find a document of the target type (text/plain in
