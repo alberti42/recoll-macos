@@ -101,9 +101,9 @@ void RclCompleterModel::onPartialWord(
     int tp, const QString& qtext, const QString& qpartial)
 {
     string partial = qs2u8s(qpartial);
-    LOGDEB1("RclCompleterModel::onPartialWord: [" << partial << "]\n");
-
     bool onlyspace = qtext.trimmed().isEmpty();
+    LOGDEB1("RclCompleterModel::onPartialWord: [" << partial << "] onlyspace "<<
+            onlyspace << "\n");
     
     currentlist.clear();
     beginResetModel();
@@ -121,7 +121,8 @@ void RclCompleterModel::onPartialWord(
     for (int i = 0; i < prefs.ssearchHistory.count(); i++) {
         LOGDEB1("[" << qs2u8s(prefs.ssearchHistory[i]) << "] contains [" <<
                 qs2u8s(qtext) << "] ?\n");
-        if (prefs.ssearchHistory[i].contains(qtext, Qt::CaseInsensitive)) {
+        if (onlyspace ||
+            prefs.ssearchHistory[i].contains(qtext, Qt::CaseInsensitive)) {
             LOGDEB1("YES\n");
             currentlist.push_back(prefs.ssearchHistory[i]);
             if (!onlyspace && ++histmatch >= maxhistmatch)
@@ -182,6 +183,7 @@ void SSearch::init()
         completermodel, SLOT(onPartialWord(int,const QString&,const QString&)));
     connect(completer, SIGNAL(activated(const QString&)), this,
             SLOT(onCompletionActivated(const QString&)));
+    connect(historyPB, SIGNAL(clicked()), this, SLOT(onHistoryClicked()));
 }
 
 void SSearch::takeFocus()
@@ -216,6 +218,17 @@ void SSearch::onCompletionActivated(const QString& text)
     QTimer::singleShot(0, this, SLOT(restoreText()));
 }
 
+void SSearch::onHistoryClicked()
+{
+    QKeyEvent event(QEvent::KeyPress, Qt::Key_Space, 0, " ");
+    QApplication::sendEvent(queryText, &event);
+    event = QKeyEvent(QEvent::KeyRelease, Qt::Key_Space, 0);
+    QApplication::sendEvent(queryText, &event);
+    queryText->setText(" ");
+    QTimer::singleShot(0, queryText->completer()->popup(),
+                       SLOT(scrollToTop()));
+}
+
 void SSearch::searchTextEdited(const QString& text)
 {
     LOGDEB1("SSearch::searchTextEdited: text [" << qs2u8s(text) << "]\n");
@@ -240,11 +253,15 @@ void SSearch::searchTextChanged(const QString& text)
     if (text.isEmpty()) {
         searchPB->setEnabled(false);
         clearqPB->setEnabled(false);
+        historyPB->setEnabled(true);
         queryText->setFocus();
         emit clearSearch();
     } else {
         searchPB->setEnabled(true);
         clearqPB->setEnabled(true);
+    }
+    if (!text.trimmed().isEmpty()) {
+        historyPB->setEnabled(false);
     }
 }
 

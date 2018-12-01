@@ -17,11 +17,23 @@
    <property name="spacing">
     <number>2</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>4</number>
+   </property>
+   <property name="topMargin">
+    <number>4</number>
+   </property>
+   <property name="rightMargin">
+    <number>4</number>
+   </property>
+   <property name="bottomMargin">
     <number>4</number>
    </property>
    <item>
     <layout class="QHBoxLayout">
+     <property name="spacing">
+      <number>3</number>
+     </property>
      <item>
       <widget class="QPushButton" name="clearqPB">
        <property name="enabled">
@@ -83,11 +95,31 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="historyPB">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Show query history</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/images/clock.png</normalon>
+        </iconset>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="0"/>
- <resources/>
+ <resources>
+  <include location="recoll.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -96,6 +96,7 @@ private slots:
     virtual void searchTextEdited(const QString&);
     virtual void onCompletionActivated(const QString&);
     virtual void restoreText();
+    virtual void onHistoryClicked();
     
 signals:
     void startSearch(std::shared_ptr<Rcl::SearchData>, bool);
