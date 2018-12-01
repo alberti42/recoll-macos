@@ -65,7 +65,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="queryText">
+      <widget class="QLineEdit" name="queryText">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>8</horstretch>
@@ -80,18 +80,6 @@
        </property>
        <property name="toolTip">
         <string>Enter search terms here. Type ESC SPC for completions of current term.</string>
-       </property>
-       <property name="editable">
-        <bool>true</bool>
-       </property>
-       <property name="maxCount">
-        <number>200</number>
-       </property>
-       <property name="insertPolicy">
-        <enum>QComboBox::NoInsert</enum>
-       </property>
-       <property name="duplicatesEnabled">
-        <bool>false</bool>
        </property>
       </widget>
      </item>

@@ -95,10 +95,6 @@ void UIPrefsDialog::init()
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(buildAbsCB, SIGNAL(toggled(bool)), 
 	    replAbsCB, SLOT(setEnabled(bool)));
-    connect(ssAutoAllCB, SIGNAL(toggled(bool)), 
-	    ssAutoSpaceCB, SLOT(setDisabled(bool)));
-    connect(ssAutoAllCB, SIGNAL(toggled(bool)), 
-	    ssAutoSpaceCB, SLOT(setChecked(bool)));
     setFromPrefs();
 }
 
@@ -128,9 +124,7 @@ void UIPrefsDialog::setFromPrefs()
 	filterBT_RB->setChecked(1);
 	break;
     }
-    ssAutoSpaceCB->setChecked(prefs.ssearchOnWS);
     ssNoCompleteCB->setChecked(prefs.ssearchNoComplete);
-    ssAutoAllCB->setChecked(prefs.ssearchAsYouType);
     syntlenSB->setValue(prefs.syntAbsLen);
     syntctxSB->setValue(prefs.syntAbsCtx);
 
@@ -261,9 +255,7 @@ void UIPrefsDialog::setupReslistFontPB()
 
 void UIPrefsDialog::accept()
 {
-    prefs.ssearchOnWS = ssAutoSpaceCB->isChecked();
     prefs.ssearchNoComplete = ssNoCompleteCB->isChecked();
-    prefs.ssearchAsYouType = ssAutoAllCB->isChecked();
 
     if (ssearchTypCMB->currentIndex() == 4) {
 	prefs.ssearchTypSav = true;

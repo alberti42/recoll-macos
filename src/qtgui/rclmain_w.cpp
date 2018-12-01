@@ -153,7 +153,7 @@ void RclMain::init()
                            "RCL.SEARCH.GUI.SIMPLE");
 
     // Set the focus to the search terms entry:
-    sSearch->queryText->setFocus();
+    sSearch->takeFocus();
 
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
     enbSynAction->setChecked(prefs.synFileEnable);
@@ -973,7 +973,7 @@ void RclMain::docExpand(Rcl::Doc doc)
     }
     // We need to insert item here, its not auto-done like when the user types
     // CR
-    sSearch->queryText->setEditText(text);
+    sSearch->setSearchString(text);
     sSearch->setAnyTermMode();
     sSearch->startSimpleSearch();
 }
@@ -1025,7 +1025,7 @@ void RclMain::eraseSearchHistory()
 {
     prefs.ssearchHistory.clear();
     if (sSearch)
-	sSearch->queryText->clear();
+	sSearch->clearAll();
     if (g_advshistory)
 	g_advshistory->clear();
 }
@@ -1138,7 +1138,7 @@ void RclMain::toggleFullScreen()
 
 void RclMain::showEvent(QShowEvent *ev)
 {
-    sSearch->queryText->setFocus();
+    sSearch->takeFocus();
     QMainWindow::showEvent(ev);
 }
 
@@ -1146,4 +1146,3 @@ void RclMain::applyStyleSheet()
 {
     ::applyStyleSheet(prefs.qssFile);
 }
-

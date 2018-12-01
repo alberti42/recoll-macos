@@ -268,26 +268,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="ssAutoSpaceCB">
-             <property name="text">
-              <string>Auto-start simple search on whitespace entry.</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="ssAutoAllCB">
-             <property name="text">
-              <string>Search as you type.</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QCheckBox" name="initStartAdvCB">
              <property name="text">
               <string>Start with advanced search dialog open.</string>

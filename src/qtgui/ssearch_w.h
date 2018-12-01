@@ -22,6 +22,9 @@
 
 #include <QVariant>
 #include <QWidget>
+#include <QAbstractListModel>
+#include <QVariant>
+#include <QPixmap>
 
 class QTimer;
 
@@ -33,8 +36,28 @@ class QTimer;
 
 struct SSearchDef;
 
-class SSearch : public QWidget, public Ui::SSearchBase
-{
+class RclCompleterModel : public QAbstractListModel {
+    Q_OBJECT
+
+public:
+    RclCompleterModel(QWidget *parent = 0)
+        : QAbstractListModel(parent) {
+        init();
+    }
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index,
+                  int role = Qt::DisplayRole) const override;
+public slots:
+    virtual void onPartialWord(int, const QString&, const QString&);
+private:
+    void init();
+    vector<QString> currentlist;
+    int firstfromindex;
+    QPixmap clockPixmap;
+    QPixmap interroPixmap;
+};
+
+class SSearch : public QWidget, public Ui::SSearchBase {
     Q_OBJECT
 
 public:
@@ -43,56 +66,51 @@ public:
     enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2, SST_LANG = 3};
 
     SSearch(QWidget* parent = 0, const char * = 0)
-	: QWidget(parent) 
-    {
-	setupUi(this);
-	init();
+        : QWidget(parent) {
+        setupUi(this);
+        init();
     }
 
     virtual void init();
     virtual void setAnyTermMode();
-    virtual void completion();
-    virtual bool eventFilter(QObject *target, QEvent *event);
     virtual bool hasSearchString();
     virtual void setPrefs();
     // Return last performed search as XML text.
     virtual std::string asXML();
     // Restore ssearch UI from saved search
     virtual bool fromXML(const SSearchDef& fxml);
-
+    virtual QString currentText();
+                                  
 public slots:
-    virtual void searchTextChanged(const QString & text);
     virtual void searchTypeChanged(int);
     virtual void setSearchString(const QString& text);
     virtual void startSimpleSearch();
     virtual void addTerm(QString);
     virtual void onWordReplace(const QString&, const QString&);
-    virtual void completionTermChosen(const QString& text);
-    virtual void wrapupCompletion();
-    virtual void timerDone();
     virtual void takeFocus();
+    // Forget current entry and any state (history)
+    virtual void clearAll();
 
+private slots:
+    virtual void searchTextChanged(const QString&);
+    virtual void searchTextEdited(const QString&);
+    virtual void onCompletionActivated(const QString&);
+    virtual void restoreText();
+    
 signals:
     void startSearch(std::shared_ptr<Rcl::SearchData>, bool);
     void clearSearch();
- private:
-    bool m_escape;
+    void partialWord(int, const QString& text, const QString &partial);
 
-    bool m_displayingCompletions;
-    QString m_chosenCompletion;
-    QString m_savedEditText;
-    unsigned int m_completedWordStart;
-
-    bool m_disableAutosearch;
-    QTimer *m_stroketimeout;
-    bool m_keystroke;
-    QString m_tstartqs;
-    QAbstractItemModel *m_savedModel;
-    std::string m_xml; /* Saved xml version of the search, as we start it */
-
-    int partialWord(string& s);
-    int completionList(string s, QStringList& lst, int max = 100);
+private:
+    int getPartialWord(QString& word);
     bool startSimpleSearch(const string& q, int maxexp = -1);
+
+    /* We save multiword entries because the completer replaces them with
+       the completion */
+    QString m_savedEditText;
+     /* Saved xml version of the search, as we start it */
+    std::string m_xml;
 };
 
 
