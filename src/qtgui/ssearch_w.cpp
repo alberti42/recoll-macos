@@ -98,10 +98,11 @@ QVariant RclCompleterModel::data(const QModelIndex &index, int role) const
 }
 
 void RclCompleterModel::onPartialWord(
-    int tp, const QString& qtext, const QString& qpartial)
+    int tp, const QString& _qtext, const QString& qpartial)
 {
     string partial = qs2u8s(qpartial);
-    bool onlyspace = qtext.trimmed().isEmpty();
+    QString qtext = _qtext.trimmed();
+    bool onlyspace = qtext.isEmpty();
     LOGDEB1("RclCompleterModel::onPartialWord: [" << partial << "] onlyspace "<<
             onlyspace << "\n");
     
