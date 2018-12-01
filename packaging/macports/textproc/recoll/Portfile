@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           app 1.0
 
 name                recoll
-version             1.24.3
+version             1.25.0
 categories          textproc
 platforms           darwin
 license             GPL-2+
@@ -36,15 +36,14 @@ depends_run         port:antiword \
                     port:unzip
 
 patchfiles          patch-sampleconf-mimeview.diff \
-    patch-mkin-no-no-undefined.diff \
-    patch-rclaspell-dylib.diff \
-    patch-netcon-traces.diff
+    patch-mkin-no-no-undefined.diff
 
 # Note: this is probably not the right way to configure QMAKE
-configure.args      QMAKE=${prefix}/libexec/qt5/bin/qmake \
-                    --without-x \
-                    --disable-x11mon \
-                    --disable-python-module
+configure.args  QMAKE=${prefix}/libexec/qt5/bin/qmake \
+                --without-x \
+                --disable-x11mon \
+                --disable-python-module \
+                --disable-python-chm
 
 build.args          CC=${configure.cc} CXX=${configure.cxx}
 
