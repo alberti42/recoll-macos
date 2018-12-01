@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="docbook-xsl.css">
   <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
   <meta name="description" content=
-  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.24.">
+  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.25.">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084"
 alink="#0000FF">
@@ -53,7 +53,7 @@ alink="#0000FF">
             and describes the installation and use of the
             <span class="application">Recoll</span> application.
             This version describes <span class=
-            "application">Recoll</span> 1.24.</p>
+            "application">Recoll</span> 1.25.</p>
           </div>
         </div>
       </div>
@@ -436,7 +436,7 @@ alink="#0000FF">
       <p>This document introduces full text search notions and
       describes the installation and use of the <span class=
       "application">Recoll</span> application. It is updated for
-      <span class="application">Recoll</span> 1.24.</p>
+      <span class="application">Recoll</span> 1.25.</p>
       <p><span class="application">Recoll</span> was for a long
       time dedicated to Unix-like systems. It was only lately
       (2015) ported to <span class="application">MS-Windows</span>.
@@ -2338,26 +2338,26 @@ alink="#0000FF">
           directives, this will look for documents containing all
           of the search terms (the ones with more terms will get
           better scores), just like the <span class="guilabel">All
-          terms</span> mode which will ignore such directives.
-          <span class="guilabel">Any term</span> will search for
-          documents where at least one of the terms appear.</p>
+          terms</span> mode. <span class="guilabel">Any term</span>
+          will search for documents where at least one of the terms
+          appear.</p>
           <p>The <span class="guilabel">Query Language</span>
           features are described in <a class="link" href=
           "#RCL.SEARCH.LANG" title="3.6.&nbsp;The query language">a
           separate section</a>.</p>
-          <p>All search modes allow wildcards inside terms
-          (<code class="literal">*</code>, <code class=
-          "literal">?</code>, <code class="literal">[]</code>). You
-          may want to have a look at the <a class="link" href=
+          <p>All search modes allow terms to be expanded with
+          wildcards characters (<code class="literal">*</code>,
+          <code class="literal">?</code>, <code class=
+          "literal">[]</code>). See the <a class="link" href=
           "#RCL.SEARCH.WILDCARDS" title=
           "3.8.1.&nbsp;More about wildcards">section about
-          wildcards</a> for more information about this.</p>
-          <p><span class="guilabel">File name</span> will
-          specifically look for file names. The point of having a
-          separate file name search is that wild card expansion can
-          be performed more efficiently on a small subset of the
-          index (allowing wild cards on the left of terms without
-          excessive penality). Things to know:</p>
+          wildcards</a> for more details.</p>
+          <p>The <span class="guilabel">File name</span> search
+          mode will specifically look for file names. The point of
+          having a separate file name search is that wild card
+          expansion can be performed more efficiently on a small
+          subset of the index (allowing wild cards on the left of
+          terms without excessive penality). Things to know:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
             "list-style-type: disc;">
@@ -2386,16 +2386,19 @@ alink="#0000FF">
               </li>
             </ul>
           </div>
-          <p>You can search for exact phrases (adjacent words in a
-          given order) by enclosing the input inside double quotes.
-          Ex: <code class="literal">"virtual reality"</code>.</p>
-          <p>When using a stripped index, character case has no
-          influence on search, except that you can disable stem
-          expansion for any term by capitalizing it. Ie: a search
-          for <code class="literal">floor</code> will also normally
-          look for <code class="literal">flooring</code>,
-          <code class="literal">floored</code>, etc., but a search
-          for <code class="literal">Floor</code> will only look for
+          <p>In all modes except <span class="guilabel">File
+          name</span>, you can search for exact phrases (adjacent
+          words in a given order) by enclosing the input inside
+          double quotes. Ex: <code class="literal">"virtual
+          reality"</code>.</p>
+          <p>When using a stripped index (the default), character
+          case has no influence on search, except that you can
+          disable stem expansion for any term by capitalizing it.
+          Ie: a search for <code class="literal">floor</code> will
+          also normally look for <code class=
+          "literal">flooring</code>, <code class=
+          "literal">floored</code>, etc., but a search for
+          <code class="literal">Floor</code> will only look for
           <code class="literal">floor</code>, in any character
           case. Stemming can also be disabled globally in the
           preferences. When using a raw index, <a class="link"
@@ -2403,17 +2406,17 @@ alink="#0000FF">
           "3.7.&nbsp;Search case and diacritics sensitivity">the
           rules are a bit more complicated</a>.</p>
           <p><span class="application">Recoll</span> remembers the
-          last few searches that you performed. You can use the
-          simple search text entry widget (a combobox) to recall
-          them (click on the thing at the right of the text field).
-          Please note, however, that only the search texts are
-          remembered, not the mode (all/any/file name).</p>
-          <p>Typing <span class=
-          "keycap"><strong>Esc</strong></span> <span class=
-          "keycap"><strong>Space</strong></span> while entering a
-          word in the simple search entry will open a window with
-          possible completions for the word. The completions are
-          extracted from the database.</p>
+          last few searches that you performed. You can directly
+          access the search history by clicking the clock button on
+          the right of the search entry, while the latter is empty.
+          Otherwise, the history is used for entry completion (see
+          next). Only the search texts are remembered, not the mode
+          (all/any/file name).</p>
+          <p>While text is entered in the search area, <span class=
+          "command"><strong>recoll</strong></span> will display
+          possible completions, filtered from the history and the
+          index search terms. This can be disabled with a GUI
+          Preferences option.</p>
           <p>Double-clicking on a word in the result list or a
           preview window will insert it into the simple search
           entry field.</p>
@@ -3802,18 +3805,12 @@ alink="#0000FF">
               </li>
               <li class="listitem">
                 <p><span class="guilabel">Choose editor
-                applicationsr</span>: this opens a dialog which
+                application</span>: this opens a dialog which
                 allows you to select the application to be used to
-                open each MIME type. The default is nornally to use
-                the <span class=
+                open each MIME type. The default is to use the
+                <span class=
                 "command"><strong>xdg-open</strong></span> utility,
-                but you can override it.</p>
-              </li>
-              <li class="listitem">
-                <p><span class="guilabel">Exceptions</span>: even
-                wen <span class=
-                "command"><strong>xdg-open</strong></span> is used
-                by default for opening documents, you can set
+                but you can use this dialog to override it, setting
                 exceptions for MIME types that will still be opened
                 according to <span class=
                 "application">Recoll</span> preferences. This is
@@ -3823,6 +3820,14 @@ alink="#0000FF">
                 This cannot be done with <span class=
                 "command"><strong>xdg-open</strong></span> which
                 only supports passing one parameter.</p>
+              </li>
+              <li class="listitem">
+                <p><span class="guilabel">Disable Qt autocompletion
+                in search entry</span>: this will disable the
+                completion popup. Il will only appear, and display
+                the full history, either if you enter only white
+                space in the search area, or if you click the clock
+                button on the right of the area.</p>
               </li>
               <li class="listitem">
                 <p><span class="guilabel">Document filter choice
@@ -3837,15 +3842,6 @@ alink="#0000FF">
                 fixed value (e.g. <code class="literal">Query
                 Language</code>, or the value in use when the
                 program last exited.</p>
-              </li>
-              <li class="listitem">
-                <p><span class="guilabel">Auto-start simple search
-                on white space entry</span>: if this is checked, a
-                search will be executed each time you enter a space
-                in the simple search input field. This lets you
-                look at the result list as you enter new terms.
-                This is off by default, you may like it or
-                not...</p>
               </li>
               <li class="listitem">
                 <p><span class="guilabel">Start with advanced

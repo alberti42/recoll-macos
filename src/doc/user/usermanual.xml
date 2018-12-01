@@ -5,7 +5,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html#doctypes'>http://www.recoll.org/features.html</ulink>">
-<!ENTITY RCLVERSION "1.24">
+<!ENTITY RCLVERSION "1.25">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY FAQS "https://www.lesbonscomptes.com/recoll/faqsandhowtos/">
@@ -1614,26 +1614,24 @@
         language</guilabel>. Without special directives, this will look for
         documents containing all of the search terms (the ones with more
         terms will get better scores), just like the <guilabel>All
-        terms</guilabel> mode which will ignore such
-        directives. <guilabel>Any term</guilabel> will search for documents
-        where at least one of the terms appear. </para>
+        terms</guilabel> mode. <guilabel>Any term</guilabel> will search
+        for documents where at least one of the terms appear.</para>
 
         <para>The <guilabel>Query Language</guilabel> features are
         described in <link linkend="RCL.SEARCH.LANG">a separate
         section</link>.</para>  
 
-        <para>All search modes allow wildcards inside terms
-        (<literal>*</literal>, <literal>?</literal>,
-        <literal>[]</literal>). You may want to have a look at the
-        <link linkend="RCL.SEARCH.WILDCARDS">section about wildcards</link>
-        for more information about this.</para>
+        <para>All search modes allow terms to be expanded with wildcards
+        characters (<literal>*</literal>, <literal>?</literal>,
+        <literal>[]</literal>). See the <link
+        linkend="RCL.SEARCH.WILDCARDS">section about wildcards</link> for
+        more details.</para>
 
-        <para><guilabel>File name</guilabel> will specifically look for file
-        names. The point of having a separate file name
-        search is that wild card expansion can be performed more
-        efficiently on a small subset of the index (allowing
-        wild cards on the left of terms without excessive penality).
-        Things to know:
+        <para>The <guilabel>File name</guilabel> search mode will
+        specifically look for file names. The point of having a separate
+        file name search is that wild card expansion can be performed more
+        efficiently on a small subset of the index (allowing wild cards on
+        the left of terms without excessive penality).  Things to know:
         <itemizedlist>
           <listitem><para>White space in the entry should match white
           space in the file name, and is not treated specially.</para>
@@ -1655,31 +1653,33 @@
         </itemizedlist>
         </para>
 
-        <para>You can search for exact phrases (adjacent words in a
-        given order) by enclosing the input inside double quotes. Ex:
-        <literal>"virtual reality"</literal>.</para>
+        <para>In all modes except <guilabel>File name</guilabel>, you can
+        search for exact phrases (adjacent words in a given order) by
+        enclosing the input inside double quotes. Ex: <literal>"virtual
+        reality"</literal>.</para>
 
-        <para>When using a stripped index, character case has no influence on
-        search, except that you can disable stem expansion for any term by
-        capitalizing it. Ie: a search for <literal>floor</literal> will also
-        normally look for <literal>flooring</literal>,
-        <literal>floored</literal>, etc., but a search for
-        <literal>Floor</literal> will only look for <literal>floor</literal>,
-        in any character case. Stemming can also be disabled globally in the
-        preferences. When using a raw index, <link
-        linkend="RCL.SEARCH.CASEDIAC">the rules are a bit more
-        complicated</link>.</para> 
+        <para>When using a stripped index (the default), character case has
+        no influence on search, except that you can disable stem expansion
+        for any term by capitalizing it. Ie: a search for
+        <literal>floor</literal> will also normally look for
+        <literal>flooring</literal>, <literal>floored</literal>, etc., but
+        a search for <literal>Floor</literal> will only look for
+        <literal>floor</literal>, in any character case. Stemming can also
+        be disabled globally in the preferences. When using a raw index,
+        <link linkend="RCL.SEARCH.CASEDIAC">the rules are a bit more
+        complicated</link>.</para>
 
-        <para>&RCL; remembers the last few searches that you
-        performed. You can use the simple search text entry widget (a
-        combobox) to recall them (click on the thing at the right of the
-        text field). Please note, however, that only the search texts
-        are remembered, not the mode (all/any/file name).</para>
+        <para>&RCL; remembers the last few searches that you performed. You
+        can directly access the search history by clicking the clock button
+        on the right of the search entry, while the latter is
+        empty. Otherwise, the history is used for entry completion (see
+        next). Only the search texts are remembered, not the mode
+        (all/any/file name).</para>
 
-        <para>Typing <keycap>Esc</keycap> <keycap>Space</keycap> while
-        entering a word in the simple search entry will open a window
-        with possible completions for the word. The completions are
-        extracted from the database.</para>
+        <para>While text is entered in the search area,
+        <command>recoll</command> will display possible completions,
+        filtered from the history and the index search terms. This can be
+        disabled with a GUI Preferences option.</para>
 
         <para>Double-clicking on a word in the result list or a preview
         window will insert it into the simple search entry field.</para>
@@ -2861,21 +2861,23 @@
               </listitem>
 
               <listitem><para><guilabel>Choose editor
-              applicationsr</guilabel>: this opens a dialog which allows you
+              application</guilabel>: this opens a dialog which allows you
               to select the application to be used to open each MIME
-              type. The default is nornally to use the
-              <command>xdg-open</command> utility, but you can override it.</para>
+              type. The default is to use the <command>xdg-open</command>
+              utility, but you can use this dialog to override it, setting
+              exceptions for MIME types that will still be opened according
+              to &RCL; preferences. This is useful for passing parameters
+              like page numbers or search strings to applications that
+              support them (e.g. <application>evince</application>). This
+              cannot be done with <command>xdg-open</command> which only
+              supports passing one parameter.</para>
               </listitem>
 
-              <listitem><para><guilabel>Exceptions</guilabel>: even wen
-              <command>xdg-open</command> is used by default for opening
-              documents, you can set exceptions for MIME types that will
-              still be opened according to &RCL; preferences. This is useful
-              for passing parameters like page numbers or search strings to
-              applications that support them
-              (e.g. <application>evince</application>). This cannot be done
-              with <command>xdg-open</command> which only supports passing
-              one parameter.</para>
+              <listitem><para><guilabel>Disable Qt autocompletion in search
+              entry</guilabel>: this will disable the completion popup. Il
+              will only appear, and display the full history, either if you
+              enter only white space in the search area, or if you click
+              the clock button on the right of the area.</para>
               </listitem>
 
               <listitem><para><guilabel>Document filter choice
@@ -2889,13 +2891,6 @@
               search type on program startup. Either a fixed value
               (e.g. <literal>Query Language</literal>, or the value in use
               when the program last exited.</para></listitem>
-
-              <listitem><para><guilabel>Auto-start simple search on white
-              space entry</guilabel>: if this is checked, a search will be
-              executed each time you enter a space in the simple search input
-              field. This lets you look at the result list as you enter new
-              terms. This is off by default, you may like it or not...</para>
-              </listitem>
 
               <listitem><para><guilabel>Start with advanced search dialog open
               </guilabel>: If you use this dialog frequently, checking
