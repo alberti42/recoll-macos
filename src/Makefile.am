@@ -392,10 +392,12 @@ qtgui/idxsched.ui \
 qtgui/images/asearch.png \
 qtgui/images/cancel.png \
 qtgui/images/close.png \
+qtgui/images/clock.png \
 qtgui/images/code-block.png \
 qtgui/images/down.png \
 qtgui/images/firstpage.png \
 qtgui/images/history.png \
+qtgui/images/interro.png \
 qtgui/images/nextpage.png \
 qtgui/images/prevpage.png \
 qtgui/images/recoll.icns \
@@ -442,6 +444,7 @@ qtgui/preview_plaintorich.cpp \
 qtgui/preview_plaintorich.h \
 qtgui/preview_w.cpp \
 qtgui/preview_w.h \
+qtgui/preview.ui \
 qtgui/ptrans.ui \
 qtgui/ptrans_w.cpp \
 qtgui/ptrans_w.h \
@@ -517,7 +520,6 @@ python/pychm/pychm.egg-info/dependency_links.txt \
 python/pychm/pychm.egg-info/top_level.txt \
 python/pychm/recollchm \
 python/pychm/recollchm/__init__.py \
-python/pychm/recollchm/__pycache__ \
 python/pychm/recollchm/chm.py \
 python/pychm/recollchm/chmlib.py \
 python/pychm/recollchm/extra.c \
@@ -706,9 +708,9 @@ python/recoll/recoll/rclconfig.py
 install-data-hook: 
 	(cd $(DESTDIR)/$(filterdir); \
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
-	chmod a+x recoll-we-move-files.py; \
+	chmod a+x recoll-we-move-files.py ../examples/rclmon.sh; \
 	chmod 0644 msodump.zip recollepub.zip rclexecm.py rcllatinstops.zip \
-        rclconfig.py conftree.py rclmidi.py)
+        rclconfig.py conftree.py rclmidi.py rclexec1.py rcluncomp.py rclxslt.py)
 
 if MAKEUSERDOC
 rdocdir = $(pkgdatadir)/doc
@@ -720,7 +722,8 @@ doc/user/usermanual.html: doc/user/usermanual.xml
 	$(MAKE) -C doc/user VPATH=$(VPATH):$(VPATH)/doc/user usermanual.html
 endif
 
-dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
+dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 \
+               doc/man/recollindex.1 doc/man/xadump.1
 dist_man5_MANS = doc/man/recoll.conf.5
 
 dist-hook:
