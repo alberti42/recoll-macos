@@ -23,12 +23,12 @@
 #include <sstream>
 using namespace std;
 
-#ifdef SNIPPETS_TEXTBROWSER
-#include <QTextBrowser>
-#else
+#if defined(USING_WEBKIT)
 #include <QWebSettings>
 #include <QWebFrame>
 #include <QUrl>
+#else
+#include <QTextBrowser>
 #endif
 #include <QShortcut>
 
@@ -42,10 +42,10 @@ using namespace std;
 
 // Note: the internal search currently does not work with QTextBrowser. To be
 // fixed by looking at the preview code if someone asks for it...
-#ifdef SNIPPETS_TEXTBROWSER
-#define browser ((QTextBrowser*)browserw)
-#else
+#if defined(USING_WEBKIT)
 #define browser ((QWebView*)browserw)
+#else
+#define browser ((QTextBrowser*)browserw)
 #endif
 
 class PlainToRichQtSnippets : public PlainToRich {
@@ -92,22 +92,7 @@ void SnippetsW::init()
     connect(nextPB, SIGNAL(clicked()), this, SLOT(slotEditFindNext()));
     connect(prevPB, SIGNAL(clicked()), this, SLOT(slotEditFindPrevious()));
 
-#ifdef SNIPPETS_TEXTBROWSER
-    browserw = new QTextBrowser(this);
-    verticalLayout->insertWidget(0, browserw);
-    connect(browser, SIGNAL(anchorClicked(const QUrl &)), 
-	    this, SLOT(linkWasClicked(const QUrl &)));
-    browser->setReadOnly(true);
-    browser->setUndoRedoEnabled(false);
-    browser->setOpenLinks(false);
-    browser->setTabChangesFocus(true);
-    if (prefs.reslistfontfamily.length()) {
-	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
-	browser->setFont(nfont);
-    } else {
-	browser->setFont(QFont());
-    }
-#else
+#if defined(USING_WEBKIT)
     browserw = new QWebView(this);
     verticalLayout->insertWidget(0, browserw);
     browser->setUrl(QUrl(QString::fromUtf8("about:blank")));
@@ -123,6 +108,21 @@ void SnippetsW::init()
     }
     if (!prefs.snipCssFile.isEmpty())
 	ws->setUserStyleSheetUrl(QUrl::fromLocalFile(prefs.snipCssFile));
+#else
+    browserw = new QTextBrowser(this);
+    verticalLayout->insertWidget(0, browserw);
+    connect(browser, SIGNAL(anchorClicked(const QUrl &)), 
+	    this, SLOT(linkWasClicked(const QUrl &)));
+    browser->setReadOnly(true);
+    browser->setUndoRedoEnabled(false);
+    browser->setOpenLinks(false);
+    browser->setTabChangesFocus(true);
+    if (prefs.reslistfontfamily.length()) {
+	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
+	browser->setFont(nfont);
+    } else {
+	browser->setFont(QFont());
+    }
 #endif
 
     // Make title out of file name if none yet
@@ -193,10 +193,10 @@ void SnippetsW::init()
                            "generator got lost in a maze...</p>"));
     }
     oss << "\n</body></html>";
-#ifdef SNIPPETS_TEXTBROWSER
-    browser->insertHtml(QString::fromUtf8(oss.str().c_str()));
-#else
+#if defined(USING_WEBKIT)
     browser->setHtml(QString::fromUtf8(oss.str().c_str()));
+#else
+    browser->insertHtml(QString::fromUtf8(oss.str().c_str()));
 #endif
 }
 
@@ -212,10 +212,10 @@ void SnippetsW::slotEditFindNext()
     if (!searchFM->isVisible())
 	slotEditFind();
 
-#ifdef SNIPPETS_TEXTBROWSER
-    browser->find(searchLE->text(), 0);
-#else
+#if defined(USING_WEBKIT)
     browser->findText(searchLE->text());
+#else
+    browser->find(searchLE->text(), 0);
 #endif
 
 }
@@ -224,18 +224,19 @@ void SnippetsW::slotEditFindPrevious()
     if (!searchFM->isVisible())
 	slotEditFind();
 
-#ifdef SNIPPETS_TEXTBROWSER
-    browser->find(searchLE->text(), QTextDocument::FindBackward);
-#else
+#if defined(USING_WEBKIT)
     browser->findText(searchLE->text(), QWebPage::FindBackward);
+#else
+    browser->find(searchLE->text(), QTextDocument::FindBackward);
 #endif
 }
+
 void SnippetsW::slotSearchTextChanged(const QString& txt)
 {
-#ifdef SNIPPETS_TEXTBROWSER
-    browser->find(txt, 0);
-#else
+#if defined(USING_WEBKIT)
     browser->findText(txt);
+#else
+    browser->find(txt, 0);
 #endif
 }
 

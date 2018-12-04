@@ -19,26 +19,24 @@
 #define _RESLIST_H_INCLUDED_
 #include "autoconfig.h"
 
-#include <list>
-#include <utility>
+#include <map>
 
-#ifdef RESLIST_TEXTBROWSER
-#include <QTextBrowser>
-#define RESLIST_PARENTCLASS QTextBrowser
+#if defined(USING_WEBENGINE)
+#  include <QWebEngineView>
+#  define RESLIST_PARENTCLASS QWebEngineView
+#elif defined(USING_WEBKIT)
+#  include <QWebView>
+#  define RESLIST_PARENTCLASS QWebView
 #else
-#include <QWebView>
-#define RESLIST_PARENTCLASS QWebView
+#  include <QTextBrowser>
+#  define RESLIST_PARENTCLASS QTextBrowser
 #endif
-
-#include "docseq.h"
-#include "sortseq.h"
-#include "filtseq.h"
-#include <memory>
-#include "rcldoc.h"
-#include "reslistpager.h"
 
 class RclMain;
 class QtGuiResListPager;
+namespace Rcl {
+class Doc;
+}
 
 /**
  * Display a list of document records. The data can be out of the history 
@@ -49,7 +47,7 @@ class ResList : public RESLIST_PARENTCLASS
     Q_OBJECT;
 
     friend class QtGuiResListPager;
- public:
+public:
     ResList(QWidget* parent = 0, const char* name = 0);
     virtual ~ResList();
     
@@ -65,7 +63,7 @@ class ResList : public RESLIST_PARENTCLASS
     void setFont();
     void setRclMain(RclMain *m, bool ismain);
 
- public slots:
+public slots:
     virtual void setDocSource(std::shared_ptr<DocSequence> nsource);
     virtual void resetList();     // Erase current list
     virtual void resPageUpOrBack(); // Page up pressed
@@ -91,8 +89,8 @@ class ResList : public RESLIST_PARENTCLASS
     virtual void highlighted(const QString& link);
     virtual void createPopupMenu(const QPoint& pos);
     virtual void showQueryDetails();
-	
- signals:
+        
+signals:
     void nextPageAvailable(bool);
     void prevPageAvailable(bool);
     void docPreviewClicked(int, Rcl::Doc, int);
@@ -107,36 +105,36 @@ class ResList : public RESLIST_PARENTCLASS
     void wordReplace(const QString&, const QString&);
     void hasResults(int);
 
- protected:
+protected:
     void keyPressEvent(QKeyEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void mouseDoubleClickEvent(QMouseEvent*);
 
- protected slots:
+protected slots:
     virtual void languageChange();
     virtual void linkWasClicked(const QUrl &);
 
- private:
-    QtGuiResListPager  *m_pager;
+private:
+    QtGuiResListPager  *m_pager{0};
     std::shared_ptr<DocSequence> m_source;
-    int        m_popDoc; // Docnum for the popup menu.
-    int        m_curPvDoc;// Docnum for current preview
-    int        m_lstClckMod; // Last click modifier. 
-    int        m_listId; // query Id for matching with preview windows
+    int        m_popDoc{-1}; // Docnum for the popup menu.
+    int        m_curPvDoc{-1};// Docnum for current preview
+    int        m_lstClckMod{0}; // Last click modifier. 
+    int        m_listId{0}; // query Id for matching with preview windows
 
-#ifdef RESLIST_TEXTBROWSER    
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
+    // Webview makes it more difficult to append text incrementally,
+    // so we store the page and display it when done.
+    QString    m_text; 
+#else
     // Translate from textedit paragraph number to relative
     // docnum. Built while we insert text into the qtextedit
     std::map<int,int>  m_pageParaToReldocnums;
     virtual int docnumfromparnum(int);
     virtual std::pair<int,int> parnumfromdocnum(int);
-#else
-    // Webview makes it more difficult to append text incrementally,
-    // so we store the page and display it when done.
-    QString    m_text; 
 #endif
-    RclMain   *m_rclmain;
-    bool m_ismainres;
+    RclMain   *m_rclmain{0};
+    bool m_ismainres{true};
 
     virtual void displayPage(); // Display current page
     static int newListId();
@@ -144,7 +142,7 @@ class ResList : public RESLIST_PARENTCLASS
     bool scrollIsAtTop();
     bool scrollIsAtBottom();
     void setupArrows();
- };
+};
 
 
 #endif /* _RESLIST_H_INCLUDED_ */

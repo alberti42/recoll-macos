@@ -20,6 +20,8 @@
 #include <time.h>
 #include <stdlib.h>
 
+#include <memory>
+
 #include <qapplication.h>
 #include <qvariant.h>
 #include <qevent.h>
@@ -34,9 +36,6 @@
 #include <qscrollbar.h>
 #include <QTextBlock>
 #include <QShortcut>
-#ifndef __APPLE__
-//#include <qx11info_x11.h>
-#endif
 
 #include "log.h"
 #include "smallut.h"
@@ -47,7 +46,6 @@
 #include "pathut.h"
 #include "mimehandler.h"
 #include "plaintorich.h"
-#include <memory>
 #include "internfile.h"
 #include "indexer.h"
 #include "snippets_w.h"
@@ -57,11 +55,12 @@
 #include "rclhelp.h"
 #include "appformime.h"
 #include "respopup.h"
+#include "reslistpager.h"
 
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
 
-#ifndef RESLIST_TEXTBROWSER
+#if defined(USING_WEBKIT)
 #include <QWebFrame>
 #include <QWebElement>
 #include <QWebSettings>
@@ -77,8 +76,8 @@ static const QKeySequence closeKeySeq("Ctrl+w");
 class QtGuiResListPager : public ResListPager {
 public:
     QtGuiResListPager(ResList *p, int ps) 
-	: ResListPager(ps), m_reslist(p) 
-    {}
+        : ResListPager(ps), m_reslist(p) 
+        {}
     virtual bool append(const string& data);
     virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
     virtual string trans(const string& in);
@@ -89,7 +88,7 @@ public:
     virtual string prevUrl();
     virtual string headerContent();
     virtual void suggest(const vector<string>uterms, 
-			 map<string, vector<string> >& sugg);
+                         map<string, vector<string> >& sugg);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
     virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
 private:
@@ -101,9 +100,9 @@ FILE *fp;
 void logdata(const char *data)
 {
     if (fp == 0)
-	fp = fopen("/tmp/recolltoto.html", "a");
+        fp = fopen("/tmp/recolltoto.html", "a");
     if (fp)
-	fprintf(fp, "%s", data);
+        fprintf(fp, "%s", data);
 }
 #else
 #define logdata(X)
@@ -120,12 +119,17 @@ bool QtGuiResListPager::append(const string& data)
 }
 
 bool QtGuiResListPager::append(const string& data, int docnum, 
-			       const Rcl::Doc&)
+                               const Rcl::Doc&)
 {
     LOGDEB2("QtGuiReslistPager::appendDoc: blockCount " <<
             m_reslist->document()->blockCount() << ", " << data << "\n");
     logdata(data.c_str());
-#ifdef RESLIST_TEXTBROWSER
+#if defined(USING_WEBKIT)
+    QString sdoc = QString("<div class=\"rclresult\" rcldocnum=\"%1\">").arg(docnum);
+    m_reslist->append(sdoc);
+    m_reslist->append(QString::fromUtf8(data.c_str()));
+    m_reslist->append("</div>");
+#else
     int blkcnt0 = m_reslist->document()->blockCount();
     m_reslist->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
     m_reslist->textCursor().insertBlock();
@@ -134,13 +138,8 @@ bool QtGuiResListPager::append(const string& data, int docnum,
     m_reslist->ensureCursorVisible();
     int blkcnt1 = m_reslist->document()->blockCount();
     for (int block = blkcnt0; block < blkcnt1; block++) {
-	m_reslist->m_pageParaToReldocnums[block] = docnum;
+        m_reslist->m_pageParaToReldocnums[block] = docnum;
     }
-#else
-    QString sdoc = QString("<div class=\"rclresult\" rcldocnum=\"%1\">").arg(docnum);
-    m_reslist->append(sdoc);
-    m_reslist->append(QString::fromUtf8(data.c_str()));
-    m_reslist->append("</div>");
 #endif
     return true;
 }
@@ -196,37 +195,37 @@ string QtGuiResListPager::headerContent()
 }
 
 void QtGuiResListPager::suggest(const vector<string>uterms, 
-				map<string, vector<string> >& sugg)
+                                map<string, vector<string> >& sugg)
 {
     sugg.clear();
     bool issimple = m_reslist && m_reslist->m_rclmain && 
-	m_reslist->m_rclmain->lastSearchSimple();
+        m_reslist->m_rclmain->lastSearchSimple();
 
     for (const auto& uit : uterms) {
         vector<string> tsuggs;
 
-	// If the term is in the dictionary, Aspell::suggest won't
-	// list alternatives. In fact we may want to check the
-	// frequencies and propose something anyway if a possible
-	// variation is much more common (as google does) ?
+        // If the term is in the dictionary, Aspell::suggest won't
+        // list alternatives. In fact we may want to check the
+        // frequencies and propose something anyway if a possible
+        // variation is much more common (as google does) ?
         if (!rcldb->getSpellingSuggestions(uit, tsuggs)) {
             continue;
         }
-	// We should check that the term stems differently from the
-	// base word (else it's not useful to expand the search). Or
-	// is it ? This should depend if stemming is turned on or not
+        // We should check that the term stems differently from the
+        // base word (else it's not useful to expand the search). Or
+        // is it ? This should depend if stemming is turned on or not
 
         if (!tsuggs.empty()) {
             sugg[uit] = vector<string>(tsuggs.begin(), tsuggs.end());
-	    if (sugg[uit].size() > 5)
-		sugg[uit].resize(5);
-	    // Set up the links as a <href="Sold|new">. 
-	    for (auto& it : sugg[uit]) {
-		if (issimple) {
-		    it = string("<a href=\"S") + uit + "|" + it + "\">" +
-			it + "</a>";
-		}
-	    }
+            if (sugg[uit].size() > 5)
+                sugg[uit].resize(5);
+            // Set up the links as a <href="Sold|new">. 
+            for (auto& it : sugg[uit]) {
+                if (issimple) {
+                    it = string("<a href=\"S") + uit + "|" + it + "\">" +
+                        it + "</a>";
+                }
+            }
         }
     }
 }
@@ -234,22 +233,22 @@ void QtGuiResListPager::suggest(const vector<string>uterms,
 string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 {
     if (doc.ipath.empty()) {
-	vector<Rcl::Doc> docs;
-	docs.push_back(doc);
-	vector<string> paths;
-	Rcl::docsToPaths(docs, paths);
-	if (!paths.empty()) {
-	    string path;
-	    LOGDEB2("ResList::iconUrl: source path [" << paths[0] << "]\n");
-	    if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
-		LOGDEB2("ResList::iconUrl: icon path [" << path << "]\n");
-		return cstr_fileu + path;
-	    } else {
-		LOGDEB2("ResList::iconUrl: no icon: path [" << path << "]\n");
-	    }
-	} else {
-	    LOGDEB("ResList::iconUrl: docsToPaths failed\n");
-	}
+        vector<Rcl::Doc> docs;
+        docs.push_back(doc);
+        vector<string> paths;
+        Rcl::docsToPaths(docs, paths);
+        if (!paths.empty()) {
+            string path;
+            LOGDEB2("ResList::iconUrl: source path [" << paths[0] << "]\n");
+            if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
+                LOGDEB2("ResList::iconUrl: icon path [" << path << "]\n");
+                return cstr_fileu + path;
+            } else {
+                LOGDEB2("ResList::iconUrl: no icon: path [" << path << "]\n");
+            }
+        } else {
+            LOGDEB("ResList::iconUrl: docsToPaths failed\n");
+        }
     }
     return ResListPager::iconUrl(config, doc);
 }
@@ -259,36 +258,42 @@ string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 class PlainToRichQtReslist : public PlainToRich {
 public:
     virtual string startMatch(unsigned int idx)
-    {
-	if (0 && m_hdata) {
-	    string s1, s2;
-	    stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
-	    stringsToString<vector<string> >(m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
-	    LOGDEB2("Reslist startmatch: group " << s1 << " user group " <<
-                    s2 << "\n");
-	}
-		
-	return string("<span class='rclmatch' style='")
-	    + qs2utf8s(prefs.qtermstyle) + string("'>");
-    }
+        {
+            if (0 && m_hdata) {
+                string s1, s2;
+                stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
+                stringsToString<vector<string> >(m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
+                LOGDEB2("Reslist startmatch: group " << s1 << " user group " <<
+                        s2 << "\n");
+            }
+                
+            return string("<span class='rclmatch' style='")
+                + qs2utf8s(prefs.qtermstyle) + string("'>");
+        }
     virtual string endMatch() 
-    {
-	return string("</span>");
-    }
+        {
+            return string("</span>");
+        }
 };
 static PlainToRichQtReslist g_hiliter;
 
 /////////////////////////////////////
 
 ResList::ResList(QWidget* parent, const char* name)
-    : RESLIST_PARENTCLASS(parent), m_curPvDoc(-1), m_lstClckMod(0), 
-      m_listId(0), m_rclmain(0), m_ismainres(true)
+    : RESLIST_PARENTCLASS(parent)
 {
     if (!name)
-	setObjectName("resList");
+        setObjectName("resList");
     else 
-	setObjectName(name);
-#ifdef RESLIST_TEXTBROWSER
+        setObjectName(name);
+#if defined(USING_WEBKIT)
+    LOGDEB("Reslist: using Webkit\n");
+    // signals and slots connections
+    connect(this, SIGNAL(linkClicked(const QUrl &)), 
+            this, SLOT(linkWasClicked(const QUrl &)));
+    page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+#else
     LOGDEB("Reslist: using QTextBrowser\n");
     setReadOnly(true);
     setUndoRedoEnabled(false);
@@ -296,14 +301,7 @@ ResList::ResList(QWidget* parent, const char* name)
     setTabChangesFocus(true);
     // signals and slots connections
     connect(this, SIGNAL(anchorClicked(const QUrl &)), 
-	    this, SLOT(linkWasClicked(const QUrl &)));
-#else
-    LOGDEB("Reslist: using QWebView\n");
-    // signals and slots connections
-    connect(this, SIGNAL(linkClicked(const QUrl &)), 
-	    this, SLOT(linkWasClicked(const QUrl &)));
-    page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+            this, SLOT(linkWasClicked(const QUrl &)));
 #endif
 
     setFont();
@@ -316,12 +314,12 @@ ResList::ResList(QWidget* parent, const char* name)
 #if 0
     // See comments in "highlighted
     connect(this, SIGNAL(highlighted(const QString &)), 
-	    this, SLOT(highlighted(const QString &)));
+            this, SLOT(highlighted(const QString &)));
 #endif
 
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
-	    this, SLOT(createPopupMenu(const QPoint&)));
+            this, SLOT(createPopupMenu(const QPoint&)));
 
     m_pager = new QtGuiResListPager(this, prefs.respagesize);
     m_pager->setHighLighter(&g_hiliter);
@@ -333,18 +331,18 @@ ResList::~ResList()
 #ifdef __GNUC__
     __attribute__((unused))
 #endif
-    static const char* strings[] = {
-	QT_TR_NOOP("<p><b>No results found</b><br>"),
-	QT_TR_NOOP("Documents"),
-	QT_TR_NOOP("out of at least"),
-	QT_TR_NOOP("for"),
-	QT_TR_NOOP("Previous"),
-	QT_TR_NOOP("Next"),
-	QT_TR_NOOP("Unavailable document"),
-	QT_TR_NOOP("Preview"),
-	QT_TR_NOOP("Open"),
-	QT_TR_NOOP("Snippets"),
-	QT_TR_NOOP("(show query)"),
+        static const char* strings[] = {
+        QT_TR_NOOP("<p><b>No results found</b><br>"),
+        QT_TR_NOOP("Documents"),
+        QT_TR_NOOP("out of at least"),
+        QT_TR_NOOP("for"),
+        QT_TR_NOOP("Previous"),
+        QT_TR_NOOP("Next"),
+        QT_TR_NOOP("Unavailable document"),
+        QT_TR_NOOP("Preview"),
+        QT_TR_NOOP("Open"),
+        QT_TR_NOOP("Snippets"),
+        QT_TR_NOOP("(show query)"),
         QT_TR_NOOP("<p><i>Alternate spellings (accents suppressed): </i>"),
         QT_TR_NOOP("<p><i>Alternate spellings: </i>"),
     };
@@ -355,43 +353,43 @@ void ResList::setRclMain(RclMain *m, bool ismain)
     m_rclmain = m;
     m_ismainres = ismain;
     if (!m_ismainres) {
-	connect(new QShortcut(closeKeySeq, this), SIGNAL (activated()), 
-		this, SLOT (close()));
-	connect(new QShortcut(quitKeySeq, this), SIGNAL (activated()), 
-		m_rclmain, SLOT (fileExit()));
-	connect(this, SIGNAL(previewRequested(Rcl::Doc)), 
-		m_rclmain, SLOT(startPreview(Rcl::Doc)));
-	connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
-		m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
-	connect(this, SIGNAL(editRequested(Rcl::Doc)), 
-		m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
+        connect(new QShortcut(closeKeySeq, this), SIGNAL (activated()), 
+                this, SLOT (close()));
+        connect(new QShortcut(quitKeySeq, this), SIGNAL (activated()), 
+                m_rclmain, SLOT (fileExit()));
+        connect(this, SIGNAL(previewRequested(Rcl::Doc)), 
+                m_rclmain, SLOT(startPreview(Rcl::Doc)));
+        connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
+                m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
+        connect(this, SIGNAL(editRequested(Rcl::Doc)), 
+                m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
     }
 }
 
 void ResList::setFont()
 {
-#ifdef RESLIST_TEXTBROWSER
-    if (prefs.reslistfontfamily.length()) {
-	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
-	QTextBrowser::setFont(nfont);
-    } else {
-	QTextBrowser::setFont(QFont());
-    }
-#else
+#if defined(USING_WEBKIT)
 #ifndef SETFONT_WITH_HEADSTYLE
     QWebSettings *websettings = settings();
     if (prefs.reslistfontfamily.length()) {
         // For some reason there is (12-2014) an offset of 3 between what
         // we request from webkit and what we get.
-	websettings->setFontSize(QWebSettings::DefaultFontSize, 
-				 prefs.reslistfontsize + 3);
-	websettings->setFontFamily(QWebSettings::StandardFont, 
-			       prefs.reslistfontfamily);
+        websettings->setFontSize(QWebSettings::DefaultFontSize, 
+                                 prefs.reslistfontsize + 3);
+        websettings->setFontFamily(QWebSettings::StandardFont, 
+                                   prefs.reslistfontfamily);
     } else {
-	websettings->resetFontSize(QWebSettings::DefaultFontSize);
-	websettings->resetFontFamily(QWebSettings::StandardFont);
+        websettings->resetFontSize(QWebSettings::DefaultFontSize);
+        websettings->resetFontFamily(QWebSettings::StandardFont);
     }
 #endif
+#else
+    if (prefs.reslistfontfamily.length()) {
+        QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
+        QTextBrowser::setFont(nfont);
+    } else {
+        QTextBrowser::setFont(QFont());
+    }
 #endif
 }
 
@@ -418,7 +416,7 @@ void ResList::readDocSource()
     LOGDEB("ResList::readDocSource()\n");
     resetView();
     if (!m_source)
-	return;
+        return;
     m_listId = newListId();
 
     // Reset the page size in case the preference was changed
@@ -443,17 +441,14 @@ void ResList::resetView()
     // slow search, the user will wonder if anything happened. The
     // following helps making sure that the textedit is really
     // blank. Else, there are often icons or text left around
-#ifdef RESLIST_TEXTBROWSER
+#if defined(USING_WEBKIT)
+    m_text = "";
+    setHtml("<html><body></body></html>");
+#else
     m_pageParaToReldocnums.clear();
     clear();
     QTextBrowser::append(".");
     clear();
-#ifndef __APPLE__
-//    XFlush(QX11Info::display());
-#endif
-#else
-    m_text = "";
-    setHtml("<html><body></body></html>");
 #endif
 
 }
@@ -464,7 +459,7 @@ bool ResList::displayingHistory()
     // shown. Using the title value is an ugly hack
     string htstring = string((const char *)tr("Document history").toUtf8());
     if (!m_source || m_source->title().empty())
-	return false;
+        return false;
     return m_source->title().find(htstring) == 0;
 }
 
@@ -473,20 +468,20 @@ void ResList::languageChange()
     setWindowTitle(tr("Result list"));
 }
 
-#ifdef RESLIST_TEXTBROWSER    
+#if !defined(USING_WEBKIT) && !defined(USING_WEBENGINE)
 // Get document number from text block number
 int ResList::docnumfromparnum(int block)
 {
     if (m_pager->pageNumber() < 0)
-	return -1;
+        return -1;
 
     // Try to find the first number < input and actually in the map
     // (result blocks can be made of several text blocks)
     std::map<int,int>::iterator it;
     do {
-	it = m_pageParaToReldocnums.find(block);
-	if (it != m_pageParaToReldocnums.end())
-	    return pageFirstDocNum() + it->second;
+        it = m_pageParaToReldocnums.find(block);
+        if (it != m_pageParaToReldocnums.end())
+            return pageFirstDocNum() + it->second;
     } while (--block >= 0);
     return -1;
 }
@@ -496,29 +491,29 @@ pair<int,int> ResList::parnumfromdocnum(int docnum)
 {
     LOGDEB("parnumfromdocnum: docnum " << docnum << "\n");
     if (m_pager->pageNumber() < 0) {
-	LOGDEB("parnumfromdocnum: no page return -1,-1\n");
-	return pair<int,int>(-1,-1);
+        LOGDEB("parnumfromdocnum: no page return -1,-1\n");
+        return pair<int,int>(-1,-1);
     }
     int winfirst = pageFirstDocNum();
     if (docnum - winfirst < 0) {
-	LOGDEB("parnumfromdocnum: docnum " << docnum << " < winfirst " <<
+        LOGDEB("parnumfromdocnum: docnum " << docnum << " < winfirst " <<
                winfirst << " return -1,-1\n");
-	return pair<int,int>(-1,-1);
+        return pair<int,int>(-1,-1);
     }
     docnum -= winfirst;
     for (std::map<int,int>::iterator it = m_pageParaToReldocnums.begin();
-	 it != m_pageParaToReldocnums.end(); it++) {
-	if (docnum == it->second) {
-	    int first = it->first;
-	    int last = first+1;
-	    std::map<int,int>::iterator it1;
-	    while ((it1 = m_pageParaToReldocnums.find(last)) != 
-		   m_pageParaToReldocnums.end() && it1->second == docnum) {
-		last++;
-	    }
-	    LOGDEB("parnumfromdocnum: return " << first << "," << last << "\n");
-	    return pair<int,int>(first, last);
-	}
+         it != m_pageParaToReldocnums.end(); it++) {
+        if (docnum == it->second) {
+            int first = it->first;
+            int last = first+1;
+            std::map<int,int>::iterator it1;
+            while ((it1 = m_pageParaToReldocnums.find(last)) != 
+                   m_pageParaToReldocnums.end() && it1->second == docnum) {
+                last++;
+            }
+            LOGDEB("parnumfromdocnum: return " << first << "," << last << "\n");
+            return pair<int,int>(first, last);
+        }
     }
     LOGDEB("parnumfromdocnum: not found return -1,-1\n");
     return pair<int,int>(-1,-1);
@@ -536,23 +531,23 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
     int winfirst = pageFirstDocNum();
     int winlast = m_pager->pageLastDocNum();
     if (docnum < 0 ||  winfirst < 0 || winlast < 0)
-	return false;
+        return false;
 
     // Is docnum in current page ? Then all Ok
     if (docnum >= winfirst && docnum <= winlast) {
-	return m_pager->getDoc(docnum, doc);
+        return m_pager->getDoc(docnum, doc);
     }
 
     // Else we accept to page down or up but not further
     if (docnum < winfirst && docnum >= winfirst - prefs.respagesize) {
-	resultPageBack();
+        resultPageBack();
     } else if (docnum < winlast + 1 + prefs.respagesize) {
-	resultPageNext();
+        resultPageNext();
     }
     winfirst = pageFirstDocNum();
     winlast = m_pager->pageLastDocNum();
     if (docnum >= winfirst && docnum <= winlast) {
-	return m_pager->getDoc(docnum, doc);
+        return m_pager->getDoc(docnum, doc);
     }
     return false;
 }
@@ -560,19 +555,19 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 void ResList::keyPressEvent(QKeyEvent * e)
 {
     if ((e->modifiers() & Qt::ShiftModifier)) {
-	if (e->key() == Qt::Key_PageUp) {
-	    // Shift-PageUp -> first page of results
-	    resultPageFirst();
-	    return;
-	} 
+        if (e->key() == Qt::Key_PageUp) {
+            // Shift-PageUp -> first page of results
+            resultPageFirst();
+            return;
+        } 
     } else {
-	if (e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Backspace) {
-	    resPageUpOrBack();
-	    return;
-	} else if (e->key() == Qt::Key_PageDown || e->key() == Qt::Key_Space) {
-	    resPageDownOrNext();
-	    return;
-	}
+        if (e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Backspace) {
+            resPageUpOrBack();
+            return;
+        } else if (e->key() == Qt::Key_PageDown || e->key() == Qt::Key_Space) {
+            resPageDownOrNext();
+            return;
+        }
     }
     RESLIST_PARENTCLASS::keyPressEvent(e);
 }
@@ -581,10 +576,10 @@ void ResList::mouseReleaseEvent(QMouseEvent *e)
 {
     m_lstClckMod = 0;
     if (e->modifiers() & Qt::ControlModifier) {
-	m_lstClckMod |= Qt::ControlModifier;
+        m_lstClckMod |= Qt::ControlModifier;
     } 
     if (e->modifiers() & Qt::ShiftModifier) {
-	m_lstClckMod |= Qt::ShiftModifier;
+        m_lstClckMod |= Qt::ShiftModifier;
     }
     RESLIST_PARENTCLASS::mouseReleaseEvent(e);
 }
@@ -601,39 +596,39 @@ void ResList::highlighted(const QString& )
 // fair enough, else we go to next/previous result page.
 void ResList::resPageUpOrBack()
 {
-#ifdef RESLIST_TEXTBROWSER
+#if defined(USING_WEBKIT)
+    if (scrollIsAtTop()) {
+        resultPageBack();
+    } else {
+        QWebFrame *frame = page()->mainFrame();
+        frame->scroll(0, -int(0.9*geometry().height()));
+    }
+    setupArrows();
+#else
     int vpos = verticalScrollBar()->value();
     verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
     if (vpos == verticalScrollBar()->value())
-	resultPageBack();
-#else
-    if (scrollIsAtTop()) {
-	resultPageBack();
-    } else {
-	QWebFrame *frame = page()->mainFrame();
-	frame->scroll(0, -int(0.9*geometry().height()));
-    }
-    setupArrows();
+        resultPageBack();
 #endif
 }
 
 void ResList::resPageDownOrNext()
 {
-#ifdef RESLIST_TEXTBROWSER
+#if defined(USING_WEBKIT)
+    if (scrollIsAtBottom()) {
+        resultPageNext();
+    } else {
+        QWebFrame *frame = page()->mainFrame();
+        frame->scroll(0, int(0.9*geometry().height()));
+    }
+    setupArrows();
+#else
     int vpos = verticalScrollBar()->value();
     verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepAdd);
     LOGDEB("ResList::resPageDownOrNext: vpos before " << vpos << ", after "
            << verticalScrollBar()->value() << "\n");
     if (vpos == verticalScrollBar()->value()) 
-	resultPageNext();
-#else
-    if (scrollIsAtBottom()) {
-	resultPageNext();
-    } else {
-	QWebFrame *frame = page()->mainFrame();
-	frame->scroll(0, int(0.9*geometry().height()));
-    }
-    setupArrows();
+        resultPageNext();
 #endif
 }
 
@@ -645,41 +640,41 @@ void ResList::setupArrows()
 
 bool ResList::scrollIsAtBottom()
 {
-#ifdef RESLIST_TEXTBROWSER
-    return false;
-#else
+#if defined(USING_WEBKIT)
     QWebFrame *frame = page()->mainFrame();
     bool ret;
     if (!frame || frame->scrollBarGeometry(Qt::Vertical).isEmpty()) {
-	ret = true;
+        ret = true;
     } else {
-	int max = frame->scrollBarMaximum(Qt::Vertical);
-	int cur = frame->scrollBarValue(Qt::Vertical); 
-	ret = (max != 0) && (cur == max);
-	LOGDEB2("Scrollatbottom: cur " << cur << " max " << max << "\n");
+        int max = frame->scrollBarMaximum(Qt::Vertical);
+        int cur = frame->scrollBarValue(Qt::Vertical); 
+        ret = (max != 0) && (cur == max);
+        LOGDEB2("Scrollatbottom: cur " << cur << " max " << max << "\n");
     }
     LOGDEB2("scrollIsAtBottom: returning " << ret << "\n");
     return ret;
+#else
+    return false;
 #endif
 }
 
 bool ResList::scrollIsAtTop()
 {
-#ifdef RESLIST_TEXTBROWSER
-    return false;
-#else
+#if defined(USING_WEBKIT)
     QWebFrame *frame = page()->mainFrame();
     bool ret;
     if (!frame || frame->scrollBarGeometry(Qt::Vertical).isEmpty()) {
-	ret = true;
+        ret = true;
     } else {
-	int cur = frame->scrollBarValue(Qt::Vertical);
-	int min = frame->scrollBarMinimum(Qt::Vertical);
-	LOGDEB("Scrollattop: cur " << cur << " min " << min << "\n");
-	ret = (cur == min);
+        int cur = frame->scrollBarValue(Qt::Vertical);
+        int min = frame->scrollBarMinimum(Qt::Vertical);
+        LOGDEB("Scrollattop: cur " << cur << " min " << min << "\n");
+        ret = (cur == min);
     }
     LOGDEB2("scrollIsAtTop: returning " << ret << "\n");
     return ret;
+#else
+    return false;
 #endif
 }
 
@@ -688,8 +683,8 @@ bool ResList::scrollIsAtTop()
 void ResList::resultPageBack()
 {
     if (m_pager->hasPrev()) {
-	m_pager->resultPageBack();
-	displayPage();
+        m_pager->resultPageBack();
+        displayPage();
     }
 }
 
@@ -706,8 +701,8 @@ void ResList::resultPageFirst()
 void ResList::resultPageNext()
 {
     if (m_pager->hasNext()) {
-	m_pager->resultPageNext();
-	displayPage();
+        m_pager->resultPageNext();
+        displayPage();
     }
 }
 
@@ -720,10 +715,10 @@ void ResList::resultPageFor(int docnum)
 void ResList::append(const QString &text)
 {
     LOGDEB2("QtGuiReslistPager::appendQString : " << qs2utf8s(text) << "\n");
-#ifdef RESLIST_TEXTBROWSER
-    QTextBrowser::append(text);
-#else
+#if defined(USING_WEBKIT)
     m_text += text;
+#else
+    QTextBrowser::append(text);
 #endif
 }
 
@@ -733,7 +728,7 @@ void ResList::displayPage()
 
     m_pager->displayPage(theconfig);
 
-#ifndef RESLIST_TEXTBROWSER
+#if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
     setHtml(m_text);
 #endif
 
@@ -753,64 +748,64 @@ void ResList::previewExposed(int docnum)
 
     // Possibly erase old one to white
     if (m_curPvDoc != -1) {
-#ifdef RESLIST_TEXTBROWSER
-	pair<int,int> blockrange = parnumfromdocnum(m_curPvDoc);
-	if (blockrange.first != -1) {
-	    for (int blockn = blockrange.first;
-		 blockn < blockrange.second; blockn++) {
-		QTextBlock block = document()->findBlockByNumber(blockn);
-		QTextCursor cursor(block);
-		QTextBlockFormat format = cursor.blockFormat();
-		format.clearBackground();
-		cursor.setBlockFormat(format);
-	    }
-	}
+#if defined(USING_WEBKIT)
+        QString sel = 
+            QString("div[rcldocnum=\"%1\"]").arg(m_curPvDoc - pageFirstDocNum());
+        LOGDEB2("Searching for element, selector: [" << qs2utf8s(sel) << "]\n");
+        QWebElement elt = page()->mainFrame()->findFirstElement(sel);
+        if (!elt.isNull()) {
+            LOGDEB2("Found\n");
+            elt.removeAttribute("style");
+        } else {
+            LOGDEB2("Not Found\n");
+        }
 #else
-	QString sel = 
-	   QString("div[rcldocnum=\"%1\"]").arg(m_curPvDoc - pageFirstDocNum());
-	LOGDEB2("Searching for element, selector: [" << qs2utf8s(sel) << "]\n");
-	QWebElement elt = page()->mainFrame()->findFirstElement(sel);
-	if (!elt.isNull()) {
-	    LOGDEB2("Found\n");
-	    elt.removeAttribute("style");
-	} else {
-	    LOGDEB2("Not Found\n");
-	}
+        pair<int,int> blockrange = parnumfromdocnum(m_curPvDoc);
+        if (blockrange.first != -1) {
+            for (int blockn = blockrange.first;
+                 blockn < blockrange.second; blockn++) {
+                QTextBlock block = document()->findBlockByNumber(blockn);
+                QTextCursor cursor(block);
+                QTextBlockFormat format = cursor.blockFormat();
+                format.clearBackground();
+                cursor.setBlockFormat(format);
+            }
+        }
 #endif
-	m_curPvDoc = -1;
+        m_curPvDoc = -1;
     }
 
     // Set background for active preview's doc entry
     m_curPvDoc = docnum;
 
-#ifdef RESLIST_TEXTBROWSER
+#if defined(USING_WEBKIT)
+    QString sel = 
+        QString("div[rcldocnum=\"%1\"]").arg(docnum - pageFirstDocNum());
+    LOGDEB2("Searching for element, selector: [" << qs2utf8s(sel) << "]\n");
+    QWebElement elt = page()->mainFrame()->findFirstElement(sel);
+    if (!elt.isNull()) {
+        LOGDEB2("Found\n");
+        elt.setAttribute("style", "background: LightBlue;}");
+    } else {
+        LOGDEB2("Not Found\n");
+    }
+#else
     pair<int,int>  blockrange = parnumfromdocnum(docnum);
 
     // Maybe docnum is -1 or not in this window, 
     if (blockrange.first < 0)
-	return;
+        return;
     // Color the new active paragraph
     QColor color("LightBlue");
     for (int blockn = blockrange.first+1;
-	 blockn < blockrange.second; blockn++) {
-	QTextBlock block = document()->findBlockByNumber(blockn);
-	QTextCursor cursor(block);
-	QTextBlockFormat format;
-	format.setBackground(QBrush(color));
-	cursor.mergeBlockFormat(format);
-	setTextCursor(cursor);
-	ensureCursorVisible();
-    }
-#else
-    QString sel = 
-	QString("div[rcldocnum=\"%1\"]").arg(docnum - pageFirstDocNum());
-    LOGDEB2("Searching for element, selector: [" << qs2utf8s(sel) << "]\n");
-    QWebElement elt = page()->mainFrame()->findFirstElement(sel);
-    if (!elt.isNull()) {
-	LOGDEB2("Found\n");
-	elt.setAttribute("style", "background: LightBlue;}");
-    } else {
-	LOGDEB2("Not Found\n");
+         blockn < blockrange.second; blockn++) {
+        QTextBlock block = document()->findBlockByNumber(blockn);
+        QTextCursor cursor(block);
+        QTextBlockFormat format;
+        format.setBackground(QBrush(color));
+        cursor.mergeBlockFormat(format);
+        setTextCursor(cursor);
+        ensureCursorVisible();
     }
 #endif
 }
@@ -819,22 +814,22 @@ void ResList::previewExposed(int docnum)
 void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 {
     RESLIST_PARENTCLASS::mouseDoubleClickEvent(event);
-#ifdef RESLIST_TEXTBROWSER
-    if (textCursor().hasSelection())
-	emit(wordSelect(textCursor().selectedText()));
-#else
+#if defined(USING_WEBKIT)
     emit(wordSelect(selectedText()));
+#else
+    if (textCursor().hasSelection())
+        emit(wordSelect(textCursor().selectedText()));
 #endif
 }
 
 void ResList::showQueryDetails()
 {
     if (!m_source)
-	return;
+        return;
     string oq = breakIntoLines(m_source->getDescription(), 100, 50);
     QString str;
     QString desc = tr("Result count (est.)") + ": " + 
-	str.setNum(m_source->getResCnt()) + "<br>";
+        str.setNum(m_source->getResCnt()) + "<br>";
     desc += tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
     QMessageBox::information(this, tr("Query details"), desc);
 }
@@ -851,48 +846,48 @@ void ResList::linkWasClicked(const QUrl &url)
     int what = strurl[0];
     switch (what) {
 
-    // Open abstract/snippets window
+        // Open abstract/snippets window
     case 'A':
     {
-	if (!m_source) 
-	    return;
-	int i = atoi(strurl.c_str()+1) - 1;
-	Rcl::Doc doc;
-	if (!getDoc(i, doc)) {
-	    LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
-	    return;
-	}
-	emit(showSnippets(doc));
+        if (!m_source) 
+            return;
+        int i = atoi(strurl.c_str()+1) - 1;
+        Rcl::Doc doc;
+        if (!getDoc(i, doc)) {
+            LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
+            return;
+        }
+        emit(showSnippets(doc));
     }
     break;
 
     // Show duplicates
     case 'D':
     {
-	if (!m_source) 
-	    return;
-	int i = atoi(strurl.c_str()+1) - 1;
-	Rcl::Doc doc;
-	if (!getDoc(i, doc)) {
-	    LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
-	    return;
-	}
-	vector<Rcl::Doc> dups;
-	if (m_source->docDups(doc, dups) && m_rclmain) {
-	    m_rclmain->newDupsW(doc, dups);
-	}
+        if (!m_source) 
+            return;
+        int i = atoi(strurl.c_str()+1) - 1;
+        Rcl::Doc doc;
+        if (!getDoc(i, doc)) {
+            LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
+            return;
+        }
+        vector<Rcl::Doc> dups;
+        if (m_source->docDups(doc, dups) && m_rclmain) {
+            m_rclmain->newDupsW(doc, dups);
+        }
     }
     break;
 
     // Open parent folder
     case 'F':
     {
-	int i = atoi(strurl.c_str()+1) - 1;
-	Rcl::Doc doc;
-	if (!getDoc(i, doc)) {
-	    LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
-	    return;
-	}
+        int i = atoi(strurl.c_str()+1) - 1;
+        Rcl::Doc doc;
+        if (!getDoc(i, doc)) {
+            LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
+            return;
+        }
         emit editRequested(ResultPopup::getParent(std::shared_ptr<DocSequence>(),
                                                   doc));
     }
@@ -901,47 +896,47 @@ void ResList::linkWasClicked(const QUrl &url)
     // Show query details
     case 'H': 
     {
-	showQueryDetails();
-	break;
+        showQueryDetails();
+        break;
     }
 
     // Preview and edit
     case 'P': 
     case 'E': 
     {
-	int i = atoi(strurl.c_str()+1) - 1;
-	Rcl::Doc doc;
-	if (!getDoc(i, doc)) {
-	    LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
-	    return;
-	}
-	if (what == 'P') {
-	    if (m_ismainres) {
-		emit docPreviewClicked(i, doc, m_lstClckMod);
-	    } else {
-		emit previewRequested(doc);
-	    }
-	} else {
-	    emit editRequested(doc);
-	}
+        int i = atoi(strurl.c_str()+1) - 1;
+        Rcl::Doc doc;
+        if (!getDoc(i, doc)) {
+            LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
+            return;
+        }
+        if (what == 'P') {
+            if (m_ismainres) {
+                emit docPreviewClicked(i, doc, m_lstClckMod);
+            } else {
+                emit previewRequested(doc);
+            }
+        } else {
+            emit editRequested(doc);
+        }
     }
     break;
 
     // Next/prev page
     case 'n':
-	resultPageNext();
-	break;
+        resultPageNext();
+        break;
     case 'p':
-	resultPageBack();
-	break;
+        resultPageBack();
+        break;
 
-	// Run script. Link format Rnn|Script Name
+        // Run script. Link format Rnn|Script Name
     case 'R':
     {
-	int i = atoi(strurl.c_str() + 1) - 1;
-	QString s = url.toString();
-	int bar = s.indexOf("|");
-	if (bar == -1 || bar >= s.size()-1)
+        int i = atoi(strurl.c_str() + 1) - 1;
+        QString s = url.toString();
+        int bar = s.indexOf("|");
+        if (bar == -1 || bar >= s.size()-1)
             break;
         string cmdname = qs2utf8s(s.right(s.size() - (bar + 1)));
         DesktopDb ddb(path_cat(theconfig->getConfDir(), "scripts"));
@@ -956,58 +951,58 @@ void ResList::linkWasClicked(const QUrl &url)
     }
     break;
 
-	// Spelling: replacement suggestion clicked
+    // Spelling: replacement suggestion clicked
     case 'S':
     {
         string s;
-	if (!strurl.empty())
-	    s = strurl.substr(1);
+        if (!strurl.empty())
+            s = strurl.substr(1);
         string::size_type bar = s.find_first_of("|");
-	if (bar != string::npos && bar < s.size() - 1) {
-	    string o = s.substr(0, bar);
-	    string n = s.substr(bar+1);
+        if (bar != string::npos && bar < s.size() - 1) {
+            string o = s.substr(0, bar);
+            string n = s.substr(bar+1);
             LOGDEB2("Emitting wordreplace " << o << " -> " << n << std::endl);
-	    emit wordReplace(u8s2qs(o), u8s2qs(n));
-	}
+            emit wordReplace(u8s2qs(o), u8s2qs(n));
+        }
     }
     break;
 
     default: 
-	LOGERR("ResList::linkWasClicked: bad link [" << strurl << "]\n");
-	break;// ?? 
+        LOGERR("ResList::linkWasClicked: bad link [" << strurl << "]\n");
+        break;// ?? 
     }
 }
 
 void ResList::createPopupMenu(const QPoint& pos)
 {
     LOGDEB("ResList::createPopupMenu(" << pos.x() << ", " << pos.y() << ")\n");
-#ifdef RESLIST_TEXTBROWSER
+#if defined(USING_WEBKIT)
+    QWebHitTestResult htr = page()->mainFrame()->hitTestContent(pos);
+    if (htr.isNull())
+        return;
+    QWebElement el = htr.enclosingBlockElement();
+    while (!el.isNull() && !el.hasAttribute("rcldocnum"))
+        el = el.parent();
+    if (el.isNull())
+        return;
+    QString snum = el.attribute("rcldocnum");
+    m_popDoc = pageFirstDocNum() + snum.toInt();
+#else
     QTextCursor cursor = cursorForPosition(pos);
     int blocknum = cursor.blockNumber();
     LOGDEB("ResList::createPopupMenu(): block " << blocknum << "\n");
     m_popDoc = docnumfromparnum(blocknum);
-#else
-    QWebHitTestResult htr = page()->mainFrame()->hitTestContent(pos);
-    if (htr.isNull())
-	return;
-    QWebElement el = htr.enclosingBlockElement();
-    while (!el.isNull() && !el.hasAttribute("rcldocnum"))
-	el = el.parent();
-    if (el.isNull())
-	return;
-    QString snum = el.attribute("rcldocnum");
-    m_popDoc = pageFirstDocNum() + snum.toInt();
 #endif
 
     if (m_popDoc < 0) 
-	return;
+        return;
     Rcl::Doc doc;
     if (!getDoc(m_popDoc, doc))
-	return;
+        return;
 
     int options =  ResultPopup::showSaveOne;
     if (m_ismainres)
-	options |= ResultPopup::isMain;
+        options |= ResultPopup::isMain;
     QMenu *popup = ResultPopup::create(this, options, m_source, doc);
     popup->popup(mapToGlobal(pos));
 }
@@ -1016,11 +1011,11 @@ void ResList::menuPreview()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc)) {
-	if (m_ismainres) {
-	    emit docPreviewClicked(m_popDoc, doc, 0);
-	} else {
-	    emit previewRequested(doc);
-	}
+        if (m_ismainres) {
+            emit docPreviewClicked(m_popDoc, doc, 0);
+        } else {
+            emit previewRequested(doc);
+        }
     }
 }
 
@@ -1028,19 +1023,19 @@ void ResList::menuSaveToFile()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
-	emit docSaveToFileClicked(doc);
+        emit docSaveToFileClicked(doc);
 }
 
 void ResList::menuPreviewParent()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc) && m_source)  {
-	Rcl::Doc pdoc = ResultPopup::getParent(m_source, doc);
-	if (pdoc.mimetype == "inode/directory") {
-	    emit editRequested(pdoc);
-	} else {
-	    emit previewRequested(pdoc);
-	}
+        Rcl::Doc pdoc = ResultPopup::getParent(m_source, doc);
+        if (pdoc.mimetype == "inode/directory") {
+            emit editRequested(pdoc);
+        } else {
+            emit previewRequested(pdoc);
+        }
     }
 }
 
@@ -1048,28 +1043,28 @@ void ResList::menuOpenParent()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc) && m_source) 
-	emit editRequested(ResultPopup::getParent(m_source, doc));
+        emit editRequested(ResultPopup::getParent(m_source, doc));
 }
 
 void ResList::menuShowSnippets()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
-	emit showSnippets(doc);
+        emit showSnippets(doc);
 }
 
 void ResList::menuShowSubDocs()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc)) 
-	emit showSubDocs(doc);
+        emit showSubDocs(doc);
 }
 
 void ResList::menuEdit()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
-	emit editRequested(doc);
+        emit editRequested(doc);
 }
 void ResList::menuOpenWith(QAction *act)
 {
@@ -1078,31 +1073,31 @@ void ResList::menuOpenWith(QAction *act)
     string cmd = qs2utf8s(act->data().toString());
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
-	emit openWithRequested(doc, cmd);
+        emit openWithRequested(doc, cmd);
 }
 
 void ResList::menuCopyFN()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
-	ResultPopup::copyFN(doc);
+        ResultPopup::copyFN(doc);
 }
 
 void ResList::menuCopyURL()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
-	ResultPopup::copyURL(doc);
+        ResultPopup::copyURL(doc);
 }
 
 void ResList::menuExpand()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
-	emit docExpand(doc);
+        emit docExpand(doc);
 }
+
 int ResList::pageFirstDocNum()
 {
     return m_pager->pageFirstDocNum();
 }
-

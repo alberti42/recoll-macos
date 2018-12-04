@@ -427,6 +427,22 @@ if test X$enableQT = Xyes ; then
    QMAKE_DISABLE_WEBKIT=""
   fi
 
+  AC_ARG_ENABLE(webengine,
+    AC_HELP_STRING([--enable-webengine],
+      [Enable use of qt-webengine (only meaningful if qtgui is enabled), in
+      place or qt-webkit.]),
+        enableWebengine=$enableval, enableWebengine="no")
+
+  if test "$enableWebengine" = "yes" ; then
+   QMAKE_ENABLE_WEBENGINE=""
+   QMAKE_DISABLE_WEBENGINE="#"
+   QMAKE_ENABLE_WEBKIT="#"
+   QMAKE_DISABLE_WEBKIT=""
+  else
+   QMAKE_ENABLE_WEBENGINE="#"
+   QMAKE_DISABLE_WEBENGINE=""
+  fi
+
  ##### Using QZeitGeist lib ? Default no for now
   AC_ARG_WITH(qzeitgeist,
     AC_HELP_STRING([--with-qzeitgeist],
@@ -504,6 +520,8 @@ AC_SUBST(QTGUI)
 AC_SUBST(XAPIANCXXFLAGS)
 AC_SUBST(QMAKE_ENABLE_WEBKIT)
 AC_SUBST(QMAKE_DISABLE_WEBKIT)
+AC_SUBST(QMAKE_ENABLE_WEBENGINE)
+AC_SUBST(QMAKE_DISABLE_WEBENGINE)
 AC_SUBST(QMAKE_ENABLE_ZEITGEIST)
 AC_SUBST(QMAKE_DISABLE_ZEITGEIST)
 AC_SUBST(LIBQZEITGEIST)
