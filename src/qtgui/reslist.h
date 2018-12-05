@@ -20,6 +20,7 @@
 #include "autoconfig.h"
 
 #include <map>
+#include <QPoint>
 
 #if defined(USING_WEBENGINE)
 #  include <QWebEngineView>
@@ -34,6 +35,7 @@
 
 class RclMain;
 class QtGuiResListPager;
+class QEvent;
 namespace Rcl {
 class Doc;
 }
@@ -110,22 +112,26 @@ protected:
     void mouseReleaseEvent(QMouseEvent *e);
     void mouseDoubleClickEvent(QMouseEvent*);
 
+public slots:
+    virtual void onLinkClicked(const QUrl &);
+    virtual void onPopupJsDone(const QVariant&);
+    void runJS(const QString& js);
+    void runStoredJS();
 protected slots:
     virtual void languageChange();
-    virtual void linkWasClicked(const QUrl &);
 
 private:
     QtGuiResListPager  *m_pager{0};
     std::shared_ptr<DocSequence> m_source;
     int        m_popDoc{-1}; // Docnum for the popup menu.
+    QPoint     m_popPos;
     int        m_curPvDoc{-1};// Docnum for current preview
     int        m_lstClckMod{0}; // Last click modifier. 
     int        m_listId{0}; // query Id for matching with preview windows
-
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     // Webview makes it more difficult to append text incrementally,
     // so we store the page and display it when done.
-    QString    m_text; 
+    QString    m_text;
 #else
     // Translate from textedit paragraph number to relative
     // docnum. Built while we insert text into the qtextedit
@@ -133,16 +139,46 @@ private:
     virtual int docnumfromparnum(int);
     virtual std::pair<int,int> parnumfromdocnum(int);
 #endif
+    QString m_js;
     RclMain   *m_rclmain{0};
     bool m_ismainres{true};
 
-    virtual void displayPage(); // Display current page
+    void doCreatePopupMenu();
+    virtual void displayPage();
     static int newListId();
     void resetView();
     bool scrollIsAtTop();
     bool scrollIsAtBottom();
     void setupArrows();
 };
+
+#ifdef USING_WEBENGINE
+
+// Subclass the page to hijack the link clicks
+class RclWebPage: public QWebEnginePage {
+    Q_OBJECT
+
+public:
+    RclWebPage(ResList *parent) 
+    : QWebEnginePage((QWidget *)parent), m_reslist(parent) {}
+
+protected:
+    virtual bool acceptNavigationRequest(const QUrl& url, 
+                                         NavigationType, 
+                                         bool) {
+        m_reslist->onLinkClicked(url);
+        return false;
+    }
+
+private:
+    ResList *m_reslist;
+};
+
+#else // Using Qt Webkit
+
+#define RclWebPage QWebPage
+
+#endif
 
 
 #endif /* _RESLIST_H_INCLUDED_ */

@@ -61,10 +61,47 @@ static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
 
 #if defined(USING_WEBKIT)
-#include <QWebFrame>
-#include <QWebElement>
-#include <QWebSettings>
+# include <QWebFrame>
+# include <QWebElement>
+# include <QWebSettings>
+# define QWEBSETTINGS QWebSettings
+#elif defined(USING_WEBENGINE)
+// Notes for WebEngine
+// - All links must begin with http:// for acceptNavigationRequest to be
+//   called. 
+// - The links passed to acceptNav.. have the host part 
+//   lowercased -> we change S0 to http://localhost/S0, not http://S0
+# include <QWebEnginePage>
+# include <QWebEngineSettings>
+# include <QtWebEngineWidgets>
+# define QWEBSETTINGS QWebEngineSettings
 #endif
+
+#ifdef USING_WEBENGINE
+// This script saves the location details when a mouse button is
+// clicked. This is for replacing data provided by Webkit QWebElement
+// on a right-click as QT WebEngine does not have an equivalent service.
+static const string locdetailscript(R"raw(
+var locDetails = '';
+function saveLoc(ev) 
+{
+    el = ev.target;
+    locDetails = '';
+    while (el && el.attributes && !el.attributes.getNamedItem("rcldocnum")) {
+        el = el.parentNode;
+    }
+    rcldocnum = el.attributes.getNamedItem("rcldocnum");
+    if (rcldocnum) {
+        rcldocnumvalue = rcldocnum.value;
+    } else {
+        rcldocnumvalue = "";
+    }
+    if (el && el.attributes) {
+        locDetails = 'rcldocnum = ' + rcldocnumvalue
+    }
+}
+)raw");
+#endif // webengine
 
 // Decide if we set font family and style with a css section in the
 // html <head> or with qwebsettings setfont... calls.  We currently do
@@ -91,6 +128,9 @@ public:
                          map<string, vector<string> >& sugg);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
     virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
+#ifdef USING_WEBENGINE
+    virtual string linkPrefix() override {return "http://localhost/";} 
+#endif
 private:
     ResList *m_reslist;
 };
@@ -124,8 +164,9 @@ bool QtGuiResListPager::append(const string& data, int docnum,
     LOGDEB2("QtGuiReslistPager::appendDoc: blockCount " <<
             m_reslist->document()->blockCount() << ", " << data << "\n");
     logdata(data.c_str());
-#if defined(USING_WEBKIT)
-    QString sdoc = QString("<div class=\"rclresult\" rcldocnum=\"%1\">").arg(docnum);
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
+    QString sdoc = QString(
+        "<div class=\"rclresult\" id=\"%1\" rcldocnum=\"%1\">").arg(docnum);
     m_reslist->append(sdoc);
     m_reslist->append(QString::fromUtf8(data.c_str()));
     m_reslist->append("</div>");
@@ -151,7 +192,7 @@ string QtGuiResListPager::trans(const string& in)
 
 string QtGuiResListPager::detailsLink()
 {
-    string chunk = "<a href=\"H-1\">";
+    string chunk = string("<a href=\"") + linkPrefix() + "H-1\">";
     chunk += trans("(show query)");
     chunk += "</a>";
     return chunk;
@@ -190,6 +231,11 @@ string QtGuiResListPager::headerContent()
 #endif
     out += string("color: ") + qs2utf8s(prefs.fontcolor) + ";\n";
     out += string("}\n</style>\n");
+#if defined(USING_WEBENGINE)
+    out += "<script type=\"text/javascript\">\n";
+    out += locdetailscript;
+    out += "</script>\n";
+#endif
     out += qs2utf8s(prefs.reslistheadertext);
     return out;
 }
@@ -257,23 +303,22 @@ string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 
 class PlainToRichQtReslist : public PlainToRich {
 public:
-    virtual string startMatch(unsigned int idx)
-        {
-            if (0 && m_hdata) {
-                string s1, s2;
-                stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
-                stringsToString<vector<string> >(m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
-                LOGDEB2("Reslist startmatch: group " << s1 << " user group " <<
-                        s2 << "\n");
-            }
+    virtual string startMatch(unsigned int idx) {
+        if (0 && m_hdata) {
+            string s1, s2;
+            stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
+            stringsToString<vector<string> >(
+                m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
+            LOGDEB2("Reslist startmatch: group " << s1 << " user group " <<
+                    s2 << "\n");
+        }
                 
-            return string("<span class='rclmatch' style='")
-                + qs2utf8s(prefs.qtermstyle) + string("'>");
-        }
-    virtual string endMatch() 
-        {
-            return string("</span>");
-        }
+        return string("<span class='rclmatch' style='")
+            + qs2utf8s(prefs.qtermstyle) + string("'>");
+    }
+    virtual string endMatch() {
+        return string("</span>");
+    }
 };
 static PlainToRichQtReslist g_hiliter;
 
@@ -286,13 +331,19 @@ ResList::ResList(QWidget* parent, const char* name)
         setObjectName("resList");
     else 
         setObjectName(name);
-#if defined(USING_WEBKIT)
+    
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
+    setPage(new RclWebPage(this));
+#ifdef USING_WEBKIT
     LOGDEB("Reslist: using Webkit\n");
+    page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     // signals and slots connections
     connect(this, SIGNAL(linkClicked(const QUrl &)), 
-            this, SLOT(linkWasClicked(const QUrl &)));
-    page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+            this, SLOT(onLinkClicked(const QUrl &)));
+#else
+    LOGDEB("Reslist: using Webengine\n");
+#endif
+    settings()->setAttribute(QWEBSETTINGS::JavascriptEnabled, true);
 #else
     LOGDEB("Reslist: using QTextBrowser\n");
     setReadOnly(true);
@@ -301,7 +352,7 @@ ResList::ResList(QWidget* parent, const char* name)
     setTabChangesFocus(true);
     // signals and slots connections
     connect(this, SIGNAL(anchorClicked(const QUrl &)), 
-            this, SLOT(linkWasClicked(const QUrl &)));
+            this, SLOT(onLinkClicked(const QUrl &)));
 #endif
 
     setFont();
@@ -366,23 +417,39 @@ void ResList::setRclMain(RclMain *m, bool ismain)
     }
 }
 
-void ResList::setFont()
+void ResList::runStoredJS()
+{
+    runJS(m_js);
+    m_js.clear();
+}
+
+void ResList::runJS(const QString& js)
 {
 #if defined(USING_WEBKIT)
-#ifndef SETFONT_WITH_HEADSTYLE
-    QWebSettings *websettings = settings();
+    page()->mainFrame()->evaluateJavaScript(js);
+#elif defined(USING_WEBENGINE)
+    page()->runJavaScript(js);
+#else
+    Q_UNUSED(js);
+#endif
+}
+
+void ResList::setFont()
+{
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
+#  ifndef SETFONT_WITH_HEADSTYLE
     if (prefs.reslistfontfamily.length()) {
         // For some reason there is (12-2014) an offset of 3 between what
         // we request from webkit and what we get.
-        websettings->setFontSize(QWebSettings::DefaultFontSize, 
+        settings()->setFontSize(QWEBSETTINGS::DefaultFontSize, 
                                  prefs.reslistfontsize + 3);
-        websettings->setFontFamily(QWebSettings::StandardFont, 
+        settings()->setFontFamily(QWEBSETTINGS::StandardFont, 
                                    prefs.reslistfontfamily);
     } else {
-        websettings->resetFontSize(QWebSettings::DefaultFontSize);
-        websettings->resetFontFamily(QWebSettings::StandardFont);
+        settings()->resetFontSize(QWEBSETTINGS::DefaultFontSize);
+        settings()->resetFontFamily(QWEBSETTINGS::StandardFont);
     }
-#endif
+# endif
 #else
     if (prefs.reslistfontfamily.length()) {
         QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
@@ -398,8 +465,6 @@ int ResList::newListId()
     static int id;
     return ++id;
 }
-
-extern "C" int XFlush(void *);
 
 void ResList::setDocSource(std::shared_ptr<DocSequence> nsource)
 {
@@ -441,7 +506,7 @@ void ResList::resetView()
     // slow search, the user will wonder if anything happened. The
     // following helps making sure that the textedit is really
     // blank. Else, there are often icons or text left around
-#if defined(USING_WEBKIT)
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     m_text = "";
     setHtml("<html><body></body></html>");
 #else
@@ -596,12 +661,21 @@ void ResList::highlighted(const QString& )
 // fair enough, else we go to next/previous result page.
 void ResList::resPageUpOrBack()
 {
-#if defined(USING_WEBKIT)
+ #if defined(USING_WEBKIT)
     if (scrollIsAtTop()) {
         resultPageBack();
     } else {
-        QWebFrame *frame = page()->mainFrame();
-        frame->scroll(0, -int(0.9*geometry().height()));
+        page()->mainFrame()->scroll(0, -int(0.9*geometry().height()));
+    }
+    setupArrows();
+#elif defined(USING_WEBENGINE)
+    if (scrollIsAtTop()) {
+        resultPageBack();
+    } else {
+        QString js = "window.scrollBy(" + 
+            QString::number(0) + ", " +
+            QString::number(-int(0.9*geometry().height())) + ");";
+        runJS(js);
     }
     setupArrows();
 #else
@@ -618,8 +692,17 @@ void ResList::resPageDownOrNext()
     if (scrollIsAtBottom()) {
         resultPageNext();
     } else {
-        QWebFrame *frame = page()->mainFrame();
-        frame->scroll(0, int(0.9*geometry().height()));
+        page()->mainFrame()->scroll(0, int(0.9*geometry().height()));
+    }
+    setupArrows();
+#elif defined(USING_WEBENGINE)
+    if (scrollIsAtBottom()) {
+        resultPageNext();
+    } else {
+        QString js = "window.scrollBy(" + 
+            QString::number(0) + ", " +
+            QString::number(int(0.9*geometry().height())) + ");";
+        runJS(js);
     }
     setupArrows();
 #else
@@ -653,6 +736,16 @@ bool ResList::scrollIsAtBottom()
     }
     LOGDEB2("scrollIsAtBottom: returning " << ret << "\n");
     return ret;
+#elif defined(USING_WEBENGINE)
+    QSize css = page()->contentsSize().toSize();
+    QSize wss = size();
+    QPoint sp = page()->scrollPosition().toPoint();
+    LOGDEB1("atBottom: contents W " << css.width() << " H " << css.height() << 
+            " widget W " << wss.width() << " Y " << wss.height() << 
+            " scroll X " << sp.x() << " Y " << sp.y() << "\n");
+    // This seems to work but it's mysterious as points and pixels
+    // should not be the same
+    return wss.height() + sp.y() >= css.height() - 10;
 #else
     return false;
 #endif
@@ -673,6 +766,8 @@ bool ResList::scrollIsAtTop()
     }
     LOGDEB2("scrollIsAtTop: returning " << ret << "\n");
     return ret;
+#elif defined(USING_WEBENGINE)
+    return page()->scrollPosition().toPoint().ry() == 0;
 #else
     return false;
 #endif
@@ -715,7 +810,7 @@ void ResList::resultPageFor(int docnum)
 void ResList::append(const QString &text)
 {
     LOGDEB2("QtGuiReslistPager::appendQString : " << qs2utf8s(text) << "\n");
-#if defined(USING_WEBKIT)
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     m_text += text;
 #else
     QTextBrowser::append(text);
@@ -730,6 +825,15 @@ void ResList::displayPage()
 
 #if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
     setHtml(m_text);
+#endif
+
+#if defined(USING_WEBENGINE)
+    // Have to delay running this. Alternative would be to set it as
+    // onload on the body element in the html, like upplay does, but
+    // this would need an ennoying reslistpager modification.
+    m_js = "elt=document.getElementsByTagName('body')[0];"
+        "elt.addEventListener('contextmenu', saveLoc);";
+    QTimer::singleShot(200, this, SLOT(runStoredJS()));
 #endif
 
     LOGDEB0("ResList::displayPg: hasNext " << m_pager->hasNext() <<
@@ -759,6 +863,12 @@ void ResList::previewExposed(int docnum)
         } else {
             LOGDEB2("Not Found\n");
         }
+#elif defined(USING_WEBENGINE)
+        QString js = QString(
+            "elt=document.getElementById('%1');"
+            "if (elt){elt.removeAttribute('style');}"
+            ).arg(m_curPvDoc - pageFirstDocNum());
+        runJS(js);
 #else
         pair<int,int> blockrange = parnumfromdocnum(m_curPvDoc);
         if (blockrange.first != -1) {
@@ -789,6 +899,12 @@ void ResList::previewExposed(int docnum)
     } else {
         LOGDEB2("Not Found\n");
     }
+#elif defined(USING_WEBENGINE)
+    QString js = QString(
+        "elt=document.getElementById('%1');"
+        "if(elt){elt.setAttribute('style', 'background: LightBlue');}"
+        ).arg(docnum - pageFirstDocNum());
+    runJS(js);
 #else
     pair<int,int>  blockrange = parnumfromdocnum(docnum);
 
@@ -814,8 +930,13 @@ void ResList::previewExposed(int docnum)
 void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 {
     RESLIST_PARENTCLASS::mouseDoubleClickEvent(event);
-#if defined(USING_WEBKIT)
+#if defined(USING_WEBKIT) 
     emit(wordSelect(selectedText()));
+#elif defined(USING_WEBENGINE)
+    // webengineview does not have such an event function, and
+    // reimplementing event() itself is not useful (tried) as it does
+    // not get mouse clicks. We'd need javascript to do this, but it's
+    // not that useful, so left aside for now.
 #else
     if (textCursor().hasSelection())
         emit(wordSelect(textCursor().selectedText()));
@@ -834,14 +955,16 @@ void ResList::showQueryDetails()
     QMessageBox::information(this, tr("Query details"), desc);
 }
 
-void ResList::linkWasClicked(const QUrl &url)
+void ResList::onLinkClicked(const QUrl &qurl)
 {
     // qt5: url.toString() does not accept FullyDecoded, but that's what we
     // want. e.g. Suggestions links are like Sterm|spelling which we
     // receive as Sterm%7CSpelling
-    string strurl = url_decode(qs2utf8s(url.toString()));
+    string strurl = url_decode(qs2utf8s(qurl.toString()));
     
-    LOGDEB("ResList::linkWasClicked: [" << strurl << "]\n");
+    LOGDEB1("ResList::onLinkClicked: [" << strurl << "] prefix " <<
+            m_pager->linkPrefix() << "\n");
+    strurl = strurl.substr(m_pager->linkPrefix().size());
 
     int what = strurl[0];
     switch (what) {
@@ -854,7 +977,7 @@ void ResList::linkWasClicked(const QUrl &url)
         int i = atoi(strurl.c_str()+1) - 1;
         Rcl::Doc doc;
         if (!getDoc(i, doc)) {
-            LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
+            LOGERR("ResList::onLinkClicked: can't get doc for " << i << "\n");
             return;
         }
         emit(showSnippets(doc));
@@ -869,7 +992,7 @@ void ResList::linkWasClicked(const QUrl &url)
         int i = atoi(strurl.c_str()+1) - 1;
         Rcl::Doc doc;
         if (!getDoc(i, doc)) {
-            LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
+            LOGERR("ResList::onLinkClicked: can't get doc for " << i << "\n");
             return;
         }
         vector<Rcl::Doc> dups;
@@ -885,7 +1008,7 @@ void ResList::linkWasClicked(const QUrl &url)
         int i = atoi(strurl.c_str()+1) - 1;
         Rcl::Doc doc;
         if (!getDoc(i, doc)) {
-            LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
+            LOGERR("ResList::onLinkClicked: can't get doc for " << i << "\n");
             return;
         }
         emit editRequested(ResultPopup::getParent(std::shared_ptr<DocSequence>(),
@@ -894,7 +1017,8 @@ void ResList::linkWasClicked(const QUrl &url)
     break;
 
     // Show query details
-    case 'H': 
+    case 'h':
+    case 'H':
     {
         showQueryDetails();
         break;
@@ -907,7 +1031,7 @@ void ResList::linkWasClicked(const QUrl &url)
         int i = atoi(strurl.c_str()+1) - 1;
         Rcl::Doc doc;
         if (!getDoc(i, doc)) {
-            LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
+            LOGERR("ResList::onLinkClicked: can't get doc for " << i << "\n");
             return;
         }
         if (what == 'P') {
@@ -934,7 +1058,7 @@ void ResList::linkWasClicked(const QUrl &url)
     case 'R':
     {
         int i = atoi(strurl.c_str() + 1) - 1;
-        QString s = url.toString();
+        QString s = qurl.toString();
         int bar = s.indexOf("|");
         if (bar == -1 || bar >= s.size()-1)
             break;
@@ -968,14 +1092,36 @@ void ResList::linkWasClicked(const QUrl &url)
     break;
 
     default: 
-        LOGERR("ResList::linkWasClicked: bad link [" << strurl << "]\n");
+        LOGERR("ResList::onLinkClicked: bad link [" << strurl << "]\n");
         break;// ?? 
     }
+}
+
+void ResList::onPopupJsDone(const QVariant &jr)
+{
+    QString qs(jr.toString());
+    LOGDEB("onPopupJsDone: parameter: " << qs2utf8s(qs) << "\n");
+    QStringList qsl = qs.split("\n", QString::SkipEmptyParts);
+    for (int i = 0 ; i < qsl.size(); i++) {
+        int eq = qsl[i].indexOf("=");
+        if (eq > 0) {
+            QString nm = qsl[i].left(eq).trimmed();
+            QString value = qsl[i].right(qsl[i].size() - (eq+1)).trimmed();
+            if (!nm.compare("rcldocnum")) {
+                m_popDoc = atoi(qs2utf8s(value).c_str());
+            } else {
+                LOGERR("onPopupJsDone: unknown key: " << qs2utf8s(nm) << "\n");
+            }
+        }
+    }
+    doCreatePopupMenu();
 }
 
 void ResList::createPopupMenu(const QPoint& pos)
 {
     LOGDEB("ResList::createPopupMenu(" << pos.x() << ", " << pos.y() << ")\n");
+    m_popDoc = -1;
+    m_popPos = pos;
 #if defined(USING_WEBKIT)
     QWebHitTestResult htr = page()->mainFrame()->hitTestContent(pos);
     if (htr.isNull())
@@ -987,13 +1133,21 @@ void ResList::createPopupMenu(const QPoint& pos)
         return;
     QString snum = el.attribute("rcldocnum");
     m_popDoc = pageFirstDocNum() + snum.toInt();
+#elif defined(USING_WEBENGINE)
+    QString js("window.locDetails;");
+    RclWebPage *mypage = dynamic_cast<RclWebPage*>(page());
+    mypage->runJavaScript(js, [this](const QVariant &v) {onPopupJsDone(v);});
 #else
     QTextCursor cursor = cursorForPosition(pos);
     int blocknum = cursor.blockNumber();
     LOGDEB("ResList::createPopupMenu(): block " << blocknum << "\n");
     m_popDoc = docnumfromparnum(blocknum);
 #endif
+    doCreatePopupMenu();
+}
 
+void ResList::doCreatePopupMenu()
+{
     if (m_popDoc < 0) 
         return;
     Rcl::Doc doc;
@@ -1004,7 +1158,7 @@ void ResList::createPopupMenu(const QPoint& pos)
     if (m_ismainres)
         options |= ResultPopup::isMain;
     QMenu *popup = ResultPopup::create(this, options, m_source, doc);
-    popup->popup(mapToGlobal(pos));
+    popup->popup(mapToGlobal(m_popPos));
 }
 
 void ResList::menuPreview()

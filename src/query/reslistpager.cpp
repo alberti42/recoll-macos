@@ -25,6 +25,7 @@
 #include <stdint.h>
 
 #include <sstream>
+#include <iostream>
 #include <list>
 using std::ostringstream;
 using std::endl;
@@ -69,12 +70,13 @@ ResListPager::ResListPager(int pagesize)
 void ResListPager::resultPageNext()
 {
     if (!m_docSource) {
-	LOGDEB("ResListPager::resultPageNext: null source\n" );
+	LOGDEB("ResListPager::resultPageNext: null source\n");
 	return;
     }
 
     int resCnt = m_docSource->getResCnt();
-    LOGDEB("ResListPager::resultPageNext: rescnt "  << (resCnt) << ", winfirst "  << (m_winfirst) << "\n" );
+    LOGDEB("ResListPager::resultPageNext: rescnt " << resCnt <<
+           ", winfirst " << m_winfirst << "\n");
 
     if (m_winfirst < 0) {
 	m_winfirst = 0;
@@ -126,12 +128,13 @@ static string maybeEscapeHtml(const string& fld)
 void ResListPager::resultPageFor(int docnum)
 {
     if (!m_docSource) {
-	LOGDEB("ResListPager::resultPageFor: null source\n" );
+	LOGDEB("ResListPager::resultPageFor: null source\n");
 	return;
     }
 
     int resCnt = m_docSource->getResCnt();
-    LOGDEB("ResListPager::resultPageFor("  << (docnum) << "): rescnt "  << (resCnt) << ", winfirst "  << (m_winfirst) << "\n" );
+    LOGDEB("ResListPager::resultPageFor(" << docnum << "): rescnt " <<
+           resCnt << ", winfirst " << m_winfirst << "\n");
     m_winfirst = (docnum / m_pagesize) * m_pagesize;
 
     // Get the next page of results.
@@ -250,7 +253,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     // Links;
     ostringstream linksbuf;
     if (canIntern(doc.mimetype, config)) { 
-	linksbuf << "<a href=\"P" << docnumforlinks << "\">" 
+	linksbuf << "<a href=\""<< linkPrefix()<< "P" << docnumforlinks << "\">" 
 		 << trans("Preview") << "</a>&nbsp;&nbsp;";
     }
 
@@ -258,12 +261,12 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
 
     if (!config->getMimeViewerDef(doc.mimetype, apptag, false).empty()) {
-	linksbuf << "<a href=\"E" << docnumforlinks << "\">"  
+	linksbuf << "<a href=\"" <<linkPrefix() + "E" <<docnumforlinks << "\">"  
 		 << trans("Open") << "</a>";
     }
     ostringstream snipsbuf;
     if (doc.haspages) {
-	snipsbuf << "<a href=\"A" << docnumforlinks << "\">" 
+	snipsbuf << "<a href=\"" <<linkPrefix()<<"A" << docnumforlinks << "\">" 
 		 << trans("Snippets") << "</a>&nbsp;&nbsp;";
 	linksbuf << "&nbsp;&nbsp;" << snipsbuf.str();
     }
@@ -272,8 +275,8 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     if (doc.getmeta(Rcl::Doc::keycc, &collapscnt) && !collapscnt.empty()) {
 	ostringstream collpsbuf;
 	int clc = atoi(collapscnt.c_str()) + 1;
-	collpsbuf << "<a href=\"D" << docnumforlinks << "\">" 
-		  << trans("Dups") << "(" << clc << ")" << "</a>&nbsp;&nbsp;";
+	collpsbuf << "<a href=\""<<linkPrefix()<<"D" << docnumforlinks << "\">" 
+		 << trans("Dups") << "(" << clc << ")" << "</a>&nbsp;&nbsp;";
 	linksbuf << "&nbsp;&nbsp;" << collpsbuf.str();
     }
 
@@ -326,7 +329,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     // the table approach for 1.15 for now (in guiutils.cpp)
 //	chunk << "<br style='clear:both;height:0;line-height:0;'>" << endl;
 
-    LOGDEB2("Chunk: ["  << ((const char *)chunk.rdbuf()->str()) << "]\n" );
+    LOGDEB2("Chunk: [" << chunk.rdbuf()->str() << "]\n");
     append(chunk.rdbuf()->str(), i, doc);
 }
 
@@ -342,13 +345,13 @@ bool ResListPager::getDoc(int num, Rcl::Doc& doc)
 
 void ResListPager::displayPage(RclConfig *config)
 {
-    LOGDEB("ResListPager::displayPage\n" );
+    LOGDEB("ResListPager::displayPage. linkPrefix: " << linkPrefix() << "\n");
     if (!m_docSource) {
-	LOGDEB("ResListPager::displayPage: null source\n" );
+	LOGDEB("ResListPager::displayPage: null source\n");
 	return;
     }
     if (m_winfirst < 0 && !pageEmpty()) {
-	LOGDEB("ResListPager::displayPage: sequence error: winfirst < 0\n" );
+	LOGDEB("ResListPager::displayPage: sequence error: winfirst < 0\n");
 	return;
     }
 
@@ -363,14 +366,14 @@ void ResListPager::displayPage(RclConfig *config)
     // accumulator
     // Also note that there can be results beyond the estimated resCnt.
     chunk << "<html><head>" << endl
-	  << "<meta http-equiv=\"content-type\""
-	  << " content=\"text/html; charset=utf-8\">" << endl
-	  << headerContent()
-	  << "</head><body>" << endl
-	  << pageTop()
-	  << "<p><span style=\"font-size:110%;\"><b>"
-	  << m_docSource->title()
-	  << "</b></span>&nbsp;&nbsp;&nbsp;";
+	 << "<meta http-equiv=\"content-type\""
+	 << " content=\"text/html; charset=utf-8\">" << endl
+	 << headerContent()
+	 << "</head><body>" << endl
+	 << pageTop()
+	 << "<p><span style=\"font-size:110%;\"><b>"
+	 << m_docSource->title()
+	 << "</b></span>&nbsp;&nbsp;&nbsp;";
 
     if (pageEmpty()) {
 	chunk << trans("<p><b>No results found</b><br>");
@@ -389,11 +392,11 @@ void ResListPager::displayPage(RclConfig *config)
 		    if (o_index_stripchars) {
 			chunk << 
 			    trans("<p><i>Alternate spellings (accents suppressed): </i>")
-			      << "<br /><blockquote>";
+			     << "<br /><blockquote>";
 		    } else {
 			chunk << 
 			    trans("<p><i>Alternate spellings: </i>")
-			      << "<br /><blockquote>";
+			     << "<br /><blockquote>";
 		    
 		    }
 
@@ -412,27 +415,27 @@ void ResListPager::displayPage(RclConfig *config)
 	unsigned int resCnt = m_docSource->getResCnt();
 	if (m_winfirst + m_respage.size() < resCnt) {
 	    chunk << trans("Documents") << " <b>" << m_winfirst + 1
-		  << "-" << m_winfirst + m_respage.size() << "</b> " 
-		  << trans("out of at least") << " " 
-		  << resCnt << " " << trans("for") << " " ;
+		 << "-" << m_winfirst + m_respage.size() << "</b> " 
+		 << trans("out of at least") << " " 
+		 << resCnt << " " << trans("for") << " " ;
 	} else {
 	    chunk << trans("Documents") << " <b>" 
-		  << m_winfirst + 1 << "-" << m_winfirst + m_respage.size()
-		  << "</b> " << trans("for") << " ";
+		 << m_winfirst + 1 << "-" << m_winfirst + m_respage.size()
+		 << "</b> " << trans("for") << " ";
 	}
     }
     chunk << detailsLink();
     if (hasPrev() || hasNext()) {
 	chunk << "&nbsp;&nbsp;";
 	if (hasPrev()) {
-	    chunk << "<a href=\"" + prevUrl() + "\"><b>"
-		  << trans("Previous")
-		  << "</b></a>&nbsp;&nbsp;&nbsp;";
+	    chunk << "<a href=\"" << linkPrefix() + prevUrl() + "\"><b>"
+		 << trans("Previous")
+		 << "</b></a>&nbsp;&nbsp;&nbsp;";
 	}
 	if (hasNext()) {
-	    chunk << "<a href=\""+ nextUrl() + "\"><b>"
-		  << trans("Next")
-		  << "</b></a>";
+	    chunk << "<a href=\"" << linkPrefix() + nextUrl() + "\"><b>"
+		 << trans("Next")
+		 << "</b></a>";
 	}
     }
     chunk << "</p>" << endl;
@@ -457,14 +460,14 @@ void ResListPager::displayPage(RclConfig *config)
     chunk << "<p align=\"center\">";
     if (hasPrev() || hasNext()) {
 	if (hasPrev()) {
-	    chunk << "<a href=\"" + prevUrl() + "\"><b>" 
-		  << trans("Previous")
-		  << "</b></a>&nbsp;&nbsp;&nbsp;";
+	    chunk << "<a href=\"" + linkPrefix() + prevUrl() + "\"><b>" 
+		 << trans("Previous")
+		 << "</b></a>&nbsp;&nbsp;&nbsp;";
 	}
 	if (hasNext()) {
-	    chunk << "<a href=\""+ nextUrl() + "\"><b>"
-		  << trans("Next")
-		  << "</b></a>";
+	    chunk << "<a href=\"" << linkPrefix() + nextUrl() + "\"><b>"
+		 << trans("Next")
+		 << "</b></a>";
 	}
     }
     chunk << "</p>" << endl;
@@ -505,7 +508,7 @@ string ResListPager::trans(const string& in)
 
 string ResListPager::detailsLink()
 {
-    string chunk = "<a href=\"H-1\">";
+    string chunk = string("<a href=\"") + linkPrefix() + "H-1\">";
     chunk += trans("(show query)") + "</a>";
     return chunk;
 }

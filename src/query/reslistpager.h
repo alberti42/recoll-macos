@@ -121,6 +121,7 @@ public:
         sugg.clear();
     }
     virtual string absSep() {return "&hellip;";}
+    virtual string linkPrefix() {return "";}
 private:
     int                  m_pagesize;
     int                  m_newpagesize;

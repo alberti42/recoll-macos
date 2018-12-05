@@ -229,7 +229,21 @@ int main(int argc, char **argv)
         }
     }
 
+#ifdef USING_WEBENGINE
+    // This is necessary for allowing webengine to load local resources (icons)
+    // It is not an issue because we never access remote sites.
+    char arg_disable_web_security[] = "--disable-web-security";
+    int appargc = argc + 1;
+    char** appargv = new char*[appargc+1];
+    for(int i = 0; i < argc; i++) {
+        appargv[i] = argv[i];
+    }
+    appargv[argc] = arg_disable_web_security;
+    appargv[argc+1] = nullptr;
+    QApplication app(appargc, appargv);
+#else
     QApplication app(argc, argv);
+#endif
 
     QCoreApplication::setOrganizationName("Recoll.org");
     QCoreApplication::setApplicationName("recoll");

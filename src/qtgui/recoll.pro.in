@@ -19,6 +19,7 @@ QT += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 @QMAKE_ENABLE_WEBKIT@ greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
+@QMAKE_ENABLE_WEBENGINE@ greaterThan(QT_MAJOR_VERSION, 4): QT += webenginewidgets
 
 CONFIG  += qt warn_on thread release 
 

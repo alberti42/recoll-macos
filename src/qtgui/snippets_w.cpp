@@ -21,15 +21,28 @@
 #include <string>
 #include <vector>
 #include <sstream>
-using namespace std;
 
 #if defined(USING_WEBKIT)
-#include <QWebSettings>
-#include <QWebFrame>
-#include <QUrl>
+#  include <QWebSettings>
+#  include <QWebFrame>
+#  include <QUrl>
+#  define QWEBSETTINGS QWebSettings
+#  define QWEBPAGE QWebPage
+#elif defined(USING_WEBENGINE)
+// Notes for WebEngine
+// - All links must begin with http:// for acceptNavigationRequest to be
+//   called. 
+// - The links passed to acceptNav.. have the host part 
+//   lowercased -> we change S0 to http://h/S0, not http://S0
+#  include <QWebEnginePage>
+#  include <QWebEngineSettings>
+#  include <QtWebEngineWidgets>
+#  define QWEBSETTINGS QWebEngineSettings
+#  define QWEBPAGE QWebEnginePage
 #else
 #include <QTextBrowser>
 #endif
+
 #include <QShortcut>
 
 #include "log.h"
@@ -40,10 +53,12 @@ using namespace std;
 #include "rclhelp.h"
 #include "plaintorich.h"
 
-// Note: the internal search currently does not work with QTextBrowser. To be
-// fixed by looking at the preview code if someone asks for it...
+using namespace std;
+
 #if defined(USING_WEBKIT)
 #define browser ((QWebView*)browserw)
+#elif defined(USING_WEBENGINE)
+#define browser ((QWebEngineView*)browserw)
 #else
 #define browser ((QTextBrowser*)browserw)
 #endif
@@ -97,22 +112,32 @@ void SnippetsW::init()
     verticalLayout->insertWidget(0, browserw);
     browser->setUrl(QUrl(QString::fromUtf8("about:blank")));
     connect(browser, SIGNAL(linkClicked(const QUrl &)), 
-	    this, SLOT(linkWasClicked(const QUrl &)));
+	    this, SLOT(onLinkClicked(const QUrl &)));
     browser->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     browser->page()->currentFrame()->setScrollBarPolicy(Qt::Horizontal,
 							Qt::ScrollBarAlwaysOff);
-    QWebSettings *ws = browser->page()->settings();
+    QWEBSETTINGS *ws = browser->page()->settings();
     if (prefs.reslistfontfamily != "") {
-	ws->setFontFamily(QWebSettings::StandardFont, prefs.reslistfontfamily);
-	ws->setFontSize(QWebSettings::DefaultFontSize, prefs.reslistfontsize);
+	ws->setFontFamily(QWEBSETTINGS::StandardFont, prefs.reslistfontfamily);
+	ws->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize);
     }
     if (!prefs.snipCssFile.isEmpty())
 	ws->setUserStyleSheetUrl(QUrl::fromLocalFile(prefs.snipCssFile));
+#elif defined(USING_WEBENGINE)
+    browserw = new QWebEngineView(this);
+    verticalLayout->insertWidget(0, browserw);
+    browser->setPage(new SnipWebPage(this));
+    QWEBSETTINGS *ws = browser->page()->settings();
+    if (prefs.reslistfontfamily != "") {
+	ws->setFontFamily(QWEBSETTINGS::StandardFont, prefs.reslistfontfamily);
+	ws->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize);
+    }
+    // Stylesheet TBD
 #else
     browserw = new QTextBrowser(this);
     verticalLayout->insertWidget(0, browserw);
     connect(browser, SIGNAL(anchorClicked(const QUrl &)), 
-	    this, SLOT(linkWasClicked(const QUrl &)));
+	    this, SLOT(onLinkClicked(const QUrl &)));
     browser->setReadOnly(true);
     browser->setUndoRedoEnabled(false);
     browser->setOpenLinks(false);
@@ -165,23 +190,23 @@ void SnippetsW::init()
     g_hiliter.set_inputhtml(false);
     bool nomatch = true;
 
-    for (vector<Rcl::Snippet>::const_iterator it = vpabs.begin(); 
-	 it != vpabs.end(); it++) {
-	if (it->page == -1) {
+    for (const auto& snippet : vpabs) {
+	if (snippet.page == -1) {
 	    oss << "<tr><td colspan=\"2\">" << 
-		it->snippet << "</td></tr>" << endl;
+		snippet.snippet << "</td></tr>" << endl;
 	    continue;
 	}
 	list<string> lr;
-	if (!g_hiliter.plaintorich(it->snippet, lr, hdata)) {
-	    LOGDEB1("No match for ["  << (it->snippet) << "]\n" );
+	if (!g_hiliter.plaintorich(snippet.snippet, lr, hdata)) {
+	    LOGDEB1("No match for [" << snippet.snippet << "]\n");
 	    continue;
 	}
 	nomatch = false;
 	oss << "<tr><td>";
-	if (it->page > 0) {
-	    oss << "<a href=\"P" << it->page << "T" << it->term << "\">" 
-		<< "P.&nbsp;" << it->page << "</a>";
+	if (snippet.page > 0) {
+	    oss << "<a href=\"http://h/P" << snippet.page << "T" <<
+                snippet.term << "\">" 
+		<< "P.&nbsp;" << snippet.page << "</a>";
 	}
 	oss << "</td><td>" << lr.front().c_str() << "</td></tr>" << endl;
     }
@@ -193,10 +218,12 @@ void SnippetsW::init()
                            "generator got lost in a maze...</p>"));
     }
     oss << "\n</body></html>";
-#if defined(USING_WEBKIT)
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     browser->setHtml(QString::fromUtf8(oss.str().c_str()));
 #else
     browser->insertHtml(QString::fromUtf8(oss.str().c_str()));
+    browser->moveCursor (QTextCursor::Start);
+    browser->ensureCursorVisible();
 #endif
 }
 
@@ -212,20 +239,21 @@ void SnippetsW::slotEditFindNext()
     if (!searchFM->isVisible())
 	slotEditFind();
 
-#if defined(USING_WEBKIT)
+#if defined(USING_WEBKIT)  || defined(USING_WEBENGINE)
     browser->findText(searchLE->text());
 #else
-    browser->find(searchLE->text(), 0);
+    browser->find(searchLE->text());
 #endif
 
 }
+
 void SnippetsW::slotEditFindPrevious()
 {
     if (!searchFM->isVisible())
 	slotEditFind();
 
-#if defined(USING_WEBKIT)
-    browser->findText(searchLE->text(), QWebPage::FindBackward);
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
+    browser->findText(searchLE->text(), QWEBPAGE::FindBackward);
 #else
     browser->find(searchLE->text(), QTextDocument::FindBackward);
 #endif
@@ -233,17 +261,22 @@ void SnippetsW::slotEditFindPrevious()
 
 void SnippetsW::slotSearchTextChanged(const QString& txt)
 {
-#if defined(USING_WEBKIT)
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     browser->findText(txt);
 #else
+    // Cursor thing is so that we don't go to the next occurrence with
+    // each character, but rather try to extend the current match
+    QTextCursor cursor = browser->textCursor();
+    cursor.setPosition(cursor.anchor(), QTextCursor::KeepAnchor);
+    browser->setTextCursor(cursor);
     browser->find(txt, 0);
 #endif
 }
 
-void SnippetsW::linkWasClicked(const QUrl &url)
+void SnippetsW::onLinkClicked(const QUrl &url)
 {
-    string ascurl = (const char *)url.toString().toUtf8();
-    LOGDEB("Snippets::linkWasClicked: ["  << (ascurl) << "]\n" );
+    string ascurl = qs2u8s(url.toString()).substr(9);
+    LOGDEB("Snippets::onLinkClicked: [" << ascurl << "]\n");
 
     if (ascurl.size() > 3) {
 	int what = ascurl[0];
@@ -264,7 +297,5 @@ void SnippetsW::linkWasClicked(const QUrl &url)
 	}
 	}
     }
-    LOGERR("Snippets::linkWasClicked: bad link ["  << (ascurl) << "]\n" );
+    LOGERR("Snippets::onLinkClicked: bad link [" << ascurl << "]\n");
 }
-
-

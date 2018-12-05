@@ -33,26 +33,49 @@ class SnippetsW : public QWidget, public Ui::Snippets
 {
     Q_OBJECT
 public:
-    SnippetsW(Rcl::Doc doc, std::shared_ptr<DocSequence> source, QWidget* parent = 0) 
-	: QWidget(parent), m_doc(doc), m_source(source)
-    {
-	setupUi((QDialog*)this);
-	init();
+    SnippetsW(Rcl::Doc doc, std::shared_ptr<DocSequence> source,
+              QWidget* parent = 0) 
+        : QWidget(parent), m_doc(doc), m_source(source) {
+        setupUi((QDialog*)this);
+        init();
     }
 
+public slots:
+    virtual void onLinkClicked(const QUrl &);
+
 protected slots:
-    virtual void linkWasClicked(const QUrl &);
     virtual void slotEditFind();
     virtual void slotEditFindNext();
     virtual void slotEditFindPrevious();
     virtual void slotSearchTextChanged(const QString&);
 signals:
     void startNativeViewer(Rcl::Doc, int pagenum, QString term);
-	
+        
 private:
     void init();
     Rcl::Doc m_doc;
     std::shared_ptr<DocSequence> m_source;
 };
+
+#ifdef USING_WEBENGINE
+#include <QWebEnginePage>
+// Subclass the page to hijack the link clicks
+class SnipWebPage: public QWebEnginePage {
+    Q_OBJECT
+public:
+    SnipWebPage(SnippetsW *parent) 
+    : QWebEnginePage((QWidget *)parent), m_parent(parent) {}
+protected:
+    virtual bool acceptNavigationRequest(const QUrl& url, 
+                                         NavigationType, 
+                                         bool) {
+        m_parent->onLinkClicked(url);
+        return false;
+    }
+private:
+    SnippetsW *m_parent;
+};
+#endif
+
 
 #endif /* _SNIPPETS_W_H_INCLUDED_ */
