@@ -1293,10 +1293,11 @@ Query_highlight(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	PyErr_SetString(PyExc_ValueError, "Plaintorich failed");
 	return 0;
     }
+    // cf python manual:The bytes will be interpreted as being UTF-8 encoded.
     PyObject* unicode = PyUnicode_FromStringAndSize(out.begin()->c_str(),
 						    out.begin()->size());
-    return Py_BuildValue("u#", PyUnicode_AsUnicode(unicode), 
-			 PyUnicode_GetSize(unicode));
+    // We used to return a copy of the unicode object. Can't see why any more
+    return unicode;
 }
 
 PyDoc_STRVAR(doc_Query_makedocabstract,
