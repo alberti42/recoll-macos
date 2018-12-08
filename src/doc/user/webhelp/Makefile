@@ -1,6 +1,6 @@
 # Configuration
 # The name of the source DocBook xml file
-INPUT_XML = ../usermanual.xml
+INPUT_XML = ../usermanual.xml ../recoll.conf.xml
 
 # The makefile assumes that you have a 
 # directory named images that contains 

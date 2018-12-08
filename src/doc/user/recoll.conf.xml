@@ -11,7 +11,7 @@ $HOME). You can use symbolic links in the list, they will be followed,
 independantly of the value of the followLinks variable.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">
 <term><varname>monitordirs</varname></term>
-<listitem><para>(1.25) Space-separated list of
+<listitem><para>(1.24) Space-separated list of
 files or directories to monitor for updates. When running
 the real-time indexer, this allows monitoring only a subset of the whole
 indexed area. The elements must be included in the tree defined by the

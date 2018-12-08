@@ -32,19 +32,19 @@ all: usermanual.html webh usermanual.pdf
 webh:
 	make -C webhelp
         
-usermanual.html: usermanual.xml
+usermanual.html: usermanual.xml recoll.conf.xml
 	xsltproc --xinclude ${commonoptions} \
             -o tmpfile.html custom.xsl $<
 	-tidy -indent tmpfile.html > usermanual.html
 	rm -f tmpfile.html
 
-index.html: usermanual.xml
+index.html: usermanual.xml recoll.conf.xml
 	xsltproc ${commonoptions} \
             --stringparam use.id.as.filename 1 \
             --stringparam root.filename index \
             "${XSLDIR}/html/chunk.xsl" $<
 
-usermanual.pdf: usermanual.xml
+usermanual.pdf: usermanual.xml recoll.conf.xml
 	dblatex --xslt-opts="--xinclude" -tpdf $<
 
 UTILBUILDS=/home/dockes/tmp/builds/medocutils/
