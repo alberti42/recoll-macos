@@ -28,7 +28,11 @@
 #include <mutex>
 #include <condition_variable>
 
+#ifdef MDU_INCLUDE_LOG
+#include MDU_INCLUDE_LOG
+#else
 #include "log.h"
+#endif
 
 /**
  * A WorkQueue manages the synchronisation around a queue of work items,
