@@ -67,6 +67,35 @@ static const QKeySequence prevDocInTabKS(Qt::ShiftModifier+Qt::Key_Up);
 static const QKeySequence closeTabKS(Qt::ControlModifier+Qt::Key_W);
 static const QKeySequence printTabKS(Qt::ControlModifier+Qt::Key_P);
 
+// Make an attempt at trimming wildcard exprs at both ends of string
+static void trimwildcards(string& elt)
+{
+    if (elt.empty())
+        return;
+    string::size_type initsize;
+    do {
+        initsize = elt.size();
+        // Trim wildcard chars. 
+        trimstring(elt, " *?");
+        // Trim wildcard char classes 
+        if (elt.size() && elt.back() == ']') {
+            string::size_type offs = elt.find_last_of("[");
+            if (offs != string::npos) {
+                elt = elt.substr(0, offs);
+                if (elt.size() && elt.back() == '[') {
+                    elt.erase(elt.end()-1);
+                }
+            }
+        }
+        if (elt.size() && elt.front() == '[') {
+            string::size_type offs = elt.find_first_of("]");
+            if (offs != string::npos) {
+                elt.erase(0, offs+1);
+            }
+        }
+    } while (elt.size() && elt.size() != initsize);
+}
+
 void Preview::init()
 {
     LOGDEB("Preview::init\n");
@@ -77,8 +106,11 @@ void Preview::init()
 
     for (const auto& ugroup : m_hData.ugroups) {
         QString s;
-        for (const auto& elt : ugroup) {
-            s.append(u8s2qs(elt));
+        for (auto elt : ugroup) {
+            trimwildcards(elt);
+            if (!elt.empty()) {
+                s.append(u8s2qs(elt));
+            }
         }
         s = s.trimmed();
         searchTextCMB->addItem(s);
