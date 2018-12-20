@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) 2014 J.F.Dockes
+# Copyright (C) 2014-2018 J.F.Dockes
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -16,15 +16,11 @@
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ######################################
 
-from __future__ import print_function
-
 import sys
 import rclexecm
-import rclxslt
-from zipfile import ZipFile
-from rclbasehandler import RclBaseHandler
+import rclgenxslt
 
-stylesheet_meta = '''<?xml version="1.0"?>
+stylesheet = '''<?xml version="1.0"?>
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" 
@@ -32,145 +28,110 @@ stylesheet_meta = '''<?xml version="1.0"?>
   xmlns:dc="http://purl.org/dc/elements/1.1/" 
   xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" 
   xmlns:ooo="http://openoffice.org/2004/office"
-  exclude-result-prefixes="office xlink meta ooo dc"
+  xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+  exclude-result-prefixes="office xlink meta ooo dc text"
   >
 
-<xsl:output method="html" encoding="UTF-8"/>
+  <xsl:output method="html" encoding="UTF-8"/>
+
+  <xsl:template match="/">
+    <html>
+      <head>
+        <xsl:apply-templates select="/office:document/office:meta" />
+      </head>
+      <body>
+        <xsl:apply-templates select="/office:document/office:body" />
+      </body></html>
+  </xsl:template>
 
 
-<xsl:template match="/office:document">
-  <xsl:apply-templates select="/office:document/office:meta" />
-</xsl:template>
+  <xsl:template match="/office:document/office:meta">
+    <xsl:apply-templates select="dc:title"/>
+    <xsl:apply-templates select="dc:description"/>
+    <xsl:apply-templates select="dc:subject"/>
+    <xsl:apply-templates select="meta:keyword"/>
+    <xsl:apply-templates select="dc:creator"/>
+  </xsl:template>
 
-<xsl:template match="office:document/office:meta">
-  <xsl:apply-templates select="dc:title"/>
-  <xsl:apply-templates select="dc:description"/>
-  <xsl:apply-templates select="dc:subject"/>
-  <xsl:apply-templates select="meta:keyword"/>
-  <xsl:apply-templates select="dc:creator"/>
-</xsl:template>
+  <xsl:template match="/office:document/office:body">
+    <xsl:apply-templates select=".//text:p" />
+    <xsl:apply-templates select=".//text:h" />
+    <xsl:apply-templates select=".//text:s" />
+    <xsl:apply-templates select=".//text:line-break" />
+    <xsl:apply-templates select=".//text:tab" />
+  </xsl:template>
 
-<xsl:template match="dc:title">
-<title> <xsl:value-of select="."/> </title><xsl:text>
-</xsl:text>
-</xsl:template>
-
-<xsl:template match="dc:description">
-  <meta>
-  <xsl:attribute name="name">abstract</xsl:attribute>
-  <xsl:attribute name="content">
-     <xsl:value-of select="."/>
-  </xsl:attribute>
-  </meta><xsl:text>
-</xsl:text>
-</xsl:template>
-
-<xsl:template match="dc:subject">
-  <meta>
-  <xsl:attribute name="name">keywords</xsl:attribute>
-  <xsl:attribute name="content">
-     <xsl:value-of select="."/>
-  </xsl:attribute>
-  </meta><xsl:text>
-</xsl:text>
-</xsl:template>
-
-<xsl:template match="dc:creator">
-  <meta>
-  <xsl:attribute name="name">author</xsl:attribute>
-  <xsl:attribute name="content">
-     <xsl:value-of select="."/>
-  </xsl:attribute>
-  </meta><xsl:text>
-</xsl:text>
-</xsl:template>
-
-<xsl:template match="meta:keyword">
-  <meta>
-  <xsl:attribute name="name">keywords</xsl:attribute>
-  <xsl:attribute name="content">
-     <xsl:value-of select="."/>
-  </xsl:attribute>
-  </meta><xsl:text>
-</xsl:text>
-</xsl:template>
-
-</xsl:stylesheet>
-'''
-
-stylesheet_content  = '''<?xml version="1.0"?>
-<xsl:stylesheet version="1.0"
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
-  xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" 
-  exclude-result-prefixes="text office"
->
-
-<xsl:template match="office:settings"><xsl:text></xsl:text></xsl:template>
-<xsl:template match="office:meta"><xsl:text></xsl:text></xsl:template>
-<xsl:template match="office:scripts"><xsl:text></xsl:text></xsl:template>
-<xsl:template match="office:font-face-decls"><xsl:text></xsl:text></xsl:template>
-<xsl:template match="office:styles"><xsl:text></xsl:text></xsl:template>
-<xsl:template match="office:automatic-styles"><xsl:text></xsl:text></xsl:template>
-<xsl:template match="office:master-styles"><xsl:text></xsl:text></xsl:template>
-
-
-<xsl:template match="text:p">
-  <p><xsl:apply-templates/></p><xsl:text>
+  <xsl:template match="dc:title">
+    <title> <xsl:value-of select="."/> </title><xsl:text>
   </xsl:text>
-</xsl:template>
+  </xsl:template>
 
-<xsl:template match="text:h">
-<p><xsl:apply-templates/></p><xsl:text>
-</xsl:text>
-</xsl:template>
+  <xsl:template match="dc:description">
+    <meta>
+      <xsl:attribute name="name">abstract</xsl:attribute>
+      <xsl:attribute name="content">
+        <xsl:value-of select="."/>
+      </xsl:attribute>
+      </meta><xsl:text>
+    </xsl:text>
+  </xsl:template>
 
-<xsl:template match="text:s">
-<xsl:text> </xsl:text>
-</xsl:template>
+  <xsl:template match="dc:subject">
+    <meta>
+      <xsl:attribute name="name">keywords</xsl:attribute>
+      <xsl:attribute name="content">
+        <xsl:value-of select="."/>
+      </xsl:attribute>
+      </meta><xsl:text>
+    </xsl:text>
+  </xsl:template>
 
-<xsl:template match="text:line-break">
-<br />
-</xsl:template>
+  <xsl:template match="dc:creator">
+    <meta>
+      <xsl:attribute name="name">author</xsl:attribute>
+      <xsl:attribute name="content">
+        <xsl:value-of select="."/>
+      </xsl:attribute>
+      </meta><xsl:text>
+    </xsl:text>
+  </xsl:template>
 
-<xsl:template match="text:tab">
-<xsl:text>    </xsl:text>
-</xsl:template>
+  <xsl:template match="meta:keyword">
+    <meta>
+      <xsl:attribute name="name">keywords</xsl:attribute>
+      <xsl:attribute name="content">
+        <xsl:value-of select="."/>
+      </xsl:attribute>
+      </meta><xsl:text>
+    </xsl:text>
+  </xsl:template>
+
+  <xsl:template match="office:body//text:p">
+    <p><xsl:apply-templates/></p><xsl:text>
+  </xsl:text>
+  </xsl:template>
+
+  <xsl:template match="office:body//text:h">
+    <p><xsl:apply-templates/></p><xsl:text>
+  </xsl:text>
+  </xsl:template>
+
+  <xsl:template match="office:body//text:s">
+    <xsl:text> </xsl:text>
+  </xsl:template>
+
+  <xsl:template match="office:body//text:line-break">
+    <br />
+  </xsl:template>
+
+  <xsl:template match="office:body//text:tab">
+    <xsl:text>    </xsl:text>
+  </xsl:template>
 
 </xsl:stylesheet>
 '''
-
-class OOExtractor(RclBaseHandler):
-    def __init__(self, em):
-        super(OOExtractor, self).__init__(em)
-
-    def html_text(self, fn):
-        f = open(fn, 'rb')
-        data = f.read()
-        f.close()
-
-        docdata = b'<html>\n<head>\n<meta http-equiv="Content-Type"' \
-                  b'content="text/html; charset=UTF-8">\n'
-
-        try:
-            res = rclxslt.apply_sheet_data(stylesheet_meta, data)
-            docdata += res
-        except:
-            # To be checked. I'm under the impression that I get this when
-            # nothing matches?
-            #self.em.rclog("no/bad metadata in %s" % fn)
-            pass
-
-        docdata += b'</head><body>'
-
-        res = rclxslt.apply_sheet_data(stylesheet_content, data)
-        docdata += res
-        docdata += b'</body></html>'
-
-        return docdata
-    
 
 if __name__ == '__main__':
     proto = rclexecm.RclExecM()
-    extract = OOExtractor(proto)
+    extract = rclgenxslt.XSLTExtractor(proto, stylesheet)
     rclexecm.main(proto, extract)
