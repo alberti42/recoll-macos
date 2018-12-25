@@ -2,6 +2,8 @@
 CXXFLAGS ?= @CXXFLAGS@
 LIBXAPIAN=@LIBXAPIAN@
 XAPIANCXXFLAGS=@XAPIANCXXFLAGS@
+XSLT_CFLAGS=@XSLT_CFLAGS@
+XSLT_LINKADD=@XSLT_LINKADD@
 LIBICONV=@LIBICONV@
 INCICONV=@INCICONV@
 LIBFAM = @LIBFAM@
@@ -29,8 +31,10 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     $(COMMONCPPFLAGS) \
     $(INCICONV) \
     $(XAPIANCXXFLAGS) \
+    $(XSLT_CFLAGS) \
     $(X_CFLAGS) \
     -DRECOLL_DATADIR=\"${pkgdatadir}\" \
+    -DREADFILE_ENABLE_ZLIB -DREADFILE_ENABLE_MINIZ \
     -D_GNU_SOURCE \
     $(DEFS)
 
@@ -121,6 +125,8 @@ internfile/mh_symlink.h \
 internfile/mh_text.cpp \
 internfile/mh_text.h \
 internfile/mh_unknown.h \
+internfile/mh_xslt.cpp \
+internfile/mh_xslt.h \
 internfile/mimehandler.cpp \
 internfile/mimehandler.h \
 internfile/myhtmlparse.cpp \
@@ -224,6 +230,8 @@ utils/md5ut.cpp \
 utils/md5ut.h \
 utils/mimeparse.cpp \
 utils/mimeparse.h \
+utils/miniz.cpp \
+utils/miniz.h \
 utils/netcon.cpp \
 utils/netcon.h \
 utils/pathut.cpp \
@@ -262,7 +270,7 @@ AM_YFLAGS = -d
 librecoll_la_LDFLAGS = -release $(VERSION) \
     -Wl,--no-undefined -Wl,--warn-unresolved-symbols
 
-librecoll_la_LIBADD = $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
+librecoll_la_LIBADD = $(XSLT_LINKADD) $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
 
 # There is probably a better way to do this. The KIO needs to be linked
 # with librecoll, but librecoll is installed into a non-standard place
@@ -640,6 +648,7 @@ sampleconf/mimeview
 filterdir = $(pkgdatadir)/filters
 filter_DATA = \
 desktop/hotrecoll.py \
+filters/abiword.xsl \
 filters/rcl7z \
 filters/rclabw.py \
 filters/rclaptosidman \

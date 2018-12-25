@@ -41,6 +41,7 @@ using namespace std;
 #include "mh_symlink.h"
 #include "mh_unknown.h"
 #include "mh_null.h"
+#include "mh_xslt.h"
 
 // Performance help: we use a pool of already known and created
 // handlers. There can be several instances for a given mime type
@@ -137,11 +138,17 @@ void clearMimeHandlerCache()
 
 /** For mime types set as "internal" in mimeconf: 
   * create appropriate handler object. */
-static RecollFilter *mhFactory(RclConfig *config, const string &mime,
+static RecollFilter *mhFactory(RclConfig *config, const string &mimeOrParams,
 				bool nobuild, string& id)
 {
-    LOGDEB2("mhFactory(" << mime << ")\n");
-    string lmime(mime);
+    LOGDEB1("mhFactory(" << mimeOrParams << ")\n");
+    vector<string> lparams;
+    stringToStrings(mimeOrParams, lparams);
+    if (lparams.empty()) {
+        // ??
+        return nullptr;
+    }
+    string lmime(lparams[0]);
     stringtolower(lmime);
     if (cstr_textplain == lmime) {
 	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerText\n");
@@ -160,11 +167,11 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mime,
 	MD5String("MimeHandlerMail", id);
 	return nobuild ? 0 : new MimeHandlerMail(config, id);
     } else if ("inode/symlink" == lmime) {
-	LOGDEB2("mhFactory(" << mime << "): ret MimeHandlerSymlink\n");
+	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerSymlink\n");
 	MD5String("MimeHandlerSymlink", id);
 	return nobuild ? 0 : new MimeHandlerSymlink(config, id);
     } else if ("application/x-zerosize" == lmime) {
-	LOGDEB("mhFactory(" << mime << "): ret MimeHandlerNull\n");
+	LOGDEB("mhFactory(" << lmime << "): returning MimeHandlerNull\n");
 	MD5String("MimeHandlerNull", id);
 	return nobuild ? 0 : new MimeHandlerNull(config, id);
     } else if (lmime.find("text/") == 0) {
@@ -175,7 +182,11 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mime,
         // exec) but still opening with a specific editor.
 	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerText(x)\n");
 	MD5String("MimeHandlerText", id);
-        return nobuild ? 0 : new MimeHandlerText(config, id); 
+        return nobuild ? 0 : new MimeHandlerText(config, id);
+    } else if ("xsltproc" == lmime) {
+        // XML Types processed with one or several xslt style sheets.
+        MD5String(mimeOrParams, id);
+        return nobuild ? 0 : new MimeHandlerXslt(config, id, lparams);
     } else {
 	// We should not get there. It means that "internal" was set
 	// as a handler in mimeconf for a mime type we actually can't
@@ -262,7 +273,7 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
 
 /* Get handler/filter object for given mime type: */
 RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg, 
-			      bool filtertypes)
+                             bool filtertypes)
 {
     LOGDEB("getMimeHandler: mtype [" << mtype << "] filtertypes " <<
            filtertypes << "\n");
@@ -291,7 +302,7 @@ RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	}
 	bool internal = !stringlowercmp("internal", handlertype);
 	if (internal) {
-	    // For internal types let the factory compute the id
+	    // For internal types let the factory compute the cache id
 	    mhFactory(cfg, cmdstr.empty() ? mtype : cmdstr, true, id);
 	} else {
 	    // exec/execm: use the md5 of the def line
@@ -304,16 +315,15 @@ RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	    goto out;
 
 	LOGDEB2("getMimeHandler: " << mtype << " not in cache\n");
-
-	// Not in cache. 
 	if (internal) {
 	    // If there is a parameter after "internal" it's the mime
-	    // type to use. This is so that we can have bogus mime
-	    // types like text/x-purple-html-log (for ie: specific
-	    // icon) and still use the html filter on them. This is
-	    // partly redundant with the localfields/rclaptg, but
-	    // better and the latter will probably go away at some
-	    // point in the future.
+	    // type to use, or the further qualifier (e.g. style sheet
+	    // name for xslt types). This is so that we can have bogus
+	    // mime types like text/x-purple-html-log (for ie:
+	    // specific icon) and still use the html filter on
+	    // them. This is partly redundant with the
+	    // localfields/rclaptg, but better? (and the latter will
+	    // probably go away at some point in the future?).
 	    LOGDEB2("handlertype internal, cmdstr [" << cmdstr << "]\n");
 	    h = mhFactory(cfg, cmdstr.empty() ? mtype : cmdstr, false, id);
 	    goto out;
@@ -336,14 +346,10 @@ RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
 		goto out;
             }
 	}
-    }
-
-    // We get here if there was no specific error, but there is no
-    // identified mime type, or no handler associated.
-
-    // Finally, unhandled files are either ignored or their name and
-    // generic metadata is indexed, depending on configuration
-    {
+    } else {
+        // No identified mime type, or no handler associated.
+        // Unhandled files are either ignored or their name and
+        // generic metadata is indexed, depending on configuration
 	bool indexunknown = false;
 	cfg->getConfParam("indexallfilenames", &indexunknown);
 	if (indexunknown) {

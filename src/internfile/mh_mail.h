@@ -38,9 +38,7 @@ public:
     MimeHandlerMail(RclConfig *cnf, const std::string &id);
     virtual ~MimeHandlerMail();
     virtual bool is_data_input_ok(DataInput input) const {
-        if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
-            return true;
-        return false;
+        return (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING);
     }
     virtual bool next_document();
     virtual bool skip_to_document(const std::string& ipath);

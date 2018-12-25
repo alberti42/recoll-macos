@@ -110,7 +110,7 @@ application/vnd.sun.xml.writer = execm rclsoff.py
 application/vnd.sun.xml.writer.global = execm rclsoff.py
 application/vnd.sun.xml.writer.template = execm rclsoff.py
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
-application/x-abiword = execm rclabw.py
+application/x-abiword = internal xsltproc abw.xsl
 application/x-awk = internal text/plain
 application/x-chm = execm rclchm
 application/x-dia-diagram = execm rcldia;mimetype=text/plain
