@@ -51,22 +51,22 @@ Architecture: any
 Breaks: recoll (<< 1.23.9)
 Replaces: recoll (<< 1.23.9)
 Depends: python, python3, ${misc:Depends}, ${shlibs:Depends}
-Recommends: aspell,
+Recommends: antiword,
+            aspell,
+            groff,
+            libimage-exiftool-perl,
+            poppler-utils,
+            pstotext,
+            python3-lxml,
+            python3-six,
+            python3-mutagen,
+            python3-rarfile,
+            unrtf,
+            unzip,
             xdg-utils
-Suggests: antiword,
-          groff,
-          libimage-exiftool-perl,
-          poppler-utils,
-          pstotext,
-          python3-lxml,
-          python3-six,
-          python3-mutagen,
-          python3-rarfile,
-          python-recoll,
+Suggests: python-recoll,
           python3-recoll,
-          unrtf,
           untex,
-          unzip,
           wv
 Description: Command line programs for recoll
  This package supports indexing and command line querying.
