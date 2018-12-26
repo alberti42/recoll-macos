@@ -178,15 +178,12 @@ public:
         m_stream.avail_in = cnt;
         
         if (m_initdone == false) {
-            m_initdone = true;
-            // We do not support a first read cnt < 2. We probably should.
-            if (cnt < 2) {
-                if (reason)
-                    *reason += "GzFilter: first data count < 2";
-                return false;
-            }
+            // We do not support a first read cnt < 2. This quite
+            // probably can't happen with a compressed file (size>2)
+            // except if we're reading a tty which is improbable. So
+            // assume this is a regular file.
             const unsigned char *ubuf = (const unsigned char *)buf;
-            if (ubuf[0] != 0x1f || ubuf[1] != 0x8b) {
+            if ((cnt < 2) || ubuf[0] != 0x1f || ubuf[1] != 0x8b) {
                 LOGDEB1("GzFilter::data: not gzip. out() is " << out() << "\n");
                 pop();
                 if (out()) {
@@ -210,6 +207,7 @@ public:
                 }
                 return false;
             }
+            m_initdone = true;
         }
         
         while (m_stream.avail_in != 0) {
