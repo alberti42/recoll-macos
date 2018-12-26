@@ -649,6 +649,12 @@ filterdir = $(pkgdatadir)/filters
 filter_DATA = \
 desktop/hotrecoll.py \
 filters/abiword.xsl \
+filters/fb2.xsl \
+filters/gnumeric.xsl \
+filters/msodump.zip \
+filters/okular-note.xsl \
+filters/opendoc-flat.xsl \
+filters/ppt-dump.py \
 filters/rcl7z \
 filters/rclabw.py \
 filters/rclaptosidman \
@@ -680,19 +686,19 @@ filters/rcllatinstops.zip \
 filters/rcllyx \
 filters/rclman \
 filters/rclmidi.py \
-filters/rclpdf.py \
-filters/rclps \
 filters/rclokulnote.py \
 filters/rclopxml.py \
+filters/rclpdf.py \
 filters/rclppt.py \
+filters/rclps \
 filters/rclpurple \
 filters/rclpython \
 filters/rclrar \
 filters/rclrtf.py \
 filters/rclscribus \
 filters/rclshowinfo \
-filters/rclsoff.py \
 filters/rclsoff-flat.py \
+filters/rclsoff.py \
 filters/rclsvg.py \
 filters/rcltar \
 filters/rcltex \
@@ -706,11 +712,11 @@ filters/rclxmp.py \
 filters/rclxslt.py \
 filters/rclzip \
 filters/recoll-we-move-files.py \
-filters/ppt-dump.py \
+filters/recollepub.zip \
+filters/svg.xsl \
 filters/xls-dump.py \
 filters/xlsxmltocsv.py \
-filters/msodump.zip \
-filters/recollepub.zip \
+filters/xml.xsl \
 python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py 
 

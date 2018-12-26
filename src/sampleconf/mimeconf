@@ -84,9 +84,9 @@ application/vnd.oasis.opendocument.text-template = execm rclsoff.py
 application/vnd.oasis.opendocument.presentation = execm rclsoff.py 
 application/vnd.oasis.opendocument.spreadsheet = execm rclsoff.py
 application/vnd.oasis.opendocument.graphics = execm rclsoff.py
-application/vnd.oasis.opendocument.presentation-flat-xml = execm rclsoff-flat.py
-application/vnd.oasis.opendocument.text-flat-xml = execm rclsoff-flat.py
-application/vnd.oasis.opendocument.spreadsheet-flat-xml = execm rclsoff-flat.py
+application/vnd.oasis.opendocument.presentation-flat-xml = internal xsltproc opendoc-flat.xsl
+application/vnd.oasis.opendocument.text-flat-xml = internal xsltproc opendoc-flat.xsl
+application/vnd.oasis.opendocument.spreadsheet-flat-xml = internal xsltproc opendoc-flat.xsl
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  execm rclopxml.py
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
@@ -110,7 +110,7 @@ application/vnd.sun.xml.writer = execm rclsoff.py
 application/vnd.sun.xml.writer.global = execm rclsoff.py
 application/vnd.sun.xml.writer.template = execm rclsoff.py
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
-application/x-abiword = internal xsltproc abw.xsl
+application/x-abiword = internal xsltproc abiword.xsl
 application/x-awk = internal text/plain
 application/x-chm = execm rclchm
 application/x-dia-diagram = execm rcldia;mimetype=text/plain
@@ -118,12 +118,12 @@ application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
 application/x-gnote = execm rclxml.py
 application/x-gnuinfo = execm rclinfo
-application/x-gnumeric = execm rclgnm.py
+application/x-gnumeric = internal xsltproc gnumeric.xsl
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-mimehtml = internal message/rfc822
 #application/x-mobipocket-ebook = execm rclmobi
-application/x-okular-notes = execm rclokulnote.py
+application/x-okular-notes = internal xsltproc okular-note.xsl
 application/x-perl = internal text/plain
 # Returned by xdg-mime for .php. Future-proofing                   
 application/x-php = internal text/plain
@@ -149,7 +149,7 @@ image/jpeg = execm rclimg
 image/png = execm rclimg
 image/tiff = execm rclimg
 image/vnd.djvu = execm rcldjvu.py
-image/svg+xml = execm rclsvg.py
+image/svg+xml = internal xsltproc svg.xsl
 image/x-xcf = execm rclimg
 image/x-nikon-nef = execm rclimg
 inode/symlink = internal
@@ -168,7 +168,7 @@ text/css = internal text/plain
 application/javascript = internal text/plain
 text/x-bibtex = exec rclbibtex.sh ; mimetype = text/plain
 text/x-csv = internal text/plain
-text/x-fictionbook = execm rclfb2.py
+text/x-fictionbook = internal xsltproc fb2.xsl
 text/x-gaim-log = exec rclgaim
 text/x-html-aptosid-man = exec rclaptosidman
 text/x-lua = internal
@@ -190,7 +190,7 @@ text/x-tex = exec rcltex
 # All parameter and tag names, attribute values etc, are indexed as
 # text. rclxml.py tries to just index the text content.
 #application/xml = execm rclxml.py
-#text/xml = execm rclxml.py
+#text/xml = internal xsltproc xml.xsl
 application/xml = internal text/plain
 text/xml = internal text/plain
 
