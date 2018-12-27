@@ -65,6 +65,10 @@ public:
 bool file_scan(const std::string& fn, FileScanDo* doer, int64_t startoffs,
                int64_t cnttoread, std::string *reason, std::string *md5p);
 
+/** Same as file_scan, from a memory buffer */
+bool string_scan(const char *data, size_t cnt, FileScanDo* doer, 
+                 std::string *reason, std::string *md5p);
+
 /** Same as above, not offset/cnt/md5 */
 bool file_scan(const std::string& filename, FileScanDo* doer,
                std::string *reason);
@@ -74,6 +78,8 @@ bool file_scan(const std::string& filename, FileScanDo* doer,
 /* Process a zip archive member */
 bool file_scan(const std::string& filename, const std::string& membername,
                FileScanDo* doer, std::string *reason);
+bool string_scan(const char* data, size_t cnt, const std::string& membername,
+                 FileScanDo* doer, std::string *reason);
 #endif
 
 /**

@@ -381,10 +381,15 @@ protected:
 // Source taking data from a ZIP archive member
 class FileScanSourceZip : public FileScanSource {
 public:
-    FileScanSourceZip(FileScanDo *next, const string& fn, const string& member,
-                       string *reason)
+    FileScanSourceZip(FileScanDo *next, const string& fn,
+                      const string& member, string *reason)
         : FileScanSource(next), m_fn(fn), m_member(member),
-          m_reason(reason) { }
+          m_reason(reason) {}
+
+    FileScanSourceZip(const char *data, size_t cnt, FileScanDo *next,
+                      const string& member, string *reason)
+        : FileScanSource(next), m_data(data), m_cnt(cnt), m_member(member),
+          m_reason(reason) {}
 
     virtual bool scan() {
         bool ret = false;
@@ -392,13 +397,21 @@ public:
         mz_zip_zero_struct(&zip);
         void *opaque = this;
 
-        if (!mz_zip_reader_init_file(&zip, m_fn.c_str(), 0)) {
+        bool ret1;
+        if (m_fn.empty()) {
+            ret1 = mz_zip_reader_init_mem(&zip, m_data, m_cnt, 0);
+        } else {
+            ret1 = mz_zip_reader_init_file(&zip, m_fn.c_str(), 0);
+        }
+        if (!ret1) {
             if (m_reason) {
-                *m_reason += "mz_zip_reader_init_file() failed: ";
-                *m_reason += string(mz_zip_get_error_string(zip.m_last_error));
+                *m_reason += "mz_zip_reader_init_xx() failed: ";
+                *m_reason +=
+                    string(mz_zip_get_error_string(zip.m_last_error));
             }
             return false;
         }
+
         mz_uint32 file_index;
         if (mz_zip_reader_locate_file_v2(&zip, m_member.c_str(), NULL, 0,
                                          &file_index) < 0) {
@@ -453,6 +466,8 @@ public:
     }
     
 protected:
+    const char *m_data;
+    size_t m_cnt;
     string m_fn;
     string m_member;
     string *m_reason;
@@ -466,6 +481,17 @@ bool file_scan(const std::string& filename, const std::string& membername,
     } else {
             FileScanSourceZip source(doer, filename, membername, reason);
             return source.scan();
+    }
+}
+
+bool string_scan(const char *data, size_t cnt, const std::string& membername,
+                 FileScanDo* doer, std::string *reason)
+{
+    if (membername.empty()) {
+        return string_scan(data, cnt, doer, reason, nullptr);
+    } else {
+        FileScanSourceZip source(data, cnt, doer, membername, reason);
+        return source.scan();
     }
 }
 
@@ -515,3 +541,52 @@ bool file_scan(const string& fn, FileScanDo* doer, string *reason)
 {
     return file_scan(fn, doer, 0, -1, reason, nullptr);
 }
+
+
+class FileScanSourceBuffer : public FileScanSource {
+public:
+    FileScanSourceBuffer(FileScanDo *next, const char *data, size_t cnt,
+                         string *reason)
+        : FileScanSource(next), m_data(data), m_cnt(cnt), m_reason(reason) {}
+
+    virtual bool scan() {
+        if (out()) {
+            if (!out()->init(m_cnt, m_reason)) {
+                return false;
+            }
+            return out()->data(m_data, m_cnt, m_reason);
+        } else {
+            return true;
+        }
+    }
+    
+protected:
+    const char *m_data{nullptr};
+    size_t m_cnt{0};
+    string *m_reason{nullptr};
+};
+
+bool string_scan(const char *data, size_t cnt, FileScanDo* doer,
+                 std::string *reason, std::string *md5p)
+{
+    FileScanSourceBuffer source(doer, data, cnt, reason);
+    FileScanUpstream *up = &source;
+
+    // We compute the MD5 on the uncompressed data, so insert this
+    // right at the source.
+    string digest;
+    FileScanMd5 md5filter(digest);
+    if (md5p) {
+        md5filter.insertAtSink(doer, up);
+        up = &md5filter;
+    }
+    
+    bool ret = source.scan();
+
+    if (md5p) {
+        md5filter.finish();
+        MD5HexPrint(digest, *md5p);
+    }
+    return ret;
+}
+

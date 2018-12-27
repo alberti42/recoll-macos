@@ -653,7 +653,9 @@ filters/fb2.xsl \
 filters/gnumeric.xsl \
 filters/msodump.zip \
 filters/okular-note.xsl \
+filters/opendoc-body.xsl \
 filters/opendoc-flat.xsl \
+filters/opendoc-meta.xsl \
 filters/ppt-dump.py \
 filters/rcl7z \
 filters/rclabw.py \

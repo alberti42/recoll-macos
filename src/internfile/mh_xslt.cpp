@@ -94,18 +94,31 @@ private:
 
 class MimeHandlerXslt::Internal {
 public:
+    Internal(MimeHandlerXslt *_p)
+        : p(_p) {}
     ~Internal() {
         if (metaOrAllSS) {
             xsltFreeStylesheet(metaOrAllSS);
         }
-        if (dataSS) {
-            xsltFreeStylesheet(dataSS);
+        if (bodySS) {
+            xsltFreeStylesheet(bodySS);
         }
     }
+
+    xsltStylesheet *prepare_stylesheet(const string& ssnm);
+    bool process_doc_or_string(bool forpv, const string& fn, const string& data);
+    bool apply_stylesheet(
+        const string& fn, const string& member, const string& data,
+        xsltStylesheet *ssp, string& result, string *md5p);
+
+    MimeHandlerXslt *p;
     bool ok{false};
+    string metamember;
     xsltStylesheet *metaOrAllSS{nullptr};
-    xsltStylesheet *dataSS{nullptr};
+    string bodymember;
+    xsltStylesheet *bodySS{nullptr};
     string result;
+    string filtersdir;
 };
 
 MimeHandlerXslt::~MimeHandlerXslt()
@@ -115,99 +128,163 @@ MimeHandlerXslt::~MimeHandlerXslt()
 
 MimeHandlerXslt::MimeHandlerXslt(RclConfig *cnf, const std::string& id,
                                  const std::vector<std::string>& params)
-    : RecollFilter(cnf, id), m(new Internal)
+    : RecollFilter(cnf, id), m(new Internal(this))
 {
     LOGDEB("MimeHandlerXslt: params: " << stringsToString(params) << endl);
-    string filtersdir = path_cat(cnf->getDatadir(), "filters");
+    m->filtersdir = path_cat(cnf->getDatadir(), "filters");
 
     xmlSubstituteEntitiesDefault(0);
     xmlLoadExtDtdDefaultValue = 0;
 
     // params can be "xslt stylesheetall" or
-    // "xslt metamember stylesheetmeta datamember stylesheetdata"
+    // "xslt metamember metastylesheet bodymember bodystylesheet"
     if (params.size() == 2) {
-        string ssfn = path_cat(filtersdir, params[1]);
-        FileScanXML XMLstyle(ssfn);
-        string reason;
-        if (!file_scan(ssfn, &XMLstyle, &reason)) {
-            LOGERR("MimeHandlerXslt: file_scan failed for style sheet " <<
-                   ssfn << " : " << reason << endl);
-            return;
-        }
-        xmlDoc *stl = XMLstyle.getDoc();
-        if (stl == nullptr) {
-            LOGERR("MimeHandlerXslt: getDoc failed for style sheet " <<
-                   ssfn << endl);
-            return;
-        }
-        m->metaOrAllSS = xsltParseStylesheetDoc(stl);
+        m->metaOrAllSS = m->prepare_stylesheet(params[1]);
         if (m->metaOrAllSS) {
             m->ok = true;
         }
-    } else if (params.size() == 4) {
+    } else if (params.size() == 5) {
+        m->metamember = params[1];
+        m->metaOrAllSS = m->prepare_stylesheet(params[2]);
+        m->bodymember = params[3];
+        m->bodySS =  m->prepare_stylesheet(params[4]);
+        if (m->metaOrAllSS && m->bodySS) {
+            m->ok = true;
+        }
     } else {
         LOGERR("MimeHandlerXslt: constructor with wrong param vector: " <<
                stringsToString(params) << endl);
     }
 }
 
-bool MimeHandlerXslt::set_document_file_impl(const std::string& mt, 
-                                             const std::string &file_path)
+xsltStylesheet *MimeHandlerXslt::Internal::prepare_stylesheet(const string& ssnm)
 {
-    LOGDEB0("MimeHandlerXslt::set_document_file_: fn: " << file_path << endl);
-    if (!m || !m->ok) {
+    string ssfn = path_cat(filtersdir, ssnm);
+    FileScanXML XMLstyle(ssfn);
+    string reason;
+    if (!file_scan(ssfn, &XMLstyle, &reason)) {
+        LOGERR("MimeHandlerXslt: file_scan failed for style sheet " <<
+               ssfn << " : " << reason << endl);
+        return nullptr;
+    }
+    xmlDoc *stl = XMLstyle.getDoc();
+    if (stl == nullptr) {
+        LOGERR("MimeHandlerXslt: getDoc failed for style sheet " <<
+               ssfn << endl);
+        return nullptr;
+    }
+    return xsltParseStylesheetDoc(stl);
+}
+
+bool MimeHandlerXslt::Internal::apply_stylesheet(
+    const string& fn, const string& member, const string& data,
+    xsltStylesheet *ssp, string& result, string *md5p)
+{
+    FileScanXML XMLdoc(fn);
+    string md5, reason;
+    bool res;
+    if (!fn.empty()) {
+        if (member.empty()) {
+            res = file_scan(fn, &XMLdoc, 0, -1, &reason, md5p);
+        } else {
+            res = file_scan(fn, member, &XMLdoc, &reason);
+        }
+    } else {
+        if (member.empty()) {
+            res = string_scan(data.c_str(), data.size(), &XMLdoc, &reason, md5p);
+        } else {
+            res = string_scan(data.c_str(), data.size(), member, &XMLdoc,
+                                                      &reason);
+        }
+    }
+    if (!res) {
+        LOGERR("MimeHandlerXslt::set_document_: file_scan failed for "<<
+               fn << " " << member << " : " << reason << endl);
         return false;
     }
-    if (nullptr == m->dataSS) {
-        if (nullptr == m->metaOrAllSS) {
-            LOGERR("MimeHandlerXslt::set_document_file_impl: both ss empty??\n");
-            return false;
-        }
-        FileScanXML XMLdoc(file_path);
-        string md5, reason;
-        if (!file_scan(file_path, &XMLdoc, 0, -1, &reason,
-                       m_forPreview ? nullptr : &md5)) {
-            LOGERR("MimeHandlerXslt::set_document_file_impl: file_scan failed "
-                   "for " << file_path << " : " << reason << endl);
-            return false;
-        }
-        if (!m_forPreview) {
-            m_metaData[cstr_dj_keymd5] = md5;
-        }
-        xmlDocPtr doc = XMLdoc.getDoc();
-        if (nullptr == doc) {
-            LOGERR("MimeHandlerXslt::set_doc_file_impl: no parsed doc\n");
-            return false;
-        }
-        xmlDocPtr transformed = xsltApplyStylesheet(m->metaOrAllSS, doc, NULL);
-        if (nullptr == transformed) {
-            LOGERR("MimeHandlerXslt::set_doc_file_: xslt transform failed\n");
-            xmlFreeDoc(doc);
-            return false;
-        }
-        xmlChar *outstr;
-        int outlen;
-        xsltSaveResultToString(&outstr, &outlen, transformed, m->metaOrAllSS);
-        m->result = string((const char*)outstr, outlen);
-        xmlFree(outstr);
-        xmlFreeDoc(transformed);
-        xmlFreeDoc(doc);
-    } else {
-        LOGERR("Not ready for multipart yet\n");
-        abort();
+
+    xmlDocPtr doc = XMLdoc.getDoc();
+    if (nullptr == doc) {
+        LOGERR("MimeHandlerXslt::set_document_: no parsed doc\n");
+        return false;
     }
-            
-    m_havedoc = true;
+    xmlDocPtr transformed = xsltApplyStylesheet(ssp, doc, NULL);
+    if (nullptr == transformed) {
+        LOGERR("MimeHandlerXslt::set_document_: xslt transform failed\n");
+        xmlFreeDoc(doc);
+        return false;
+    }
+    xmlChar *outstr;
+    int outlen;
+    xsltSaveResultToString(&outstr, &outlen, transformed, metaOrAllSS);
+    result = string((const char*)outstr, outlen);
+    xmlFree(outstr);
+    xmlFreeDoc(transformed);
+    xmlFreeDoc(doc);
     return true;
 }
 
-bool MimeHandlerXslt::set_document_string_impl(const string& mt, 
-                                               const string& msgtxt)
+bool MimeHandlerXslt::Internal::process_doc_or_string(
+    bool forpreview, const string& fn, const string& data)
 {
+    if (nullptr == metaOrAllSS && nullptr == bodySS) {
+        LOGERR("MimeHandlerXslt::set_document_file_impl: both ss empty??\n");
+        return false;
+    }
+    if (nullptr == bodySS) {
+        string md5;
+        if (apply_stylesheet(fn, string(), data, metaOrAllSS, result,
+                             forpreview ? nullptr : &md5)) {
+            if (!forpreview) {
+                p->m_metaData[cstr_dj_keymd5] = md5;
+            }
+            return true;
+        }
+        return false;
+    } else {
+        result = "<html>\n<head>\n<meta http-equiv=\"Content-Type\""
+            "content=\"text/html; charset=UTF-8\">";
+        string part;
+        if (!apply_stylesheet(fn,metamember, data, metaOrAllSS, part, nullptr)) {
+            return false;
+        }
+        result += part;
+        result += "</head>\n<body>\n";
+        if (!apply_stylesheet(fn, bodymember, data, bodySS, part, nullptr)) {
+            return false;
+        }
+        result += part;
+        result += "</body></html>";
+    }
+    return true;
+}
+
+bool MimeHandlerXslt::set_document_file_impl(const std::string& mt, 
+                                             const std::string &fn)
+{
+    LOGDEB0("MimeHandlerXslt::set_document_file_: fn: " << fn << endl);
     if (!m || !m->ok) {
         return false;
     }
-    return true;
+    bool ret = m->process_doc_or_string(m_forPreview, fn, string());
+    if (ret) {
+        m_havedoc = true;
+    }
+    return ret;
+}
+
+bool MimeHandlerXslt::set_document_string_impl(const string& mt, 
+                                               const string& txt)
+{
+    LOGDEB0("MimeHandlerXslt::set_document_string_\n");
+    if (!m || !m->ok) {
+        return false;
+    }
+    bool ret = m->process_doc_or_string(m_forPreview, string(), txt);
+    if (ret) {
+        m_havedoc = true;
+    }
+    return ret;
 }
 
 bool MimeHandlerXslt::next_document()
