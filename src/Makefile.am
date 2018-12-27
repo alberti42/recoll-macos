@@ -656,6 +656,9 @@ filters/okular-note.xsl \
 filters/opendoc-body.xsl \
 filters/opendoc-flat.xsl \
 filters/opendoc-meta.xsl \
+filters/openxml-xls-body.xsl \
+filters/openxml-word-body.xsl \
+filters/openxml-meta.xsl \
 filters/ppt-dump.py \
 filters/rcl7z \
 filters/rclabw.py \

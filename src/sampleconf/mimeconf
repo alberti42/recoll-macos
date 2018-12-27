@@ -88,17 +88,17 @@ application/vnd.oasis.opendocument.presentation-flat-xml = internal xsltproc ope
 application/vnd.oasis.opendocument.text-flat-xml = internal xsltproc opendoc-flat.xsl
 application/vnd.oasis.opendocument.spreadsheet-flat-xml = internal xsltproc opendoc-flat.xsl
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
- execm rclopxml.py
+ internal xsltproc docProps/core.xml openxml-meta.xsl word/document.xml openxml-word-body.xsl
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
- execm rclopxml.py
+ internal xsltproc docProps/core.xml openxml-meta.xsl word/document.xml openxml-word-body.xsl
 application/vnd.openxmlformats-officedocument.presentationml.template = \
  execm rclopxml.py
 application/vnd.openxmlformats-officedocument.presentationml.presentation = \
  execm rclopxml.py
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
- execm rclopxml.py
+ internal xsltproc docProps/core.xml openxml-meta.xsl xl/sharedStrings.xml openxml-xls-body.xsl
 application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
- execm rclopxml.py
+ internal xsltproc docProps/core.xml openxml-meta.xsl xl/sharedStrings.xml openxml-xls-body.xsl
 application/vnd.sun.xml.calc = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
 application/vnd.sun.xml.calc.template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
 application/vnd.sun.xml.draw = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
