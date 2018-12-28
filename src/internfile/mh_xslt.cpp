@@ -32,6 +32,12 @@
 
 using namespace std;
 
+// Do we need this? It would need to be called from recollinit
+// Call once, not reentrant
+// xmlInitParser();
+// LIBXML_TEST_VERSION;
+// Probably not:    xmlCleanupParser();
+        
 
 class FileScanXML : public FileScanDo {
 public:

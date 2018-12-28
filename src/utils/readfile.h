@@ -65,14 +65,13 @@ public:
 bool file_scan(const std::string& fn, FileScanDo* doer, int64_t startoffs,
                int64_t cnttoread, std::string *reason, std::string *md5p);
 
-/** Same as file_scan, from a memory buffer */
-bool string_scan(const char *data, size_t cnt, FileScanDo* doer, 
-                 std::string *reason, std::string *md5p);
-
 /** Same as above, not offset/cnt/md5 */
 bool file_scan(const std::string& filename, FileScanDo* doer,
                std::string *reason);
 
+/** Same as file_scan, from a memory buffer. No libz processing */
+bool string_scan(const char *data, size_t cnt, FileScanDo* doer, 
+                 std::string *reason, std::string *md5p);
 
 #if defined(READFILE_ENABLE_MINIZ)
 /* Process a zip archive member */

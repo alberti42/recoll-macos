@@ -511,14 +511,6 @@ bool file_scan(const string& fn, FileScanDo* doer, int64_t startoffs,
     FileScanSourceFile source(doer, fn, startoffs, cnttoread, reason);
     FileScanUpstream *up = &source;
 
-    // We compute the MD5 on the uncompressed data, so insert this
-    // right at the source.
-    string digest;
-    FileScanMd5 md5filter(digest);
-    if (md5p) {
-        md5filter.insertAtSink(doer, up);
-        up = &md5filter;
-    }
     
 #if defined(READFILE_ENABLE_ZLIB)
     GzFilter gzfilter;
@@ -528,6 +520,15 @@ bool file_scan(const string& fn, FileScanDo* doer, int64_t startoffs,
     }
 #endif
 
+    // We compute the MD5 on the uncompressed data, so insert this
+    // right at the source (after the decompressor).
+    string digest;
+    FileScanMd5 md5filter(digest);
+    if (md5p) {
+        md5filter.insertAtSink(doer, up);
+        up = &md5filter;
+    }
+    
     bool ret = source.scan();
 
     if (md5p) {
@@ -572,8 +573,6 @@ bool string_scan(const char *data, size_t cnt, FileScanDo* doer,
     FileScanSourceBuffer source(doer, data, cnt, reason);
     FileScanUpstream *up = &source;
 
-    // We compute the MD5 on the uncompressed data, so insert this
-    // right at the source.
     string digest;
     FileScanMd5 md5filter(digest);
     if (md5p) {
