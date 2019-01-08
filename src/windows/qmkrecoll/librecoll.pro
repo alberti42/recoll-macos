@@ -14,6 +14,10 @@ DEFINES -= UNICODE
 DEFINES -= _UNICODE
 DEFINES += _MBCS
 DEFINES += PSAPI_VERSION=1
+DEFINES += READFILE_ENABLE_MINIZ
+# This is necessary to avoid an undefined impl__xmlFree.
+# See comment in libxml/xmlexports.h
+DEFINES += LIBXML_STATIC
 
 SOURCES += \
 ../../aspell/rclaspell.cpp \
@@ -50,6 +54,7 @@ SOURCES += \
 ../../internfile/mh_mail.cpp \
 ../../internfile/mh_mbox.cpp \
 ../../internfile/mh_text.cpp \
+../../internfile/mh_xslt.cpp \
 ../../internfile/mimehandler.cpp \
 ../../internfile/myhtmlparse.cpp \
 ../../internfile/txtdcode.cpp \
@@ -105,6 +110,7 @@ SOURCES += \
 ../../utils/md5.cpp \
 ../../utils/md5ut.cpp \
 ../../utils/mimeparse.cpp \
+../../utils/miniz.cpp \
 ../../utils/pathut.cpp \
 ../../utils/pxattr.cpp \
 ../../utils/rclionice.cpp \
@@ -129,10 +135,16 @@ windows {
     contains(QMAKE_CC, cl){
         # Visual Studio
     }
-  LIBS += c:/temp/xapian-core-1.4.5/.libs/libxapian-30.dll \
-      c:/temp/zlib-1.2.8/zlib1.dll -liconv -lshlwapi -lpsapi -lkernel32
+  LIBS += C:/recolldeps/libxslt/libxslt-1.1.29/win32/bin.mingw/libxslt.a \
+          C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
+          c:/recolldeps/xapian-core-1.4.5/.libs/libxapian-30.dll \
+          c:/recolldeps/zlib-1.2.8/zlib1.dll \
+          -liconv -lshlwapi -lpsapi -lkernel32
   INCLUDEPATH += ../../windows \
-            C:/temp/xapian-core-1.4.5/include
+          C:/recolldeps/xapian-core-1.4.5/include \
+          C:/recolldeps/libxslt/libxslt-1.1.29/ \
+          C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/include
+
 }
 
 unix {

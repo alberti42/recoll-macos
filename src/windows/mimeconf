@@ -47,54 +47,43 @@ application/x-lzma = uncompress python rcluncomp.py 7z %f %t
 # each filter, see the exemples below (ie: msword)
 [index]
 application/msword = execm python rcldoc.py
-application/pdf = execm python rclpdf.py
 application/vnd.ms-excel = execm python rclxls.py
 application/vnd.ms-powerpoint = execm python rclppt.py
-application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
- execm python rclopxml.py
-application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
- execm python rclopxml.py
-application/vnd.openxmlformats-officedocument.presentationml.template = \
- execm python rclopxml.py
-application/vnd.openxmlformats-officedocument.presentationml.presentation = \
- execm python rclopxml.py
-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
- execm python rclopxml.py
-application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
- execm python rclopxml.py
 
-application/vnd.oasis.opendocument.text = execm python rclsoff.py
-application/vnd.oasis.opendocument.text-template = execm python rclsoff.py
-application/vnd.oasis.opendocument.presentation = execm python rclsoff.py 
-application/vnd.oasis.opendocument.spreadsheet = execm python rclsoff.py
-application/vnd.oasis.opendocument.graphics = execm python rclsoff.py
-application/vnd.sun.xml.calc = execm python rclsoff.py
-application/vnd.sun.xml.calc.template = execm python rclsoff.py
-application/vnd.sun.xml.draw = execm python rclsoff.py
-application/vnd.sun.xml.draw.template = execm python rclsoff.py
-application/vnd.sun.xml.impress = execm python rclsoff.py
-application/vnd.sun.xml.impress.template = execm python rclsoff.py
-application/vnd.sun.xml.math = execm python rclsoff.py
-application/vnd.sun.xml.writer = execm python rclsoff.py
-application/vnd.sun.xml.writer.global = execm python rclsoff.py
-application/vnd.sun.xml.writer.template = execm python rclsoff.py
+application/pdf = execm python rclpdf.py
+
+application/vnd.oasis.opendocument.text = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.oasis.opendocument.text-template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.oasis.opendocument.presentation = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl 
+application/vnd.oasis.opendocument.spreadsheet = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.oasis.opendocument.graphics = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.calc = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.calc.template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.draw = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.draw.template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.impress = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.impress.template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.math = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.writer = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.writer.global = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+application/vnd.sun.xml.writer.template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
 
 application/vnd.wordperfect = exec wpd/wpd2html;mimetype=text/html
-application/x-abiword = execm python rclabw.py
-text/x-fictionbook = execm python rclfb2.py
+application/x-abiword = internal xsltproc abiword.xsl
+text/x-fictionbook = internal xsltproc fb2.xsl
 
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
- execm python rclopxml.py
+ internal xsltproc docProps/core.xml openxml-meta.xsl word/document.xml openxml-word-body.xsl
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
- execm python rclopxml.py
+ internal xsltproc docProps/core.xml openxml-meta.xsl word/document.xml openxml-word-body.xsl
 application/vnd.openxmlformats-officedocument.presentationml.template = \
  execm python rclopxml.py
 application/vnd.openxmlformats-officedocument.presentationml.presentation = \
  execm python rclopxml.py
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
- execm python rclopxml.py
+ internal xsltproc docProps/core.xml openxml-meta.xsl xl/sharedStrings.xml openxml-xls-body.xsl
 application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
- execm python rclopxml.py
+ internal xsltproc docProps/core.xml openxml-meta.xsl xl/sharedStrings.xml openxml-xls-body.xsl
 
 application/epub+zip = execm python rclepub
 # Returned by xdg-mime for .js. Future-proofing
@@ -130,7 +119,7 @@ image/jp2 = execm python rclimg.py
 image/jpeg = execm python rclimg.py
 image/png = execm python rclimg.py
 image/tiff = execm python rclimg.py
-image/svg+xml = execm python rclsvg.py
+image/svg+xml = internal xsltproc svg.xsl
 #image/x-xcf = execm perl rclimg
 inode/symlink = internal
 application/x-zerosize = internal

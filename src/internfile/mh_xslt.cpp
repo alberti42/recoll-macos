@@ -237,6 +237,7 @@ bool MimeHandlerXslt::Internal::process_doc_or_string(
         LOGERR("MimeHandlerXslt::set_document_file_impl: both ss empty??\n");
         return false;
     }
+    p->m_metaData[cstr_dj_keycharset] = cstr_utf8;
     if (nullptr == bodySS) {
         string md5;
         if (apply_stylesheet(fn, string(), data, metaOrAllSS, result,
