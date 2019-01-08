@@ -27,23 +27,19 @@ RCL=c:/recoll/src/
 
 ReleaseBuild=y
 
-# Note: unrtf not under recolldeps because it's a clone from the
-# original mercurial repository 
-UNRTF=c:/unrtf
-# antiword is under recolldeps: it's not really maintained any more
-# and has no public repository
+UNRTF=c:/recolldeps/unrtf
 ANTIWORD=c:/recolldeps/antiword
 PYXSLT=C:/recolldeps/pyxslt
 PYEXIV2=C:/recolldeps/pyexiv2
 #LIBXAPIAN=c:/temp/xapian-core-1.2.21/.libs/libxapian-22.dll
-LIBXAPIAN=c:/temp/xapian-core-1.4.5/.libs/libxapian-30.dll
-MUTAGEN=C:/temp/mutagen-1.32/
-EPUB=C:/temp/epub-0.5.2
-FUTURE=C:/temp/python2-future
-ZLIB=c:/temp/zlib-1.2.8
-POPPLER=c:/temp/poppler-0.36/
-LIBWPD=c:/temp/libwpd/libwpd-0.10.0/
-LIBREVENGE=c:/temp/libwpd/librevenge-0.0.1.jfd/
+LIBXAPIAN=c:/recolldeps/xapian-core-1.4.5/.libs/libxapian-30.dll
+MUTAGEN=C:/recolldeps/mutagen-1.32/
+EPUB=C:/recolldeps/epub-0.5.2
+FUTURE=C:/recolldeps/python2-future
+ZLIB=c:/recolldeps/zlib-1.2.8
+POPPLER=c:/recolldeps/poppler-0.36/
+LIBWPD=c:/recolldeps/libwpd/libwpd-0.10.0/
+LIBREVENGE=c:/recolldeps/libwpd/librevenge-0.0.1.jfd/
 CHM=c:/recolldeps/pychm
 
 # Where to find libgcc_s_dw2-1.dll for progs which need it copied
@@ -146,6 +142,7 @@ copyrecoll()
     chkcp $RCL/sampleconf/recoll.qss    $DESTDIR/Share/examples
 
     chkcp $RCL/python/recoll/recoll/rclconfig.py $FILTERS
+    chkcp $RCL/python/recoll/recoll/conftree.py $FILTERS
     chkcp $RCL/filters/*       $FILTERS 
     chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
     chkcp $RCL/qtgui/i18n/*.qm $DESTDIR/Share/translations
