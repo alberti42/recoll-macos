@@ -27,6 +27,7 @@ RCL=c:/recoll/src/
 
 ReleaseBuild=y
 
+PYTHON=c:/recolldeps/python2
 UNRTF=c:/recolldeps/unrtf
 ANTIWORD=c:/recolldeps/antiword
 PYXSLT=C:/recolldeps/pyxslt
@@ -115,7 +116,11 @@ copyzlib()
 {
     chkcp $ZLIB/zlib1.dll $DESTDIR
 }
-
+copypython()
+{
+    cp -rp $PYTHON $DESTDIR/Share/filters
+    chkcp $PYTHON/python.exe $DESTDIR/Share/filters/python/python.exe
+}
 copyrecoll()
 {
 #    bindir=$RCL/windows/$PLATFORM/$CONFIGURATION/
@@ -187,6 +192,10 @@ copyepub()
     # chkcp to check that epub is where we think it is
     chkcp $EPUB/build/lib/epub/opf.py $FILTERS/epub
 }
+
+# We used to copy the future module to the filters dir, but it is now
+# part of the Python installation we copy (2 dirs:
+# site-packages/builtins, site-packages/future)
 copyfuture()
 {
     cp -rp $FUTURE/future $FILTERS/
@@ -255,9 +264,10 @@ copypoppler
 copyantiword
 copyunrtf
 copyxslt
-copyfuture
+#copyfuture
 copymutagen
 copyepub
 copypyexiv2
 copywpd
 copychm
+copypython

@@ -1623,7 +1623,12 @@ string RclConfig::findFilter(const string &icmd) const
     // Prepend $datadir/filters
     temp = path_cat(m_datadir, "filters");
     PATH = temp + path_PATHsep() + PATH;
-
+#ifdef _WIN32
+    // Windows only: use the bundled Python
+    temp = path_cat(m_datadir, "filters");
+    temp = path_cat(temp, "python");
+    PATH = temp + path_PATHsep() + PATH;
+#endif
     // Prepend possible configuration parameter?
     if (getConfParam(string("filtersdir"), temp)) {
         temp = path_tildexpand(temp);
