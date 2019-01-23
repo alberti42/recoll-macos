@@ -29,17 +29,15 @@
 
 #include <iostream>
 
-#ifndef NO_NAMESPACES
 using namespace std;
-#endif /* NO_NAMESPACES */
-
 
 bool MimeHandlerHtml::set_document_file_impl(const string& mt, const string &fn)
 {
     LOGDEB0("textHtmlToDoc: " << fn << "\n");
     string otext;
-    if (!file_to_string(fn, otext)) {
-	LOGINFO("textHtmlToDoc: cant read: " << fn << "\n");
+    string reason;
+    if (!file_to_string(fn, otext, &reason)) {
+        LOGERR("textHtmlToDoc: cant read: " << fn << ": " << reason << "\n");
 	return false;
     }
     m_filename = fn;
