@@ -20,22 +20,31 @@
 #include "config.h"
 #endif
 
+#include "readfile.h"
+
 #include <errno.h>
 #include <sys/types.h>
+
 #ifdef _WIN32
 #include "safefcntl.h"
 #include "safesysstat.h"
 #include "safeunistd.h"
+#include "transcode.h"
+#define OPEN _wopen
+
 #else
 #define O_BINARY 0
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#define OPEN open
+
 #endif
+
 #include <string>
 
-#include "readfile.h"
 #include "smallut.h"
+#include "pathut.h"
 #include "md5.h"
 
 #ifdef MDU_INCLUDE_LOG
@@ -295,7 +304,8 @@ public:
 
         // If we have a file name, open it, else use stdin.
         if (!m_fn.empty()) {
-            fd = open(m_fn.c_str(), O_RDONLY | O_BINARY);
+            SYSPATH(m_fn, realpath);
+            fd = OPEN(realpath, O_RDONLY | O_BINARY);
             if (fd < 0 || fstat(fd, &st) < 0) {
                 catstrerror(m_reason, "open/stat", errno);
                 return false;

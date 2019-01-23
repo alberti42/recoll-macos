@@ -36,4 +36,9 @@ extern bool transcode(const std::string &in, std::string &out,
 		      const std::string &ocode, 
 		      int *ecnt = 0);
 
+#ifdef _WIN32
+extern bool wchartoutf8(const wchar_t *in, std::string& out);
+extern bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap);
+#endif
+
 #endif /* _TRANSCODE_H_INCLUDED_ */

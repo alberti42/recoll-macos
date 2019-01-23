@@ -36,6 +36,7 @@
 #include "log.h"
 #include "pathut.h"
 #include "fstreewalk.h"
+#include "transcode.h"
 
 using namespace std;
 
@@ -310,6 +311,20 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
     return FtwOk;
 }
 
+#ifdef _WIN32
+#define DIRENT _wdirent
+#define DIRHDL _WDIR
+#define OPENDIR _wopendir
+#define CLOSEDIR _wclosedir
+#define READDIR _wreaddir
+#else
+#define DIRENT dirent
+#define DIRHDL DIR
+#define OPENDIR opendir
+#define CLOSEDIR closedir
+#define READDIR readdir
+#endif
+
 // Note that the 'norecurse' flag is handled as part of the directory read. 
 // This means that we always go into the top 'walk()' parameter if it is a 
 // directory, even if norecurse is set. Bug or Feature ?
@@ -341,24 +356,25 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
     // This is a directory, read it and process entries:
 
+#ifndef _WIN32
     // Detect if directory already seen. This could just be several
     // symlinks pointing to the same place (if FtwFollow is set), it
     // could also be some other kind of cycle. In any case, there is
     // no point in entering again.
     // For now, we'll ignore the "other kind of cycle" part and only monitor
     // this is FtwFollow is set
-#ifndef _WIN32
     if (data->options & FtwFollow) {
 	DirId dirid(stp->st_dev, stp->st_ino);
 	if (data->donedirs.find(dirid) != data->donedirs.end()) {
-	    LOGINFO("Not processing ["  << (top) << "] (already seen as other path)\n" );
+	    LOGINFO("Not processing [" << top <<
+                    "] (already seen as other path)\n");
 	    return status;
 	}
 	data->donedirs.insert(dirid);
     }
 #endif
-    
-    DIR *d = opendir(top.c_str());
+    SYSPATH(top, systop);
+    DIRHDL *d = OPENDIR(systop);
     if (d == 0) {
 	data->logsyserr("opendir", top);
 	switch (errno) {
@@ -376,42 +392,38 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 	}
     }
 
-    struct dirent *ent;
-    while ((ent = readdir(d)) != 0) {
+    struct DIRENT *ent;
+    while ((ent = READDIR(d)) != 0) {
         string fn;
         struct stat st;
+#ifdef _WIN32
+        string sdname;
+        if (!wchartoutf8(ent->d_name, sdname)) {
+            LOGERR("wchartoutf8 failed in " << top << endl);
+            continue;
+        }
+        const char *dname = sdname.c_str();
+#else
+        const char *dname = ent->d_name;
+#endif
 	// Maybe skip dotfiles
-	if ((data->options & FtwSkipDotFiles) && ent->d_name[0] == '.')
+	if ((data->options & FtwSkipDotFiles) && dname[0] == '.')
 	    continue;
 	// Skip . and ..
-	if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) 
+	if (!strcmp(dname, ".") || !strcmp(dname, "..")) 
 	    continue;
 
 	// Skipped file names match ?
 	if (!data->skippedNames.empty()) {
-	    if (inSkippedNames(ent->d_name))
+	    if (inSkippedNames(dname))
 		continue;
 	}
-
-        fn = path_cat(top, ent->d_name);
-#ifdef _WIN32
-        // readdir gets the useful attrs, no inode indirection on windows,
-        // spare the path_fileprops() call, but make sure we mimick it.
-        memset(&st, 0, sizeof(st));
-        st.st_mtime = ent->d_mtime;
-        st.st_size = ent->d_size;
-        st.st_mode = ent->d_mode;
-        // ctime is really creation time on Windows. Just use mtime
-        // for all. We only use ctime on Unix to catch xattr changes
-        // anyway.
-        st.st_ctime = st.st_mtime;
-#else
+        fn = path_cat(top, dname);
         int statret =  path_fileprops(fn.c_str(), &st, data->options&FtwFollow);
         if (statret == -1) {
             data->logsyserr("stat", fn);
             continue;
         }
-#endif
 
         if (!data->skippedPaths.empty()) {
             // We do not check the ancestors. This means that you can have
@@ -461,7 +473,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
  out:
     if (d)
-	closedir(d);
+	CLOSEDIR(d);
     return status;
 }
 	

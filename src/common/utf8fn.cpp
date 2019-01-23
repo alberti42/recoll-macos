@@ -7,6 +7,11 @@ using namespace std;
 
 string compute_utf8fn(const RclConfig *config, const string& ifn, bool simple)
 {
+#ifdef _WIN32
+    // On windows file names are read as UTF16 wchar_t and converted to UTF-8
+    // while scanning directories
+    return ifn;
+#else
     string charset = config->getDefCharset(true);
     string utf8fn; 
     int ercnt;
@@ -21,4 +26,5 @@ string compute_utf8fn(const RclConfig *config, const string& ifn, bool simple)
     LOGDEB1("compute_utf8fn: transcoded from ["  << lfn << "] to ["  <<
             utf8fn << "] ("  << charset << "->"  << "UTF-8)\n");
     return utf8fn;
+#endif
 }

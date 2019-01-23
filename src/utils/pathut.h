@@ -91,6 +91,14 @@ extern bool path_exists(const std::string& path);
 /// Return separator for PATH environment variable
 extern std::string path_PATHsep();
 
+#ifdef _WIN32
+#define SYSPATH(PATH, SPATH) wchar_t PATH ## _buf[2048];      \
+    utf8towchar(PATH, PATH ## _buf, 2048);                    \
+    wchar_t *SPATH = PATH ## _buf;
+#else
+#define SYSPATH(PATH, SPATH) const char *SPATH = PATH.c_str()
+#endif
+
 /// Dump directory
 extern bool readdir(const std::string& dir, std::string& reason,
                     std::set<std::string>& entries);
