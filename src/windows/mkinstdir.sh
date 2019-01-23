@@ -24,24 +24,27 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 
 # Recoll src tree
 RCL=c:/recoll/src/
+RCLW=$RCL/windows/
+# Recoll dependancies
+RCLDEPS=c:/recolldeps/
 
 ReleaseBuild=y
 
-PYTHON=c:/recolldeps/python2
-UNRTF=c:/recolldeps/unrtf
-ANTIWORD=c:/recolldeps/antiword
-PYXSLT=C:/recolldeps/pyxslt
-PYEXIV2=C:/recolldeps/pyexiv2
-#LIBXAPIAN=c:/temp/xapian-core-1.2.21/.libs/libxapian-22.dll
-LIBXAPIAN=c:/recolldeps/xapian-core-1.4.5/.libs/libxapian-30.dll
-MUTAGEN=C:/recolldeps/mutagen-1.32/
-EPUB=C:/recolldeps/epub-0.5.2
-FUTURE=C:/recolldeps/python2-future
-ZLIB=c:/recolldeps/zlib-1.2.8
-POPPLER=c:/recolldeps/poppler-0.36/
-LIBWPD=c:/recolldeps/libwpd/libwpd-0.10.0/
-LIBREVENGE=c:/recolldeps/libwpd/librevenge-0.0.1.jfd/
-CHM=c:/recolldeps/pychm
+PYTHON=${RCLDEPS}python2
+UNRTF=${RCLDEPS}unrtf
+ANTIWORD=${RCLDEPS}antiword
+PYXSLT=${RCLDEPS}pyxslt
+PYEXIV2=${RCLDEPS}pyexiv2
+LIBXAPIAN=${RCLDEPS}xapian-core-1.4.5/.libs/libxapian-30.dll
+MUTAGEN=${RCLDEPS}mutagen-1.32/
+EPUB=${RCLDEPS}epub-0.5.2
+FUTURE=${RCLDEPS}python2-future
+ZLIB=${RCLDEPS}zlib-1.2.8
+POPPLER=${RCLDEPS}poppler-0.36/
+LIBWPD=${RCLDEPS}libwpd/libwpd-0.10.0/
+LIBREVENGE=${RCLDEPS}libwpd/librevenge-0.0.1.jfd/
+CHM=${RCLDEPS}pychm
+MISC=${RCLDEPS}misc
 
 # Where to find libgcc_s_dw2-1.dll for progs which need it copied
 gccpath=`which gcc`
@@ -52,8 +55,6 @@ QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
 
 # Qt arch
 QTA=Desktop_Qt_5_8_0_MinGW_32bit
-
-RCLW=$RCL/windows/
 
 if test X$ReleaseBuild = X'y'; then
     qtsdir=release
@@ -118,7 +119,8 @@ copyzlib()
 }
 copypython()
 {
-    cp -rp $PYTHON $DESTDIR/Share/filters
+    mkdir -p $DESTDIR/Share/filters/python
+    cp -rp $PYTHON/* $DESTDIR/Share/filters/python
     chkcp $PYTHON/python.exe $DESTDIR/Share/filters/python/python.exe
 }
 copyrecoll()
@@ -174,9 +176,8 @@ copyunrtf()
     chkcp  $bindir/unrtf.exe               $FILTERS
     chkcp  $UNRTF/outputs/*.conf           $FILTERS/Share
     chkcp  $UNRTF/outputs/SYMBOL.charmap   $FILTERS/Share
-    # libiconv2 is not present in qt, get it from mingw direct. is C, should
-    # be compatible
-    chkcp c:/MinGW/bin/libiconv-2.dll $FILTERS
+    # libiconv-2 originally comes from mingw
+    chkcp $MISC/libiconv-2.dll $FILTERS
 }
 
 copymutagen()
@@ -194,7 +195,7 @@ copyepub()
 }
 
 # We used to copy the future module to the filters dir, but it is now
-# part of the Python installation we copy (2 dirs:
+# part of the origin Python tree in recolldeps. (2 dirs:
 # site-packages/builtins, site-packages/future)
 copyfuture()
 {
