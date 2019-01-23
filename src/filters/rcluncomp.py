@@ -42,7 +42,8 @@ outdir = sys.argv[3]
 try:
     cmd = [sevenz, "e", "-bd", "-y", "-o" + outdir, infile]
     subprocess.check_output(cmd, stderr = subprocess.PIPE)
-    outputname = glob.glob(os.path.join(outdir, "*"))
+    # Don't use os.path.join, we always want to use '/'
+    outputname = glob.glob(outdir + "/*")
     # There should be only one file in there..
     print(outputname[0])
 except Exception as err:
