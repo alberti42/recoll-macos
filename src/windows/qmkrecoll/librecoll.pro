@@ -120,8 +120,7 @@ SOURCES += \
 ../../utils/strmatcher.cpp \
 ../../utils/transcode.cpp \
 ../../utils/wipedir.cpp \
-../../windows/strptime.cpp \
-../../windows/dirent.c
+../../windows/strptime.cpp
 
 INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
             ../../unac ../../utils ../../aspell ../../rcldb ../../qtgui \
