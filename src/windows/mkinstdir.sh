@@ -30,7 +30,7 @@ RCLDEPS=c:/recolldeps/
 
 ReleaseBuild=y
 
-PYTHON=${RCLDEPS}python2
+PYTHON=${RCLDEPS}py-python3
 UNRTF=${RCLDEPS}unrtf
 ANTIWORD=${RCLDEPS}antiword
 PYXSLT=${RCLDEPS}pyxslt
@@ -46,12 +46,13 @@ LIBREVENGE=${RCLDEPS}libwpd/librevenge-0.0.1.jfd/
 CHM=${RCLDEPS}pychm
 MISC=${RCLDEPS}misc
 
-# Where to find libgcc_s_dw2-1.dll for progs which need it copied
-gccpath=`which gcc`
-MINGWBIN=`dirname $gccpath`
-
 # Where to copy the Qt Dlls from:
 QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
+QTGCCBIN=C:/qt/Qt5.8.0/Tools/mingw530_32/bin/
+# Where to find libgcc_s_dw2-1.dll for progs which need it copied
+MINGWBIN=$QTBIN
+PATH=$MINGWBIN:$QTGCCBIN:$PATH
+export PATH
 
 # Qt arch
 QTA=Desktop_Qt_5_8_0_MinGW_32bit
@@ -134,6 +135,7 @@ copyrecoll()
     chkcp $RCLIDX $DESTDIR
     chkcp $RCLQ $DESTDIR 
     chkcp $RCLS $DESTDIR 
+    chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DESTDIR
 
     chkcp $RCL/COPYING                  $DESTDIR/COPYING.txt
     chkcp $RCL/doc/user/usermanual.html $DESTDIR/Share/doc
@@ -150,7 +152,9 @@ copyrecoll()
 
     chkcp $RCL/python/recoll/recoll/rclconfig.py $FILTERS
     chkcp $RCL/python/recoll/recoll/conftree.py $FILTERS
-    chkcp $RCL/filters/*       $FILTERS 
+    chkcp $RCL/filters/*       $FILTERS
+    rm $FILTERS/rclimg $FILTERS/rclimg.py
+    chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
     chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
     chkcp $RCL/qtgui/i18n/*.qm $DESTDIR/Share/translations
 }
@@ -268,7 +272,7 @@ copyxslt
 #copyfuture
 copymutagen
 copyepub
-copypyexiv2
+#copypyexiv2
 copywpd
-copychm
+#copychm
 copypython
