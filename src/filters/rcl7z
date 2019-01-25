@@ -12,10 +12,9 @@ import fnmatch
 import rclexecm
 
 try:
-    import pylzma
     from py7zlib import Archive7z
 except:
-    print("RECFILTERROR HELPERNOTFOUND python:pylzma")
+    print("RECFILTERROR HELPERNOTFOUND python:py7zlib")
     sys.exit(1);
 
 try:
