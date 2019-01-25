@@ -411,7 +411,8 @@ public:
         if (m_fn.empty()) {
             ret1 = mz_zip_reader_init_mem(&zip, m_data, m_cnt, 0);
         } else {
-            ret1 = mz_zip_reader_init_file(&zip, m_fn.c_str(), 0);
+            SYSPATH(m_fn, realpath);
+            ret1 = mz_zip_reader_init_file(&zip, realpath, 0);
         }
         if (!ret1) {
             if (m_reason) {

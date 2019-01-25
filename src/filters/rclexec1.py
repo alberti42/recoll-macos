@@ -61,7 +61,7 @@ class Executor(RclBaseHandler):
             return True, postproc.wrapData()
         else:
             try:
-                fullcmd = cmd + [filename]
+                fullcmd = cmd + [rclexecm.subprocfile(filename)]
                 proc = subprocess.Popen(fullcmd,
                                         stdout = subprocess.PIPE)
                 stdout = proc.stdout

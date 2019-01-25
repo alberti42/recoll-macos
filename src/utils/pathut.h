@@ -87,6 +87,8 @@ extern int path_fileprops(const std::string path, struct stat *stp,
 /// Returns true if last elt could be checked to exist. False may mean that
 /// the file/dir does not exist or that an error occurred.
 extern bool path_exists(const std::string& path);
+/// Same but must be readable
+extern bool path_readable(const std::string& path);
 
 /// Return separator for PATH environment variable
 extern std::string path_PATHsep();

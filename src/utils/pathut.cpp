@@ -567,6 +567,11 @@ bool path_exists(const string& path)
     SYSPATH(path, syspath);
     return ACCESS(syspath, 0) == 0;
 }
+bool path_readable(const string& path)
+{
+    SYSPATH(path, syspath);
+    return ACCESS(syspath, R_OK) == 0;
+}
 
 // Allowed punctuation in the path part of an URI according to RFC2396
 // -_.!~*'():@&=+$,

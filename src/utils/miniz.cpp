@@ -2970,6 +2970,7 @@ static FILE *mz_freopen(const char *pPath, const char *pMode, FILE *pStream)
 #ifndef MINIZ_NO_TIME
 #include <sys/utime.h>
 #endif
+#define MZ_FOPENREAD(f, m) _wfopen(f, m)
 #define MZ_FOPEN(f, m) fopen(f, m)
 #define MZ_FCLOSE fclose
 #define MZ_FREAD fread
@@ -3845,20 +3846,23 @@ static size_t mz_zip_file_read_func(void *pOpaque, mz_uint64 file_ofs, void *pBu
     return MZ_FREAD(pBuf, 1, n, pZip->m_pState->m_pFile);
 }
 
-mz_bool mz_zip_reader_init_file(mz_zip_archive *pZip, const char *pFilename, mz_uint32 flags)
+mz_bool mz_zip_reader_init_file(mz_zip_archive *pZip, const WCHAR_TYPE *pFilename, mz_uint32 flags)
 {
     return mz_zip_reader_init_file_v2(pZip, pFilename, flags, 0, 0);
 }
 
-mz_bool mz_zip_reader_init_file_v2(mz_zip_archive *pZip, const char *pFilename, mz_uint flags, mz_uint64 file_start_ofs, mz_uint64 archive_size)
+mz_bool mz_zip_reader_init_file_v2(mz_zip_archive *pZip, const WCHAR_TYPE *pFilename, mz_uint flags, mz_uint64 file_start_ofs, mz_uint64 archive_size)
 {
     mz_uint64 file_size;
     MZ_FILE *pFile;
 
     if ((!pZip) || (!pFilename) || ((archive_size) && (archive_size < MZ_ZIP_END_OF_CENTRAL_DIR_HEADER_SIZE)))
         return mz_zip_set_error(pZip, MZ_ZIP_INVALID_PARAMETER);
-
-    pFile = MZ_FOPEN(pFilename, "rb");
+#ifdef _WIN32
+    pFile = MZ_FOPENREAD(pFilename, L"rb");
+#else
+    pFile = MZ_FOPENREAD(pFilename, "rb");
+#endif
     if (!pFile)
         return mz_zip_set_error(pZip, MZ_ZIP_FILE_OPEN_FAILED);
 
@@ -5400,7 +5404,7 @@ mz_bool mz_zip_validate_mem_archive(const void *pMem, size_t size, mz_uint flags
 }
 
 #ifndef MINIZ_NO_STDIO
-mz_bool mz_zip_validate_file_archive(const char *pFilename, mz_uint flags, mz_zip_error *pErr)
+mz_bool mz_zip_validate_file_archive(const WCHAR_TYPE *pFilename, mz_uint flags, mz_zip_error *pErr)
 {
     mz_bool success = MZ_TRUE;
     mz_zip_archive zip;

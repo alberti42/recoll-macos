@@ -29,12 +29,24 @@ import shutil
 import getopt
 import rclconfig
 
-PY3 = sys.version > '3'
+PY3 = (sys.version > '3')
+_mswindows = (sys.platform == "win32")
 
 def makebytes(data):
     if type(data) == type(u''):
         return data.encode("UTF-8")
     return data
+
+def subprocfile(fn):
+    # On Windows PY3 the list2cmdline() method in subprocess assumes that
+    # all args are str, and we receive file names as UTF-8. So we need
+    # to convert.
+    # On Unix all list elements get converted to bytes in the C
+    # _posixsubprocess module, nothing to do
+    if PY3 and _mswindows:
+        return fn.decode('UTF-8')
+    else:
+        return fn
 
 my_config = rclconfig.RclConfig()
 

@@ -1097,9 +1097,13 @@ mz_bool mz_zip_reader_init_mem(mz_zip_archive *pZip, const void *pMem, size_t si
 /* Read a archive from a disk file. */
 /* file_start_ofs is the file offset where the archive actually begins, or 0. */
 /* actual_archive_size is the true total size of the archive, which may be smaller than the file's actual size on disk. If zero the entire file is treated as the archive. */
-mz_bool mz_zip_reader_init_file(mz_zip_archive *pZip, const char *pFilename, mz_uint32 flags);
-mz_bool mz_zip_reader_init_file_v2(mz_zip_archive *pZip, const char *pFilename, mz_uint flags, mz_uint64 file_start_ofs, mz_uint64 archive_size);
-
+#ifdef _WIN32
+#define WCHAR_TYPE wchar_t
+#else
+#define WCHAR_TYPE char
+#endif
+mz_bool mz_zip_reader_init_file(mz_zip_archive *pZip, const WCHAR_TYPE *pFilename, mz_uint32 flags);
+mz_bool mz_zip_reader_init_file_v2(mz_zip_archive *pZip, const WCHAR_TYPE *pFilename, mz_uint flags, mz_uint64 file_start_ofs, mz_uint64 archive_size);
 /* Read an archive from an already opened FILE, beginning at the current file position. */
 /* The archive is assumed to be archive_size bytes long. If archive_size is < 0, then the entire rest of the file is assumed to contain the archive. */
 /* The FILE will NOT be closed when mz_zip_reader_end() is called. */
@@ -1222,7 +1226,7 @@ mz_bool mz_zip_validate_archive(mz_zip_archive *pZip, mz_uint flags);
 
 /* Misc utils/helpers, valid for ZIP reading or writing */
 mz_bool mz_zip_validate_mem_archive(const void *pMem, size_t size, mz_uint flags, mz_zip_error *pErr);
-mz_bool mz_zip_validate_file_archive(const char *pFilename, mz_uint flags, mz_zip_error *pErr);
+mz_bool mz_zip_validate_file_archive(const WCHAR_TYPE *pFilename, mz_uint flags, mz_zip_error *pErr);
 
 /* Universal end function - calls either mz_zip_reader_end() or mz_zip_writer_end(). */
 mz_bool mz_zip_end(mz_zip_archive *pZip);
