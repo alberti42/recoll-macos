@@ -76,8 +76,13 @@ RCLS=$RCLW/build-rclstartw-${QTA}-${qtsdir}/${qtsdir}/rclstartw.exe
 
 ################
 # Script:
-
 FILTERS=$DESTDIR/Share/filters
+
+fatal()
+{
+    echo $*
+    exit 1
+}
 
 # checkcopy. 
 chkcp()
@@ -259,6 +264,18 @@ for d in doc examples filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
         fatal mkdir $d failed
 done
+
+
+# First check that the config is ok
+ cmp -s $RCL/common/autoconfig.h $RCL/common/autoconfig-win.h || \
+    fatal autoconfig.h and autoconfig-win.h differ
+VERSION=`cat $RCL/VERSION`
+CFVERS=`grep PACKAGE_VERSION $RCL/common/autoconfig.h | \
+cut -d ' ' -f 3 | sed -e 's/"//g'`
+test "$VERSION" = "$CFVERS" ||
+    fatal Versions in VERSION and autoconfig.h differ
+
+echo Packaging version $CFVERS
 
 # copyrecoll must stay before copyqt so that windeployqt can do its thing
 copyrecoll
