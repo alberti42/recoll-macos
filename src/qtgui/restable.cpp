@@ -375,7 +375,9 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
 
     string data = m_getters[index.column()](colname, doc);
 
+#ifndef _WIN32
     // Special case url, because it may not be utf-8. URL-encode in this case.
+    // Not on windows, where we always read the paths as Unicode.
     if (!colname.compare("url")) {
         int ecnt;
         string data1;
@@ -383,6 +385,7 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
             data = url_encode(data);
         }
     }
+#endif
 
     list<string> lr;
     g_hiliter.plaintorich(data, lr, m_hdata);
