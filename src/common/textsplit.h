@@ -59,6 +59,11 @@ public:
 	o_deHyphenate = on;
     }
 
+    // Process backslashes as letters? Default is off, but it may be
+    // useful for searching for tex commands. Config variable:
+    // backslashasletter
+    static void backslashAsLetter(bool on);
+    
     enum Flags {
         // Default: will return spans and words (a_b, a, b)
         TXTS_NONE = 0, 

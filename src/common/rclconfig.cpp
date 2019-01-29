@@ -394,6 +394,7 @@ bool RclConfig::updateMainConfig()
 
     setKeyDir(cstr_null);
 
+    // Texsplit customization
     bool bvalue = false;
     if (getConfParam("nocjk", &bvalue) && bvalue == true) {
         TextSplit::cjkProcessing(false);
@@ -405,15 +406,17 @@ bool RclConfig::updateMainConfig()
             TextSplit::cjkProcessing(true);
         }
     }
-
     bvalue = false;
     if (getConfParam("nonumbers", &bvalue) && bvalue == true) {
         TextSplit::noNumbers();
     }
-
     bvalue = false;
     if (getConfParam("dehyphenate", &bvalue)) {
         TextSplit::deHyphenate(bvalue);
+    }
+    bvalue = false;
+    if (getConfParam("backslashasletter", &bvalue)) {
+        TextSplit::backslashAsLetter(bvalue);
     }
 
     bvalue = true;

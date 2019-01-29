@@ -137,6 +137,14 @@ public:
 };
 static const CharClassInit charClassInitInstance;
 
+void TextSplit::backslashAsLetter(bool on) {
+    if (on) {
+        charclasses[int('\\')] = A_LLETTER;
+    } else {
+        charclasses[int('\\')] = SPACE;
+    }
+}
+
 static inline int whatcc(unsigned int c)
 {
     if (c <= 127) {
