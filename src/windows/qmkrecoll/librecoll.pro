@@ -15,6 +15,9 @@ DEFINES -= _UNICODE
 DEFINES += _MBCS
 DEFINES += PSAPI_VERSION=1
 DEFINES += READFILE_ENABLE_MINIZ
+DEFINES += READFILE_ENABLE_MD5
+DEFINES += READFILE_ENABLE_ZLIB
+
 # This is necessary to avoid an undefined impl__xmlFree.
 # See comment in libxml/xmlexports.h
 DEFINES += LIBXML_STATIC
