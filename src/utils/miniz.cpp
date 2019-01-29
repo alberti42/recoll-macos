@@ -2955,6 +2955,7 @@ static FILE *mz_freopen(const char *pPath, const char *pMode, FILE *pStream)
 #ifndef MINIZ_NO_TIME
 #include <sys/utime.h>
 #endif
+#define MZ_FOPENREAD mz_fopen
 #define MZ_FOPEN mz_fopen
 #define MZ_FCLOSE fclose
 #define MZ_FREAD fread
@@ -2986,6 +2987,7 @@ static FILE *mz_freopen(const char *pPath, const char *pMode, FILE *pStream)
 #ifndef MINIZ_NO_TIME
 #include <sys/utime.h>
 #endif
+#define MZ_FOPENREAD(f, m) fopen(f, m)
 #define MZ_FOPEN(f, m) fopen(f, m)
 #define MZ_FCLOSE fclose
 #define MZ_FREAD fread
@@ -3002,6 +3004,7 @@ static FILE *mz_freopen(const char *pPath, const char *pMode, FILE *pStream)
 #include <utime.h>
 #endif
 #define MZ_FOPEN(f, m) fopen64(f, m)
+#define MZ_FOPENREAD(f, m) fopen64(f, m)
 #define MZ_FCLOSE fclose
 #define MZ_FREAD fread
 #define MZ_FWRITE fwrite
@@ -3017,6 +3020,7 @@ static FILE *mz_freopen(const char *pPath, const char *pMode, FILE *pStream)
 #include <utime.h>
 #endif
 #define MZ_FOPEN(f, m) fopen(f, m)
+#define MZ_FOPENREAD(f, m) fopen(f, m)
 #define MZ_FCLOSE fclose
 #define MZ_FREAD fread
 #define MZ_FWRITE fwrite
@@ -3033,6 +3037,7 @@ static FILE *mz_freopen(const char *pPath, const char *pMode, FILE *pStream)
 #ifndef MINIZ_NO_TIME
 #include <utime.h>
 #endif
+#define MZ_FOPENREAD(f, m) fopen(f, m)
 #define MZ_FOPEN(f, m) fopen(f, m)
 #define MZ_FCLOSE fclose
 #define MZ_FREAD fread

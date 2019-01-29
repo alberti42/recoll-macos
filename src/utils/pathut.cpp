@@ -65,7 +65,6 @@
 
 #include "pathut.h"
 #include "smallut.h"
-#include "log.h"
 
 using namespace std;
 

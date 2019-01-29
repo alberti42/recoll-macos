@@ -45,7 +45,10 @@
 
 #include "smallut.h"
 #include "pathut.h"
+
+#ifdef READFILE_ENABLE_MD5
 #include "md5.h"
+#endif
 
 #ifdef MDU_INCLUDE_LOG
 #include MDU_INCLUDE_LOG
@@ -88,7 +91,11 @@ bool file_to_string(const string& fn, string& data, int64_t offs, size_t cnt,
                     string *reason)
 {
     FileToString accum(data);
-    return file_scan(fn, &accum, offs, cnt, reason, nullptr);
+    return file_scan(fn, &accum, offs, cnt, reason
+#ifdef READFILE_ENABLE_MD5
+                     , nullptr
+#endif
+        );
 }
 
 bool file_to_string(const string& fn, string& data, string *reason)
@@ -254,6 +261,8 @@ public:
 };
 #endif // GZ
 
+#ifdef READFILE_ENABLE_MD5
+
 class FileScanMd5 : public FileScanFilter {
 public:
     FileScanMd5(string& d) : digest(d) {}
@@ -281,7 +290,7 @@ public:
     string &digest;
     MD5_CTX ctx;
 };
-
+#endif // MD5
 
 // Source taking data from a regular file
 class FileScanSourceFile : public FileScanSource {
@@ -488,7 +497,11 @@ bool file_scan(const std::string& filename, const std::string& membername,
                FileScanDo* doer, std::string *reason)
 {
     if (membername.empty()) {
-        return file_scan(filename, doer, 0, -1, reason, nullptr);
+        return file_scan(filename, doer, 0, -1, reason
+#ifdef READFILE_ENABLE_MD5
+, nullptr
+#endif
+            );
     } else {
             FileScanSourceZip source(doer, filename, membername, reason);
             return source.scan();
@@ -499,7 +512,11 @@ bool string_scan(const char *data, size_t cnt, const std::string& membername,
                  FileScanDo* doer, std::string *reason)
 {
     if (membername.empty()) {
-        return string_scan(data, cnt, doer, reason, nullptr);
+        return string_scan(data, cnt, doer, reason
+#ifdef READFILE_ENABLE_MD5
+, nullptr
+#endif
+            );                           
     } else {
         FileScanSourceZip source(data, cnt, doer, membername, reason);
         return source.scan();
@@ -509,9 +526,13 @@ bool string_scan(const char *data, size_t cnt, const std::string& membername,
 #endif // READFILE_ENABLE_ZIP
 
 bool file_scan(const string& fn, FileScanDo* doer, int64_t startoffs,
-               int64_t cnttoread, string *reason, string *md5p)
+               int64_t cnttoread, string *reason
+#ifdef READFILE_ENABLE_MD5
+               , string *md5p
+#endif
+    )
 {
-    LOGDEB("file_scan: doer " << doer << endl);
+    LOGDEB1("file_scan: doer " << doer << endl);
 #if defined(READFILE_ENABLE_ZLIB)
     bool nodecomp = startoffs != 0;
 #endif
@@ -521,7 +542,7 @@ bool file_scan(const string& fn, FileScanDo* doer, int64_t startoffs,
     
     FileScanSourceFile source(doer, fn, startoffs, cnttoread, reason);
     FileScanUpstream *up = &source;
-
+    up = up;
     
 #if defined(READFILE_ENABLE_ZLIB)
     GzFilter gzfilter;
@@ -531,6 +552,7 @@ bool file_scan(const string& fn, FileScanDo* doer, int64_t startoffs,
     }
 #endif
 
+#ifdef READFILE_ENABLE_MD5
     // We compute the MD5 on the uncompressed data, so insert this
     // right at the source (after the decompressor).
     string digest;
@@ -539,19 +561,26 @@ bool file_scan(const string& fn, FileScanDo* doer, int64_t startoffs,
         md5filter.insertAtSink(doer, up);
         up = &md5filter;
     }
+#endif
     
     bool ret = source.scan();
 
+#ifdef READFILE_ENABLE_MD5
     if (md5p) {
         md5filter.finish();
         MD5HexPrint(digest, *md5p);
     }
+#endif
     return ret;
 }
 
 bool file_scan(const string& fn, FileScanDo* doer, string *reason)
 {
-    return file_scan(fn, doer, 0, -1, reason, nullptr);
+    return file_scan(fn, doer, 0, -1, reason
+#ifdef READFILE_ENABLE_MD5
+, nullptr
+#endif
+        );                           
 }
 
 
@@ -579,24 +608,33 @@ protected:
 };
 
 bool string_scan(const char *data, size_t cnt, FileScanDo* doer,
-                 std::string *reason, std::string *md5p)
+                 std::string *reason
+#ifdef READFILE_ENABLE_MD5
+                 , std::string *md5p
+#endif
+    )
 {
     FileScanSourceBuffer source(doer, data, cnt, reason);
     FileScanUpstream *up = &source;
-
+    up = up;
+    
+#ifdef READFILE_ENABLE_MD5
     string digest;
     FileScanMd5 md5filter(digest);
     if (md5p) {
         md5filter.insertAtSink(doer, up);
         up = &md5filter;
     }
+#endif
     
     bool ret = source.scan();
 
+#ifdef READFILE_ENABLE_MD5
     if (md5p) {
         md5filter.finish();
         MD5HexPrint(digest, *md5p);
     }
+#endif
     return ret;
 }
 

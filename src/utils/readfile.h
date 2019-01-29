@@ -63,7 +63,11 @@ public:
  * @return true if the operation ended normally, else false.
  */
 bool file_scan(const std::string& fn, FileScanDo* doer, int64_t startoffs,
-               int64_t cnttoread, std::string *reason, std::string *md5p);
+               int64_t cnttoread, std::string *reason
+#ifdef READFILE_ENABLE_MD5
+               , std::string *md5p
+#endif
+    );
 
 /** Same as above, not offset/cnt/md5 */
 bool file_scan(const std::string& filename, FileScanDo* doer,
@@ -71,7 +75,11 @@ bool file_scan(const std::string& filename, FileScanDo* doer,
 
 /** Same as file_scan, from a memory buffer. No libz processing */
 bool string_scan(const char *data, size_t cnt, FileScanDo* doer, 
-                 std::string *reason, std::string *md5p);
+                 std::string *reason
+#ifdef READFILE_ENABLE_MD5
+                 , std::string *md5p
+#endif
+    );
 
 #if defined(READFILE_ENABLE_MINIZ)
 /* Process a zip archive member */
