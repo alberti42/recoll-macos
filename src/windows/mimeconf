@@ -110,6 +110,7 @@ application/x-shellscript = internal text/plain
 #application/x-tar = execm python rcltar
 application/x-webarchive = execm python rclwar
 application/x-7z-compressed = execm python rcl7z
+application/zip = execm python rclzip;charset=default
 audio/mpeg = execm python rclaudio
 audio/mp4 = execm python rclaudio
 audio/aac = execm python rclaudio
