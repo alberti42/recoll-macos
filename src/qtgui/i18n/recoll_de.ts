@@ -2078,6 +2078,10 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
         <source>Choose search type.</source>
         <translation>Wählen Sie die Art der Suche</translation>
     </message>
+    <message>
+        <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -3179,7 +3183,7 @@ für Ergebnisse</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Automatisch eine einfache Suche starten, wenn ein Worttrenner eingegeben wird</translation>
+        <translation type="vanished">Automatisch eine einfache Suche starten, wenn ein Worttrenner eingegeben wird</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
@@ -3393,7 +3397,7 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation>Suche beim Eintippen starten.</translation>
+        <translation type="vanished">Suche beim Eintippen starten.</translation>
     </message>
     <message>
         <source>Paths translations</source>

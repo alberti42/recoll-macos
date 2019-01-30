@@ -2144,6 +2144,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Choose search type.</source>
         <translation>Choisir le type de recherche.</translation>
     </message>
+    <message>
+        <source>Show query history</source>
+        <translation>Afficher l&apos;historique des recherches</translation>
+    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -3313,7 +3317,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Démarrer automatiquement une recherche simple sur entrée d&apos;un espace.</translation>
+        <translation type="vanished">Démarrer automatiquement une recherche simple sur entrée d&apos;un espace.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
@@ -3535,7 +3539,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation>Lancer la recherche a chaque caractere entre</translation>
+        <translation type="vanished">Lancer la recherche a chaque caractere entre</translation>
     </message>
     <message>
         <source>Paths translations</source>

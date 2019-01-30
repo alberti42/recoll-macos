@@ -2114,6 +2114,10 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
         <source>Choose search type.</source>
         <translation>Vyberte typ hledání.</translation>
     </message>
+    <message>
+        <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -3213,7 +3217,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Automaticky spustit jednoduché hledání, když je do zadávacího pole pro hledání zadáno prázdné místo (mezera).</translation>
+        <translation type="vanished">Automaticky spustit jednoduché hledání, když je do zadávacího pole pro hledání zadáno prázdné místo (mezera).</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
@@ -3435,7 +3439,7 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation>Hledat při psaní.</translation>
+        <translation type="vanished">Hledat při psaní.</translation>
     </message>
     <message>
         <source>Paths translations</source>

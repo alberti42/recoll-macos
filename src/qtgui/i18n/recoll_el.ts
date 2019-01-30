@@ -2055,6 +2055,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
         <translation>Εισάγετε εδώ τους όρους αναζήτησης. Πατήστε ESC SPC για να εμφανίσετε τις λέξεις που αρχίζουν από τον τρέχοντα όρο.</translation>
     </message>
+    <message>
+        <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -2895,7 +2899,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Αυτόματη έναρξη μιας απλής αναζήτησης όταν εισαχθεί ένα κενό.</translation>
+        <translation type="vanished">Αυτόματη έναρξη μιας απλής αναζήτησης όταν εισαχθεί ένα κενό.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
@@ -3097,7 +3101,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation>Αναζήτηση κατά την πληκτρολόγηση.</translation>
+        <translation type="vanished">Αναζήτηση κατά την πληκτρολόγηση.</translation>
     </message>
     <message>
         <source>Paths translations</source>

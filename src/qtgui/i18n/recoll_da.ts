@@ -1853,6 +1853,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
         <source>Choose search type.</source>
         <translation>Vælg søgetype.</translation>
     </message>
+    <message>
+        <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -2632,7 +2636,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Autostart simpel søgning ved blanktegn.</translation>
+        <translation type="vanished">Autostart simpel søgning ved blanktegn.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
@@ -2822,7 +2826,7 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation>Søg mens du skriver.</translation>
+        <translation type="vanished">Søg mens du skriver.</translation>
     </message>
     <message>
         <source>Paths translations</source>

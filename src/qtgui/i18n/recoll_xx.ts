@@ -1682,6 +1682,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Choose search type.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -2418,10 +2422,6 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Auto-start simple search on whitespace entry.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Start with advanced search dialog open.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2600,10 +2600,6 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Disable Qt autocompletion in search entry.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search as you type.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

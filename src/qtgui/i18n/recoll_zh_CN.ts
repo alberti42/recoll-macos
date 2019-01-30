@@ -2107,6 +2107,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Choose search type.</source>
         <translation>选择搜索类型。</translation>
     </message>
+    <message>
+        <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -2949,7 +2953,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>输入空格时自动开始进行简单搜索。</translation>
+        <translation type="vanished">输入空格时自动开始进行简单搜索。</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
@@ -3151,7 +3155,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation>在输入的同时进行搜索。</translation>
+        <translation type="vanished">在输入的同时进行搜索。</translation>
     </message>
     <message>
         <source>Paths translations</source>

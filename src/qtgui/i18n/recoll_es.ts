@@ -2078,6 +2078,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Choose search type.</source>
         <translation>Elija tipo de búsqueda.</translation>
     </message>
+    <message>
+        <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -2957,7 +2961,7 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Auto iniciar búsqueda simple al entrar espacios en blanco.</translation>
+        <translation type="vanished">Auto iniciar búsqueda simple al entrar espacios en blanco.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
@@ -3167,7 +3171,7 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation>Buscar al escribir.</translation>
+        <translation type="vanished">Buscar al escribir.</translation>
     </message>
     <message>
         <source>Paths translations</source>
