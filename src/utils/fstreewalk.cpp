@@ -476,7 +476,33 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 	CLOSEDIR(d);
     return status;
 }
-	
+
+
+int64_t fsTreeBytes(const string& topdir)
+{
+    class bytesCB : public FsTreeWalkerCB {
+    public:
+        FsTreeWalker::Status processone(const string &path, 
+                                        const struct stat *st,
+                                        FsTreeWalker::CbFlag flg) {
+            if (flg == FsTreeWalker::FtwDirEnter ||
+                flg == FsTreeWalker::FtwRegular) {
+                totalbytes += st->st_blocks * 512;
+            }
+            return FsTreeWalker::FtwOk;
+        }
+        int64_t totalbytes{0};
+    };
+    FsTreeWalker walker;
+    bytesCB cb;
+    FsTreeWalker::Status status = walker.walk(topdir, cb);
+    if (status != FsTreeWalker::FtwOk) {
+        LOGERR("fsTreeBytes: walker failed: " << walker.getReason() << endl);
+        return -1;
+    }
+    return cb.totalbytes;
+}
+
 #else // TEST_FSTREEWALK
 
 #include <stdio.h>
@@ -504,7 +530,7 @@ static int     op_flags;
 #define OPT_w     0x200
 #define OPT_M     0x400
 #define OPT_D     0x800
-
+#define OPT_k     0x1000
 class myCB : public FsTreeWalkerCB {
  public:
     FsTreeWalker::Status processone(const string &path, 
@@ -556,6 +582,7 @@ static char usage [] =
 " -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
 " -M <depth>: limit depth (works with -b/m/d)\n"
 " -D : skip dotfiles\n"
+"-k : like du\n"
 ;
 static void
 Usage(void)
@@ -583,6 +610,7 @@ int main(int argc, const char **argv)
 	    case 'c':	op_flags |= OPT_c; break;
 	    case 'd':	op_flags |= OPT_d; break;
 	    case 'D':	op_flags |= OPT_D; break;
+	    case 'k':	op_flags |= OPT_k; break;
 	    case 'L':	op_flags |= OPT_L; break;
 	    case 'm':	op_flags |= OPT_m; break;
 	    case 'M':	op_flags |= OPT_M; if (argc < 2)  Usage();
@@ -608,6 +636,17 @@ int main(int argc, const char **argv)
 	Usage();
     string topdir = *argv++;argc--;
 
+    if (op_flags & OPT_k) {
+        int64_t bytes = fsTreeBytes(topdir);
+        if (bytes < 0) {
+            cerr << "fsTreeBytes failed\n";
+            return 1;
+        } else {
+            cout << bytes / 1024 << "\t" << topdir << endl;
+            return 0;
+        }
+    }
+    
     int opt = 0;
     if (op_flags & OPT_r)
 	opt |= FsTreeWalker::FtwNoRecurse;
@@ -645,4 +684,3 @@ int main(int argc, const char **argv)
 }
 
 #endif // TEST_FSTREEWALK
-

@@ -42,7 +42,7 @@ class RclConfig;
 enum RclInitFlags {RCLINIT_NONE = 0, RCLINIT_DAEMON = 1, RCLINIT_IDX = 2};
 extern RclConfig *recollinit(int flags,
                              void (*cleanup)(void), void (*sigcleanup)(int),
-                             std::string& reason, const string *argcnf = 0);
+                             std::string& reason, const std::string *argcnf = 0);
 inline RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int),
                              std::string& reason,
                              const std::string *argcnf = 0)

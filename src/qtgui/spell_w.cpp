@@ -46,6 +46,7 @@
 #include "wasatorcl.h"
 #include "execmd.h"
 #include "indexer.h"
+#include "fstreewalk.h"
 
 using std::list;
 using std::multimap;
@@ -319,16 +320,9 @@ void SpellW::showStats()
 
     baseWordLE->setText(QString::fromLocal8Bit(theconfig->getDbDir().c_str()));
 
-    ExecCmd cmd;
-    vector<string> args; 
-    int status;
-    args.push_back("-sk");
-    args.push_back(theconfig->getDbDir());
-    string output;
-    status = cmd.doexec("du", args, 0, &output);
-    long long dbkbytes = 0;
-    if (!status) {
-	dbkbytes = atoll(output.c_str());
+    int64_t dbkbytes = fsTreeBytes(theconfig->getDbDir()) / 1024;
+    if (dbkbytes < 0) {
+	dbkbytes = 0;
     }
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,

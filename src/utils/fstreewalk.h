@@ -125,4 +125,8 @@ class FsTreeWalkerCB {
 	processone(const string &, const struct stat *, FsTreeWalker::CbFlag) 
 	= 0;
 };
+
+// Utility function. Somewhat like du.
+int64_t fsTreeBytes(const string& topdir);
+
 #endif /* _FSTREEWALK_H_INCLUDED_ */
