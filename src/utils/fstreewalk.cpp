@@ -487,7 +487,11 @@ int64_t fsTreeBytes(const string& topdir)
                                         FsTreeWalker::CbFlag flg) {
             if (flg == FsTreeWalker::FtwDirEnter ||
                 flg == FsTreeWalker::FtwRegular) {
+#ifdef _WIN32
+                totalbytes += st->st_size;
+#else
                 totalbytes += st->st_blocks * 512;
+#endif
             }
             return FsTreeWalker::FtwOk;
         }
