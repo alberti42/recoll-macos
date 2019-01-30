@@ -557,9 +557,9 @@ int path_fileprops(const std::string path, struct stat *stp, bool follow)
     stp->st_ino = mst.st_ino;
     stp->st_dev = mst.st_dev;
     stp->st_ctime = mst.st_ctime;
-#endif
     stp->st_blocks = mst.st_blocks;
     stp->st_blksize = mst.st_blksize;
+#endif
     return 0;
 }
 

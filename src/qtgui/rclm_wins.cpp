@@ -401,7 +401,7 @@ void RclMain::showActiveTypes()
     dialog.setWindowTitle(tr("Indexed MIME Types"));
 
     // Turn the result into a string and display
-    dialog.groupBox->setTitle(tr("Content has been indexed for these mime types:"));
+    dialog.groupBox->setTitle(tr("Content has been indexed for these MIME types:"));
 
     // We replace the list with an editor so that the user can copy/paste
     delete dialog.listWidget;
