@@ -140,7 +140,7 @@ sub readparam {
 
 # JFD: replaced the "use" call with a runtime load with error checking,
 # for compat with the missing filter detection code.
-#use Image::ExifTool qw(:Public);
+use Image::ExifTool qw(:Public);
 eval {require Image::ExifTool; Image::ExifTool->import(qw(:Public));}; 
 if ($@) {
 	print "RECFILTERROR HELPERNOTFOUND Perl::Image::ExifTool\n";

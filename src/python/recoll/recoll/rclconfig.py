@@ -12,7 +12,7 @@ import conftree
 
 class RclDynConf:
     def __init__(self, fname):
-        self.data = ConfSimple(fname)
+        self.data = conftree.ConfSimple(fname)
 
     def getStringList(self, sk):
         nms = self.data.getNames(sk)
@@ -95,6 +95,6 @@ class RclExtraDbs:
     
 if __name__ == '__main__':
     config = RclConfig()
-    print(config.getConfParam("topdirs"))
+    print("topdirs = %s" % config.getConfParam("topdirs"))
     extradbs = RclExtraDbs(config)
     print(extradbs.getActDbs())

@@ -2,6 +2,8 @@
 CXXFLAGS ?= @CXXFLAGS@
 LIBXAPIAN=@LIBXAPIAN@
 XAPIANCXXFLAGS=@XAPIANCXXFLAGS@
+XSLT_CFLAGS=@XSLT_CFLAGS@
+XSLT_LINKADD=@XSLT_LINKADD@
 LIBICONV=@LIBICONV@
 INCICONV=@INCICONV@
 LIBFAM = @LIBFAM@
@@ -29,8 +31,10 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     $(COMMONCPPFLAGS) \
     $(INCICONV) \
     $(XAPIANCXXFLAGS) \
+    $(XSLT_CFLAGS) \
     $(X_CFLAGS) \
     -DRECOLL_DATADIR=\"${pkgdatadir}\" \
+    -DREADFILE_ENABLE_ZLIB -DREADFILE_ENABLE_MINIZ -DREADFILE_ENABLE_MD5 \
     -D_GNU_SOURCE \
     $(DEFS)
 
@@ -121,6 +125,8 @@ internfile/mh_symlink.h \
 internfile/mh_text.cpp \
 internfile/mh_text.h \
 internfile/mh_unknown.h \
+internfile/mh_xslt.cpp \
+internfile/mh_xslt.h \
 internfile/mimehandler.cpp \
 internfile/mimehandler.h \
 internfile/myhtmlparse.cpp \
@@ -224,6 +230,8 @@ utils/md5ut.cpp \
 utils/md5ut.h \
 utils/mimeparse.cpp \
 utils/mimeparse.h \
+utils/miniz.cpp \
+utils/miniz.h \
 utils/netcon.cpp \
 utils/netcon.h \
 utils/pathut.cpp \
@@ -262,7 +270,7 @@ AM_YFLAGS = -d
 librecoll_la_LDFLAGS = -release $(VERSION) \
     -Wl,--no-undefined -Wl,--warn-unresolved-symbols
 
-librecoll_la_LIBADD = $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
+librecoll_la_LIBADD = $(XSLT_LINKADD) $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
 
 # There is probably a better way to do this. The KIO needs to be linked
 # with librecoll, but librecoll is installed into a non-standard place
@@ -640,6 +648,18 @@ sampleconf/mimeview
 filterdir = $(pkgdatadir)/filters
 filter_DATA = \
 desktop/hotrecoll.py \
+filters/abiword.xsl \
+filters/fb2.xsl \
+filters/gnumeric.xsl \
+filters/msodump.zip \
+filters/okular-note.xsl \
+filters/opendoc-body.xsl \
+filters/opendoc-flat.xsl \
+filters/opendoc-meta.xsl \
+filters/openxml-xls-body.xsl \
+filters/openxml-word-body.xsl \
+filters/openxml-meta.xsl \
+filters/ppt-dump.py \
 filters/rcl7z \
 filters/rclabw.py \
 filters/rclaptosidman \
@@ -671,19 +691,19 @@ filters/rcllatinstops.zip \
 filters/rcllyx \
 filters/rclman \
 filters/rclmidi.py \
-filters/rclpdf.py \
-filters/rclps \
 filters/rclokulnote.py \
 filters/rclopxml.py \
+filters/rclpdf.py \
 filters/rclppt.py \
+filters/rclps \
 filters/rclpurple \
 filters/rclpython \
 filters/rclrar \
 filters/rclrtf.py \
 filters/rclscribus \
 filters/rclshowinfo \
-filters/rclsoff.py \
 filters/rclsoff-flat.py \
+filters/rclsoff.py \
 filters/rclsvg.py \
 filters/rcltar \
 filters/rcltex \
@@ -697,11 +717,11 @@ filters/rclxmp.py \
 filters/rclxslt.py \
 filters/rclzip \
 filters/recoll-we-move-files.py \
-filters/ppt-dump.py \
+filters/recollepub.zip \
+filters/svg.xsl \
 filters/xls-dump.py \
 filters/xlsxmltocsv.py \
-filters/msodump.zip \
-filters/recollepub.zip \
+filters/xml.xsl \
 python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py 
 

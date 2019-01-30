@@ -479,7 +479,8 @@ class PDFExtractor:
             print("RECFILTERROR HELPERNOTFOUND pdftotext")
             sys.exit(1);
 
-        self.filename = params["filename:"]
+        self.filename = rclexecm.subprocfile(params["filename:"])
+
         #self.em.rclog("openfile: [%s]" % self.filename)
         self.currentindex = -1
         self.attextractdone = False

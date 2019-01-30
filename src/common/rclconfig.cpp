@@ -394,6 +394,7 @@ bool RclConfig::updateMainConfig()
 
     setKeyDir(cstr_null);
 
+    // Texsplit customization
     bool bvalue = false;
     if (getConfParam("nocjk", &bvalue) && bvalue == true) {
         TextSplit::cjkProcessing(false);
@@ -405,15 +406,17 @@ bool RclConfig::updateMainConfig()
             TextSplit::cjkProcessing(true);
         }
     }
-
     bvalue = false;
     if (getConfParam("nonumbers", &bvalue) && bvalue == true) {
         TextSplit::noNumbers();
     }
-
     bvalue = false;
     if (getConfParam("dehyphenate", &bvalue)) {
         TextSplit::deHyphenate(bvalue);
+    }
+    bvalue = false;
+    if (getConfParam("backslashasletter", &bvalue)) {
+        TextSplit::backslashAsLetter(bvalue);
     }
 
     bvalue = true;
@@ -1623,7 +1626,12 @@ string RclConfig::findFilter(const string &icmd) const
     // Prepend $datadir/filters
     temp = path_cat(m_datadir, "filters");
     PATH = temp + path_PATHsep() + PATH;
-
+#ifdef _WIN32
+    // Windows only: use the bundled Python
+    temp = path_cat(m_datadir, "filters");
+    temp = path_cat(temp, "python");
+    PATH = temp + path_PATHsep() + PATH;
+#endif
     // Prepend possible configuration parameter?
     if (getConfParam(string("filtersdir"), temp)) {
         temp = path_tildexpand(temp);

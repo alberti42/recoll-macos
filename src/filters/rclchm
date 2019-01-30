@@ -15,12 +15,10 @@ if PY3:
     from urllib.parse import unquote as urllib_unquote
     from urllib.parse import urlparse as urlparse_urlparse
     from html.parser import HTMLParser
-    chmpackname = 'pychm3.egg'
 else:
     from urlparse import urlparse as urlparse_urlparse
     from urllib import unquote as urllib_unquote
     from HTMLParser import HTMLParser
-    chmpackname = 'pychm2.egg'
 
 import subprocess
 
@@ -28,12 +26,12 @@ import rclconfig
 import rclexecm
 
 # pychm has no official port to Python3, hence no package in the
-# standard place.  Recoll bundles a python3 port which we install out
-# of the standard python places. Look for it:
-#  sys.path[0] is for MSW, where we install the egg in the filters
-#  directory? TBD for now
+# standard place. Linux Recoll bundles a python3 port which is identical
+# to pychm, but named recollchm to avoid conflicts because it is installed
+# as a normal python package (in /usr/lib/pythonxx/dist-packages,
+# not recoll/filters.). No such issues on Windows
 try:
-    # First try the system version if any
+    # First try the system (or recoll-local on Windows) version if any
     from chm import chm,chmlib
 except:
     try:

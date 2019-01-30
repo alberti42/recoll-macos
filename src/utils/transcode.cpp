@@ -21,13 +21,15 @@
 #include <string>
 #include <iostream>
 #include <mutex>
-using std::string;
 
 #include <errno.h>
 #include <iconv.h>
+#include <wchar.h>
 
 #include "transcode.h"
 #include "log.h"
+
+using namespace std;
 
 // We gain approximately 25% exec time for word at a time conversions by
 // caching the iconv_open thing. 
@@ -42,7 +44,7 @@ using std::string;
 bool transcode(const string &in, string &out, const string &icode,
 	       const string &ocode, int *ecnt)
 {
-    LOGDEB2("Transcode: "  << (icode) << " -> "  << (ocode) << "\n" );
+    LOGDEB2("Transcode: " << icode << " -> " << ocode << "\n");
 #ifdef ICONV_CACHE_OPEN
     static iconv_t ic = (iconv_t)-1;
     static string cachedicode;
@@ -100,8 +102,9 @@ bool transcode(const string &in, string &out, const string &icode,
 		" : " + strerror(errno);
 #endif
 	    if (errno == EILSEQ) {
-		LOGDEB1("transcode:iconv: bad input seq.: shift, retry\n" );
-		LOGDEB1(" Input consumed "  << (ip - in) << " output produced "  << (out.length() + OBSIZ - osiz) << "\n" );
+		LOGDEB1("transcode:iconv: bad input seq.: shift, retry\n");
+		LOGDEB1(" Input consumed " << ip - in << " output produced " <<
+                        out.length() + OBSIZ - osiz << "\n");
 		out.append(obuf, OBSIZ - osiz);
 		out += "?";
 		mecnt++;
@@ -144,14 +147,67 @@ error:
     }
 
     if (mecnt)
-	LOGDEB("transcode: ["  << (icode) << "]->["  << (ocode) << "] "  << (mecnt) << " errors\n" );
+	LOGDEB("transcode: [" << icode << "]->[" << ocode << "] " <<
+               mecnt << " errors\n");
     if (ecnt)
 	*ecnt = mecnt;
     return ret;
 }
 
+bool wchartoutf8(const wchar_t *in, std::string& out)
+{
+    static iconv_t ic = (iconv_t)-1;
+    if (ic == (iconv_t)-1) {
+	if((ic = iconv_open("UTF-8", "WCHAR_T")) == (iconv_t)-1) {
+            LOGERR("wchartoutf8: iconv_open failed\n");
+            return false;
+	}
+    }
+    const int OBSIZ = 8192;
+    char obuf[OBSIZ], *op;
+    out.erase();
+    size_t isiz = 2 * wcslen(in);
+    out.reserve(isiz);
+    const char *ip = (const char *)in;
 
-#else
+    while (isiz > 0) {
+	size_t osiz;
+	op = obuf;
+	osiz = OBSIZ;
+
+	if(iconv(ic, (ICONV_CONST char **)&ip, &isiz, &op, &osiz) == (size_t)-1
+           && errno != E2BIG) {
+            LOGERR("wchartoutf8: iconv error, errno: " << errno << endl);
+            return false;
+	}
+	out.append(obuf, OBSIZ - osiz);
+    }
+    return true;
+}
+
+bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
+{
+    static iconv_t ic = (iconv_t)-1;
+    if (ic == (iconv_t)-1) {
+	if((ic = iconv_open("WCHAR_T", "UTF-8")) == (iconv_t)-1) {
+            LOGERR("utf8towchar: iconv_open failed\n");
+            return false;
+	}
+    }
+    size_t isiz = in.size();
+    const char *ip = in.c_str();
+    size_t osiz = (size_t)obytescap-2;
+    char *op = (char *)out;
+    if (iconv(ic, (ICONV_CONST char **)&ip, &isiz, &op, &osiz) == (size_t)-1) {
+        LOGERR("utf8towchar: iconv error, errno: " << errno << endl);
+        return false;
+    }
+    *op++ = 0;
+    *op = 0;
+    return true;
+}
+
+#else // -> TEST
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -222,4 +278,3 @@ int main(int argc, char **argv)
     exit(0);
 }
 #endif
-

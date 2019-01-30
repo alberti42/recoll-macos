@@ -32,6 +32,7 @@
 #include <psapi.h>
 #include "smallut.h"
 #include "pathut.h"
+#include "transcode.h"
 
 using namespace std;
 
@@ -752,7 +753,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
         return false;
     }
 
-    STARTUPINFO siStartInfo;
+    STARTUPINFOW siStartInfo;
     BOOL bSuccess = FALSE;
 
     // Set up members of the PROCESS_INFORMATION structure. 
@@ -760,8 +761,8 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 
     // Set up members of the STARTUPINFO structure. 
     // This structure specifies the STDIN and STDOUT handles for redirection.
-    ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
-    siStartInfo.cb = sizeof(STARTUPINFO);
+    ZeroMemory(&siStartInfo, sizeof(siStartInfo));
+    siStartInfo.cb = sizeof(siStartInfo);
     if (m->m_flags & EXF_SHOWWINDOW) {
         siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
         if (m->m_flags & EXF_MAXIMIZED) {
@@ -782,12 +783,15 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 
     // Create the child process. 
     // Need a writable buffer for the command line, for some reason.
-    LOGDEB1("ExecCmd:startExec: cmdline ["  << (cmdline) << "]\n" );
+    LOGDEB("ExecCmd:startExec: cmdline [" << cmdline << "]\n");
+#if 0
     LPSTR buf = (LPSTR)malloc(cmdline.size() + 1);
     memcpy(buf, cmdline.c_str(), cmdline.size());
     buf[cmdline.size()] = 0;
-    bSuccess = CreateProcess(NULL,
-                             buf, // command line 
+#endif
+    SYSPATH(cmdline, wcmdline);
+    bSuccess = CreateProcessW(NULL,
+                             wcmdline, // command line 
                              NULL,          // process security attributes 
                              NULL,          // primary thread security attrs 
                              TRUE,         // handles are inherited 
@@ -798,9 +802,10 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
                              &m->m_piProcInfo);  // PROCESS_INFORMATION 
     if (!bSuccess) {
         printError("ExecCmd::doexec: CreateProcess");
-    } 
+    }
+    
     free(envir);
-    free(buf);
+//    free(buf);
     // Close child-side handles else we'll never see eofs
     if (!CloseHandle(hOutputWrite))
         printError("CloseHandle");

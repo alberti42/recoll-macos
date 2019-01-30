@@ -164,10 +164,15 @@ const string& path_pkgdatadir()
 // into either utf-8 if transcoding succeeds, or url-encoded
 bool printableUrl(const string& fcharset, const string& in, string& out)
 {
+#ifdef _WIN32
+    // On windows our paths are always utf-8
+    out = in;
+#else
     int ecnt = 0;
     if (!transcode(in, out, fcharset, "UTF-8", &ecnt) || ecnt) {
         out = url_encode(in, 7);
     }
+#endif
     return true;
 }
 

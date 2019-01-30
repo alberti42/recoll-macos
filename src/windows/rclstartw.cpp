@@ -19,6 +19,9 @@
 #include <shellapi.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "safewindows.h"
+#include "pathut.h"
+#include "transcode.h"
 
 using namespace std;
 
@@ -41,6 +44,10 @@ int op_flags;
 
 int main(int argc, char *argv[])
 {
+    int wargc;
+    wchar_t **wargv = CommandLineToArgvW(GetCommandLineW(), &wargc);
+
+    // Yes we could use wargv
     thisprog = argv[0];
     argc--; argv++;
     int imode = 0;
@@ -62,7 +69,9 @@ int main(int argc, char *argv[])
     if (argc != 1) {
         Usage();
     }
-    char *fn = strdup(argv[0]);
+
+    wchar_t *wfn = wargv[1];
+
     // Do we need this ?
     //https://msdn.microsoft.com/en-us/library/windows/desktop/bb762153%28v=vs.85%29.aspx
     //CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -73,9 +82,10 @@ int main(int argc, char *argv[])
     default: wmode = SW_SHOWNORMAL;  break;
     }
     
-    int ret = (int)ShellExecute(NULL, "open", fn, NULL, NULL, wmode);
+    int ret = (int)ShellExecuteW(NULL, L"open", wfn, NULL, NULL, wmode);
     if (ret) {
         fprintf(stderr, "ShellExecute returned %d\n", ret);
     }
+    LocalFree(wargv);
     return ret;
 }

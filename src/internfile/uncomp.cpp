@@ -118,15 +118,15 @@ bool Uncomp::uncompressfile(const string& ifn,
     ExecCmd ex;
     int status = ex.doexec(cmd, args, 0, &tfile);
     if (status || tfile.empty()) {
-	LOGERR("uncompressfile: doexec: failed for [" << ifn << "] status 0x" <<
-               status << "\n");
+	LOGERR("uncompressfile: doexec: " << cmd << " " <<
+               stringsToString(args) << " failed for [" <<
+               ifn << "] status 0x" << status << "\n");
 	if (!m_dir->wipe()) {
 	    LOGERR("uncompressfile: wipedir failed\n");
 	}
 	return false;
     }
-    if (tfile[tfile.length() - 1] == '\n')
-	tfile.erase(tfile.length() - 1, 1);
+    rtrimstring(tfile, "\n\r");
     m_tfile = tfile;
     m_srcpath = ifn;
     return true;

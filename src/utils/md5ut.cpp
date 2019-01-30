@@ -20,15 +20,17 @@
 #include <string.h>
 
 #include "md5ut.h"
-
 #include "readfile.h"
 
 using namespace std;
 
-class FileScanMd5 : public FileScanDo {
+// Quite incredibly if this class is named FileScanMd5 like the
+// different one in readfile.cpp, the vtables get mixed up and mh_xslt
+// crashes while calling a virtual function (gcc 6.3 and 7.3)
+class FileScanMd5loc : public FileScanDo {
 public:
-    FileScanMd5(string& d) : digest(d) {}
-    virtual bool init(size_t size, string *)
+    FileScanMd5loc(string& d) : digest(d) {}
+    virtual bool init(int64_t, string *)
     {
 	MD5Init(&ctx);
 	return true;
@@ -44,7 +46,7 @@ public:
 
 bool MD5File(const string& filename, string &digest, string *reason)
 {
-    FileScanMd5 md5er(digest);
+    FileScanMd5loc md5er(digest);
     if (!file_scan(filename, &md5er, reason))
 	return false;
     // We happen to know that digest and md5er.digest are the same object

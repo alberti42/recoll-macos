@@ -24,35 +24,38 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 
 # Recoll src tree
 RCL=c:/recoll/src/
+RCLW=$RCL/windows/
+# Recoll dependancies
+RCLDEPS=c:/recolldeps/
 
 ReleaseBuild=y
 
-UNRTF=c:/recolldeps/unrtf
-ANTIWORD=c:/recolldeps/antiword
-PYXSLT=C:/recolldeps/pyxslt
-PYEXIV2=C:/recolldeps/pyexiv2
-#LIBXAPIAN=c:/temp/xapian-core-1.2.21/.libs/libxapian-22.dll
-LIBXAPIAN=c:/recolldeps/xapian-core-1.4.5/.libs/libxapian-30.dll
-MUTAGEN=C:/recolldeps/mutagen-1.32/
-EPUB=C:/recolldeps/epub-0.5.2
-FUTURE=C:/recolldeps/python2-future
-ZLIB=c:/recolldeps/zlib-1.2.8
-POPPLER=c:/recolldeps/poppler-0.36/
-LIBWPD=c:/recolldeps/libwpd/libwpd-0.10.0/
-LIBREVENGE=c:/recolldeps/libwpd/librevenge-0.0.1.jfd/
-CHM=c:/recolldeps/pychm
-
-# Where to find libgcc_s_dw2-1.dll for progs which need it copied
-gccpath=`which gcc`
-MINGWBIN=`dirname $gccpath`
+PYTHON=${RCLDEPS}py-python3
+UNRTF=${RCLDEPS}unrtf
+ANTIWORD=${RCLDEPS}antiword
+PYXSLT=${RCLDEPS}pyxslt
+PYEXIV2=${RCLDEPS}pyexiv2
+LIBXAPIAN=${RCLDEPS}xapian-core-1.4.5/.libs/libxapian-30.dll
+MUTAGEN=${RCLDEPS}mutagen-1.32/
+EPUB=${RCLDEPS}epub-0.5.2
+FUTURE=${RCLDEPS}python2-future
+ZLIB=${RCLDEPS}zlib-1.2.8
+POPPLER=${RCLDEPS}poppler-0.36/
+LIBWPD=${RCLDEPS}libwpd/libwpd-0.10.0/
+LIBREVENGE=${RCLDEPS}libwpd/librevenge-0.0.1.jfd/
+CHM=${RCLDEPS}pychm
+MISC=${RCLDEPS}misc
 
 # Where to copy the Qt Dlls from:
 QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
+QTGCCBIN=C:/qt/Qt5.8.0/Tools/mingw530_32/bin/
+# Where to find libgcc_s_dw2-1.dll for progs which need it copied
+MINGWBIN=$QTBIN
+PATH=$MINGWBIN:$QTGCCBIN:$PATH
+export PATH
 
 # Qt arch
 QTA=Desktop_Qt_5_8_0_MinGW_32bit
-
-RCLW=$RCL/windows/
 
 if test X$ReleaseBuild = X'y'; then
     qtsdir=release
@@ -73,8 +76,13 @@ RCLS=$RCLW/build-rclstartw-${QTA}-${qtsdir}/${qtsdir}/rclstartw.exe
 
 ################
 # Script:
-
 FILTERS=$DESTDIR/Share/filters
+
+fatal()
+{
+    echo $*
+    exit 1
+}
 
 # checkcopy. 
 chkcp()
@@ -115,7 +123,12 @@ copyzlib()
 {
     chkcp $ZLIB/zlib1.dll $DESTDIR
 }
-
+copypython()
+{
+    mkdir -p $DESTDIR/Share/filters/python
+    cp -rp $PYTHON/* $DESTDIR/Share/filters/python
+    chkcp $PYTHON/python.exe $DESTDIR/Share/filters/python/python.exe
+}
 copyrecoll()
 {
 #    bindir=$RCL/windows/$PLATFORM/$CONFIGURATION/
@@ -127,6 +140,7 @@ copyrecoll()
     chkcp $RCLIDX $DESTDIR
     chkcp $RCLQ $DESTDIR 
     chkcp $RCLS $DESTDIR 
+    chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DESTDIR
 
     chkcp $RCL/COPYING                  $DESTDIR/COPYING.txt
     chkcp $RCL/doc/user/usermanual.html $DESTDIR/Share/doc
@@ -143,7 +157,9 @@ copyrecoll()
 
     chkcp $RCL/python/recoll/recoll/rclconfig.py $FILTERS
     chkcp $RCL/python/recoll/recoll/conftree.py $FILTERS
-    chkcp $RCL/filters/*       $FILTERS 
+    chkcp $RCL/filters/*       $FILTERS
+    rm $FILTERS/rclimg $FILTERS/rclimg.py
+    chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
     chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
     chkcp $RCL/qtgui/i18n/*.qm $DESTDIR/Share/translations
 }
@@ -169,9 +185,8 @@ copyunrtf()
     chkcp  $bindir/unrtf.exe               $FILTERS
     chkcp  $UNRTF/outputs/*.conf           $FILTERS/Share
     chkcp  $UNRTF/outputs/SYMBOL.charmap   $FILTERS/Share
-    # libiconv2 is not present in qt, get it from mingw direct. is C, should
-    # be compatible
-    chkcp c:/MinGW/bin/libiconv-2.dll $FILTERS
+    # libiconv-2 originally comes from mingw
+    chkcp $MISC/libiconv-2.dll $FILTERS
 }
 
 copymutagen()
@@ -187,6 +202,10 @@ copyepub()
     # chkcp to check that epub is where we think it is
     chkcp $EPUB/build/lib/epub/opf.py $FILTERS/epub
 }
+
+# We used to copy the future module to the filters dir, but it is now
+# part of the origin Python tree in recolldeps. (2 dirs:
+# site-packages/builtins, site-packages/future)
 copyfuture()
 {
     cp -rp $FUTURE/future $FILTERS/
@@ -246,6 +265,18 @@ for d in doc examples filters images translations; do
         fatal mkdir $d failed
 done
 
+
+# First check that the config is ok
+ cmp -s $RCL/common/autoconfig.h $RCL/common/autoconfig-win.h || \
+    fatal autoconfig.h and autoconfig-win.h differ
+VERSION=`cat $RCL/VERSION`
+CFVERS=`grep PACKAGE_VERSION $RCL/common/autoconfig.h | \
+cut -d ' ' -f 3 | sed -e 's/"//g'`
+test "$VERSION" = "$CFVERS" ||
+    fatal Versions in VERSION and autoconfig.h differ
+
+echo Packaging version $CFVERS
+
 # copyrecoll must stay before copyqt so that windeployqt can do its thing
 copyrecoll
 copyqt
@@ -255,9 +286,10 @@ copypoppler
 copyantiword
 copyunrtf
 copyxslt
-copyfuture
+#copyfuture
 copymutagen
 copyepub
-copypyexiv2
+#copypyexiv2
 copywpd
-copychm
+#copychm
+copypython

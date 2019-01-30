@@ -341,7 +341,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     // If using an actual file, check that it exists, and if it is
     // compressed, we may need an uncompressed version
     if (!fn.empty() && theconfig->mimeViewerNeedsUncomp(doc.mimetype)) {
-        if (access(fn.c_str(), R_OK) != 0) {
+        if (!path_readable(fn)) {
             QMessageBox::warning(0, "Recoll", 
                                  tr("Can't access file: ") + u8s2qs(fn));
             return;
@@ -445,9 +445,13 @@ void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
 #endif
     QStatusBar *stb = statusBar();
     if (stb) {
-	string fcharset = theconfig->getDefCharset(true);
 	string prcmd;
+#ifdef _WIN32
+        prcmd = ncmd;
+#else
+	string fcharset = theconfig->getDefCharset(true);
 	transcode(ncmd, prcmd, fcharset, "UTF-8");
+#endif
 	QString msg = tr("Executing: [") + 
 	    QString::fromUtf8(prcmd.c_str()) + "]";
 	stb->showMessage(msg, 10000);
