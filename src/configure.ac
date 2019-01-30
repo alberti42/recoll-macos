@@ -548,7 +548,6 @@ AC_SUBST(XSLT_LINKADD)
 # All object files depend on localdefs which has the cc flags. Avoid
 # changing it unless necessary
 AC_CONFIG_FILES(Makefile)
-AC_CONFIG_FILES(common/rclversion.h)
 AC_CONFIG_FILES(python/recoll/setup.py)
 AC_CONFIG_FILES(python/pychm/setup.py)
 

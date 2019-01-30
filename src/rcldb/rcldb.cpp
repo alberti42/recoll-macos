@@ -52,7 +52,6 @@ using namespace std;
 #include "rclquery_p.h"
 #include "rclvalues.h"
 #include "md5ut.h"
-#include "rclversion.h"
 #include "cancelcheck.h"
 #include "termproc.h"
 #include "expansiondbs.h"
@@ -116,7 +115,7 @@ static const string cstr_md5empty("d41d8cd98f00b204e9800998ecf8427e");
 static const int MB = 1024 * 1024;
 
 string version_string(){
-    return string("Recoll ") + string(rclversionstr) + string(" + Xapian ") +
+    return string("Recoll ") + string(PACKAGE_VERSION) + string(" + Xapian ") +
         string(Xapian::version_string());
 }
 
