@@ -44,6 +44,7 @@
 #include "transcode.h"
 #include "md5ut.h"
 #include "log.h"
+#include "smallut.h"
 
 using namespace std;
 
@@ -365,9 +366,13 @@ TempFile::Internal::Internal(const string& suffix)
 #endif
 
     m_filename = filename + suffix;
-    if (close(open(m_filename.c_str(), O_CREAT | O_EXCL, 0600)) != 0) {
-        m_reason = string("Could not open/create") + m_filename;
+    int fd1 = open(m_filename.c_str(), O_CREAT | O_EXCL, 0600);
+    if (fd1 < 0) {
+        m_reason = string("Open/create error. errno : ") +
+            lltodecstr(errno) + " file name: " + m_filename;
         m_filename.erase();
+    } else {
+        close(fd1);
     }
 }
 
