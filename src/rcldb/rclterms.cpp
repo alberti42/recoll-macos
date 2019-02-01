@@ -400,9 +400,10 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
             if (!is.empty())
                 it.skip_to(is.c_str());
             for (int rcnt = 0; it != xdb.allterms_end(); it++) {
+                const string ixterm{*it};
                 // If we're beyond the terms matching the initial
                 // section, end
-                if (!is.empty() && (*it).find(is) != 0)
+                if (!is.empty() && ixterm.find(is) != 0)
                     break;
 
                 // Else try to match the term. The matcher content
@@ -411,19 +412,19 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
                 // the prefix.
                 string term;
                 if (!prefix.empty()) {
-                    term = (*it).substr(prefix.length());
+                    term = ixterm.substr(prefix.length());
                 } else {
-                    if (has_prefix(*it)) {
+                    if (has_prefix(ixterm)) {
                         continue;
                     }
-                    term = *it;
+                    term = ixterm;
                 }
 
                 if (matcher && !matcher->match(term))
                     continue;
 
                 res.entries.push_back(
-                    TermMatchEntry(*it, xdb.get_collection_freq(*it),
+                    TermMatchEntry(ixterm, xdb.get_collection_freq(ixterm),
                                    it.get_termfreq()));
 
                 // The problem with truncating here is that this is done

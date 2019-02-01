@@ -18,7 +18,10 @@
 
 #include "autoconfig.h"
 
+#include "expansiondbs.h"
+
 #include <memory>
+#include <string>
 
 #include "log.h"
 #include "utf8iter.h"
@@ -28,7 +31,6 @@
 #include "xmacros.h"
 #include "rcldb.h"
 #include "stemdb.h"
-#include "expansiondbs.h"
 
 using namespace std;
 
@@ -41,7 +43,7 @@ namespace Rcl {
 bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
 			const vector<string>& langs)
 {
-    LOGDEB("StemDb::createExpansionDbs: languages: "  << (stringsToString(langs)) << "\n" );
+    LOGDEB("StemDb::createExpansionDbs: languages: " <<stringsToString(langs) << "\n");
     Chrono cron;
 
     // Erase and recreate all the expansion groups
@@ -93,32 +95,33 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 	// skip the rest one by one.
 	it.skip_to(wrap_prefix("Z"));
         for ( ;it != wdb.allterms_end(); it++) {
-	    if (has_prefix(*it))
+            const string term{*it};
+	    if (has_prefix(term))
 		continue;
 
 	    // Detect and skip CJK terms.
-	    Utf8Iter utfit(*it);
+	    Utf8Iter utfit(term);
             if (utfit.eof()) // Empty term?? Seems to happen.
                 continue;
 	    if (TextSplit::isCJK(*utfit)) {
-		// LOGDEB("stemskipped: Skipping CJK\n" );
+		// LOGDEB("stemskipped: Skipping CJK\n");
 		continue;
 	    }
 
-	    string lower = *it;
+	    string lower = term;
 	    // If the index is raw, compute the case-folded term which
 	    // is the input to the stem db, and add a synonym from the
 	    // stripped term to the cased and accented one, for accent
 	    // and case expansion at query time
 	    if (!o_index_stripchars) {
-		unacmaybefold(*it, lower, "UTF-8", UNACOP_FOLD);
-		diacasedb.addSynonym(*it);
+		unacmaybefold(term, lower, "UTF-8", UNACOP_FOLD);
+		diacasedb.addSynonym(term);
 	    }
 
 	    // Dont' apply stemming to terms which don't look like
 	    // natural language words.
-            if (!Db::isSpellingCandidate(*it)) {
-                LOGDEB1("createExpansionDbs: skipped: ["  << ((*it)) << "]\n" );
+            if (!Db::isSpellingCandidate(term)) {
+                LOGDEB1("createExpansionDbs: skipped: [" << term << "]\n");
                 continue;
             }
 
@@ -144,11 +147,11 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-        LOGERR("Db::createStemDb: map build failed: "  << (ermsg) << "\n" );
+        LOGERR("Db::createStemDb: map build failed: " << ermsg << "\n");
         return false;
     }
 
-    LOGDEB("StemDb::createExpansionDbs: done: "  << (cron.secs()) << " S\n" );
+    LOGDEB("StemDb::createExpansionDbs: done: " << cron.secs() << " S\n");
     return true;
 }
 
