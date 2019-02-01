@@ -11,6 +11,8 @@ text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/badhtml.html]	["
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/htmlfield.html]	[htmlfield.html]	137	bytes	
 testfield = testfieldvalue
 1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/apos.html]	[apos.html]	344	bytes	
+1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/utf8.html]	[Some chars]	330	bytes	
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/utf8.html]	[Some chars]	330	bytes	

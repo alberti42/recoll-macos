@@ -11,7 +11,13 @@ recollq '"This is the Mysql reference manual"'
 # Tests that the charset spec is correctly recognised inside badhtml.html
 recollq -a 'etonne badhtml' 
 # Tests field extraction/storage and indexing
-recollq -m -q "testfield:testfieldvalue" | egrep 'results|^text/html|^testfield ='
+recollq -m -q "testfield:testfieldvalue" | \
+    egrep 'results|^text/html|^testfield ='
+
+# Not specifically HTML. apos.html has text where an apostrophe-like
+# Unicode character is used in place of ASCII ' . Checks that we
+# replace the character for proper span processing
+recollq -q '"'imperfections de l"'"oeil'"'
 
 # more unaccenting tests
 recollq -q 'effaranteUTF8HTML'
