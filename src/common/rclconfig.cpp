@@ -47,7 +47,6 @@
 #include "conftree.h"
 #include "log.h"
 #include "smallut.h"
-#include "textsplit.h"
 #include "readfile.h"
 #include "fstreewalk.h"
 #include "cpuconf.h"
@@ -394,32 +393,7 @@ bool RclConfig::updateMainConfig()
 
     setKeyDir(cstr_null);
 
-    // Texsplit customization
-    bool bvalue = false;
-    if (getConfParam("nocjk", &bvalue) && bvalue == true) {
-        TextSplit::cjkProcessing(false);
-    } else {
-        int ngramlen;
-        if (getConfParam("cjkngramlen", &ngramlen)) {
-            TextSplit::cjkProcessing(true, (unsigned int)ngramlen);
-        } else {
-            TextSplit::cjkProcessing(true);
-        }
-    }
-    bvalue = false;
-    if (getConfParam("nonumbers", &bvalue) && bvalue == true) {
-        TextSplit::noNumbers();
-    }
-    bvalue = false;
-    if (getConfParam("dehyphenate", &bvalue)) {
-        TextSplit::deHyphenate(bvalue);
-    }
-    bvalue = false;
-    if (getConfParam("backslashasletter", &bvalue)) {
-        TextSplit::backslashAsLetter(bvalue);
-    }
-
-    bvalue = true;
+    bool bvalue = true;
     if (getConfParam("skippedPathsFnmPathname", &bvalue) && bvalue == false) {
         FsTreeWalker::setNoFnmPathname();
     }

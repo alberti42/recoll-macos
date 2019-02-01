@@ -23,6 +23,7 @@
 #include <vector>
 
 class Utf8Iter;
+class RclConfig;
 
 /** 
  * Split text into words. 
@@ -32,38 +33,6 @@ class Utf8Iter;
  */
 class TextSplit {
 public:
-    // Should we activate special processing of Chinese characters ? This
-    // needs a little more cpu, so it can be turned off globally. This is set
-    // by rclconfig, changing it means reindexing
-    static bool o_processCJK;
-    static unsigned int  o_CJKNgramLen;
-    static const unsigned int o_CJKMaxNgramLen =  5;
-    static void cjkProcessing(bool onoff, unsigned int ngramlen = 2) 
-    {
-	o_processCJK = onoff;
-	o_CJKNgramLen = ngramlen <= o_CJKMaxNgramLen ? 
-	    ngramlen : o_CJKMaxNgramLen;
-    }
-
-    // Are we indexing numbers ? Set by rclconfig. Change needs reindex
-    static bool o_noNumbers;
-    static void noNumbers()
-    {
-	o_noNumbers = true;
-    }
-
-    // Given [co-worker] as input, do we also generate [coworker] ?
-    // Set by rclconfig
-    static bool o_deHyphenate;
-    static void deHyphenate(bool on) {
-	o_deHyphenate = on;
-    }
-
-    // Process backslashes as letters? Default is off, but it may be
-    // useful for searching for tex commands. Config variable:
-    // backslashasletter
-    static void backslashAsLetter(bool on);
-    
     enum Flags {
         // Default: will return spans and words (a_b, a, b)
         TXTS_NONE = 0, 
@@ -79,11 +48,13 @@ public:
     };
     
     TextSplit(Flags flags = Flags(TXTS_NONE))
-	: m_flags(flags), m_maxWordLength(40), m_prevpos(-1)
-    {
-    }
+	: m_flags(flags) {}
     virtual ~TextSplit() {}
 
+    /** Call at program initialization to read non default values from the 
+        configuration */
+    static void staticConfInit(RclConfig *config);
+    
     /** Split text, emit words and positions. */
     virtual bool text_to_words(const std::string &in);
 
@@ -97,8 +68,7 @@ public:
     /** Called when we encounter formfeed \f 0x0c. Override to use the event.
      * Mostly or exclusively used with pdftoxx output. Other filters mostly 
      * just don't know about pages. */
-    virtual void newpage(int /*pos*/) {
-    }
+    virtual void newpage(int /*pos*/) {}
 
     // Static utility functions:
 
@@ -184,8 +154,13 @@ public:
 #endif // TEXTSPLIT_STATS
 
 private:
+    static bool o_processCJK; // true
+    static bool o_noNumbers;  // false
+    static bool o_deHyphenate; // false
+    static unsigned int o_CJKNgramLen; // 2
+    static int o_maxWordLength; // 40
+
     Flags         m_flags;
-    int           m_maxWordLength;
 
     // Current span. Might be jf.dockes@wanadoo.f
     std::string        m_span; 
@@ -206,7 +181,7 @@ private:
 
     // It may happen that our cleanup would result in emitting the
     // same term twice. We try to avoid this
-    int           m_prevpos;
+    int           m_prevpos{-1};
     int           m_prevlen;
 
 #ifdef TEXTSPLIT_STATS

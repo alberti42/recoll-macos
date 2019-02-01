@@ -37,6 +37,7 @@
 #include "unac.h"
 #include "smallut.h"
 #include "execmd.h"
+#include "textsplit.h"
 
 std::thread::id mainthread_id;
 
@@ -273,6 +274,8 @@ RclConfig *recollinit(int flags,
 	return 0;
     }
 
+    TextSplit::staticConfInit(config);
+    
     // Retrieve the log file name and level. Daemon and batch indexing
     // processes may use specific values, else fall back on common
     // ones.

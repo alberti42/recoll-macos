@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -32,6 +32,7 @@
 #include "utf8iter.h"
 #include "uproplist.h"
 #include "smallut.h"
+#include "rclconfig.h"
 
 // Decide if we treat katakana as western scripts, splitting into
 // words instead of n-grams. This is not absurd (katakana is a kind of
@@ -136,14 +137,6 @@ public:
     }
 };
 static const CharClassInit charClassInitInstance;
-
-void TextSplit::backslashAsLetter(bool on) {
-    if (on) {
-        charclasses[int('\\')] = A_LLETTER;
-    } else {
-        charclasses[int('\\')] = SPACE;
-    }
-}
 
 static inline int whatcc(unsigned int c)
 {
@@ -251,10 +244,47 @@ bool TextSplit::isKATAKANA(int c)
 // which has its span reader causing a word break)
 enum CharSpanClass {CSC_CJK, CSC_KATAKANA, CSC_OTHER};
 
-bool          TextSplit::o_processCJK = true;
-unsigned int  TextSplit::o_CJKNgramLen = 2;
-bool          TextSplit::o_noNumbers = false;
-bool          TextSplit::o_deHyphenate = false;
+bool          TextSplit::o_processCJK{true};
+unsigned int  TextSplit::o_CJKNgramLen{2};
+bool          TextSplit::o_noNumbers{false};
+bool          TextSplit::o_deHyphenate{false};
+int           TextSplit::o_maxWordLength{40};
+static const int o_CJKMaxNgramLen{5};
+
+void TextSplit::staticConfInit(RclConfig *config)
+{
+    config->getConfParam("maxtermlength", &o_maxWordLength);
+
+    bool bvalue{false};
+    if (config->getConfParam("nocjk", &bvalue) && bvalue == true) {
+	o_processCJK = false;
+    } else {
+	o_processCJK = true;
+        int ngramlen;
+        if (config->getConfParam("cjkngramlen", &ngramlen)) {
+            o_CJKNgramLen = (unsigned int)(ngramlen <= o_CJKMaxNgramLen ?
+                                           ngramlen : o_CJKMaxNgramLen);
+        }
+    }
+
+    bvalue = false;
+    if (config->getConfParam("nonumbers", &bvalue)) {
+	o_noNumbers = bvalue;
+    }
+
+    bvalue = false;
+    if (config->getConfParam("dehyphenate", &bvalue)) {
+	o_deHyphenate = bvalue;
+    }
+
+    bvalue = false;
+    if (config->getConfParam("backslashasletter", &bvalue)) {
+        if (bvalue) {
+        } else {
+            charclasses[int('\\')] = SPACE;
+        }
+    }
+}    
 
 // Final term checkpoint: do some checking (the kind which is simpler
 // to do here than in the main loop), then send term to our client.
@@ -272,7 +302,7 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	m_stats.newsamp(m_wordChars);
 #endif
 
-    if (l > 0 && l < m_maxWordLength) {
+    if (l > 0 && l <= o_maxWordLength) {
 	// 1 byte word: we index single ascii letters and digits, but
 	// nothing else. We might want to turn this into a test for a
 	// single utf8 character instead ?
