@@ -32,15 +32,15 @@
 class Utf8Iter {
 public:
     Utf8Iter(const std::string &in) 
-	: m_sp(&in), m_cl(0), m_pos(0), m_charpos(0)
-    {
+	: m_sp(&in) {
 	update_cl();
     }
 
-    const std::string& buffer() const {return (*m_sp);}
+    const std::string& buffer() const {
+        return *m_sp;
+    }
 
-    void rewind() 
-    {
+    void rewind() {
 	m_cl = 0; 
 	m_pos = 0; 
 	m_charpos = 0; 
@@ -50,8 +50,7 @@ public:
     /** "Direct" access. Awfully inefficient as we skip from start or current
      * position at best. This can only be useful for a lookahead from the
      * current position */
-    unsigned int operator[](std::string::size_type charpos) const 
-    {
+    unsigned int operator[](std::string::size_type charpos) const {
 	std::string::size_type mypos = 0;
 	unsigned int mycp = 0;
 	if (charpos >= m_charpos) {
@@ -75,8 +74,7 @@ public:
     }
 
     /** Increment current position to next utf-8 char */
-    std::string::size_type operator++(int) 
-    {
+    std::string::size_type operator++(int) {
 	// Note: m_cl may be zero at eof if user's test not right
 	// this shouldn't crash the program until actual data access
 #ifdef UTF8ITER_CHECK
@@ -92,8 +90,7 @@ public:
     }
 
     /** operator* returns the ucs4 value as a machine integer*/
-    unsigned int operator*() 
-    {
+    unsigned int operator*() {
 #ifdef UTF8ITER_CHECK
 	assert(m_cl > 0);
 #endif
@@ -146,11 +143,11 @@ private:
     const std::string*     m_sp; 
     // Character length at current position. A value of zero indicates
     // an error.
-    unsigned int m_cl;
+    unsigned int m_cl{0};
     // Current byte offset in string.
-    std::string::size_type m_pos; 
+    std::string::size_type m_pos{0}; 
     // Current character position
-    unsigned int      m_charpos; 
+    unsigned int      m_charpos{0}; 
 
     // Check position and cl against string length
     bool poslok(std::string::size_type p, int l) const {
@@ -162,8 +159,7 @@ private:
 
     // Update current char length in object state, check
     // for errors
-    inline void update_cl() 
-    {
+    inline void update_cl() {
 	m_cl = 0;
 	if (m_pos >= m_sp->length())
 	    return;
@@ -180,8 +176,7 @@ private:
 	}
     }
 
-    inline bool checkvalidat(std::string::size_type p, int l) const
-    {
+    inline bool checkvalidat(std::string::size_type p, int l) const {
 	switch (l) {
 	case 1: 
 	    return (unsigned char)(*m_sp)[p] < 128;
@@ -205,8 +200,7 @@ private:
     }
 
     // Get character byte length at specified position. Returns 0 for error.
-    inline int get_cl(std::string::size_type p) const 
-    {
+    inline int get_cl(std::string::size_type p) const {
 	unsigned int z = (unsigned char)(*m_sp)[p];
 	if (z <= 127) {
 	    return 1;
@@ -225,8 +219,7 @@ private:
     }
 
     // Compute value at given position. No error checking.
-    inline unsigned int getvalueat(std::string::size_type p, int l) const
-    {
+    inline unsigned int getvalueat(std::string::size_type p, int l) const {
 	switch (l) {
 	case 1: 
 #ifdef UTF8ITER_CHECK
