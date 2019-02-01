@@ -220,6 +220,12 @@ if test X$idxthreadsEnabled = Xyes ; then
   AC_DEFINE(IDX_THREADS, 1, [Use multiple threads for indexing])
 fi
 
+AC_ARG_ENABLE(testmains,
+    AC_HELP_STRING([--enable-testmains],
+   [Enable building small test drivers. These are not unit tests.]),
+        buildtestmains=$enableval, buildtestmains=no)
+AM_CONDITIONAL([COND_TESTMAINS], [test "$buildtestmains" = yes])
+
 # Enable CamelCase word splitting. This is optional because it causes 
 # problems with phrases: with camelcase enabled, "MySQL manual"
 # will be matched by "MySQL manual" and "my sql manual" but not 
@@ -545,10 +551,8 @@ AC_SUBST(RCLLIBVERSION)
 AC_SUBST(XSLT_CFLAGS)
 AC_SUBST(XSLT_LINKADD)
 
-# All object files depend on localdefs which has the cc flags. Avoid
-# changing it unless necessary
-AC_CONFIG_FILES(Makefile)
-AC_CONFIG_FILES(python/recoll/setup.py)
-AC_CONFIG_FILES(python/pychm/setup.py)
+AC_CONFIG_FILES([Makefile testmains/Makefile
+                 python/recoll/setup.py
+                 python/pychm/setup.py])
 
 AC_OUTPUT

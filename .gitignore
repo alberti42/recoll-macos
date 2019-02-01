@@ -20,6 +20,7 @@
 \#*
 libtool
 ptrans
+src/python/pychm/setup.py
 src/Makefile
 src/Makefile.in
 src/aclocal.m4
@@ -68,6 +69,8 @@ src/recollindex
 src/recollq
 src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf
+src/testmains/Makefile
+src/testmains/Makefile.in
 src/xadump
 stamp-h1
 tests/casediac/aspdict.en.rws

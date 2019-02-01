@@ -1,4 +1,12 @@
 
+# Conditionally enable building the small test drivers, but don't
+# distribute them, they are not generally useful
+if COND_TESTMAINS
+  MAYBE_TESTMAINS = testmains
+endif
+SUBDIRS = . $(MAYBE_TESTMAINS)
+DIST_SUBDIRS = .
+
 CXXFLAGS ?= @CXXFLAGS@
 LIBXAPIAN=@LIBXAPIAN@
 XAPIANCXXFLAGS=@XAPIANCXXFLAGS@
