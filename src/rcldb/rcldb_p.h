@@ -20,7 +20,6 @@
 
 #include "autoconfig.h"
 
-#include <map>
 #include <mutex>
 
 #include <xapian.h>

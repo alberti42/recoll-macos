@@ -49,7 +49,7 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
         pattern = "*" + pattern + "*";
     } // else let it be
 
-    LOGDEB("Rcl::Db::filenameWildExp: pattern: ["  << (pattern) << "]\n" );
+    LOGDEB("Rcl::Db::filenameWildExp: pattern: ["  << pattern << "]\n");
 
     // We inconditionnally lowercase and strip the pattern, as is done
     // during indexing. This seems to be the only sane possible
@@ -64,10 +64,9 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
     if (!idxTermMatch(ET_WILD, string(), pattern, result, max,
                       unsplitFilenameFieldName))
         return false;
-    for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
-         it != result.entries.end(); it++) 
-        names.push_back(it->term);
-
+    for (const auto& entry : result.entries) {
+        names.push_back(entry.term);
+    }
     if (names.empty()) {
         // Build an impossible query: we know its impossible because we
         // control the prefixes!
@@ -79,18 +78,17 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
 // Walk the Y terms and return min/max
 bool Db::maxYearSpan(int *minyear, int *maxyear)
 {
-    LOGDEB("Rcl::Db:maxYearSpan\n" );
+    LOGDEB("Rcl::Db:maxYearSpan\n");
     *minyear = 1000000; 
     *maxyear = -1000000;
     TermMatchResult result;
     if (!idxTermMatch(ET_WILD, string(), "*", result, -1, "xapyear")) {
-        LOGINFO("Rcl::Db:maxYearSpan: termMatch failed\n" );
+        LOGINFO("Rcl::Db:maxYearSpan: termMatch failed\n");
         return false;
     }
-    for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
-         it != result.entries.end(); it++) {
-        if (!it->term.empty()) {
-            int year = atoi(strip_prefix(it->term).c_str());
+    for (const auto& entry : result.entries) {
+        if (!entry.term.empty()) {
+            int year = atoi(strip_prefix(entry.term).c_str());
             if (year < *minyear)
                 *minyear = year;
             if (year > *maxyear)
@@ -106,9 +104,8 @@ bool Db::getAllDbMimeTypes(std::vector<std::string>& exp)
     if (!idxTermMatch(Rcl::Db::ET_WILD, "", "*", res, -1, "mtype")) {
         return false;
     }
-    for (vector<Rcl::TermMatchEntry>::const_iterator rit = res.entries.begin();
-         rit != res.entries.end(); rit++) {
-        exp.push_back(Rcl::strip_prefix(rit->term));
+    for (const auto& entry : res.entries) {
+        exp.push_back(Rcl::strip_prefix(entry.term));
     }
     return true;
 }
@@ -217,9 +214,8 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
                 synac.synKeyExpand(matcher.get(), exp);
             }
             // Retrieve additional info and filter against the index itself
-            for (vector<string>::const_iterator it = exp.begin(); 
-                 it != exp.end(); it++) {
-                idxTermMatch(ET_NONE, "", *it, res, max, field);
+            for (const auto& term : exp) {
+                idxTermMatch(ET_NONE, "", term, res, max, field);
             }
             // And also expand the original expression against the
             // main index: for the common case where the expression
@@ -257,10 +253,10 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             // diacs and case (enforced in searchdatatox:termexpand
             // Need stem expansion. Lowercase the result of accent and case
             // expansion for input to stemdb.
-            for (unsigned int i = 0; i < lexp.size(); i++) {
+            for (auto& term : lexp) {
                 string lower;
-                unacmaybefold(lexp[i], lower, "UTF-8", UNACOP_FOLD);
-                lexp[i] = lower;
+                unacmaybefold(term, lower, "UTF-8", UNACOP_FOLD);
+                term.swap(lower);
             }
             sort(lexp.begin(), lexp.end());
             lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
@@ -268,32 +264,30 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             if (matchtyp == ET_STEM) {
                 StemDb sdb(xrdb);
                 vector<string> exp1;
-                for (vector<string>::const_iterator it = lexp.begin(); 
-                     it != lexp.end(); it++) {
-                    sdb.stemExpand(lang, *it, exp1);
+                for (const auto& term : lexp) {
+                    sdb.stemExpand(lang, term, exp1);
                 }
                 exp1.swap(lexp);
                 sort(lexp.begin(), lexp.end());
                 lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
-                LOGDEB("ExpTerm: stemexp: "  << (stringsToString(lexp)) << "\n" );
+                LOGDEB("ExpTerm: stemexp: "  << stringsToString(lexp) << "\n");
             }
 
             if (m_syngroups.ok() && (typ_sens & ET_SYNEXP)) {
-                LOGDEB("ExpTerm: got syngroups\n" );
+                LOGDEB("ExpTerm: got syngroups\n");
                 vector<string> exp1(lexp);
-                for (vector<string>::const_iterator it = lexp.begin(); 
-                     it != lexp.end(); it++) {
-                    vector<string> sg = m_syngroups.getgroup(*it);
+                for (const auto& term : lexp) {
+                    vector<string> sg = m_syngroups.getgroup(term);
                     if (!sg.empty()) {
-                        LOGDEB("ExpTerm: syns: "  << *it << " -> "  << (stringsToString(sg)) << "\n" );
-                        for (vector<string>::const_iterator it1 = sg.begin();
-                             it1 != sg.end(); it1++) {
-                            if (it1->find_first_of(" ") != string::npos) {
+                        LOGDEB("ExpTerm: syns: " << term << " -> "  <<
+                               stringsToString(sg) << "\n");
+                        for (const auto& synonym : sg) {
+                            if (synonym.find_first_of(" ") != string::npos) {
                                 if (multiwords) {
-                                    multiwords->push_back(*it1);
+                                    multiwords->push_back(synonym);
                                 }
                             } else {
-                                exp1.push_back(*it1);
+                                exp1.push_back(synonym);
                             }
                         }
                     }
@@ -306,9 +300,8 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             // Expand the resulting list for case (all stemdb content
             // is lowercase)
             vector<string> exp1;
-            for (vector<string>::const_iterator it = lexp.begin(); 
-                 it != lexp.end(); it++) {
-                synac.synExpand(*it, exp1);
+            for (const auto& term: lexp) {
+                synac.synExpand(term, exp1);
             }
             exp1.swap(lexp);
             sort(lexp.begin(), lexp.end());
@@ -316,10 +309,9 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
         }
 
         // Filter the result and get the stats, possibly add prefixes.
-        LOGDEB("ExpandTerm:TM: lexp: "  << (stringsToString(lexp)) << "\n" );
-        for (vector<string>::const_iterator it = lexp.begin();
-             it != lexp.end(); it++) {
-            idxTermMatch(Rcl::Db::ET_WILD, "", *it, res, max, field);
+        LOGDEB("ExpandTerm:TM: lexp: "  << stringsToString(lexp) << "\n");
+        for (const auto& term : lexp) {
+            idxTermMatch(Rcl::Db::ET_WILD, "", term, res, max, field);
         }
     }
 
@@ -344,10 +336,12 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
                       TermMatchResult& res, int max,  const string& field)
 {
     int typ = matchTypeTp(typ_sens);
-    LOGDEB1("Db::idxTermMatch: typ "  << (tmtptostr(typ)) << " lang ["  << (lang) << "] term ["  << (root) << "] max "  << (max) << " field ["  << (field) << "] init res.size "  << (res.entries.size()) << "\n" );
+    LOGDEB1("Db::idxTermMatch: typ " << tmtptostr(typ) << " lang [" <<
+            lang << "] term [" << root << "] max "  << max << " field [" <<
+            field << "] init res.size " << res.entries.size() << "\n");
 
     if (typ == ET_STEM) {
-        LOGFATAL("RCLDB: internal error: idxTermMatch called with ET_STEM\n" );
+        LOGFATAL("RCLDB: internal error: idxTermMatch called with ET_STEM\n");
         abort();
     }
 
@@ -357,7 +351,8 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     if (!field.empty()) {
         const FieldTraits *ftp = 0;
         if (!fieldToTraits(field, &ftp, true) || ftp->pfx.empty()) {
-            LOGDEB("Db::termMatch: field is not indexed (no prefix): ["  << (field) << "]\n" );
+            LOGDEB("Db::termMatch: field is not indexed (no prefix): [" <<
+                   field << "]\n");
         } else {
             prefix = wrap_prefix(ftp->pfx);
         }
@@ -368,8 +363,8 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     if (typ == ET_REGEXP) {
         matcher = std::shared_ptr<StrMatcher>(new StrRegexpMatcher(root));
         if (!matcher->ok()) {
-            LOGERR("termMatch: regcomp failed: "  << (matcher->getreason()));
-                return false;
+            LOGERR("termMatch: regcomp failed: " << matcher->getreason());
+            return false;
         }
     } else if (typ == ET_WILD) {
         matcher = std::shared_ptr<StrMatcher>(new StrWildMatcher(root));
@@ -392,7 +387,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     } else {
         is = prefix + root.substr(0, es);
     }
-    LOGDEB2("termMatch: initsec: ["  << (is) << "]\n" );
+    LOGDEB2("termMatch: initsec: [" << is << "]\n");
 
     for (int tries = 0; tries < 2; tries++) { 
         try {
@@ -445,7 +440,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
         break;
     }
     if (!m_reason.empty()) {
-        LOGERR("termMatch: "  << (m_reason) << "\n" );
+        LOGERR("termMatch: " << m_reason << "\n");
         return false;
     }
 
@@ -467,7 +462,7 @@ TermIter *Db::termWalkOpen()
         tit->db = m_ndb->xrdb;
         XAPTRY(tit->it = tit->db.allterms_begin(), tit->db, m_reason);
         if (!m_reason.empty()) {
-            LOGERR("Db::termWalkOpen: xapian error: "  << (m_reason) << "\n" );
+            LOGERR("Db::termWalkOpen: xapian error: " << m_reason << "\n");
             return 0;
         }
     }
@@ -483,7 +478,7 @@ bool Db::termWalkNext(TermIter *tit, string &term)
         , tit->db, m_reason);
 
     if (!m_reason.empty()) {
-        LOGERR("Db::termWalkOpen: xapian error: "  << (m_reason) << "\n" );
+        LOGERR("Db::termWalkOpen: xapian error: " << m_reason << "\n");
     }
     return false;
 }
@@ -503,18 +498,19 @@ bool Db::termExists(const string& word)
            m_ndb->xrdb, m_reason);
 
     if (!m_reason.empty()) {
-        LOGERR("Db::termWalkOpen: xapian error: "  << (m_reason) << "\n" );
+        LOGERR("Db::termWalkOpen: xapian error: " << m_reason << "\n");
         return false;
     }
     return true;
 }
 
-bool Db::stemDiffers(const string& lang, const string& word, 
+bool Db::stemDiffers(const string& lang, const string& word,
                      const string& base)
 {
     Xapian::Stem stemmer(lang);
     if (!stemmer(word).compare(stemmer(base))) {
-        LOGDEB2("Rcl::Db::stemDiffers: same for "  << (word) << " and "  << (base) << "\n" );
+        LOGDEB2("Rcl::Db::stemDiffers: same for " << word << " and " <<
+                base << "\n");
         return false;
     }
     return true;
