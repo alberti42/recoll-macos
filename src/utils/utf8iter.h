@@ -273,4 +273,6 @@ private:
 };
 
 
+extern void utf8truncate(std::string& s, int maxlen);
+
 #endif /* _UTF8ITER_H_INCLUDED_ */

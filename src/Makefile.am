@@ -258,6 +258,7 @@ utils/strmatcher.cpp \
 utils/strmatcher.h \
 utils/transcode.cpp \
 utils/transcode.h \
+utils/utf8iter.cpp \
 utils/utf8iter.h \
 utils/wipedir.cpp \
 utils/wipedir.h \
