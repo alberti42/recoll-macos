@@ -330,34 +330,14 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     return true;
 }
 
-// Second phase of wildcard/regexp term expansion after case/diac
-// expansion: expand against main index terms
-bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
-                      TermMatchResult& res, int max,  const string& field)
+bool Db::Native::idxTermMatch_p(
+    int typ, const string &lang, const string &root,
+    std::function<bool(const string& term,
+                       Xapian::termcount colfreq,
+                       Xapian::doccount termfreq)> client,
+    const string& prefix)
 {
-    int typ = matchTypeTp(typ_sens);
-    LOGDEB1("Db::idxTermMatch: typ " << tmtptostr(typ) << " lang [" <<
-            lang << "] term [" << root << "] max "  << max << " field [" <<
-            field << "] init res.size " << res.entries.size() << "\n");
-
-    if (typ == ET_STEM) {
-        LOGFATAL("RCLDB: internal error: idxTermMatch called with ET_STEM\n");
-        abort();
-    }
-
-    Xapian::Database xdb = m_ndb->xrdb;
-
-    string prefix;
-    if (!field.empty()) {
-        const FieldTraits *ftp = 0;
-        if (!fieldToTraits(field, &ftp, true) || ftp->pfx.empty()) {
-            LOGDEB("Db::termMatch: field is not indexed (no prefix): [" <<
-                   field << "]\n");
-        } else {
-            prefix = wrap_prefix(ftp->pfx);
-        }
-    }
-    res.prefix = prefix;
+    Xapian::Database xdb = xrdb;
 
     std::shared_ptr<StrMatcher> matcher;
     if (typ == ET_REGEXP) {
@@ -418,33 +398,72 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
                 if (matcher && !matcher->match(term))
                     continue;
 
-                res.entries.push_back(
-                    TermMatchEntry(ixterm, xdb.get_collection_freq(ixterm),
-                                   it.get_termfreq()));
-
-                // The problem with truncating here is that this is done
-                // alphabetically and we may not keep the most frequent 
-                // terms. OTOH, not doing it may stall the program if
-                // we are walking the whole term list. We compromise
-                // by cutting at 2*max
-                if (max > 0 && ++rcnt >= 2*max)
+                if (!client(ixterm, xdb.get_collection_freq(ixterm),
+                            it.get_termfreq())) {
                     break;
+                }
             }
-            m_reason.erase();
+            m_rcldb->m_reason.erase();
             break;
         } catch (const Xapian::DatabaseModifiedError &e) {
-            m_reason = e.get_msg();
+            m_rcldb->m_reason = e.get_msg();
             xdb.reopen();
             continue;
-        } XCATCHERROR(m_reason);
+        } XCATCHERROR(m_rcldb->m_reason);
         break;
     }
-    if (!m_reason.empty()) {
-        LOGERR("termMatch: " << m_reason << "\n");
+    if (!m_rcldb->m_reason.empty()) {
+        LOGERR("termMatch: " << m_rcldb->m_reason << "\n");
         return false;
     }
 
     return true;
+}
+
+
+// Second phase of wildcard/regexp term expansion after case/diac
+// expansion: expand against main index terms
+bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
+                      TermMatchResult& res, int max,  const string& field)
+{
+    int typ = matchTypeTp(typ_sens);
+    LOGDEB1("Db::idxTermMatch: typ " << tmtptostr(typ) << " lang [" <<
+            lang << "] term [" << root << "] max "  << max << " field [" <<
+            field << "] init res.size " << res.entries.size() << "\n");
+
+    if (typ == ET_STEM) {
+        LOGFATAL("RCLDB: internal error: idxTermMatch called with ET_STEM\n");
+        abort();
+    }
+    string prefix;
+    if (!field.empty()) {
+        const FieldTraits *ftp = 0;
+        if (!fieldToTraits(field, &ftp, true) || ftp->pfx.empty()) {
+            LOGDEB("Db::termMatch: field is not indexed (no prefix): [" <<
+                   field << "]\n");
+        } else {
+            prefix = wrap_prefix(ftp->pfx);
+        }
+    }
+    res.prefix = prefix;
+
+    int rcnt = 0;
+    bool ret = m_ndb->idxTermMatch_p(
+        typ, lang, root,
+        [&res, &rcnt, max](const string& term,
+                    Xapian::termcount cf, Xapian::doccount tf) {
+            res.entries.push_back(TermMatchEntry(term, cf, tf));
+            // The problem with truncating here is that this is done
+            // alphabetically and we may not keep the most frequent 
+            // terms. OTOH, not doing it may stall the program if
+            // we are walking the whole term list. We compromise
+            // by cutting at 2*max
+            if (max > 0 && ++rcnt >= 2*max)
+                return false;
+            return true;
+        }, prefix);
+
+    return ret;
 }
 
 /** Term list walking. */

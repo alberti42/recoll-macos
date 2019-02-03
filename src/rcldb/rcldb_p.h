@@ -181,6 +181,13 @@ class Db::Native {
      */
     bool subDocs(const string &udi, int idxi, vector<Xapian::docid>& docids);
 
+    /** Matcher */
+    bool idxTermMatch_p(int typ_sens,const string &lang,const std::string &term,
+                        std::function<bool(const std::string& term,
+                                           Xapian::termcount colfreq,
+                                           Xapian::doccount termfreq)> client,
+                        const string& field);
+
     /** Check if a page position list is defined */
     bool hasPages(Xapian::docid id);
 

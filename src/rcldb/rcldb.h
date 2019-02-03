@@ -483,7 +483,14 @@ public:
 
     // Use empty fn for no synonyms
     bool setSynGroupsFile(const std::string& fn);
-    
+
+    // Mark all documents with an UDI having input as prefix as
+    // existing.  Only works if the UDIs for the store are
+    // hierarchical of course.  Used by FsIndexer to avoid purging
+    // files for a topdir which is on a removable file system and
+    // currently unmounted (topdir does not exist or is empty.
+    bool udiTreeMarkExisting(const string& udi);
+
     /* This has to be public for access by embedded Query::Native */
     Native *m_ndb; 
 private:

@@ -46,7 +46,6 @@ using namespace std;
 #include "rclutil.h"
 #include "smallut.h"
 #include "chrono.h"
-#include "utf8iter.h"
 #include "searchdata.h"
 #include "rclquery.h"
 #include "rclquery_p.h"
@@ -142,21 +141,6 @@ static inline string make_parentterm(const string& udi)
     string pterm(wrap_prefix(parent_prefix));
     pterm.append(udi);
     return pterm;
-}
-
-static void utf8truncate(string& s, int maxlen)
-{
-    if (s.size() <= string::size_type(maxlen)) {
-        return;
-    }
-    Utf8Iter iter(s);
-    string::size_type pos = 0;
-    while (iter++ != string::npos)
-        if (iter.getBpos() < string::size_type(maxlen)) {
-            pos = iter.getBpos();
-        }
-
-    s.erase(pos);
 }
 
 Db::Native::Native(Db *db) 
@@ -2023,11 +2007,10 @@ void Db::i_setExistingFlags(const string& udi, unsigned int docid)
         LOGERR("Rcl::Db::needUpdate: can't get subdocs\n");
         return;
     }
-    for (vector<Xapian::docid>::iterator it = docids.begin();
-         it != docids.end(); it++) {
-        if (*it < updated.size()) {
-            LOGDEB2("Db::needUpdate: docid " << (*it) << " set\n");
-            updated[*it] = true;
+    for (auto docid : docids) {
+        if (docid < updated.size()) {
+            LOGDEB2("Db::needUpdate: docid " << docid << " set\n");
+            updated[docid] = true;
         }
     }
 }
@@ -2556,5 +2539,40 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
     return false;
 }
 
-} // End namespace Rcl
+// Walk an UDI section (all UDIs beginning with input prefix), and
+// mark all docs and subdocs as existing. Caller beware: Makes sense
+// or not depending on the UDI structure for the data store. In practise,
+// used for absent FS mountable volumes.
+bool Db::udiTreeMarkExisting(const string& udi)
+{
+    LOGDEB("Db::udiTreeWalk: " << udi << endl);
+    string wrapd = wrap_prefix(udi_prefix);
+    string expr = udi + "*";
 
+#ifdef IDX_THREADS
+    std::unique_lock<std::mutex> lock(m_ndb->m_mutex);
+#endif
+
+    bool ret = m_ndb->idxTermMatch_p(
+        int(ET_WILD), cstr_null, expr,
+        [this, &udi](const string& term, Xapian::termcount, Xapian::doccount) {
+            Xapian::PostingIterator docid;
+            XAPTRY(docid = m_ndb->xrdb.postlist_begin(term), m_ndb->xrdb,
+                   m_reason);
+            if (!m_reason.empty()) {
+                LOGERR("Db::udiTreeWalk: xapian::postlist_begin failed: " <<
+                       m_reason << "\n");
+                return false;
+            }
+            if (docid == m_ndb->xrdb.postlist_end(term)) {
+                LOGDEB("Db::udiTreeWalk:no doc for " << term << " ??\n");
+                return false;
+            }
+            i_setExistingFlags(udi, *docid);
+            LOGDEB("Db::udiTreeWalk: uniterm: " << term << endl);
+            return true;
+        }, wrapd);
+    return ret;
+}
+
+} // End namespace Rcl
