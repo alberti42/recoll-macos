@@ -1481,7 +1481,7 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
                 string npath;
                 // Key comes from getNames()=> call must succeed
                 if (m_ptrans->get(opath, npath, dbdir)) { 
-                    path = path.replace(0, opath.size(), npath);
+                    path = path_canon(path.replace(0, opath.size(), npath));
                     computeurl = true;
                 }
                 break;
