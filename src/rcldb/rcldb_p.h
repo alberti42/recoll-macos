@@ -21,6 +21,7 @@
 #include "autoconfig.h"
 
 #include <mutex>
+#include <functional>
 
 #include <xapian.h>
 
@@ -51,9 +52,9 @@ public:
     // available on the caller site.
     // Take some care to avoid sharing string data (if string impl is cow)
     DbUpdTask(Op _op, const string& ud, const string& un, 
-	      Xapian::Document *d, size_t tl, string& rztxt
-        ) : op(_op), udi(ud.begin(), ud.end()), uniterm(un.begin(), un.end()), 
-            doc(d), txtlen(tl) {
+	      Xapian::Document *d, size_t tl, string& rztxt)
+        : op(_op), udi(ud.begin(), ud.end()), uniterm(un.begin(), un.end()), 
+          doc(d), txtlen(tl) {
         rawztext.swap(rztxt);
     }
     // Udi and uniterm equivalently designate the doc

@@ -412,7 +412,7 @@ int Query::Native::abstractFromText(
             inslen += endhit.size();
         }
 #endif
-        LOGDEB("=== FRAGMENT: Coef: " << entry.coef << ": " << frag << endl);
+        LOGDEB0("=== FRAGMENT: Coef: " << entry.coef << ": " << frag << endl);
         int page = 0;
         if (vpbreaks.size() > 1) {
             page = ndb->getPageNumberForPosition(vpbreaks, entry.hitpos);
