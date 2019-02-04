@@ -100,6 +100,7 @@ SOURCES += \
 ../../utils/copyfile.cpp \
 ../../utils/cpuconf.cpp \
 ../../utils/ecrontab.cpp \
+../../utils/utf8iter.cpp \
 ../../utils/zlibut.cpp \
 ../../utils/zlibut.h \
 ../../windows/execmd_w.cpp \
