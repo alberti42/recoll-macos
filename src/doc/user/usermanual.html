@@ -8300,8 +8300,8 @@ for i in range(nres):
                   cases) Can be redefined for subtrees.</p>
                 </dd>
                 <dt><a name=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES" id=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES"></a><span class="term"><code class="varname">nomd5mimetypes</code></span></dt>
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5TYPES" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5TYPES"></a><span class="term"><code class="varname">nomd5types</code></span></dt>
                 <dd>
                   <p>Don't compute md5 for these types. md5
                   checksums are used only for deduplicating
@@ -8495,6 +8495,25 @@ for i in range(nres):
                   the input is 'co-worker'. This is new in version
                   1.22, and on by default. Setting the variable to
                   off allows restoring the previous behaviour.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.BACKSLASHASLETTER"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.BACKSLASHASLETTER"></a><span class="term"><code class="varname">backslashasletter</code></span></dt>
+                <dd>
+                  <p>Process backslash as normal letter This may
+                  make sense for people wanting to index TeX
+                  commands as such but is not of much general
+                  use.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMLENGTH" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMLENGTH"></a><span class="term"><code class="varname">maxtermlength</code></span></dt>
+                <dd>
+                  <p>Maximum term length. Words longer than this
+                  will be discarded. The default is 40 and used to
+                  be hard-coded, but it can now be adjusted. You
+                  need an index reset if you change the value.</p>
                 </dd>
                 <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.NOCJK"
                 id=
@@ -8696,9 +8715,9 @@ for i in range(nres):
                   column shows. The default value is 0, meaning no
                   checking.</p>
                 </dd>
-                <dt><a name=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.XAPIANDB" id=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.XAPIANDB"></a><span class="term"><code class="varname">xapiandb</code></span></dt>
+                <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.DBDIR"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DBDIR"></a><span class="term"><code class="varname">dbdir</code></span></dt>
                 <dd>
                   <p>Xapian database directory location. This will
                   be created on first indexing. If the value is not
@@ -8840,13 +8859,13 @@ for i in range(nres):
                   the Xapian approach is is not very useful, and
                   you should let Recoll manage the flushes. The
                   program compiled value is 0. The configured
-                  default value (from this file) is 10 MB, and will
-                  be too low in many cases (it is chosen to
-                  conserve memory). If you are looking for maximum
-                  speed, you may want to experiment with values
-                  between 20 and 200. In my experience, values
-                  beyond this are always counterproductive. If you
-                  find otherwise, please drop me a note.</p>
+                  default value (from this file) is now 50 MB, and
+                  should be ok in many cases. You can set it as low
+                  as 10 to conserve memory, but if you are looking
+                  for maximum speed, you may want to experiment
+                  with values between 20 and 200. In my experience,
+                  values beyond this are always counterproductive.
+                  If you find otherwise, please drop me a note.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXSECONDS"
@@ -9283,6 +9302,16 @@ for i in range(nres):
                   <p>Attempt OCR of PDF files with no text content
                   if both tesseract and pdftoppm are installed. The
                   default is off because OCR is so very slow.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCRLANG" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCRLANG"></a><span class="term"><code class="varname">pdfocrlang</code></span></dt>
+                <dd>
+                  <p>Language to assume for PDF OCR. This is very
+                  important for having a reasonable rate of errors
+                  with tesseract. This can also be set through a
+                  configuration variable or directory-local
+                  parameters. See the rclpdf.py script.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH" id=

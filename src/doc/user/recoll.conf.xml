@@ -126,15 +126,14 @@ types. Lets you exclude some types from indexing. MIME type
 names should be taken from the mimemap file (the values may be different
 from xdg-mime or file -i output in some cases) Can be redefined for
 subtrees.</para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES">
-<term><varname>nomd5mimetypes</varname></term>
-<listitem><para>Don't compute md5 for
-these types. md5 checksums are used only for deduplicating
-results, and can be very expensive to compute on multimedia or other big
-files. This list lets you turn off md5 computation for selected types. It
-is global (no redefinition for subtrees). At the moment, it only has an
-effect for external handlers (exec and execm). The file types can be
-specified by listing either MIME types (e.g. audio/mpeg) or handler names
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5TYPES">
+<term><varname>nomd5types</varname></term>
+<listitem><para>Don't compute md5 for these types. md5 checksums are used only for deduplicating results, and can be
+very expensive to compute on multimedia or other big files. This list
+lets you turn off md5 computation for selected types. It is global (no
+redefinition for subtrees). At the moment, it only has an effect for
+external handlers (exec and execm). The file types can be specified by
+listing either MIME types (e.g. audio/mpeg) or handler names
 (e.g. rclaudio).</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.COMPRESSEDFILEMAXKBS">
 <term><varname>compressedfilemaxkbs</varname></term>
@@ -244,6 +243,15 @@ for a subtree.</para></listitem></varlistentry>
 'coworker' also when the input is 'co-worker'. This is new
 in version 1.22, and on by default. Setting the variable to off allows
 restoring the previous behaviour.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.BACKSLASHASLETTER">
+<term><varname>backslashasletter</varname></term>
+<listitem><para>Process backslash as normal letter This may make sense for people wanting to index TeX commands as
+such but is not of much general use.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMLENGTH">
+<term><varname>maxtermlength</varname></term>
+<listitem><para>Maximum term length. Words longer than this will be discarded.
+The default is 40 and used to be hard-coded, but it can now be
+adjusted. You need an index reset if you change the value.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCJK">
 <term><varname>nocjk</varname></term>
 <listitem><para>Decides if specific East Asian
@@ -371,8 +379,8 @@ subpath under cachedir.</para></listitem></varlistentry>
 over which we stop indexing. The value is a percentage,
 corresponding to what the "Capacity" df output column shows. The default
 value is 0, meaning no checking.</para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.XAPIANDB">
-<term><varname>xapiandb</varname></term>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.DBDIR">
+<term><varname>dbdir</varname></term>
 <listitem><para>Xapian database directory
 location. This will be created on first indexing. If the
 value is not an absolute path, it will be interpreted as relative to
@@ -447,8 +455,8 @@ $XAPIAN_FLUSH_THRESHOLD documents created, modified or deleted: as memory
 usage depends on average document size, not only document count, the
 Xapian approach is is not very useful, and you should let Recoll manage
 the flushes. The program compiled value is 0. The configured default
-value (from this file) is 10 MB, and will be too low in many cases (it is
-chosen to conserve memory). If you are looking
+value (from this file) is now 50 MB, and should be ok in many cases.
+You can set it as low as 10 to conserve memory, but if you are looking
 for maximum speed, you may want to experiment with values between 20 and
 200. In my experience, values beyond this are always counterproductive. If
 you find otherwise, please drop me a note.</para></listitem></varlistentry>
@@ -677,6 +685,11 @@ with possibly meaning-altering missing words.</para></listitem></varlistentry>
 <listitem><para>Attempt OCR of PDF files with no text content if both tesseract and
 pdftoppm are installed. The default is off because OCR is so
 very slow.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCRLANG">
+<term><varname>pdfocrlang</varname></term>
+<listitem><para>Language to assume for PDF OCR. This is very important for having a reasonable rate of errors
+with tesseract. This can also be set through a configuration variable
+or directory-local parameters. See the rclpdf.py script.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">
 <term><varname>pdfattach</varname></term>
 <listitem><para>Enable PDF attachment extraction by executing pdftk (if
