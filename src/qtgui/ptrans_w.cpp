@@ -99,6 +99,10 @@ void EditTrans::on_savePB_clicked()
 	conftrans->set(from, to, m_dbdir);
     }
     conftrans->holdWrites(false);
+    // The rcldb does not use the same configuration object, but a
+    // copy. Force a reopen, this is quick.
+    string reason;
+    maybeOpenDb(reason, true);
     close();
 }
 

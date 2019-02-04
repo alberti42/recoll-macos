@@ -92,14 +92,12 @@ void startManual(const string& helpindex)
 
 bool maybeOpenDb(string &reason, bool force, bool *maindberror)
 {
-    LOGDEB2("maybeOpenDb: force "  << (force) << "\n" );
-    if (!rcldb) {
-        reason = "Internal error: db not created";
-        return false;
-    }
+    LOGDEB2("maybeOpenDb: force " << force << "\n");
 
-    if (force)
-        rcldb->close();
+    if (force) {
+        delete rcldb;
+        rcldb = new Rcl::Db(theconfig);
+    }
     rcldb->rmQueryDb("");
     for (const auto& dbdir : prefs.activeExtraDbs) {
         LOGDEB("main: adding [" << dbdir << "]\n");
@@ -129,7 +127,7 @@ bool getStemLangs(vector<string>& vlangs)
     string reason;
     if (maybeOpenDb(reason)) {
         vlangs = rcldb->getStemLangs();
-        LOGDEB0("getStemLangs: from index: "  << (stringsToString(vlangs)) << "\n" );
+        LOGDEB0("getStemLangs: from index: " << stringsToString(vlangs) <<"\n");
         return true;
     } else {
         // Cant get the langs from the index. Maybe it just does not
@@ -375,8 +373,8 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    rcldb = new Rcl::Db(theconfig);
-
+    maybeOpenDb(reason);
+    
     mainWindow->show();
     QTimer::singleShot(0, mainWindow, SLOT(initDbOpen()));
 
