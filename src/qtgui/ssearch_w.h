@@ -112,6 +112,7 @@ private:
     QString m_savedEditText;
      /* Saved xml version of the search, as we start it */
     std::string m_xml;
+    RclCompleterModel *m_completermodel{nullptr};
 };
 
 

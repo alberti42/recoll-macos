@@ -122,20 +122,19 @@ void RclCompleterModel::onPartialWord(
     for (int i = 0; i < prefs.ssearchHistory.count(); i++) {
         LOGDEB1("[" << qs2u8s(prefs.ssearchHistory[i]) << "] contains [" <<
                 qs2u8s(qtext) << "] ?\n");
+        // If there is current text, only show a limited count of
+        // matching entries, else show the full history.
         if (onlyspace ||
             prefs.ssearchHistory[i].contains(qtext, Qt::CaseInsensitive)) {
-            LOGDEB1("YES\n");
             currentlist.push_back(prefs.ssearchHistory[i]);
             if (!onlyspace && ++histmatch >= maxhistmatch)
                 break;
-        } else {
-            LOGDEB1("NO\n");
         }
     }
     firstfromindex = currentlist.size();
 
     // Look for Recoll terms beginning with the partial word
-    if (!partial.empty() && partial.compare(" ")) {
+    if (!qpartial.trimmed().isEmpty()) {
         Rcl::TermMatchResult rclmatches;
         if (!rcldb->termMatch(Rcl::Db::ET_WILD, string(),
                               partial + "*", rclmatches, maxdbtermmatch)) {
@@ -172,16 +171,16 @@ void SSearch::init()
     connect(searchTypCMB, SIGNAL(activated(int)), this,
             SLOT(searchTypeChanged(int)));
 
-    RclCompleterModel *completermodel = new RclCompleterModel(this);
-    QCompleter *completer = new QCompleter(completermodel, this);
+    m_completermodel = new RclCompleterModel(this);
+    QCompleter *completer = new QCompleter(m_completermodel, this);
     completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
     completer->setFilterMode(Qt::MatchContains);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     completer->setMaxVisibleItems(completervisibleitems);
     queryText->setCompleter(completer);
-    connect(
-        this, SIGNAL(partialWord(int, const QString&, const QString&)),
-        completermodel, SLOT(onPartialWord(int,const QString&,const QString&)));
+    connect(this, SIGNAL(partialWord(int, const QString&, const QString&)),
+            m_completermodel,
+            SLOT(onPartialWord(int,const QString&,const QString&)));
     connect(completer, SIGNAL(activated(const QString&)), this,
             SLOT(onCompletionActivated(const QString&)));
     connect(historyPB, SIGNAL(clicked()), this, SLOT(onHistoryClicked()));
@@ -206,28 +205,46 @@ void SSearch::clearAll()
     queryText->clear();
 }
 
+// onCompletionActivated() is called when an entry is selected in the
+// popup, but the edit text is going to be replaced in any case if
+// there is a current match (we can't prevent it in the signal). If
+// there is no match (e.g. the user clicked the history button and
+// selected an entry), the query text will not be set.
+// So:
+//  - We set the query text to the popup activation value in all cases
+//  - We schedule a callback to set the text to what we want (which is the
+//    concatenation of the user entry before the current partial word and the
+//    pop up data.
+//  - Note that a history click will replace a current partial word,
+//    so that the effect is different if there is a space at the end
+//    of the entry or not: pure concatenation vs replacement of the
+//    last (partial) word.
 void SSearch::restoreText()
 {
-    queryText->setText(m_savedEditText);
+    LOGDEB("SSearch::restoreText: savedEdit: " << qs2u8s(m_savedEditText) <<
+           endl);
+    if (!m_savedEditText.trimmed().isEmpty()) {
+        // If the popup text begins with the saved text, just let it replace
+        if (currentText().lastIndexOf(m_savedEditText) != 0) {
+            queryText->setText(m_savedEditText.trimmed() + " " + currentText());
+        }
+        m_savedEditText = "";
+    }        
 }
-
 void SSearch::onCompletionActivated(const QString& text)
 {
-    LOGDEB1("SSearch::onCompletionActivated: current text " <<
-           qs2u8s(currentText()) << endl);
-    m_savedEditText = m_savedEditText + text;
+    LOGDEB("SSearch::onCompletionActivated: queryText [" <<
+           qs2u8s(currentText()) << "] text [" << qs2u8s(text) << "]\n");
+    queryText->setText(text);
     QTimer::singleShot(0, this, SLOT(restoreText()));
 }
 
 void SSearch::onHistoryClicked()
 {
-    QKeyEvent event(QEvent::KeyPress, Qt::Key_Space, 0, " ");
-    QApplication::sendEvent(queryText, &event);
-    event = QKeyEvent(QEvent::KeyRelease, Qt::Key_Space, 0);
-    QApplication::sendEvent(queryText, &event);
-    queryText->setText(" ");
-    QTimer::singleShot(0, queryText->completer()->popup(),
-                       SLOT(scrollToTop()));
+     if (m_completermodel) {
+        m_completermodel->onPartialWord(SST_LANG, "", "");
+        queryText->completer()->complete();
+    }
 }
 
 void SSearch::searchTextEdited(const QString& text)
@@ -254,15 +271,11 @@ void SSearch::searchTextChanged(const QString& text)
     if (text.isEmpty()) {
         searchPB->setEnabled(false);
         clearqPB->setEnabled(false);
-        historyPB->setEnabled(true);
         queryText->setFocus();
         emit clearSearch();
     } else {
         searchPB->setEnabled(true);
         clearqPB->setEnabled(true);
-    }
-    if (!text.trimmed().isEmpty()) {
-        historyPB->setEnabled(false);
     }
 }
 
@@ -535,14 +548,35 @@ int SSearch::getPartialWord(QString& word)
 {
     // Extract last word in text
     QString txt = currentText();
-    int cs = txt.lastIndexOf(" ");
-    if (cs == -1)
+    if (txt.isEmpty()) {
+        return -1;
+    }
+    int lstidx = txt.size()-1;
+
+    // If the input ends with a space or dquote (phrase input), or
+    // dquote+qualifiers, no partial word.
+    if (txt[lstidx] == ' ') {
+        return -1;
+    }
+    int cs = txt.lastIndexOf("\"");
+    if (cs > 0) {
+        bool dquoteToEndNoSpace{true};
+        for (int i = cs; i <= lstidx; i++) {
+            if (txt[i] == " ") {
+                dquoteToEndNoSpace = false;
+                break;
+            }
+        }
+        if (dquoteToEndNoSpace) {
+            return -1;
+        }
+    }
+
+    cs = txt.lastIndexOf(" ");
+    if (cs < 0)
         cs = 0;
     else
         cs++;
-    if (txt.size() == 0 || cs == txt.size()) {
-        return -1;
-    }
     word = txt.right(txt.size() - cs);
     return cs;
 }
