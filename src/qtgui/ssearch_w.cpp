@@ -562,7 +562,7 @@ int SSearch::getPartialWord(QString& word)
     if (cs > 0) {
         bool dquoteToEndNoSpace{true};
         for (int i = cs; i <= lstidx; i++) {
-            if (txt[i] == " ") {
+            if (txt[i] == ' ') {
                 dquoteToEndNoSpace = false;
                 break;
             }
