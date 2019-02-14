@@ -45,6 +45,9 @@
              </item>
              <item>
               <widget class="QLineEdit" name="qtermStyleLE">
+               <property name="toolTip">
+                <string>Query terms highlighting in results. &lt;br&gt;Maybe try something like "color:red;background:yellow" for something more lively than the default blue...</string>
+               </property>
                <property name="minimumSize">
                 <size>
                  <width>50</width>
