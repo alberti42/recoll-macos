@@ -33,7 +33,7 @@ class RclTrayIcon : public QSystemTrayIcon {
     }
 public slots:
     void onRestore();
-
+    void onActivated(QSystemTrayIcon::ActivationReason reason);
 private:
     void init();
     RclMain *m_mainw;

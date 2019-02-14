@@ -19,6 +19,7 @@
 
 #include "systray.h"
 #include "rclmain_w.h"
+#include "log.h"
 
 void RclTrayIcon::init()
 {
@@ -27,16 +28,32 @@ void RclTrayIcon::init()
      
     connect(restoreAction, SIGNAL(triggered()), this, SLOT(onRestore()));
     connect(quitAction, SIGNAL(triggered()), m_mainw, SLOT(fileExit()));
-
     QMenu *trayIconMenu = new QMenu(0);
     trayIconMenu->addAction(restoreAction);
     trayIconMenu->addAction(quitAction);
     setContextMenu(trayIconMenu);
+
+    connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(onActivated(QSystemTrayIcon::ActivationReason)));
 }
 
 void RclTrayIcon::onRestore()
 {
     // Hide and show to restore on current desktop
     m_mainw->hide();
-    m_mainw->show();
+    m_mainw->showNormal();
+}
+
+void RclTrayIcon::onActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    LOGDEB("RclTrayIcon::onActivated: reason " << reason << std::endl);
+    switch (reason) {
+    case QSystemTrayIcon::DoubleClick:
+    case QSystemTrayIcon::Trigger:
+    case QSystemTrayIcon::MiddleClick:
+        onRestore();
+        break;
+    default:
+        return;
+    }
 }
