@@ -68,6 +68,7 @@ class PrefsPack {
     QString queryStemLang;
     int mainwidth;
     int mainheight;
+    bool maximized{false};
     int pvwidth; // Preview window geom
     int pvheight;
     int toolArea; // Area for "tools" toolbar

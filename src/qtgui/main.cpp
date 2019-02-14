@@ -375,7 +375,11 @@ int main(int argc, char **argv)
 
     maybeOpenDb(reason);
     
-    mainWindow->show();
+    if (prefs.maximized) {
+        mainWindow->showMaximized();
+    } else {
+        mainWindow->show();
+    }
     QTimer::singleShot(0, mainWindow, SLOT(initDbOpen()));
 
     // Connect exit handlers etc.. Beware, apparently this must come

@@ -646,10 +646,12 @@ void RclMain::fileExit()
 {
     LOGDEB("RclMain: fileExit\n");
     // Don't save geometry if we're currently fullscreened
-    if (!isFullScreen()) {
+    if (!isFullScreen() && !isMaximized()) {
         prefs.mainwidth = width();
         prefs.mainheight = height();
     }
+    prefs.maximized = isMaximized();
+    
     prefs.toolArea = toolBarArea(m_toolsTB);
     prefs.resArea = toolBarArea(m_resTB);
     restable->saveColState();
