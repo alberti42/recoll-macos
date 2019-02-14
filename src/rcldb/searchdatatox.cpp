@@ -620,11 +620,12 @@ void SearchDataClauseSimple::processSimpleSpan(
     // less wqf). This does not happen if there are wildcards anywhere
     // in the search.
     // We normally boost the original term in the stem expansion list. Don't
-    // do it if there are wildcards anywhere, this would skew the results.
+    // do it if there are wildcards anywhere, this would skew the results. Also
+    // no need to do it if there was no expansion.
     bool doBoostUserTerm = 
 	(m_parentSearch && !m_parentSearch->haveWildCards()) || 
 	(m_parentSearch == 0 && !m_haveWildCards);
-    if (doBoostUserTerm && !sterm.empty()) {
+    if (exp.size() > 1 && doBoostUserTerm && !sterm.empty()) {
         xq = Xapian::Query(Xapian::Query::OP_OR, xq, 
 			   Xapian::Query(prefix+sterm, 
 					 original_term_wqf_booster));
