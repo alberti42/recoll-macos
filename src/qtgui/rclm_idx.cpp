@@ -246,13 +246,6 @@ void RclMain::toggleIndexing()
 	break;
     case IXST_RUNNINGNOTMINE:
     {
-#ifdef _WIN32
-        QMessageBox::warning(0, tr("Warning"),
-                             tr("The current indexing process "
-                                "was not started from this "
-                                "interface, can't kill it"),
-                             QMessageBox::Ok, QMessageBox::NoButton);
-#else
 	int rep = 
 	    QMessageBox::information(
                 0, tr("Warning"), 
@@ -261,12 +254,16 @@ void RclMain::toggleIndexing()
                    "anyway, or Cancel to leave it alone"),
                 QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
 	if (rep == QMessageBox::Ok) {
+#ifdef _WIN32
+            // No simple way to signal the process. Use the stop file
+            ::close(::creat(theconfig->getIdxStopFile().c_str(), 0666));
+#else
 	    Pidfile pidfile(theconfig->getPidfile());
 	    pid_t pid = pidfile.open();
 	    if (pid > 0)
 		kill(pid, SIGTERM);
+#endif // !_WIN32
 	}
-#endif
     }
     break;
     case IXST_NOTRUNNING:

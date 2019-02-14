@@ -111,6 +111,7 @@ class MyUpdater : public DbIxStatusUpdater {
  public:
     MyUpdater(const RclConfig *config) 
 	: m_file(config->getIdxStatusFile().c_str()),
+          m_stopfilename(config->getIdxStopFile()),
 	  m_prevphase(DbIxStatus::DBIXS_NONE) {
         // The total number of files included in the index is actually
         // difficult to compute from the index itself. For display
@@ -145,7 +146,10 @@ class MyUpdater : public DbIxStatusUpdater {
             m_file.set("hasmonitor", status.hasmonitor);
             m_file.holdWrites(false);
 	}
-
+        if (path_exists(m_stopfilename)) {
+            unlink(m_stopfilename.c_str());
+            stopindexing = true;
+        }
 	if (stopindexing) {
 	    return false;
 	}
@@ -166,6 +170,7 @@ class MyUpdater : public DbIxStatusUpdater {
 
 private:
     ConfSimple m_file;
+    string m_stopfilename;
     Chrono m_chron;
     DbIxStatus::Phase m_prevphase;
 };

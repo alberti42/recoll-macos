@@ -1377,6 +1377,10 @@ string RclConfig::getPidfile() const
 {
     return path_cat(getCacheDir(), "index.pid");
 }
+string RclConfig::getIdxStopFile() const
+{
+    return path_cat(getCacheDir(), "index.stop");
+}
 
 /* Eliminate the common leaf part of file paths p1 and p2. Example: 
  * /mnt1/common/part /mnt2/common/part -> /mnt1 /mnt2. This is used

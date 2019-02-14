@@ -203,6 +203,7 @@ class RclConfig {
     string getPidfile() const;
     /** Get indexing status file name */
     string getIdxStatusFile() const;
+    string getIdxStopFile() const;
     /** Do path translation according to the ptrans table */
     void urlrewrite(const string& dbdir, string& url) const;
     ConfSimple *getPTrans() {
