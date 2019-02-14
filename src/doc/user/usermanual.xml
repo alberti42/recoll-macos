@@ -4207,25 +4207,54 @@
 
   </chapter> <!-- Search -->
 
-  <chapter id="RCL.MOVABLE">
-    <title>Movable datasets</title>
+  <chapter id="RCL.REMOVABLE">
+    <title>Removable volumes</title>
 
-    <para>As of &RCL; 1.24, it has become easy to build self-contained
-    datasets including a &RCL; configuration directory and index together
-    with the indexed documents, and to move such a dataset around (for
-    example copying it to an USB drive), without having to adjust the
-    configuration for querying the index.</para>
+    <para>&RCL; used to have no support for indexing removable volumes
+    (portable disks, USB keys, etc.). Recent versions have improved the
+    situation and support indexing removable volumes in two different
+    ways:</para>
 
-    <note><para>This is a query-time feature only. The index must only be
-    updated in its original location. If an update is necessary in a
-    different location, the index must be reset.</para></note>
+    <itemizedlist>
+      <listitem><para>By storing a volume index on the volume
+      itself (&RCL; 1.24).</para></listitem>
+      <listitem><para>By indexing the volume in the main, fixed, index, and
+      ensuring that the volume data is not purged if the indexing runs
+      while the volume is mounted. (&RCL; 1.25.2).</para></listitem>
+    </itemizedlist>
 
-    <para>To make a long story short, here follows a script to create a
-    &RCL; configuration and index under a given directory (given as single
-    parameter). The resulting data set (files + recoll directory) can later
-    to be moved to a CDROM or thumb drive. Longer explanations come after
-    the script.</para>
+    <sect1 id="RCL.REMOVABLE.MAIN">
+      <title>Indexing removable volumes in the main index</title>
+
+      <para>As of version 1.25.2, &RCL; has a simple way to ensure that the
+      index data for an absent volume will not be purged: the volume mount
+      point must be a member of the <literal>topdirs</literal> list, and
+      the mount directory must be empty (when the volume is not
+      mounted). If <command>recollindex</command> finds that one of the
+      <literal>topdirs</literal> is empty when starting up, any existing
+      data for the tree will be preserved by the indexing
+      pass (no purge for this area).</para> 
+    </sect1>
     
+    <sect1 id="RCL.REMOVABLE.SELF">
+      <title>Self contained volumes</title>
+      
+      <para>As of &RCL; 1.24, it has become easy to build self-contained
+      datasets including a &RCL; configuration directory and index together
+      with the indexed documents, and to move such a dataset around (for
+      example copying it to an USB drive), without having to adjust the
+      configuration for querying the index.</para>
+
+      <note><para>This is a query-time feature only. The index must only be
+      updated in its original location. If an update is necessary in a
+      different location, the index must be reset.</para></note>
+
+      <para>To make a long story short, here follows a script to create a
+      &RCL; configuration and index under a given directory (given as single
+      parameter). The resulting data set (files + recoll directory) can later
+      to be moved to a CDROM or thumb drive. Longer explanations come after
+      the script.</para>
+      
     <programlisting>#!/bin/sh
 
 fatal()
@@ -4323,7 +4352,7 @@ recollindex -c "$confdir"
     possible to run queries from a readonly configuration directory (with
     slightly reduced function of course, such as not recording the query
     history).</para>
-      
+    </sect1>
   </chapter>
 
   <chapter id="RCL.PROGRAM">

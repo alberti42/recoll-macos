@@ -307,8 +307,18 @@ alink="#0000FF">
             </dd>
           </dl>
         </dd>
-        <dt><span class="chapter">4. <a href="#RCL.MOVABLE">Movable
-        datasets</a></span></dt>
+        <dt><span class="chapter">4. <a href=
+        "#RCL.REMOVABLE">Removable volumes</a></span></dt>
+        <dd>
+          <dl>
+            <dt><span class="sect1">4.1. <a href=
+            "#RCL.REMOVABLE.MAIN">Indexing removable volumes in the
+            main index</a></span></dt>
+            <dt><span class="sect1">4.2. <a href=
+            "#RCL.REMOVABLE.SELF">Self contained
+            volumes</a></span></dt>
+          </dl>
+        </dd>
         <dt><span class="chapter">5. <a href=
         "#RCL.PROGRAM">Programming interface</a></span></dt>
         <dd>
@@ -5463,34 +5473,86 @@ alink="#0000FF">
       <div class="titlepage">
         <div>
           <div>
-            <h1 class="title"><a name="RCL.MOVABLE" id=
-            "RCL.MOVABLE"></a>Chapter&nbsp;4.&nbsp;Movable
-            datasets</h1>
+            <h1 class="title"><a name="RCL.REMOVABLE" id=
+            "RCL.REMOVABLE"></a>Chapter&nbsp;4.&nbsp;Removable
+            volumes</h1>
           </div>
         </div>
       </div>
-      <p>As of <span class="application">Recoll</span> 1.24, it has
-      become easy to build self-contained datasets including a
-      <span class="application">Recoll</span> configuration
-      directory and index together with the indexed documents, and
-      to move such a dataset around (for example copying it to an
-      USB drive), without having to adjust the configuration for
-      querying the index.</p>
-      <div class="note" style=
-      "margin-left: 0.5in; margin-right: 0.5in;">
-        <h3 class="title">Note</h3>
-        <p>This is a query-time feature only. The index must only
-        be updated in its original location. If an update is
-        necessary in a different location, the index must be
-        reset.</p>
+      <p><span class="application">Recoll</span> used to have no
+      support for indexing removable volumes (portable disks, USB
+      keys, etc.). Recent versions have improved the situation and
+      support indexing removable volumes in two different ways:</p>
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>By storing a volume index on the volume itself
+            (<span class="application">Recoll</span> 1.24).</p>
+          </li>
+          <li class="listitem">
+            <p>By indexing the volume in the main, fixed, index,
+            and ensuring that the volume data is not purged if the
+            indexing runs while the volume is mounted.
+            (<span class="application">Recoll</span> 1.25.2).</p>
+          </li>
+        </ul>
       </div>
-      <p>To make a long story short, here follows a script to
-      create a <span class="application">Recoll</span>
-      configuration and index under a given directory (given as
-      single parameter). The resulting data set (files + recoll
-      directory) can later to be moved to a CDROM or thumb drive.
-      Longer explanations come after the script.</p>
-      <pre class="programlisting">#!/bin/sh
+      <div class="sect1">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a name=
+              "RCL.REMOVABLE.MAIN" id=
+              "RCL.REMOVABLE.MAIN"></a>4.1.&nbsp;Indexing removable
+              volumes in the main index</h2>
+            </div>
+          </div>
+        </div>
+        <p>As of version 1.25.2, <span class=
+        "application">Recoll</span> has a simple way to ensure that
+        the index data for an absent volume will not be purged: the
+        volume mount point must be a member of the <code class=
+        "literal">topdirs</code> list, and the mount directory must
+        be empty (when the volume is not mounted). If <span class=
+        "command"><strong>recollindex</strong></span> finds that
+        one of the <code class="literal">topdirs</code> is empty
+        when starting up, any existing data for the tree will be
+        preserved by the indexing pass (no purge for this
+        area).</p>
+      </div>
+      <div class="sect1">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a name=
+              "RCL.REMOVABLE.SELF" id=
+              "RCL.REMOVABLE.SELF"></a>4.2.&nbsp;Self contained
+              volumes</h2>
+            </div>
+          </div>
+        </div>
+        <p>As of <span class="application">Recoll</span> 1.24, it
+        has become easy to build self-contained datasets including
+        a <span class="application">Recoll</span> configuration
+        directory and index together with the indexed documents,
+        and to move such a dataset around (for example copying it
+        to an USB drive), without having to adjust the
+        configuration for querying the index.</p>
+        <div class="note" style=
+        "margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">Note</h3>
+          <p>This is a query-time feature only. The index must only
+          be updated in its original location. If an update is
+          necessary in a different location, the index must be
+          reset.</p>
+        </div>
+        <p>To make a long story short, here follows a script to
+        create a <span class="application">Recoll</span>
+        configuration and index under a given directory (given as
+        single parameter). The resulting data set (files + recoll
+        directory) can later to be moved to a CDROM or thumb drive.
+        Longer explanations come after the script.</p>
+        <pre class="programlisting">#!/bin/sh
 
 fatal()
 {
@@ -5519,79 +5581,84 @@ confdir=`pwd`
 
 recollindex -c "$confdir"
 </pre>
-      <p>The examples below will assume that you have a dataset
-      under <code class="filename">/home/me/mydata/</code>, with
-      the index configuration and data stored inside <code class=
-      "filename">/home/me/mydata/recoll-confdir</code>.</p>
-      <p>In order to be able to run queries after the dataset has
-      been moved, you must ensure the following:</p>
-      <div class="itemizedlist">
-        <ul class="itemizedlist" style="list-style-type: disc;">
-          <li class="listitem">
-            <p>The main configuration file must define the
-            <a class="link" href=
-            "#RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</a>
-            variable to be the original location of the
-            configuration directory (<code class=
-            "filename">orgidxconfdir=/home/me/mydata/recoll-confdir</code>
-            must be set inside <code class=
-            "filename">/home/me/mydata/recoll-confdir/recoll.conf</code>
-            in the example above).</p>
-          </li>
-          <li class="listitem">
-            <p>The configuration directory must exist with the
-            documents, somewhere under the directory which will be
-            moved. E.g. if you are moving <code class=
-            "filename">/home/me/mydata</code> around, the
-            configuration directory must exist somewhere below this
-            point, for example <code class=
-            "filename">/home/me/mydata/recoll-confdir</code>, or
-            <code class=
-            "filename">/home/me/mydata/sub/recoll-confdir</code>.</p>
-          </li>
-          <li class="listitem">
-            <p>You should keep the default locations for the index
-            elements (they are relative to the configuration
-            directory by default). Only the paths referring to the
-            documents themselves (e.g. <code class=
-            "literal">topdirs</code> values) should be absolute (in
-            general, they are only used when indexing anyway).</p>
-          </li>
-        </ul>
+        <p>The examples below will assume that you have a dataset
+        under <code class="filename">/home/me/mydata/</code>, with
+        the index configuration and data stored inside <code class=
+        "filename">/home/me/mydata/recoll-confdir</code>.</p>
+        <p>In order to be able to run queries after the dataset has
+        been moved, you must ensure the following:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>The main configuration file must define the
+              <a class="link" href=
+              "#RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</a>
+              variable to be the original location of the
+              configuration directory (<code class=
+              "filename">orgidxconfdir=/home/me/mydata/recoll-confdir</code>
+              must be set inside <code class=
+              "filename">/home/me/mydata/recoll-confdir/recoll.conf</code>
+              in the example above).</p>
+            </li>
+            <li class="listitem">
+              <p>The configuration directory must exist with the
+              documents, somewhere under the directory which will
+              be moved. E.g. if you are moving <code class=
+              "filename">/home/me/mydata</code> around, the
+              configuration directory must exist somewhere below
+              this point, for example <code class=
+              "filename">/home/me/mydata/recoll-confdir</code>, or
+              <code class=
+              "filename">/home/me/mydata/sub/recoll-confdir</code>.</p>
+            </li>
+            <li class="listitem">
+              <p>You should keep the default locations for the
+              index elements (they are relative to the
+              configuration directory by default). Only the paths
+              referring to the documents themselves (e.g.
+              <code class="literal">topdirs</code> values) should
+              be absolute (in general, they are only used when
+              indexing anyway).</p>
+            </li>
+          </ul>
+        </div>
+        <p>Only the first point needs an explicit user action, the
+        <span class="application">Recoll</span> defaults are
+        compatible with the second one, and the third is
+        natural.</p>
+        <p>If, after the move, the configuration directory needs to
+        be copied out of the dataset (for example because the thumb
+        drive is too slow), you can set the <a class="link" href=
+        "#RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">curidxconfdir</a>,
+        variable inside the copied configuration to define the
+        location of the moved one. For example if <code class=
+        "filename">/home/me/mydata</code> is now mounted onto
+        <code class="filename">/media/me/somelabel</code>, but the
+        configuration directory and index has been copied to
+        <code class="filename">/tmp/tempconfig</code>, you would
+        set <code class="literal">curidxconfdir</code> to
+        <code class=
+        "filename">/media/me/somelabel/recoll-confdir</code> inside
+        <code class="filename">/tmp/tempconfig/recoll.conf</code>.
+        <code class="literal">orgidxconfdir</code> would still be
+        <code class=
+        "filename">/home/me/mydata/recoll-confdir</code> in the
+        original and the copy.</p>
+        <p>If you are regularly copying the configuration out of
+        the dataset, it will be useful to write a script to
+        automate the procedure. This can't really be done inside
+        <span class="application">Recoll</span> because there are
+        probably many possible variants. One example would be to
+        copy the configuration to make it writable, but keep the
+        index data on the medium because it is too big - in this
+        case, the script would also need to set <code class=
+        "literal">dbdir</code> in the copied configuration.</p>
+        <p>The same set of modifications (<span class=
+        "application">Recoll</span> 1.24) has also made it possible
+        to run queries from a readonly configuration directory
+        (with slightly reduced function of course, such as not
+        recording the query history).</p>
       </div>
-      <p>Only the first point needs an explicit user action, the
-      <span class="application">Recoll</span> defaults are
-      compatible with the second one, and the third is natural.</p>
-      <p>If, after the move, the configuration directory needs to
-      be copied out of the dataset (for example because the thumb
-      drive is too slow), you can set the <a class="link" href=
-      "#RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">curidxconfdir</a>,
-      variable inside the copied configuration to define the
-      location of the moved one. For example if <code class=
-      "filename">/home/me/mydata</code> is now mounted onto
-      <code class="filename">/media/me/somelabel</code>, but the
-      configuration directory and index has been copied to
-      <code class="filename">/tmp/tempconfig</code>, you would set
-      <code class="literal">curidxconfdir</code> to <code class=
-      "filename">/media/me/somelabel/recoll-confdir</code> inside
-      <code class="filename">/tmp/tempconfig/recoll.conf</code>.
-      <code class="literal">orgidxconfdir</code> would still be
-      <code class="filename">/home/me/mydata/recoll-confdir</code>
-      in the original and the copy.</p>
-      <p>If you are regularly copying the configuration out of the
-      dataset, it will be useful to write a script to automate the
-      procedure. This can't really be done inside <span class=
-      "application">Recoll</span> because there are probably many
-      possible variants. One example would be to copy the
-      configuration to make it writable, but keep the index data on
-      the medium because it is too big - in this case, the script
-      would also need to set <code class="literal">dbdir</code> in
-      the copied configuration.</p>
-      <p>The same set of modifications (<span class=
-      "application">Recoll</span> 1.24) has also made it possible
-      to run queries from a readonly configuration directory (with
-      slightly reduced function of course, such as not recording
-      the query history).</p>
     </div>
     <div class="chapter">
       <div class="titlepage">
