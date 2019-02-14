@@ -257,6 +257,11 @@ AC_ARG_ENABLE(python-chm, AC_HELP_STRING([--disable-python-chm],
     [Do not build the libchm Python wrapper.]),
     pythonChmEnabled=$enableval, pythonChmEnabled=yes)
 
+if test X$pythonChmEnabled = Xyes; then
+   AC_CHECK_LIB([chm], [chm_resolve_object], [],
+   [AC_MSG_ERROR([--enable-python-chm is set but libchm is not found])])
+fi
+
 AM_CONDITIONAL(MAKEPYTHONCHM, [test X$pythonChmEnabled = Xyes])
 
 
