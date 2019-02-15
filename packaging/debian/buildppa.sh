@@ -6,9 +6,9 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.24.1
+RCLVERS=1.25.3
 SCOPEVERS=1.20.2.4
-PPAVERS=2
+PPAVERS=6
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -20,7 +20,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-# PPANAME=recollexp-ppa
+PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -46,8 +46,8 @@ debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
-series="xenial zesty artful bionic"
-#series=
+series="xenial bionic cosmic disco"
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -78,8 +78,8 @@ done
 
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
-series="xenial zesty artful bionic"
-series=
+series="xenial bionic cosmic disco"
+series="cosmic disco"
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -101,6 +101,12 @@ for svers in $series ; do
 
   rm -rf $topdir/debian
   cp -rp ${debdir}/ $topdir/debian || exit 1
+
+  if test -f $debdir/control-$series ; then
+      cp -f -p $debdir/control-$series recoll-${RCLVERS}/debian/control
+  else 
+      cp -f -p $debdir/control recoll-${RCLVERS}/debian/control
+  fi
 
   sed -e s/SERIES/$svers/g \
       -e s/PPAVERS/${PPAVERS}/g \
