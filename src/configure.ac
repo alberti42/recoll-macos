@@ -556,8 +556,11 @@ AC_SUBST(RCLLIBVERSION)
 AC_SUBST(XSLT_CFLAGS)
 AC_SUBST(XSLT_LINKADD)
 
-AC_CONFIG_FILES([Makefile testmains/Makefile
-                 python/recoll/setup.py
-                 python/pychm/setup.py])
+AC_CONFIG_FILES([Makefile python/recoll/setup.py
+ python/pychm/setup.py])
+
+if test X$buildtestmains = Xyes ; then
+   AC_CONFIG_FILES([testmains/Makefile])
+fi
 
 AC_OUTPUT
