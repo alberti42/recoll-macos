@@ -1,8 +1,16 @@
-recoll (1.25.0pre0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.25.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
-  * Not a release: 1.25 development and testing
-    
- -- Jean-Francois Dockes <jf@dockes.org>  Wed, 13 Jun 2018 08:38:00 +0200
+  * New release 1.25.3
+  * New GUI term completion tool, fetching from search history and index
+    terms.
+  * All Python scripts converted to Python3 and using it by default.
+  * XML formats formerly using xsltproc now handled internally through
+    libxml2 and libxslt.
+  * Better support for mountable volumes: empty elements of topdirs are
+    ignored (the corresponding index data is not purged).
+  * GUI: remember and manage maximized state.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 15 Feb 2019 08:42:00 +0100
 
 recoll (1.24.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
