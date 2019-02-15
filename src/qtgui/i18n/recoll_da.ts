@@ -1068,7 +1068,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation>Den nuværende indekseringsproces blev ikke startet fra denne grænseflade, kan ikke stoppe den</translation>
+        <translation type="vanished">Den nuværende indekseringsproces blev ikke startet fra denne grænseflade, kan ikke stoppe den</translation>
     </message>
     <message>
         <source>Bad paths</source>
@@ -2910,6 +2910,10 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

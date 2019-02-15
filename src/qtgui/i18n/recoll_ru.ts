@@ -341,17 +341,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+1"/>
-        <location line="+55"/>
+        <location line="+59"/>
         <source>Local path</source>
         <translation>Локальный путь</translation>
     </message>
     <message>
-        <location line="-22"/>
+        <location line="-26"/>
         <source>Config error</source>
         <translation>Ошибка конфигурации</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+25"/>
         <source>Original path</source>
         <translation>Изначальный путь</translation>
     </message>
@@ -532,7 +532,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="+374"/>
+        <location filename="../main.cpp" line="+372"/>
         <source>No db directory in configuration</source>
         <translation>Каталог БД в конфигурации не указан</translation>
     </message>
@@ -981,7 +981,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>RclMain</name>
     <message>
-        <location filename="../rclmain_w.cpp" line="+714"/>
+        <location filename="../rclmain_w.cpp" line="+716"/>
         <source>Query results</source>
         <translation>Результаты запроса</translation>
     </message>
@@ -991,9 +991,8 @@ p, li { white-space: pre-wrap; }
         <translation>Невозможно извлечь сведения о документе из БД</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+250"/>
-        <location line="+8"/>
-        <location line="+260"/>
+        <location filename="../rclm_idx.cpp" line="+251"/>
+        <location line="+264"/>
         <location filename="../rclm_preview.cpp" line="-135"/>
         <location line="+44"/>
         <location line="+37"/>
@@ -1028,7 +1027,7 @@ p, li { white-space: pre-wrap; }
         <translation>История</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-474"/>
+        <location filename="../rclm_idx.cpp" line="-471"/>
         <source>Indexing in progress: </source>
         <translation>Идёт индексирование: </translation>
     </message>
@@ -1074,7 +1073,7 @@ Please check the mimeconf file</source>
         <translation>Невозможно извлечь документ или создать временный файл</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="-758"/>
+        <location filename="../rclmain_w.cpp" line="-760"/>
         <source>(no stemming)</source>
         <translation>(без однокоренных слов)</translation>
     </message>
@@ -1101,7 +1100,7 @@ Please check the mimeconf file</source>
     <message>
         <location line="+34"/>
         <location line="+27"/>
-        <location line="+365"/>
+        <location line="+362"/>
         <source>Stop &amp;Indexing</source>
         <translation>О&amp;становить индексирование</translation>
     </message>
@@ -1213,7 +1212,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Невозможно распаковать файл: </translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+780"/>
+        <location filename="../rclmain_w.cpp" line="+782"/>
         <source>Save file</source>
         <translation>Сохранение файл</translation>
     </message>
@@ -1227,17 +1226,17 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="obsolete">Подробности запроса</translation>
     </message>
     <message>
-        <location line="-236"/>
+        <location line="-238"/>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
         <translation>Не удалось открыть внешний индекс. БД не открыта. Проверьте список внешних индексов.</translation>
     </message>
     <message>
-        <location line="+239"/>
+        <location line="+241"/>
         <source>No results found</source>
         <translation>Поиск не дал результатов</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-487"/>
+        <location filename="../rclm_idx.cpp" line="-484"/>
         <source>None</source>
         <translation>Отсутствует</translation>
     </message>
@@ -1262,12 +1261,12 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Не удалось выполнить индексирование</translation>
     </message>
     <message>
-        <location line="+148"/>
+        <location line="+141"/>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
         <translation>Для запуска текущего процесса индексирования был использован другой интерфейс. Нажмите «OK» для прекращения процесса или «Отмена» для его продолжения</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+90"/>
         <source>Erasing index</source>
         <translation>Стирание индекса</translation>
     </message>
@@ -1364,7 +1363,7 @@ Please check the mimeview file</source>
         <translation>Вложенные документы</translation>
     </message>
     <message>
-        <location line="-731"/>
+        <location line="-733"/>
         <source>Document filter</source>
         <translation>Фильтр документов</translation>
     </message>
@@ -1401,12 +1400,11 @@ Please check the desktop file</source>
 Проверьте файл .desktop</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-268"/>
         <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation>Для запуска текущего процесса индексирования был использован другой интерфейс. Прекратить выполнение процесса невозможно</translation>
+        <translation type="vanished">Для запуска текущего процесса индексирования был использован другой интерфейс. Прекратить выполнение процесса невозможно</translation>
     </message>
     <message>
-        <location line="-35"/>
+        <location filename="../rclm_idx.cpp" line="-300"/>
         <source>Bad paths</source>
         <translation>Неверные пути</translation>
     </message>
@@ -1418,7 +1416,7 @@ Please check the desktop file</source>
 </translation>
     </message>
     <message>
-        <location line="+279"/>
+        <location line="+276"/>
         <source>Selection patterns need topdir</source>
         <translation>Для шаблонов отбора требуется topdir</translation>
     </message>
@@ -1504,7 +1502,7 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+490"/>
+        <location filename="../rclmain_w.cpp" line="+492"/>
         <source>Can&apos;t set synonyms file (parse error?)</source>
         <translation>Невозможно установить файл синономов (ошибка анализа?)</translation>
     </message>
@@ -1529,7 +1527,7 @@ Please check the desktop file</source>
         <translation>Больше не показывать (для восстановления значений используйте окно настройки интерфейса).</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-342"/>
+        <location filename="../rclm_idx.cpp" line="-339"/>
         <source>Index locked</source>
         <translation>Индекс заблокирован</translation>
     </message>
@@ -1564,7 +1562,7 @@ Please check the desktop file</source>
         <translation>В командной строке программы просмотра %1 указан родительский файл, а в URL — сетевой протокол http[s]: команда не поддерживается</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="-507"/>
+        <location filename="../rclmain_w.cpp" line="-509"/>
         <source>Tools</source>
         <translation>Инструменты</translation>
     </message>
@@ -1953,7 +1951,7 @@ Please check the desktop file</source>
 <context>
     <name>RclTrayIcon</name>
     <message>
-        <location filename="../systray.cpp" line="+25"/>
+        <location filename="../systray.cpp" line="+26"/>
         <source>Restore</source>
         <translation>Восстановить</translation>
     </message>
@@ -2350,7 +2348,7 @@ Please check the desktop file</source>
 <context>
     <name>SSearch</name>
     <message>
-        <location filename="../ssearch_w.cpp" line="+160"/>
+        <location filename="../ssearch_w.cpp" line="+159"/>
         <source>Any term</source>
         <translation>Любое слово</translation>
     </message>
@@ -2382,7 +2380,7 @@ Please check the desktop file</source>
         <translation>Язык запроса</translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location line="+220"/>
         <source>Bad query string</source>
         <translation>Ошибка в строке запроса</translation>
     </message>
@@ -2737,7 +2735,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Шаблоны отбора:</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+274"/>
+        <location filename="../rclm_idx.cpp" line="+271"/>
         <source>Top indexed entity</source>
         <translation>Проиндексированный элемент верхнего уровня</translation>
     </message>
@@ -3777,7 +3775,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Интерфейс пользователя</translation>
     </message>
     <message>
-        <location line="+329"/>
+        <location line="+332"/>
         <source>Number of entries in a result page</source>
         <translation>Количество записей на странице результатов</translation>
     </message>
@@ -3877,7 +3875,12 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Просмотр простого текста в формате HTML.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="-82"/>
+        <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+490"/>
         <source>Search parameters</source>
         <translation>Параметры поиска</translation>
     </message>
@@ -4199,7 +4202,7 @@ The default value is 2 (percent). </source>
         <translation>Показывать предупреждение при открытии временного файла.</translation>
     </message>
     <message>
-        <location line="-274"/>
+        <location line="-277"/>
         <source>Highlight CSS style for query terms</source>
         <translation>CSS-стиль подсветки слов запроса</translation>
     </message>
@@ -4209,7 +4212,7 @@ The default value is 2 (percent). </source>
         <translation>Recoll — Пользовательская настройка</translation>
     </message>
     <message>
-        <location line="+883"/>
+        <location line="+886"/>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation>Задать корректировку путей для выбранного или главного индекса, если ничего не выбрано.</translation>
     </message>

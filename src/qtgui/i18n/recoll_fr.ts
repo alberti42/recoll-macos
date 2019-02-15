@@ -1243,7 +1243,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation>Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface, impossible de l&apos;arrêter</translation>
+        <translation type="vanished">Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface, impossible de l&apos;arrêter</translation>
     </message>
     <message>
         <source>The document belongs to an external index which I can&apos;t update. </source>
@@ -3624,6 +3624,10 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
         <translation>Rendre clicquables les liens dans la fenêtre de prévisualisation et démarrer un navigateur extérieur quand ils sont activés.</translation>
+    </message>
+    <message>
+        <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
+        <translation type="unfinished">Mise en évidence des termes de recherche. &lt;br&gt;Si le bleu utilisé par défaut est trop discret, essayer peut-être : &quot;color:red;background:yellow&quot;...</translation>
     </message>
 </context>
 </TS>
