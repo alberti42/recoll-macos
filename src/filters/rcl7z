@@ -14,7 +14,7 @@ import rclexecm
 try:
     from py7zlib import Archive7z
 except:
-    print("RECFILTERROR HELPERNOTFOUND python:py7zlib")
+    print("RECFILTERROR HELPERNOTFOUND python3:py7zlib")
     sys.exit(1);
 
 try:

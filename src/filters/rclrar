@@ -25,7 +25,7 @@ import rclexecm
 try:
     from rarfile import RarFile
 except:
-    print("RECFILTERROR HELPERNOTFOUND python:rarfile")
+    print("RECFILTERROR HELPERNOTFOUND python3:rarfile")
     sys.exit(1);
 
 # Requires RarFile python module. Try "sudo pip install rarfile" or

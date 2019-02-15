@@ -17,7 +17,7 @@ import rclexecm
 try:
     import sys
 except:
-    print("RECFILTERROR HELPERNOTFOUND python:sys")
+    print("RECFILTERROR HELPERNOTFOUND python3:sys")
     sys.exit(1);
 
 # Our class.

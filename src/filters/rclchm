@@ -37,7 +37,7 @@ except:
     try:
         from recollchm import chm,chmlib
     except:
-        print("RECFILTERROR HELPERNOTFOUND python:chm")
+        print("RECFILTERROR HELPERNOTFOUND python3:chm")
         sys.exit(1);
 
 # Small helper routines

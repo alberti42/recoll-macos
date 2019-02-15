@@ -13,7 +13,7 @@ import rclexecm
 try:
     import tarfile
 except:
-    print("RECFILTERROR HELPERNOTFOUND python:tarfile")
+    print("RECFILTERROR HELPERNOTFOUND python3:tarfile")
     sys.exit(1);
 
 class TarExtractor:

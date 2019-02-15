@@ -16,7 +16,7 @@ sys.path.append(sys.path[0]+"/recollepub.zip")
 try:
     import epub
 except:
-    print("RECFILTERROR HELPERNOTFOUND python:epub")
+    print("RECFILTERROR HELPERNOTFOUND python3:epub")
     sys.exit(1);
 
 class rclEPUB:

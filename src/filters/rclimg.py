@@ -17,7 +17,7 @@ from rclbasehandler import RclBaseHandler
 try:
     import pyexiv2
 except:
-    print("RECFILTERROR HELPERNOTFOUND python:pyexiv2")
+    print("RECFILTERROR HELPERNOTFOUND python3:pyexiv2")
     sys.exit(1);
 
 khexre = re.compile('.*\.0[xX][0-9a-fA-F]+$')

@@ -28,8 +28,8 @@ if usemodule != "internal":
             import vobject
             usemodule = "vobject"
         except:
-            print("RECFILTERROR HELPERNOTFOUND python:icalendar")
-            print("RECFILTERROR HELPERNOTFOUND python:vobject")
+            print("RECFILTERROR HELPERNOTFOUND python3:icalendar")
+            print("RECFILTERROR HELPERNOTFOUND python3:vobject")
             sys.exit(1);
 
 

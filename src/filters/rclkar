@@ -20,7 +20,7 @@ except:
 try:
     import rclmidi as midi
 except:
-    print("RECFILTERROR HELPERNOTFOUND python:midi")
+    print("RECFILTERROR HELPERNOTFOUND python3:midi")
     sys.exit(1);
 
 try:

@@ -15,7 +15,7 @@ try:
     from mutagen import File
     from mutagen.id3 import ID3TimeStamp
 except:
-    print("RECFILTERROR HELPERNOTFOUND python:mutagen")
+    print("RECFILTERROR HELPERNOTFOUND python3:mutagen")
     sys.exit(1);
 
 
