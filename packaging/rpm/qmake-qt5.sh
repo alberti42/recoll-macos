@@ -1,0 +1,8 @@
+#!/bin/sh
+
+/usr/bin/qmake-qt5 \
+  $@ \
+  QMAKE_CFLAGS_RELEASE="${CFLAGS}" \
+  QMAKE_CXXFLAGS_RELEASE="${CXXFLAGS}" \
+  QMAKE_LFLAGS_RELEASE="${LDFLAGS}" \
+  QMAKE_STRIP=

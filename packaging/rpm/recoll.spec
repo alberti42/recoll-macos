@@ -10,6 +10,8 @@ License:        GPLv2+
 URL:            http://www.lesbonscomptes.com/recoll/
 Source0:        http://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
 Source10:       qmake-qt5.sh
+Patch0:         recoll-searchgui-desktop-encoding.patch
+Patch1:         recoll-25-fix-kio-build.patch
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
@@ -23,6 +25,8 @@ BuildRequires:  python2-devel
 BuildRequires:  python3-devel
 BuildRequires:  xapian-core-devel
 BuildRequires:  zlib-devel
+BuildRequires:  chmlib-devel
+BuildRequires:  libxslt-devel
 Requires:       xdg-utils
 
 %description
@@ -43,6 +47,8 @@ displayed in Konqueror.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p2
+%patch1 -p2
 
 %build
 CFLAGS="%{optflags}"; export CFLAGS
@@ -69,16 +75,6 @@ rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
 # kio_recoll -kde5
 (
 mkdir kde/kioslave/kio_recoll/build && pushd kde/kioslave/kio_recoll/build
-%cmake ..
-make %{?_smp_mflags} VERBOSE=1
-make install DESTDIR=%{buildroot}
-popd
-)
-
-# kio_recoll -kde4
-(
-mkdir kde/kioslave/kio_recoll-kde4/build && \
-      pushd kde/kioslave/kio_recoll-kde4/build
 %cmake ..
 make %{?_smp_mflags} VERBOSE=1
 make install DESTDIR=%{buildroot}
@@ -147,18 +143,21 @@ exit 0
 %{_libdir}/recoll
 %{python_sitearch}/recoll
 %{python_sitearch}/Recoll*.egg-info
+%{python3_sitearch}/recoll
+%{python3_sitearch}/Recoll*.egg-info
+%{python_sitearch}/recollchm
+%{python_sitearch}/recollchm*.egg-info
+%{python3_sitearch}/recollchm
+%{python3_sitearch}/recollchm*.egg-info
 %{_mandir}/man1/%{name}.1*
 %{_mandir}/man1/%{name}q.1*
 %{_mandir}/man1/%{name}index.1*
+%{_mandir}/man1/xadump.1*
 %{_mandir}/man5/%{name}.conf.5*
 
 %files kio
 %license COPYING
-%{_libdir}/kde4/kio_recoll.so
 %{_libdir}/qt5/plugins/kio_recoll.so
-%{_datadir}/kde4/apps/kio_recoll/
-%{_datadir}/kde4/services/recoll.protocol
-%{_datadir}/kde4/services/recollf.protocol
 %{_datadir}/kio_recoll/help.html
 %{_datadir}/kio_recoll/welcome.html
 %{_datadir}/kservices5/recoll.protocol
