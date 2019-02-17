@@ -61,11 +61,13 @@ class RarExtractor:
         isdir = False
         
         try:
-            rarinfo = self.rar.getinfo(ipath)
             if using_unrar:
+                ipath = ipath.decode('UTF-8')
+                rarinfo = self.rar.getinfo(ipath)
                 # dll.hpp RHDF_DIRECTORY: 0x20
                 isdir = ((rarinfo.flag_bits & 0x20) != 0)
             else:
+                rarinfo = self.rar.getinfo(ipath)
                 isdir = rarinfo.isdir()
         except Exception as err:
             self.em.rclog("extractone: rar.getinfo failed: [%s]" % err)
