@@ -22,11 +22,24 @@ from __future__ import print_function
 
 import sys
 import rclexecm
+import os
+
+# We can use two different unrar python modules. Either python-rarfile
+# which is a wrapper over the the unrar command line, or python-unrar
+# which is a ctypes wrapper of the unrar lib. Python-rarfile is the
+# one commonly packaged on linux. Their interfaces is similar. Note
+# that python-unrar uses forward slashes in internal file paths while
+# python-rarfile uses backslashes (ipaths are opaque anyway).
+using_unrar = False
 try:
-    from rarfile import RarFile
-except:
-    print("RECFILTERROR HELPERNOTFOUND python3:rarfile")
-    sys.exit(1);
+    from unrar import rarfile
+    using_unrar = True
+except Exception as ex:
+    try:
+        from rarfile import RarFile
+    except:
+        print("RECFILTERROR HELPERNOTFOUND python3:rarfile/python3:unrar")
+        sys.exit(1);
 
 # Requires RarFile python module. Try "sudo pip install rarfile" or
 # install it with the system package manager
@@ -49,10 +62,14 @@ class RarExtractor:
         
         try:
             rarinfo = self.rar.getinfo(ipath)
-            isdir = rarinfo.isdir()
+            if using_unrar:
+                # dll.hpp RHDF_DIRECTORY: 0x20
+                isdir = ((rarinfo.flag_bits & 0x20) != 0)
+            else:
+                isdir = rarinfo.isdir()
         except Exception as err:
             self.em.rclog("extractone: rar.getinfo failed: [%s]" % err)
-            return (True, docdata, ipath, false)
+            return (True, docdata, ipath, False)
 
         if not isdir:
             try:
@@ -80,12 +97,20 @@ class RarExtractor:
     def openfile(self, params):
         self.currentindex = -1
         try:
-            # The previous versions passed the file name to
-            # RarFile. But the py3 version of this wants an str as
-            # input, which is wrong of course, as filenames are
-            # binary. Circumvented by passing the open file
-            f = open(params["filename:"], 'rb')
-            self.rar = RarFile(f)
+            if using_unrar:
+                # There might be a way to avoid the decoding which is
+                # wrong on Unix, but I'd have to dig further in the
+                # lib than I wish to. This is used on Windows anyway,
+                # where all Recoll paths are utf-8
+                fn = params["filename:"].decode("UTF-8")
+                self.rar = rarfile.RarFile(fn, 'rb')
+            else:
+                # The previous versions passed the file name to
+                # RarFile. But the py3 version of this wants an str as
+                # input, which is wrong of course, as filenames are
+                # binary. Circumvented by passing the open file
+                f = open(params["filename:"], 'rb')
+                self.rar = RarFile(f)
             return True
         except Exception as err:
             self.em.rclog("RarFile: %s"%err)
