@@ -238,10 +238,15 @@ class AudioTagExtractor(RclBaseHandler):
 
         # We actually output text/plain
         self.outputmimetype = 'text/plain'
-        
-        mutf = File(filename)
+
+        mutf = None
+        msg = ''
+        try:
+            mutf = File(filename)
+        except Exception as ex:
+            msg = "Open failed: %s" % ex
         if not mutf:
-            raise Exception("mutagen failed opening %s" % filename)
+            raise Exception(msg)
         
         #self._showMutaInfo(mutf)
 

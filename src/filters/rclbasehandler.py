@@ -55,9 +55,9 @@ class RclBaseHandler(object):
             # output text/plain
             html = self.html_text(fn)
         except Exception as err:
-            import traceback
-            traceback.print_exc()
-            self.em.rclog("RclBaseHandler: %s : %s" % (fn, err))
+            #import traceback
+            #traceback.print_exc()
+            self.em.rclog("%s : %s" % (fn, err))
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
         self.em.setmimetype(self.outputmimetype)
