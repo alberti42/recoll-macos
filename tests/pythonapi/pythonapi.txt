@@ -1,5 +1,5 @@
 python doc.py
-Xapian query: [Query((TSTFLDtestfieldvalue1 OR TSTFLDtestfieldvalue1#10))]
+Xapian query: [Query(TSTFLDtestfieldvalue1)]
 Result count: 1 1
 doc.title: [HTML fields test file: été à noël]
 doc.testfield: [testfieldvalue1]
@@ -56,7 +56,7 @@ Result count: 1 1
 Text length: 3457
 bfbb63f7a245c31767585b45014dbd07
 python simple.py
-Xapian query: [Query((huniique OR huniique#10))]
+Xapian query: [Query(huniique)]
 Result count: 2 2
 for i in range(nres):
 Home.ics
@@ -68,7 +68,7 @@ unique.txt
 
 Catched bad mode. (ok)
 python url.py
-Xapian query: [Query(((latin1name_uniquexxx OR latin1name_uniquexxx#10) AND XPiso8859name))]
+Xapian query: [Query((latin1name_uniquexxx AND XPiso8859name))]
 Result count: 1 1
 iso8859-1_????????.txt
 Contents: [LATIN1NAME_UNIQUEXXX 
