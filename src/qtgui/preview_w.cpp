@@ -109,6 +109,9 @@ void Preview::init()
         for (auto elt : ugroup) {
             trimwildcards(elt);
             if (!elt.empty()) {
+                if (!s.isEmpty()) {
+                    s.append(" ");
+                }
                 s.append(u8s2qs(elt));
             }
         }
