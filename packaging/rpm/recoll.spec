@@ -3,15 +3,13 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.25.3
+Version:        1.25.4
 Release:        2%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
 URL:            http://www.lesbonscomptes.com/recoll/
 Source0:        http://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
 Source10:       qmake-qt5.sh
-Patch0:         recoll-searchgui-desktop-encoding.patch
-Patch1:         recoll-25-fix-kio-build.patch
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
@@ -47,8 +45,6 @@ displayed in Konqueror.
 
 %prep
 %setup -q -n %{name}-%{version}
-%patch0 -p2
-%patch1 -p2
 
 %build
 CFLAGS="%{optflags}"; export CFLAGS
