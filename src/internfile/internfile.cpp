@@ -852,7 +852,14 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc,const string& ipath)
 	// might be ie an error while decoding an attachment, but we
 	// still want to process the rest of the mbox! For preview: fatal.
 	if (!m_handlers.back()->next_document()) {
-	    processNextDocError(doc);
+            // Using a temp doc here because else we'd need to pop the
+            // last ipath element when we do the pophandler (else the
+            // ipath continues to grow in the current doc with each
+            // consecutive error). It would be better to have
+            // something like ipath.pop(). We do need the MIME type
+            Rcl::Doc doc1 = doc;
+	    processNextDocError(doc1);
+            doc.mimetype = doc1.mimetype;
 	    if (m_forPreview) {
                 m_reason += "Requested document does not exist. ";
                 m_reason += m_handlers.back()->get_error();
