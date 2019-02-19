@@ -16,7 +16,7 @@ set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
 # Execute recoll configuration to create autoconfig.h and version.h and
 # generate a PIC lib
-execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
+execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --disable-python-chm --disable-python-module --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
 		WORKING_DIRECTORY ${rcltop}
 )
 
@@ -60,7 +60,7 @@ add_custom_target(rcllib
 )
 add_dependencies(kio_recoll rcllib)
 
-target_link_libraries(kio_recoll recoll xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
+target_link_libraries(kio_recoll recoll xapian xslt xml2 z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
 
 install(TARGETS kio_recoll DESTINATION ${PLUGIN_INSTALL_DIR})
 
