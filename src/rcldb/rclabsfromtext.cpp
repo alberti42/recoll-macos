@@ -272,6 +272,9 @@ public:
         // (phrase/near), they are dear to the user's heart.  list are
         // sorted, so we never go back in the fragment list (can
         // always start the search where we previously stopped).
+        if (m_fragments.empty()) {
+            return;
+        }
         auto fragit = m_fragments.begin();
         for (const auto& grpmatch : tboffs) {
             LOGDEB2("LOOKING FOR FRAGMENT: group: " << grpmatch.offs.first <<
