@@ -1075,7 +1075,7 @@ Query_iternext(PyObject *_self)
     }
     int cnt = self->query->getResCnt();
     if (cnt <= 0 || self->next < 0) {
-        PyErr_SetString(PyExc_AttributeError, "query: no results");
+        // This happens if there are no results and is not an error
 	return 0;
     }
     recoll_DocObject *result = 
