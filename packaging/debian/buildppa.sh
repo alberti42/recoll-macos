@@ -6,7 +6,7 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.25.3
+RCLVERS=1.25.4
 SCOPEVERS=1.20.2.4
 PPAVERS=2
 
@@ -79,7 +79,7 @@ done
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
 series="xenial bionic cosmic disco"
-series="xenial"
+#series="xenial"
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -102,8 +102,8 @@ for svers in $series ; do
   rm -rf $topdir/debian
   cp -rp ${debdir}/ $topdir/debian || exit 1
 
-  if test -f $debdir/control-$series ; then
-      cp -f -p $debdir/control-$series $topdir/debian/control
+  if test -f $debdir/control-$svers ; then
+      cp -f -p $debdir/control-$svers $topdir/debian/control
   else 
       cp -f -p $debdir/control $topdir/debian/control
   fi

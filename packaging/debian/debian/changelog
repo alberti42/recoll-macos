@@ -1,3 +1,10 @@
+recoll (1.25.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * New release 1.25.4
+  * Fixes a few minor-to-ennoying bugs
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 19 Feb 2019 08:42:00 +0100
+
 recoll (1.25.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * New release 1.25.3
