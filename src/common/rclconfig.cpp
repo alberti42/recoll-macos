@@ -397,7 +397,12 @@ bool RclConfig::updateMainConfig()
     if (getConfParam("skippedPathsFnmPathname", &bvalue) && bvalue == false) {
         FsTreeWalker::setNoFnmPathname();
     }
-
+    string nowalkfn;
+    getConfParam("nowalkfn", nowalkfn);
+    if (!nowalkfn.empty()) {
+        FsTreeWalker::setNoWalkFn(nowalkfn);
+    }
+    
     static int m_index_stripchars_init = 0;
     if (!m_index_stripchars_init) {
         getConfParam("indexStripChars", &o_index_stripchars);

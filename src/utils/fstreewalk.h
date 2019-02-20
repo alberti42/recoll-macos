@@ -49,6 +49,15 @@ class FsTreeWalker {
 	o_useFnmPathname = false;
     }
 
+    // Global option to observe a "nowalk" file, which makes us treat
+    // directories as if they were in skippedPaths) if the file exists
+    // inside the directory.
+    static std::string o_nowalkfn;
+    static void setNoWalkFn(const std::string& nowalkfn)
+    {
+        o_nowalkfn = nowalkfn;
+    }
+
     // Flags for call to processone(). FtwDirEnter is used when
     // entering a directory. FtwDirReturn is used when returning to it
     // after processing a subdirectory.

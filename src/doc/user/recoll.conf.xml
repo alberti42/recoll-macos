@@ -11,11 +11,10 @@ $HOME). You can use symbolic links in the list, they will be followed,
 independantly of the value of the followLinks variable.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">
 <term><varname>monitordirs</varname></term>
-<listitem><para>(1.24) Space-separated list of
-files or directories to monitor for updates. When running
-the real-time indexer, this allows monitoring only a subset of the whole
-indexed area. The elements must be included in the tree defined by the
-'topdirs' members.</para></listitem></varlistentry>
+<listitem><para>Space-separated list of files or directories to monitor for
+updates. When running the real-time indexer, this allows monitoring only a
+subset of the whole indexed area. The elements must be included in the
+tree defined by the 'topdirs' members.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">
 <term><varname>skippedNames</varname></term>
 <listitem><para>Files and directories which should be ignored. 
@@ -78,6 +77,10 @@ this.</para></listitem></varlistentry>
 <listitem><para>Set to 0 to
 override use of FNM_PATHNAME for matching skipped
 paths. </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOWALKFN">
+<term><varname>nowalkfn</varname></term>
+<listitem><para>File name which will cause its parent directory to be skipped. Any directory containing a file with this name will be skipped as
+if it was part of the skippedPaths list. Ex: .recoll-noindex</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.DAEMSKIPPEDPATHS">
 <term><varname>daemSkippedPaths</varname></term>
 <listitem><para>skippedPaths equivalent specific to

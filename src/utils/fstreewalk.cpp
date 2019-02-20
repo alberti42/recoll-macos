@@ -17,8 +17,6 @@
 
 #include "autoconfig.h"
 
-#ifndef TEST_FSTREEWALK
-
 #include <stdio.h>
 #include <dirent.h>
 #include <errno.h>
@@ -41,6 +39,7 @@
 using namespace std;
 
 bool FsTreeWalker::o_useFnmPathname = true;
+string FsTreeWalker::o_nowalkfn;
 
 const int FsTreeWalker::FtwTravMask = FtwTravNatural|
     FtwTravBreadth|FtwTravFilesThenDirs|FtwTravBreadthThenDepth;
@@ -63,8 +62,7 @@ public:
 class FsTreeWalker::Internal {
 public:
     Internal(int opts)
-    : options(opts), depthswitch(4), maxdepth(-1), errors(0)
-    {
+    : options(opts), depthswitch(4), maxdepth(-1), errors(0) {
     }
     int options;
     int depthswitch;
@@ -80,8 +78,7 @@ public:
 #ifndef _WIN32
     set<DirId> donedirs;
 #endif
-    void logsyserr(const char *call, const string &param) 
-    {
+    void logsyserr(const char *call, const string &param) {
 	errors++;
 	reason << call << "(" << param << ") : " << errno << " : " << 
 	    strerror(errno) << endl;
@@ -436,6 +433,9 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
         }
 
         if (S_ISDIR(st.st_mode)) {
+            if (!o_nowalkfn.empty() && path_exists(path_cat(fn, o_nowalkfn))) {
+                continue;
+            }
             if (data->options & FtwNoRecurse) {
                 status = cb.processone(fn, &st, FtwDirEnter);
             } else {
@@ -506,185 +506,3 @@ int64_t fsTreeBytes(const string& topdir)
     }
     return cb.totalbytes;
 }
-
-#else // TEST_FSTREEWALK
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-
-#include <iostream>
-
-#include "rclinit.h"
-#include "rclconfig.h"
-#include "fstreewalk.h"
-
-using namespace std;
-
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_p	  0x2 
-#define OPT_P	  0x4 
-#define OPT_r     0x8
-#define OPT_c     0x10
-#define OPT_b     0x20
-#define OPT_d     0x40
-#define OPT_m     0x80
-#define OPT_L     0x100
-#define OPT_w     0x200
-#define OPT_M     0x400
-#define OPT_D     0x800
-#define OPT_k     0x1000
-class myCB : public FsTreeWalkerCB {
- public:
-    FsTreeWalker::Status processone(const string &path, 
-                                    const struct stat *st,
-                                    FsTreeWalker::CbFlag flg)
-    {
-	if (flg == FsTreeWalker::FtwDirEnter) {
-            if (op_flags & OPT_r) 
-                cout << path << endl;
-            else
-                cout << "[Entering " << path << "]" << endl;
-	} else if (flg == FsTreeWalker::FtwDirReturn) {
-	    cout << "[Returning to " << path << "]" << endl;
-	} else if (flg == FsTreeWalker::FtwRegular) {
-	    cout << path << endl;
-	}
-	return FsTreeWalker::FtwOk;
-    }
-};
-
-static const char *thisprog;
-
-// Note that breadth first sorting is relatively expensive: less inode
-// locality, more disk usage (and also more user memory usage, does
-// not appear here). Some typical results on a real tree with 2.6
-// million entries (220MB of name data)
-// Recoll 1.13
-// time trfstreewalk / > /data/tmp/old
-// real    13m32.839s user    0m4.443s sys     0m31.128s
-// 
-// Recoll 1.14
-// time trfstreewalk / > /data/tmp/nat;
-// real    13m28.685s user    0m4.430s sys     0m31.083s
-// time trfstreewalk -d / > /data/tmp/depth;
-// real    13m30.051s user    0m4.140s sys     0m33.862s
-// time trfstreewalk -m / > /data/tmp/mixed;
-// real    14m53.245s user    0m4.244s sys     0m34.494s
-// time trfstreewalk -b / > /data/tmp/breadth;
-// real    17m10.585s user    0m4.532s sys     0m35.033s
-
-static char usage [] =
-"trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] [-L] topdir\n"
-" -r : norecurse\n"
-" -c : no path canonification\n"
-" -L : follow symbolic links\n"
-" -b : use breadth first walk\n"
-" -d : use almost depth first (dir files, then subdirs)\n"
-" -m : use breadth up to 4 deep then switch to -d\n"
-" -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
-" -M <depth>: limit depth (works with -b/m/d)\n"
-" -D : skip dotfiles\n"
-"-k : like du\n"
-;
-static void
-Usage(void)
-{
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
-    exit(1);
-}
-
-int main(int argc, const char **argv)
-{
-    vector<string> patterns;
-    vector<string> paths;
-    int maxdepth = -1;
-
-    thisprog = argv[0];
-    argc--; argv++;
-    while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'b':	op_flags |= OPT_b; break;
-	    case 'c':	op_flags |= OPT_c; break;
-	    case 'd':	op_flags |= OPT_d; break;
-	    case 'D':	op_flags |= OPT_D; break;
-	    case 'k':	op_flags |= OPT_k; break;
-	    case 'L':	op_flags |= OPT_L; break;
-	    case 'm':	op_flags |= OPT_m; break;
-	    case 'M':	op_flags |= OPT_M; if (argc < 2)  Usage();
-		maxdepth = atoi(*(++argv));
-		argc--; 
-		goto b1;
-	    case 'p':	op_flags |= OPT_p; if (argc < 2)  Usage();
-		patterns.push_back(*(++argv));
-		argc--; 
-		goto b1;
-	    case 'P':	op_flags |= OPT_P; if (argc < 2)  Usage();
-		paths.push_back(*(++argv));
-		argc--; 
-		goto b1;
-	    case 'r':	op_flags |= OPT_r; break;
-	    case 'w':	op_flags |= OPT_w; break;
-	    default: Usage();	break;
-	    }
-    b1: argc--; argv++;
-    }
-
-    if (argc != 1)
-	Usage();
-    string topdir = *argv++;argc--;
-
-    if (op_flags & OPT_k) {
-        int64_t bytes = fsTreeBytes(topdir);
-        if (bytes < 0) {
-            cerr << "fsTreeBytes failed\n";
-            return 1;
-        } else {
-            cout << bytes / 1024 << "\t" << topdir << endl;
-            return 0;
-        }
-    }
-    
-    int opt = 0;
-    if (op_flags & OPT_r)
-	opt |= FsTreeWalker::FtwNoRecurse;
-    if (op_flags & OPT_c)
-	opt |= FsTreeWalker::FtwNoCanon;
-    if (op_flags & OPT_L)
-	opt |= FsTreeWalker::FtwFollow;
-    if (op_flags & OPT_D)
-	opt |= FsTreeWalker::FtwSkipDotFiles;
-
-    if (op_flags & OPT_b)
-	opt |= FsTreeWalker::FtwTravBreadth;
-    else if (op_flags & OPT_d)
-	opt |= FsTreeWalker::FtwTravFilesThenDirs;
-    else if (op_flags & OPT_m)
-	opt |= FsTreeWalker::FtwTravBreadthThenDepth;
-
-    string reason;
-    if (!recollinit(0, 0, reason)) {
-	fprintf(stderr, "Init failed: %s\n", reason.c_str());
-	exit(1);
-    }
-    if (op_flags & OPT_w) {
-	FsTreeWalker::setNoFnmPathname();
-    }
-    FsTreeWalker walker;
-    walker.setOpts(opt); 
-    walker.setMaxDepth(maxdepth);
-    walker.setSkippedNames(patterns);
-    walker.setSkippedPaths(paths);
-    myCB cb;
-    walker.walk(topdir, cb);
-    if (walker.getErrCnt() > 0)
-	cout << walker.getReason();
-}
-
-#endif // TEST_FSTREEWALK
