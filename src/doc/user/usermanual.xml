@@ -276,8 +276,11 @@
         <application>KDE</application> KIO slave
         module</link>.</para></listitem> 
         <listitem><para>A Ubuntu Unity <ulink
-        url="https://bitbucket.org/medoc/unity-scope-recoll">Scope</ulink>
+        url="https://www.lesbonscomptes.com/recoll/download.html">Scope</ulink>
         module.</para></listitem>
+        <listitem><para>A Gnome Shell <ulink
+        url="https://www.lesbonscomptes.com/recoll/download.html">Search
+        Provider</ulink>.</para></listitem>
         <listitem><para>A <ulink
         url="https://github.com/koniu/recoll-webui">WEB
         interface</ulink>.
