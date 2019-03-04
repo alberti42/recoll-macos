@@ -1657,13 +1657,16 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	if (!parent_udi.empty()) {
 	    newdocument.add_boolean_term(make_parentterm(parent_udi));
 	}
-	// Dates etc.
+
+	// Fields used for selecting by date. Note that this only
+	// works for years AD 0-9999 (no crash elsewhere, but things
+	// won't work).
 	time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
 			     doc.dmtime.c_str());
         struct tm tmb;
         localtime_r(&mtime, &tmb);
-        char buf[9];
-        snprintf(buf, 9, "%04d%02d%02d",
+        char buf[50]; // It's actually 9, but use 50 to suppress warnings.
+        snprintf(buf, 50, "%04d%02d%02d",
                  tmb.tm_year+1900, tmb.tm_mon + 1, tmb.tm_mday);
             
 	// Date (YYYYMMDD)
