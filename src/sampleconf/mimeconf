@@ -139,6 +139,7 @@ audio/ape = execm rclaudio
 audio/mpeg = execm rclaudio
 audio/mp4 = execm rclaudio
 video/mp4 = execm rclaudio
+video/x-msvideo = execm rclimg
 audio/aac = execm rclaudio
 audio/x-karaoke = execm rclkar
 audio/x-wavpack = execm rclaudio

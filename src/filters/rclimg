@@ -27,6 +27,7 @@
 #
 $tagMap = {
 	'subject' => 'subject',
+	'comment' => 'description',
 	'title' => 'title',
 	'headline' => 'title',
 	'caption' => 'caption',
@@ -71,17 +72,26 @@ sub imgTagsToHtml {
     foreach $tagname ( sort keys %{$info} ) {
 	$xapiantag = xapianTag($tagname);
 	if (defined $xapiantag ) {
-	    push @{$fields}, [ $xapiantag, $info->{$tagname} ];
 	    if ($xapiantag eq 'title') {
-		$titleHtmlTag = "<title>$info->{$tagname}</title>";
-	    }
-	    push @{$other}, [ $tagname, $info->{$tagname} ] if $headAndBody;
+                if ($titleHtmlTag) {
+                    $titleHtmlTag = $titleHtmlTag . " - $info->{$tagname}";
+                } else {
+                    $titleHtmlTag = $info->{$tagname};
+                }
+	    } else {
+                push @{$fields}, [ $xapiantag, $info->{$tagname} ];
+            }
+            push @{$other}, [ $tagname, $info->{$tagname} ] if $headAndBody;
 	} else {
 	    push @{$other}, [ $tagname, $info->{$tagname} ];
 	}
     }
-    $output = "<html>\n<head>\n$titleHtmlTag\n" .
-    "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n";
+    $output = "<html>\n<head>\n";
+    if ($titleHtmlTag) {
+        $output = $output . "<title>" . $titleHtmlTag . "</title>\n";
+    }
+    $output = $output . 
+     "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n";
     foreach $tagpair ( @{$fields} ) {
 	($tagname, $value) = @{$tagpair};
 	$output = $output . "<meta name=\"$tagname\" content=\"$value\">\n";
