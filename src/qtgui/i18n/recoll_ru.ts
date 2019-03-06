@@ -991,7 +991,7 @@ p, li { white-space: pre-wrap; }
         <translation>Невозможно извлечь сведения о документе из БД</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+255"/>
+        <location filename="../rclm_idx.cpp" line="+258"/>
         <location line="+264"/>
         <location filename="../rclm_preview.cpp" line="-135"/>
         <location line="+44"/>
@@ -1027,7 +1027,7 @@ p, li { white-space: pre-wrap; }
         <translation>История</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-475"/>
+        <location filename="../rclm_idx.cpp" line="-478"/>
         <source>Indexing in progress: </source>
         <translation>Идёт индексирование: </translation>
     </message>
@@ -1100,7 +1100,7 @@ Please check the mimeconf file</source>
     <message>
         <location line="+34"/>
         <location line="+27"/>
-        <location line="+362"/>
+        <location line="+365"/>
         <source>Stop &amp;Indexing</source>
         <translation>О&amp;становить индексирование</translation>
     </message>
@@ -1236,7 +1236,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Поиск не дал результатов</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-488"/>
+        <location filename="../rclm_idx.cpp" line="-491"/>
         <source>None</source>
         <translation>Отсутствует</translation>
     </message>
@@ -1271,7 +1271,13 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Не удалось выполнить индексирование</translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+106"/>
+        <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
         <translation>Для запуска текущего процесса индексирования был использован другой интерфейс. Нажмите «OK» для прекращения процесса или «Отмена» для его продолжения</translation>
     </message>
@@ -1414,19 +1420,18 @@ Please check the desktop file</source>
         <translation type="vanished">Для запуска текущего процесса индексирования был использован другой интерфейс. Прекратить выполнение процесса невозможно</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-300"/>
+        <location filename="../rclm_idx.cpp" line="-303"/>
         <source>Bad paths</source>
         <translation>Неверные пути</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>Bad paths in configuration file:
 </source>
-        <translation>Неверные пути в файле конфигурации:
+        <translation type="vanished">Неверные пути в файле конфигурации:
 </translation>
     </message>
     <message>
-        <location line="+276"/>
+        <location line="+279"/>
         <source>Selection patterns need topdir</source>
         <translation>Для шаблонов отбора требуется topdir</translation>
     </message>
@@ -1537,7 +1542,7 @@ Please check the desktop file</source>
         <translation>Больше не показывать (для восстановления значений используйте окно настройки интерфейса).</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-339"/>
+        <location filename="../rclm_idx.cpp" line="-342"/>
         <source>Index locked</source>
         <translation>Индекс заблокирован</translation>
     </message>
@@ -2395,7 +2400,7 @@ Please check the desktop file</source>
         <translation>Язык запроса</translation>
     </message>
     <message>
-        <location line="+221"/>
+        <location line="+222"/>
         <source>Bad query string</source>
         <translation>Ошибка в строке запроса</translation>
     </message>
@@ -2750,7 +2755,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Шаблоны отбора:</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+271"/>
+        <location filename="../rclm_idx.cpp" line="+274"/>
         <source>Top indexed entity</source>
         <translation>Проиндексированный элемент верхнего уровня</translation>
     </message>

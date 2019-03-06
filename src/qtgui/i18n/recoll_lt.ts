@@ -1072,11 +1072,6 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bad paths in configuration file:
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Selection patterns need topdir</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1206,6 +1201,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>(%d documents/%d files/%d errors) </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

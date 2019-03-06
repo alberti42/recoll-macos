@@ -1174,7 +1174,7 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Bad paths in configuration file:
 </source>
-        <translation>Chemins inexistants définis dans le fichier de configuration :
+        <translation type="vanished">Chemins inexistants définis dans le fichier de configuration :
 </translation>
     </message>
     <message>
@@ -1308,6 +1308,11 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>(%d documents/%d files/%d errors) </source>
         <translation>(%d documents/%d fichiers/%d erreurs) </translation>
+    </message>
+    <message>
+        <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
+</source>
+        <translation>Chemins vides ou non existants dans le fichier de configuration. Cliquer sur Ok pour démarrer l&apos;indexation (les données absentes ne seront pas éliminées de l&apos;index):</translation>
     </message>
 </context>
 <context>
