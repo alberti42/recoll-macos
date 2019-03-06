@@ -1200,6 +1200,14 @@ Please check the desktop file</source>
         <source>Content has been indexed for these MIME types:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>(%d documents/%d files/%d errors/%d total files) </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(%d documents/%d files/%d errors) </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>

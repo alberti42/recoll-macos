@@ -57,11 +57,15 @@ void RclMain::updateIdxStatus()
     if (status.phase == DbIxStatus::DBIXS_FILES) {
 	char cnts[100];
 	if (status.dbtotdocs > 0) {
-	    sprintf(cnts, "(%d docs/%d files/%d errors/%d tot files) ",
+            string format =
+               qs2utf8s(tr("(%d documents/%d files/%d errors/%d total files) "));
+	    sprintf(cnts, format.c_str(),
                     status.docsdone, status.filesdone, status.fileerrors,
 		    status.totfiles);
         } else {
-	    sprintf(cnts, "(%d docs/%d files/%d errors) ",
+            string format =
+                qs2utf8s(tr("(%d documents/%d files/%d errors) "));
+            sprintf(cnts, format.c_str(),
                     status.docsdone, status.filesdone, status.fileerrors);
         }
 	msg += QString::fromUtf8(cnts) + " ";

@@ -598,7 +598,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="+695"/>
+        <location filename="../preview_w.cpp" line="+698"/>
         <source>Creating preview text</source>
         <translation>Создание текста для просмотра</translation>
     </message>
@@ -981,7 +981,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>RclMain</name>
     <message>
-        <location filename="../rclmain_w.cpp" line="+716"/>
+        <location filename="../rclmain_w.cpp" line="+743"/>
         <source>Query results</source>
         <translation>Результаты запроса</translation>
     </message>
@@ -991,7 +991,7 @@ p, li { white-space: pre-wrap; }
         <translation>Невозможно извлечь сведения о документе из БД</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+251"/>
+        <location filename="../rclm_idx.cpp" line="+255"/>
         <location line="+264"/>
         <location filename="../rclm_preview.cpp" line="-135"/>
         <location line="+44"/>
@@ -1027,7 +1027,7 @@ p, li { white-space: pre-wrap; }
         <translation>История</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-471"/>
+        <location filename="../rclm_idx.cpp" line="-475"/>
         <source>Indexing in progress: </source>
         <translation>Идёт индексирование: </translation>
     </message>
@@ -1073,7 +1073,7 @@ Please check the mimeconf file</source>
         <translation>Невозможно извлечь документ или создать временный файл</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="-760"/>
+        <location filename="../rclmain_w.cpp" line="-787"/>
         <source>(no stemming)</source>
         <translation>(без однокоренных слов)</translation>
     </message>
@@ -1088,7 +1088,7 @@ Please check the mimeconf file</source>
         <translation>ошибка получения списка языков</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+107"/>
+        <location filename="../rclm_idx.cpp" line="+111"/>
         <source>Update &amp;Index</source>
         <translation>Обновить &amp;индекс</translation>
     </message>
@@ -1212,7 +1212,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Невозможно распаковать файл: </translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+782"/>
+        <location filename="../rclmain_w.cpp" line="+809"/>
         <source>Save file</source>
         <translation>Сохранение файл</translation>
     </message>
@@ -1226,17 +1226,17 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="obsolete">Подробности запроса</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-256"/>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
         <translation>Не удалось открыть внешний индекс. БД не открыта. Проверьте список внешних индексов.</translation>
     </message>
     <message>
-        <location line="+241"/>
+        <location line="+259"/>
         <source>No results found</source>
         <translation>Поиск не дал результатов</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-484"/>
+        <location filename="../rclm_idx.cpp" line="-488"/>
         <source>None</source>
         <translation>Отсутствует</translation>
     </message>
@@ -1256,7 +1256,17 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Монитор</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+8"/>
+        <source>(%d documents/%d files/%d errors/%d total files) </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>(%d documents/%d files/%d errors) </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+48"/>
         <source>Indexing failed</source>
         <translation>Не удалось выполнить индексирование</translation>
     </message>
@@ -1363,7 +1373,7 @@ Please check the mimeview file</source>
         <translation>Вложенные документы</translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-760"/>
         <source>Document filter</source>
         <translation>Фильтр документов</translation>
     </message>
@@ -1502,7 +1512,7 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+492"/>
+        <location filename="../rclmain_w.cpp" line="+519"/>
         <source>Can&apos;t set synonyms file (parse error?)</source>
         <translation>Невозможно установить файл синономов (ошибка анализа?)</translation>
     </message>
@@ -1562,7 +1572,7 @@ Please check the desktop file</source>
         <translation>В командной строке программы просмотра %1 указан родительский файл, а в URL — сетевой протокол http[s]: команда не поддерживается</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="-509"/>
+        <location filename="../rclmain_w.cpp" line="-536"/>
         <source>Tools</source>
         <translation>Инструменты</translation>
     </message>
@@ -2953,7 +2963,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 <context>
     <name>UIPrefsDialog</name>
     <message>
-        <location filename="../uiprefs_w.cpp" line="+614"/>
+        <location filename="../uiprefs_w.cpp" line="+615"/>
         <source>The selected directory does not appear to be a Xapian index</source>
         <translation>Выбранный каталог не является каталогом индексов Xapian</translation>
     </message>
@@ -2972,7 +2982,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="obsolete">Выберите каталог индекса Xapian (например, /home/приятель/.recoll/xapiandb)</translation>
     </message>
     <message>
-        <location line="-441"/>
+        <location line="-442"/>
         <source>error retrieving stemming languages</source>
         <translation>ошибка получения списка языков</translation>
     </message>
@@ -2980,7 +2990,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <location line="-24"/>
         <location line="+8"/>
         <location line="+43"/>
-        <location line="+216"/>
+        <location line="+217"/>
         <location line="+7"/>
         <location line="+11"/>
         <source>Choose</source>
@@ -3017,7 +3027,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Невозможно добавить индекс с другими настройками учёта регистра и диакритических знаков</translation>
     </message>
     <message>
-        <location line="-370"/>
+        <location line="-371"/>
         <source>Default QtWebkit font</source>
         <translation>Шрифт QtWebkit по умолчанию</translation>
     </message>

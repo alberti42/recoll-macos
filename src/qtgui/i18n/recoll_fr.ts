@@ -1301,6 +1301,14 @@ Merci de vérifier le fichier desktop </translation>
         <source>Results</source>
         <translation>Résultats</translation>
     </message>
+    <message>
+        <source>(%d documents/%d files/%d errors/%d total files) </source>
+        <translation>(%d documents/%d fichiers/%d erreurs/%d : total fichiers) </translation>
+    </message>
+    <message>
+        <source>(%d documents/%d files/%d errors) </source>
+        <translation type="unfinished">(%d documents/%d fichiers/%d erreurs) </translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
