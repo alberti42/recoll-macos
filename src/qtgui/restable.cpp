@@ -435,6 +435,12 @@ void RecollModel::sort(int column, Qt::SortOrder order)
     DocSeqSortSpec spec;
     if (column >= 0 && column < int(m_fields.size())) {
 	spec.field = m_fields[column];
+        if (!stringlowercmp("relevancyrating", spec.field) &&
+            order != Qt::AscendingOrder) {
+            QMessageBox::warning(0, "Recoll", 
+                                 tr("Can't sort by inverse relevance"));
+            return;
+        }
 	if (!stringlowercmp("date", spec.field) || 
 	    !stringlowercmp("datetime", spec.field))
 	    spec.field = "mtime";
