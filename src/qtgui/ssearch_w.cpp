@@ -230,6 +230,7 @@ void SSearch::restoreText()
         }
         m_savedEditText = "";
     }        
+    queryText->setFocus();
 }
 void SSearch::onCompletionActivated(const QString& text)
 {
