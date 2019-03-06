@@ -165,20 +165,34 @@ LRESULT CALLBACK MainWndProc(HWND hwnd , UINT msg , WPARAM wParam,
                              LPARAM lParam)
 {
     switch (msg) {
+    case WM_POWERBROADCAST:
+    {
+        LOGDEB("MainWndProc: got powerbroadcast message\n");
+        // We always try to end an indexing operation, independantly
+        // of the kind of event. Mounted volumes may have changed
+        // etc. Using SIGTERM just to have something different from
+        // the other messages
+        if (l_sigcleanup) {
+            l_sigcleanup(SIGTERM);
+        }
+    }
+    break;
     case WM_QUERYENDSESSION:
     case WM_ENDSESSION:
     case WM_DESTROY:
     case WM_CLOSE:
     {
-        l_sigcleanup(SIGINT);
+        if (l_sigcleanup) {
+            l_sigcleanup(SIGINT);
+        }
         LOGDEB("MainWndProc: got end message, waiting for work finished\n" );
 	DWORD res = WaitForSingleObject(eWorkFinished, INFINITE);
 	if (res != WAIT_OBJECT_0) {
             LOGERR("MainWndProc: exit ack wait failed\n" );
 	}
         LOGDEB("MainWindowProc: got exit ready event, exiting\n" );
-        return TRUE;
     }
+    break;
     default:
         return DefWindowProc(hwnd, msg, wParam, lParam);
     }
