@@ -184,12 +184,12 @@ LRESULT CALLBACK MainWndProc(HWND hwnd , UINT msg , WPARAM wParam,
     {
         if (l_sigcleanup) {
             l_sigcleanup(SIGINT);
+            LOGDEB("MainWndProc: got end message, waiting for work finished\n");
+            DWORD res = WaitForSingleObject(eWorkFinished, INFINITE);
+            if (res != WAIT_OBJECT_0) {
+                LOGERR("MainWndProc: exit ack wait failed\n" );
+            }
         }
-        LOGDEB("MainWndProc: got end message, waiting for work finished\n" );
-	DWORD res = WaitForSingleObject(eWorkFinished, INFINITE);
-	if (res != WAIT_OBJECT_0) {
-            LOGERR("MainWndProc: exit ack wait failed\n" );
-	}
         LOGDEB("MainWindowProc: got exit ready event, exiting\n" );
     }
     break;
