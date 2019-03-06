@@ -1307,7 +1307,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>(%d documents/%d files/%d errors) </source>
-        <translation type="unfinished">(%d documents/%d fichiers/%d erreurs) </translation>
+        <translation>(%d documents/%d fichiers/%d erreurs) </translation>
     </message>
 </context>
 <context>
@@ -1709,6 +1709,10 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>MIME type</source>
         <translation>Type MIME</translation>
+    </message>
+    <message>
+        <source>Can&apos;t sort by inverse relevance</source>
+        <translation>Impossible de trier par pertinence inverse</translation>
     </message>
 </context>
 <context>
@@ -3635,7 +3639,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
-        <translation type="unfinished">Mise en évidence des termes de recherche. &lt;br&gt;Si le bleu utilisé par défaut est trop discret, essayer peut-être : &quot;color:red;background:yellow&quot;...</translation>
+        <translation>Mise en évidence des termes de recherche. &lt;br&gt;Si le bleu utilisé par défaut est trop discret, essayer peut-être : &quot;color:red;background:yellow&quot;...</translation>
     </message>
 </context>
 </TS>

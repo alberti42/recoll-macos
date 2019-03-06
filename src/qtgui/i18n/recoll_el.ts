@@ -1645,6 +1645,10 @@ Please check the desktop file</source>
         <source>Date and time</source>
         <translation>Ημερομηνία και ώρα</translation>
     </message>
+    <message>
+        <source>Can&apos;t sort by inverse relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>

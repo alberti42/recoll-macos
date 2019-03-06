@@ -1553,6 +1553,10 @@ Please check the desktop file</source>
         <source>MIME type</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Can&apos;t sort by inverse relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>

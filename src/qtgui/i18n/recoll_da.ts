@@ -1560,6 +1560,10 @@ Tjek venligst desktopfilen</translation>
         <source>MIME type</source>
         <translation>MIME-type</translation>
     </message>
+    <message>
+        <source>Can&apos;t sort by inverse relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>

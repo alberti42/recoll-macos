@@ -1696,6 +1696,10 @@ Prověřte soubor pracovní plochy</translation>
         <source>MIME type</source>
         <translation>Typ MIME</translation>
     </message>
+    <message>
+        <source>Can&apos;t sort by inverse relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>

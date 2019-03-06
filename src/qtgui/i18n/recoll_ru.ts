@@ -2053,7 +2053,12 @@ Please check the desktop file</source>
         <translation>Дата и время</translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location line="+190"/>
+        <source>Can&apos;t sort by inverse relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-199"/>
         <source>Ipath</source>
         <translation>Ipath</translation>
     </message>
@@ -2203,7 +2208,7 @@ Please check the desktop file</source>
 <context>
     <name>ResTable</name>
     <message>
-        <location filename="../restable.cpp" line="+771"/>
+        <location filename="../restable.cpp" line="+777"/>
         <source>&amp;Reset sort</source>
         <translation>&amp;Сбросить сортировку</translation>
     </message>
@@ -2390,7 +2395,7 @@ Please check the desktop file</source>
         <translation>Язык запроса</translation>
     </message>
     <message>
-        <location line="+220"/>
+        <location line="+221"/>
         <source>Bad query string</source>
         <translation>Ошибка в строке запроса</translation>
     </message>
