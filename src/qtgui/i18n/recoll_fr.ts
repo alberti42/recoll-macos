@@ -1009,7 +1009,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
-        <translation>Nombre de résultats (est.)</translation>
+        <translation>Nombre de résultats (estimation) </translation>
     </message>
     <message>
         <source>Query details</source>
