@@ -427,7 +427,7 @@ bool runWebFilesMoverScript(RclConfig *config)
 }
 
 
-static const char *thisprog;
+string thisprog;
 
 static const char usage [] =
 "\n"
@@ -483,7 +483,7 @@ static void
 Usage(FILE *where = stderr)
 {
     FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
-    fprintf(fp, "%s: Usage: %s", thisprog, usage);
+    fprintf(fp, "%s: Usage: %s", path_getsimple(thisprog).c_str(), usage);
     fprintf(fp, "Recoll version: %s\n", Rcl::version_string().c_str());
     exit((op_flags & OPT_h)==0);
 }
@@ -565,7 +565,7 @@ int main(int argc, char **argv)
     o_reexec->init(argc, argv);
 #endif
 
-    thisprog = argv[0];
+    thisprog = path_absolute(argv[0]);
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
@@ -697,7 +697,10 @@ int main(int argc, char **argv)
         indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
     } else {
         if (checkRetryFailed(config, false)) {
+            LOGDEB("recollindex: files in error will be retried\n");
             indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
+        } else {
+            LOGDEB("recollindex: files in error will not be retried\n");
         }
     }
 

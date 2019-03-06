@@ -39,7 +39,6 @@ SOURCES += \
 ../../common/utf8fn.cpp \
 ../../index/webqueue.cpp \
 ../../index/webqueuefetcher.cpp \
-../../index/checkretryfailed.cpp \
 ../../index/fetcher.cpp \
 ../../index/exefetcher.cpp \
 ../../index/fsfetcher.cpp \

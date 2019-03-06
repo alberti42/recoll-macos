@@ -43,5 +43,6 @@ extern void addIdxReason(std::string who, std::string reason);
 
 class ReExec;
 extern ReExec *o_reexec;
+extern std::string thisprog;
 
 #endif /* _recollindex_h_included_ */

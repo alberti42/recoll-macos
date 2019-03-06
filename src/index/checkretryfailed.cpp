@@ -16,25 +16,51 @@
  */
 #include "autoconfig.h"
 
+#include "checkretryfailed.h"
+
+#include "safesysstat.h"
+
 #include <string>
 #include <vector>
 
 #include "rclconfig.h"
 #include "execmd.h"
 #include "log.h"
-#include "checkretryfailed.h"
+#include "pathut.h"
+#include "recollindex.h"
 
 using namespace std;
 
 bool checkRetryFailed(RclConfig *conf, bool record)
 {
 #ifdef _WIN32
-    return true;
+    // Under Windows we only retry if the recollindex program is newer
+    // than the index
+    struct stat st;
+    string path(thisprog);
+    if (path_suffix(path).empty()) {
+        path = path + ".exe";
+    }
+    if (path_fileprops(path, &st) != 0) {
+        LOGERR("checkRetryFailed: can't stat the program file: " <<
+               thisprog << endl);
+        return false;
+    }
+    time_t exetime = st.st_mtime;
+    if (path_fileprops(conf->getDbDir(), &st) != 0) {
+        // Maybe it just does not exist.
+        LOGDEB("checkRetryFailed: can't stat the index directory: " <<
+               conf->getDbDir() << endl);
+        return false;
+    }
+    time_t dbtime = st.st_mtime;
+    return exetime > dbtime;
 #else
     string cmd;
 
     if (!conf->getConfParam("checkneedretryindexscript", cmd)) {
-        LOGDEB("checkRetryFailed: 'checkneedretryindexscript' not set in config\n" );
+        LOGDEB("checkRetryFailed: 'checkneedretryindexscript' "
+               "not set in config\n");
         // We could toss a dice ? Say no retry in this case.
         return false;
     }

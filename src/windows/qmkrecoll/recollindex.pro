@@ -15,6 +15,7 @@ DEFINES += RCL_MONITOR
 
 SOURCES += \
 ../../index/recollindex.cpp \
+../../index/checkretryfailed.cpp \
 ../../index/rclmonprc.cpp \
 ../../index/rclmonrcv.cpp 
 
