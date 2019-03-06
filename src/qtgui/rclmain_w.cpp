@@ -645,6 +645,9 @@ void RclMain::closeEvent(QCloseEvent *ev)
 void RclMain::fileExit()
 {
     LOGDEB("RclMain: fileExit\n");
+    if (m_trayicon) {
+        m_trayicon->setVisible(false);
+    }
     // Don't save geometry if we're currently fullscreened
     if (!isFullScreen() && !isMaximized()) {
         prefs.mainwidth = width();
