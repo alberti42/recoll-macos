@@ -217,7 +217,10 @@ bool RclMain::checkIdxPaths()
     ExecCmd::backtick(args, badpaths);
     if (!badpaths.empty()) {
         int rep = QMessageBox::warning(
-            0, tr("Bad paths"), tr("Bad paths in configuration file:\n") +
+            0, tr("Bad paths"),
+            tr("Empty or non-existant paths in configuration file. "
+               "Click Ok to start indexing anyway "
+               "(absent data will not be purged from the index):\n") +
             QString::fromLocal8Bit(badpaths.c_str()),
             QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
         if (rep == QMessageBox::Cancel)
