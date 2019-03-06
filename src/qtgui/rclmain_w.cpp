@@ -449,13 +449,7 @@ void RclMain::init()
 	emit sortDataChanged(m_sortspec);
     }
 
-    if (prefs.showTrayIcon && QSystemTrayIcon::isSystemTrayAvailable()) {
-        m_trayicon = new RclTrayIcon(this, 
-                                     QIcon(QString(":/images/recoll.png")));
-        m_trayicon->show();
-    } else {
-        m_trayicon = 0;
-    }
+    enableTrayIcon(prefs.showTrayIcon);
 
     fileRebuildIndexAction->setEnabled(false);
     fileToggleIndexingAction->setEnabled(false);
@@ -463,6 +457,21 @@ void RclMain::init()
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
+}
+
+void RclMain::enableTrayIcon(bool on)
+{
+    on =  on && QSystemTrayIcon::isSystemTrayAvailable();
+    if (on) {
+        if (nullptr == m_trayicon) {
+            m_trayicon = new RclTrayIcon(this, 
+                                         QIcon(QString(":/images/recoll.png")));
+        }
+        m_trayicon->show();
+    } else {
+        delete m_trayicon;
+        m_trayicon = 0;
+    }
 }
 
 void RclMain::setSynEnabled(bool on)

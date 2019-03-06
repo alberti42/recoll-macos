@@ -90,7 +90,7 @@ public:
     IndexerState indexerState() const {
         return m_indexerState;
     }
-
+    void enableTrayIcon(bool onoff);
                             
 public slots:
     virtual void fileExit();

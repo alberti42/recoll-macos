@@ -315,6 +315,7 @@ void UIPrefsDialog::accept()
 
     prefs.keepSort = keepSortCB->isChecked();
     prefs.showTrayIcon = showTrayIconCB->isChecked();
+    m_mainWindow->enableTrayIcon(prefs.showTrayIcon);
     prefs.closeToTray = closeToTrayCB->isChecked();
     prefs.showTempFileWarning = showTempFileWarningCB->isChecked() ?
         -1 : 1024;
