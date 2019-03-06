@@ -375,10 +375,10 @@ int main(int argc, char **argv)
 
     maybeOpenDb(reason);
     
-    if (prefs.maximized) {
-        mainWindow->showMaximized();
-    } else {
-        mainWindow->show();
+    switch (prefs.showmode) {
+    case PrefsPack::SHOW_NORMAL: mainWindow->show(); break;
+    case PrefsPack::SHOW_MAX: mainWindow->showMaximized(); break;
+    case PrefsPack::SHOW_FULL: mainWindow->showFullScreen(); break;
     }
     QTimer::singleShot(0, mainWindow, SLOT(initDbOpen()));
 

@@ -30,11 +30,9 @@ extern RclDynConf *g_dynconf;
 #include "advshist.h"
 extern AdvSearchHist *g_advshistory;
 
-#ifndef NO_NAMESPACES
 using std::string;
 using std::list;
 using std::vector;
-#endif
 
 /** Holder for preferences (gets saved to user Qt prefs) */
 class PrefsPack {
@@ -68,7 +66,8 @@ class PrefsPack {
     QString queryStemLang;
     int mainwidth;
     int mainheight;
-    bool maximized{false};
+    enum ShowMode {SHOW_NORMAL, SHOW_MAX, SHOW_FULL};
+    int showmode{SHOW_NORMAL};
     int pvwidth; // Preview window geom
     int pvheight;
     int toolArea; // Area for "tools" toolbar

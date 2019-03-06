@@ -643,6 +643,13 @@ void RclMain::showTrayMessage(const QString& text)
 void RclMain::closeEvent(QCloseEvent *ev)
 {
     LOGDEB("RclMain::closeEvent\n");
+    if (isFullScreen()) {
+        prefs.showmode = PrefsPack::SHOW_FULL;
+    } else if (isMaximized()) {
+        prefs.showmode = PrefsPack::SHOW_MAX;
+    } else {
+        prefs.showmode = PrefsPack::SHOW_NORMAL;
+    }
     if (prefs.closeToTray && m_trayicon && m_trayicon->isVisible()) {
         hide();
         ev->ignore();
@@ -654,6 +661,15 @@ void RclMain::closeEvent(QCloseEvent *ev)
 void RclMain::fileExit()
 {
     LOGDEB("RclMain: fileExit\n");
+    // Have to do this both in closeEvent (for close to tray) and fileExit
+    // (^Q, doesnt go through closeEvent)
+    if (isFullScreen()) {
+        prefs.showmode = PrefsPack::SHOW_FULL;
+    } else if (isMaximized()) {
+        prefs.showmode = PrefsPack::SHOW_MAX;
+    } else {
+        prefs.showmode = PrefsPack::SHOW_NORMAL;
+    }
     if (m_trayicon) {
         m_trayicon->setVisible(false);
     }
@@ -662,7 +678,6 @@ void RclMain::fileExit()
         prefs.mainwidth = width();
         prefs.mainheight = height();
     }
-    prefs.maximized = isMaximized();
     
     prefs.toolArea = toolBarArea(m_toolsTB);
     prefs.resArea = toolBarArea(m_resTB);

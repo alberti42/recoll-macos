@@ -41,7 +41,11 @@ void RclTrayIcon::onRestore()
 {
     // Hide and show to restore on current desktop
     m_mainw->hide();
-    m_mainw->showNormal();
+    switch (prefs.showmode) {
+    case PrefsPack::SHOW_NORMAL: m_mainw->show(); break;
+    case PrefsPack::SHOW_MAX: m_mainw->showMaximized(); break;
+    case PrefsPack::SHOW_FULL: m_mainw->showFullScreen(); break;
+    }
 }
 
 void RclTrayIcon::onActivated(QSystemTrayIcon::ActivationReason reason)
