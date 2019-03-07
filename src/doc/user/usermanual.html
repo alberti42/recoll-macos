@@ -8237,12 +8237,12 @@ for i in range(nres):
                 "RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS"></a><span class="term"><code class="varname">monitordirs</code></span></dt>
                 <dd>
-                  <p>(1.24) Space-separated list of files or
-                  directories to monitor for updates. When running
-                  the real-time indexer, this allows monitoring
-                  only a subset of the whole indexed area. The
-                  elements must be included in the tree defined by
-                  the 'topdirs' members.</p>
+                  <p>Space-separated list of files or directories
+                  to monitor for updates. When running the
+                  real-time indexer, this allows monitoring only a
+                  subset of the whole indexed area. The elements
+                  must be included in the tree defined by the
+                  'topdirs' members.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES" id=
@@ -8349,6 +8349,16 @@ for i in range(nres):
                 <dd>
                   <p>Set to 0 to override use of FNM_PATHNAME for
                   matching skipped paths.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOWALKFN" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOWALKFN"></a><span class="term"><code class="varname">nowalkfn</code></span></dt>
+                <dd>
+                  <p>File name which will cause its parent
+                  directory to be skipped. Any directory containing
+                  a file with this name will be skipped as if it
+                  was part of the skippedPaths list. Ex:
+                  .recoll-noindex</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMSKIPPEDPATHS"
