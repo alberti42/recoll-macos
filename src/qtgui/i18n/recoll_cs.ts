@@ -3546,5 +3546,9 @@ Výchozí hodnota je 2 (procenta).</translation>
         <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Start search on completer popup activation.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

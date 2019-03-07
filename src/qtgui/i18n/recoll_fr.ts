@@ -3646,5 +3646,9 @@ La valeur par défaut est 2%</translation>
         <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
         <translation>Mise en évidence des termes de recherche. &lt;br&gt;Si le bleu utilisé par défaut est trop discret, essayer peut-être : &quot;color:red;background:yellow&quot;...</translation>
     </message>
+    <message>
+        <source>Start search on completer popup activation.</source>
+        <translation>Démarrer la recherche quand un choix est fait dans les suggestions.</translation>
+    </message>
 </context>
 </TS>
