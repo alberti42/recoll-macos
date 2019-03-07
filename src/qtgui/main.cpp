@@ -29,6 +29,7 @@
 #include <QLocale>
 #include <QLibraryInfo>
 #include <QFileDialog>
+#include <QUrl>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -412,8 +413,22 @@ int main(int argc, char **argv)
 
 QString myGetFileName(bool isdir, QString caption, bool filenosave)
 {
-    LOGDEB1("myFileDialog: isdir "  << (isdir) << "\n" );
+    LOGDEB1("myFileDialog: isdir " << isdir << "\n");
     QFileDialog dialog(0, caption);
+
+#ifdef _WIN32
+    // The default initial directory on WIndows is the Recoll install,
+    // which is not appropriate. Change it, only for the first call
+    // (next will start with the previous selection).
+    static bool first{true};
+    if (first) {
+        first = false;
+        // See https://doc.qt.io/qt-5/qfiledialog.html#setDirectoryUrl
+        // about the clsid magic (this one points to the desktop).
+        dialog.setDirectoryUrl(
+            QUrl("clsid:B4BFCC3A-DB2C-424C-B029-7FE99A87C641"));
+    }
+#endif
 
     if (isdir) {
         dialog.setFileMode(QFileDialog::Directory);
