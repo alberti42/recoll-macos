@@ -31,12 +31,12 @@ static const QKeySequence quitKeySeq("Ctrl+q");
 // where the current one is closed
 void RclMain::previewClosed(Preview *w)
 {
-    LOGDEB("RclMain::previewClosed("  << (w) << ")\n" );
+    LOGDEB("RclMain::previewClosed(" << w << ")\n");
     if (w == curPreview) {
-	LOGDEB("Active preview closed\n" );
+	LOGDEB("Active preview closed\n");
 	curPreview = 0;
     } else {
-	LOGDEB("Old preview closed\n" );
+	LOGDEB("Old preview closed\n");
     }
     delete w;
 }
@@ -114,7 +114,7 @@ bool RclMain::containerUpToDate(Rcl::Doc& doc)
                              QMessageBox::Cancel : QMessageBox::NoButton);
 
     if (m_indexerState == IXST_NOTRUNNING && rep == QMessageBox::Ok) {
-        LOGDEB("Requesting index update for "  << (doc.url) << "\n" );
+        LOGDEB("Requesting index update for " << doc.url << "\n");
         vector<Rcl::Doc> docs(1, doc);
         updateIdxForDocs(docs);
     }
@@ -135,7 +135,7 @@ bool RclMain::containerUpToDate(Rcl::Doc& doc)
  */
 void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 {
-    LOGDEB("startPreview("  << (docnum) << ", doc, "  << (mod) << ")\n" );
+    LOGDEB("startPreview(" << docnum << ", doc, " << mod << ")\n");
 
     if (!containerUpToDate(doc))
         return;
@@ -221,7 +221,8 @@ void RclMain::previewPrevInTab(Preview * w, int sid, int docnum)
 // Combined next/prev from result list in current preview tab
 void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 {
-    LOGDEB("RclMain::previewNextInTab  sid "  << (sid) << " docnum "  << (docnum) << ", listId "  << (reslist->listId()) << "\n" );
+    LOGDEB("RclMain::previewNextInTab  sid " << sid << " docnum " << docnum <<
+           ", listId " << reslist->listId() << "\n");
 
     if (w == 0) // ??
 	return;
@@ -255,7 +256,8 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 // displayed result list, tell reslist (to color the paragraph)
 void RclMain::previewExposed(Preview *, int sid, int docnum)
 {
-    LOGDEB2("RclMain::previewExposed: sid "  << (sid) << " docnum "  << (docnum) << ", m_sid "  << (reslist->listId()) << "\n" );
+    LOGDEB2("RclMain::previewExposed: sid " << sid << " docnum " << docnum <<
+            ", m_sid " << reslist->listId() << "\n");
     if (sid != reslist->listId()) {
 	return;
     }
