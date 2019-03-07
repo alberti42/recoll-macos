@@ -95,6 +95,8 @@ void UIPrefsDialog::init()
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(buildAbsCB, SIGNAL(toggled(bool)), 
 	    replAbsCB, SLOT(setEnabled(bool)));
+    connect(ssNoCompleteCB, SIGNAL(toggled(bool)), 
+	    ssSearchOnCompleteCB, SLOT(setDisabled(bool)));
     setFromPrefs();
 }
 
@@ -125,6 +127,9 @@ void UIPrefsDialog::setFromPrefs()
 	break;
     }
     ssNoCompleteCB->setChecked(prefs.ssearchNoComplete);
+    ssSearchOnCompleteCB->setChecked(prefs.ssearchStartOnComplete);
+    ssSearchOnCompleteCB->setEnabled(!prefs.ssearchNoComplete);
+    
     syntlenSB->setValue(prefs.syntAbsLen);
     syntctxSB->setValue(prefs.syntAbsCtx);
 
@@ -256,6 +261,7 @@ void UIPrefsDialog::setupReslistFontPB()
 void UIPrefsDialog::accept()
 {
     prefs.ssearchNoComplete = ssNoCompleteCB->isChecked();
+    prefs.ssearchStartOnComplete = ssSearchOnCompleteCB->isChecked();
 
     if (ssearchTypCMB->currentIndex() == 4) {
 	prefs.ssearchTypSav = true;

@@ -39,6 +39,7 @@ class PrefsPack {
  public:
     // Simple search entry behaviour
     bool ssearchNoComplete;
+    bool ssearchStartOnComplete;
     // Decide if we display the doc category filter control as a
     // toolbar+combobox or as a button group under simple search
     enum FilterCtlStyle {FCS_BT, FCS_CMB, FCS_MN};

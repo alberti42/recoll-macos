@@ -231,7 +231,9 @@ void SSearch::restoreText()
         m_savedEditText = "";
     }        
     queryText->setFocus();
-    QTimer::singleShot(0, this, SLOT(startSimpleSearch()));
+    if (prefs.ssearchStartOnComplete) {
+        QTimer::singleShot(0, this, SLOT(startSimpleSearch()));
+    }
 }
 void SSearch::onCompletionActivated(const QString& text)
 {
