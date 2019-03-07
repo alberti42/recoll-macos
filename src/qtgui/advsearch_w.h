@@ -67,7 +67,8 @@ public slots:
 
 signals:
     void startSearch(std::shared_ptr<Rcl::SearchData>, bool);
-
+    void setDescription(QString);
+    
 private:
     virtual void init();
     std::vector<SearchClauseW *> m_clauseWins;

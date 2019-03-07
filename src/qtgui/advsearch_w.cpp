@@ -474,6 +474,7 @@ void AdvSearch::runSearch()
     }
     saveCnf();
     g_advshistory && g_advshistory->push(sdata);
+    emit setDescription("");
     emit startSearch(sdata, false);
 }
 

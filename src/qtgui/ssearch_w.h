@@ -100,6 +100,7 @@ private slots:
     
 signals:
     void startSearch(std::shared_ptr<Rcl::SearchData>, bool);
+    void setDescription(QString);
     void clearSearch();
     void partialWord(int, const QString& text, const QString &partial);
 

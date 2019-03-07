@@ -160,7 +160,8 @@ public slots:
     virtual void applyStyleSheet();
     virtual void setFilterCtlStyle(int stl);
     virtual void showTrayMessage(const QString& text);
-
+    virtual void onSetDescription(QString);
+                                          
 private slots:
     virtual void updateIdxStatus();
     virtual void onWebcacheDestroyed(QObject *);
@@ -216,7 +217,11 @@ private:
     bool              m_queryActive{false};
     bool              m_firstIndexing{false};
     // Last search was started from simple
-    bool              m_searchIsSimple{false}; 
+    bool              m_searchIsSimple{false};
+    // This is set to the query string by ssearch, and to empty by
+    // advsearch, and used for the Preview window title. If empty, we
+    // use the Xapian Query string.
+    QString           m_queryDescription;
     // If set on init, will be displayed either through ext app, or
     // preview (if no ext app set)
     QString          m_urltoview;

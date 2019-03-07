@@ -426,6 +426,7 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
     LOGDEB("SSearch::startSimpleSearch:xml:[" << m_xml << "]\n");
 
     std::shared_ptr<Rcl::SearchData> rsdata(sdata);
+    emit setDescription(u8s2qs(u8));
     emit startSearch(rsdata, true);
     return true;
 }

@@ -297,6 +297,8 @@ void RclMain::init()
     connect(sSearch,
             SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
 	    this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
+    connect(sSearch, SIGNAL(setDescription(QString)), 
+	    this, SLOT(onSetDescription(QString)));
     connect(sSearch, SIGNAL(clearSearch()), 
 	    this, SLOT(resetSearch()));
     connect(preferencesMenu, SIGNAL(triggered(QAction*)),
@@ -1085,11 +1087,17 @@ void RclMain::enablePrevPage(bool yesno)
     }
 }
 
+void RclMain::onSetDescription(QString desc)
+{
+    m_queryDescription = desc;
+}
+
 QString RclMain::getQueryDescription()
 {
     if (!m_source)
 	return "";
-    return QString::fromUtf8(m_source->getDescription().c_str());
+    return m_queryDescription.isEmpty() ?
+        u8s2qs(m_source->getDescription()) : m_queryDescription;
 }
 
 // Set filter, action style

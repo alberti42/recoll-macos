@@ -51,6 +51,8 @@ void RclMain::showAdvSearchDialog()
 	connect(asearchform, 
 		SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
 		this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
+        connect(asearchform, SIGNAL(setDescription(QString)), 
+                this, SLOT(onSetDescription(QString)));
 	asearchform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
