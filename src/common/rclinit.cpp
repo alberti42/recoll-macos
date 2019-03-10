@@ -274,7 +274,8 @@ RclConfig *recollinit(int flags,
     // to utf8 for indexing.
     setlocale(LC_CTYPE, "");
 
-    Logger::getTheLog("")->setLogLevel(Logger::LLDEB1);
+    // Initially log to stderr, at error level.
+    Logger::getTheLog("")->setLogLevel(Logger::LLERR);
 
     initAsyncSigs(sigcleanup);
     
@@ -306,6 +307,14 @@ RclConfig *recollinit(int flags,
             config->getConfParam(string("idxloglevel"), loglevel);
         }
     }
+    if (flags & RCLINIT_PYTHON) {
+        if (logfilename.empty()) {
+            config->getConfParam(string("pylogfilename"), logfilename);
+        }
+        if (loglevel.empty()) {
+            config->getConfParam(string("pyloglevel"), loglevel);
+        }
+    }
 
     if (logfilename.empty())
 	config->getConfParam(string("logfilename"), logfilename);
@@ -315,7 +324,7 @@ RclConfig *recollinit(int flags,
     // Initialize logging
     if (!logfilename.empty()) {
 	logfilename = path_tildexpand(logfilename);
-	// If not an absolute path or , compute relative to config dir
+	// If not an absolute path or stderr, compute relative to config dir.
 	if (!path_isabsolute(logfilename) &&
             logfilename.compare("stderr")) {
 	    logfilename = path_cat(config->getConfDir(), logfilename);
@@ -372,7 +381,8 @@ RclConfig *recollinit(int flags,
 
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {
-	LOGDEB1("rclinit: idxflushmb="  << (flushmb) << ", set XAPIAN_FLUSH_THRESHOLD to 10E6\n" );
+	LOGDEB1("rclinit: idxflushmb=" << flushmb <<
+                ", set XAPIAN_FLUSH_THRESHOLD to 10E6\n");
 	static const char *cp = "XAPIAN_FLUSH_THRESHOLD=1000000";
 #ifdef PUTENV_ARG_CONST
 	::putenv(cp);

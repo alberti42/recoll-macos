@@ -1576,9 +1576,9 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
     delete rclconfig;
     if (confdir) {
 	string cfd = confdir;
-	rclconfig = recollinit(0, 0, reason, &cfd);
+	rclconfig = recollinit(RCLINIT_PYTHON, 0, 0, reason, &cfd);
     } else {
-	rclconfig = recollinit(0, 0, reason, 0);
+	rclconfig = recollinit(RCLINIT_PYTHON, 0, 0, reason, 0);
     }
     LOGDEB("Db_init\n");
 

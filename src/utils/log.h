@@ -81,8 +81,8 @@ public:
 #endif
     
 private:
-    bool m_tocerr;
-    int m_loglevel;
+    bool m_tocerr{false};
+    int m_loglevel{LLERR};
     std::string m_fn;
     std::ofstream m_stream;
 #if LOGGER_THREADSAFE

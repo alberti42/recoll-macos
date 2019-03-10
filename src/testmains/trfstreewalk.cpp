@@ -175,7 +175,7 @@ int main(int argc, const char **argv)
 	opt |= FsTreeWalker::FtwTravBreadthThenDepth;
 
     string reason;
-    if (!recollinit(0, 0, reason)) {
+    if (!recollinit(0, 0, 0, reason)) {
 	fprintf(stderr, "Init failed: %s\n", reason.c_str());
 	exit(1);
     }

@@ -248,7 +248,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 endopts:
 
     string reason;
-    *cfp = recollinit(0, 0, reason, &a_config);
+    *cfp = recollinit(0, 0, 0, reason, &a_config);
     RclConfig *rclconfig = *cfp;
     if (!rclconfig || !rclconfig->ok()) {
 	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());

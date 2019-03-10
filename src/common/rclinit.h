@@ -39,16 +39,11 @@ class RclConfig;
  *               default and environment
  * @return the parsed configuration.
  */
-enum RclInitFlags {RCLINIT_NONE = 0, RCLINIT_DAEMON = 1, RCLINIT_IDX = 2};
+enum RclInitFlags {RCLINIT_NONE = 0, RCLINIT_DAEMON = 1, RCLINIT_IDX = 2,
+                   RCLINIT_PYTHON = 4};
 extern RclConfig *recollinit(int flags,
                              void (*cleanup)(void), void (*sigcleanup)(int),
                              std::string& reason, const std::string *argcnf = 0);
-inline RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int),
-                             std::string& reason,
-                             const std::string *argcnf = 0)
-{
-    return recollinit(RCLINIT_NONE, cleanup, sigcleanup, reason, argcnf);
-}
 
 // Threads need to call this to block signals.
 // The main thread handles all signals.

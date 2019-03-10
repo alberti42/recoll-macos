@@ -23,7 +23,7 @@
 using namespace std;
 
 Logger::Logger(const std::string& fn)
-    : m_tocerr(false), m_loglevel(LLDEB), m_fn(fn)
+    : m_fn(fn)
 {
     reopen(fn);
 }

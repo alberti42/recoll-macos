@@ -35,7 +35,6 @@ using namespace std;
 
 // Imported from pyrecoll
 static PyObject *recoll_DocType;
-static RclConfig *rclconfig;
 
 //////////////////////////////////////////////////////////////////////
 /// Extractor object code
@@ -324,19 +323,21 @@ initrclextract(void)
 #endif
 {
     // We run recollinit. It's responsible for initializing some static data
-    // which is distinct from pyrecoll's as we're separately dlopened
+    // which is distinct from pyrecoll's as we're separately dlopened.
+    // The rclconfig object is not used, we'll get the config
+    // data from the objects out of the recoll module.
+    // Unfortunately, as we're not getting the actual config directory
+    // from pyrecoll (we could, through a capsule), this needs at
+    // least an empty default configuration directory to work.
     string reason;
-    rclconfig = recollinit(0, 0, reason, 0);
+    RclConfig *rclconfig = recollinit(RCLINIT_PYTHON, 0, 0, reason, 0);
     if (rclconfig == 0) {
 	PyErr_SetString(PyExc_EnvironmentError, reason.c_str());
 	INITERROR;
+    } else {
+        delete rclconfig;
     }
-    if (!rclconfig->ok()) {
-	PyErr_SetString(PyExc_EnvironmentError, 
-			"Recoll init error: bad environment ?");
-	INITERROR;
-    }
-
+        
 #if PY_MAJOR_VERSION >= 3
     PyObject *module = PyModule_Create(&moduledef);
 #else

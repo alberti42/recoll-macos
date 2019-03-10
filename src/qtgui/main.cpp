@@ -305,7 +305,7 @@ int main(int argc, char **argv)
 
 
     string reason;
-    theconfig = recollinit(recollCleanup, 0, reason, &a_config);
+    theconfig = recollinit(0, recollCleanup, 0, reason, &a_config);
     if (!theconfig || !theconfig->ok()) {
         QString msg = "Configuration problem: ";
         msg += QString::fromUtf8(reason.c_str());
