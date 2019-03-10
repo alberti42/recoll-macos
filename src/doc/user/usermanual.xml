@@ -5349,40 +5349,45 @@ recollindex -c "$confdir"
         <sect3 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT">
           <title>The rclextract module</title>
 
-          <para>Index queries do not provide document content (only a
-          partial and unprecise reconstruction is performed to show the
-          snippets text). In order to access the actual document data, the
-          data extraction part of the indexing process must be performed
-          (subdocument access and format translation). This is not trivial
-          in the case of embedded documents. The
-          <literal>rclextract</literal> module provides a single class
-          which can be used to access the data content for result
-          documents.</para>
+          
+          <para>Prior to &RCL; 1.25, index queries never provide document
+          content because it is not stored. More recent versions usually
+          store the document text, which can be optionally retrieved when
+          running a query (see <literal>query.execute()</literal>
+          above - the result is always plain text).</para>
 
-          <sect4 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES">
-            <title>Classes</title>
-            
-            <sect5 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR">
-              <title>The Extractor class</title>
+          <para>The <literal>rclextract</literal> module can give access to
+          the original document and to the document text content (if not
+          stored by the index, or to access an HTML version of the text).
+          Acessing the original document is particularly useful if it is
+          embedded (e.g. an email attachment).</para>
 
-              <variablelist>
+          <para>You need to import the <literal>recoll</literal> module
+          before the <literal>rclextract</literal> module.</para>
+          
+          <sect4 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR">
+            <title>The Extractor class</title>
 
-                <varlistentry>
-                  <term>Extractor(doc)</term>
-                  <listitem><para>An <literal>Extractor</literal> object is
-                  built from a <literal>Doc</literal> object, output
-                  from a query.</para></listitem>
-                </varlistentry>
-                <varlistentry>
-                  <term>Extractor.textextract(ipath)</term>
-                  <listitem><para>Extract document defined by
-                  <replaceable>ipath</replaceable> and return a
-                  <literal>Doc</literal> object. The
-                  <literal>doc.text</literal> field has the document text
-                  converted to either text/plain or text/html according to
-                  <literal>doc.mimetype</literal>. The typical use would be
-                  as follows:</para>
+            <variablelist>
+
+              <varlistentry>
+                <term>Extractor(doc)</term>
+                <listitem><para>An <literal>Extractor</literal> object is
+                built from a <literal>Doc</literal> object, output
+                from a query.</para></listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Extractor.textextract(ipath)</term>
+                <listitem><para>Extract document defined by
+                <replaceable>ipath</replaceable> and return a
+                <literal>Doc</literal> object. The
+                <literal>doc.text</literal> field has the document text
+                converted to either text/plain or text/html according to
+                <literal>doc.mimetype</literal>. The typical use would be
+                as follows:</para>
 <programlisting>
+from recoll import recoll, rclextract
+
 qdoc = query.fetchone()
 extractor = recoll.Extractor(qdoc)
 doc = extractor.textextract(qdoc.ipath)
@@ -5401,6 +5406,8 @@ doc = extractor.textextract(qdoc.ipath)
                   temporary file to be deleted by the caller. Typical
                   use:</para> 
 <programlisting>
+from recoll import recoll, rclextract
+
 qdoc = query.fetchone()
 extractor = recoll.Extractor(qdoc)
 filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</programlisting>
@@ -5417,8 +5424,7 @@ not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
 
               </variablelist>
 
-            </sect5> <!-- Extractor class -->
-          </sect4> <!-- rclextract classes -->
+          </sect4>
         </sect3> <!-- rclextract module -->
 
 

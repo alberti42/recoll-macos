@@ -6920,96 +6920,94 @@ recollindex -c "$confdir"
                 </div>
               </div>
             </div>
-            <p>Index queries do not provide document content (only
-            a partial and unprecise reconstruction is performed to
-            show the snippets text). In order to access the actual
-            document data, the data extraction part of the indexing
-            process must be performed (subdocument access and
-            format translation). This is not trivial in the case of
-            embedded documents. The <code class=
-            "literal">rclextract</code> module provides a single
-            class which can be used to access the data content for
-            result documents.</p>
+            <p>Prior to <span class="application">Recoll</span>
+            1.25, index queries never provide document content
+            because it is not stored. More recent versions usually
+            store the document text, which can be optionally
+            retrieved when running a query (see <code class=
+            "literal">query.execute()</code> above - the result is
+            always plain text).</p>
+            <p>The <code class="literal">rclextract</code> module
+            can give access to the original document and to the
+            document text content (if not stored by the index, or
+            to access an HTML version of the text). Acessing the
+            original document is particularly useful if it is
+            embedded (e.g. an email attachment).</p>
+            <p>You need to import the <code class=
+            "literal">recoll</code> module before the <code class=
+            "literal">rclextract</code> module.</p>
             <div class="sect4">
               <div class="titlepage">
                 <div>
                   <div>
                     <h5 class="title"><a name=
-                    "RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES" id=
-                    "RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES"></a>Classes</h5>
+                    "RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR"
+                    id=
+                    "RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR">
+                    </a>The Extractor class</h5>
                   </div>
                 </div>
               </div>
-              <div class="sect5">
-                <div class="titlepage">
-                  <div>
-                    <div>
-                      <h6 class="title"><a name=
-                      "RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR"
-                      id=
-                      "RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR">
-                      </a>The Extractor class</h6>
-                    </div>
-                  </div>
-                </div>
-                <div class="variablelist">
-                  <dl class="variablelist">
-                    <dt><span class=
-                    "term">Extractor(doc)</span></dt>
-                    <dd>
-                      <p>An <code class="literal">Extractor</code>
-                      object is built from a <code class=
-                      "literal">Doc</code> object, output from a
-                      query.</p>
-                    </dd>
-                    <dt><span class=
-                    "term">Extractor.textextract(ipath)</span></dt>
-                    <dd>
-                      <p>Extract document defined by <em class=
-                      "replaceable"><code>ipath</code></em> and
-                      return a <code class="literal">Doc</code>
-                      object. The <code class=
-                      "literal">doc.text</code> field has the
-                      document text converted to either text/plain
-                      or text/html according to <code class=
-                      "literal">doc.mimetype</code>. The typical
-                      use would be as follows:</p>
-                      <pre class="programlisting">
+              <div class="variablelist">
+                <dl class="variablelist">
+                  <dt><span class="term">Extractor(doc)</span></dt>
+                  <dd>
+                    <p>An <code class="literal">Extractor</code>
+                    object is built from a <code class=
+                    "literal">Doc</code> object, output from a
+                    query.</p>
+                  </dd>
+                  <dt><span class=
+                  "term">Extractor.textextract(ipath)</span></dt>
+                  <dd>
+                    <p>Extract document defined by <em class=
+                    "replaceable"><code>ipath</code></em> and
+                    return a <code class="literal">Doc</code>
+                    object. The <code class=
+                    "literal">doc.text</code> field has the
+                    document text converted to either text/plain or
+                    text/html according to <code class=
+                    "literal">doc.mimetype</code>. The typical use
+                    would be as follows:</p>
+                    <pre class="programlisting">
+from recoll import recoll, rclextract
+
 qdoc = query.fetchone()
 extractor = recoll.Extractor(qdoc)
 doc = extractor.textextract(qdoc.ipath)
 # use doc.text, e.g. for previewing</pre>
-                      <p>Passing <code class=
-                      "literal">qdoc.ipath</code> to <code class=
-                      "literal">textextract()</code> is redundant,
-                      but reflects the fact that the <code class=
-                      "literal">Extractor</code> object actually
-                      has the capability to access the other
-                      entries in a compound document.</p>
-                    </dd>
-                    <dt><span class=
-                    "term">Extractor.idoctofile(ipath, targetmtype,
-                    outfile='')</span></dt>
-                    <dd>
-                      <p>Extracts document into an output file,
-                      which can be given explicitly or will be
-                      created as a temporary file to be deleted by
-                      the caller. Typical use:</p>
-                      <pre class="programlisting">
+                    <p>Passing <code class=
+                    "literal">qdoc.ipath</code> to <code class=
+                    "literal">textextract()</code> is redundant,
+                    but reflects the fact that the <code class=
+                    "literal">Extractor</code> object actually has
+                    the capability to access the other entries in a
+                    compound document.</p>
+                  </dd>
+                  <dt><span class=
+                  "term">Extractor.idoctofile(ipath, targetmtype,
+                  outfile='')</span></dt>
+                  <dd>
+                    <p>Extracts document into an output file, which
+                    can be given explicitly or will be created as a
+                    temporary file to be deleted by the caller.
+                    Typical use:</p>
+                    <pre class="programlisting">
+from recoll import recoll, rclextract
+
 qdoc = query.fetchone()
 extractor = recoll.Extractor(qdoc)
 filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</pre>
-                      <p>In all cases the output is a copy, even if
-                      the requested document is a regular system
-                      file, which may be wasteful in some cases. If
-                      you want to avoid this, you can test for a
-                      simple file document as follows:</p>
-                      <pre class="programlisting">
+                    <p>In all cases the output is a copy, even if
+                    the requested document is a regular system
+                    file, which may be wasteful in some cases. If
+                    you want to avoid this, you can test for a
+                    simple file document as follows:</p>
+                    <pre class="programlisting">
 not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
 </pre>
-                    </dd>
-                  </dl>
-                </div>
+                  </dd>
+                </dl>
               </div>
             </div>
           </div>
