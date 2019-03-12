@@ -690,18 +690,27 @@ int main(int argc, char **argv)
     bool rezero((op_flags & OPT_z) != 0);
     bool inPlaceReset((op_flags & OPT_Z) != 0);
 
-    // We do not retry previously failed files by default. If -k is
-    // set, we do.  If the checker script says so, we do too.
+    // The default is not to retry previously failed files by default.
+    // If -k is set, we do.
+    // If the checker script says so, we do too, except if -K is set.
     int indexerFlags = ConfIndexer::IxFNoRetryFailed;
     if (op_flags & OPT_k) {
         indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
     } else {
-        if (checkRetryFailed(config, false)) {
-            LOGDEB("recollindex: files in error will be retried\n");
-            indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
+        if (op_flags & OPT_K) {
+            indexerFlags |= ConfIndexer::IxFNoRetryFailed;
         } else {
-            LOGDEB("recollindex: files in error will not be retried\n");
+            if (checkRetryFailed(config, false)) {
+                indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
+            } else {
+                indexerFlags |= ConfIndexer::IxFNoRetryFailed;
+            }
         }
+    }
+    if (indexerFlags & ConfIndexer::IxFNoRetryFailed) {
+        LOGDEB("recollindex: files in error will not be retried\n");
+    } else {
+        LOGDEB("recollindex: files in error will be retried\n");
     }
 
     Pidfile pidfile(config->getPidfile());

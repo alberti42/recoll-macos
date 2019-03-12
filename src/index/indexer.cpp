@@ -123,7 +123,11 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         deleteZ(m_fsindexer);
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
         if (!m_fsindexer || !m_fsindexer->index(flags)) {
-            addIdxReason("indexer", "Index creation failed. See log");
+            if (stopindexing) {
+                addIdxReason("indexer", "Indexing was interrupted.");
+            } else {
+                addIdxReason("indexer", "Index creation failed. See log.");
+            }
 	    m_db.close();
             return false;
         }
