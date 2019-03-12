@@ -147,6 +147,8 @@ class MyUpdater : public DbIxStatusUpdater {
             m_file.holdWrites(false);
 	}
         if (path_exists(m_stopfilename)) {
+            LOGINF("recollindex: asking indexer to stop because " <<
+                   m_stopfilename << " exists\n");
             unlink(m_stopfilename.c_str());
             stopindexing = true;
         }
