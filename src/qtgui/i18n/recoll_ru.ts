@@ -532,7 +532,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="+372"/>
+        <location filename="../main.cpp" line="+373"/>
         <source>No db directory in configuration</source>
         <translation>Каталог БД в конфигурации не указан</translation>
     </message>
@@ -709,7 +709,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Частные параметры</translation>
     </message>
     <message>
-        <location line="+266"/>
+        <location line="+267"/>
         <source>&lt;b&gt;Customised subtrees</source>
         <translation>&lt;b&gt;Пользовательские подкаталоги</translation>
     </message>
@@ -719,12 +719,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Список подкаталогов индексируемого дерева,&lt;br&gt;к которым должны применяться особые параметры. По умолчанию: пусто.</translation>
     </message>
     <message>
-        <location line="+34"/>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;Следующие ниже параметры применяются или к каталогу верхнего уровня, если в списке выше ничего не выбрано&lt;br&gt;или выбрана пустая строка, или только для выбранного подкаталога.&lt;br&gt;Добавлять и удалять каталоги можно при помощи кнопок +/-.</translation>
+        <translation type="vanished">&lt;i&gt;Следующие ниже параметры применяются или к каталогу верхнего уровня, если в списке выше ничего не выбрано&lt;br&gt;или выбрана пустая строка, или только для выбранного подкаталога.&lt;br&gt;Добавлять и удалять каталоги можно при помощи кнопок +/-.</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+57"/>
         <source>Skipped names</source>
         <translation>Пропускать</translation>
     </message>
@@ -766,7 +765,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="obsolete">Web-история Beagle</translation>
     </message>
     <message>
-        <location line="-405"/>
+        <location line="-406"/>
         <source>Search parameters</source>
         <translation>Параметры поиска</translation>
     </message>
@@ -776,7 +775,12 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Просмотренные веб-страницы</translation>
     </message>
     <message>
-        <location line="+385"/>
+        <location line="+298"/>
+        <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+88"/>
         <source>Default&lt;br&gt;character set</source>
         <translation>Кодировка&lt;br&gt;по умолчанию</translation>
     </message>
@@ -991,8 +995,8 @@ p, li { white-space: pre-wrap; }
         <translation>Невозможно извлечь сведения о документе из БД</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+258"/>
-        <location line="+264"/>
+        <location filename="../rclm_idx.cpp" line="+261"/>
+        <location line="+271"/>
         <location filename="../rclm_preview.cpp" line="-136"/>
         <location line="+44"/>
         <location line="+37"/>
@@ -1027,7 +1031,7 @@ p, li { white-space: pre-wrap; }
         <translation>История</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-478"/>
+        <location filename="../rclm_idx.cpp" line="-488"/>
         <source>Indexing in progress: </source>
         <translation>Идёт индексирование: </translation>
     </message>
@@ -1088,7 +1092,7 @@ Please check the mimeconf file</source>
         <translation>ошибка получения списка языков</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+111"/>
+        <location filename="../rclm_idx.cpp" line="+114"/>
         <source>Update &amp;Index</source>
         <translation>Обновить &amp;индекс</translation>
     </message>
@@ -1100,7 +1104,7 @@ Please check the mimeconf file</source>
     <message>
         <location line="+34"/>
         <location line="+27"/>
-        <location line="+365"/>
+        <location line="+372"/>
         <source>Stop &amp;Indexing</source>
         <translation>О&amp;становить индексирование</translation>
     </message>
@@ -1236,7 +1240,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Поиск не дал результатов</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-491"/>
+        <location filename="../rclm_idx.cpp" line="-501"/>
         <source>None</source>
         <translation>Отсутствует</translation>
     </message>
@@ -1266,7 +1270,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+51"/>
         <source>Indexing failed</source>
         <translation>Не удалось выполнить индексирование</translation>
     </message>
@@ -1282,7 +1286,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Для запуска текущего процесса индексирования был использован другой интерфейс. Нажмите «OK» для прекращения процесса или «Отмена» для его продолжения</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+96"/>
         <source>Erasing index</source>
         <translation>Стирание индекса</translation>
     </message>
@@ -1324,7 +1328,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="obsolete">Индекс для этого файла устарел. Не буду рисковать показывать не тот фрагмент. Нажмите OK для обновления индекса для этого файла, затем повторите запрос. Или же Отменить.</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+173"/>
+        <location filename="../rclm_idx.cpp" line="+174"/>
         <source>Can&apos;t update index: indexer running</source>
         <translation>Невозможно обновить индекс: индексатор уже запущен</translation>
     </message>
@@ -1420,7 +1424,7 @@ Please check the desktop file</source>
         <translation type="vanished">Для запуска текущего процесса индексирования был использован другой интерфейс. Прекратить выполнение процесса невозможно</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-303"/>
+        <location filename="../rclm_idx.cpp" line="-310"/>
         <source>Bad paths</source>
         <translation>Неверные пути</translation>
     </message>
@@ -1431,7 +1435,7 @@ Please check the desktop file</source>
 </translation>
     </message>
     <message>
-        <location line="+279"/>
+        <location line="+286"/>
         <source>Selection patterns need topdir</source>
         <translation>Для шаблонов отбора требуется topdir</translation>
     </message>
@@ -1542,7 +1546,7 @@ Please check the desktop file</source>
         <translation>Больше не показывать (для восстановления значений используйте окно настройки интерфейса).</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-342"/>
+        <location filename="../rclm_idx.cpp" line="-349"/>
         <source>Index locked</source>
         <translation>Индекс заблокирован</translation>
     </message>
@@ -1979,7 +1983,7 @@ Please check the desktop file</source>
 <context>
     <name>RecollModel</name>
     <message>
-        <location filename="../restable.cpp" line="+240"/>
+        <location filename="../restable.cpp" line="+243"/>
         <source>File name</source>
         <translation>Имя файла</translation>
     </message>
@@ -2213,7 +2217,7 @@ Please check the desktop file</source>
 <context>
     <name>ResTable</name>
     <message>
-        <location filename="../restable.cpp" line="+777"/>
+        <location filename="../restable.cpp" line="+782"/>
         <source>&amp;Reset sort</source>
         <translation>&amp;Сбросить сортировку</translation>
     </message>
@@ -2231,7 +2235,7 @@ Please check the desktop file</source>
         <translation type="obsolete">&quot;</translation>
     </message>
     <message>
-        <location line="-308"/>
+        <location line="-312"/>
         <source>Save table to CSV file</source>
         <translation>Сохранить таблицу в CSV-файл</translation>
     </message>
@@ -2273,7 +2277,7 @@ Please check the desktop file</source>
         <translation type="obsolete">&amp;Открыть родительский документ/каталог</translation>
     </message>
     <message>
-        <location line="+296"/>
+        <location line="+300"/>
         <source>&amp;Save as CSV</source>
         <translation>&amp;Сохранить как CSV</translation>
     </message>
@@ -2755,7 +2759,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Шаблоны отбора:</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+274"/>
+        <location filename="../rclm_idx.cpp" line="+280"/>
         <source>Top indexed entity</source>
         <translation>Проиндексированный элемент верхнего уровня</translation>
     </message>
@@ -3457,7 +3461,7 @@ This should give higher precedence to the results where the search terms appear 
         <translation type="obsolete">При достижении указанного размера кэша старые записи будут удаляться</translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="-332"/>
+        <location filename="../confgui/confguiindex.cpp" line="-333"/>
         <source>Web page store directory name</source>
         <translation>Имя каталога хранения веб-страниц</translation>
     </message>
@@ -3490,7 +3494,12 @@ This should give higher precedence to the results where the search terms appear 
 <context>
     <name>confgui::ConfIndexW</name>
     <message>
-        <location line="-73"/>
+        <location line="-104"/>
+        <source>Recoll - Index Settings: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>Can&apos;t write configuration file</source>
         <translation>Невозможно записать файл конфигурации</translation>
     </message>
@@ -3523,7 +3532,7 @@ This should give higher precedence to the results where the search terms appear 
 <context>
     <name>confgui::ConfSearchPanelW</name>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="+96"/>
+        <location filename="../confgui/confguiindex.cpp" line="+97"/>
         <source>Automatic diacritics sensitivity</source>
         <translation>Автоматический учёт диакритических знаков</translation>
     </message>
@@ -3566,7 +3575,7 @@ This should give higher precedence to the results where the search terms appear 
 <context>
     <name>confgui::ConfSubPanelW</name>
     <message>
-        <location line="+376"/>
+        <location line="+377"/>
         <source>Global</source>
         <translation>Общее</translation>
     </message>
@@ -3606,8 +3615,12 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <location line="+10"/>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Max. filter exec. time (S)</source>
-        <translation>Максимальное время работы фильтра (сек)</translation>
+        <translation type="vanished">Максимальное время работы фильтра (сек)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
@@ -3645,7 +3658,7 @@ This will help searching very big text  files (ie: log files).</source>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
-        <location line="-219"/>
+        <location line="-220"/>
         <source>Top directories</source>
         <translation>Каталоги верхнего уровня</translation>
     </message>

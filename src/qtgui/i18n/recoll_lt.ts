@@ -553,7 +553,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;Nurodyti parametrai taikomi arba visoms direktorijoms, arba subdirektorijoms,&lt;br&gt; jei kuri jų prieš tai pažymimos. Pridėti ir ištrinti direktorijų vardus galite&lt;br&gt; spausdami +/- mygtukus.</translation>
+        <translation type="vanished">&lt;i&gt;Nurodyti parametrai taikomi arba visoms direktorijoms, arba subdirektorijoms,&lt;br&gt; jei kuri jų prieš tai pažymimos. Pridėti ir ištrinti direktorijų vardus galite&lt;br&gt; spausdami +/- mygtukus.</translation>
     </message>
     <message>
         <source>Skipped names</source>
@@ -614,6 +614,10 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2745,6 +2749,10 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
         <source>Can&apos;t write configuration file</source>
         <translation>Nepavyksta įrašyti nustatymų bylos</translation>
     </message>
+    <message>
+        <source>Recoll - Index Settings: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfParamFNW</name>
@@ -2837,7 +2845,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation>Ilgiausias filtrų veikimo laikas (S)</translation>
+        <translation type="vanished">Ilgiausias filtrų veikimo laikas (S)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
@@ -2863,6 +2871,10 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

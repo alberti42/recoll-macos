@@ -600,7 +600,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;Parametry, které následují, jsou nastaveny buď na nejvyšší úrovni, pokud nic&lt;br&gt;, nebo pokud je v seznamu výše vybrán prázdný řádek, nebo pro vybraný podadresář.&lt;br&gt;Adresáře můžete přidat anebo odebrat klepnutím na tlačítka +/-.</translation>
+        <translation type="vanished">&lt;i&gt;Parametry, které následují, jsou nastaveny buď na nejvyšší úrovni, pokud nic&lt;br&gt;, nebo pokud je v seznamu výše vybrán prázdný řádek, nebo pro vybraný podadresář.&lt;br&gt;Adresáře můžete přidat anebo odebrat klepnutím na tlačítka +/-.</translation>
     </message>
     <message>
         <source>Skipped names</source>
@@ -663,6 +663,10 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
 (no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation>Toto jsou zakončení souborů pro soubory, které se budou rejstříkovat výhradně podle svého názvu
 (žádné určování typu MIME, žádné rozbalování, žádné rejstříkování obsahu).</translation>
+    </message>
+    <message>
+        <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2918,6 +2922,10 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <source>Can&apos;t write configuration file</source>
         <translation>Nelze zapsat soubor s nastavením</translation>
     </message>
+    <message>
+        <source>Recoll - Index Settings: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfParamFNW</name>
@@ -3008,7 +3016,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation>Největší čas na provedení filtru (s)</translation>
+        <translation type="vanished">Největší čas na provedení filtru (s)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
@@ -3037,6 +3045,10 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     <message>
         <source>Mime types not to be indexed</source>
         <translation>Typy MIME, které se nemají rejstříkovat</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

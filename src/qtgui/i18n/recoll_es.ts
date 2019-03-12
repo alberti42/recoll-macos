@@ -590,7 +590,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;Los parámetros siguientes se aplican a nivel superior, si una línea vacía&lt;br&gt;o ninguna es seleccionada en el listado arriba, o para cada directorio seleccionado.&lt;br&gt;Puede añadir o remover directorios presionando los botones +/-.</translation>
+        <translation type="vanished">&lt;i&gt;Los parámetros siguientes se aplican a nivel superior, si una línea vacía&lt;br&gt;o ninguna es seleccionada en el listado arriba, o para cada directorio seleccionado.&lt;br&gt;Puede añadir o remover directorios presionando los botones +/-.</translation>
     </message>
     <message>
         <source>Skipped names</source>
@@ -651,6 +651,10 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2656,6 +2660,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Can&apos;t write configuration file</source>
         <translation>No se puede escribir archivo de configuración</translation>
     </message>
+    <message>
+        <source>Recoll - Index Settings: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfParamFNW</name>
@@ -2745,7 +2753,7 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation>Tiempo máximo de ejecución de filtros (S)</translation>
+        <translation type="vanished">Tiempo máximo de ejecución de filtros (S)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
@@ -2771,6 +2779,10 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

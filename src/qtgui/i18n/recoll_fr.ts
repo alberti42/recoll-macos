@@ -603,7 +603,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;Les paramètres qui suivent sont définis soit globalement, si la sélection dans la liste ci-dessus&lt;br&gt;est vide ou réduite à la ligne vide, soit pour le répertoire sélectionné.&lt;br&gt;Vous pouvez ajouter et enlever des répertoires en cliquant les boutons +/-.</translation>
+        <translation type="vanished">&lt;i&gt;Les paramètres qui suivent sont définis soit globalement, si la sélection dans la liste ci-dessus est vide ou réduite à la ligne vide, soit pour le répertoire sélectionné. Vous pouvez ajouter et enlever des répertoires en cliquant les boutons +/-.</translation>
     </message>
     <message>
         <source>Skipped names</source>
@@ -659,7 +659,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Ignored endings</source>
-        <translation>Suffixes ignor&apos;es</translation>
+        <translation>Suffixes ignorés</translation>
     </message>
     <message>
         <source>These are file name endings for files which will be indexed by content only 
@@ -672,6 +672,10 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation>Suffixes sélectionnant des fichiers qui seront indexés uniquement sur leur nom
 (pas d&apos;identification de type MIME, pas de décompression, pas d&apos;indexation du contenu).</translation>
+    </message>
+    <message>
+        <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
+        <translation>&lt;i&gt;Les paramètres qui suivent sont définis soit globalement, si la sélection dans la liste ci-dessus est vide ou réduite à la ligne vide, soit pour le répertoire sélectionné. Vous pouvez ajouter et enlever des répertoires en cliquant les boutons +/-.</translation>
     </message>
 </context>
 <context>
@@ -1045,7 +1049,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface. Cliquer Ok pour le tuer quand même, ou Annuler pour le laisser tranquille.</translation>
+        <translation>Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface. Cliquer OK pour le tuer quand même, ou Annuler pour le laisser tranquille.</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -1081,7 +1085,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="obsolete">Index pas à jour pour ce fichier. Risque d&apos;afficher une entrée incorrecte. Cliquer Ok pour mettre à jour l&apos;index pour ce fichier, puis redémarrer la requête quand l&apos;indexation est terminée. Sinon, Annuler.</translation>
+        <translation type="obsolete">Index pas à jour pour ce fichier. Risque d&apos;afficher une entrée incorrecte. Cliquer OK pour mettre à jour l&apos;index pour ce fichier, puis redémarrer la requête quand l&apos;indexation est terminée. Sinon, Annuler.</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -1119,7 +1123,7 @@ Vérifier le fichier mimeview.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="obsolete">Cliquer Ok pour mettre à jour l&apos;index pour ce fichier, puis relancer la recherche quand l&apos;indexation est terminée. Sinon cliquer Annuler</translation>
+        <translation type="obsolete">Cliquer OK pour mettre à jour l&apos;index pour ce fichier, puis relancer la recherche quand l&apos;indexation est terminée. Sinon cliquer Annuler</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
@@ -1139,7 +1143,7 @@ Vérifier le fichier mimeview.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation>Cliquer Ok pour mettre à jour l&apos;index pour ce fichier, puis attendez la fin de l&apos;indexation pour relancer la recherche.</translation>
+        <translation>Cliquer OK pour mettre à jour l&apos;index pour ce fichier, puis attendez la fin de l&apos;indexation pour relancer la recherche.</translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
@@ -2979,7 +2983,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Max. size for the web cache (MB)</source>
-        <translation type="obsolete">Taille maximum pour le cache (MB)</translation>
+        <translation type="obsolete">Taille maximum pour le cache (Mo)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached</source>
@@ -2987,7 +2991,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Web page store directory name</source>
-        <translation></translation>
+        <translation>Répertoire de stockage des pages WEB</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
@@ -2995,7 +2999,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation>Taille max. pour le cache Web (MB)</translation>
+        <translation>Taille maximale pour le cache Web (Mo)</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
@@ -3015,6 +3019,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>Can&apos;t write configuration file</source>
         <translation>Impossible d&apos;ecrire le fichier de configuration</translation>
+    </message>
+    <message>
+        <source>Recoll - Index Settings: </source>
+        <translation>Recoll - Paramètres de l&apos;index : </translation>
     </message>
 </context>
 <context>
@@ -3082,7 +3090,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>Taill maximale pour les fichiers à décomprimer (Ko)</translation>
+        <translation>Taille maximale pour les fichiers à décomprimer (ko)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
@@ -3090,7 +3098,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>Taille maximale d&apos;un fichier texte (MB)</translation>
+        <translation>Taille maximale d&apos;un fichier texte (Mo)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
@@ -3100,7 +3108,7 @@ Utilisé pour éviter d&apos;indexer des fichiers monstres.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>Taille de page pour les fichiers de texte pur (KB)</translation>
+        <translation>Taille de page pour les fichiers de texte pur (ko)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
@@ -3110,7 +3118,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation>Temps d&apos;exécution maximum pour un filtre (S)</translation>
+        <translation type="vanished">Temps d&apos;exécution maximum pour un filtre (S)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
@@ -3137,6 +3145,10 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     <message>
         <source>Mime types not to be indexed</source>
         <translation>Types MIME à ne pas indexer</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation>Temps d&apos;exécution maximum pour un filtre (s)</translation>
     </message>
 </context>
 <context>

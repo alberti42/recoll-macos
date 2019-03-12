@@ -570,7 +570,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;De parametre, der følger er angivet enten på øverste niveau, hvis intet&lt;br&gt;eller en tom linje er valgt i listefeltet ovenfor, eller for den valgte undermappe. &lt;br&gt; Du kan tilføje eller fjerne mapper ved at klikke på +/- knapperne.</translation>
+        <translation type="vanished">&lt;i&gt;De parametre, der følger er angivet enten på øverste niveau, hvis intet&lt;br&gt;eller en tom linje er valgt i listefeltet ovenfor, eller for den valgte undermappe. &lt;br&gt; Du kan tilføje eller fjerne mapper ved at klikke på +/- knapperne.</translation>
     </message>
     <message>
         <source>Skipped names</source>
@@ -621,6 +621,10 @@ p, li { white-space: pre-wrap; }
 (no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation>Dette er endelser på filnavne for filer, hvor kun navnet vil blive indekseret 
 (ingen forsøg på identifikation af MIME-type, ingen dekomprimering, ingen indeksering af indhold).</translation>
+    </message>
+    <message>
+        <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2376,6 +2380,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
         <source>Can&apos;t write configuration file</source>
         <translation>Kan ikke skrive konfigurationsfil</translation>
     </message>
+    <message>
+        <source>Recoll - Index Settings: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfParamFNW</name>
@@ -2466,7 +2474,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation>Maks. udførelsestid for filtre (S)</translation>
+        <translation type="vanished">Maks. udførelsestid for filtre (S)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
@@ -2488,6 +2496,10 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     <message>
         <source>Mime types not to be indexed</source>
         <translation>Mime-typer der ikke skal indekseres</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
