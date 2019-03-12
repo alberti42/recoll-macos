@@ -156,7 +156,7 @@ private:
 ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
     : QDialog(parent), m_rclconf(config)
 {
-    QString title("Recoll - Index Settings : ");
+    QString title(tr("Recoll - Index Settings: "));
     title += QString::fromLocal8Bit(config->getConfDir().c_str());
     setWindowTitle(title);
     tabWidget = new QTabWidget;
@@ -221,10 +221,11 @@ void ConfIndexW::reloadPanels()
     m_widgets.push_back(w);
     tabWidget->addTab(w, QObject::tr("Local parameters"));
 
+#ifndef _WIN32
     w = new ConfBeaglePanelW(this, m_conf);
     m_widgets.push_back(w);
     tabWidget->addTab(w, QObject::tr("Web history"));
-
+#endif
     w = new ConfSearchPanelW(this, m_conf);
     m_widgets.push_back(w);
     tabWidget->addTab(w, QObject::tr("Search parameters"));
@@ -518,12 +519,13 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
     vboxLayout->addWidget(line2);
 
     QLabel *explain = new QLabel(this);
+    explain->setWordWrap(true);
     explain->setText(
 		     QObject::
 		     tr("<i>The parameters that follow are set either at the "
-			"top level, if nothing<br>"
+			"top level, if nothing "
 			"or an empty line is selected in the listbox above, "
-			"or for the selected subdirectory.<br>"
+			"or for the selected subdirectory. "
 			"You can add or remove directories by clicking "
 			"the +/- buttons."));
     vboxLayout->addWidget(explain);
@@ -673,7 +675,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
     ConfParamIntW *efiltmaxsecs = new ConfParamIntW(
         m_groupbox, 
         ConfLink(new ConfLinkRclRep(config, "filtermaxseconds", &m_sk)), 
-        tr("Max. filter exec. time (S)"),
+        tr("Max. filter exec. time (s)"),
         tr("External filters working longer than this will be "
            "aborted. This is for the rare case (ie: postscript) "
            "where a document could cause a filter to loop. "
