@@ -864,9 +864,13 @@ void ResTable::onDoubleClick(const QModelIndex& index)
 	return;
     Rcl::Doc doc;
     if (m_model->getDocSource()->getDoc(index.row(), doc)) {
-	m_detail->clear();
-	m_detaildocnum = index.row();
-	m_detaildoc = doc;
+        if (m_detaildocnum != index.row()) {
+            m_detail->clear();
+            m_detaildocnum = index.row();
+            m_pager->displayDoc(theconfig, index.row(), m_detaildoc, 
+                                m_model->m_hdata);
+        }
+        m_detaildoc = doc;
         if (m_detaildocnum >= 0) 
             emit editRequested(m_detaildoc);
     } else {
