@@ -72,8 +72,11 @@ void RclMain::updateIdxStatus()
     }
     string mf;int ecnt = 0;
     string fcharset = theconfig->getDefCharset(true);
-    if (!transcode(status.fn, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
-	mf = url_encode(status.fn, 0);
+    // If already UTF-8 let it be, else try to transcode, or url-encode
+    if (!transcode(status.fn, mf, "UTF-8", "UTF-8", &ecnt) || ecnt) {
+        if (!transcode(status.fn, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
+            mf = url_encode(status.fn, 0);
+        }
     }
     msg += QString::fromUtf8(mf.c_str());
     statusBar()->showMessage(msg, 4000);
@@ -331,6 +334,12 @@ static void delay(int millisecondsWait)
 
 void RclMain::rebuildIndex()
 {
+    if (!m_idxreasontmp || !m_idxreasontmp->ok()) {
+        // We just store the pointer and let the tempfile cleaner deal
+        // with delete on exiting
+        TempFile temp(".txt");
+        m_idxreasontmp = rememberTempFile(temp);
+    }
     if (m_indexerState == IXST_UNKNOWN) {
         delay(1500);
     }
@@ -448,6 +457,12 @@ static string execToString(const string& cmd, const vector<string>& args)
 void RclMain::specialIndex()
 {
     LOGDEB("RclMain::specialIndex\n" );
+    if (!m_idxreasontmp || !m_idxreasontmp->ok()) {
+        // We just store the pointer and let the tempfile cleaner deal
+        // with delete on exiting
+        TempFile temp(".txt");
+        m_idxreasontmp = rememberTempFile(temp);
+    }
     switch (m_indexerState) {
     case IXST_UNKNOWN:
     case IXST_RUNNINGMINE:
@@ -483,15 +498,10 @@ void RclMain::specialIndex()
         }
     } 
 
-    // The default for retrying differ depending if -r is set
-    if (top.empty()) {
-        if (!specidx->noRetryFailed()) {
-            args.push_back("-k");
-        }
+    if (!specidx->noRetryFailed()) {
+        args.push_back("-k");
     } else {
-        if (specidx->noRetryFailed()) {
-            args.push_back("-K");
-        }
+        args.push_back("-K");
     }
         
     vector<string> selpats = specidx->selpatterns();
