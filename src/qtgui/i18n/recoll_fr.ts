@@ -1045,7 +1045,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface. Cliquer Ok pour le tuer quand même, ou Annuler pour le laisser tranquille</translation>
+        <translation>Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface. Cliquer Ok pour le tuer quand même, ou Annuler pour le laisser tranquille.</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -1279,7 +1279,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source> with additional message: </source>
-        <translation>avec le message complémentaire :</translation>
+        <translation> avec le message complémentaire :</translation>
     </message>
     <message>
         <source>Non-fatal indexing message: </source>
@@ -1303,7 +1303,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>(%d documents/%d files/%d errors/%d total files) </source>
-        <translation>(%d documents/%d fichiers/%d erreurs/%d : total fichiers) </translation>
+        <translation>(%d documents/%d fichiers/%d erreurs/%d fichiers en tout) </translation>
     </message>
     <message>
         <source>(%d documents/%d files/%d errors) </source>
@@ -1312,7 +1312,7 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
 </source>
-        <translation>Chemins vides ou non existants dans le fichier de configuration. Cliquer sur Ok pour démarrer l&apos;indexation (les données absentes ne seront pas éliminées de l&apos;index):</translation>
+        <translation>Chemins vides ou non existants dans le fichier de configuration. Cliquer sur Ok pour démarrer l&apos;indexation (les données absentes ne seront pas éliminées de l&apos;index) :</translation>
     </message>
 </context>
 <context>
