@@ -16,11 +16,14 @@
  */
 #include "autoconfig.h"
 
+#include "restable.h"
+
 #include <stdlib.h>
 #include <time.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 
 #include <Qt>
 #include <QShortcut>
@@ -34,12 +37,11 @@
 #include <QSplitter>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QTimer>
 
 #include "recoll.h"
-#include <memory>
 #include "docseq.h"
 #include "log.h"
-#include "restable.h"
 #include "guiutils.h"
 #include "reslistpager.h"
 #include "reslist.h"
@@ -228,8 +230,9 @@ string RecollModel::baseField(const string& field)
 	return field;
 }
 
-RecollModel::RecollModel(const QStringList fields, QObject *parent)
-    : QAbstractTableModel(parent), m_ignoreSort(false)
+RecollModel::RecollModel(const QStringList fields, ResTable *tb,
+                         QObject *parent)
+    : QAbstractTableModel(parent), m_table(tb), m_ignoreSort(false)
 {
     // Initialize the translated map for column headers
     o_displayableFields["abstract"] = tr("Abstract");
@@ -439,6 +442,7 @@ void RecollModel::sort(int column, Qt::SortOrder order)
             order != Qt::AscendingOrder) {
             QMessageBox::warning(0, "Recoll", 
                                  tr("Can't sort by inverse relevance"));
+            QTimer::singleShot(0, m_table, SLOT(resetSort()));
             return;
         }
 	if (!stringlowercmp("date", spec.field) || 
@@ -506,7 +510,7 @@ public:
 
 void ResTable::init()
 {
-    if (!(m_model = new RecollModel(prefs.restableFields)))
+    if (!(m_model = new RecollModel(prefs.restableFields, this)))
 	return;
     tableView->setModel(m_model);
     tableView->setMouseTracking(true);

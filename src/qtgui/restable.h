@@ -38,7 +38,7 @@ class RecollModel : public QAbstractTableModel {
     Q_OBJECT
 
 public:
-    RecollModel(const QStringList fields, QObject *parent = 0);
+    RecollModel(const QStringList fields, ResTable *tb, QObject *parent = 0);
 
     // Reimplemented methods
     virtual int rowCount (const QModelIndex& = QModelIndex()) const;
@@ -73,6 +73,7 @@ signals:
     void sortDataChanged(DocSeqSortSpec);
 
 private:
+    ResTable *m_table{0};
     mutable std::shared_ptr<DocSequence> m_source;
     std::vector<std::string> m_fields;
     std::vector<FieldGetter*> m_getters;
