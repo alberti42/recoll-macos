@@ -245,12 +245,9 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     df->set_property(Dijon::Filter::DJF_UDI, udi);
 
     df->set_docsize(docsize);
-    if (!df->set_document_file(l_mime, m_fn)) {
-	delete df;
-	LOGERR("FileInterner:: error converting " << m_fn << "\n");
-	return;
-    }
-
+    // Don't process init errors here: doing it later allows indexing
+    // the file name of even a totally unparsable file
+    (void)df->set_document_file(l_mime, m_fn);
     m_handlers.push_back(df);
     LOGDEB("FileInterner:: init ok " << l_mime << " [" << m_fn << "]\n");
     m_ok = true;
@@ -286,26 +283,21 @@ void FileInterner::init(const string &data, RclConfig *cnf,
     df->set_property(Dijon::Filter::OPERATING_MODE, 
 			    m_forPreview ? "view" : "index");
 
-    bool result = false;
     df->set_docsize(data.length());
     if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
-	result = df->set_document_string(m_mimetype, data);
+	(void)df->set_document_string(m_mimetype, data);
     } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
-	result = df->set_document_data(m_mimetype, data.c_str(), data.length());
+	(void)df->set_document_data(m_mimetype, data.c_str(), data.length());
     } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
 	TempFile temp = dataToTempFile(data, m_mimetype);
-	if (temp.ok() && 
-	    (result = df->set_document_file(m_mimetype, temp.filename()))) {
+	if (temp.ok()) {
+	    (void)df->set_document_file(m_mimetype, temp.filename());
 	    m_tmpflgs[m_handlers.size()] = true;
 	    m_tempfiles.push_back(temp);
 	}
     }
-    if (!result) {
-	LOGINFO("FileInterner:: set_doc failed inside for mtype " <<
-                m_mimetype << "\n");
-	delete df;
-	return;
-    }
+    // Don't process init errors here: doing it later allows indexing
+    // the file name of even a totally unparsable file
     m_handlers.push_back(df);
     m_ok = true;
 }
@@ -763,15 +755,11 @@ int FileInterner::addHandler()
     if (!setres) {
 	LOGINFO("FileInterner::addHandler: set_doc failed inside [" << m_fn <<
                 "]  for mtype " << mimetype << "\n");
-	delete newflt;
-	if (m_forPreview)
-	    return ADD_ERROR;
-	return ADD_CONTINUE;
     }
-    // add handler and go on, maybe this one will give us text...
+    // Add handler and go on, maybe this one will give us text...
     m_handlers.push_back(newflt);
     LOGDEB1("FileInterner::addHandler: added\n");
-    return ADD_OK;
+    return setres ? ADD_OK : ADD_BREAK;
 }
 
 // Information and debug after a next_document error
@@ -799,19 +787,12 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc,const string& ipath)
     }
 
     // Input Ipath vector when retrieving a given subdoc for previewing
-    // Note that the vector is big enough for the maximum stack. All values
-    // over the last significant one are ""
-    // We set the ipath for the first handler here, others are set
-    // when they're pushed on the stack
     vector<string> vipath;
     if (!ipath.empty() && !m_direct) {
-	vector<string> lipath;
-	stringToTokens(ipath, lipath, cstr_isep, true);
-	for (vector<string>::iterator it = lipath.begin();
-	     it != lipath.end(); it++) {
-	    *it = colon_restore(*it);
+	stringToTokens(ipath, vipath, cstr_isep, true);
+	for (auto& entry: vipath) {
+	    entry = colon_restore(entry);
 	}
-	vipath.insert(vipath.begin(), lipath.begin(), lipath.end());
 	if (!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
 	    LOGERR("FileInterner::internfile: can't skip\n");
 	    return FIError;
