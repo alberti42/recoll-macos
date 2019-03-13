@@ -41,6 +41,10 @@ using std::list;
 using std::string;
 using std::vector;
 
+// Global stop request flag. This is checked in a number of place in the
+// indexing routines.
+int stopindexing;
+
 // This would more logically live in recollindex.cpp, but then librecoll would
 // have an undefined symbol
 ConfSimple idxreasons;

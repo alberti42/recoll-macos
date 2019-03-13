@@ -100,10 +100,6 @@ static void cleanup()
     recoll_exitready();
 }
 
-// Global stop request flag. This is checked in a number of place in the
-// indexing routines.
-int stopindexing;
-
 // Receive status updates from the ongoing indexing operation
 // Also check for an interrupt request and return the info to caller which
 // should subsequently orderly terminate what it is doing.
