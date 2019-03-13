@@ -181,6 +181,7 @@ static int    op_flags;
 #define OPT_q 0x80      
 #define OPT_t 0x100      
 #define OPT_v 0x200     
+#define OPT_w 0x400
 
 static const char usage [] =
     "\n"
@@ -201,6 +202,7 @@ static const char usage [] =
     "       explicitly as -t (not ie, -at), and -q <query> MUST\n"
     "       be last on the command line if this is used.\n"
     "       Use -t -h to see the additional non-gui options\n"
+    "  -w : open minimized\n"
     "recoll -v : print version\n"
     "recoll <url>\n"
     "   This is used to open a recoll url (including an ipath), and called\n"
@@ -275,10 +277,11 @@ int main(int argc, char **argv)
             case 'q':   op_flags |= OPT_q; if (argc < 2)  Usage();
                 question = *(++argv);
                 argc--; goto b1;
+            case 't': op_flags |= OPT_t; break;
             case 'v': op_flags |= OPT_v;
                 fprintf(stdout, "%s\n", Rcl::version_string().c_str());
                 return 0;
-            case 't': op_flags |= OPT_t; break;
+            case 'w': op_flags |= OPT_w; break;
             default: Usage();
             }
     b1: argc--; argv++;
@@ -375,11 +378,15 @@ int main(int argc, char **argv)
     }
 
     maybeOpenDb(reason);
-    
-    switch (prefs.showmode) {
-    case PrefsPack::SHOW_NORMAL: mainWindow->show(); break;
-    case PrefsPack::SHOW_MAX: mainWindow->showMaximized(); break;
-    case PrefsPack::SHOW_FULL: mainWindow->showFullScreen(); break;
+
+    if (op_flags & OPT_w) {
+        mainWindow->showMinimized();
+    } else {
+        switch (prefs.showmode) {
+        case PrefsPack::SHOW_NORMAL: mainWindow->show(); break;
+        case PrefsPack::SHOW_MAX: mainWindow->showMaximized(); break;
+        case PrefsPack::SHOW_FULL: mainWindow->showFullScreen(); break;
+        }
     }
     QTimer::singleShot(0, mainWindow, SLOT(initDbOpen()));
 
