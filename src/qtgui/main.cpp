@@ -418,7 +418,8 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-QString myGetFileName(bool isdir, QString caption, bool filenosave)
+QString myGetFileName(bool isdir, QString caption, bool filenosave,
+                      QString dirloc, QString dfltnm)
 {
     LOGDEB1("myFileDialog: isdir " << isdir << "\n");
     QFileDialog dialog(0, caption);
@@ -436,7 +437,12 @@ QString myGetFileName(bool isdir, QString caption, bool filenosave)
             QUrl("clsid:B4BFCC3A-DB2C-424C-B029-7FE99A87C641"));
     }
 #endif
-
+    if (!dirloc.isEmpty()) {
+        dialog.setDirectory(dirloc);
+    }
+    if (!dfltnm.isEmpty()) {
+        dialog.selectFile(dfltnm);
+    }
     if (isdir) {
         dialog.setFileMode(QFileDialog::Directory);
         dialog.setOptions(QFileDialog::ShowDirsOnly);
@@ -460,4 +466,3 @@ QString myGetFileName(bool isdir, QString caption, bool filenosave)
     }
     return QString();
 }
-

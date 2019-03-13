@@ -166,7 +166,11 @@ namespace confgui {
 		      const QString& tltptxt);
 	virtual void loadValue();
     public slots:
-        virtual void setEnabled(bool i) {if(m_cb) ((QWidget*)m_cb)->setEnabled(i);}
+        virtual void setEnabled(bool i) {
+            if(m_cb) {
+                ((QWidget*)m_cb)->setEnabled(i);
+            }
+        }
     public:
 	QCheckBox *m_cb;
     };
@@ -176,14 +180,16 @@ namespace confgui {
 	Q_OBJECT
     public:
 	ConfParamFNW(QWidget *parent, ConfLink cflink, 
-		      const QString& lbltxt,
-		     const QString& tltptxt, bool isdir = false);
+                     const QString& lbltxt,
+		     const QString& tltptxt, bool isdir = false,
+                     QString dirloc = QString(),
+                     QString dfltnm = QString()
+            );
 	virtual void loadValue();
     protected slots:
 	void showBrowserDialog();
     public slots:
-        virtual void setEnabled(bool i) 
-        {
+        virtual void setEnabled(bool i) {
             if(m_le) ((QWidget*)m_le)->setEnabled(i);
             if(m_pb) ((QWidget*)m_pb)->setEnabled(i);
         }
@@ -191,6 +197,8 @@ namespace confgui {
 	QLineEdit *m_le;
         QPushButton *m_pb;
 	bool       m_isdir;
+        QString m_dirloc;
+        QString m_dfltnm;
     };
 
     // String list

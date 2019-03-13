@@ -62,6 +62,9 @@ inline QString u8s2qs(const std::string us)
 /** Specialized version of the qt file dialog. Can't use getOpenFile()
    etc. cause they hide dot files... */
 extern QString myGetFileName(bool isdir, QString caption = QString(),
-			     bool filenosave = false);
+			     bool filenosave = false,
+                             QString dirlocation = QString(),
+                             QString dlftnm = QString()
+    );
 
 #endif /* _RECOLL_H_INCLUDED_ */

@@ -394,7 +394,9 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
                          ConfLink(new ConfLinkRclRep(config, "logfilename")), 
                          tr("Log file name"),
                          tr("The file where the messages will be written.<br>"
-                            "Use 'stderr' for terminal output"), false);
+                            "Use 'stderr' for terminal output"), false,
+                         u8s2qs(tmplocation()),
+                         "log-recoll.txt");
     gl1->addWidget(w, gridrow++, 1);
 
     

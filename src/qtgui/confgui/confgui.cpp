@@ -236,9 +236,12 @@ void ConfParamBoolW::loadValue()
 ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink, 
 			   const QString& lbltxt,
 			   const QString& tltptxt,
-			   bool isdir
+			   bool isdir,
+                           QString dirloc,
+                           QString dfltnm
 			   )
-    : ConfParamW(parent, cflink), m_isdir(isdir)
+    : ConfParamW(parent, cflink), m_isdir(isdir), m_dirloc(dirloc),
+      m_dfltnm(dfltnm)
 {
     if (!createCommon(lbltxt, tltptxt))
 	return;
@@ -274,7 +277,7 @@ void ConfParamFNW::loadValue()
 
 void ConfParamFNW::showBrowserDialog()
 {
-    QString s = myGetFileName(m_isdir);
+    QString s = myGetFileName(m_isdir, "", false, m_dirloc, m_dfltnm);
     if (!s.isEmpty())
         m_le->setText(s);
 }
