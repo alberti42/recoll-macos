@@ -1284,6 +1284,10 @@ Please check the desktop file</source>
 </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2245,10 +2249,6 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do not retry previously failed files.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Else only modified or failed files will be processed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2278,6 +2278,10 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Top indexed entity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retry previously failed files.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

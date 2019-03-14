@@ -1316,7 +1316,11 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
 </source>
-        <translation>Chemins vides ou non existants dans le fichier de configuration. Cliquer sur Ok pour démarrer l&apos;indexation (les données absentes ne seront pas éliminées de l&apos;index) :</translation>
+        <translation>Chemins vides ou non existants dans le fichier de configuration. Cliquer sur Ok pour démarrer l&apos;indexation (les données absentes ne seront pas éliminées de l&apos;index) : </translation>
+    </message>
+    <message>
+        <source>Indexing done</source>
+        <translation>Indexation terminée</translation>
     </message>
 </context>
 <context>
@@ -2321,7 +2325,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Do not retry previously failed files.</source>
-        <translation>Ne pas réessayer les fichiers en erreur.</translation>
+        <translation type="vanished">Ne pas réessayer les fichiers en erreur.</translation>
     </message>
     <message>
         <source>Else only modified or failed files will be processed.</source>
@@ -2358,6 +2362,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
         <translation>Répertoire à indexer récursivement. Il doit être à l&apos;intérieur de la zone normale&lt;br&gt;définie par la variable topdirs.</translation>
+    </message>
+    <message>
+        <source>Retry previously failed files.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

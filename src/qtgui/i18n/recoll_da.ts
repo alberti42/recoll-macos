@@ -1212,6 +1212,10 @@ Tjek venligst desktopfilen</translation>
 </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1956,7 +1960,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Do not retry previously failed files.</source>
-        <translation>Forsøg ikke igen med filer, der tidligere mislykkedes.</translation>
+        <translation type="vanished">Forsøg ikke igen med filer, der tidligere mislykkedes.</translation>
     </message>
     <message>
         <source>Else only modified or failed files will be processed.</source>
@@ -1989,6 +1993,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>Top indexed entity</source>
         <translation>Top indekserede enhed</translation>
+    </message>
+    <message>
+        <source>Retry previously failed files.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

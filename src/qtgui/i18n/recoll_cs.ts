@@ -1304,6 +1304,10 @@ Prověřte soubor pracovní plochy</translation>
 </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2291,7 +2295,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Do not retry previously failed files.</source>
-        <translation>Nezkoušet znovu soubory, které předtím selhaly.</translation>
+        <translation type="vanished">Nezkoušet znovu soubory, které předtím selhaly.</translation>
     </message>
     <message>
         <source>Else only modified or failed files will be processed.</source>
@@ -2324,6 +2328,10 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <message>
         <source>Top indexed entity</source>
         <translation>Předmět rejstříkovaný od spuštění</translation>
+    </message>
+    <message>
+        <source>Retry previously failed files.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

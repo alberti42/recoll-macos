@@ -1133,6 +1133,10 @@ Please check the desktop file</source>
 </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1771,10 +1775,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do not retry previously failed files.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Else only modified or failed files will be processed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1804,6 +1804,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Top indexed entity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retry previously failed files.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

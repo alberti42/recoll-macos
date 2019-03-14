@@ -532,7 +532,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="+373"/>
+        <location filename="../main.cpp" line="+376"/>
         <source>No db directory in configuration</source>
         <translation>Каталог БД в конфигурации не указан</translation>
     </message>
@@ -709,7 +709,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Частные параметры</translation>
     </message>
     <message>
-        <location line="+267"/>
+        <location line="+269"/>
         <source>&lt;b&gt;Customised subtrees</source>
         <translation>&lt;b&gt;Пользовательские подкаталоги</translation>
     </message>
@@ -765,7 +765,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="obsolete">Web-история Beagle</translation>
     </message>
     <message>
-        <location line="-406"/>
+        <location line="-408"/>
         <source>Search parameters</source>
         <translation>Параметры поиска</translation>
     </message>
@@ -775,7 +775,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Просмотренные веб-страницы</translation>
     </message>
     <message>
-        <location line="+298"/>
+        <location line="+300"/>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1275,7 +1275,12 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Не удалось выполнить индексирование</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+75"/>
+        <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
         <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
 </source>
         <translation type="unfinished"></translation>
@@ -2719,9 +2724,13 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Специальное индексирование</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>Do not retry previously failed files.</source>
-        <translation>Не обрабатывать файлы с ошибками повторно.</translation>
+        <translation type="vanished">Не обрабатывать файлы с ошибками повторно.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Retry previously failed files.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3461,7 +3470,7 @@ This should give higher precedence to the results where the search terms appear 
         <translation type="obsolete">При достижении указанного размера кэша старые записи будут удаляться</translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="-333"/>
+        <location filename="../confgui/confguiindex.cpp" line="-335"/>
         <source>Web page store directory name</source>
         <translation>Имя каталога хранения веб-страниц</translation>
     </message>
@@ -3511,7 +3520,7 @@ This should give higher precedence to the results where the search terms appear 
         <translation type="obsolete">Просмотр</translation>
     </message>
     <message>
-        <location filename="../confgui/confgui.cpp" line="+255"/>
+        <location filename="../confgui/confgui.cpp" line="+258"/>
         <source>Choose</source>
         <translation>Выбрать</translation>
     </message>
@@ -3575,7 +3584,7 @@ This should give higher precedence to the results where the search terms appear 
 <context>
     <name>confgui::ConfSubPanelW</name>
     <message>
-        <location line="+377"/>
+        <location line="+379"/>
         <source>Global</source>
         <translation>Общее</translation>
     </message>
@@ -3658,7 +3667,7 @@ This will help searching very big text  files (ie: log files).</source>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
-        <location line="-220"/>
+        <location line="-222"/>
         <source>Top directories</source>
         <translation>Каталоги верхнего уровня</translation>
     </message>
@@ -3693,7 +3702,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Файл, куда будут записываться сообщения.&lt;br&gt;Используйте &apos;stderr&apos; для вывода в терминал</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+9"/>
         <source>Log verbosity level</source>
         <translation>Уровень подробности журнала</translation>
     </message>
@@ -3781,12 +3790,12 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>&lt;p&gt;Это исключения для механизма unac, который по умолчанию отбрасывает все диакритические знаки и проводит каноническую декомпозицию. Можно переопределить механизм удаления надстрочных знаков для отдельных символов или добавить правила декомпозиции (например, для лигатур). В каждой, отделённой запятой записи первый символ является исходным, а остальные — его интерпретация.</translation>
     </message>
     <message>
-        <location line="-102"/>
+        <location line="-104"/>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
         <translation>Полный путь к директории, которая не будет затрагиваться при индексировании. &lt;br&gt;Может содержать маски. Записи должны совпадать с путями, которые видит индексатор (например, если topdirs включает «/home/me», а «/home» на самом деле ведёт к «/usr/home», правильной записью skippedPath будет «/home/me/tmp*», а не «/usr/home/me/tmp*»)</translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+58"/>
         <source>Max disk occupation (%, 0 means no limit)</source>
         <translation>Максимальный объём использования диска (%, 0 — без ограничений)</translation>
     </message>
