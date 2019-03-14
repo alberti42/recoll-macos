@@ -190,7 +190,7 @@ void RclMain::periodic100()
 
     if ((prevstate == IXST_RUNNINGMINE || prevstate == IXST_RUNNINGNOTMINE)
         && m_indexerState == IXST_NOTRUNNING) {
-        showTrayMessage("Indexing done");
+        showTrayMessage(tr("Indexing done"));
     }
 
     // Possibly cleanup the dead viewers
@@ -413,7 +413,7 @@ void SpecIdxW::onBrowsePB_clicked()
 
 bool SpecIdxW::noRetryFailed()
 {
-    return noRetryFailedCB->isChecked();
+    return !retryFailedCB->isChecked();
 }
 
 bool SpecIdxW::eraseFirst()

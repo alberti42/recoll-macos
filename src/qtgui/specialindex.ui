@@ -20,9 +20,9 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QCheckBox" name="noRetryFailedCB">
+      <widget class="QCheckBox" name="retryFailedCB">
        <property name="text">
-        <string>Do not retry previously failed files.</string>
+        <string>Retry previously failed files.</string>
        </property>
       </widget>
      </item>
