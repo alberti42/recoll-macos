@@ -40,14 +40,9 @@
  */
 class RclMonitor {
 public:
-    RclMonitor()
-	: saved_errno(0)
-    {
-    }
+    RclMonitor() {}
+    virtual ~RclMonitor() {}
 
-    virtual ~RclMonitor() 
-    {
-    }
     virtual bool addWatch(const string& path, bool isDir) = 0;
     virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
     virtual bool ok() const = 0;
@@ -55,7 +50,7 @@ public:
     virtual bool generatesExist() const = 0; 
 
     // Save significant errno after monitor calls
-    int saved_errno;
+    int saved_errno{0};
 };
 
 // Monitor factory. We only have one compiled-in kind at a time, no
@@ -73,15 +68,15 @@ static RclMonitor *makeMonitor();
 class WalkCB : public FsTreeWalkerCB {
 public:
     WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue,
-        FsTreeWalker& walker)
-	: m_config(conf), m_mon(mon), m_queue(queue), m_walker(walker)
-    {}
+           FsTreeWalker& walker)
+        : m_config(conf), m_mon(mon), m_queue(queue), m_walker(walker)
+        {}
     virtual ~WalkCB() {}
 
     virtual FsTreeWalker::Status 
     processone(const string &fn, const struct stat *st, 
                FsTreeWalker::CbFlag flg) {
-	MONDEB("rclMonRcvRun: processone " << fn <<  " m_mon " << m_mon <<
+        MONDEB("rclMonRcvRun: processone " << fn <<  " m_mon " << m_mon <<
                " m_mon->ok " << (m_mon ? m_mon->ok() : false) << std::endl);
 
         if (flg == FsTreeWalker::FtwDirEnter || 
@@ -91,47 +86,47 @@ public:
             m_walker.setSkippedNames(m_config->getSkippedNames());
         }
 
-	if (flg == FsTreeWalker::FtwDirEnter) {
-	    // Create watch when entering directory, but first empty
-	    // whatever events we may already have on queue
-	    while (m_queue->ok() && m_mon->ok()) {
-		RclMonEvent ev;
-		if (m_mon->getEvent(ev, 0)) {
-		    if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
-			m_queue->pushEvent(ev);
-		} else {
-		    MONDEB("rclMonRcvRun: no event pending\n");
-		    break;
-		}
-	    }
-	    if (!m_mon || !m_mon->ok())
-		return FsTreeWalker::FtwError;
-	    // We do nothing special if addWatch fails for a reasonable reason
-	    if (!m_mon->addWatch(fn, true)) {
-		if (m_mon->saved_errno != EACCES && 
-		    m_mon->saved_errno != ENOENT)
-		    return FsTreeWalker::FtwError;
-	    }
-	} else if (!m_mon->generatesExist() && 
-		   flg == FsTreeWalker::FtwRegular) {
-	    // Have to synthetize events for regular files existence
-	    // at startup because the monitor does not do it
-	    // Note 2011-09-29: no sure this is actually needed. We just ran
-	    //  an incremental indexing pass (before starting the
-	    //  monitor). Why go over the files once more ? The only
-	    //  reason I can see would be to catch modifications that
-	    //  happen between the incremental and the start of
-	    //  monitoring ? There should be another way: maybe start
-	    //  monitoring without actually handling events (just
-	    //  queue), then run incremental then start handling
-	    //  events ? But we also have to do it on a directory
-	    //  move! So keep it
-	    RclMonEvent ev;
-	    ev.m_path = fn;
-	    ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
-	    m_queue->pushEvent(ev);
-	}
-	return FsTreeWalker::FtwOk;
+        if (flg == FsTreeWalker::FtwDirEnter) {
+            // Create watch when entering directory, but first empty
+            // whatever events we may already have on queue
+            while (m_queue->ok() && m_mon->ok()) {
+                RclMonEvent ev;
+                if (m_mon->getEvent(ev, 0)) {
+                    if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
+                        m_queue->pushEvent(ev);
+                } else {
+                    MONDEB("rclMonRcvRun: no event pending\n");
+                    break;
+                }
+            }
+            if (!m_mon || !m_mon->ok())
+                return FsTreeWalker::FtwError;
+            // We do nothing special if addWatch fails for a reasonable reason
+            if (!m_mon->addWatch(fn, true)) {
+                if (m_mon->saved_errno != EACCES && 
+                    m_mon->saved_errno != ENOENT)
+                    return FsTreeWalker::FtwError;
+            }
+        } else if (!m_mon->generatesExist() && 
+                   flg == FsTreeWalker::FtwRegular) {
+            // Have to synthetize events for regular files existence
+            // at startup because the monitor does not do it
+            // Note 2011-09-29: no sure this is actually needed. We just ran
+            //  an incremental indexing pass (before starting the
+            //  monitor). Why go over the files once more ? The only
+            //  reason I can see would be to catch modifications that
+            //  happen between the incremental and the start of
+            //  monitoring ? There should be another way: maybe start
+            //  monitoring without actually handling events (just
+            //  queue), then run incremental then start handling
+            //  events ? But we also have to do it on a directory
+            //  move! So keep it
+            RclMonEvent ev;
+            ev.m_path = fn;
+            ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+            m_queue->pushEvent(ev);
+        }
+        return FsTreeWalker::FtwOk;
     }
 
 private:
@@ -156,19 +151,19 @@ void *rclMonRcvRun(void *q)
     // Create the fam/whatever interface object
     RclMonitor *mon;
     if ((mon = makeMonitor()) == 0) {
-	LOGERR("rclMonRcvRun: makeMonitor failed\n");
-	queue->setTerminate();
-	return 0;
+        LOGERR("rclMonRcvRun: makeMonitor failed\n");
+        queue->setTerminate();
+        return 0;
     }
 
     // Get top directories from config. Special monitor sublist if
     // set, else full list.
     vector<string> tdl = lconfig.getTopdirs(true);
     if (tdl.empty()) {
-	LOGERR("rclMonRcvRun:: top directory list (topdirs param.) not found "
+        LOGERR("rclMonRcvRun:: top directory list (topdirs param.) not found "
                "in configuration or topdirs list parse error");
-	queue->setTerminate();
-	return 0;
+        queue->setTerminate();
+        return 0;
     }
 
     // Walk the directory trees to add watches
@@ -176,15 +171,15 @@ void *rclMonRcvRun(void *q)
     walker.setSkippedPaths(lconfig.getDaemSkippedPaths());
     WalkCB walkcb(&lconfig, mon, queue, walker);
     for (auto it = tdl.begin(); it != tdl.end(); it++) {
-	lconfig.setKeyDir(*it);
-	// Adjust the follow symlinks options
-	bool follow;
-	if (lconfig.getConfParam("followLinks", &follow) && 
-	    follow) {
-	    walker.setOpts(FsTreeWalker::FtwFollow);
-	} else {
-	    walker.setOpts(FsTreeWalker::FtwOptNone);
-	}
+        lconfig.setKeyDir(*it);
+        // Adjust the follow symlinks options
+        bool follow;
+        if (lconfig.getConfParam("followLinks", &follow) && 
+            follow) {
+            walker.setOpts(FsTreeWalker::FtwFollow);
+        } else {
+            walker.setOpts(FsTreeWalker::FtwOptNone);
+        }
         // We have to special-case regular files which are part of the topdirs
         // list because we the tree walker only adds watches for directories
         struct stat st;
@@ -206,68 +201,68 @@ void *rclMonRcvRun(void *q)
             if (!mon->addWatch(*it, false)) {
                 LOGERR("rclMonRcvRun: addWatch failed for " << *it <<
                        " errno " << mon->saved_errno << std::endl);
-	    }
+            }
         }
     }
 
     {
-	bool doweb = false;
-	lconfig.getConfParam("processwebqueue", &doweb);
-	if (doweb) {
-	    string webqueuedir = lconfig.getWebQueueDir();
-	    if (!mon->addWatch(webqueuedir, true)) {
-		LOGERR("rclMonRcvRun: addwatch (webqueuedir) failed\n");
-		if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT)
-		    goto terminate;
-	    }
-	}
+        bool doweb = false;
+        lconfig.getConfParam("processwebqueue", &doweb);
+        if (doweb) {
+            string webqueuedir = lconfig.getWebQueueDir();
+            if (!mon->addWatch(webqueuedir, true)) {
+                LOGERR("rclMonRcvRun: addwatch (webqueuedir) failed\n");
+                if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT)
+                    goto terminate;
+            }
+        }
     }
 
     // Forever wait for monitoring events and add them to queue:
     MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() <<
            std::endl);
     while (queue->ok() && mon->ok()) {
-	RclMonEvent ev;
-	// Note: I could find no way to get the select
-	// call to return when a signal is delivered to the process
-	// (it goes to the main thread, from which I tried to close or
-	// write to the select fd, with no effect). So set a 
-	// timeout so that an intr will be detected
-	if (mon->getEvent(ev, 2000)) {
-	    // Don't push events for skipped files. This would get
-	    // filtered on the processing side anyway, but causes
-	    // unnecessary wakeups and messages. Do not test
+        RclMonEvent ev;
+        // Note: I could find no way to get the select
+        // call to return when a signal is delivered to the process
+        // (it goes to the main thread, from which I tried to close or
+        // write to the select fd, with no effect). So set a 
+        // timeout so that an intr will be detected
+        if (mon->getEvent(ev, 2000)) {
+            // Don't push events for skipped files. This would get
+            // filtered on the processing side anyway, but causes
+            // unnecessary wakeups and messages. Do not test
             // skippedPaths here, this would be incorrect (because a
             // topdir can be under a skippedPath and this was handled
             // while adding the watches).
-	    lconfig.setKeyDir(path_getfather(ev.m_path));
-	    walker.setSkippedNames(lconfig.getSkippedNames());
-	    if (walker.inSkippedNames(path_getsimple(ev.m_path)))
-		continue;
+            lconfig.setKeyDir(path_getfather(ev.m_path));
+            walker.setSkippedNames(lconfig.getSkippedNames());
+            if (walker.inSkippedNames(path_getsimple(ev.m_path)))
+                continue;
 
-	    if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
-		// Recursive addwatch: there may already be stuff
-		// inside this directory. Ie: files were quickly
-		// created, or this is actually the target of a
-		// directory move. This is necessary for inotify, but
-		// it seems that fam/gamin is doing the job for us so
-		// that we are generating double events here (no big
-		// deal as prc will sort/merge).
-		LOGDEB("rclMonRcvRun: walking new dir " << ev.m_path << "\n");
-		if (walker.walk(ev.m_path, walkcb) != FsTreeWalker::FtwOk) {
-		    LOGERR("rclMonRcvRun: walking new dir " << ev.m_path <<
+            if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
+                // Recursive addwatch: there may already be stuff
+                // inside this directory. Ie: files were quickly
+                // created, or this is actually the target of a
+                // directory move. This is necessary for inotify, but
+                // it seems that fam/gamin is doing the job for us so
+                // that we are generating double events here (no big
+                // deal as prc will sort/merge).
+                LOGDEB("rclMonRcvRun: walking new dir " << ev.m_path << "\n");
+                if (walker.walk(ev.m_path, walkcb) != FsTreeWalker::FtwOk) {
+                    LOGERR("rclMonRcvRun: walking new dir " << ev.m_path <<
                            " : "  << walker.getReason() << "\n");
-		    goto terminate;
-		}
-		if (walker.getErrCnt() > 0) {
-		    LOGINFO("rclMonRcvRun: fs walker errors: " <<
+                    goto terminate;
+                }
+                if (walker.getErrCnt() > 0) {
+                    LOGINFO("rclMonRcvRun: fs walker errors: " <<
                             walker.getReason() << "\n");
-		}
-	    }
+                }
+            }
 
-	    if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
-		queue->pushEvent(ev);
-	}
+            if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
+                queue->pushEvent(ev);
+        }
     }
 
 terminate:
@@ -284,12 +279,12 @@ bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
     MONDEB("Clearing map for [" << top << "]\n");
     map<int,string>::iterator it = idtopath.begin();
     while (it != idtopath.end()) {
-	if (it->second.find(top) == 0) {
-	    found = true;
-	    idtopath.erase(it++);
-	} else {
-	    it++;
-	}
+        if (it->second.find(top) == 0) {
+            found = true;
+            idtopath.erase(it++);
+        } else {
+            it++;
+        }
     }
     return found;
 }
@@ -321,8 +316,8 @@ private:
     bool m_ok;
     FAMConnection m_conn;
     void close() {
-	FAMClose(&m_conn);
-	m_ok = false;
+        FAMClose(&m_conn);
+        m_ok = false;
     }
     map<int,string> m_idtopath;
     const char *event_name(int code);
@@ -356,8 +351,8 @@ RclFAM::RclFAM()
     : m_ok(false)
 {
     if (FAMOpen2(&m_conn, "Recoll")) {
-	LOGERR("RclFAM::RclFAM: FAMOpen2 failed, errno " << errno << "\n");
-	return;
+        LOGERR("RclFAM::RclFAM: FAMOpen2 failed, errno " << errno << "\n");
+        return;
     }
     m_ok = true;
 }
@@ -365,7 +360,7 @@ RclFAM::RclFAM()
 RclFAM::~RclFAM()
 {
     if (ok())
-	FAMClose(&m_conn);
+        FAMClose(&m_conn);
 }
 
 static jmp_buf jbuf;
@@ -376,7 +371,7 @@ static void onalrm(int sig)
 bool RclFAM::addWatch(const string& path, bool isdir)
 {
     if (!ok())
-	return false;
+        return false;
     bool ret = false;
 
     MONDEB("RclFAM::addWatch: adding " << path << std::endl);
@@ -387,22 +382,22 @@ bool RclFAM::addWatch(const string& path, bool isdir)
     // to unblock signals. SIGALRM is not used by the main thread, so at least
     // ensure that we exit after gamin gets stuck.
     if (setjmp(jbuf)) {
-	LOGERR("RclFAM::addWatch: timeout talking to FAM\n");
-	return false;
+        LOGERR("RclFAM::addWatch: timeout talking to FAM\n");
+        return false;
     }
     signal(SIGALRM, onalrm);
     alarm(20);
     FAMRequest req;
     if (isdir) {
-	if (FAMMonitorDirectory(&m_conn, path.c_str(), &req, 0) != 0) {
-	    LOGERR("RclFAM::addWatch: FAMMonitorDirectory failed\n");
-	    goto out;
-	}
+        if (FAMMonitorDirectory(&m_conn, path.c_str(), &req, 0) != 0) {
+            LOGERR("RclFAM::addWatch: FAMMonitorDirectory failed\n");
+            goto out;
+        }
     } else {
-	if (FAMMonitorFile(&m_conn, path.c_str(), &req, 0) != 0) {
-	    LOGERR("RclFAM::addWatch: FAMMonitorFile failed\n");
-	    goto out;
-	}
+        if (FAMMonitorFile(&m_conn, path.c_str(), &req, 0) != 0) {
+            LOGERR("RclFAM::addWatch: FAMMonitorFile failed\n");
+            goto out;
+        }
     }
     m_idtopath[req.reqnum] = path;
     ret = true;
@@ -417,7 +412,7 @@ out:
 bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 {
     if (!ok())
-	return false;
+        return false;
     MONDEB("RclFAM::getEvent:\n");
 
     fd_set readfds;
@@ -430,27 +425,27 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
     // a little timeout, because if we fail to retrieve enough events,
     // we risk deadlocking in addwatch()
     if (msecs == 0)
-	msecs = 2;
+        msecs = 2;
     struct timeval timeout;
     if (msecs >= 0) {
-	timeout.tv_sec = msecs / 1000;
-	timeout.tv_usec = (msecs % 1000) * 1000;
+        timeout.tv_sec = msecs / 1000;
+        timeout.tv_usec = (msecs % 1000) * 1000;
     }
     int ret;
     if ((ret=select(fam_fd+1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0)) < 0) {
-	LOGERR("RclFAM::getEvent: select failed, errno " << errno << "\n");
-	close();
-	return false;
+        LOGERR("RclFAM::getEvent: select failed, errno " << errno << "\n");
+        close();
+        return false;
     } else if (ret == 0) {
-	// timeout
-	MONDEB("RclFAM::getEvent: select timeout\n");
-	return false;
+        // timeout
+        MONDEB("RclFAM::getEvent: select timeout\n");
+        return false;
     }
 
     MONDEB("RclFAM::getEvent: select returned " << ret << std::endl);
 
     if (!FD_ISSET(fam_fd, &readfds))
-	return false;
+        return false;
 
     // ?? 2011/03/15 gamin v0.1.10. There is initially a single null
     // byte on the connection so the first select always succeeds. If
@@ -458,25 +453,25 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
     // around the issue, but we did not need this in the past and this
     // is most weird.
     if (FAMPending(&m_conn) <= 0) {
-	MONDEB("RclFAM::getEvent: FAMPending says no events\n");
-	return false;
+        MONDEB("RclFAM::getEvent: FAMPending says no events\n");
+        return false;
     }
 
     MONDEB("RclFAM::getEvent: call FAMNextEvent\n");
     FAMEvent fe;
     if (FAMNextEvent(&m_conn, &fe) < 0) {
-	LOGERR("RclFAM::getEvent: FAMNextEvent: errno " << errno << "\n");
-	close();
-	return false;
+        LOGERR("RclFAM::getEvent: FAMNextEvent: errno " << errno << "\n");
+        close();
+        return false;
     }
     MONDEB("RclFAM::getEvent: FAMNextEvent returned\n");
     
     map<int,string>::const_iterator it;
     if ((!path_isabsolute(fe.filename)) && 
-	(it = m_idtopath.find(fe.fr.reqnum)) != m_idtopath.end()) {
-	ev.m_path = path_cat(it->second, fe.filename);
+        (it = m_idtopath.find(fe.fr.reqnum)) != m_idtopath.end()) {
+        ev.m_path = path_cat(it->second, fe.filename);
     } else {
-	ev.m_path = fe.filename;
+        ev.m_path = fe.filename;
     }
 
     MONDEB("RclFAM::getEvent: " << event_name(fe.code) < " " <<
@@ -484,39 +479,39 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 
     switch (fe.code) {
     case FAMCreated:
-	if (path_isdir(ev.m_path)) {
-	    ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
-	    break;
-	}
-	/* FALLTHROUGH */
+        if (path_isdir(ev.m_path)) {
+            ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
+            break;
+        }
+        /* FALLTHROUGH */
     case FAMChanged:
     case FAMExists:
-	// Let the other side sort out the status of this file vs the db
-	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
-	break;
+        // Let the other side sort out the status of this file vs the db
+        ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+        break;
 
     case FAMMoved: 
     case FAMDeleted:
-	ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
-	// We would like to signal a directory here to enable cleaning
-	// the subtree (on a dir move), but can't test the actual file
-	// which is gone, and fam doesn't tell us if it's a dir or reg. 
-	// Let's rely on the fact that a directory should be watched
-	if (eraseWatchSubTree(m_idtopath, ev.m_path)) 
-	    ev.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
-	break;
+        ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
+        // We would like to signal a directory here to enable cleaning
+        // the subtree (on a dir move), but can't test the actual file
+        // which is gone, and fam doesn't tell us if it's a dir or reg. 
+        // Let's rely on the fact that a directory should be watched
+        if (eraseWatchSubTree(m_idtopath, ev.m_path)) 
+            ev.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
+        break;
 
     case FAMStartExecuting:
     case FAMStopExecuting:
     case FAMAcknowledge:
     case FAMEndExist:
     default:
-	// Have to return something, this is different from an empty queue,
-	// esp if we are trying to empty it...
-	if (fe.code != FAMEndExist)
-	    LOGDEB("RclFAM::getEvent: got other event " << fe.code << "!\n");
-	ev.m_etyp = RclMonEvent::RCLEVT_NONE;
-	break;
+        // Have to return something, this is different from an empty queue,
+        // esp if we are trying to empty it...
+        if (fe.code != FAMEndExist)
+            LOGDEB("RclFAM::getEvent: got other event " << fe.code << "!\n");
+        ev.m_etyp = RclMonEvent::RCLEVT_NONE;
+        break;
     }
     return true;
 }
@@ -532,18 +527,18 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 class RclIntf : public RclMonitor {
 public:
     RclIntf()
-	: m_ok(false), m_fd(-1), m_evp(0), m_ep(0)
-    {
-	if ((m_fd = inotify_init()) < 0) {
-	    LOGERR("RclIntf:: inotify_init failed, errno " << errno << "\n");
-	    return;
-	}
-	m_ok = true;
-    }
+        : m_ok(false), m_fd(-1), m_evp(0), m_ep(0)
+        {
+            if ((m_fd = inotify_init()) < 0) {
+                LOGERR("RclIntf:: inotify_init failed, errno " << errno << "\n");
+                return;
+            }
+            m_ok = true;
+        }
     virtual ~RclIntf()
-    {
-	close();
-    }
+        {
+            close();
+        }
 
     virtual bool addWatch(const string& path, bool isdir);
     virtual bool getEvent(RclMonEvent& ev, int msecs = -1);
@@ -560,11 +555,11 @@ private:
     char *m_ep;  // Pointer to end of events
     const char *event_name(int code);
     void close() {
-	if (m_fd >= 0) {
-	    ::close(m_fd);
-	    m_fd = -1;
-	}
-	m_ok = false;
+        if (m_fd >= 0) {
+            ::close(m_fd);
+            m_fd = -1;
+        }
+        m_ok = false;
     }
 };
 
@@ -590,42 +585,42 @@ const char *RclIntf::event_name(int code)
     case IN_Q_OVERFLOW: return "IN_Q_OVERFLOW";
     case IN_IGNORED: return "IN_IGNORED";
     default: {
-	static char msg[50];
-	sprintf(msg, "Unknown event 0x%x", code);
-	return msg;
+        static char msg[50];
+        sprintf(msg, "Unknown event 0x%x", code);
+        return msg;
     }
     };
 }
 
 bool RclIntf::addWatch(const string& path, bool)
 {
-   if (!ok())
-       return false;
-   MONDEB("RclIntf::addWatch: adding " << path << std::endl);
+    if (!ok())
+        return false;
+    MONDEB("RclIntf::addWatch: adding " << path << std::endl);
     // CLOSE_WRITE is covered through MODIFY. CREATE is needed for mkdirs
     uint32_t mask = IN_MODIFY | IN_CREATE
         | IN_MOVED_FROM | IN_MOVED_TO | IN_DELETE
-	// IN_ATTRIB used to be not needed to receive extattr
-	// modification events, which was a bit weird because only ctime is
-	// set, and now it is...
-	| IN_ATTRIB
+        // IN_ATTRIB used to be not needed to receive extattr
+        // modification events, which was a bit weird because only ctime is
+        // set, and now it is...
+        | IN_ATTRIB
 #ifdef IN_DONT_FOLLOW
-	| IN_DONT_FOLLOW
+        | IN_DONT_FOLLOW
 #endif
 #ifdef IN_EXCL_UNLINK
-	| IN_EXCL_UNLINK
+        | IN_EXCL_UNLINK
 #endif
-	;
+        ;
     int wd;
     if ((wd = inotify_add_watch(m_fd, path.c_str(), mask)) < 0) {
-	saved_errno = errno;
+        saved_errno = errno;
         LOGERR("RclIntf::addWatch: inotify_add_watch failed. errno " <<
                saved_errno << "\n");
         if (errno == ENOSPC) {
             LOGERR("RclIntf::addWatch: ENOSPC error may mean that you should "
                    "increase the inotify kernel constants. See inotify(7)\n");
         }
-	return false;
+        return false;
     }
     m_idtopath[wd] = path;
     return true;
@@ -636,103 +631,103 @@ bool RclIntf::addWatch(const string& path, bool)
 bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 {
     if (!ok())
-	return false;
+        return false;
     ev.m_etyp = RclMonEvent::RCLEVT_NONE;
     MONDEB("RclIntf::getEvent:\n");
 
     if (m_evp == 0) {
-	fd_set readfds;
-	FD_ZERO(&readfds);
-	FD_SET(m_fd, &readfds);
-	struct timeval timeout;
-	if (msecs >= 0) {
-	    timeout.tv_sec = msecs / 1000;
-	    timeout.tv_usec = (msecs % 1000) * 1000;
-	}
-	int ret;
-	MONDEB("RclIntf::getEvent: select\n");
-	if ((ret = select(m_fd + 1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0))
+        fd_set readfds;
+        FD_ZERO(&readfds);
+        FD_SET(m_fd, &readfds);
+        struct timeval timeout;
+        if (msecs >= 0) {
+            timeout.tv_sec = msecs / 1000;
+            timeout.tv_usec = (msecs % 1000) * 1000;
+        }
+        int ret;
+        MONDEB("RclIntf::getEvent: select\n");
+        if ((ret = select(m_fd + 1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0))
             < 0) {
-	    LOGERR("RclIntf::getEvent: select failed, errno " << errno << "\n");
-	    close();
-	    return false;
-	} else if (ret == 0) {
-	    MONDEB("RclIntf::getEvent: select timeout\n");
-	    // timeout
-	    return false;
-	}
-	MONDEB("RclIntf::getEvent: select returned\n");
+            LOGERR("RclIntf::getEvent: select failed, errno " << errno << "\n");
+            close();
+            return false;
+        } else if (ret == 0) {
+            MONDEB("RclIntf::getEvent: select timeout\n");
+            // timeout
+            return false;
+        }
+        MONDEB("RclIntf::getEvent: select returned\n");
 
-	if (!FD_ISSET(m_fd, &readfds))
-	    return false;
-	int rret;
-	if ((rret=read(m_fd, m_evbuf, sizeof(m_evbuf))) <= 0) {
-	    LOGERR("RclIntf::getEvent: read failed, "  << sizeof(m_evbuf) <<
+        if (!FD_ISSET(m_fd, &readfds))
+            return false;
+        int rret;
+        if ((rret=read(m_fd, m_evbuf, sizeof(m_evbuf))) <= 0) {
+            LOGERR("RclIntf::getEvent: read failed, "  << sizeof(m_evbuf) <<
                    "->"  << rret << " errno "  << errno << "\n");
-	    close();
-	    return false;
-	}
-	m_evp = m_evbuf;
-	m_ep = m_evbuf + rret;
+            close();
+            return false;
+        }
+        m_evp = m_evbuf;
+        m_ep = m_evbuf + rret;
     }
 
     struct inotify_event *evp = (struct inotify_event *)m_evp;
     m_evp += sizeof(struct inotify_event);
     if (evp->len > 0)
-	m_evp += evp->len;
+        m_evp += evp->len;
     if (m_evp >= m_ep)
-	m_evp = m_ep = 0;
+        m_evp = m_ep = 0;
     
     map<int,string>::const_iterator it;
     if ((it = m_idtopath.find(evp->wd)) == m_idtopath.end()) {
-	LOGERR("RclIntf::getEvent: unknown wd " << evp->wd << "\n");
-	return true;
+        LOGERR("RclIntf::getEvent: unknown wd " << evp->wd << "\n");
+        return true;
     }
     ev.m_path = it->second;
 
     if (evp->len > 0) {
-	ev.m_path = path_cat(ev.m_path, evp->name);
+        ev.m_path = path_cat(ev.m_path, evp->name);
     }
 
     MONDEB("RclIntf::getEvent: " << event_name(evp->mask) << " " <<
            ev.m_path << std::endl);
 
     if ((evp->mask & IN_MOVED_FROM) && (evp->mask & IN_ISDIR)) {
-	// We get this when a directory is renamed. Erase the subtree
-	// entries in the map. The subsequent MOVED_TO will recreate
-	// them. This is probably not needed because the watches
-	// actually still exist in the kernel, so that the wds
-	// returned by future addwatches will be the old ones, and the
-	// map will be updated in place. But still, this feels safer
-	eraseWatchSubTree(m_idtopath, ev.m_path);
+        // We get this when a directory is renamed. Erase the subtree
+        // entries in the map. The subsequent MOVED_TO will recreate
+        // them. This is probably not needed because the watches
+        // actually still exist in the kernel, so that the wds
+        // returned by future addwatches will be the old ones, and the
+        // map will be updated in place. But still, this feels safer
+        eraseWatchSubTree(m_idtopath, ev.m_path);
     }
 
     // IN_ATTRIB used to be not needed, but now it is
     if (evp->mask & (IN_MODIFY|IN_ATTRIB)) {
-	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+        ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
     } else if (evp->mask & (IN_DELETE | IN_MOVED_FROM)) {
-	ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
-	if (evp->mask & IN_ISDIR)
-	    ev.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
+        ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
+        if (evp->mask & IN_ISDIR)
+            ev.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
     } else if (evp->mask & (IN_CREATE | IN_MOVED_TO)) {
-	if (evp->mask & IN_ISDIR) {
-	    ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
-	} else {
-	    // We used to return null event because we would get a
-	    // modify event later, but it seems not to be the case any
-	    // more (10-2011). So generate MODIFY event
-	    ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
-	}
+        if (evp->mask & IN_ISDIR) {
+            ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
+        } else {
+            // We used to return null event because we would get a
+            // modify event later, but it seems not to be the case any
+            // more (10-2011). So generate MODIFY event
+            ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+        }
     } else if (evp->mask & (IN_IGNORED)) {
-	if (!m_idtopath.erase(evp->wd)) {
-	    LOGDEB0("Got IGNORE event for unknown watch\n");
-	} else {
-	    eraseWatchSubTree(m_idtopath, ev.m_path);
-	}
+        if (!m_idtopath.erase(evp->wd)) {
+            LOGDEB0("Got IGNORE event for unknown watch\n");
+        } else {
+            eraseWatchSubTree(m_idtopath, ev.m_path);
+        }
     } else {
-	LOGDEB("RclIntf::getEvent: unhandled event " << event_name(evp->mask) <<
+        LOGDEB("RclIntf::getEvent: unhandled event " << event_name(evp->mask) <<
                " " << evp->mask << " " << ev.m_path << "\n");
-	return true;
+        return true;
     }
     return true;
 }
@@ -757,4 +752,3 @@ static RclMonitor *makeMonitor()
     return 0;
 }
 #endif // RCL_MONITOR
-
