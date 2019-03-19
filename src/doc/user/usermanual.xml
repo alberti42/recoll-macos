@@ -6544,21 +6544,89 @@ for i in range(nres):
       <sect2 id="RCL.INSTALL.CONFIG.MIMECONF">
         <title>The mimeconf file</title>
 
-        <para><filename>mimeconf</filename> specifies how the
-        different MIME types are handled for indexing, and which icons
-        are displayed in the <command>recoll</command> result lists.</para>
+        <para>The main purpose of the <filename>mimeconf</filename> file is
+        to specify how the different MIME types are handled for
+        indexing. This is done in the <literal>[index]</literal>
+        section, which should not be modified casually. See the comments in
+        the file.</para>
 
-        <para>Changing the parameters in the [index] section is
-        probably not a good idea except if you are a &RCL;
-        developer.</para> 
+        <para>The file also contains other definitions which affect the
+        query language and the GUI, and which, in retrospect, should have
+        been stored elsewhere.</para>
 
-        <para>The [icons] section allows you to change the icons which
-        are displayed by <command>recoll</command> in the result
-        lists (the values are the basenames of the png images inside
-        the <filename>iconsdir</filename> directory (specified in
-        <filename>recoll.conf</filename>).</para>
+        <para>The <literal>[icons]</literal> section allows you to change
+        the icons which are displayed by the <command>recoll</command> GUI
+        in the result lists (the values are the basenames of the
+        <literal>png</literal> images inside the
+        <filename>iconsdir</filename> directory (which is itself defined
+        in <filename>recoll.conf</filename>).</para>
 
+        <para>The <literal>[categories]</literal> section defines the
+        groupings of MIME types into <literal>categories</literal> as used
+        when adding an <literal>rclcat</literal> clause to a
+        <link linkend="RCL.SEARCH.LANG">query language</link>
+        query. <literal>rclcat</literal> clauses are also used by the
+        default <literal>guifilters</literal> buttons in the GUI (see
+        next).</para>
+
+        <para>The filter controls appear at the top of the
+        <command>recoll</command> GUI, either as checkboxes just above the
+        result list, or as a dropbox in the tool area.</para>
+
+        <para>By default, they are labeled: <literal>media</literal>,
+        <literal>message</literal>, <literal>other</literal>,
+        <literal>presentation</literal>, <literal>spreadsheet</literal> and
+        <literal>text</literal>, and each maps to a document category. This
+        is determined in the <literal>[guifilters]</literal> section, where
+        each control is defined by a variable naming a query language
+        fragment.</para>
+
+        <para>A simple exemple will hopefully make things clearer.</para>
+
+        <programlisting>[guifilters]
+
+Big Books = dir:"~/My Books" size&gt;10K
+My Docs = dir:"~/My Documents"
+Small Books = dir:"~/My Books" size&lt;10K
+System Docs = dir:/usr/share/doc
+        </programlisting>
+
+
+        <para>The above definition would create four filter checkboxes,
+        labelled <literal>Big Books</literal>, <literal>My Docs</literal>,
+        etc.</para>
+
+        <para>The text after the equal sign must be a valid query language
+        fragment, and, when the button is checked, it will be combined with
+        the rest of the query with an AND conjunction.</para>
+
+        <para>Any name text before a colon character will be erased in the
+        display, but used for sorting. You can use this to display the
+        checkboxes in any order you like. For exemple, the following would
+        do exactly the same as above, but ordering the checkboxes in the
+        reverse order.</para>
+
+        <programlisting>[guifilters]
+
+d:Big Books = dir:"~/My Books" size&gt;10K
+c:My Docs = dir:"~/My Documents"
+b:Small Books = dir:"~/My Books" size&lt;10K
+a:System Docs = dir:/usr/share/doc
+        </programlisting>
+
+        <para>As you may have guessed, The default
+        <literal>[guifilters]</literal> section looks like:</para>
+        <programlisting>[guifilters]
+text = rclcat:text
+spreadsheet = rclcat:spreadsheet
+presentation = rclcat:presentation
+media = rclcat:media
+message = rclcat:message
+other = rclcat:other
+        </programlisting>
+        
       </sect2>
+
 
       <sect2 id="RCL.INSTALL.CONFIG.MIMEVIEW">
         <title>The mimeview file</title>

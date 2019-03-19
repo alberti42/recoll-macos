@@ -9713,21 +9713,87 @@ for i in range(nres):
               </div>
             </div>
           </div>
-          <p><code class="filename">mimeconf</code> specifies how
-          the different MIME types are handled for indexing, and
-          which icons are displayed in the <span class=
-          "command"><strong>recoll</strong></span> result
-          lists.</p>
-          <p>Changing the parameters in the [index] section is
-          probably not a good idea except if you are a <span class=
-          "application">Recoll</span> developer.</p>
-          <p>The [icons] section allows you to change the icons
-          which are displayed by <span class=
-          "command"><strong>recoll</strong></span> in the result
-          lists (the values are the basenames of the png images
-          inside the <code class="filename">iconsdir</code>
-          directory (specified in <code class=
+          <p>The main purpose of the <code class=
+          "filename">mimeconf</code> file is to specify how the
+          different MIME types are handled for indexing. This is
+          done in the <code class="literal">[index]</code> section,
+          which should not be modified casually. See the comments
+          in the file.</p>
+          <p>The file also contains other definitions which affect
+          the query language and the GUI, and which, in retrospect,
+          should have been stored elsewhere.</p>
+          <p>The <code class="literal">[icons]</code> section
+          allows you to change the icons which are displayed by the
+          <span class="command"><strong>recoll</strong></span> GUI
+          in the result lists (the values are the basenames of the
+          <code class="literal">png</code> images inside the
+          <code class="filename">iconsdir</code> directory (which
+          is itself defined in <code class=
           "filename">recoll.conf</code>).</p>
+          <p>The <code class="literal">[categories]</code> section
+          defines the groupings of MIME types into <code class=
+          "literal">categories</code> as used when adding an
+          <code class="literal">rclcat</code> clause to a <a class=
+          "link" href="#RCL.SEARCH.LANG" title=
+          "3.6.&nbsp;The query language">query language</a> query.
+          <code class="literal">rclcat</code> clauses are also used
+          by the default <code class="literal">guifilters</code>
+          buttons in the GUI (see next).</p>
+          <p>The filter controls appear at the top of the
+          <span class="command"><strong>recoll</strong></span> GUI,
+          either as checkboxes just above the result list, or as a
+          dropbox in the tool area.</p>
+          <p>By default, they are labeled: <code class=
+          "literal">media</code>, <code class=
+          "literal">message</code>, <code class=
+          "literal">other</code>, <code class=
+          "literal">presentation</code>, <code class=
+          "literal">spreadsheet</code> and <code class=
+          "literal">text</code>, and each maps to a document
+          category. This is determined in the <code class=
+          "literal">[guifilters]</code> section, where each control
+          is defined by a variable naming a query language
+          fragment.</p>
+          <p>A simple exemple will hopefully make things
+          clearer.</p>
+          <pre class="programlisting">[guifilters]
+
+Big Books = dir:"~/My Books" size&gt;10K
+My Docs = dir:"~/My Documents"
+Small Books = dir:"~/My Books" size&lt;10K
+System Docs = dir:/usr/share/doc
+        </pre>
+          <p>The above definition would create four filter
+          checkboxes, labelled <code class="literal">Big
+          Books</code>, <code class="literal">My Docs</code>,
+          etc.</p>
+          <p>The text after the equal sign must be a valid query
+          language fragment, and, when the button is checked, it
+          will be combined with the rest of the query with an AND
+          conjunction.</p>
+          <p>Any name text before a colon character will be erased
+          in the display, but used for sorting. You can use this to
+          display the checkboxes in any order you like. For
+          exemple, the following would do exactly the same as
+          above, but ordering the checkboxes in the reverse
+          order.</p>
+          <pre class="programlisting">[guifilters]
+
+d:Big Books = dir:"~/My Books" size&gt;10K
+c:My Docs = dir:"~/My Documents"
+b:Small Books = dir:"~/My Books" size&lt;10K
+a:System Docs = dir:/usr/share/doc
+        </pre>
+          <p>As you may have guessed, The default <code class=
+          "literal">[guifilters]</code> section looks like:</p>
+          <pre class="programlisting">[guifilters]
+text = rclcat:text
+spreadsheet = rclcat:spreadsheet
+presentation = rclcat:presentation
+media = rclcat:media
+message = rclcat:message
+other = rclcat:other
+        </pre>
         </div>
         <div class="sect2">
           <div class="titlepage">
