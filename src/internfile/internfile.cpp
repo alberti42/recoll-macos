@@ -129,6 +129,14 @@ FileInterner::FileInterner(const string &fn, const struct stat *stp,
     init(fn, stp, cnf, flags, imime);
 }
 
+// Note that we always succeed (set m_ok = true), except in internal
+// inconsistency cases (which could just as well abort()).  Errors
+// will be detected when internfile() is called. This is done so that
+// our caller creates a doc record in all cases (with an error-flagged
+// signature), so that the appropriate retry choices can be made. This
+// used to not be the case, and was changed because this was the
+// simplest way to solve the retry issues (simpler than changing the
+// caller in e.g. fsindexer).
 void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
                         int flags, const string *imime)
 {
@@ -190,6 +198,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 	    if (!m_cfg->getConfParam("compressedfilemaxkbs", &maxkbs) ||
 		maxkbs < 0 || !stp || int(stp->st_size / 1024) < maxkbs) {
 		if (!m_uncomp->uncompressfile(m_fn, ucmd, m_tfile)) {
+                    m_ok = true;
 		    return;
 		}
 		LOGDEB1("FileInterner:: after ucomp: tfile " << m_tfile <<"\n");
@@ -199,6 +208,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		if (path_fileprops(m_fn, &ucstat) != 0) {
 		    LOGERR("FileInterner: can't stat the uncompressed file[" <<
                            m_fn << "] errno " << errno << "\n");
+                    m_ok = true;
 		    return;
 		} else {
 		    docsize = ucstat.st_size;
