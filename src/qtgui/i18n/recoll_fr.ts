@@ -2805,7 +2805,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation type="obsolete">Cacher les doublons.</translation>
+        <translation type="obsolete">Cacher les doublons</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
@@ -3338,7 +3338,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Taille maximum des textes surlignés avant prévisualisation (MO)</translation>
+        <translation>Taille maximum des textes surlignés avant prévisualisation (Mo)</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
@@ -3600,7 +3600,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
-        <translation>Décide si les filtres de documents sont affichés comme des radio-boutons, un combobox dans la barre d&apos;outils, ou un menu.</translation>
+        <translation>Décide si les filtres de documents sont affichés comme des radio-boutons, un menu déroulant dans la barre d&apos;outils, ou un menu.</translation>
     </message>
     <message>
         <source>Document filter choice style:</source>
@@ -3612,7 +3612,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Toolbar Combobox</source>
-        <translation>Combobox dans le panneau d&apos;outils</translation>
+        <translation>Menu déroulant dans le panneau d&apos;outils</translation>
     </message>
     <message>
         <source>Menu</source>
