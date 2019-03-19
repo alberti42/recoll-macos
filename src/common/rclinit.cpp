@@ -168,12 +168,14 @@ LRESULT CALLBACK MainWndProc(HWND hwnd , UINT msg , WPARAM wParam,
     case WM_POWERBROADCAST:
     {
         LOGDEB("MainWndProc: got powerbroadcast message\n");
-        // We always try to end an indexing operation, independantly
-        // of the kind of event. Mounted volumes may have changed
-        // etc. Using SIGTERM just to have something different from
-        // the other messages
+        // This gets specific processing because we want to check the
+        // state of topdirs on resuming indexing (in case a mounted
+        // volume went away).
         if (l_sigcleanup) {
-            l_sigcleanup(SIGTERM);
+            if (wParam == PBT_APMRESUMEAUTOMATIC ||
+                wParam == PBT_APMRESUMESUSPEND) {
+                l_sigcleanup(RCLSIG_RESUME);
+            }
         }
     }
     break;

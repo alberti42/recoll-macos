@@ -172,21 +172,6 @@ bool FsIndexer::init()
     return true;
 }
 
-// Check if path is either non-existing or an empty directory.
-static bool path_empty(const string& path)
-{
-    if (path_isdir(path)) {
-        string reason;
-        std::set<string> entries;
-        if (!readdir(path, reason, entries) || entries.empty()) {
-            return true;
-        }
-        return false;
-    } else {
-        return !path_exists(path);
-    }
-}
-
 // Recursively index each directory in the topdirs:
 bool FsIndexer::index(int flags)
 {

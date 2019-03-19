@@ -132,6 +132,21 @@ string path_wingettempfilename(TCHAR *pref)
 
 #endif // _WIN32
 
+// Check if path is either non-existing or an empty directory.
+bool path_empty(const string& path)
+{
+    if (path_isdir(path)) {
+        string reason;
+        std::set<string> entries;
+        if (!readdir(path, reason, entries) || entries.empty()) {
+            return true;
+        }
+        return false;
+    } else {
+        return !path_exists(path);
+    }
+}
+
 string path_defaultrecollconfsubdir()
 {
 #ifdef _WIN32

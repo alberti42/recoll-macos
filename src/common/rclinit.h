@@ -41,6 +41,14 @@ class RclConfig;
  */
 enum RclInitFlags {RCLINIT_NONE = 0, RCLINIT_DAEMON = 1, RCLINIT_IDX = 2,
                    RCLINIT_PYTHON = 4};
+// Kinds of termination requests, in addition to the normal signal
+// values. Passed as type int to sigcleanup() when it is not invoked
+// directly as a sig handler. Note that because of the existence of
+// sigset_t, we are pretty sure that no signals can have a high value
+enum RclSigKind {
+    // System resume from sleep
+    RCLSIG_RESUME = 1002};
+                 
 extern RclConfig *recollinit(int flags,
                              void (*cleanup)(void), void (*sigcleanup)(int),
                              std::string& reason, const std::string *argcnf = 0);

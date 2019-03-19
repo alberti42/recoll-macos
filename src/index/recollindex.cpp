@@ -174,12 +174,43 @@ private:
 };
 static MyUpdater *updater;
 
+// This holds the state of topdirs (exist+nonempty) on indexing
+// startup. If it changes after a resume from sleep we interrupt the
+// indexing (the assumption being that a volume has been mounted or
+// unmounted while we slept). This is not foolproof as the user can
+// always pull out a removable volume while we work. It just avoids a
+// harmful purge in a common case.
+static vector<string> o_topdirs;
+static vector<bool> o_topdirs_emptiness;
+
+bool topdirs_state(vector<bool> tdlstate)
+{
+    tdlstate.clear();
+    for (const auto& dir : o_topdirs) {
+        tdlstate.push_back(path_empty(dir));
+    }
+}
+    
 static void sigcleanup(int sig)
 {
-    cerr << "Recollindex: got signal " << sig << ", registering stop request\n";
-    LOGDEB("Got signal " << sig << ", registering stop request\n");
-    CancelCheck::instance().setCancel();
-    stopindexing = 1;
+    if (sig == RCLSIG_RESUME) {
+        vector<bool> emptiness;
+        topdirs_state(emptiness);
+        if (emptiness != o_topdirs_emptiness) {
+            string msg = "Recollindex: resume: topdirs state changed while "
+                "we were sleeping\n";
+            cerr << msg;
+            LOGDEB(msg);
+            CancelCheck::instance().setCancel();
+            stopindexing = 1;
+        }
+    } else {
+        cerr << "Recollindex: got signal " << sig <<
+            ", registering stop request\n";
+        LOGDEB("Got signal " << sig << ", registering stop request\n");
+        CancelCheck::instance().setCancel();
+        stopindexing = 1;
+    }
 }
 
 static void makeIndexerOrExit(RclConfig *config, bool inPlaceReset)
@@ -330,8 +361,7 @@ static bool createstemdb(RclConfig *config, const string &lang)
 // match existing files or directories. Warn if they don't
 static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
 {
-    vector<string> tdl;
-    if (!config->getConfParam("topdirs", &tdl)) {
+    if (!config->getConfParam("topdirs", &o_topdirs)) {
         cerr << "No 'topdirs' parameter in configuration\n";
         LOGERR("recollindex:No 'topdirs' parameter in configuration\n");
         return false;
@@ -343,7 +373,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
     if (config->getConfParam("monitordirs", &mondirs)) {
         for (const auto& sub : mondirs) {
             bool found{false};
-            for (const auto& top : tdl) {
+            for (const auto& top : o_topdirs) {
                 if (path_isdesc(top, sub)) {
                     found = true;
                     break;
@@ -358,24 +388,24 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
             }
         }
     }
-
     
-    for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
-	*it = path_tildexpand(*it);
-        if (!it->size() || !path_isabsolute(*it)) {
-            if ((*it)[0] == '~') {
-                cerr << "Tilde expansion failed: " << *it << endl;
-                LOGERR("recollindex: tilde expansion failed: " << *it << "\n");
+    for (auto& dir : o_topdirs) {
+	dir = path_tildexpand(dir);
+        if (!dir.size() || !path_isabsolute(dir)) {
+            if (dir[0] == '~') {
+                cerr << "Tilde expansion failed: " << dir << endl;
+                LOGERR("recollindex: tilde expansion failed: " << dir << "\n");
             } else {
-                cerr << "Not an absolute path: " << *it << endl;
-                LOGERR("recollindex: not an absolute path: " << *it << "\n");
+                cerr << "Not an absolute path: " << dir << endl;
+                LOGERR("recollindex: not an absolute path: " << dir << "\n");
             }
             return false;
         }
-        if (!path_exists(*it)) {
-            nonexist.push_back(*it);
+        if (!path_exists(dir)) {
+            nonexist.push_back(dir);
         }
     }
+    topdirs_state(o_topdirs_emptiness);
 
     // We'd like to check skippedPaths too, but these are wildcard
     // exprs, so reasonably can't
@@ -895,4 +925,3 @@ int main(int argc, char **argv)
 	return !status;
     }
 }
-

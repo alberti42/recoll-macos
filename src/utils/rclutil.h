@@ -30,6 +30,8 @@ extern void rclutil_init_mt();
 
 /// Sub-directory for default recoll config (e.g: .recoll)
 extern std::string path_defaultrecollconfsubdir();
+// Check if path is either non-existing or an empty directory.
+extern bool path_empty(const std::string& path);
 
 /// e.g. /usr/share/recoll. Depends on OS and config
 extern const std::string& path_pkgdatadir();
