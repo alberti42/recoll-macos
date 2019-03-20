@@ -685,14 +685,25 @@ int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, int pos)
     return int(it - pbreaks.begin() + 1);
 }
 
-bool Db::Native::getRawText(Xapian::docid docid, string& rawtext)
+bool Db::Native::getRawText(Xapian::docid docid_combined, string& rawtext)
 {
     if (!m_storetext) {
         LOGDEB("Db::Native::getRawText: document text not stored in index\n");
         return false;
     }
+
+    // Xapian get_metadata only works on a single index (else of
+    // course, unicity of keys can't be ensured). When using multiple
+    // indexes, we need to open the right one.
+    size_t dbidx = whatDbIdx(docid_combined);
+    Xapian::docid docid = whatDbDocid(docid_combined);
     string reason;
-    XAPTRY(rawtext = xrdb.get_metadata(rawtextMetaKey(docid)), xrdb, reason);
+    if (dbidx != 0) {
+        Xapian::Database db(m_rcldb->m_extraDbs[dbidx-1]);
+        XAPTRY(rawtext = db.get_metadata(rawtextMetaKey(docid)), db, reason);
+    } else {
+        XAPTRY(rawtext = xrdb.get_metadata(rawtextMetaKey(docid)), xrdb, reason);
+    }
     if (!reason.empty()) {
         LOGERR("Rcl::Db::getRawText: could not get value: " << reason << endl);
         return false;
@@ -1152,6 +1163,14 @@ size_t Db::Native::whatDbIdx(Xapian::docid id)
     if (m_rcldb->m_extraDbs.size() == 0)
 	return 0;
     return (id - 1) % (m_rcldb->m_extraDbs.size() + 1);
+}
+
+// Return the docid inside the non-combined index
+Xapian::docid Db::Native::whatDbDocid(Xapian::docid docid_combined)
+{
+    if (m_rcldb->m_extraDbs.size() == 0)
+	return docid_combined;
+    return (docid_combined - 1) / (m_rcldb->m_extraDbs.size() + 1) + 1;
 }
 
 bool Db::testDbDir(const string &dir, bool *stripped_p)

@@ -136,6 +136,7 @@ class Db::Native {
                         bool fetchtext = false);
 
     size_t whatDbIdx(Xapian::docid id);
+    Xapian::docid whatDbDocid(Xapian::docid);
 
     /** Retrieve Xapian::docid, given unique document identifier, 
      * using the posting list for the derived term.
