@@ -189,6 +189,7 @@ bool topdirs_state(vector<bool> tdlstate)
     for (const auto& dir : o_topdirs) {
         tdlstate.push_back(path_empty(dir));
     }
+    return true;
 }
     
 static void sigcleanup(int sig)
