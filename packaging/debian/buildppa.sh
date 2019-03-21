@@ -6,13 +6,15 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.25.4
+RCLVERS=1.25.8
 SCOPEVERS=1.20.2.4
+GSSPVERS=1.0.0
 PPAVERS=2
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
 SCOPESRC=/y/home/dockes/projets/fulltext/unity-scope-recoll
+GSSPSRC=/y/home/dockes/projets/fulltext/gssp-recoll
 RCLDOWNLOAD=/y/home/dockes/projets/lesbonscomptes/recoll
 
 case $RCLVERS in
@@ -79,7 +81,7 @@ done
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
 series="xenial bionic cosmic disco"
-#series="xenial"
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -114,6 +116,50 @@ for svers in $series ; do
   (cd $topdir;debuild -k$PPA_KEYID -S -sa) || exit 1
 
   dput $PPANAME kio-recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
+
+done
+
+### GSSP
+series="bionic cosmic disco"
+series=
+
+debdir=debiangssp
+if test ! -d ${debdir}/ ; then
+    rm -f ${debdir}
+    ln -s ${GSSPSRC}/debian $debdir
+fi
+topdir=gssp-recoll-${GSSPVERS}
+dload=$RCLDOWNLOAD/downloads
+if test "X$series" != X ; then
+    if test ! -f gssp-recoll_${GSSPVERS}.orig.tar.gz ; then 
+        if test -f gssp-recoll-${GSSPVERS}.tar.gz ; then
+          mv gssp-recoll-${GSSPVERS}.tar.gz gssp-recoll_${GSSPVERS}.orig.tar.gz
+        else
+          if test -f $dload/gssp-recoll-${GSSPVERS}.tar.gz;then
+                cp -p $dload/gssp-recoll-${GSSPVERS}.tar.gz \
+                   gssp-recoll_${GSSPVERS}.orig.tar.gz || fatal copy
+            else
+                fatal "Can find neither " \
+                      "gssp-recoll_${GSSPVERS}.orig.tar.gz nor " \
+                      "$dload/gssp-recoll-${GSSPVERS}.tar.gz"
+            fi
+        fi
+    fi
+    test -d $topdir || tar xvzf gssp-recoll_${GSSPVERS}.orig.tar.gz || exit 1
+fi
+for series in $series ; do
+
+   rm -rf $topdir/debian
+   cp -rp ${debdir}/ $topdir/debian || exit 1
+
+  sed -e s/SERIES/$series/g \
+      -e s/PPAVERS/${PPAVERS}/g \
+          < ${debdir}/changelog > $topdir/debian/changelog ;
+
+  (cd $topdir;debuild -k$PPA_KEYID -S -sa) || break
+
+  dput $PPANAME \
+      gssp-recoll_${GSSPVERS}-1~ppa${PPAVERS}~${series}1_source.changes
 
 done
 

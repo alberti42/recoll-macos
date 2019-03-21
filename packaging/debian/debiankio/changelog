@@ -1,3 +1,10 @@
+kio-recoll (1.25.8-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * New release 1.25.8
+  * Minor updates
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 21 Mar 2019 14:14:00 +0100
+
 kio-recoll (1.25.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * New release 1.25.4
