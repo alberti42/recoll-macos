@@ -241,12 +241,24 @@ class AudioTagExtractor(RclBaseHandler):
 
         mutf = None
         msg = ''
+        strex = ''
         try:
             mutf = File(filename)
         except Exception as ex:
-            msg = "Open failed: %s" % ex
+            strex = str(ex)
         if not mutf:
-            raise Exception(msg)
+            # Note: mutagen will fail the open (and raise) for a valid
+            # file with no tags. Maybe we should just return an empty
+            # text in this case? We seem to get an empty str(ex) in
+            # this case, and a non empty one for, e.g. permission
+            # denied, but I am not sure that the emptiness will be
+            # consistent for all file types. The point of detecting
+            # this would be to avoid error messages and useless
+            # retries.
+            if not strex:
+                return b''
+            else:
+                raise Exception("Open failed: %s" % strex)
         
         #self._showMutaInfo(mutf)
 
