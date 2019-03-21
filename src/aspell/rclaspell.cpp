@@ -573,7 +573,7 @@ int main(int argc, char **argv)
 	Usage();
 
     string reason;
-    rclconfig = recollinit(0, 0, reason);
+    rclconfig = recollinit(0, 0, 0, reason);
     if (!rclconfig || !rclconfig->ok()) {
 	fprintf(stderr, "Configuration problem: %s\n", reason.c_str());
 	exit(1);

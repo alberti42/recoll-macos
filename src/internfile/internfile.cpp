@@ -1216,7 +1216,7 @@ int main(int argc, char **argv)
 	argc--;
     }
     string reason;
-    config = recollinit(0, 0, reason);
+    config = recollinit(0, 0, 0, reason);
 
     if (config == 0 || !config->ok()) {
 	string str = "Configuration problem: ";

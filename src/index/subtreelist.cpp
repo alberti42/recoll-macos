@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 	Usage();
     top = *argv++;argc--;
     string reason;
-    RclConfig *config = recollinit(0, 0, reason, 0);
+    RclConfig *config = recollinit(0, 0, 0, reason, 0);
     if (!config || !config->ok()) {
 	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
 	exit(1);

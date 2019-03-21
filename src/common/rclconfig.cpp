@@ -1907,7 +1907,7 @@ int main(int argc, char **argv)
         Usage();
 
     string reason;
-    RclConfig *config = recollinit(0, 0, reason);
+    RclConfig *config = recollinit(0, 0, 0, reason);
     if (config == 0 || !config->ok()) {
         cerr << "Configuration problem: " << reason << endl;
         exit(1);

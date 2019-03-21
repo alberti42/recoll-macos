@@ -53,7 +53,7 @@ RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
 {
     qDebug() << "RecollProtocol::RecollProtocol()";
     if (o_rclconfig == 0) {
-        o_rclconfig = recollinit(0, 0, m_reason);
+        o_rclconfig = recollinit(0, 0, 0, m_reason);
         if (!o_rclconfig || !o_rclconfig->ok()) {
             m_reason = string("Configuration problem: ") + m_reason;
             return;

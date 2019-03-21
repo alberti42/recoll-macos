@@ -105,7 +105,7 @@ PHP_METHOD(Query, query)
     }
     string qs = qs_c;
 
-    RclConfig *rclconfig = recollinit(0, 0, reason, &a_config);
+    RclConfig *rclconfig = recollinit(0, 0, 0, reason, &a_config);
     if (!rclconfig || !rclconfig->ok()) {
 	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
 	RETURN_BOOL(false);

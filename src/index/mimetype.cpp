@@ -223,7 +223,7 @@ using namespace std;
 int main(int argc, const char **argv)
 {
     string reason;
-    RclConfig *config = recollinit(0, 0, reason);
+    RclConfig *config = recollinit(0, 0, 0, reason);
 
     if (config == 0 || !config->ok()) {
 	string str = "Configuration problem: ";
