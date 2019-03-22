@@ -551,7 +551,7 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
     }
     PyErr_Clear();
     
-    char *name = 0;
+    string name;
     if (PyUnicode_Check(nameobj)) {
 	PyObject* utf8o = PyUnicode_AsUTF8String(nameobj);
 	if (utf8o == 0) {
@@ -568,7 +568,7 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
 	Py_RETURN_NONE;
     }
 
-    string key = rclconfig->fieldQCanon(string(name));
+    string key = rclconfig->fieldQCanon(name);
     string value;
     if (idocget(self, key, value)) {
 	LOGDEB1("Doc_getattro: [" << key << "] -> [" << value << "]\n");
@@ -613,8 +613,9 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
 	PyErr_SetString(PyExc_AttributeError, "value??");
 	return -1;
     }
-    char* uvalue = PyBytes_AsString(putf8);
-    string key = rclconfig->fieldQCanon(string(name));
+    string uvalue = PyBytes_AsString(putf8);
+    Py_DECREF(putf8);
+    string key = rclconfig->fieldQCanon(name);
 
     LOGDEB0("Doc_setattr: doc " << self->doc << " [" << key << "] (" << name <<
             ") -> [" << uvalue << "]\n");
@@ -625,54 +626,53 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
     switch (key.at(0)) {
     case 't':
 	if (!key.compare("text")) {
-	    self->doc->text = uvalue;
+	    self->doc->text.swap(uvalue);
 	}
 	break;
     case 'u':
 	if (!key.compare(Rcl::Doc::keyurl)) {
-	    self->doc->url = uvalue;
+	    self->doc->url.swap(uvalue);
 	}
 	break;
     case 'f':
 	if (!key.compare(Rcl::Doc::keyfs)) {
-	    self->doc->fbytes = uvalue;
+	    self->doc->fbytes.swap(uvalue);
 	} else if (!key.compare(Rcl::Doc::keyfmt)) {
-	    self->doc->fmtime = uvalue;
+	    self->doc->fmtime.swap(uvalue);
 	}
 	break;
     case 'd':
 	if (!key.compare(Rcl::Doc::keyds)) {
-	    self->doc->dbytes = uvalue;
+	    self->doc->dbytes.swap(uvalue);
 	} else if (!key.compare(Rcl::Doc::keydmt)) {
-	    self->doc->dmtime = uvalue;
+	    self->doc->dmtime.swap(uvalue);
 	}
 	break;
     case 'i':
 	if (!key.compare(Rcl::Doc::keyipt)) {
-	    self->doc->ipath = uvalue;
+	    self->doc->ipath.swap(uvalue);
 	}
 	break;
     case 'm':
 	if (!key.compare(Rcl::Doc::keytp)) {
-	    self->doc->mimetype = uvalue;
+	    self->doc->mimetype.swap(uvalue);
 	} else if (!key.compare(Rcl::Doc::keymt)) {
-	    self->doc->dmtime = uvalue;
+	    self->doc->dmtime.swap(uvalue);
 	}
 	break;
     case 'o':
 	if (!key.compare(Rcl::Doc::keyoc)) {
-	    self->doc->origcharset = uvalue;
+	    self->doc->origcharset.swap(uvalue);
 	}
 	break;
     case 's':
 	if (!key.compare(Rcl::Doc::keysig)) {
-	    self->doc->sig = uvalue;
+	    self->doc->sig.swap(uvalue);
 	} else 	if (!key.compare(Rcl::Doc::keysz)) {
-	    self->doc->dbytes = uvalue;
+	    self->doc->dbytes.swap(uvalue);
 	}
 	break;
     }
-    Py_DECREF(putf8);
     return 0;
 }
 
@@ -693,7 +693,7 @@ Doc_subscript(recoll_DocObject *self, PyObject *key)
         PyErr_SetString(PyExc_AttributeError, "doc??");
 	return NULL;
     }
-    char *name = 0;
+    string name;
     if (PyUnicode_Check(key)) {
         PyObject* utf8o = PyUnicode_AsUTF8String(key);
 	if (utf8o == 0) {
@@ -710,7 +710,7 @@ Doc_subscript(recoll_DocObject *self, PyObject *key)
 	Py_RETURN_NONE;
     }
 
-    string skey = rclconfig->fieldQCanon(string(name));
+    string skey = rclconfig->fieldQCanon(name);
     string value;
     if (idocget(self, skey, value)) {
 	return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8","replace");
@@ -1613,15 +1613,17 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 	}
 	for (int i = 0; i < dbcnt; i++) {
 	    PyObject *item = PySequence_GetItem(extradbs, i);
-	    char *s = PyBytes_AsString(item);
-	    Py_DECREF(item);
-	    if (!s) {
+	    const char *s = PyBytes_AsString(item);
+	    if (s == nullptr) {
 		PyErr_SetString(PyExc_TypeError,
 				"extra_dbs must contain strings");
 		deleteZ(self->db);
+                Py_DECREF(item);
 		return -1;
 	    }
-	    if (!self->db->addQueryDb((const char *)s)) {
+            string dbname(s);
+	    Py_DECREF(item);
+	    if (!self->db->addQueryDb(dbname)) {
 		PyErr_SetString(PyExc_EnvironmentError, 
 				"extra db could not be opened");
 		deleteZ(self->db);
