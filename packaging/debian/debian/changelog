@@ -1,3 +1,10 @@
+recoll (1.25.9-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * New release 1.25.9
+  * Fixes crash in python module.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 22 Mar 2019 10:07:00 +0100
+
 recoll (1.25.8-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * New release 1.25.8

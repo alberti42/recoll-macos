@@ -6,7 +6,7 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.25.8
+RCLVERS=1.25.9
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=2
@@ -49,7 +49,7 @@ debdir=debian
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
 series="xenial bionic cosmic disco"
-series=
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
