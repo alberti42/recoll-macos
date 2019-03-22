@@ -4392,16 +4392,16 @@ recollindex -c "$confdir"
       still used in many places though.</para></note>
 
       <para>&RCL; input handlers cooperate to translate from the multitude
-      of input document formats, simple ones
-      as <application>opendocument</application>, 
-      <application>acrobat</application>), or compound ones such
-      as <application>Zip</application>
-      or <application>Email</application>, into the final &RCL;
-      indexing input format, which is plain text.
-      Most input handlers are executable
-      programs or scripts. A few handlers are coded in C++ and live
-      inside <command>recollindex</command>. This latter kind will not
-      be described here.</para>
+      of input document formats, simple ones as
+      <application>opendocument</application>,
+      <application>acrobat</application>, or compound ones such as
+      <application>Zip</application> or <application>Email</application>,
+      into the final &RCL; indexing input format, which is plain text (in
+      many cases the processing pipeline has an intermediary HTML step,
+      which may be used for better previewing presentation).  Most input
+      handlers are executable programs or scripts. A few handlers are coded
+      in C++ and live inside <command>recollindex</command>. This latter
+      kind will not be described here.</para>
 
       <para>There are currently (since version 1.13) two kinds of
       external executable input handlers:
@@ -4414,23 +4414,32 @@ recollindex -c "$confdir"
         output. Their output can be plain text or HTML. HTML is
         usually preferred because it can store metadata fields and
         it allows preserving some of the formatting for the GUI
-        preview.</para>
+        preview. However, these handlers have limitations:
+        <itemizedlist>
+          <listitem><para>They can only process one document
+          per file.</para></listitem>
+          <listitem><para>The output MIME type must be known and
+          fixed.</para></listitem>
+          <listitem><para>The character encoding, if relevant, must be
+          known and fixed (or possibly just depending on
+          location).</para></listitem>
+        </itemizedlist>
+        </para>
         </listitem>
-        <listitem><para>Multiple <literal>execm</literal> handlers
-        can process multiple files (sparing the process startup
-        time which can be very significant), or multiple documents
-        per file (e.g.: for <application>zip</application> or
-        <application>chm</application> files). They communicate
-        with the indexer through a simple protocol, but are
-        nevertheless a bit more complicated than the older
-        kind. Most of new handlers are written in
-        <application>Python</application>, using a common module
-        to handle the protocol. There is an exception,
-        <command>rclimg</command> which is written in Perl. The
-        subdocuments output by these handlers can be directly
-        indexable (text or HTML), or they can be other simple or
-        compound documents that will need to be processed by
-        another handler.</para>
+        <listitem><para>Multiple <literal>execm</literal> handlers can
+        process multiple files (sparing the process startup time which can
+        be very significant), or multiple documents per file (e.g.: for
+        archives or multi-chapter publications). They communicate with the
+        indexer through a simple protocol, but are nevertheless a bit more
+        complicated than the older kind. Most of the new handlers are
+        written in <application>Python</application> (exception:
+        <command>rclimg</command> which is written in Perl because
+        <literal>exiftool</literal> has no real Python equivalent). The
+        Python handlers use common modules to factor out the boilerplate,
+        which can make them very simple in favorable cases. The
+        subdocuments output by these handlers can be directly indexable
+        (text or HTML), or they can be other simple or compound documents
+        that will need to be processed by another handler.</para>
         </listitem>
       </itemizedlist>
       </para>
@@ -4458,10 +4467,12 @@ recollindex -c "$confdir"
       <para>The handlers that can handle multiple documents per file
       return a single piece of data to identify each document inside
       the file. This piece of data, called
-      an <literal>ipath element</literal> will be sent back by
+      an <literal>ipath</literal> will be sent back by
       &RCL; to extract the document at query time, for previewing,
       or for creating a temporary file to be opened by a
-      viewer.</para>  
+      viewer. These handlers can also return metadata either as HTML
+      <literal>meta</literal> tags, or as named data through the
+      communication protocol.</para>
 
       <para>The following section describes the simple
       handlers, and the next one gives a few explanations about
@@ -4514,14 +4525,53 @@ recollindex -c "$confdir"
 
         <para>If you can program and want to write
         an <literal>execm</literal> handler, it should not be too
-        difficult to make sense of one of the existing modules. There is
-        a sample one with many comments, not actually used by &RCL;,
-        which would index a text file as one document per line. Look for
-        <filename>rcltxtlines.py</filename> in the
-        <filename>src/filters</filename> directory in the &RCL; <ulink
-        url="https://bitbucket.org/medoc/recoll/src">BitBucket
-        repository</ulink> (the sample
-        not in the distributed release at the moment).</para>
+        difficult to make sense of one of the existing handlers.</para>
+
+        <para>The existing handlers differ in the amount of helper code
+        which they are using:
+        <itemizedlist>
+          <listitem><para><literal>rclimg</literal> is written in Perl and
+          handles the execm protocol all by itself (showing how trivial it
+          is).</para></listitem>
+          <listitem><para>All the Python handlers share at least the
+          <filename>rclexecm.py</filename> module, which handles the
+          communication. Have a look at, for example,
+          <filename>rclzip</filename> for a handler which uses
+          <filename>rclexecm.py</filename> directly.</para></listitem>
+          <listitem><para>Most Python handlers which process
+          single-document files by executing another command are further
+          abstracted by using the <filename>rclexec1.py</filename>
+          module. See for example <filename>rclrtf.py</filename> for a
+          simple one, or <filename>rcldoc.py</filename> for a slightly more
+          complicated one (possibly executing several
+          commands).</para></listitem> 
+          <listitem><para>Handlers which extract text from an XML document
+          by using an XSLT style sheet are now executed inside
+          <command>recollindex</command>, with only the style sheet stored
+          in the <filename>filters/</filename> directory. These can
+          use a single style sheet (e.g. <filename>abiword.xsl</filename>),
+          or two sheets for the data and metadata
+          (e.g. <filename>opendoc-body.xsl</filename> and
+          <filename>opendoc-meta.xsl</filename>). The
+          <filename>mimeconf</filename> configuration file defines how the
+          sheets are used, have a look. Before the C++ import, the
+          xsl-based handlers used a common module
+          <filename>rclgenxslt.py</filename>, it is still around but
+          unused. The handler for OpenXML presentations is still the Python
+          version because the format did not fit with what the C++ code
+          does. It would be a good base for another similar
+          issue.</para></listitem>
+        </itemizedlist>
+        </para>
+
+        <para>There is a sample trivial handler based on
+        <filename>rclexecm.py</filename>, with many comments, not actually
+        used by &RCL;. It would index a text file as one document per
+        line. Look for <filename>rcltxtlines.py</filename> in the
+        <filename>src/filters</filename> directory in the online &RCL;
+        <ulink url="https://opensourceprojects.eu/p/recoll1/">Git
+        repository</ulink> (the sample not in the distributed release at
+        the moment).</para>
 
         <para>You can also have a look at the slightly more complex
         <command>rclzip</command> which uses Zip

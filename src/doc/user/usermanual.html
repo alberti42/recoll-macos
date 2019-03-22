@@ -5719,14 +5719,17 @@ recollindex -c "$confdir"
         cooperate to translate from the multitude of input document
         formats, simple ones as <span class=
         "application">opendocument</span>, <span class=
-        "application">acrobat</span>), or compound ones such as
+        "application">acrobat</span>, or compound ones such as
         <span class="application">Zip</span> or <span class=
         "application">Email</span>, into the final <span class=
         "application">Recoll</span> indexing input format, which is
-        plain text. Most input handlers are executable programs or
-        scripts. A few handlers are coded in C++ and live inside
-        <span class="command"><strong>recollindex</strong></span>.
-        This latter kind will not be described here.</p>
+        plain text (in many cases the processing pipeline has an
+        intermediary HTML step, which may be used for better
+        previewing presentation). Most input handlers are
+        executable programs or scripts. A few handlers are coded in
+        C++ and live inside <span class=
+        "command"><strong>recollindex</strong></span>. This latter
+        kind will not be described here.</p>
         <p>There are currently (since version 1.13) two kinds of
         external executable input handlers:</p>
         <div class="itemizedlist">
@@ -5741,26 +5744,47 @@ recollindex -c "$confdir"
               document to the standard output. Their output can be
               plain text or HTML. HTML is usually preferred because
               it can store metadata fields and it allows preserving
-              some of the formatting for the GUI preview.</p>
+              some of the formatting for the GUI preview. However,
+              these handlers have limitations:</p>
+              <div class="itemizedlist">
+                <ul class="itemizedlist" style=
+                "list-style-type: circle;">
+                  <li class="listitem">
+                    <p>They can only process one document per
+                    file.</p>
+                  </li>
+                  <li class="listitem">
+                    <p>The output MIME type must be known and
+                    fixed.</p>
+                  </li>
+                  <li class="listitem">
+                    <p>The character encoding, if relevant, must be
+                    known and fixed (or possibly just depending on
+                    location).</p>
+                  </li>
+                </ul>
+              </div>
             </li>
             <li class="listitem">
               <p>Multiple <code class="literal">execm</code>
               handlers can process multiple files (sparing the
               process startup time which can be very significant),
-              or multiple documents per file (e.g.: for
-              <span class="application">zip</span> or <span class=
-              "application">chm</span> files). They communicate
-              with the indexer through a simple protocol, but are
+              or multiple documents per file (e.g.: for archives or
+              multi-chapter publications). They communicate with
+              the indexer through a simple protocol, but are
               nevertheless a bit more complicated than the older
-              kind. Most of new handlers are written in
-              <span class="application">Python</span>, using a
-              common module to handle the protocol. There is an
-              exception, <span class=
-              "command"><strong>rclimg</strong></span> which is
-              written in Perl. The subdocuments output by these
-              handlers can be directly indexable (text or HTML), or
-              they can be other simple or compound documents that
-              will need to be processed by another handler.</p>
+              kind. Most of the new handlers are written in
+              <span class="application">Python</span> (exception:
+              <span class="command"><strong>rclimg</strong></span>
+              which is written in Perl because <code class=
+              "literal">exiftool</code> has no real Python
+              equivalent). The Python handlers use common modules
+              to factor out the boilerplate, which can make them
+              very simple in favorable cases. The subdocuments
+              output by these handlers can be directly indexable
+              (text or HTML), or they can be other simple or
+              compound documents that will need to be processed by
+              another handler.</p>
             </li>
           </ul>
         </div>
@@ -5786,10 +5810,13 @@ recollindex -c "$confdir"
         <p>The handlers that can handle multiple documents per file
         return a single piece of data to identify each document
         inside the file. This piece of data, called an <code class=
-        "literal">ipath element</code> will be sent back by
-        <span class="application">Recoll</span> to extract the
-        document at query time, for previewing, or for creating a
-        temporary file to be opened by a viewer.</p>
+        "literal">ipath</code> will be sent back by <span class=
+        "application">Recoll</span> to extract the document at
+        query time, for previewing, or for creating a temporary
+        file to be opened by a viewer. These handlers can also
+        return metadata either as HTML <code class=
+        "literal">meta</code> tags, or as named data through the
+        communication protocol.</p>
         <p>The following section describes the simple handlers, and
         the next one gives a few explanations about the
         <code class="literal">execm</code> ones. You could
@@ -5860,16 +5887,72 @@ recollindex -c "$confdir"
           </div>
           <p>If you can program and want to write an <code class=
           "literal">execm</code> handler, it should not be too
-          difficult to make sense of one of the existing modules.
-          There is a sample one with many comments, not actually
-          used by <span class="application">Recoll</span>, which
-          would index a text file as one document per line. Look
-          for <code class="filename">rcltxtlines.py</code> in the
-          <code class="filename">src/filters</code> directory in
-          the <span class="application">Recoll</span> <a class=
-          "ulink" href="https://bitbucket.org/medoc/recoll/src"
-          target="_top">BitBucket repository</a> (the sample not in
-          the distributed release at the moment).</p>
+          difficult to make sense of one of the existing
+          handlers.</p>
+          <p>The existing handlers differ in the amount of helper
+          code which they are using:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist" style=
+            "list-style-type: disc;">
+              <li class="listitem">
+                <p><code class="literal">rclimg</code> is written
+                in Perl and handles the execm protocol all by
+                itself (showing how trivial it is).</p>
+              </li>
+              <li class="listitem">
+                <p>All the Python handlers share at least the
+                <code class="filename">rclexecm.py</code> module,
+                which handles the communication. Have a look at,
+                for example, <code class="filename">rclzip</code>
+                for a handler which uses <code class=
+                "filename">rclexecm.py</code> directly.</p>
+              </li>
+              <li class="listitem">
+                <p>Most Python handlers which process
+                single-document files by executing another command
+                are further abstracted by using the <code class=
+                "filename">rclexec1.py</code> module. See for
+                example <code class="filename">rclrtf.py</code> for
+                a simple one, or <code class=
+                "filename">rcldoc.py</code> for a slightly more
+                complicated one (possibly executing several
+                commands).</p>
+              </li>
+              <li class="listitem">
+                <p>Handlers which extract text from an XML document
+                by using an XSLT style sheet are now executed
+                inside <span class=
+                "command"><strong>recollindex</strong></span>, with
+                only the style sheet stored in the <code class=
+                "filename">filters/</code> directory. These can use
+                a single style sheet (e.g. <code class=
+                "filename">abiword.xsl</code>), or two sheets for
+                the data and metadata (e.g. <code class=
+                "filename">opendoc-body.xsl</code> and <code class=
+                "filename">opendoc-meta.xsl</code>). The
+                <code class="filename">mimeconf</code>
+                configuration file defines how the sheets are used,
+                have a look. Before the C++ import, the xsl-based
+                handlers used a common module <code class=
+                "filename">rclgenxslt.py</code>, it is still around
+                but unused. The handler for OpenXML presentations
+                is still the Python version because the format did
+                not fit with what the C++ code does. It would be a
+                good base for another similar issue.</p>
+              </li>
+            </ul>
+          </div>
+          <p>There is a sample trivial handler based on
+          <code class="filename">rclexecm.py</code>, with many
+          comments, not actually used by <span class=
+          "application">Recoll</span>. It would index a text file
+          as one document per line. Look for <code class=
+          "filename">rcltxtlines.py</code> in the <code class=
+          "filename">src/filters</code> directory in the online
+          <span class="application">Recoll</span> <a class="ulink"
+          href="https://opensourceprojects.eu/p/recoll1/" target=
+          "_top">Git repository</a> (the sample not in the
+          distributed release at the moment).</p>
           <p>You can also have a look at the slightly more complex
           <span class="command"><strong>rclzip</strong></span>
           which uses Zip file paths as identifiers (<code class=
