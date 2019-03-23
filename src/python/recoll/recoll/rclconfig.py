@@ -8,7 +8,10 @@ import sys
 import base64
 import platform
 
-import conftree
+try:
+    from . import conftree
+except:
+    import conftree
 
 class RclDynConf:
     def __init__(self, fname):
