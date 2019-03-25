@@ -39,12 +39,12 @@ else:
 
 class XlsXmlHandler(xml.sax.handler.ContentHandler):
     def __init__(self):
-        self.output = b''
+        self.output = []
         
     def startElement(self, name, attrs):
         if name == "worksheet":
             if "name" in attrs:
-                self.output += b"%s\n" % attrs["name"].encode("UTF-8")
+                self.output.append(b"%s\n" % attrs["name"].encode("UTF-8"))
         elif name == "row":
             self.cells = dict()
         elif name == "label-cell" or name == "number-cell":
@@ -56,7 +56,7 @@ class XlsXmlHandler(xml.sax.handler.ContentHandler):
                 self.cells[int(attrs["col"])] = value
             else:
                 #??
-                self.output += b"%s%s" % (value.encode("UTF-8"), sepstring)
+                self.output.append(b"%s%s" % (value.encode("UTF-8"), sepstring))
         elif name == "formula-cell":
             if "formula-result" in attrs and "col" in attrs:
                 self.cells[int(attrs["col"])] = \
@@ -65,20 +65,21 @@ class XlsXmlHandler(xml.sax.handler.ContentHandler):
     def endElement(self, name, ):
         if name == "row":
             curidx = 0
+            line = []
             for idx, value in self.cells.items():
-                self.output += sepstring * (idx - curidx)
-                self.output += b"%s%s%s" % (dquote, value, dquote)
+                line.append(sepstring * (idx - curidx))
+                line.append(b"%s%s%s" % (dquote, value, dquote))
                 curidx = idx
-            self.output += b"\n"
+            self.output.append(b''.join(line))
         elif name == "worksheet":
-            self.output += b"\n"
+            self.output.append(b'')
 
 
 if __name__ == '__main__':
     try:
         handler = XlsXmlHandler()
         xml.sax.parse(sys.stdin, handler)
-        print(handler.output)
+        print(b'\n'.join(handler.output))
     except BaseException as err:
         print("xml-parse: %s\n" % (str(sys.exc_info()[:2]),), file=sys.stderr)
         sys.exit(1)

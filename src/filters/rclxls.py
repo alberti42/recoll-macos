@@ -13,30 +13,30 @@ import xml.sax
 class XLSProcessData:
     def __init__(self, em, ishtml = False):
         self.em = em
-        self.out = b""
+        self.out = []
         self.gotdata = 0
-        self.xmldata = b""
+        self.xmldata = []
         self.ishtml = ishtml
         
     def takeLine(self, line):
         if self.ishtml:
-            self.out += line + "\n"
+            self.out.append(line)
             return
         if not self.gotdata:
-            self.out += b'''<html><head>''' + \
+            self.out.append(b'''<html><head>''' + \
                         b'''<meta http-equiv="Content-Type" ''' + \
                         b'''content="text/html;charset=UTF-8">''' + \
-                        b'''</head><body><pre>'''
+                        b'''</head><body><pre>''')
             self.gotdata = True
-        self.xmldata += line
+        self.xmldata.append(line)
 
     def wrapData(self):
         if self.ishtml:
-            return self.out
+            return b'\n'.join(self.out)
         handler =  xlsxmltocsv.XlsXmlHandler()
-        xml.sax.parseString(self.xmldata, handler)
-        self.out += self.em.htmlescape(handler.output)
-        return self.out + b'''</pre></body></html>'''
+        xml.sax.parseString(b'\n'.join(self.xmldata), handler)
+        self.out.append(self.em.htmlescape(b'\n'.join(handler.output)))
+        return b'\n'.join(self.out) + b'</pre></body></html>'
 
 class XLSFilter:
     def __init__(self, em):

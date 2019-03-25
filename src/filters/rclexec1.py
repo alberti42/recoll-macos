@@ -56,7 +56,7 @@ class Executor(RclBaseHandler):
             except Exception as err:
                 self.em.rclog("runCmd: error reading %s: %s"%(filename, err))
                 return(False, "")
-            for line in data.split('\n'):
+            for line in data.split(b'\n'):
                 postproc.takeLine(line)
             return True, postproc.wrapData()
         else:

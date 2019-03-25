@@ -11,7 +11,7 @@ import os
 class RTFProcessData:
     def __init__(self, em):
         self.em = em
-        self.out = b''
+        self.out = []
         self.gothead = 0
         self.patendhead = re.compile(b'''</head>''')
         self.patcharset = re.compile(b'''^<meta http-equiv=''')
@@ -21,17 +21,17 @@ class RTFProcessData:
     def takeLine(self, line):
         if not self.gothead:
             if self.patendhead.search(line):
-                self.out +=  b'<meta http-equiv="Content-Type" ' + \
-                             b'content="text/html;charset=UTF-8">' + b'\n'
-                self.out += line + b'\n'
+                self.out.append(b'<meta http-equiv="Content-Type" ' + \
+                             b'content="text/html;charset=UTF-8">')
+                self.out.append(line)
                 self.gothead = 1
             elif not self.patcharset.search(line):
-                self.out += line + b'\n'
+                self.out.append(line)
         else:
-            self.out += line + b'\n'
+            self.out.append(line)
 
     def wrapData(self):
-        return self.out
+        return b'\n'.join(self.out)
 
 class RTFFilter:
     def __init__(self, em):

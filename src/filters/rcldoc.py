@@ -12,7 +12,7 @@ import os
 class WordProcessData:
     def __init__(self, em):
         self.em = em
-        self.out = b''
+        self.out = []
         self.cont = b''
         self.gotdata = False
         # Line with continued word (ending in -)
@@ -26,10 +26,10 @@ class WordProcessData:
         if not self.gotdata:
             if line == b'':
                 return
-            self.out = b'<html><head><title></title>' + \
+            self.out.append(b'<html><head><title></title>' + \
                        b'<meta http-equiv="Content-Type"' + \
                        b'content="text/html;charset=UTF-8">' + \
-                       b'</head><body><p>'
+                       b'</head><body><p>')
             self.gotdata = True
 
         if self.cont:
@@ -37,7 +37,7 @@ class WordProcessData:
             self.cont = ""
 
         if line == b'\f':
-            self.out += '</p><hr><p>'
+            self.out.append('</p><hr><p>')
             return
 
         if self.patcont.search(line):
@@ -51,30 +51,30 @@ class WordProcessData:
                 line = b''
 
         if line:
-            self.out += self.em.htmlescape(line) + b'<br>'
+            self.out.append(self.em.htmlescape(line) + b'<br>')
         else:
-            self.out += b'<br>'
+            self.out.append(b'<br>')
 
     def wrapData(self):
         if self.gotdata:
-            self.out += b'</p></body></html>'
+            self.out.append(b'</p></body></html>')
         self.em.setmimetype("text/html")
-        return self.out
+        return b'\n'.join(self.out)
 
-# Null data accumulator. We use this when antiword has fail, and the
+# Null data accumulator. We use this when antiword has failed, and the
 # data actually comes from rclrtf, rcltext or vwWare, which all
 # output HTML
 class WordPassData:
     def __init__(self, em):
-        self.out = b''
+        self.out = []
         self.em = em
 
     def takeLine(self, line):
-        self.out += line
+        self.out.append(line)
 
     def wrapData(self):
         self.em.setmimetype("text/html")
-        return self.out
+        return b'\n'.join(self.out)
         
 
 # Filter for msword docs. Try antiword, and if this fails, check for

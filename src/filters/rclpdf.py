@@ -322,7 +322,7 @@ class PDFExtractor:
         inheader = False
         inbody = False
         didcs = False
-        output = b''
+        output = []
         isempty = True
         for line in input.split(b'\n'):
             if re.search(b'</head>', line):
@@ -331,8 +331,8 @@ class PDFExtractor:
                 inbody = False
             if inheader:
                 if not didcs:
-                    output += b'<meta http-equiv="Content-Type"' + \
-                              b'content="text/html; charset=UTF-8">\n'
+                    output.append(b'<meta http-equiv="Content-Type"' + \
+                              b'content="text/html; charset=UTF-8">\n')
                     didcs = True
                 if self.needescape:
                     m = re.search(b'''(.*<title>)(.*)(<\/title>.*)''', line)
@@ -361,9 +361,9 @@ class PDFExtractor:
             if re.search(b'<pre>', line):
                 inbody = True
 
-            output += line + b'\n'
+            output.append(line)
 
-        return output, isempty
+        return b'\n'.join(output), isempty
 
     def _metatag(self, nm, val):
         return "<meta name=\"" + nm + "\" content=\"" + \
