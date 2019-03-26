@@ -19,6 +19,8 @@ class XLSProcessData:
         self.ishtml = ishtml
         
     def takeLine(self, line):
+        if not line:
+            return
         if self.ishtml:
             self.out.append(line)
             return
@@ -31,6 +33,9 @@ class XLSProcessData:
         self.xmldata.append(line)
 
     def wrapData(self):
+        if not self.gotdata:
+            raise Exception("xls-dump returned no data")
+            return b''
         if self.ishtml:
             return b'\n'.join(self.out)
         handler =  xlsxmltocsv.XlsXmlHandler()
@@ -62,6 +67,7 @@ class XLSFilter:
         cmd = rclexecm.which("xls-dump.py")
         if cmd:
             # xls-dump.py often exits 1 with valid data. Ignore exit value
+            # We later treat an empty output as an error
             return ([sys.executable, cmd, "--dump-mode=canonical-xml", \
                      "--utf-8", "--catch"],
                     XLSProcessData(self.em), rclexec1.Executor.opt_ignxval)

@@ -73,16 +73,23 @@ class Executor(RclBaseHandler):
                               (fullcmd, err))
                 return (False, "")
 
-            for line in stdout:
-                postproc.takeLine(line.strip())
+            try:
+                for line in stdout:
+                    postproc.takeLine(line.strip())
+            except:
+                return (False, "")
 
             proc.wait()
+            try:
+                data = postproc.wrapData()
+            except:
+                return (False, "")
             if (opt & self.opt_ignxval) == 0 and proc.returncode:
                 self.em.rclog("extractone: [%s] returncode %d" % \
                               (filename, proc.returncode))
-                return False, postproc.wrapData()
+                return False, data
             else:
-                return True, postproc.wrapData()
+                return True, data
 
     def extractone(self, params):
         #self.em.rclog("extractone %s %s" % (params["filename:"], \
