@@ -7,6 +7,7 @@
 from builtins import range
 import sys, os.path, optparse
 sys.path.append(sys.path[0]+"/msodump.zip")
+import traceback
 
 from msodumper import ole, xlsstream, globals, node, xlsmodel, olestream
 from msodumper import xlsparser, msocrypto
@@ -232,7 +233,15 @@ def main ():
     elif options.dump_mode == 'xml':
         dumper.dumpXML()
     elif options.dump_mode == 'canonical-xml' or options.dump_mode == 'cxml':
-        dumper.dumpCanonicalXML()
+        try:
+            dumper.dumpCanonicalXML()
+        except Exception as err:
+            if globals.params.catchExceptions:
+                traceback.print_exc()
+            else:
+                raise
+            globals.error("Dump failed")
+            sys.exit(1)
     else:
         error("unknown dump mode: '%s'\n"%options.dump_mode)
         parser.print_help()
