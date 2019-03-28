@@ -24,6 +24,8 @@ re_pairnum = re.compile(b'''[[(]*([0-9]+),\s*([0-9]+)''')
 # The 'Easy' mutagen tags conversions are incomplete. We do it ourselves.
 # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
 # TRCK,TRK,trkn TRACKNUMBER/TOTALTRACKS
+# The conversions here are consistent with the ones in MinimServer (2019-03),
+# including the rating stuff and TXXX. Lacking: Itunes '----' handling ?
 tagdict = {
     'ALBUM ARTIST': 'ALBUMARTIST', 
     'ALBUM' : 'ALBUM',
@@ -57,6 +59,8 @@ tagdict = {
     'MOOD' : 'MOOD', 
     'ORCHESTRA' : 'ORCHESTRA',
     'PERFORMER' : 'PERFORMER',
+    'POP' : 'RATING1',
+    'POPM' : 'RATING1',
     'ORIGINALARTIST' : 'ORIGINALARTIST', 
     'ORIGINALDATE' : 'ORIGINALDATE', 
     'RELEASEDATE' : 'RELEASEDATE', 
@@ -132,6 +136,7 @@ tagdict = {
     'TT3' : 'SUBTITLE',
     'TXT' : 'LYRICIST',
     'TXXX:ORCHESTRA' : 'ORCHESTRA',
+    'TXX:ORCHESTRA' : 'ORCHESTRA',
     'TYE' : 'DATE',
     'TYER' : 'DATE',
     'ULT' : 'LYRICS',
@@ -186,6 +191,18 @@ class AudioTagExtractor(RclBaseHandler):
         for prop in dir(mutf.info):
             self.em.rclog("mutinfo: %s -> %s" %
                           (prop, getattr( mutf.info, prop)))
+
+
+    def _fixrating(self, minf):
+        if 'RATING1' in minf:
+            if not 'RATING' in minf:
+               val = int(minf['RATING1']) // 51 + 1
+               if val > 5:
+                   val = 5
+               if val < 1:
+                   val = 1
+               minf['RATING'] = str(val)
+            del minf['RATING1']
 
 
     def _embeddedImageFormat(self, mutf):
@@ -299,7 +316,11 @@ class AudioTagExtractor(RclBaseHandler):
         # Metadata tags. The names vary depending on the file type. We
         # just have a big translation dictionary for all
         for tag,val in mutf.items():
-            if tag.upper() in tagdict:
+            if tag.find('TXXX:') == 0:
+                tag = tag[5:].upper()
+            elif tag.find('TXX:') == 0:
+                tag = tag[4:].upper()
+            elif tag.upper() in tagdict:
                 tag = tag.upper()
             if tag in tagdict:
                 #self.em.rclog("Original tag: <%s>, type0 %s val <%s>" %
@@ -322,6 +343,8 @@ class AudioTagExtractor(RclBaseHandler):
                 #self.em.rclog("Unprocessed tag: %s, value %s"%(tag,val))
                 pass
 
+        self._fixrating(minf)
+        
         #self.em.rclog("minf after extract %s\n" % minf)
 
         # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
