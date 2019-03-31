@@ -92,11 +92,11 @@ alink="#0000FF">
                 "#RCL.INDEXING.INTRODUCTION.CONFIG">Configurations,
                 multiple indexes</a></span></dt>
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idm227">Document types</a></span></dt>
+                "#idm229">Document types</a></span></dt>
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idm268">Indexing failures</a></span></dt>
+                "#idm270">Indexing failures</a></span></dt>
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idm280">Recovery</a></span></dt>
+                "#idm282">Recovery</a></span></dt>
               </dl>
             </dd>
             <dt><span class="sect1">2.2. <a href=
@@ -885,9 +885,8 @@ alink="#0000FF">
             </div>
           </div>
           <p><span class="application">Recoll</span> supports
-          defining multiple indexes.</p>
-          <p>Each index is defined by its own <a class="link" href=
-          "#RCL.INDEXING.CONFIG" title=
+          defining multiple indexes, each defined by its own
+          <a class="link" href="#RCL.INDEXING.CONFIG" title=
           "2.3.&nbsp;Index configuration">configuration
           directory</a>, in which several configuration files
           describe what should be indexed and how.</p>
@@ -904,46 +903,66 @@ alink="#0000FF">
           changed to process a different area of the file system,
           select files in different ways, and many other
           things.</p>
-          <p>In some cases, it may be interesting, for example, to
-          index different areas of the file system into separate
-          indexes, or use different options. You can do this by
-          creating additional configuration directories.</p>
-          <p>Examples of usage would be to separate personal and
-          shared indexes, or to take advantage of the organization
-          of your data to improve search precision.</p>
+          <p>In some cases, it may be useful to create additional
+          configuration directories, for example, to separate
+          personal and shared indexes, or to take advantage of the
+          organization of your data to improve search
+          precision.</p>
+          <p>A plausible usage scenario for the multiple index
+          feature would be for a system administrator to set up a
+          central index for shared data, that you choose to search
+          or not in addition to your personal data. Of course,
+          there are other possibilities. for example, there are
+          many cases where you know the subset of files that should
+          be searched, and where narrowing the search can improve
+          the results. You can achieve approximately the same
+          effect with the directory filter in advanced search, but
+          multiple indexes may have better performance and may be
+          worth the trouble in some cases.</p>
+          <p>A more advanced use case would be to use multiple
+          index to improve indexing performance, by updating
+          several indexes in parallel (using multiple CPU cores and
+          disks, or possibly several machines), and then merging
+          them, or querying them in parallel.</p>
           <p>A specific configuration can be selected by setting
           the <code class="envar">RECOLL_CONFDIR</code> environment
           variable, or giving the <code class="option">-c</code>
           option to any of the <span class=
           "application">Recoll</span> commands.</p>
-          <p>When generating indexes, the different configurations
-          are entirely independant (no parameters are ever shared
-          between configurations when indexing).</p>
-          <p>Multiple indexes can be queryied concurrently, either
-          from the GUI or the command line. When doing this, there
-          is always a main configuration, from which both
-          configuration and index data are used. Only the index
-          data from the additional indexes is used (their
-          configuration parameters are ignored).</p>
-          <p>This is important and sometimes confusing, so it will
-          be rephrased here: for index generation, multiple
-          configurations are totally independant from each other.
-          When querying, configuration and data are used from the
-          main index (the one designated by <code class=
-          "literal">-c</code> or <code class=
+          <p>When creating or updating indexes, the different
+          configurations are entirely independant (no parameters
+          are ever shared between configurations when indexing).
+          The <span class=
+          "command"><strong>recollindex</strong></span> program
+          always works on a single index.</p>
+          <p>When querying, multiple indexes can be accessed
+          concurrently, either from the GUI or the command line.
+          When doing this, there is always one main configuration,
+          from which both configuration and index data are used.
+          Only the index data from the additional indexes is used
+          (their configuration parameters are ignored).</p>
+          <p>The behaviour of index update and query regarding
+          multiple configurations is important and sometimes
+          confusing, so it will be rephrased here: for index
+          generation, multiple configurations are totally
+          independant from each other. When querying, configuration
+          and data are used from the main index (the one designated
+          by <code class="literal">-c</code> or <code class=
           "envar">RECOLL_CONFDIR</code>), and only the data from
-          the additional indexes is used. This also implies that
-          <a class="link" href="#RCL.INDEXING.CONFIG.MULTIPLE"
-          title="2.3.1.&nbsp;Multiple indexes">some parameters
-          should be consistent among the configurations</a> for
-          indexes which are to be used together.</p>
+          the additional indexes is used. This implies that some
+          parameters should be consistent among the configurations
+          for indexes which are to be used together.</p>
+          <p>See the section about <a class="link" href=
+          "#RCL.INDEXING.CONFIG.MULTIPLE" title=
+          "2.3.1.&nbsp;Multiple indexes">configuring multiple
+          indexes</a> for more detail</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm227" id=
-                "idm227"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idm229" id=
+                "idm229"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1040,8 +1059,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm268" id=
-                "idm268"></a>2.1.4.&nbsp;Indexing failures</h3>
+                <h3 class="title"><a name="idm270" id=
+                "idm270"></a>2.1.4.&nbsp;Indexing failures</h3>
               </div>
             </div>
           </div>
@@ -1076,8 +1095,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm280" id=
-                "idm280"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idm282" id=
+                "idm282"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -1368,42 +1387,29 @@ alink="#0000FF">
           <span class="command"><strong>recoll</strong></span> and
           <span class=
           "command"><strong>recollindex</strong></span>.</p>
-          <p>When working with the <span class=
+          <p>Index configuration parameters can be set either by
+          using a text editor on the files, or, for most
+          parameters, by using the <span class=
           "command"><strong>recoll</strong></span> index
-          configuration GUI, the configuration directory for which
-          parameters are modified is the one which was selected by
-          <code class="envar">RECOLL_CONFDIR</code> or the
-          <code class="option">-c</code> parameter, and there is no
-          way to switch configurations within the GUI.</p>
-          <p>Additional configuration directories (beyond
-          <code class="filename">~/.recoll</code>) must be created
-          by hand (<span class=
-          "command"><strong>mkdir</strong></span> or such), the GUI
-          will not do it. This is to avoid mistakenly creating
-          additional directories when an argument is mistyped.</p>
-          <p>A typical usage scenario for the multiple index
-          feature would be for a system administrator to set up a
-          central index for shared data, that you choose to search
-          or not in addition to your personal data. Of course,
-          there are other possibilities. There are many cases where
-          you know the subset of files that should be searched, and
-          where narrowing the search can improve the results. You
-          can achieve approximately the same effect with the
-          directory filter in advanced search, but multiple indexes
-          will have better performance and may be worth the
-          trouble.</p>
-          <p>A <span class=
+          configuration GUI. In the latter case, the configuration
+          directory for which parameters are modified is the one
+          which was selected by <code class=
+          "envar">RECOLL_CONFDIR</code> or the <code class=
+          "option">-c</code> parameter, and there is no way to
+          switch configurations within the GUI.</p>
+          <p>As a remainder from a previous section, a <span class=
           "command"><strong>recollindex</strong></span> program
           instance can only update one specific index, and it will
           only use parameters from a single configuration (no
           parameters are ever shared between configurations when
-          indexing).</p>
-          <p>Multiple indexes can be queryied concurrently, either
-          from the GUI or the command line. When doing this, there
-          is always a main configuration, from which both
-          configuration and index data are used. Only the index
-          data from the additional indexes is used (their
-          configuration parameters are ignored).</p>
+          indexing). All the query methods (<span class=
+          "command"><strong>recoll</strong></span>, <span class=
+          "command"><strong>recollq</strong></span>, the Python
+          API, etc.) operate with a main configuration, from which
+          both configuration and index data are used, but can also
+          query data from multiple additional indexes. Only the
+          index data from the latter is used, their configuration
+          parameters are ignored.</p>
           <p>When searching, the current main index (defined by
           <code class="envar">RECOLL_CONFDIR</code> or <code class=
           "option">-c</code>) is always active. If this is
@@ -1428,6 +1434,60 @@ alink="#0000FF">
           <p>The different search interfaces (GUI, command line,
           ...) have different methods to define the set of indexes
           to be used, see the appropriate section.</p>
+          <p>At the moment, using multiple configurations implies a
+          small level of command line usage. Additional
+          configuration directories (beyond <code class=
+          "filename">~/.recoll</code>) must be created by hand
+          (<span class="command"><strong>mkdir</strong></span> or
+          such), the GUI will not do it. This is to avoid
+          mistakenly creating additional directories when an
+          argument is mistyped. Also, the GUI or the indexer must
+          be launched with a specific option or environment to work
+          on the right configuration.</p>
+          <p>To be more practical, here follows a few examples of
+          the commands need to create, configure, update, and query
+          an additional index.</p>
+          <p>Initially creating the configuration and index:</p>
+          <pre class="programlisting">
+mkdir <em class=
+"replaceable"><code>/path/to/my/new/config</code></em></pre>
+          <p>Configuring the new index can be done from the
+          <span class="command"><strong>recoll</strong></span> GUI,
+          launched from the command line to pass the <code class=
+          "literal">-c</code> option (you could create a desktop
+          file to do it for you), and then using the GUI index
+          configuration tool to set up the index.</p>
+          <pre class="programlisting">
+recoll -c <em class=
+"replaceable"><code>/path/to/my/new/config</code></em></pre>
+          <p>Alternatively, you can just start a text editor on the
+          main configuration file <a class="link" href=
+          "#RCL.INSTALL.CONFIG.RECOLLCONF" title=
+          "6.4.2.&nbsp;Recoll main configuration file, recoll.conf">
+          <code class="filename">recoll.conf</code></a> .</p>
+          <p>Creating and updating the index can be done from the
+          command line:</p>
+          <pre class="programlisting">recollindex -c <em class=
+          "replaceable"><code>/path/to/my/new/config</code></em>
+</pre>
+          <p>or from the File menu of a GUI launched with the same
+          option (<span class=
+          "command"><strong>recoll</strong></span>, see above).</p>
+          <p>The same GUI would also let you set up batch indexing
+          for the new index. Real time indexing can only be set up
+          from the GUI for the default index (the menu entry will
+          be inactive if the GUI was started with a non-default
+          <code class="literal">-c</code> option).</p>
+          <p>The new index can be queried alone with</p>
+          <pre class="programlisting">
+recoll -c <em class=
+"replaceable"><code>/path/to/my/new/config</code></em></pre>
+          <p>Or, in parallel with the default index, by starting
+          <span class="command"><strong>recoll</strong></span>
+          without a <code class="literal">-c</code> option, and
+          using the <span class="guimenu">Preferences</span> →
+          <span class="guimenuitem">External Index Dialog</span>
+          menu.</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
