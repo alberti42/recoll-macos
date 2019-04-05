@@ -1,7 +1,7 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: recoll
 Upstream-Contact: Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr>
-Source: http://www.lesbonscomptes.com/recoll/
+Source: https://www.lesbonscomptes.com/recoll/
 
 Files: *
 Copyright: 2005-2014, Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr>
@@ -85,7 +85,7 @@ License: Unicode
 
 License: Unicode
  All rights reserved. Distributed under the Terms of Use in
- http://www.unicode.org/copyright.html
+ https://www.unicode.org/copyright.html
  .
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of the Unicode data files and any associated documentation (the "Data Files")

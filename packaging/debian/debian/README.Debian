@@ -1,6 +1,11 @@
 README for Debian
 -----------------
 
+ Starting with 1.27.3-2, recoll is split into 3 packages. recoll is metapackage
+ now and depends on GUI program, recollgui and commandline programs recollcmd.
+
+ -- Kartik Mistry <kartik@debian.org>  Sat, 13 Jan 2018 21:52:00 +0530
+
  Installing over an older version: 1.18 introduces significant index formats
  changes to support optional character case and diacritics sensitivity, and it
  will be advisable to reset the index in most cases. This will be best done by

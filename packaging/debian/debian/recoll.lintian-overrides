@@ -1,2 +1,0 @@
-recoll: postinst-has-useless-call-to-ldconfig
-recoll: postrm-has-useless-call-to-ldconfig
