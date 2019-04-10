@@ -148,19 +148,19 @@
     </message>
     <message>
         <source>Minimum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation>Taille minimum. Vous pouvez utiliser un suffixe multiplicateur : k/K, m/M, g/G.</translation>
+        <translation>Taille minimum. Vous pouvez utiliser un suffixe multiplicateur : k/K, m/M, g/G</translation>
     </message>
     <message>
         <source>Min. Size</source>
-        <translation>Taille Min.</translation>
+        <translation>Taille Min</translation>
     </message>
     <message>
         <source>Maximum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation>Taille Maximum. Vous pouvez utiliser un suffixe multiplicateur : k/K, m/M, g/G.</translation>
+        <translation>Taille Maximum. Vous pouvez utiliser un suffixe multiplicateur : k/K, m/M, g/G</translation>
     </message>
     <message>
         <source>Max. Size</source>
-        <translation>Taille Max.</translation>
+        <translation>Taille Max</translation>
     </message>
     <message>
         <source>Select</source>
@@ -915,7 +915,7 @@ Vérifier le fichier mimeconf</translation>
     </message>
     <message>
         <source>Update &amp;Index</source>
-        <translation>Mettre à jour l&apos;&amp;Index</translation>
+        <translation>Mettre à jour l&apos;&amp;index</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
@@ -1527,7 +1527,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Index configuration</source>
-        <translation>Configuration de l&apos;&amp;Index</translation>
+        <translation>Configuration de l&apos;&amp;index</translation>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
@@ -2365,7 +2365,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Retry previously failed files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne pas réessayer les fichiers en erreur.</translation>
     </message>
 </context>
 <context>
@@ -2657,7 +2657,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation type="obsolete">Panneau de recherche avancée ouvert au démarrage.</translation>
+        <translation type="obsolete">Panneau de recherche avancée ouvert au démarrage</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
@@ -2735,7 +2735,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation type="obsolete">Ajouter automatiquement une phrase aux recherches simples</translation>
+        <translation type="obsolete">Ajouter automatiquement une phrase aux recherches simples.</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
@@ -2781,7 +2781,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation type="obsolete">Mémoriser l&apos;état d&apos;activation du tri.</translation>
+        <translation type="obsolete">Mémoriser l&apos;état d&apos;activation du tri</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
@@ -2797,7 +2797,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation type="obsolete">Utiliser le format Html pour la previsualisation.</translation>
+        <translation type="obsolete">Utiliser le format Html pour la prévisualisation</translation>
     </message>
     <message>
         <source>If checked, results with the same content under different names will only be shown once.</source>
@@ -3298,7 +3298,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation>Cacher les doublons.</translation>
+        <translation>Cacher les doublons</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
@@ -3366,7 +3366,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation>Memoriser l&apos;etat d&apos;activation du tri.</translation>
+        <translation>Mémoriser l&apos;état d&apos;activation du tri</translation>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
@@ -3422,7 +3422,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation>Suffixes automatiques pour le langage d&apos;interrogation.</translation>
+        <translation>Suffixes automatiques pour le langage d&apos;interrogation</translation>
     </message>
     <message>
         <source>Enable</source>
@@ -3572,7 +3572,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Disable Qt autocompletion in search entry.</source>
-        <translation>Desactiver l&apos;autocompletion Qt dans l&apos;entree de recherche</translation>
+        <translation>Désactiver l&apos;autocomplétion Qt dans l&apos;entrée de recherche</translation>
     </message>
     <message>
         <source>Search as you type.</source>
@@ -3620,11 +3620,11 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Show system tray icon.</source>
-        <translation>Afficher l&apos;icone dans la barre d&apos;état système.</translation>
+        <translation>Afficher l&apos;icone dans la barre d&apos;état système</translation>
     </message>
     <message>
         <source>Close to tray instead of exiting.</source>
-        <translation>Réduire dans la barre d&apos;état au lieu de quitter.</translation>
+        <translation>Réduire dans la barre d&apos;état au lieu de quitter</translation>
     </message>
     <message>
         <source>Start with simple search mode</source>
@@ -3632,7 +3632,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
-        <translation>Afficher un avertissement quand on édite une copie temporaire.</translation>
+        <translation>Afficher un avertissement quand on édite une copie temporaire</translation>
     </message>
     <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
@@ -3656,7 +3656,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Activate links in preview.</source>
-        <translation>Activer les liens dans la prévisualisation.</translation>
+        <translation>Activer les liens dans la prévisualisation</translation>
     </message>
     <message>
         <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
@@ -3668,7 +3668,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Start search on completer popup activation.</source>
-        <translation>Démarrer la recherche quand un choix est fait dans les suggestions.</translation>
+        <translation>Démarrer la recherche quand un choix est fait dans les suggestions</translation>
     </message>
 </context>
 </TS>
