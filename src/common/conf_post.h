@@ -25,7 +25,7 @@ typedef int mode_t;
 #endif // GMinw only
 
 typedef int pid_t;
-inline int readlink(const char *cp, void *buf, int cnt)
+inline int readlink(const char *, void *, int)
 {
     return -1;
 }

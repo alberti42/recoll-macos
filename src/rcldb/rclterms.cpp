@@ -374,7 +374,7 @@ bool Db::Native::idxTermMatch_p(
             Xapian::TermIterator it = xdb.allterms_begin(); 
             if (!is.empty())
                 it.skip_to(is.c_str());
-            for (int rcnt = 0; it != xdb.allterms_end(); it++) {
+            for (; it != xdb.allterms_end(); it++) {
                 const string ixterm{*it};
                 // If we're beyond the terms matching the initial
                 // section, end

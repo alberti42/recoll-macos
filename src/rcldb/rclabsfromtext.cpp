@@ -344,8 +344,6 @@ int Query::Native::abstractFromText(
     Chrono&
     )
 {
-    Xapian::Database& xrdb(ndb->xrdb);
-
     string rawtext;
     if (!ndb->getRawText(docid, rawtext)) {
         LOGDEB0("abstractFromText: can't fetch text\n");

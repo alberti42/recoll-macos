@@ -636,7 +636,6 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     }
 
     Rcl::Db::Native *ndb(m_q->m_db->m_ndb);
-    Xapian::Database& xrdb(ndb->xrdb);
 
     // Total number of slots we populate. The 7 is taken as
     // average word size. It was a mistake to have the user max

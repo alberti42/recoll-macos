@@ -577,8 +577,9 @@ bool TextSplit::text_to_words(const string &in)
     int nonalnumcnt = 0;
 
     Utf8Iter it(in);
+#ifdef KATAKANA_AS_WORDS
     int prev_csc = -1;
-
+#endif
     for (; !it.eof(); it++) {
         unsigned int c = *it;
         nonalnumcnt++;
@@ -627,9 +628,9 @@ bool TextSplit::text_to_words(const string &in)
                 return false;
             }
         }
+        prev_csc = csc;
 #endif
 
-        prev_csc = csc;
         char asciirep = 0;
         int cc = whatcc(c, &asciirep);
 
