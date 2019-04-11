@@ -859,7 +859,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
 
     // Enter document in document history
-    historyEnterDoc(rcldb, g_dynconf, idoc);
+    historyEnterDoc(rcldb.get(), g_dynconf, idoc);
 
     editor->setFocus();
     emit(previewExposed(this, m_searchId, docnum));

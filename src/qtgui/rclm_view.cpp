@@ -67,10 +67,10 @@ void RclMain::viewUrl()
 	return;
 
     // StartNativeViewer needs a db source to call getEnclosing() on.
-    Rcl::Query *query = new Rcl::Query(rcldb);
-    DocSequenceDb *src = 
-	new DocSequenceDb(std::shared_ptr<Rcl::Query>(query), "", 
-			  std::shared_ptr<Rcl::SearchData>(new Rcl::SearchData));
+    Rcl::Query *query = new Rcl::Query(rcldb.get());
+    DocSequenceDb *src = new DocSequenceDb(
+        rcldb, std::shared_ptr<Rcl::Query>(query), "", 
+        std::shared_ptr<Rcl::SearchData>(new Rcl::SearchData));
     m_source = std::shared_ptr<DocSequence>(src);
 
 
@@ -458,7 +458,7 @@ void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
     }
 
     if (enterHistory)
-	historyEnterDoc(rcldb, g_dynconf, doc);
+	historyEnterDoc(rcldb.get(), g_dynconf, doc);
     
     // Do the zeitgeist thing
     zg_send_event(ZGSEND_OPEN, doc);

@@ -19,6 +19,7 @@
 #include <time.h>
 
 #include <vector>
+#include <memory>
 
 #include "docseq.h"
 #include "dynconf.h"
@@ -47,8 +48,9 @@ class RclDHistoryEntry : public DynConfEntry {
  *  metadata for an url key */
 class DocSequenceHistory : public DocSequence {
  public:
-    DocSequenceHistory(Rcl::Db *d, RclDynConf *h, const std::string &t) 
-	: DocSequence(t), m_db(d), m_hist(h) {}
+    DocSequenceHistory(std::shared_ptr<Rcl::Db> db, RclDynConf *h,
+                       const std::string &t) 
+	: DocSequence(t), m_db(db), m_hist(h) {}
     virtual ~DocSequenceHistory() {}
 
     virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0);
@@ -56,9 +58,11 @@ class DocSequenceHistory : public DocSequence {
     virtual std::string getDescription() {return m_description;}
     void setDescription(const std::string& desc) {m_description = desc;}
 protected:
-    virtual Rcl::Db *getDb();
+    virtual std::shared_ptr<Rcl::Db> getDb() {
+        return m_db;
+    }
 private:
-    Rcl::Db    *m_db;
+    std::shared_ptr<Rcl::Db> m_db;
     RclDynConf *m_hist;
     time_t      m_prevtime{-1};
     std::string m_description; // This is just an nls translated 'doc history'

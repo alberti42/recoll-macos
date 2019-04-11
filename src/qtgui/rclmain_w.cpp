@@ -736,12 +736,12 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
         rcldb->setSynGroupsFile("");
     }
 
-    Rcl::Query *query = new Rcl::Query(rcldb);
+    Rcl::Query *query = new Rcl::Query(rcldb.get());
     query->setCollapseDuplicates(prefs.collapseDuplicates);
 
     curPreview = 0;
     DocSequenceDb *src = 
-	new DocSequenceDb(std::shared_ptr<Rcl::Query>(query), 
+	new DocSequenceDb(rcldb, std::shared_ptr<Rcl::Query>(query), 
 			  string(tr("Query results").toUtf8()), sdata);
     src->setAbstractParams(prefs.queryBuildAbstract, 
                            prefs.queryReplaceAbstract);

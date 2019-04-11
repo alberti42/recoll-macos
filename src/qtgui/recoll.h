@@ -18,6 +18,7 @@
 #define _RECOLL_H_INCLUDED_
 
 #include <string>
+#include <memory>
 
 #include "rclconfig.h"
 #include "rcldb.h"
@@ -40,7 +41,7 @@ extern TempFile *rememberTempFile(TempFile);
 extern void forgetTempFile(string &fn);
 extern void deleteAllTempFiles();
 
-extern Rcl::Db *rcldb;
+extern std::shared_ptr<Rcl::Db> rcldb;
 extern int recollNeedsExit;
 extern void startManual(const string& helpindex);
 

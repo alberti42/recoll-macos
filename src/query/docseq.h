@@ -166,7 +166,7 @@ class DocSequence {
 
 protected:
     friend class DocSeqModifier;
-    virtual Rcl::Db *getDb() = 0;
+    virtual std::shared_ptr<Rcl::Db> getDb() = 0;
     static std::mutex o_dblock;
     static std::string o_sort_trans;
     static std::string o_filt_trans;
@@ -247,8 +247,7 @@ public:
     }
 
 protected:
-    virtual Rcl::Db *getDb()
-    {
+    virtual std::shared_ptr<Rcl::Db> getDb() {
 	if (!m_seq)
 	    return 0;
 	return m_seq->getDb();

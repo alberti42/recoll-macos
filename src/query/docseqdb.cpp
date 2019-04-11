@@ -28,9 +28,10 @@
 
 using std::list;
 
-DocSequenceDb::DocSequenceDb(std::shared_ptr<Rcl::Query> q, const string &t, 
+DocSequenceDb::DocSequenceDb(std::shared_ptr<Rcl::Db> db,
+                             std::shared_ptr<Rcl::Query> q, const string &t, 
 			     std::shared_ptr<Rcl::SearchData> sdata) 
-    : DocSequence(t), m_q(q), m_sdata(sdata), m_fsdata(sdata),
+    : DocSequence(t), m_db(db), m_q(q), m_sdata(sdata), m_fsdata(sdata),
       m_rescnt(-1), 
       m_queryBuildAbstract(true),
       m_queryReplaceAbstract(false),
@@ -129,11 +130,6 @@ int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc, string& term)
 	return m_q->getFirstMatchPage(doc, term);
     }
     return -1;
-}
-
-Rcl::Db *DocSequenceDb::getDb()
-{
-    return m_q ? m_q->whatDb() : 0;
 }
 
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)

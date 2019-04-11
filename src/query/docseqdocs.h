@@ -17,6 +17,8 @@
 #ifndef _DOCSEQDOCS_H_INCLUDED_
 #define _DOCSEQDOCS_H_INCLUDED_
 
+#include <memory>
+
 #include "docseq.h"
 #include "rcldoc.h"
 
@@ -27,16 +29,13 @@ namespace Rcl {
 /** A DocSequence that's just built from a bunch of docs */
 class DocSequenceDocs : public DocSequence {
  public:
-    DocSequenceDocs(Rcl::Db *d, const std::vector<Rcl::Doc> docs, 
-		    const string &t) 
-	: DocSequence(t), m_db(d), m_docs(docs)
-    {
+    DocSequenceDocs(std::shared_ptr<Rcl::Db> d,
+                    const std::vector<Rcl::Doc> docs, const string &t) 
+	: DocSequence(t), m_db(d), m_docs(docs) {
     }
-    virtual ~DocSequenceDocs() 
-    {
+    virtual ~DocSequenceDocs() {
     }
-    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0)
-    {
+    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0) {
 	if (sh)
 	    *sh = string();
 	if (num < 0 || num >= int(m_docs.size()))
@@ -44,25 +43,21 @@ class DocSequenceDocs : public DocSequence {
 	doc = m_docs[num];
 	return true;
     }
-    virtual int getResCnt()
-    {
+    virtual int getResCnt() {
 	return m_docs.size();
     }
-    virtual string getDescription() 
-    {
+    virtual string getDescription() {
 	return m_description;
     }
-    void setDescription(const string& desc) 
-    {
+    void setDescription(const string& desc) {
 	m_description = desc;
     }
 protected:
-    virtual Rcl::Db *getDb()
-    {
+    virtual std::shared_ptr<Rcl::Db> getDb() {
 	return m_db;
     }
  private:
-    Rcl::Db    *m_db;
+    std::shared_ptr<Rcl::Db> m_db;
     string      m_description;
     std::vector<Rcl::Doc> m_docs;
 };

@@ -41,8 +41,8 @@ int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
 
 bool DocSequence::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
 {
-    Rcl::Db *db = getDb();
-    if (db == 0) {
+    std::shared_ptr<Rcl::Db> db = getDb();
+    if (!db) {
 	LOGERR("DocSequence::getEnclosing: no db\n" );
 	return false;
     }

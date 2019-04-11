@@ -25,7 +25,8 @@
 /** A DocSequence from a Db query */
 class DocSequenceDb : public DocSequence {
  public:
-    DocSequenceDb(std::shared_ptr<Rcl::Query> q, const string &t, 
+    DocSequenceDb(std::shared_ptr<Rcl::Db> db,
+                  std::shared_ptr<Rcl::Query> q, const string &t, 
 		  std::shared_ptr<Rcl::SearchData> sdata);
     virtual ~DocSequenceDb() {}
     virtual bool getDoc(int num, Rcl::Doc &doc, string * = 0);
@@ -58,8 +59,11 @@ class DocSequenceDb : public DocSequence {
     virtual string title();
 
 protected:
-    virtual Rcl::Db *getDb();
+    virtual std::shared_ptr<Rcl::Db> getDb() {
+        return m_db;
+    }
 private:
+    std::shared_ptr<Rcl::Db>         m_db;
     std::shared_ptr<Rcl::Query>      m_q;
     std::shared_ptr<Rcl::SearchData> m_sdata;
     std::shared_ptr<Rcl::SearchData> m_fsdata; // Filtered 

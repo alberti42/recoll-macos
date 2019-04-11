@@ -81,7 +81,7 @@ void deleteAllTempFiles()
     Uncomp::clearcache();
 }
 
-Rcl::Db *rcldb;
+std::shared_ptr<Rcl::Db> rcldb;
 int recollNeedsExit;
 RclMain *mainWindow;
 
@@ -96,8 +96,7 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
     LOGDEB2("maybeOpenDb: force " << force << "\n");
 
     if (force) {
-        delete rcldb;
-        rcldb = new Rcl::Db(theconfig);
+        rcldb = std::shared_ptr<Rcl::Db>(new Rcl::Db(theconfig));
     }
     rcldb->rmQueryDb("");
     for (const auto& dbdir : prefs.activeExtraDbs) {
@@ -142,10 +141,11 @@ bool getStemLangs(vector<string>& vlangs)
     }
 }
 
+// This is never called because we _Exit() in rclmain_w.cpp
 static void recollCleanup()
 {
     LOGDEB2("recollCleanup: closing database\n" );
-    deleteZ(rcldb);
+    rcldb.reset();
     deleteZ(theconfig);
 
     deleteAllTempFiles();

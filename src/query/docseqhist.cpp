@@ -159,11 +159,6 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
     return ret;
 }
 
-Rcl::Db *DocSequenceHistory::getDb()
-{
-    return m_db;
-}
-
 int DocSequenceHistory::getResCnt()
 {	
     if (m_history.empty())
