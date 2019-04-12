@@ -4018,8 +4018,7 @@ Db.setAbstractParams(maxchars, contextwords)
     of the abstract. ``contextwords`` defines how many terms are shown
     around the keyword.
 
-Db.termMatch(match\_type, expr, field='', maxlen=-1, casesens=False,
-diacsens=False, lang='english')
+Db.termMatch(match\_type, expr, field='', maxlen=-1, casesens=False, diacsens=False, lang='english')
     Expand an expression against the index term list. Performs the basic
     function from the GUI term explorer tool. ``match_type`` can be
     either of ``wildcard``, ``regexp`` or ``stem``. Returns a list of
@@ -4032,8 +4031,7 @@ Query.sortby(fieldname, ascending=True)
     Sort results by fieldname, in ascending or descending order. Must be
     called before executing the search.
 
-Query.execute(query\_string, stemming=1, stemlang="english",
-fetchtext=False)
+Query.execute(query\_string, stemming=1, stemlang="english", fetchtext=False)
     Starts a search for query\_string, a RCL search language string. If
     the index stores the document texts and ``fetchtext`` is True, store
     the document extracted text in ``doc.text``.
