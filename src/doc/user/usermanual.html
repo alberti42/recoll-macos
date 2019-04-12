@@ -6971,8 +6971,51 @@ recollindex -c "$confdir"
                 as Unicode or strings. Outputs are Unicode objects.
                 All dates are specified as Unix timestamps, printed
                 as strings. Please refer to the <code class=
-                "filename">rcldb/rcldoc.h</code> C++ file for a
-                description of the predefined attributes.</p>
+                "filename">rcldb/rcldoc.cpp</code> C++ file for a
+                full description of the predefined attributes. Here
+                follows a short list.</p>
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style=
+                  "list-style-type: disc;">
+                    <li class="listitem">
+                      <p><code class="literal">url</code> the
+                      document URL but see also <code class=
+                      "literal">getbinurl()</code></p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class="literal">ipath</code> the
+                      document <code class="literal">ipath</code>
+                      for embedded documents.</p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class="literal">fbytes,
+                      dbytes</code> the document file and text
+                      sizes.</p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class="literal">fmtime,
+                      dmtime</code> the document file and document
+                      times.</p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class="literal">xdocid</code> the
+                      document Xapian document ID. This is useful
+                      if you want to access the document through a
+                      direct Xapian operation.</p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class="literal">mtype</code> the
+                      document MIME type.</p>
+                    </li>
+                    <li class="listitem">
+                      <p>Fields stored by default: <code class=
+                      "literal">author</code>, <code class=
+                      "literal">filename</code>, <code class=
+                      "literal">keywords</code>, <code class=
+                      "literal">recipient</code></p>
+                    </li>
+                  </ul>
+                </div>
                 <p>At query time, only the fields that are defined
                 as <code class="literal">stored</code> either by
                 default or in the <code class=
@@ -6987,17 +7030,18 @@ recollindex -c "$confdir"
                     <dt><span class="term">get(key), []
                     operator</span></dt>
                     <dd>
-                      <p>Retrieve the named doc attribute. You can
-                      also use <code class="literal">getattr(doc,
-                      key)</code> or <code class=
-                      "literal">doc.key</code>.</p>
+                      <p>Retrieve the named document attribute. You
+                      can also use <code class=
+                      "literal">getattr(doc, key)</code> or
+                      <code class="literal">doc.key</code>.</p>
                     </dd>
                     <dt><span class="term">doc.key =
                     value</span></dt>
                     <dd>
-                      <p>Set the the named doc attribute. You can
-                      also use <code class="literal">setattr(doc,
-                      key, value)</code>.</p>
+                      <p>Set the the named document attribute. You
+                      can also use <code class=
+                      "literal">setattr(doc, key,
+                      value)</code>.</p>
                     </dd>
                     <dt><span class="term">getbinurl()</span></dt>
                     <dd>

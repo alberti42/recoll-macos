@@ -5372,9 +5372,39 @@ recollindex -c "$confdir"
               configuration.  Inputs can be specified as Unicode or
               strings. Outputs are Unicode objects. All dates are
               specified as Unix timestamps, printed as strings. Please
-              refer to the <filename>rcldb/rcldoc.h</filename> C++ file
-              for a description of the predefined attributes.</para>
+              refer to the <filename>rcldb/rcldoc.cpp</filename> C++ file
+              for a full description of the predefined attributes. Here
+              follows a short list.</para>
 
+              <para><itemizedlist>
+                <listitem><para><literal>url</literal> the document URL but
+                see also <literal>getbinurl()</literal></para></listitem>
+              
+                <listitem><para><literal>ipath</literal> the document
+                <literal>ipath</literal> for embedded
+                documents.</para></listitem> 
+
+                <listitem><para><literal>fbytes, dbytes</literal> the document
+                file and text sizes.</para></listitem> 
+                <listitem><para><literal>fmtime, dmtime</literal> the document
+                file and document times.</para></listitem> 
+              
+                <listitem><para><literal>xdocid</literal> the document
+                Xapian document ID. This is useful if you want to access
+                the document through a direct Xapian
+                operation.</para></listitem>
+
+                <listitem><para><literal>mtype</literal> the document
+                MIME type.</para></listitem>
+
+                <listitem><para>Fields stored by default:
+                <literal>author</literal>, <literal>filename</literal>,
+                <literal>keywords</literal>,
+                <literal>recipient</literal></para></listitem>
+
+              </itemizedlist>                
+              </para>
+              
               <para>At query time, only the fields that are defined
               as <literal>stored</literal> either by default or in
               the <filename>fields</filename> configuration file will be
@@ -5388,18 +5418,18 @@ recollindex -c "$confdir"
                 <varlistentry>
                   <term>get(key), [] operator</term>
 
-                  <listitem><para>Retrieve the named doc
-                  attribute. You can also use
-                  <literal>getattr(doc, key)</literal> or
-                  <literal>doc.key</literal>.</para></listitem>  
+                  <listitem><para>Retrieve the named document
+                  attribute. You can also use <literal>getattr(doc,
+                  key)</literal> or
+                  <literal>doc.key</literal>.</para></listitem>
                 </varlistentry>
 
                 <varlistentry>
                   <term>doc.key = value</term>
 
-                  <listitem><para>Set the the named doc
-                  attribute. You can also use
-                  <literal>setattr(doc, key, value)</literal>.</para></listitem>  
+                  <listitem><para>Set the the named document attribute. You
+                  can also use <literal>setattr(doc, key,
+                  value)</literal>.</para></listitem>
                 </varlistentry>
 
                 <varlistentry>
