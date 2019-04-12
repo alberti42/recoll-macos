@@ -6,10 +6,10 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.25.11
+RCLVERS=1.25.12
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
-PPAVERS=2
+PPAVERS=5
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -49,7 +49,7 @@ debdir=debian
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
 series="xenial bionic cosmic disco"
-#series=
+series=xenial
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -66,6 +66,11 @@ for series in $series ; do
   else 
       cp -f -p $debdir/control recoll-${RCLVERS}/debian/control
   fi
+  if test -f $debdir/rules-$series ; then
+      cp -f -p $debdir/rules-$series recoll-${RCLVERS}/debian/rules
+  else 
+      cp -f -p $debdir/rules recoll-${RCLVERS}/debian/rules
+  fi
 
   sed -e s/SERIES/${series}/g \
       -e s/PPAVERS/${PPAVERS}/g \
@@ -81,7 +86,7 @@ done
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
 series="xenial bionic cosmic disco"
-#series=
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
