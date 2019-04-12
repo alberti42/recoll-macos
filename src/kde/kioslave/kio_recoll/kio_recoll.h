@@ -177,7 +177,7 @@ private:
     bool isRecollResult(const QUrl& url, int *num, QString* q);
 
     bool        m_initok;
-    Rcl::Db    *m_rcldb;
+    std::shared_ptr<Rcl::Db> m_rcldb;
     std::string      m_reason;
     bool        m_alwaysdir;
     // english by default else env[RECOLL_KIO_STEMLANG]
