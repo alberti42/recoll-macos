@@ -17,8 +17,9 @@ XSLDIR="/usr/share/xml/docbook/stylesheet/docbook-xsl/"
 
 # Options common to the single-file and chunked versions
 commonoptions=--stringparam section.autolabel 1 \
-  --stringparam section.autolabel.max.depth 3 \
+  --stringparam section.autolabel.max.depth 2 \
   --stringparam section.label.includes.component.label 1 \
+  --stringparam toc.max.depth 3 \
   --stringparam autotoc.label.in.hyperlink 0 \
   --stringparam abstract.notitle.enabled 1 \
   --stringparam html.stylesheet docbook-xsl.css \
