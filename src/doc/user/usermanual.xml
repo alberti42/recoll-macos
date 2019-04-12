@@ -70,8 +70,8 @@
       <title>Giving it a try</title>
       
       <para>If you do not like reading manuals (who does?) but 
-      wish to give &RCL; a try, just <link
-      linkend="RCL.INSTALL.BINARY">install</link> the application
+      wish to give &RCL; a try, just
+      <link linkend="RCL.INSTALL.BINARY">install</link> the application
       and start the <command>recoll</command> graphical user
       interface (GUI), which will ask permission to index your home
       directory by default, allowing you to search immediately after
@@ -511,14 +511,12 @@
 
         <para>Excluding files by name can be done by adding wildcard name
         patterns to the
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">
-          skippedNames</link> list, which
-          can be done from the GUI Index configuration menu. Excluding by
-          type can be done by setting the 
-          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
-            excludedmimetypes</link> list in the configuration file (1.20
-            and later). This
-        can be redefined for subdirectories.</para>
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">skippedNames</link> 
+        list, which can be done from the GUI Index configuration
+        menu. Excluding by type can be done by setting the 
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">excludedmimetypes</link> 
+        list in the configuration file (1.20 and later). This can be
+        redefined for subdirectories.</para>
 
         <para>You can also define an exclusive list of MIME types to be
         indexed (no others will be indexed), by settting 
@@ -872,9 +870,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
     
 
          <para>Alternatively, you can just start a text editor on the main
-         configuration file <link
-         linkend="RCL.INSTALL.CONFIG.RECOLLCONF"><filename>recoll.conf
-       </filename></link>.</para> 
+         configuration file
+         <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF"><filename>recoll.conf</filename></link>.</para> 
 
 
 <para>Creating and updating the index can be done from the command line:
@@ -1231,8 +1228,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       <literal>myfield</literal> just the same, but <literal>tags</literal>
       is an alias for the standard &RCL; <literal>keywords</literal> field,
       and the <command>tmsu</command> output will just augment its
-      contents. This will avoid the need to extend the <link
-      linkend="RCL.PROGRAM.FIELDS">field configuration</link>.</para>
+      contents. This will avoid the need to extend the
+      <link linkend="RCL.PROGRAM.FIELDS">field configuration</link>.</para>
 
       <para>Once re-indexing is performed (you'll need to force the file
       reindexing, &RCL; will not detect the need by itself), you will 
@@ -1241,8 +1238,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       <literal>tags:all,these,values</literal> (the compact field search
       syntax is supported for recoll 1.20 and later. For 
       older versions, you would need to repeat the <literal>tags:</literal>
-      specifier for each term, e.g. <literal>tags:some OR
-      tags:alternate</literal>).</para> 
+      specifier for each term, e.g.
+      <literal>tags:some OR tags:alternate</literal>).</para> 
 
       <para>You should be aware that tags changes will not be detected by
       the indexer if the file itself did not change. One possible
@@ -1251,8 +1248,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       would be consistent with how extended attributes function. A pair of
       <command>chmod</command> commands could accomplish this, or a
       <literal>touch -a</literal> . Alternatively, just
-      couple the tag update with a <literal>recollindex -e -i
-      filename.</literal></para>
+      couple the tag update with a
+      <literal>recollindex -e -i filename.</literal></para>
 
     </sect1>
 
@@ -1280,8 +1277,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
         <command>pdftoppm</command> (generally from the
         <application>poppler-utils</application> package) are installed,
         the PDF handler may attempt OCR on PDF files with no text
-        content. This is controlled by the <link
-        linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR">pdfocr</link>
+        content. This is controlled by the
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR">pdfocr</link>
         configuration variable, which is false by default because
         OCR is very slow.</para>
 
@@ -1305,13 +1302,13 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
         1.23.2 and later can extract XMP metadata fields by executing the
         <command>pdfinfo</command> command (usually found with
         <application>poppler-utils</application>). This is controlled by
-        the <link
-        linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA">pdfextrameta</link>
+        the
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA">pdfextrameta</link>
         configuration variable, which specifies which tags to extract and,
         possibly, how to rename them.</para>
 
-        <para>The <link
-        linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">pdfextrametafix</link>
+        <para>The
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">pdfextrametafix</link>
         variable can be used to designate a file with Python code to edit
         the metadata fields (available for &RCL; 1.23.3 and later. 1.23.2
         has equivalent code inside the handler script). Example:</para>
@@ -1356,8 +1353,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
         <title>PDF attachment indexing</title>
 
         <para>If <application>pdftk</application> is installed, and if the
-        the <link
-        linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</link>
+        the
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</link>
         configuration variable is set, the PDF input handler will try to
         extract PDF attachements for indexing as sub-documents of the PDF
         file. This is disabled by default, because it slows down PDF
@@ -1520,8 +1517,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       your system is short on resources. Periodic indexing is
       adequate in most cases.</para>
 
-      <para>As of &RCL; 1.24, you can set the <link
-      linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">monitordirs</link>
+      <para>As of &RCL; 1.24, you can set the
+      <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">monitordirs</link>
       configuration variable to specify that only a subset of your indexed
       files will be monitored for instant indexing.  In this situation, an
       incremental pass on the full tree can be triggered by either
@@ -1590,9 +1587,9 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
         depending on the log level.</para>
 
         <para>When building &RCL;, the real time indexing support can be
-        customised during package <link
-        linkend="RCL.INSTALL.BUILDING">configuration</link> with
-        the <option>--with[out]-fam</option> or
+        customised during package
+        <link linkend="RCL.INSTALL.BUILDING">configuration</link>
+        with the <option>--with[out]-fam</option> or
         <option>--with[out]-inotify</option> options.  The default is
         currently to include <application>inotify</application>
         monitoring on systems that support it, and, as of &RCL; 1.17,
@@ -1720,8 +1717,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
 
         <para>All search modes allow terms to be expanded with wildcards
         characters (<literal>*</literal>, <literal>?</literal>,
-        <literal>[]</literal>). See the <link
-        linkend="RCL.SEARCH.WILDCARDS">section about wildcards</link> for
+        <literal>[]</literal>). See the
+        <link linkend="RCL.SEARCH.WILDCARDS">section about wildcards</link> for
         more details.</para>
 
         <para>The <guilabel>File name</guilabel> search mode will
@@ -1752,8 +1749,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
 
         <para>In all modes except <guilabel>File name</guilabel>, you can
         search for exact phrases (adjacent words in a given order) by
-        enclosing the input inside double quotes. Ex: <literal>"virtual
-        reality"</literal>.</para>
+        enclosing the input inside double quotes. Ex:
+        <literal>"virtual reality"</literal>.</para>
 
         <para>When using a stripped index (the default), character case has
         no influence on search, except that you can disable stem expansion
@@ -1931,8 +1928,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
 
           <para><guilabel>Run Script</guilabel> allows starting an arbitrary
           command on the result file. It will only appear for results which
-          are top-level files. See <link
-          linkend="RCL.SEARCH.GUI.RUNSCRIPT">further</link> for a more
+          are top-level files. See
+          <link linkend="RCL.SEARCH.GUI.RUNSCRIPT">further</link> for a more
           detailed description.</para>
 
           <para>The <guilabel>Copy File Name</guilabel> and
@@ -2336,21 +2333,22 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
           search. </para>
 
           <formalpara><title>Phrases and Proximity searches</title>
-          <para>These two clauses work in similar ways, with the
-          difference that proximity searches do not impose an order on the
-          words. In both cases, an adjustable number (slack) of non-matched words
-          may be accepted between the searched ones (use the counter on
-          the left to adjust this count). For phrases, the default count
-          is zero (exact match). For proximity it is ten (meaning that two search
-          terms, would be matched if found within a window of twelve
-          words). Examples: a phrase search for <literal>quick
-          fox</literal> with a slack of 0 will match <literal>quick
-          fox</literal> but not <literal>quick brown fox</literal>. With
-          a slack of 1 it will match the latter, but not <literal>fox
-          quick</literal>. A proximity search for <literal>quick
-          fox</literal> with the default slack will match the
-          latter, and also <literal>a fox is a cunning and quick
-          animal</literal>.</para> 
+          <para>These two clauses work in similar ways, with the difference
+          that proximity searches do not impose an order on the words. In
+          both cases, an adjustable number (slack) of non-matched words may
+          be accepted between the searched ones (use the counter on the
+          left to adjust this count). For phrases, the default count is
+          zero (exact match). For proximity it is ten (meaning that two
+          search terms, would be matched if found within a window of twelve
+          words). Examples: a phrase search for
+          <literal>quick fox</literal> with a slack of 0 will match
+          <literal>quick fox</literal> but not
+          <literal>quick brown fox</literal>. With
+          a slack of 1 it will match the latter, but not
+          <literal>fox quick</literal>. A proximity search for
+          <literal>quick fox</literal> with the default slack will 
+          match the latter, and also
+          <literal>a fox is a cunning and quick animal</literal>.</para> 
           </formalpara>
 
         </sect3>
@@ -2366,9 +2364,9 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
 
             <listitem>
               <para>The first section allows filtering by dates of last
-              modification. You can specify both a minimum and a maximum date. The
-              initial values are set according to the oldest and newest documents
-              found in the index.</para>
+              modification. You can specify both a minimum and a maximum
+              date. The initial values are set according to the oldest and
+              newest documents found in the index.</para>
             </listitem>
 
             <listitem>
@@ -2453,8 +2451,9 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
             search string with shell-like wildcards (*, ?, []). ie:
             <replaceable>xapi*</replaceable> would display all index terms
             beginning with <replaceable>xapi</replaceable>. (More
-            about wildcards <link
-            linkend="RCL.SEARCH.WILDCARDS">here</link>).</para></listitem> 
+            about wildcards
+            <link linkend="RCL.SEARCH.WILDCARDS">here</link>
+            ).</para></listitem> 
           </varlistentry>
 
           <varlistentry>
@@ -2715,8 +2714,9 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
           phrase. Ie: searching for <literal>virtual reality</literal>
           will still find all documents where either
           <literal>virtual</literal> or <literal>reality</literal> or 
-          both appear, but those which contain <literal>virtual
-          reality</literal> should appear sooner in the list.</para>
+          both appear, but those which contain
+          <literal>virtual reality</literal> should appear sooner in the
+          list.</para> 
           </formalpara>
 
           <para>Phrase searches can strongly slow down a query if most of the
@@ -3066,21 +3066,23 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
               <listitem><para><guilabel>Stemming language</guilabel>:
               stemming obviously depends on the document's language. This
               listbox will let you chose among the stemming databases which
-              were built during indexing (this is set in the <link
-              linkend="RCL.INSTALL.CONFIG.RECOLLCONF">main configuration
-              file</link>), or later added with <command>recollindex
-              -s</command> (See the recollindex manual). Stemming languages
+              were built during indexing (this is set in the
+              <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">main configuration file</link>), 
+              or later added with
+              <command>recollindex -s</command> (See the recollindex
+              manual). Stemming languages
               which are dynamically added will be deleted at the next
               indexing pass unless they are also added in the configuration
               file.</para>
               </listitem>
 
-              <listitem><para><guilabel>Automatically add phrase to simple
-              searches</guilabel>: a phrase will be automatically built and
-              added to simple searches when looking for <literal>Any
-              terms</literal>. This will give a relevance boost to the
-              results where the search terms appear as a phrase (consecutive
-              and in order).</para>
+              <listitem><para>
+                <guilabel>Automatically add phrase to simple searches</guilabel>:
+                a phrase will be automatically built and
+              added to simple searches when looking for
+              <literal>Any terms</literal>. This will give a relevance
+              boost to the results where the search terms appear as a
+              phrase (consecutive and in order).</para>
               </listitem>
 
               <listitem><para><guilabel>Autophrase term frequency threshold
@@ -3116,8 +3118,9 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
               <listitem><para><guilabel>Query language magic file name 
               suffixes</guilabel>: a list of words which automatically get
               turned into <literal>ext:xxx</literal> file name suffix clauses
-              when starting a query language query (ie: <literal>doc xls
-              xlsx...</literal>). This will save some typing for people who
+              when starting a query language query (e.g.:
+              <literal>doc xls xlsx...</literal>). 
+              This will save some typing for people who
               use file types a lot when querying.</para>
               </listitem>
             </itemizedlist>
@@ -3420,8 +3423,9 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       simple program, and if you can program a little c++, you may find it
       useful to taylor its output format to your needs. Not that recollq is
       only really useful on systems where the Qt libraries (or even the X11
-      ones) are not available. Otherwise, just use <literal>recoll
-      -t</literal>, which takes the exact same parameters and options which
+      ones) are not available. Otherwise, just use
+      <literal>recoll -t</literal>, which takes the exact same
+      parameters and options which
       are described for <command>recollq</command></para> 
 
       <para><command>recollq</command> has a man page (not installed by
@@ -3769,8 +3773,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       field names, which will save typing, for example by aliasing
       <literal>filename</literal> to <replaceable>fn</replaceable> or
       <literal>containerfilename</literal> to
-      <replaceable>cfn</replaceable>. See the <link
-      linkend="RCL.INSTALL.CONFIG.FIELDS">section about the
+      <replaceable>cfn</replaceable>. See the
+      <link linkend="RCL.INSTALL.CONFIG.FIELDS">section about the
       <filename>fields</filename> file</link></para> 
 
       <para>The document input handlers used while indexing have the
@@ -3938,8 +3942,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
         which the <replaceable>myfield</replaceable> value is in the
         possibly open-ended interval.</para>
 
-        <para>See the section about the <link
-        linkend="RCL.INSTALL.CONFIG.FIELDS"> 
+        <para>See the section about the
+        <link linkend="RCL.INSTALL.CONFIG.FIELDS"> 
         <filename>fields</filename> configuration file</link> for the
         details of configuring a field for range searches (list them in the
         [values] section).</para>
@@ -4184,8 +4188,9 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
 
         <para>This feature can also be used with an actual phrase search,
         but in this case, the distance applies to the whole phrase and
-        anchor, so that, for example, <literal>bla bla my unexpected
-        term</literal> at the beginning of the text would be a match for
+        anchor, so that, for example,
+        <literal>bla bla my unexpected term</literal> at the
+        beginning of the text would be a match for
         <literal>"^my term"o5</literal>.</para>
 
         <para>Anchored searches can be very useful for searches inside
@@ -4357,8 +4362,8 @@ recollindex -c "$confdir"
     <para>In order to be able to run queries after the dataset has been
     moved, you must ensure the following:
     <itemizedlist>
-      <listitem><para>The main configuration file must define the <link
-      linkend="RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</link>
+      <listitem><para>The main configuration file must define the
+      <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</link>
       variable to be the original location of the configuration directory
       (<filename>orgidxconfdir=/home/me/mydata/recoll-confdir</filename>
       must be set inside
@@ -4389,8 +4394,8 @@ recollindex -c "$confdir"
     
     <para>If, after the move, the configuration directory needs to be
     copied out of the dataset (for example because the thumb drive is too
-    slow), you can set the <link
-    linkend="RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">
+    slow), you can set the
+    <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">
     curidxconfdir</link>, variable inside the copied configuration to
     define the location of the moved one. For example if
     <filename>/home/me/mydata</filename> is now mounted onto
@@ -4937,8 +4942,8 @@ recollindex -c "$confdir"
         </listitem>
         <listitem><para>At query time, the field can be displayed inside
         the result list by using the appropriate directive in the
-        definition of the <link
-        linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST">result list paragraph
+        definition of the
+        <link linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST">result list paragraph
         format</link>. All fields are displayed on the fields screen of
         the preview window (which you can reach through the right-click
         menu). This is independant of the fact that the search which
@@ -5122,8 +5127,8 @@ recollindex -c "$confdir"
 
           <varlistentry> 
             <term>Stored and indexed fields</term> 
-            <listitem><para>The <link
-            linkend="RCL.INSTALL.CONFIG.FIELDS"><filename>fields</filename>
+            <listitem><para>The
+            <link linkend="RCL.INSTALL.CONFIG.FIELDS"><filename>fields</filename>
             file</link> inside the &RCL; configuration defines which
             document fields are either <literal>indexed</literal>
             (searchable), <literal>stored</literal> (retrievable with
@@ -5193,9 +5198,7 @@ recollindex -c "$confdir"
             </varlistentry>
 
             <varlistentry>
-              <term>Db.termMatch(match_type, expr, field='',
-              maxlen=-1, casesens=False, diacsens=False, lang='english')
-              </term> 
+<term>Db.termMatch(match_type, expr, field='', maxlen=-1, casesens=False, diacsens=False, lang='english')</term> 
               <listitem><para>Expand an expression against the
               index term list. Performs the basic function from the
               GUI term explorer tool. <literal>match_type</literal>
@@ -5228,8 +5231,7 @@ recollindex -c "$confdir"
             </varlistentry>
             
             <varlistentry>
-              <term>Query.execute(query_string, stemming=1, 
-              stemlang="english", fetchtext=False)</term>
+<term>Query.execute(query_string, stemming=1, stemlang="english", fetchtext=False)</term>
               <listitem><para>Starts a search
               for <replaceable>query_string</replaceable>, a &RCL;
               search language string. If the index stores the document
@@ -5249,7 +5251,6 @@ recollindex -c "$confdir"
 
             <varlistentry>
               <term>Query.fetchmany(size=query.arraysize)</term> 
-              
               <listitem><para>Fetches
               the next <literal>Doc</literal> objects in the current
               search results, and returns them as an array of the
@@ -5321,26 +5322,33 @@ recollindex -c "$confdir"
             
             <varlistentry>
               <term>Query.__iter__() and Query.next()</term>
-              <listitem><para>So that things like <literal>for doc in
-              query:</literal> will work.</para></listitem>
+              <listitem><para>So that things like
+              <literal>for doc in query:</literal>
+              will work.</para></listitem>
             </varlistentry>
           </variablelist>
 
           <variablelist>
 
-            <varlistentry><term>Query.arraysize</term>
-            <listitem><para>Default number of records processed by fetchmany
-            (r/w).</para></listitem>  
+            <varlistentry>
+              <term>Query.arraysize</term>
+              <listitem><para>Default number of records processed by
+              fetchmany (r/w).</para></listitem>  
             </varlistentry>
-            <varlistentry><term>Query.rowcount</term><listitem><para>Number
-            of records returned by the last
-            execute.</para></listitem></varlistentry>
-            <varlistentry><term>Query.rownumber</term><listitem><para>Next index
-            to be fetched from results. Normally increments after
-            each fetchone() call, but can be set/reset before the
-            call to effect seeking (equivalent to
-            using <literal>scroll()</literal>). Starts at
-            0.</para></listitem> 
+
+            <varlistentry>
+              <term>Query.rowcount</term>
+              <listitem><para>Number of records returned by the last
+              execute.</para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Query.rownumber</term>
+              <listitem><para>Next index to be fetched from
+              results. Normally increments after each fetchone() call, but
+              can be set/reset before the call to effect seeking
+              (equivalent to using <literal>scroll()</literal>). Starts at
+              0.</para></listitem>
             </varlistentry>
 
           </variablelist>
@@ -5408,8 +5416,8 @@ recollindex -c "$confdir"
               <term>get(key), [] operator</term>
 
               <listitem><para>Retrieve the named document
-              attribute. You can also use <literal>getattr(doc,
-              key)</literal> or
+              attribute. You can also use
+              <literal>getattr(doc, key)</literal> or
               <literal>doc.key</literal>.</para></listitem>
             </varlistentry>
 
@@ -5417,8 +5425,9 @@ recollindex -c "$confdir"
               <term>doc.key = value</term>
 
               <listitem><para>Set the the named document attribute. You
-              can also use <literal>setattr(doc, key,
-              value)</literal>.</para></listitem>
+              can also use
+              <literal>setattr(doc, key, value)</literal>.</para>
+              </listitem>
             </varlistentry>
 
             <varlistentry>
@@ -5646,21 +5655,19 @@ for i in range(nres):
             <varlistentry>
               <term>addOrUpdate(udi, doc, parent_udi=None)</term>
               <listitem><para>Add or update index data for a given document
-              The <literal>
-              <link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">
-                udi</link></literal> string must define a unique id for
+              The
+              <literal><link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">udi</link></literal> 
+              string must define a unique id for
                 the document. It is an opaque interface element and not
                 interpreted inside Recoll. <literal>doc</literal> is a
-                <literal>
-                  <link linkend="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC">
-                    Doc</link></literal> object, created from the data to be
+                <literal><link linkend="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC">Doc</link></literal> 
+                object, created from the data to be
                     indexed (the main text should be in
-                    <literal>doc.text</literal>). If <literal>
-                    <link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">
-                      parent_udi</link></literal> is set, this is a unique
-                      identifier for the top-level container (e.g. for the
-                      filesystem indexer, this would be the one which is an actual
-                      file).</para>
+                    <literal>doc.text</literal>). If
+                    <literal><link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">parent_udi</link></literal>
+                    is set, this is a unique identifier for the top-level
+                    container (e.g. for the filesystem indexer, this would
+                    be the one which is an actual file).</para>
               </listitem>
             </varlistentry>
 
@@ -5835,8 +5842,8 @@ for i in range(nres):
       downloaded packages (for example, when <command>dpkg</command>
       complains about missing dependancies).</para>
 
-      <para>In all cases, you will have to check or install <link
-      linkend="RCL.INSTALL.EXTERNAL">supporting applications</link>
+      <para>In all cases, you will have to check or install
+      <link linkend="RCL.INSTALL.EXTERNAL">supporting applications</link>
       for the file types that you want to index beyond those that are
       natively processed by &RCL; (text, HTML, email files, and a few
       others).</para>
@@ -6150,8 +6157,9 @@ for i in range(nres):
               side-effect of making some phrase searches quite
               confusing: ie, <literal>"MySQL manual"</literal> would be
               matched by <literal>"MySQL manual"</literal> and
-              <literal>"my sql manual"</literal> but not <literal>"mysql
-              manual"</literal> (only inside phrase searches).</para>
+              <literal>"my sql manual"</literal> but not
+              <literal>"mysql manual"</literal> (only inside phrase
+              searches).</para>
               </listitem>
 
               <listitem><para><option>--with-file-command</option> Specify
@@ -6204,9 +6212,9 @@ for i in range(nres):
         <para>When building from source cloned from the git repository,
         you also need to install <application>autoconf</application>,
         <application>automake</application>, and
-        <application>libtool</application> and you must execute <literal>sh
-        autogen.sh</literal> in the top source directory before running
-        <literal>configure</literal>.</para>
+        <application>libtool</application> and you must execute
+        <literal>sh autogen.sh</literal> in the top source directory
+        before running <literal>configure</literal>.</para>
       </sect2>
       
       <sect2 id="RCL.INSTALL.BUILDING.INSTALL">
@@ -6459,11 +6467,10 @@ for i in range(nres):
           </varlistentry>
 
           <varlistentry>
-            <term><varname>RECOLL_EXTRA_DBS,
-            RECOLL_ACTIVE_EXTRA_DBS</varname></term>
+            <term><varname>RECOLL_EXTRA_DBS, RECOLL_ACTIVE_EXTRA_DBS</varname></term>
             <listitem><para>
-              Help for setting up external indexes. See <link
-              linkend="RCL.SEARCH.GUI.MULTIDB">this paragraph</link> for
+              Help for setting up external indexes. See
+              <link linkend="RCL.SEARCH.GUI.MULTIDB">this paragraph</link> for
               explanations.
             </para></listitem>
           </varlistentry>
@@ -6500,8 +6507,7 @@ for i in range(nres):
       </sect2>
 
       <!-- <sect2 id="RCL.INSTALL.CONFIG.RECOLLCONF"> -->
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-                  href="recoll.conf.xml" /> 
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="recoll.conf.xml" /> 
 
 
       <sect2 id="RCL.INSTALL.CONFIG.FIELDS">

@@ -54,5 +54,14 @@ recoll-conf-xml:
         --idprefix=RCL.INSTALL.CONFIG.RECOLLCONF  \
         ../../sampleconf/recoll.conf  > recoll.conf.xml
 
+usermanual-rst: recoll-conf-xml
+	tail -n +2 recoll.conf.xml > rcl-conf-tail.xml
+	sed -e '/xi:include/r rcl-conf-tail.xml' \
+		< usermanual.xml > full-man.xml
+	sed -i -e '/xi:include/d' -e '/<?xml version="1.0"?>/d' full-man.xml
+	test -d sphinx || mkdir sphinx
+	pandoc -s --toc -f docbook -t rst full-man.xml  > sphinx/usermanual.rst
+	(cd sphinx;make html)
+
 clean:
 	rm -f RCL.*.html usermanual.pdf usermanual.html index.html tmpfile.html
