@@ -61,7 +61,7 @@ class DJVUExtractor(RclBaseHandler):
                     title = ' '.join(line[1:])
 
         # Main text
-        txtdata = subprocess.check_output([self.djvutxt, "-escape", fn])
+        txtdata = subprocess.check_output([self.djvutxt, fn])
 
         txtdata = txtdata.decode('UTF-8', 'replace')
 
