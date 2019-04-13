@@ -60,8 +60,10 @@ usermanual-rst: recoll-conf-xml
 		< usermanual.xml > full-man.xml
 	sed -i -e '/xi:include/d' -e '/<?xml version="1.0"?>/d' full-man.xml
 	test -d sphinx || mkdir sphinx
-	pandoc -s --toc -f docbook -t rst full-man.xml  > sphinx/usermanual.rst
-	(cd sphinx;make html)
+	pandoc -s --toc -f docbook -t rst full-man.xml  > sphinx/index.rst
+	-@echo fix termmatch and execute
+
+#(cd sphinx;make html)
 
 clean:
 	rm -f RCL.*.html usermanual.pdf usermanual.html index.html tmpfile.html

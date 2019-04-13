@@ -154,7 +154,7 @@ discriminate two terms based on diacritics (``sake`` / ``saké``,
 RCL can optionally store the raw terms, without accent stripping or case
 conversion. In this configuration, default searches will behave as
 before, but it is possible to perform searches sensitive to case and
-diacritics. This is described in more detail in the `section about index
+diacritics. This is described in more detail in the section about `index
 case and diacritics sensitivity <#RCL.INDEXING.CONFIG.SENS>`__.
 
 RCL has many parameters which define exactly what to index, and how to
@@ -186,7 +186,7 @@ However, there are other ways to perform RCL searches:
 
 -  A `command line interface <#RCL.SEARCH.COMMANDLINE>`__.
 
--  A `Python programming interface <#RCL.PROGRAM.PYTHONAPI>`__
+-  A `Pythonprogramming interface <#RCL.PROGRAM.PYTHONAPI>`__
 
 -  A `KDE KIO slave module <#RCL.SEARCH.KIO>`__.
 
@@ -586,7 +586,7 @@ determines what subtrees and files get indexed.
 
 The applications needed to index file types other than text, HTML or
 email (ie: pdf, postscript, ms-word...) are described in the `external
-packages section. <#RCL.INSTALL.EXTERNAL>`__
+packages section <#RCL.INSTALL.EXTERNAL>`__.
 
 As of Recoll 1.18 there are two incompatible types of Recoll indexes,
 depending on the treatment of character case and diacritics. A `further
@@ -1934,7 +1934,7 @@ list and any entry field (the end of lines will be taken care of).
 Multiple indexes
 ~~~~~~~~~~~~~~~~
 
-See the `section describing the use of multiple
+See the section describing `the use of multiple
 indexes <#RCL.INDEXING.CONFIG.MULTIPLE>`__ for generalities. Only the
 aspects concerning the ``recoll`` GUI are described here.
 
@@ -2326,7 +2326,7 @@ indexes are searched.
 -  Edit result page HTML header insert: allows you to define text
    inserted at the end of the result page HTML header. More detail in
    the `result list customisation
-   section. <#RCL.SEARCH.GUI.CUSTOM.RESLIST>`__
+   section <#RCL.SEARCH.GUI.CUSTOM.RESLIST>`__.
 
 -  Date format: allows specifying the format used for displaying dates
    inside the result list. This should be specified as an strftime()
@@ -2415,7 +2415,7 @@ two elements:
 
 -  HTML code inside the header section. For versions 1.21 and later,
    this is also used for the `snippets
-   window <#RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS>`__
+   window <#RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS>`__.
 
 The paragraph format and the header fragment can be edited from the
 Result list tab of the GUI configuration.
@@ -2925,7 +2925,7 @@ RCL currently manages the following default fields:
 RCL 1.20 and later have a way to specify aliases for the field names,
 which will save typing, for example by aliasing ``filename`` to fn or
 ``containerfilename`` to cfn. See the `section about the ``fields``
-file <#RCL.INSTALL.CONFIG.FIELDS>`__
+file <#RCL.INSTALL.CONFIG.FIELDS>`__.
 
 The document input handlers used while indexing have the possibility to
 create other fields with arbitrary names, and aliases may be defined in
