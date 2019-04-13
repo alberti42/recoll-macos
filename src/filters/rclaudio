@@ -10,6 +10,8 @@ import time
 import datetime
 import re
 
+import rclconfig
+
 try:
     import mutagen
     from mutagen import File
@@ -184,8 +186,19 @@ class AudioTagExtractor(RclBaseHandler):
 
     def __init__(self, em):
         super(AudioTagExtractor, self).__init__(em)
-
-
+        config = rclconfig.RclConfig()
+        tagfixerfn = config.getConfParam("audiotagfixerscript")
+        self.tagfix = None
+        if tagfixerfn:
+            import runpy
+            try:
+                d = runpy.run_path(tagfixerfn)
+                self.tagfix = d['tagfix']
+                self.tagfix()
+            except Exception as ex:
+                #self.em.rclog("tagfix script import failed: %s" % ex)
+                pass
+            
     def _showMutaInfo(self, mutf):
         self.em.rclog("%s" % mutf.info.pprint())
         for prop in dir(mutf.info):
@@ -383,7 +396,9 @@ class AudioTagExtractor(RclBaseHandler):
             minf['embdimg'] = tobytes(embdimg)
         
         self.em.setfield("charset", 'utf-8')
-
+        if self.tagfix:
+            self.tagfix(minf)
+            
         for tag,val in minf.items():
             #self.em.rclog("%s -> %s" % (tag, val))
             self.em.setfield(tag, val)
