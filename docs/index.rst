@@ -4,9 +4,7 @@ Recoll user manual
 
 :Author: Jean-Francois Dockes
 
-.. contents::
-   :depth: 3
-..
+.. _RCL.INTRODUCTION:
 
 Introduction
 ============
@@ -24,6 +22,8 @@ shared files can be translated by looking under the Recoll installation
 directory (esp. the ``Share`` subdirectory). The user configuration is
 stored by default under ``AppData/Local/Recoll`` inside the user
 directory, along with the index itself.
+
+.. _RCL.INTRODUCTION.TRYIT:
 
 Giving it a try
 ---------------
@@ -45,6 +45,8 @@ On Unix/Linux, you may need to install the appropriate `supporting
 applications <#RCL.INSTALL.EXTERNAL>`__ for document types that need
 them (for example antiword for Microsoft Word files). The RCL for WIN
 package is self-contained and includes most useful auxiliary programs.
+
+.. _RCL.INTRODUCTION.SEARCH:
 
 Full text search
 ----------------
@@ -82,6 +84,8 @@ result might propose alliteration, alteration, alterations, or
 altercation as possible replacement terms. RCL bases its suggestions on
 the actual index contents, so that suggestions may be made for words
 which would not appear in a standard dictionary.
+
+.. _RCL.INTRODUCTION.RECOLL:
 
 Recoll overview
 ---------------
@@ -196,8 +200,12 @@ However, there are other ways to perform RCL searches:
 
 -  A `WEB interface <https://github.com/koniu/recoll-webui>`__.
 
+.. _RCL.INDEXING:
+
 Indexing
 ========
+
+.. _RCL.INDEXING.INTRODUCTION:
 
 Introduction
 ------------
@@ -219,24 +227,25 @@ The following sections give an overview of different aspects of the
 indexing processes and configuration, with links to detailed sections.
 
 Depending on your data, temporary files may be needed during indexing,
-some of them possibly quite big. You can use the RECOLL\_TMPDIR or
-TMPDIR environment variables to determine where they are created (the
-default is to use ``/tmp``). Using TMPDIR has the nice property that it
-may also be taken into account by auxiliary commands executed by
-``recollindex``.
+some of them possibly quite big. You can use the RECOLL_TMPDIR or TMPDIR
+environment variables to determine where they are created (the default
+is to use ``/tmp``). Using TMPDIR has the nice property that it may also
+be taken into account by auxiliary commands executed by ``recollindex``.
+
+.. _RCL.INDEXING.INTRODUCTION.MODES:
 
 Indexing modes
 ~~~~~~~~~~~~~~
 
 RCL indexing can be performed along two main modes:
 
--  **`Periodic (or batch) indexing: <#RCL.INDEXING.PERIODIC>`__.**
+-  `Periodic (or batch) indexing: <#RCL.INDEXING.PERIODIC>`__\ **.**
 
    ``recollindex`` is executed at discrete times. The typical usage is
    to have a nightly run `programmed <#RCL.INDEXING.PERIODIC.AUTOMAT>`__
    into your ``cron`` file.
 
--  **`Real time indexing: <#RCL.INDEXING.MONITOR>`__.**
+-  `Real time indexing: <#RCL.INDEXING.MONITOR>`__\ **.**
 
    ``recollindex`` runs permanently as a daemon and uses a file system
    alteration monitor (e.g. inotify) to detect file changes. New or
@@ -267,6 +276,8 @@ the menu: 'Stop' and 'Trigger incremental pass'. When no indexing is
 running, you have a choice of updating the index or rebuilding it (the
 first choice only processes changed files, the second one zeroes the
 index before starting so that all files are processed).
+
+.. _RCL.INDEXING.INTRODUCTION.CONFIG:
 
 Configurations, multiple indexes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -306,7 +317,7 @@ indexing performance, by updating several indexes in parallel (using
 multiple CPU cores and disks, or possibly several machines), and then
 merging them, or querying them in parallel.
 
-A specific configuration can be selected by setting the RECOLL\_CONFDIR
+A specific configuration can be selected by setting the RECOLL_CONFDIR
 environment variable, or giving the ``-c`` option to any of the RCL
 commands.
 
@@ -326,7 +337,7 @@ configurations is important and sometimes confusing, so it will be
 rephrased here: for index generation, multiple configurations are
 totally independant from each other. When querying, configuration and
 data are used from the main index (the one designated by ``-c`` or
-RECOLL\_CONFDIR), and only the data from the additional indexes is used.
+RECOLL_CONFDIR), and only the data from the additional indexes is used.
 This implies that some parameters should be consistent among the
 configurations for indexes which are to be used together.
 
@@ -379,16 +390,16 @@ configuration variable. Example:
 
 ::
 
-            indexedmimetypes = text/html application/pdf
-          
+           indexedmimetypes = text/html application/pdf
+         
 
 It is possible to redefine this parameter for subdirectories. Example:
 
 ::
 
-          [/path/to/my/dir]
-          indexedmimetypes = application/pdf
-        
+         [/path/to/my/dir]
+         indexedmimetypes = application/pdf
+       
 
 (When using sections like this, don't forget that they remain in effect
 until the end of the file or another section indicator).
@@ -398,14 +409,14 @@ editing the `configuration file
 (``recoll.conf``) <#RCL.INSTALL.CONFIG.RECOLLCONF>`__ for the index, or
 by using the GUI index configuration tool.
 
-    **Note**
+   **Note**
 
-    When editing the ``indexedmimetypes`` or ``excludedmimetypes``
-    lists, you should use the MIME values listed in the ``mimemap`` file
-    or in Recoll result lists in preference to ``file -i`` output: there
-    are a number of differences. The ``file -i`` output should only be
-    used for files without extensions, or for which the extension is not
-    listed in ``mimemap``
+   When editing the ``indexedmimetypes`` or ``excludedmimetypes`` lists,
+   you should use the MIME values listed in the ``mimemap`` file or in
+   Recoll result lists in preference to ``file -i`` output: there are a
+   number of differences. The ``file -i`` output should only be used for
+   files without extensions, or for which the extension is not listed in
+   ``mimemap``
 
 Indexing failures
 ~~~~~~~~~~~~~~~~~
@@ -443,6 +454,8 @@ between the two methods is that the second will not change the current
 index format, which may be undesirable if a newer format is supported by
 the XAP version.
 
+.. _RCL.INDEXING.STORAGE:
+
 Index storage
 -------------
 
@@ -460,14 +473,14 @@ methods (with different purposes):
    typically out of disk occupation or performance concerns.
 
 2. You can specify a different configuration directory by setting the
-   RECOLL\_CONFDIR environment variable, or using the ``-c`` option to
+   RECOLL_CONFDIR environment variable, or using the ``-c`` option to
    the RCL commands. This method would typically be used to index
    different areas of the file system to different indexes. For example,
    if you were to issue the following command:
 
    ::
 
-       recoll -c ~/.indexes-email
+      recoll -c ~/.indexes-email
 
    Then RCL would use configuration files stored in
    ``~/.indexes-email/`` and, (unless specified otherwise in
@@ -495,6 +508,8 @@ The index data directory (``xapiandb``) only contains data that can be
 completely rebuilt by an index run (as long as the original documents
 exist), and it can always be destroyed safely.
 
+.. _RCL.INDEXING.STORAGE.FORMAT:
+
 XAP index formats
 ~~~~~~~~~~~~~~~~~
 
@@ -509,6 +524,8 @@ a very old index needs to be converted because its format is not
 supported any more, you will have to explicitly delete the old index
 (typically ``~/.recoll/xapiandb``), then run a normal indexing command.
 Using ``recollindex`` option ``-z`` would not work in this situation.
+
+.. _RCL.INDEXING.STORAGE.SECURITY:
 
 Security aspects
 ~~~~~~~~~~~~~~~~
@@ -527,6 +544,8 @@ If you use another setup, you should think of the kind of protection you
 need for your index, set the directory and files access modes
 appropriately, and also maybe adjust the ``umask`` used during index
 updates.
+
+.. _RCL.INDEXING.STORAGE.BIG:
 
 Special considerations for big indexes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -557,6 +576,8 @@ The problem can be mitigated by observing the following rules:
 
 -  Use Xapian 1.4.10 or newer, as this version brought a significant
    improvement in the amount of writes.
+
+.. _RCL.INDEXING.CONFIG:
 
 Index configuration
 -------------------
@@ -590,20 +611,22 @@ depending on the treatment of character case and diacritics. A `further
 section <#RCL.INDEXING.CONFIG.SENS>`__ describes the two types in more
 detail.
 
+.. _RCL.INDEXING.CONFIG.MULTIPLE:
+
 Multiple indexes
 ~~~~~~~~~~~~~~~~
 
 Multiple RCL indexes can be created by using several configuration
 directories which are typically set to index different areas of the file
 system. A specific index can be selected for updating or searching,
-using the RECOLL\_CONFDIR environment variable or the ``-c`` option to
+using the RECOLL_CONFDIR environment variable or the ``-c`` option to
 ``recoll`` and ``recollindex``.
 
 Index configuration parameters can be set either by using a text editor
 on the files, or, for most parameters, by using the ``recoll`` index
 configuration GUI. In the latter case, the configuration directory for
 which parameters are modified is the one which was selected by
-RECOLL\_CONFDIR or the ``-c`` parameter, and there is no way to switch
+RECOLL_CONFDIR or the ``-c`` parameter, and there is no way to switch
 configurations within the GUI.
 
 As a remainder from a previous section, a ``recollindex`` program
@@ -616,7 +639,7 @@ but can also query data from multiple additional indexes. Only the index
 data from the latter is used, their configuration parameters are
 ignored.
 
-When searching, the current main index (defined by RECOLL\_CONFDIR or
+When searching, the current main index (defined by RECOLL_CONFDIR or
 ``-c``) is always active. If this is undesirable, you can set up your
 base configuration to index an empty directory.
 
@@ -652,7 +675,7 @@ Initially creating the configuration and index:
 
 ::
 
-    mkdir /path/to/my/new/config
+   mkdir /path/to/my/new/config
 
 Configuring the new index can be done from the ``recoll`` GUI, launched
 from the command line to pass the ``-c`` option (you could create a
@@ -661,7 +684,7 @@ configuration tool to set up the index.
 
 ::
 
-    recoll -c /path/to/my/new/config
+   recoll -c /path/to/my/new/config
 
 Alternatively, you can just start a text editor on the main
 configuration file ```recoll.conf`` <#RCL.INSTALL.CONFIG.RECOLLCONF>`__.
@@ -670,7 +693,7 @@ Creating and updating the index can be done from the command line:
 
 ::
 
-    recollindex -c /path/to/my/new/config
+   recollindex -c /path/to/my/new/config
 
 or from the File menu of a GUI launched with the same option
 (``recoll``, see above).
@@ -684,10 +707,12 @@ The new index can be queried alone with
 
 ::
 
-    recoll -c /path/to/my/new/config
+   recoll -c /path/to/my/new/config
 
 Or, in parallel with the default index, by starting ``recoll`` without a
 ``-c`` option, and using the Preferences > External Index Dialog menu.
+
+.. _RCL.INDEXING.CONFIG.SENS:
 
 Index case and diacritics sensitivity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -727,6 +752,8 @@ phrase and proximity searches may become impossible: because each term
 needs to be expanded, and all combinations searched for, the
 multiplicative expansion may become unmanageable.
 
+.. _RCL.INDEXING.CONFIG.THREADS:
+
 Indexing threads configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -751,26 +778,28 @@ The threads configuration is controlled by two configuration file
 parameters.
 
 ``thrQSizes``
-    This variable defines the job input queues configuration. There are
-    three possible queues for stages 2, 3 and 4, and this parameter
-    should give the queue depth for each stage (three integer values).
-    If a value of -1 is used for a given stage, no queue is used, and
-    the thread will go on performing the next stage. In practise, deep
-    queues have not been shown to increase performance. A value of 0 for
-    the first queue tells RCL to perform autoconfiguration (no need for
-    anything else in this case, thrTCounts is not used) - this is the
-    default configuration.
+   This variable defines the job input queues configuration. There are
+   three possible queues for stages 2, 3 and 4, and this parameter
+   should give the queue depth for each stage (three integer values). If
+   a value of -1 is used for a given stage, no queue is used, and the
+   thread will go on performing the next stage. In practise, deep queues
+   have not been shown to increase performance. A value of 0 for the
+   first queue tells RCL to perform autoconfiguration (no need for
+   anything else in this case, thrTCounts is not used) - this is the
+   default configuration.
 
 ``thrTCounts``
-    This defines the number of threads used for each stage. If a value
-    of -1 is used for one of the queue depths, the corresponding thread
-    count is ignored. It makes no sense to use a value other than 1 for
-    the last stage because updating the XAP index is necessarily
-    single-threaded (and protected by a mutex).
+   This defines the number of threads used for each stage. If a value of
+   -1 is used for one of the queue depths, the corresponding thread
+   count is ignored. It makes no sense to use a value other than 1 for
+   the last stage because updating the XAP index is necessarily
+   single-threaded (and protected by a mutex).
 
-    **Note**
+..
 
-    If the first value in ``thrQSizes`` is 0, ``thrTCounts`` is ignored.
+   **Note**
+
+   If the first value in ``thrQSizes`` is 0, ``thrTCounts`` is ignored.
 
 The following example would use three queues (of depth 2), and 4 threads
 for converting source documents, 2 for processing their text, and one to
@@ -779,9 +808,9 @@ test system (quadri-processor with multiple disks).
 
 ::
 
-              thrQSizes = 2 2 2
-              thrTCounts =  4 2 1
-            
+             thrQSizes = 2 2 2
+             thrTCounts =  4 2 1
+           
 
 The following example would use a single queue, and the complete
 processing for each document would be performed by a single thread
@@ -794,24 +823,26 @@ YMMV... The 2 last values for thrTCounts are ignored.
 
 ::
 
-              thrQSizes = 2 -1 -1
-              thrTCounts =  6 1 1
-            
+             thrQSizes = 2 -1 -1
+             thrTCounts =  6 1 1
+           
 
 The following example would disable multithreading. Indexing will be
 performed by a single thread.
 
 ::
 
-              thrQSizes = -1 -1 -1
-            
+             thrQSizes = -1 -1 -1
+           
+
+.. _RCL.INDEXING.CONFIG.GUI:
 
 The index configuration GUI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Most parameters for a given index configuration can be set from a
 ``recoll`` GUI running on this configuration (either as default, or by
-setting RECOLL\_CONFDIR or the ``-c`` option.)
+setting RECOLL_CONFDIR or the ``-c`` option.)
 
 The interface is started from the Preferences > Index Configuration menu
 entry. It is divided in four tabs, Global parameters, Local parameters,
@@ -841,6 +872,8 @@ formatting inside the configuration file, so that it is quite possible
 to use it on hand-edited files, which you might nevertheless want to
 backup first...
 
+.. _RCL.INDEXING.WEBQUEUE:
+
 Indexing the WEB pages which you wisit.
 ---------------------------------------
 
@@ -864,11 +897,11 @@ and newer. It could conceivably be executed independantly to make the
 new browser extension compatible with an older RCL version (the script
 is named ``recoll-we-move-files.py``).
 
-    **Note**
+   **Note**
 
-    For the WebExtensions-based version to work, it is necessary to set
-    the ``webdownloadsdir`` value in the configuration if it was changed
-    from the default ``$HOME/Downloads`` in the browser preferences.
+   For the WebExtensions-based version to work, it is necessary to set
+   the ``webdownloadsdir`` value in the configuration if it was changed
+   from the default ``$HOME/Downloads`` in the browser preferences.
 
 The visited WEB pages indexing feature can be enabled on the RCL side
 from the GUI Index configuration panel, or by editing the configuration
@@ -884,6 +917,8 @@ is reached, old pages are purged - both from the cache and the index -
 to make room for new ones, so you need to explicitly archive in some
 other place the pages that you want to keep indefinitely.
 
+.. _RCL.INDEXING.EXTATTR:
+
 Extended attributes data
 ------------------------
 
@@ -898,18 +933,19 @@ A `freedesktop
 standard <http://www.freedesktop.org/wiki/CommonExtendedAttributes>`__
 defines a few special attributes, which are handled as such by RCL:
 
-mime\_type
-    If set, this overrides any other determination of the file MIME
-    type.
+mime_type
+   If set, this overrides any other determination of the file MIME type.
 
 charset
-    If set, this defines the file character set (mostly useful for plain
-    text files).
+   If set, this defines the file character set (mostly useful for plain
+   text files).
 
 By default, other attributes are handled as RCL fields. On Linux, the
 ``user`` prefix is removed from the name. This can be configured more
 precisely inside the ```fields`` configuration
 file <#RCL.INSTALL.CONFIG.FIELDS>`__.
+
+.. _RCL.INDEXING.EXTTAGS:
 
 Importing external tags
 -----------------------
@@ -927,14 +963,16 @@ would add the following to the configuration file:
 
 ::
 
-    [/some/area/of/the/fs]
-          metadatacmds = ; tags = tmsu tags %f
-          
+   [/some/area/of/the/fs]
+         metadatacmds = ; tags = tmsu tags %f
+         
 
-    **Note**
+..
 
-    Depending on the tmsu version, you may need/want to add options like
-    ``--database=/some/db``.
+   **Note**
+
+   Depending on the tmsu version, you may need/want to add options like
+   ``--database=/some/db``.
 
 You may want to restrict this processing to a subset of the directory
 tree, because it may slow down indexing a bit
@@ -964,6 +1002,8 @@ consistent with how extended attributes function. A pair of ``chmod``
 commands could accomplish this, or a ``touch -a`` . Alternatively, just
 couple the tag update with a ``recollindex -e -i filename.``
 
+.. _RCL.INDEXING.PDF:
+
 The PDF input handler
 ---------------------
 
@@ -979,6 +1019,8 @@ OCR if the document text is empty, it can be configured to extract
 specific metadata tags from an XMP packet, and to extract PDF
 attachments.
 
+.. _RCL.INDEXING.PDF.OCR:
+
 OCR with Tesseract
 ~~~~~~~~~~~~~~~~~~
 
@@ -992,10 +1034,12 @@ The choice of language is very important for successfull OCR. Recoll has
 currently no way to determine this from the document itself. You can set
 the language to use through the contents of a ``.ocrpdflang`` text file
 in the same directory as the PDF document, or through the
-RECOLL\_TESSERACT\_LANG environment variable, or through the contents of
+RECOLL_TESSERACT_LANG environment variable, or through the contents of
 an ``ocrpdf`` text file inside the configuration directory. If none of
 the above are used, RCL will try to guess the language from the NLS
 environment.
+
+.. _RCL.INDEXING.PDF.XMP:
 
 XMP fields extraction
 ~~~~~~~~~~~~~~~~~~~~~
@@ -1014,27 +1058,27 @@ equivalent code inside the handler script). Example:
 
 ::
 
-    import sys
-            import re
+   import sys
+           import re
 
-            class MetaFixer(object):
-            def __init__(self):
-            pass
+           class MetaFixer(object):
+           def __init__(self):
+           pass
 
-            def metafix(self, nm, txt):
-            if nm == 'bibtex:pages':
-            txt = re.sub(r'--', '-', txt)
-            elif nm == 'someothername':
-            # do something else
-            pass
-            elif nm == 'stillanother':
-            # etc.
-            pass
-            
-            return txt
-            def wrapup(self, metaheaders):
-            pass
-            
+           def metafix(self, nm, txt):
+           if nm == 'bibtex:pages':
+           txt = re.sub(r'--', '-', txt)
+           elif nm == 'someothername':
+           # do something else
+           pass
+           elif nm == 'stillanother':
+           # etc.
+           pass
+           
+           return txt
+           def wrapup(self, metaheaders):
+           pass
+           
 
 If the 'metafix()' method is defined, it is called for each metadata
 field. A new MetaFixer object is created for each PDF document (so the
@@ -1043,6 +1087,8 @@ If the 'wrapup()' method is defined, it is called at the end of XMP
 fields processing with the whole metadata as parameter, as an array of
 '(nm, val)' pairs, allowing an alternate approach for editing or
 adding/deleting fields.
+
+.. _RCL.INDEXING.PDF.ATTACH:
 
 PDF attachment indexing
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1055,8 +1101,12 @@ disabled by default, because it slows down PDF indexing a bit even if
 not one attachment is ever found (PDF attachments are uncommon in my
 experience).
 
+.. _RCL.INDEXING.PERIODIC:
+
 Periodic indexing
 -----------------
+
+.. _RCL.INDEXING.PERIODIC.EXEC:
 
 Running indexing
 ~~~~~~~~~~~~~~~~
@@ -1065,7 +1115,7 @@ Indexing is always performed by the ``recollindex`` program, which can
 be started either from the command line or from the File menu in the
 ``recoll`` GUI program. When started from the GUI, the indexing will run
 on the same configuration ``recoll`` was started on. When started from
-the command line, ``recollindex`` will use the RECOLL\_CONFDIR variable
+the command line, ``recollindex`` will use the RECOLL_CONFDIR variable
 or accept a ``-c`` confdir option to specify a non-default configuration
 directory.
 
@@ -1114,12 +1164,14 @@ list to be fed to ``recollindex`` ``-if``. Trivial example:
 
 ::
 
-              find . -name indexable.txt -print | recollindex -if
-            
+             find . -name indexable.txt -print | recollindex -if
+           
 
 ``recollindex`` ``-i`` will not descend into subdirectories specified as
 parameters, but just add them as index entries. It is up to the external
 file selection method to build the complete file list.
+
+.. _RCL.INDEXING.PERIODIC.AUTOMAT:
 
 Using ``cron`` to automate indexing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1130,15 +1182,15 @@ every day at 3:30AM (supposing ``recollindex`` is in your PATH):
 
 ::
 
-            30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&1
-            
+           30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&1
+           
 
 Or, using ``anacron``:
 
 ::
 
-            1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&1"
-            
+           1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&1"
+           
 
 As of version 1.17 the RCL GUI has dialogs to manage ``crontab`` entries
 for ``recollindex``. You can reach them from the Preferences > Indexing
@@ -1153,6 +1205,8 @@ Please be aware that there may be differences between your usual
 interactive command line environment and the one seen by crontab
 commands. Especially the PATH variable may be of concern. Please check
 the crontab manual pages about possible issues.
+
+.. _RCL.INDEXING.MONITOR:
 
 Real time indexing
 ------------------
@@ -1177,6 +1231,8 @@ incremental pass on the full tree can be triggered by either restarting
 the indexer, or just running ``recollindex``, which will notify the
 running process. The ``recoll`` GUI also has a menu entry for this.
 
+.. _RCL.INDEXING.MONITOR.START:
+
 Real time indexing: automatic daemon start
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1197,13 +1253,13 @@ script with the following lines at the end:
 
 ::
 
-    recollconf=$HOME/.recoll-home
-            recolldata=/usr/local/share/recoll
-            RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
+   recollconf=$HOME/.recoll-home
+           recolldata=/usr/local/share/recoll
+           RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
 
-            fvwm 
+           fvwm 
 
-            
+           
 
 The indexing daemon gets started, then the window manager, for which the
 session waits.
@@ -1216,6 +1272,8 @@ explicitly. (The X11 server monitoring can be disabled with option
 If you use the daemon completely out of an X11 session, you need to add
 option ``-x`` to disable X11 session monitoring (else the daemon will
 not start).
+
+.. _RCL.INDEXING.MONITOR.DETAILS:
 
 Real time indexing: miscellaneous details
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1233,44 +1291,50 @@ during package `configuration <#RCL.INSTALL.BUILDING>`__ with the
 currently to include inotify monitoring on systems that support it, and,
 as of RCL 1.17, gamin support on FreeBSD.
 
-    **Note**
+   **Note**
 
-    On Linux systems, monitoring a big tree may need increasing the
-    resources available to inotify, which are normally defined in
-    ``/etc/sysctl.conf``.
+   On Linux systems, monitoring a big tree may need increasing the
+   resources available to inotify, which are normally defined in
+   ``/etc/sysctl.conf``.
 
-    ::
+   ::
 
-                  ### inotify
-                  #
-                  # cat  /proc/sys/fs/inotify/max_queued_events   - 16384
-                  # cat  /proc/sys/fs/inotify/max_user_instances  - 128
-                  # cat  /proc/sys/fs/inotify/max_user_watches    - 16384
-                  #
-                  # -- Change to:
-                  #
-                  fs.inotify.max_queued_events=32768
-                  fs.inotify.max_user_instances=256
-                  fs.inotify.max_user_watches=32768
-                
+                ### inotify
+                #
+                # cat  /proc/sys/fs/inotify/max_queued_events   - 16384
+                # cat  /proc/sys/fs/inotify/max_user_instances  - 128
+                # cat  /proc/sys/fs/inotify/max_user_watches    - 16384
+                #
+                # -- Change to:
+                #
+                fs.inotify.max_queued_events=32768
+                fs.inotify.max_user_instances=256
+                fs.inotify.max_user_watches=32768
+              
 
-    Especially, you will need to trim your tree or adjust the
-    ``max_user_watches`` value if indexing exits with a message about
-    errno ``ENOSPC`` (28) from ``inotify_add_watch``.
+   Especially, you will need to trim your tree or adjust the
+   ``max_user_watches`` value if indexing exits with a message about
+   errno ``ENOSPC`` (28) from ``inotify_add_watch``.
 
-    **Note**
+..
 
-    When using the real time monitor, it may happen that some files need
-    to be indexed, but change so often that they impose an excessive
-    load for the system.
+   **Note**
 
-    RCL provides a configuration option to specify the minimum time
-    before which a file, specified by a wildcard pattern, cannot be
-    reindexed. See the ``mondelaypatterns`` parameter in the
-    `configuration section <#RCL.INSTALL.CONFIG.RECOLLCONF.MISC>`__.
+   When using the real time monitor, it may happen that some files need
+   to be indexed, but change so often that they impose an excessive load
+   for the system.
+
+   RCL provides a configuration option to specify the minimum time
+   before which a file, specified by a wildcard pattern, cannot be
+   reindexed. See the ``mondelaypatterns`` parameter in the
+   `configuration section <#RCL.INSTALL.CONFIG.RECOLLCONF.MISC>`__.
+
+.. _RCL.SEARCH:
 
 Searching
 =========
+
+.. _RCL.SEARCH.GUI:
 
 Searching with the Qt graphical user interface
 ----------------------------------------------
@@ -1303,6 +1367,8 @@ Some searches can be quite complex, and you may want to re-use them
 later, perhaps with some tweaking. RCL versions 1.21 and later can save
 and restore searches, using XML files. See `Saving and restoring
 queries <#RCL.SEARCH.SAVING>`__.
+
+.. _RCL.SEARCH.GUI.SIMPLE:
 
 Simple search
 ~~~~~~~~~~~~~
@@ -1342,8 +1408,7 @@ Things to know:
    independantly of the type of index.
 
 -  An entry without any wild card character and not capitalized will be
-   prepended and appended with '\*' (ie: etc -> \*etc\*, but Etc ->
-   etc).
+   prepended and appended with '*' (ie: etc -> \*etc*, but Etc -> etc).
 
 -  If you have a big index (many files), excessively generic fragments
    may result in inefficient searches.
@@ -1381,6 +1446,8 @@ Query Language mode, where you have to care about the syntax.
 
 You can use the `Tools > Advanced search <#RCL.SEARCH.GUI.COMPLEX>`__
 dialog for more complex searches.
+
+.. _RCL.SEARCH.GUI.RESLIST:
 
 The default result list
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1451,6 +1518,8 @@ The result list is divided into pages (the size of which you can change
 in the preferences). Use the arrow buttons in the toolbar or the links
 at the bottom of the page to browse the results.
 
+.. _RCL.SEARCH.GUI.RESLIST.SUGGS:
+
 No results: the spelling suggestions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1461,6 +1530,8 @@ suggestions will replace the word and restart the search. You can hold
 any of the modifier keys (Ctrl, Shift, etc.) while clicking if you would
 rather stay on the suggestion screen because several terms need
 replacement.
+
+.. _RCL.SEARCH.GUI.RESULTLIST.MENU:
 
 The result list right-click menu
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1535,6 +1606,8 @@ can be used to start the native viewer on the appropriate page. If the
 viewer supports it, its search function will also be primed with one of
 the search terms.
 
+.. _RCL.SEARCH.GUI.RESTABLE:
+
 The result table
 ~~~~~~~~~~~~~~~~
 
@@ -1563,6 +1636,8 @@ paragraph, with links for starting a preview or a native application,
 and an equivalent right-click menu. Typing Esc (the Escape key) will
 unfreeze the display.
 
+.. _RCL.SEARCH.GUI.RUNSCRIPT:
+
 Running arbitrary commands on result files (1.20 and later)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1582,12 +1657,12 @@ inside the directory is irrelevant):
 
 ::
 
-              [Desktop Entry]
-              Type=Application
-              Name=MyFirstScript
-              Exec=/home/me/bin/tryscript %F
-              MimeType=*/*
-            
+             [Desktop Entry]
+             Type=Application
+             Name=MyFirstScript
+             Exec=/home/me/bin/tryscript %F
+             MimeType=*/*
+           
 
 The ``Name`` attribute defines the label which will appear inside the
 Run Script menu. The ``Exec`` attribute defines the program to be run,
@@ -1599,6 +1674,8 @@ The commands defined this way can also be used from links inside the
 
 As an example, it might make sense to write a script which would move
 the document to the trash and purge it from the RCL index.
+
+.. _RCL.SEARCH.GUI.THUMBNAILS:
 
 Displaying thumbnails
 ~~~~~~~~~~~~~~~~~~~~~
@@ -1618,6 +1695,8 @@ settings). Restarting the search should then display the thumbnails.
 
 There are also `some pointers about thumbnail
 generation <&FAQS;ResultsThumbnails.wiki>`__ on the RCL wiki.
+
+.. _RCL.SEARCH.GUI.PREVIEW:
 
 The preview window
 ~~~~~~~~~~~~~~~~~~
@@ -1653,6 +1732,8 @@ which is the metadata stored in the index.
 You can print the current preview window contents by typing Ctrl-P (Ctrl
 + P) in the window text.
 
+.. _RCL.SEARCH.GUI.PREVIEW.SEARCH:
+
 Searching inside the preview
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1663,27 +1744,29 @@ in the entry zone, or as a way to walk the matches between the document
 and the RCL query that found it.
 
 Incremental text search
-    The preview tabs have an internal incremental search function. You
-    initiate the search either by typing a / (slash) or CTL-F inside the
-    text area or by clicking into the Search for: text field and
-    entering the search string. You can then use the Next and Previous
-    buttons to find the next/previous occurrence. You can also type F3
-    inside the text area to get to the next occurrence.
+   The preview tabs have an internal incremental search function. You
+   initiate the search either by typing a / (slash) or CTL-F inside the
+   text area or by clicking into the Search for: text field and entering
+   the search string. You can then use the Next and Previous buttons to
+   find the next/previous occurrence. You can also type F3 inside the
+   text area to get to the next occurrence.
 
-    If you have a search string entered and you use Ctrl-Up/Ctrl-Down to
-    browse the results, the search is initiated for each successive
-    document. If the string is found, the cursor will be positioned at
-    the first occurrence of the search string.
+   If you have a search string entered and you use Ctrl-Up/Ctrl-Down to
+   browse the results, the search is initiated for each successive
+   document. If the string is found, the cursor will be positioned at
+   the first occurrence of the search string.
 
 Walking the match lists
-    If the entry area is empty when you click the Next or Previous
-    buttons, the editor will be scrolled to show the next match to any
-    search term (the next highlighted zone). If you select a search
-    group from the dropdown list and click Next or Previous, the match
-    list for this group will be walked. This is not the same as a text
-    search, because the occurences will include non-exact matches (as
-    caused by stemming or wildcards). The search will revert to the text
-    mode as soon as you edit the entry area.
+   If the entry area is empty when you click the Next or Previous
+   buttons, the editor will be scrolled to show the next match to any
+   search term (the next highlighted zone). If you select a search group
+   from the dropdown list and click Next or Previous, the match list for
+   this group will be walked. This is not the same as a text search,
+   because the occurences will include non-exact matches (as caused by
+   stemming or wildcards). The search will revert to the text mode as
+   soon as you edit the entry area.
+
+.. _RCL.SEARCH.GUI.FRAGBUTS:
 
 The Query Fragments window
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1705,44 +1788,44 @@ Here follows an example:
 
 ::
 
-              <?xml version="1.0" encoding="UTF-8"?>
+             <?xml version="1.0" encoding="UTF-8"?>
 
-              <fragbuts version="1.0">
+             <fragbuts version="1.0">
 
-              <radiobuttons>
+             <radiobuttons>
 
-              <fragbut>
-              <label>Include Web Results</label>
-              <frag></frag>
-              </fragbut>
+             <fragbut>
+             <label>Include Web Results</label>
+             <frag></frag>
+             </fragbut>
 
-              <fragbut>
-              <label>Exclude Web Results</label>
-              <frag>-rclbes:BGL</frag>
-              </fragbut>
+             <fragbut>
+             <label>Exclude Web Results</label>
+             <frag>-rclbes:BGL</frag>
+             </fragbut>
 
-              <fragbut>
-              <label>Only Web Results</label>
-              <frag>rclbes:BGL</frag>
-              </fragbut>
+             <fragbut>
+             <label>Only Web Results</label>
+             <frag>rclbes:BGL</frag>
+             </fragbut>
 
-              </radiobuttons>
+             </radiobuttons>
 
-              <buttons>
+             <buttons>
 
-              <fragbut>
-              <label>Year 2010</label>
-              <frag>date:2010-01-01/2010-12-31</frag>
-              </fragbut>
+             <fragbut>
+             <label>Year 2010</label>
+             <frag>date:2010-01-01/2010-12-31</frag>
+             </fragbut>
 
-              <fragbut>
-              <label>My Great Directory Only</label>
-              <frag>dir:/my/great/directory</frag>
-              </fragbut>
+             <fragbut>
+             <label>My Great Directory Only</label>
+             <frag>dir:/my/great/directory</frag>
+             </fragbut>
 
-              </buttons>
-              </fragbuts>
-            
+             </buttons>
+             </fragbuts>
+           
 
 Each ``radiobuttons`` or ``buttons`` section defines a line of
 checkbuttons or radiobuttons inside the window. Any number of buttons
@@ -1754,6 +1837,8 @@ performing the query if the button is active.
 
 This feature is new in RCL 1.20, and will probably be refined depending
 on user feedback.
+
+.. _RCL.SEARCH.GUI.COMPLEX:
 
 Complex/advanced search
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1779,6 +1864,8 @@ window always performs a simple search.
 
 Click on the ``Show query details`` link at the top of the result page
 to see the query expansion.
+
+.. _RCL.SEARCH.GUI.COMPLEX.TERMS:
 
 Avanced search: the "find" tab
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1825,6 +1912,8 @@ found within a window of twelve words). Examples: a phrase search for
 slack will match the latter, and also
 ``a fox is a cunning and quick animal``.
 
+.. _RCL.SEARCH.GUI.COMPLEX.FILTER:
+
 Avanced search: the "filter" tab
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1861,6 +1950,8 @@ results of a search according to a number of criteria
    ``dirA/dirB`` would match either ``/dir1/dirA/dirB/myfile1`` or
    ``/dir2/dirA/dirB/someother/myfile2``.
 
+.. _RCL.SEARCH.GUI.COMPLEX.HISTORY:
+
 Avanced search history
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1870,6 +1961,8 @@ the keyboard focus belongs to the advanced search dialog.
 
 The complex search history can be erased, along with the one for simple
 search, by selecting the File > Erase Search History menu entry.
+
+.. _RCL.SEARCH.GUI.TERMEXPLORER:
 
 The term explorer tool
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -1889,33 +1982,33 @@ explorer entry of the Tools menu) can be used to search the full index
 terms list. It has three modes of operations:
 
 Wildcard
-    In this mode of operation, you can enter a search string with
-    shell-like wildcards (\*, ?, []). ie: xapi\* would display all index
-    terms beginning with xapi. (More about wildcards
-    `here <#RCL.SEARCH.WILDCARDS>`__ ).
+   In this mode of operation, you can enter a search string with
+   shell-like wildcards (*, ?, []). ie: xapi\* would display all index
+   terms beginning with xapi. (More about wildcards
+   `here <#RCL.SEARCH.WILDCARDS>`__ ).
 
 Regular expression
-    This mode will accept a regular expression as input. Example:
-    word[0-9]+. The expression is implicitely anchored at the beginning.
-    Ie: press will match pression but not expression. You can use
-    .\*press to match the latter, but be aware that this will cause a
-    full index term list scan, which can be quite long.
+   This mode will accept a regular expression as input. Example:
+   word[0-9]+. The expression is implicitely anchored at the beginning.
+   Ie: press will match pression but not expression. You can use .*press
+   to match the latter, but be aware that this will cause a full index
+   term list scan, which can be quite long.
 
 Stem expansion
-    This mode will perform the usual stem expansion normally done as
-    part user input processing. As such it is probably mostly useful to
-    demonstrate the process.
+   This mode will perform the usual stem expansion normally done as part
+   user input processing. As such it is probably mostly useful to
+   demonstrate the process.
 
 Spelling/Phonetic
-    In this mode, you enter the term as you think it is spelled, and RCL
-    will do its best to find index terms that sound like your entry.
-    This mode uses the Aspell spelling application, which must be
-    installed on your system for things to work (if your documents
-    contain non-ascii characters, RCL needs an aspell version newer than
-    0.60 for UTF-8 support). The language which is used to build the
-    dictionary out of the index terms (which is done at the end of an
-    indexing pass) is the one defined by your NLS environment. Weird
-    things will probably happen if languages are mixed up.
+   In this mode, you enter the term as you think it is spelled, and RCL
+   will do its best to find index terms that sound like your entry. This
+   mode uses the Aspell spelling application, which must be installed on
+   your system for things to work (if your documents contain non-ascii
+   characters, RCL needs an aspell version newer than 0.60 for UTF-8
+   support). The language which is used to build the dictionary out of
+   the index terms (which is done at the end of an indexing pass) is the
+   one defined by your NLS environment. Weird things will probably
+   happen if languages are mixed up.
 
 Note that in cases where RCL does not know the beginning of the string
 to search for (ie a wildcard expression like \*coll), the expansion can
@@ -1927,6 +2020,8 @@ the configuration file.
 Double-clicking on a term in the result list will insert it into the
 simple search entry field. You can also cut/paste between the result
 list and any entry field (the end of lines will be taken care of).
+
+.. _RCL.SEARCH.GUI.MULTIDB:
 
 Multiple indexes
 ~~~~~~~~~~~~~~~~
@@ -1948,7 +2043,7 @@ searching. These parameters are retained across program executions
 indexes is usually quite stable, while the active ones might typically
 be adjusted quite frequently.
 
-The main index (defined by RECOLL\_CONFDIR) is always active. If this is
+The main index (defined by RECOLL_CONFDIR) is always active. If this is
 undesirable, you can set up your base configuration to index an empty
 directory.
 
@@ -1958,26 +2053,27 @@ case, the XAP index directory will be obtained from the selected
 configuration.
 
 As building the set of all indexes can be a little tedious when done
-through the user interface, you can use the RECOLL\_EXTRA\_DBS
-environment variable to provide an initial set. This might typically be
-set up by a system administrator so that every user does not have to do
-it. The variable should define a colon-separated list of index
-directories, ie:
+through the user interface, you can use the RECOLL_EXTRA_DBS environment
+variable to provide an initial set. This might typically be set up by a
+system administrator so that every user does not have to do it. The
+variable should define a colon-separated list of index directories, ie:
 
 ::
 
-    export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db
+   export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db
 
-Another environment variable, RECOLL\_ACTIVE\_EXTRA\_DBS allows adding
-to the active list of indexes. This variable was suggested and
-implemented by a RCL user. It is mostly useful if you use scripts to
-mount external volumes with RCL indexes. By using RECOLL\_EXTRA\_DBS and
-RECOLL\_ACTIVE\_EXTRA\_DBS, you can add and activate the index for the
+Another environment variable, RECOLL_ACTIVE_EXTRA_DBS allows adding to
+the active list of indexes. This variable was suggested and implemented
+by a RCL user. It is mostly useful if you use scripts to mount external
+volumes with RCL indexes. By using RECOLL_EXTRA_DBS and
+RECOLL_ACTIVE_EXTRA_DBS, you can add and activate the index for the
 mounted volume when starting ``recoll``.
 
-RECOLL\_ACTIVE\_EXTRA\_DBS is available for RCL versions 1.17.2 and
-later. A change was made in the same update so that ``recoll`` will
+RECOLL_ACTIVE_EXTRA_DBS is available for RCL versions 1.17.2 and later.
+A change was made in the same update so that ``recoll`` will
 automatically deactivate unreachable indexes when starting up.
+
+.. _RCL.SEARCH.GUI.HISTORY:
 
 Document history
 ~~~~~~~~~~~~~~~~
@@ -1991,6 +2087,8 @@ entry.
 
 You can erase the document history by using the Erase document history
 entry in the File menu.
+
+.. _RCL.SEARCH.GUI.SORT:
 
 Sorting search results and collapsing duplicates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2022,8 +2120,12 @@ duplicates, a ``Dups`` link will be shown with the result list entry.
 Clicking the link will display the paths (URLs + ipaths) for the
 duplicate entries.
 
+.. _RCL.SEARCH.GUI.TIPS:
+
 Search tips, shortcuts
 ~~~~~~~~~~~~~~~~~~~~~~
+
+.. _RCL.SEARCH.GUI.TIPS.TERMS:
 
 Terms and search expansion
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2075,6 +2177,8 @@ not seem really useful). Alternatively, you can use the specific file
 name search which will *only* look for file names, and may be faster
 than the generic search especially when using wildcards.
 
+.. _RCL.SEARCH.GUI.TIPS.PHRASES:
+
 Working with phrases and proximity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -2113,6 +2217,8 @@ the word inside a phrase (ie: ``"the IBM company"``) will only match the
 dotted abrreviation if you increase the phrase slack (using the advanced
 search panel control, or the ``o`` query language modifier). Literal
 occurences of the word will be matched normally.
+
+.. _RCL.SEARCH.GUI.TIPS.MISC:
 
 Others
 ^^^^^^
@@ -2202,6 +2308,8 @@ text.
 
 Entering Ctrl-Q almost anywhere will close the application.
 
+.. _RCL.SEARCH.SAVING:
+
 Saving and restoring queries (1.21 and later)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2219,6 +2327,8 @@ Some of the saved query parameters are part of the preferences (e.g.
 ``autophrase`` or the active external indexes), and may differ when the
 query is loaded from the time it was saved. In this case, RCL will warn
 of the differences, but will not change the user preferences.
+
+.. _RCL.SEARCH.GUI.CUSTOM:
 
 Customizing the search interface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2394,6 +2504,8 @@ configuration so that it indexes, for example, an empty directory. An
 alternative indexer may also need to implement a way of purging the
 index from stale data,
 
+.. _RCL.SEARCH.GUI.CUSTOM.RESLIST:
+
 The result list format
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -2424,6 +2536,8 @@ attribute. Each paragraph in the result list is a table, with class
 
 There are a few examples on the `page about customising the result
 list <http://www.recoll.org/custom.html>`__ on the RCL web site.
+
+.. _RCL.SEARCH.GUI.CUSTOM.RESLIST.PARA:
 
 The paragraph format
 ''''''''''''''''''''
@@ -2502,7 +2616,7 @@ window on the folder where the container file resides. E.g.:
 
 ::
 
-    <a href="F%N">%P</a>
+   <a href="F%N">%P</a>
 
 A link target defined as ``R%N|scriptname`` will run the corresponding
 script on the result file (if the document is embedded, the script will
@@ -2524,35 +2638,35 @@ The default value for the paragraph format string is:
 
 ::
 
-                "<table class=\"respar\">\n"
-                "<tr>\n"
-                "<td><a href='%U'><img src='%I' width='64'></a></td>\n"
-                "<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>\n"
-                "<span style='white-space:nowrap'><i>%M</i>&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>\n"
-                "%A %K</td>\n"
-                "</tr></table>\n"
-                
+               "<table class=\"respar\">\n"
+               "<tr>\n"
+               "<td><a href='%U'><img src='%I' width='64'></a></td>\n"
+               "<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>\n"
+               "<span style='white-space:nowrap'><i>%M</i>&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>\n"
+               "%A %K</td>\n"
+               "</tr></table>\n"
+               
 
 You may, for example, try the following for a more web-like experience:
 
 ::
 
-                <u><b><a href="P%N">%T</a></b></u><br>
-                %A<font color=#008000>%U - %S</font> - %L
-                
+               <u><b><a href="P%N">%T</a></b></u><br>
+               %A<font color=#008000>%U - %S</font> - %L
+               
 
 Note that the P%N link in the above paragraph makes the title a preview
 link. Or the clean looking:
 
 ::
 
-                <img src="%I" align="left">%L <font color="#900000">%R</font>
-                &nbsp;&nbsp;<b>%T&</b><br>%S&nbsp;
-                <font color="#808080"><i>%U</i></font>
-                <table bgcolor="#e0e0e0">
-                <tr><td><div>%A</div></td></tr>
-                </table>%K
-                
+               <img src="%I" align="left">%L <font color="#900000">%R</font>
+               &nbsp;&nbsp;<b>%T&</b><br>%S&nbsp;
+               <font color="#808080"><i>%U</i></font>
+               <table bgcolor="#e0e0e0">
+               <tr><td><div>%A</div></td></tr>
+               </table>%K
+               
 
 These samples, and some others are `on the web site, with pictures to
 show how they look. <http://www.recoll.org/custom.html>`__
@@ -2560,8 +2674,12 @@ show how they look. <http://www.recoll.org/custom.html>`__
 It is also possible to `define the value of the snippet separator inside
 the abstract section <#RCL.SEARCH.GUI.CUSTOM.ABSSEP>`__.
 
+.. _RCL.SEARCH.KIO:
+
 Searching with the KDE KIO slave
 --------------------------------
+
+.. _RCL.SEARCH.KIO.INTRO:
 
 What's this
 ~~~~~~~~~~~
@@ -2589,6 +2707,8 @@ tree. See: ``kde/kio/recoll/00README.txt``. Some Linux distributions do
 package the kio-recoll module, so check before diving into the build
 process, maybe it's already out there ready for one-click installation.
 
+.. _RCL.SEARCH.KIO.SEARCHABLEDOCS:
+
 Searchable documents
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -2604,17 +2724,19 @@ double-clicking any term:
 
 ::
 
-    <script language="JavaScript">
-            function recollsearch() {
-            var t = document.getSelection();
-            window.location.href = 'recoll://search/query?qtp=a&p=0&q=' +
-            encodeURIComponent(t);
-            }
-            </script>
-            ....
-            <body ondblclick="recollsearch()">
+   <script language="JavaScript">
+           function recollsearch() {
+           var t = document.getSelection();
+           window.location.href = 'recoll://search/query?qtp=a&p=0&q=' +
+           encodeURIComponent(t);
+           }
+           </script>
+           ....
+           <body ondblclick="recollsearch()">
 
-            
+           
+
+.. _RCL.SEARCH.COMMANDLINE:
 
 Searching on the command line
 -----------------------------
@@ -2647,55 +2769,57 @@ and options which are described for ``recollq``
 
 ::
 
-            recollq: usage:
-            -P: Show the date span for all the documents present in the index
-            [-o|-a|-f] [-q] <query string>
-            Runs a recoll query and displays result lines. 
-            Default: will interpret the argument(s) as a xesam query string
-            query may be like: 
-            implicit AND, Exclusion, field spec:    t1 -t2 title:t3
-            OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)
-            Phrase: "t1 t2" (needs additional quoting on cmd line)
-            -o Emulate the GUI simple search in ANY TERM mode
-            -a Emulate the GUI simple search in ALL TERMS mode
-            -f Emulate the GUI simple search in filename mode
-            -q is just ignored (compatibility with the recoll GUI command line)
-            Common options:
-            -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR
-            -d also dump file contents
-            -n [first-]<cnt> define the result slice. The default value for [first]
-            is 0. Without the option, the default max count is 2000.
-            Use n=0 for no limit
-            -b : basic. Just output urls, no mime types or titles
-            -Q : no result lines, just the processed query and result count
-            -m : dump the whole document meta[] array for each result
-            -A : output the document abstracts
-            -S fld : sort by field <fld>
-            -s stemlang : set stemming language to use (must exist in index...)
-            Use -s "" to turn off stem expansion
-            -D : sort descending
-            -i <dbdir> : additional index, several can be given
-            -e use url encoding (%xx) for urls
-            -F <field name list> : output exactly these fields for each result.
-            The field values are encoded in base64, output in one line and 
-            separated by one space character. This is the recommended format 
-            for use by other programs. Use a normal query with option -m to 
-            see the field names.
-          
+           recollq: usage:
+           -P: Show the date span for all the documents present in the index
+           [-o|-a|-f] [-q] <query string>
+           Runs a recoll query and displays result lines. 
+           Default: will interpret the argument(s) as a xesam query string
+           query may be like: 
+           implicit AND, Exclusion, field spec:    t1 -t2 title:t3
+           OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)
+           Phrase: "t1 t2" (needs additional quoting on cmd line)
+           -o Emulate the GUI simple search in ANY TERM mode
+           -a Emulate the GUI simple search in ALL TERMS mode
+           -f Emulate the GUI simple search in filename mode
+           -q is just ignored (compatibility with the recoll GUI command line)
+           Common options:
+           -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR
+           -d also dump file contents
+           -n [first-]<cnt> define the result slice. The default value for [first]
+           is 0. Without the option, the default max count is 2000.
+           Use n=0 for no limit
+           -b : basic. Just output urls, no mime types or titles
+           -Q : no result lines, just the processed query and result count
+           -m : dump the whole document meta[] array for each result
+           -A : output the document abstracts
+           -S fld : sort by field <fld>
+           -s stemlang : set stemming language to use (must exist in index...)
+           Use -s "" to turn off stem expansion
+           -D : sort descending
+           -i <dbdir> : additional index, several can be given
+           -e use url encoding (%xx) for urls
+           -F <field name list> : output exactly these fields for each result.
+           The field values are encoded in base64, output in one line and 
+           separated by one space character. This is the recommended format 
+           for use by other programs. Use a normal query with option -m to 
+           see the field names.
+         
 
 Sample execution:
 
 ::
 
-    recollq 'ilur -nautique mime:text/html'
-          Recoll query: ((((ilur:(wqf=11) OR ilurs) AND_NOT (nautique:(wqf=11)
-          OR nautiques OR nautiqu OR nautiquement)) FILTER Ttext/html))
-          4 results
-          text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/comptes.html]      [comptes.html]  18593   bytes   
-          text/html       [file:///Users/uncrypted-dockes/projets/nautique/webnautique/articles/ilur1/index.html] [Constructio...
-          text/html       [file:///Users/uncrypted-dockes/projets/pagepers/index.html]    [psxtcl/writemime/recoll]...
-          text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
-          
+   recollq 'ilur -nautique mime:text/html'
+         Recoll query: ((((ilur:(wqf=11) OR ilurs) AND_NOT (nautique:(wqf=11)
+         OR nautiques OR nautiqu OR nautiquement)) FILTER Ttext/html))
+         4 results
+         text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/comptes.html]      [comptes.html]  18593   bytes   
+         text/html       [file:///Users/uncrypted-dockes/projets/nautique/webnautique/articles/ilur1/index.html] [Constructio...
+         text/html       [file:///Users/uncrypted-dockes/projets/pagepers/index.html]    [psxtcl/writemime/recoll]...
+         text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
+         
+
+.. _RCL.SEARCH.SYNONYMS:
 
 Using Synonyms (1.22)
 ---------------------
@@ -2726,12 +2850,12 @@ Example:
 
 ::
 
-            hi hello "good morning"
+           hi hello "good morning"
 
-            # not sure about "au revoir" though. Is this english ?
-            bye goodbye "see you" \
-            "au revoir" 
-          
+           # not sure about "au revoir" though. Is this english ?
+           bye goodbye "see you" \
+           "au revoir" 
+         
 
 As usual, lines beginning with a ``#`` are comments, empty lines are
 ignored, and lines can be continued by ending them with a backslash.
@@ -2758,6 +2882,8 @@ letters to Mr. Smith. It is best used for domain-specific searches. For
 example, it was initially suggested by a user performing searches among
 historical documents: the synonyms file would contains nicknames and
 aliases for each of the persons of interest.
+
+.. _RCL.SEARCH.PTRANS:
 
 Path translations
 -----------------
@@ -2800,10 +2926,12 @@ can be edited by hand or from the GUI external indexes configuration
 dialog: Preferences > External index dialog, then click the Paths
 translations button on the right below the index list.
 
-    **Note**
+   **Note**
 
-    Due to a current bug, the GUI must be restarted after changing the
-    ``ptrans`` values (even when they were changed from the GUI).
+   Due to a current bug, the GUI must be restarted after changing the
+   ``ptrans`` values (even when they were changed from the GUI).
+
+.. _RCL.SEARCH.LANG:
 
 The query language
 ------------------
@@ -2826,8 +2954,8 @@ Here follows a sample request that we are going to explain:
 
 ::
 
-            author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
-          
+           author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
+         
 
 This would search for all documents with John Doe appearing as a phrase
 in the author field (exactly what this is would depend on the document
@@ -2873,14 +3001,14 @@ slash characters ('/') for an OR list. No white space is allowed. So
 
 ::
 
-    author:john,lennon
+   author:john,lennon
 
 will search for documents with ``john`` and ``lennon`` inside the
 ``author`` field (in any order), and
 
 ::
 
-    author:john/ringo
+   author:john/ringo
 
 would search for ``john`` or ``ringo``.
 
@@ -2947,8 +3075,8 @@ The field syntax also supports a few field-like, but special, criteria:
 
    ::
 
-                 dir:recoll dir:src -dir:utils -dir:common
-                 
+                dir:recoll dir:src -dir:utils -dir:common
+                
 
    This would select results which have both ``recoll`` and ``src`` in
    the path (in any order), and which have not either ``utils`` or
@@ -3017,17 +3145,21 @@ The field syntax also supports a few field-like, but special, criteria:
    which permit filtering results in the main GUI screen. Categories are
    OR'ed like MIME types above, and can be negated with ``-``.
 
-    **Note**
+..
 
-    ``mime``, ``rclcat``, ``size`` and ``date`` criteria always affect
-    the whole query (they are applied as a final filter), even if set
-    with other terms inside a parenthese.
+   **Note**
 
-    **Note**
+   ``mime``, ``rclcat``, ``size`` and ``date`` criteria always affect
+   the whole query (they are applied as a final filter), even if set
+   with other terms inside a parenthese.
 
-    ``mime`` (or the equivalent ``rclcat``) is the *only* field with an
-    ``OR`` default. You do need to use ``OR`` with ``ext`` terms for
-    example.
+   **Note**
+
+   ``mime`` (or the equivalent ``rclcat``) is the *only* field with an
+   ``OR`` default. You do need to use ``OR`` with ``ext`` terms for
+   example.
+
+.. _RCL.SEARCH.LANG.RANGES:
 
 Range clauses
 ~~~~~~~~~~~~~
@@ -3041,10 +3173,10 @@ A range clause looks like one of the following:
 
 ::
 
-    myfield:small..big
-    myfield:small..
-    myfield:..big
-            
+   myfield:small..big
+   myfield:small..
+   myfield:..big
+           
 
 The nature of the clause is indicated by the two dots ``..``, and the
 effect is to filter the results for which the myfield value is in the
@@ -3053,6 +3185,8 @@ possibly open-ended interval.
 See the section about the ```fields`` configuration
 file <#RCL.INSTALL.CONFIG.FIELDS>`__ for the details of configuring a
 field for range searches (list them in the [values] section).
+
+.. _RCL.SEARCH.LANG.MODIFIERS:
 
 Modifiers
 ~~~~~~~~~
@@ -3083,6 +3217,8 @@ of course. Supported modifiers:
 -  A weight can be specified for a query element by specifying a decimal
    value at the start of the modifiers. Example: ``"Important"2.5``.
 
+.. _RCL.SEARCH.CASEDIAC:
+
 Search case and diacritics sensitivity
 --------------------------------------
 
@@ -3100,19 +3236,19 @@ Two configuration variables can automate switching on sensitivity (they
 were documented but actually did nothing until RCL 1.22):
 
 autodiacsens
-    If this is set, search sensitivity to diacritics will be turned on
-    as soon as an accented character exists in a search term. When the
-    variable is set to true, ``resume`` will start a
-    diacritics-unsensitive search, but ``résumé`` will be matched
-    exactly. The default value is *false*.
+   If this is set, search sensitivity to diacritics will be turned on as
+   soon as an accented character exists in a search term. When the
+   variable is set to true, ``resume`` will start a
+   diacritics-unsensitive search, but ``résumé`` will be matched
+   exactly. The default value is *false*.
 
 autocasesens
-    If this is set, search sensitivity to character case will be turned
-    on as soon as an upper-case character exists in a search term
-    *except for the first one*. When the variable is set to true, ``us``
-    or ``Us`` will start a diacritics-unsensitive search, but ``US``
-    will be matched exactly. The default value is *true* (contrary to
-    ``autodiacsens``).
+   If this is set, search sensitivity to character case will be turned
+   on as soon as an upper-case character exists in a search term *except
+   for the first one*. When the variable is set to true, ``us`` or
+   ``Us`` will start a diacritics-unsensitive search, but ``US`` will be
+   matched exactly. The default value is *true* (contrary to
+   ``autodiacsens``).
 
 As in the past, capitalizing the first letter of a word will turn off
 its stem expansion and have no effect on case-sensitivity.
@@ -3123,21 +3259,23 @@ case-sensitive, and ``D`` will make it diacritics-sensitive. Examples:
 
 ::
 
-            "us"C
-          
+           "us"C
+         
 
 will search for the term ``us`` exactly (``Us`` will not be a match).
 
 ::
 
-            "resume"D
-          
+           "resume"D
+         
 
 will search for the term ``resume`` exactly (``résumé`` will not be a
 match).
 
 When either case or diacritics sensitivity is activated, stem expansion
 is turned off. Having both does not make much sense.
+
+.. _RCL.SEARCH.ANCHORWILD:
 
 Anchored searches and wildcards
 -------------------------------
@@ -3147,6 +3285,8 @@ expand or specialize the search. Wildcards expand a root term in
 controlled ways. Anchor characters can restrict a search to succeed only
 if the match is found at or near the beginning of the document or one of
 its fields.
+
+.. _RCL.SEARCH.WILDCARDS:
 
 More about wildcards
 ~~~~~~~~~~~~~~~~~~~~
@@ -3169,7 +3309,7 @@ You should be aware of a few things when using wildcards.
 -  Using a wildcard character at the beginning of a word can make for a
    slow search because RCL will have to scan the whole index term list
    to find the matches. However, this is much less a problem for field
-   searches, and queries like author:\*@domain.com can sometimes be very
+   searches, and queries like author:*@domain.com can sometimes be very
    useful.
 
 -  For RCL version 18 only, when working with a raw index (preserving
@@ -3186,14 +3326,16 @@ You should be aware of a few things when using wildcards.
    produce better results than an ending ``*`` (stem expansion is turned
    off when any wildcard character appears in the term).
 
+.. _RCL.SEARCH.WILDCARDS.PATH:
+
 Wildcards and path filtering
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Due to the way that RCL processes wildcards inside ``dir`` path
 filtering clauses, they will have a multiplicative effect on the query
 size. A clause containg wildcards in several paths elements, like, for
-example, ``dir:``/home/me/\*/\*/docdir, will almost certainly fail if
-your indexed tree is of any realistic size.
+example, ``dir:``/home/me/*/*/docdir, will almost certainly fail if your
+indexed tree is of any realistic size.
 
 Depending on the case, you may be able to work around the issue by
 specifying the paths elements more narrowly, with a constant prefix, or
@@ -3202,6 +3344,8 @@ in ``dir:``/home/me ``dir:``\ docdir. The latter query is not equivalent
 to the initial one because it does not specify a number of directory
 levels, but that's the best we can do (and it may be actually more
 useful in some cases).
+
+.. _RCL.SEARCH.ANCHOR:
 
 Anchored searches
 ~~~~~~~~~~~~~~~~~
@@ -3218,7 +3362,7 @@ for example, as in:
 
 ::
 
-    "^someterm"o10
+   "^someterm"o10
 
 which would force ``someterm`` to be found within 10 terms of the start
 of the text. This can be combined with a field search as in
@@ -3234,6 +3378,8 @@ structured documents like scientific articles, in case explicit metadata
 has not been supplied (a most frequent case), for example for looking
 for matches inside the abstract or the list of authors (which occur at
 the top of the document).
+
+.. _RCL.SEARCH.DESKTOP:
 
 Desktop integration
 -------------------
@@ -3252,6 +3398,8 @@ integration is minimal. However there are a few tools available:
 
 Here follow a few other things that may help.
 
+.. _RCL.SEARCH.SHORTCUT:
+
 Hotkeying recoll
 ~~~~~~~~~~~~~~~~
 
@@ -3261,13 +3409,15 @@ on the libwnck window manager interface library, which will allow you to
 do just this. The detailed instructions are on `this wiki
 page <&FAQS;HotRecoll>`__.
 
+.. _RCL.KICKER-APPLET:
+
 The KDE Kicker Recoll applet
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is probably obsolete now. Anyway:
 
-The RCL source tree contains the source code to the recoll\_applet, a
-small application derived from the find\_applet. This can be used to add
+The RCL source tree contains the source code to the recoll_applet, a
+small application derived from the find_applet. This can be used to add
 a small RCL launcher to the KDE panel.
 
 The applet is not automatically built with the main RCL programs, nor is
@@ -3279,11 +3429,13 @@ the recoll.org download page. Use the omnipotent
 You can then add the applet to the panel by right-clicking the panel and
 choosing the Add applet entry.
 
-The recoll\_applet has a small text window where you can type a RCL
-query (in query language form), and an icon which can be used to
-restrict the search to certain types of files. It is quite primitive,
-and launches a new recoll GUI instance every time (even if it is already
-running). You may find it useful anyway.
+The recoll_applet has a small text window where you can type a RCL query
+(in query language form), and an icon which can be used to restrict the
+search to certain types of files. It is quite primitive, and launches a
+new recoll GUI instance every time (even if it is already running). You
+may find it useful anyway.
+
+.. _RCL.REMOVABLE:
 
 Removable volumes
 =================
@@ -3298,6 +3450,8 @@ support indexing removable volumes in two different ways:
    the volume data is not purged if the indexing runs while the volume
    is mounted. (RCL 1.25.2).
 
+.. _RCL.REMOVABLE.MAIN:
+
 Indexing removable volumes in the main index
 --------------------------------------------
 
@@ -3308,6 +3462,8 @@ a member of the ``topdirs`` list, and the mount directory must be empty
 the ``topdirs`` is empty when starting up, any existing data for the
 tree will be preserved by the indexing pass (no purge for this area).
 
+.. _RCL.REMOVABLE.SELF:
+
 Self contained volumes
 ----------------------
 
@@ -3317,11 +3473,11 @@ indexed documents, and to move such a dataset around (for example
 copying it to an USB drive), without having to adjust the configuration
 for querying the index.
 
-    **Note**
+   **Note**
 
-    This is a query-time feature only. The index must only be updated in
-    its original location. If an update is necessary in a different
-    location, the index must be reset.
+   This is a query-time feature only. The index must only be updated in
+   its original location. If an update is necessary in a different
+   location, the index must be reset.
 
 To make a long story short, here follows a script to create a RCL
 configuration and index under a given directory (given as single
@@ -3331,34 +3487,34 @@ the script.
 
 ::
 
-    #!/bin/sh
+   #!/bin/sh
 
-    fatal()
-    {
-        echo $*;exit 1
-    }
-    usage()
-    {
-        fatal "Usage: init-recoll-volume.sh <top-directory>"
-    }
+   fatal()
+   {
+       echo $*;exit 1
+   }
+   usage()
+   {
+       fatal "Usage: init-recoll-volume.sh <top-directory>"
+   }
 
-    test $# = 1 || usage
-    topdir=$1
-    test -d "$topdir" || fatal $topdir should be a directory
+   test $# = 1 || usage
+   topdir=$1
+   test -d "$topdir" || fatal $topdir should be a directory
 
-    confdir="$topdir/recoll-config"
-    test ! -d "$confdir" || fatal $confdir should not exist
+   confdir="$topdir/recoll-config"
+   test ! -d "$confdir" || fatal $confdir should not exist
 
-    mkdir "$confdir"
-    cd "$topdir"
-    topdir=`pwd`
-    cd "$confdir"
-    confdir=`pwd`
+   mkdir "$confdir"
+   cd "$topdir"
+   topdir=`pwd`
+   cd "$confdir"
+   confdir=`pwd`
 
-    (echo topdirs = '"'$topdir'"'; \
-     echo orgidxconfdir = $topdir/recoll-config) > "$confdir/recoll.conf"
+   (echo topdirs = '"'$topdir'"'; \
+    echo orgidxconfdir = $topdir/recoll-config) > "$confdir/recoll.conf"
 
-    recollindex -c "$confdir"
+   recollindex -c "$confdir"
 
 The examples below will assume that you have a dataset under
 ``/home/me/mydata/``, with the index configuration and data stored
@@ -3413,6 +3569,8 @@ The same set of modifications (RCL 1.24) has also made it possible to
 run queries from a readonly configuration directory (with slightly
 reduced function of course, such as not recording the query history).
 
+.. _RCL.PROGRAM:
+
 Programming interface
 =====================
 
@@ -3425,20 +3583,22 @@ handlers for new types of documents.
 The processing of metadata attributes for documents (``fields``) is
 highly configurable.
 
+.. _RCL.PROGRAM.FILTERS:
+
 Writing a document input handler
 --------------------------------
 
-    **Note**
+   **Note**
 
-    The small programs or pieces of code which handle the processing of
-    the different document types for RCL used to be called ``filters``,
-    which is still reflected in the name of the directory which holds
-    them and many configuration variables. They were named this way
-    because one of their primary functions is to filter out the
-    formatting directives and keep the text content. However these
-    modules may have other behaviours, and the term ``input handler`` is
-    now progressively substituted in the documentation. ``filter`` is
-    still used in many places though.
+   The small programs or pieces of code which handle the processing of
+   the different document types for RCL used to be called ``filters``,
+   which is still reflected in the name of the directory which holds
+   them and many configuration variables. They were named this way
+   because one of their primary functions is to filter out the
+   formatting directives and keep the text content. However these
+   modules may have other behaviours, and the term ``input handler`` is
+   now progressively substituted in the documentation. ``filter`` is
+   still used in many places though.
 
 RCL input handlers cooperate to translate from the multitude of input
 document formats, simple ones as opendocument, acrobat, or compound ones
@@ -3508,6 +3668,8 @@ write a simple handler with only the elements in the manual. This will
 not be the case for the other ones, for which you will have to look at
 the code.
 
+.. _RCL.PROGRAM.FILTERS.SIMPLE:
+
 Simple input handlers
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -3530,7 +3692,7 @@ preserve when previewing HTML. Actually the deciding factor is metadata:
 RCL has a way to `extract metadata from the HTML header and use it for
 field searches. <#RCL.PROGRAM.FILTERS.HTML>`__.
 
-The RECOLL\_FILTER\_FORPREVIEW environment variable (values ``yes``,
+The RECOLL_FILTER_FORPREVIEW environment variable (values ``yes``,
 ``no``) tells the handler if the operation is for indexing or
 previewing. Some handlers use this to output a slightly different
 format, for example stripping uninteresting repeated keywords (ie:
@@ -3540,6 +3702,8 @@ You should look at one of the simple handlers, for example ``rclps`` for
 a starting point.
 
 Don't forget to make your handler executable before testing !
+
+.. _RCL.PROGRAM.FILTERS.MULTIPLE:
 
 "Multiple" handlers
 ~~~~~~~~~~~~~~~~~~~
@@ -3611,6 +3775,8 @@ associated data (e.g. the body of an email message), or none (typical
 for an archive file). If it is empty, this document will be useful
 anyway for some operations, as the parent of the actual data documents.
 
+.. _RCL.PROGRAM.FILTERS.ASSOCIATION:
+
 Telling RCL about the handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -3625,8 +3791,8 @@ file <#RCL.INSTALL.CONFIG.MIMEMAP>`__. Example:
 ::
 
 
-                .doc = application/msword
-              
+               .doc = application/msword
+             
 
 If no suffix association is found for the file name, RCL will try to
 execute a system command (typically ``file -i`` or ``xdg-mime``) to
@@ -3639,16 +3805,16 @@ probably be better than a long explanation:
 ::
 
 
-              [index]
-              application/msword = exec antiword -t -i 1 -m UTF-8;\
-              mimetype = text/plain ; charset=utf-8
+             [index]
+             application/msword = exec antiword -t -i 1 -m UTF-8;\
+             mimetype = text/plain ; charset=utf-8
 
-              application/ogg = exec rclogg
+             application/ogg = exec rclogg
 
-              text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
+             text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
 
-              application/x-chm = execm rclchm
-            
+             application/x-chm = execm rclchm
+           
 
 The fragment specifies that:
 
@@ -3667,6 +3833,8 @@ The fragment specifies that:
 
 -  ``application/x-chm`` is processed by a persistant handler. This is
    determined by the ``execm`` keyword.
+
+.. _RCL.PROGRAM.FILTERS.HTML:
 
 Input handler output
 ~~~~~~~~~~~~~~~~~~~~
@@ -3689,15 +3857,15 @@ following example:
 
 ::
 
-              <html>
-              <head>
-              <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-              </head>
-              <body>
-              Some text content
-              </body>
-              </html>
-            
+             <html>
+             <head>
+             <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+             </head>
+             <body>
+             Some text content
+             </body>
+             </html>
+           
 
 You should take care to escape some characters inside the text by
 transforming them into appropriate entities. At the very minimum,
@@ -3730,25 +3898,25 @@ should be as follows:
 
 ::
 
-              <meta name="date" content="YYYY-mm-dd HH:MM:SS">
-              or
-              <meta name="date" content="YYYY-mm-ddTHH:MM:SS">
-            
+             <meta name="date" content="YYYY-mm-dd HH:MM:SS">
+             or
+             <meta name="date" content="YYYY-mm-ddTHH:MM:SS">
+           
 
 Example:
 
 ::
 
-              <meta name="date" content="2013-02-24 17:50:00">
-            
+             <meta name="date" content="2013-02-24 17:50:00">
+           
 
 Input handlers also have the possibility to "invent" field names. This
 should also be output as meta tags:
 
 ::
 
-              <meta name="somefield" content="Some textual data" />
-            
+             <meta name="somefield" content="Some textual data" />
+           
 
 You can embed HTML markup inside the content of custom fields, for
 improving the display inside result lists. In this case, add a (wildly
@@ -3757,8 +3925,8 @@ and should not be escaped for display.
 
 ::
 
-              <meta name="somefield" markup="html" content="Some <i>textual</i> data" />
-            
+             <meta name="somefield" markup="html" content="Some <i>textual</i> data" />
+           
 
 As written above, the processing of fields is described in a `further
 section <#RCL.PROGRAM.FIELDS>`__.
@@ -3770,6 +3938,8 @@ example, ``rclaudio`` in RCL 1.23 and later for an example of handler
 which outputs ``text/plain`` and uses ``setfield()`` to produce
 metadata.
 
+.. _RCL.PROGRAM.FILTERS.PAGES:
+
 Page numbers
 ~~~~~~~~~~~~
 
@@ -3777,6 +3947,8 @@ The indexer will interpret ``^L`` characters in the handler output as
 indicating page breaks, and will record them. At query time, this allows
 starting a viewer on the right page for a hit or a snippet. Currently,
 only the PDF, Postscript and DVI handlers generate page breaks.
+
+.. _RCL.PROGRAM.FIELDS:
 
 Field data processing
 ---------------------
@@ -3847,8 +4019,12 @@ You can also have a look at the `example in the FAQs
 area <&FAQS;HandleCustomField>`__, detailing how one could add a *page
 count* field to pdf documents for displaying inside result lists.
 
+.. _RCL.PROGRAM.PYTHONAPI:
+
 Python API
 ----------
+
+.. _RCL.PROGRAM.PYTHONAPI.INTRO:
 
 Introduction
 ~~~~~~~~~~~~
@@ -3903,17 +4079,17 @@ completely, and especially its data extraction features.
 
 ::
 
-            #!/usr/bin/env python
+           #!/usr/bin/env python
 
-            from recoll import recoll
+           from recoll import recoll
 
-            db = recoll.connect()
-            query = db.query()
-            nres = query.execute("some query")
-            results = query.fetchmany(20)
-            for doc in results:
-                print("%s %s" % (doc.url, doc.title))
-            
+           db = recoll.connect()
+           query = db.query()
+           nres = query.execute("some query")
+           results = query.fetchmany(20)
+           for doc in results:
+               print("%s %s" % (doc.url, doc.title))
+           
 
 You can also take a look at the source for the `Recoll
 WebUI <https://opensourceprojects.eu/p/recollwebui/code/ci/78ddb20787b2a894b5e4661a8d5502c4511cf71e/tree/>`__,
@@ -3922,6 +4098,8 @@ server <https://opensourceprojects.eu/p/upmpdcli/code/ci/c8c8e75bd181ad9db2df14d
 or the `Gnome Shell Search
 Provider <https://opensourceprojects.eu/p/recollgssp/code/ci/3f120108e099f9d687306c0be61593994326d52d/tree/gssp-recoll.py>`__.
 
+.. _RCL.PROGRAM.PYTHONAPI.ELEMENTS:
+
 Interface elements
 ~~~~~~~~~~~~~~~~~~
 
@@ -3929,58 +4107,62 @@ A few elements in the interface are specific and and need an
 explanation.
 
 ipath
-    This data value (set as a field in the Doc object) is stored, along
-    with the URL, but not indexed by RCL. Its contents are not
-    interpreted by the index layer, and its use is up to the
-    application. For example, the RCL file system indexer uses the
-    ``ipath`` to store the part of the document access path internal to
-    (possibly imbricated) container documents. ``ipath`` in this case is
-    a vector of access elements (e.g, the first part could be a path
-    inside a zip file to an archive member which happens to be an mbox
-    file, the second element would be the message sequential number
-    inside the mbox etc.). ``url`` and ``ipath`` are returned in every
-    search result and define the access to the original document.
-    ``ipath`` is empty for top-level document/files (e.g. a PDF document
-    which is a filesystem file). The RCL GUI knows about the structure
-    of the ``ipath`` values used by the filesystem indexer, and uses it
-    for such functions as opening the parent of a given document.
+   This data value (set as a field in the Doc object) is stored, along
+   with the URL, but not indexed by RCL. Its contents are not
+   interpreted by the index layer, and its use is up to the application.
+   For example, the RCL file system indexer uses the ``ipath`` to store
+   the part of the document access path internal to (possibly
+   imbricated) container documents. ``ipath`` in this case is a vector
+   of access elements (e.g, the first part could be a path inside a zip
+   file to an archive member which happens to be an mbox file, the
+   second element would be the message sequential number inside the mbox
+   etc.). ``url`` and ``ipath`` are returned in every search result and
+   define the access to the original document. ``ipath`` is empty for
+   top-level document/files (e.g. a PDF document which is a filesystem
+   file). The RCL GUI knows about the structure of the ``ipath`` values
+   used by the filesystem indexer, and uses it for such functions as
+   opening the parent of a given document.
 
 udi
-    An ``udi`` (unique document identifier) identifies a document.
-    Because of limitations inside the index engine, it is restricted in
-    length (to 200 bytes), which is why a regular URI cannot be used.
-    The structure and contents of the ``udi`` is defined by the
-    application and opaque to the index engine. For example, the
-    internal file system indexer uses the complete document path (file
-    path + internal path), truncated to length, the suppressed part
-    being replaced by a hash value. The ``udi`` is not explicit in the
-    query interface (it is used "under the hood" by the ``rclextract``
-    module), but it is an explicit element of the update interface.
+   An ``udi`` (unique document identifier) identifies a document.
+   Because of limitations inside the index engine, it is restricted in
+   length (to 200 bytes), which is why a regular URI cannot be used. The
+   structure and contents of the ``udi`` is defined by the application
+   and opaque to the index engine. For example, the internal file system
+   indexer uses the complete document path (file path + internal path),
+   truncated to length, the suppressed part being replaced by a hash
+   value. The ``udi`` is not explicit in the query interface (it is used
+   "under the hood" by the ``rclextract`` module), but it is an explicit
+   element of the update interface.
 
-parent\_udi
-    If this attribute is set on a document when entering it in the
-    index, it designates its physical container document. In a
-    multilevel hierarchy, this may not be the immediate parent.
-    ``parent_udi`` is optional, but its use by an indexer may simplify
-    index maintenance, as RCL will automatically delete all children
-    defined by ``parent_udi == udi`` when the document designated by
-    ``udi`` is destroyed. e.g. if a ``Zip`` archive contains entries
-    which are themselves containers, like ``mbox`` files, all the
-    subdocuments inside the ``Zip`` file (mbox, messages, message
-    attachments, etc.) would have the same ``parent_udi``, matching the
-    ``udi`` for the ``Zip`` file, and all would be destroyed when the
-    ``Zip`` file (identified by its ``udi``) is removed from the index.
-    The standard filesystem indexer uses ``parent_udi``.
+parent_udi
+   If this attribute is set on a document when entering it in the index,
+   it designates its physical container document. In a multilevel
+   hierarchy, this may not be the immediate parent. ``parent_udi`` is
+   optional, but its use by an indexer may simplify index maintenance,
+   as RCL will automatically delete all children defined by
+   ``parent_udi == udi`` when the document designated by ``udi`` is
+   destroyed. e.g. if a ``Zip`` archive contains entries which are
+   themselves containers, like ``mbox`` files, all the subdocuments
+   inside the ``Zip`` file (mbox, messages, message attachments, etc.)
+   would have the same ``parent_udi``, matching the ``udi`` for the
+   ``Zip`` file, and all would be destroyed when the ``Zip`` file
+   (identified by its ``udi``) is removed from the index. The standard
+   filesystem indexer uses ``parent_udi``.
 
 Stored and indexed fields
-    The ```fields`` file <#RCL.INSTALL.CONFIG.FIELDS>`__ inside the RCL
-    configuration defines which document fields are either ``indexed``
-    (searchable), ``stored`` (retrievable with search results), or both.
-    Apart from a few standard/internal fields, only the ``stored``
-    fields are retrievable through the Python search interface.
+   The ```fields`` file <#RCL.INSTALL.CONFIG.FIELDS>`__ inside the RCL
+   configuration defines which document fields are either ``indexed``
+   (searchable), ``stored`` (retrievable with search results), or both.
+   Apart from a few standard/internal fields, only the ``stored`` fields
+   are retrievable through the Python search interface.
+
+.. _RCL.PROGRAM.PYTHONAPI.SEARCH:
 
 Python search interface
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _RCL.PROGRAM.PYTHONAPI.RECOLL:
 
 The recoll module
 ^^^^^^^^^^^^^^^^^
@@ -4003,94 +4185,94 @@ A Db object is created by a ``connect()`` call and holds a connection to
 a Recoll index.
 
 Db.close()
-    Closes the connection. You can't do anything with the ``Db`` object
-    after this.
+   Closes the connection. You can't do anything with the ``Db`` object
+   after this.
 
 Db.query(), Db.cursor()
-    These aliases return a blank ``Query`` object for this index.
+   These aliases return a blank ``Query`` object for this index.
 
 Db.setAbstractParams(maxchars, contextwords)
-    Set the parameters used to build snippets (sets of keywords in
-    context text fragments). ``maxchars`` defines the maximum total size
-    of the abstract. ``contextwords`` defines how many terms are shown
-    around the keyword.
+   Set the parameters used to build snippets (sets of keywords in
+   context text fragments). ``maxchars`` defines the maximum total size
+   of the abstract. ``contextwords`` defines how many terms are shown
+   around the keyword.
 
-Db.termMatch(match\_type, expr, field='', maxlen=-1, casesens=False, diacsens=False, lang='english')
-    Expand an expression against the index term list. Performs the basic
-    function from the GUI term explorer tool. ``match_type`` can be
-    either of ``wildcard``, ``regexp`` or ``stem``. Returns a list of
-    terms expanded from the input expression.
+Db.termMatch(match_type, expr, field='', maxlen=-1, casesens=False, diacsens=False, lang='english')
+   Expand an expression against the index term list. Performs the basic
+   function from the GUI term explorer tool. ``match_type`` can be
+   either of ``wildcard``, ``regexp`` or ``stem``. Returns a list of
+   terms expanded from the input expression.
 
 A ``Query`` object (equivalent to a cursor in the Python DB API) is
 created by a ``Db.query()`` call. It is used to execute index searches.
 
 Query.sortby(fieldname, ascending=True)
-    Sort results by fieldname, in ascending or descending order. Must be
-    called before executing the search.
+   Sort results by fieldname, in ascending or descending order. Must be
+   called before executing the search.
 
-Query.execute(query\_string, stemming=1, stemlang="english", fetchtext=False)
-    Starts a search for query\_string, a RCL search language string. If
-    the index stores the document texts and ``fetchtext`` is True, store
-    the document extracted text in ``doc.text``.
+Query.execute(query_string, stemming=1, stemlang="english", fetchtext=False)
+   Starts a search for query_string, a RCL search language string. If
+   the index stores the document texts and ``fetchtext`` is True, store
+   the document extracted text in ``doc.text``.
 
 Query.executesd(SearchData, fetchtext=False)
-    Starts a search for the query defined by the SearchData object. If
-    the index stores the document texts and ``fetchtext`` is True, store
-    the document extracted text in ``doc.text``.
+   Starts a search for the query defined by the SearchData object. If
+   the index stores the document texts and ``fetchtext`` is True, store
+   the document extracted text in ``doc.text``.
 
 Query.fetchmany(size=query.arraysize)
-    Fetches the next ``Doc`` objects in the current search results, and
-    returns them as an array of the required size, which is by default
-    the value of the ``arraysize`` data member.
+   Fetches the next ``Doc`` objects in the current search results, and
+   returns them as an array of the required size, which is by default
+   the value of the ``arraysize`` data member.
 
 Query.fetchone()
-    Fetches the next ``Doc`` object from the current search results.
-    Generates a StopIteration exception if there are no results left.
+   Fetches the next ``Doc`` object from the current search results.
+   Generates a StopIteration exception if there are no results left.
 
 Query.close()
-    Closes the query. The object is unusable after the call.
+   Closes the query. The object is unusable after the call.
 
 Query.scroll(value, mode='relative')
-    Adjusts the position in the current result set. ``mode`` can be
-    ``relative`` or ``absolute``.
+   Adjusts the position in the current result set. ``mode`` can be
+   ``relative`` or ``absolute``.
 
 Query.getgroups()
-    Retrieves the expanded query terms as a list of pairs. Meaningful
-    only after executexx In each pair, the first entry is a list of user
-    terms (of size one for simple terms, or more for group and phrase
-    clauses), the second a list of query terms as derived from the user
-    terms and used in the Xapian Query.
+   Retrieves the expanded query terms as a list of pairs. Meaningful
+   only after executexx In each pair, the first entry is a list of user
+   terms (of size one for simple terms, or more for group and phrase
+   clauses), the second a list of query terms as derived from the user
+   terms and used in the Xapian Query.
 
 Query.getxquery()
-    Return the Xapian query description as a Unicode string. Meaningful
-    only after executexx.
+   Return the Xapian query description as a Unicode string. Meaningful
+   only after executexx.
 
 Query.highlight(text, ishtml = 0, methods = object)
-    Will insert <span "class=rclmatch">, </span> tags around the match
-    areas in the input text and return the modified text. ``ishtml`` can
-    be set to indicate that the input text is HTML and that HTML special
-    characters should not be escaped. ``methods`` if set should be an
-    object with methods startMatch(i) and endMatch() which will be
-    called for each match and should return a begin and end tag
+   Will insert <span "class=rclmatch">, </span> tags around the match
+   areas in the input text and return the modified text. ``ishtml`` can
+   be set to indicate that the input text is HTML and that HTML special
+   characters should not be escaped. ``methods`` if set should be an
+   object with methods startMatch(i) and endMatch() which will be called
+   for each match and should return a begin and end tag
 
 Query.makedocabstract(doc, methods = object))
-    Create a snippets abstract for ``doc`` (a ``Doc`` object) by
-    selecting text around the match terms. If methods is set, will also
-    perform highlighting. See the highlight method.
+   Create a snippets abstract for ``doc`` (a ``Doc`` object) by
+   selecting text around the match terms. If methods is set, will also
+   perform highlighting. See the highlight method.
 
-Query.\_\_iter\_\_() and Query.next()
-    So that things like ``for doc in query:`` will work.
+Query.__iter__() and Query.next()
+   So that things like ``for doc in query:`` will work.
 
 Query.arraysize
-    Default number of records processed by fetchmany (r/w).
+   Default number of records processed by fetchmany (r/w).
 
 Query.rowcount
-    Number of records returned by the last execute.
+   Number of records returned by the last execute.
 
 Query.rownumber
-    Next index to be fetched from results. Normally increments after
-    each fetchone() call, but can be set/reset before the call to effect
-    seeking (equivalent to using ``scroll()``). Starts at 0.
+   Next index to be fetched from results. Normally increments after each
+   fetchone() call, but can be set/reset before the call to effect
+   seeking (equivalent to using ``scroll()``). Starts at 0.
 
 A ``Doc`` object contains index data for a given document. The data is
 extracted from the index when searching, or set by the indexer program
@@ -4127,33 +4309,34 @@ depending if the index stores the text at all, and if it does, on the
 for accessing document contents.
 
 get(key), [] operator
-    Retrieve the named document attribute. You can also use
-    ``getattr(doc, key)`` or ``doc.key``.
+   Retrieve the named document attribute. You can also use
+   ``getattr(doc, key)`` or ``doc.key``.
 
 doc.key = value
-    Set the the named document attribute. You can also use
-    ``setattr(doc, key, value)``.
+   Set the the named document attribute. You can also use
+   ``setattr(doc, key, value)``.
 
 getbinurl()
-    Retrieve the URL in byte array format (no transcoding), for use as
-    parameter to a system call.
+   Retrieve the URL in byte array format (no transcoding), for use as
+   parameter to a system call.
 
 setbinurl(url)
-    Set the URL in byte array format (no transcoding).
+   Set the URL in byte array format (no transcoding).
 
 items()
-    Return a dictionary of doc object keys/values
+   Return a dictionary of doc object keys/values
 
 keys()
-    list of doc object keys (attribute names).
+   list of doc object keys (attribute names).
 
 A ``SearchData`` object allows building a query by combining clauses,
 for execution by ``Query.executesd()``. It can be used in replacement of
 the query language approach. The interface is going to change a little,
 so no detailed doc for now...
 
-addclause(type='and'\|'or'\|'excl'\|'phrase'\|'near'\|'sub',
-qstring=string, slack=0, field='', stemming=1, subSearch=SearchData)
+addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub', qstring=string, slack=0, field='', stemming=1, subSearch=SearchData)
+
+.. _RCL.PROGRAM.PYTHONAPI.RCLEXTRACT:
 
 The rclextract module
 ^^^^^^^^^^^^^^^^^^^^^
@@ -4172,49 +4355,51 @@ You need to import the ``recoll`` module before the ``rclextract``
 module.
 
 Extractor(doc)
-    An ``Extractor`` object is built from a ``Doc`` object, output from
-    a query.
+   An ``Extractor`` object is built from a ``Doc`` object, output from a
+   query.
 
 Extractor.textextract(ipath)
-    Extract document defined by ipath and return a ``Doc`` object. The
-    ``doc.text`` field has the document text converted to either
-    text/plain or text/html according to ``doc.mimetype``. The typical
-    use would be as follows:
+   Extract document defined by ipath and return a ``Doc`` object. The
+   ``doc.text`` field has the document text converted to either
+   text/plain or text/html according to ``doc.mimetype``. The typical
+   use would be as follows:
 
-    ::
+   ::
 
-        from recoll import recoll, rclextract
+      from recoll import recoll, rclextract
 
-        qdoc = query.fetchone()
-        extractor = recoll.Extractor(qdoc)
-        doc = extractor.textextract(qdoc.ipath)
-        # use doc.text, e.g. for previewing
+      qdoc = query.fetchone()
+      extractor = recoll.Extractor(qdoc)
+      doc = extractor.textextract(qdoc.ipath)
+      # use doc.text, e.g. for previewing
 
-    Passing ``qdoc.ipath`` to ``textextract()`` is redundant, but
-    reflects the fact that the ``Extractor`` object actually has the
-    capability to access the other entries in a compound document.
+   Passing ``qdoc.ipath`` to ``textextract()`` is redundant, but
+   reflects the fact that the ``Extractor`` object actually has the
+   capability to access the other entries in a compound document.
 
 Extractor.idoctofile(ipath, targetmtype, outfile='')
-    Extracts document into an output file, which can be given explicitly
-    or will be created as a temporary file to be deleted by the caller.
-    Typical use:
+   Extracts document into an output file, which can be given explicitly
+   or will be created as a temporary file to be deleted by the caller.
+   Typical use:
 
-    ::
+   ::
 
-        from recoll import recoll, rclextract
+      from recoll import recoll, rclextract
 
-        qdoc = query.fetchone()
-        extractor = recoll.Extractor(qdoc)
-        filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)
+      qdoc = query.fetchone()
+      extractor = recoll.Extractor(qdoc)
+      filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)
 
-    In all cases the output is a copy, even if the requested document is
-    a regular system file, which may be wasteful in some cases. If you
-    want to avoid this, you can test for a simple file document as
-    follows:
+   In all cases the output is a copy, even if the requested document is
+   a regular system file, which may be wasteful in some cases. If you
+   want to avoid this, you can test for a simple file document as
+   follows:
 
-    ::
+   ::
 
-        not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
+      not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
+
+.. _RCL.PROGRAM.PYTHONAPI.SEARCH.EXAMPLE:
 
 Search API usage example
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -4226,26 +4411,28 @@ demonstrates the highlighting and data extraction functions.
 
 ::
 
-    #!/usr/bin/env python
+   #!/usr/bin/env python
 
-    from recoll import recoll
+   from recoll import recoll
 
-    db = recoll.connect()
-    db.setAbstractParams(maxchars=80, contextwords=4)
+   db = recoll.connect()
+   db.setAbstractParams(maxchars=80, contextwords=4)
 
-    query = db.query()
-    nres = query.execute("some user question")
-    print "Result count: ", nres
-    if nres > 5:
-        nres = 5
-    for i in range(nres):
-        doc = query.fetchone()
-        print "Result #%d" % (query.rownumber,)
-        for k in ("title", "size"):
-            print k, ":", getattr(doc, k).encode('utf-8')
-        abs = db.makeDocAbstract(doc, query).encode('utf-8')
-        print abs
-        print
+   query = db.query()
+   nres = query.execute("some user question")
+   print "Result count: ", nres
+   if nres > 5:
+       nres = 5
+   for i in range(nres):
+       doc = query.fetchone()
+       print "Result #%d" % (query.rownumber,)
+       for k in ("title", "size"):
+           print k, ":", getattr(doc, k).encode('utf-8')
+       abs = db.makeDocAbstract(doc, query).encode('utf-8')
+       print abs
+       print
+
+.. _RCL.PROGRAM.PYTHONAPI.UPDATE:
 
 Creating Python external indexers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4282,6 +4469,8 @@ There are two parts in the update interface:
    the GUI or the ``rclextract`` module to access original document data
    for previewing or editing.
 
+.. _RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE:
+
 Python update interface
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -4290,45 +4479,47 @@ The connect() method is used with a ``writable=true`` parameter to
 obtain a writable ``Db`` object. The following ``Db`` object methods are
 then available.
 
-addOrUpdate(udi, doc, parent\_udi=None)
-    Add or update index data for a given document The ``udi`` string
-    must define a unique id for the document. It is an opaque interface
-    element and not interpreted inside Recoll. ``doc`` is a ``Doc``
-    object, created from the data to be indexed (the main text should be
-    in ``doc.text``). If ``parent_udi`` is set, this is a unique
-    identifier for the top-level container (e.g. for the filesystem
-    indexer, this would be the one which is an actual file).
+addOrUpdate(udi, doc, parent_udi=None)
+   Add or update index data for a given document The ``udi`` string must
+   define a unique id for the document. It is an opaque interface
+   element and not interpreted inside Recoll. ``doc`` is a ``Doc``
+   object, created from the data to be indexed (the main text should be
+   in ``doc.text``). If ``parent_udi`` is set, this is a unique
+   identifier for the top-level container (e.g. for the filesystem
+   indexer, this would be the one which is an actual file).
 
 delete(udi)
-    Purge index from all data for ``udi``, and all documents (if any)
-    which have a matrching ``parent_udi``.
+   Purge index from all data for ``udi``, and all documents (if any)
+   which have a matrching ``parent_udi``.
 
 needUpdate(udi, sig)
-    Test if the index needs to be updated for the document identified by
-    ``udi``. If this call is to be used, the ``doc.sig`` field should
-    contain a signature value when calling ``addOrUpdate()``. The
-    ``needUpdate()`` call then compares its parameter value with the
-    stored ``sig`` for ``udi``. ``sig`` is an opaque value, compared as
-    a string.
+   Test if the index needs to be updated for the document identified by
+   ``udi``. If this call is to be used, the ``doc.sig`` field should
+   contain a signature value when calling ``addOrUpdate()``. The
+   ``needUpdate()`` call then compares its parameter value with the
+   stored ``sig`` for ``udi``. ``sig`` is an opaque value, compared as a
+   string.
 
-    The filesystem indexer uses a concatenation of the decimal string
-    values for file size and update time, but a hash of the contents
-    could also be used.
+   The filesystem indexer uses a concatenation of the decimal string
+   values for file size and update time, but a hash of the contents
+   could also be used.
 
-    As a side effect, if the return value is false (the index is up to
-    date), the call will set the existence flag for the document (and
-    any subdocument defined by its ``parent_udi``), so that a later
-    ``purge()`` call will preserve them).
+   As a side effect, if the return value is false (the index is up to
+   date), the call will set the existence flag for the document (and any
+   subdocument defined by its ``parent_udi``), so that a later
+   ``purge()`` call will preserve them).
 
-    The use of ``needUpdate()`` and ``purge()`` is optional, and the
-    indexer may use another method for checking the need to reindex or
-    to delete stale entries.
+   The use of ``needUpdate()`` and ``purge()`` is optional, and the
+   indexer may use another method for checking the need to reindex or to
+   delete stale entries.
 
 purge()
-    Delete all documents that were not touched during the just finished
-    indexing pass (since open-for-write). These are the documents for
-    the needUpdate() call was not performed, indicating that they no
-    longer exist in the primary storage system.
+   Delete all documents that were not touched during the just finished
+   indexing pass (since open-for-write). These are the documents for the
+   needUpdate() call was not performed, indicating that they no longer
+   exist in the primary storage system.
+
+.. _RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS:
 
 Query data access for external indexers (1.23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -4351,10 +4542,10 @@ indexing sample found in the Recoll source (which sets
 
 ::
 
-    [MBOX]
-              fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
-              makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
-              
+   [MBOX]
+             fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
+             makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
+             
 
 ``fetch`` and ``makesig`` define two commands to execute to respectively
 retrieve the document text and compute the document signature (the
@@ -4365,6 +4556,8 @@ The scripts are called with three additional arguments: ``udi``,
 ``url``, ``ipath``, stored with the document when it was indexed, and
 may use any or all to perform the requested operation. The caller
 expects the result data on ``stdout``.
+
+.. _RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES:
 
 External indexer samples
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -4377,6 +4570,8 @@ data access interface.
 
 See the comments inside the file for more information.
 
+.. _RCL.PROGRAM.PYTHONAPI.COMPAT:
+
 Package compatibility with the previous version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -4388,16 +4583,16 @@ Adapting to the new package structure:
 
 ::
 
-              
-                       try:
-                       from recoll import recoll
-                       from recoll import rclextract
-                       hasextract = True
-                       except:
-                       import recoll
-                       hasextract = False
-              
-            
+             
+                      try:
+                      from recoll import recoll
+                      from recoll import rclextract
+                      hasextract = True
+                      except:
+                      import recoll
+                      hasextract = False
+             
+           
 
 Adapting to the change of nature of the ``next`` ``Query`` member. The
 same test can be used to choose to use the ``scroll()`` method (new) or
@@ -4405,14 +4600,18 @@ set the ``next`` value (old).
 
 ::
 
-              
-                       rownum = query.next if type(query.next) == int else \
-                       query.rownumber
-              
-            
+             
+                      rownum = query.next if type(query.next) == int else \
+                      query.rownumber
+             
+           
+
+.. _RCL.INSTALL:
 
 Installation and configuration
 ==============================
+
+.. _RCL.INSTALL.BINARY:
 
 Installing a binary copy
 ------------------------
@@ -4444,13 +4643,15 @@ section <#RCL.INSTALL.CONFIG>`__ (but this may not be necessary for a
 quick test with default parameters). Most parameters can be more
 conveniently set from the GUI interface.
 
+.. _RCL.INSTALL.EXTERNAL:
+
 Supporting packages
 -------------------
 
-    **Note**
+   **Note**
 
-    The WIN installation of RCL is self-contained, and only needs Python
-    2.7 to be externally installed. WIN users can skip this section.
+   The WIN installation of RCL is self-contained, and only needs Python
+   2.7 to be externally installed. WIN users can skip this section.
 
 RCL uses external applications to index some file types. You need to
 install them for the file types that you wish to have indexed (these are
@@ -4499,8 +4700,7 @@ Now for the list:
 -  MS Excel and PowerPoint are processed by internal ``Python``
    handlers.
 
--  MS Open XML (docx) needs ``
-           xsltproc``.
+-  MS Open XML (docx) needs ``xsltproc``.
 
 -  Wordperfect files need ``wpd2html`` from the libwpd (or libwpd-tools
    on Ubuntu) package.
@@ -4550,8 +4750,12 @@ Text, HTML, email folders, and Scribus files are processed internally.
 Lyx is used to index Lyx files. Many handlers need ``iconv`` and the
 standard ``sed`` and ``awk``.
 
+.. _RCL.INSTALL.BUILDING:
+
 Building from source
 --------------------
+
+.. _RCL.INSTALL.BUILDING.PREREQS:
 
 Prerequisites
 ~~~~~~~~~~~~~
@@ -4578,12 +4782,12 @@ The shopping list:
 
 -  Development files for `Xapian core <http://www.xapian.org>`__.
 
-       **Important**
+      **Important**
 
-       If you are building Xapian for an older CPU (before Pentium 4 or
-       Athlon 64), you need to add the ``--disable-sse`` flag to the
-       configure command. Else all Xapian application will crash with an
-       ``illegal instruction`` error.
+      If you are building Xapian for an older CPU (before Pentium 4 or
+      Athlon 64), you need to add the ``--disable-sse`` flag to the
+      configure command. Else all Xapian application will crash with an
+      ``illegal instruction`` error.
 
 -  Development files for `Qt 4 or Qt
    5 <http://qt-project.org/downloads>`__. RCL 1.15.9 was the last
@@ -4602,6 +4806,8 @@ The shopping list:
 
 Check the `RCL download page <http://www.recoll.org/download.html>`__
 for up to date version information.
+
+.. _RCL.INSTALL.BUILDING.BUILDING:
 
 Building
 ~~~~~~~~
@@ -4677,16 +4883,18 @@ Normal procedure (for source extracted from a tar distribution):
 
 ::
 
-              cd recoll-xxx
-              ./configure
-              make
-              (practices usual hardship-repelling invocations)
-            
+             cd recoll-xxx
+             ./configure
+             make
+             (practices usual hardship-repelling invocations)
+           
 
 When building from source cloned from the git repository, you also need
 to install autoconf, automake, and libtool and you must execute
 ``sh autogen.sh`` in the top source directory before running
 ``configure``.
+
+.. _RCL.INSTALL.BUILDING.INSTALL:
 
 Installing
 ~~~~~~~~~~
@@ -4694,6 +4902,8 @@ Installing
 Use ``make install`` in the root of the source tree. This will copy the
 commands to ``prefix/bin`` and the sample configuration files, scripts
 and other shared data to ``prefix/share/recoll``.
+
+.. _RCL.INSTALL.BUILDING.PYTHON:
 
 Python API package
 ~~~~~~~~~~~~~~~~~~
@@ -4714,10 +4924,12 @@ build and install the Python module:
 
 ::
 
-              cd recoll-xxx/python/recoll
-              pythonX setup.py build
-              sudo pythonX setup.py install
-            
+             cd recoll-xxx/python/recoll
+             pythonX setup.py build
+             sudo pythonX setup.py install
+           
+
+.. _RCL.INSTALL.BUILDING.SOLARIS:
 
 Building on Solaris
 ~~~~~~~~~~~~~~~~~~~
@@ -4729,6 +4941,8 @@ valid.
 
 Someone did test the 1.19 indexer and Python module build, they do work,
 with a few minor glitches. Be sure to use GNU ``make`` and ``install``.
+
+.. _RCL.INSTALL.CONFIG:
 
 Configuration overview
 ----------------------
@@ -4761,13 +4975,13 @@ The default location of the customized configuration is the ``.recoll``
 directory in your home. Most people will only use this directory.
 
 This location can be changed, or others can be added with the
-RECOLL\_CONFDIR environment variable or the ``-c`` option parameter to
+RECOLL_CONFDIR environment variable or the ``-c`` option parameter to
 ``recoll`` and ``recollindex``.
 
 In addition (as of RCL version 1.19.7), it is possible to specify two
 additional configuration directories which will be stacked before and
 after the user configuration directory. These are defined by the
-RECOLL\_CONFTOP and RECOLL\_CONFMID environment variables. Values from
+RECOLL_CONFTOP and RECOLL_CONFMID environment variables. Values from
 configuration files inside the top directory will override user ones,
 values from configuration files inside the middle directory will
 override system ones and be overriden by user ones. These two variables
@@ -4783,7 +4997,7 @@ configuration files. ``recoll`` will give you a chance to edit the
 configuration file before starting indexing. ``recollindex`` will
 proceed immediately. To avoid mistakes, the automatic directory creation
 will only occur for the default location, not if ``-c`` or
-RECOLL\_CONFDIR were used (in the latter cases, you will have to create
+RECOLL_CONFDIR were used (in the latter cases, you will have to create
 the directory).
 
 All configuration files share the same format. For example, a short
@@ -4791,12 +5005,12 @@ extract of the main configuration file might look as follows:
 
 ::
 
-            # Space-separated list of files and directories to index.
-            topdirs =  ~/docs /usr/share/doc
+           # Space-separated list of files and directories to index.
+           topdirs =  ~/docs /usr/share/doc
 
-            [~/somedirectory-with-utf8-txt-files]
-            defaultcharset = utf-8
-          
+           [~/somedirectory-with-utf8-txt-files]
+           defaultcharset = utf-8
+         
 
 There are three kinds of lines:
 
@@ -4817,11 +5031,11 @@ used for indexing are looked up hierarchically from the current
 directory location upwards. Not all parameters can be meaningfully
 redefined, this is specified for each in the next section.
 
-    **Important**
+   **Important**
 
-    Global parameters *must not* be defined in a directory subsection,
-    else they will not be found at all by the RCL code, which looks for
-    them at the top level (e.g. ``skippedPaths``).
+   Global parameters *must not* be defined in a directory subsection,
+   else they will not be found at all by the RCL code, which looks for
+   them at the top level (e.g. ``skippedPaths``).
 
 When found at the beginning of a file path, the tilde character (~) is
 expanded to the name of the user's home directory, as a shell would do.
@@ -4837,10 +5051,10 @@ backslash, even inside quoted strings.
 
 ::
 
-            astringlist =  "some string \
-            with spaces"
-            thesame = "some string with spaces"        
-          
+           astringlist =  "some string \
+           with spaces"
+           thesame = "some string with spaces"        
+         
 
 Parameters which are not part of string lists can't be quoted, and
 leading and trailing space characters are stripped before the value is
@@ -4856,7 +5070,7 @@ sets of values may cause encoding issues:
    Usually, this means that the configuration file should use the system
    default locale encoding.
 
--  The unac\_except\_trans parameter should be encoded in UTF-8. If your
+-  The unac_except_trans parameter should be encoded in UTF-8. If your
    system locale is not UTF-8, and you need to also specify non-ascii
    file paths, this poses a difficulty because common text editors
    cannot handle multiple encodings in a single file. In this relatively
@@ -4864,731 +5078,748 @@ sets of values may cause encoding issues:
    text files with appropriate encodings, and concatenate them to create
    the complete configuration.
 
+.. _RCL.INSTALL.CONFIG.ENVIR:
+
 Environment variables
 ~~~~~~~~~~~~~~~~~~~~~
 
 ``RECOLL_CONFDIR``
-    Defines the main configuration directory.
+   Defines the main configuration directory.
 
 ``RECOLL_TMPDIR, TMPDIR``
-    Locations for temporary files, in this order of priority. The
-    default if none of these is set is to use ``/tmp``. Big temporary
-    files may be created during indexing, mostly for decompressing, and
-    also for processing, e.g. email attachments.
+   Locations for temporary files, in this order of priority. The default
+   if none of these is set is to use ``/tmp``. Big temporary files may
+   be created during indexing, mostly for decompressing, and also for
+   processing, e.g. email attachments.
 
 ``RECOLL_CONFTOP, RECOLL_CONFMID``
-    Allow adding configuration directories with priorities below and
-    above the user directory (see above the Configuration overview
-    section for details).
+   Allow adding configuration directories with priorities below and
+   above the user directory (see above the Configuration overview
+   section for details).
 
 ``RECOLL_EXTRA_DBS, RECOLL_ACTIVE_EXTRA_DBS``
-    Help for setting up external indexes. See `this
-    paragraph <#RCL.SEARCH.GUI.MULTIDB>`__ for explanations.
+   Help for setting up external indexes. See `this
+   paragraph <#RCL.SEARCH.GUI.MULTIDB>`__ for explanations.
 
 ``RECOLL_DATADIR``
-    Defines replacement for the default location of Recoll data files,
-    normally found in, e.g., ``/usr/share/recoll``).
+   Defines replacement for the default location of Recoll data files,
+   normally found in, e.g., ``/usr/share/recoll``).
 
 ``RECOLL_FILTERSDIR``
-    Defines replacement for the default location of Recoll filters,
-    normally found in, e.g., ``/usr/share/recoll/filters``).
+   Defines replacement for the default location of Recoll filters,
+   normally found in, e.g., ``/usr/share/recoll/filters``).
 
 ``ASPELL_PROG``
-    ``aspell`` program to use for creating the spelling dictionary. The
-    result has to be compatible with the ``libaspell`` which RCL is
-    using.
+   ``aspell`` program to use for creating the spelling dictionary. The
+   result has to be compatible with the ``libaspell`` which RCL is
+   using.
 
 ``VARNAME``
-    Blabla
+   Blabla
+
+.. _RCL.INSTALL.CONFIG.RECOLLCONF:
 
 Recoll main configuration file, recoll.conf
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _RCL.INSTALL.CONFIG.RECOLLCONF.WHATDOCS:
 
 Parameters affecting what documents we index
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``topdirs``
-    Space-separated list of files or directories to recursively index.
-    Default to ~ (indexes $HOME). You can use symbolic links in the
-    list, they will be followed, independantly of the value of the
-    followLinks variable.
+   Space-separated list of files or directories to recursively index.
+   Default to ~ (indexes $HOME). You can use symbolic links in the list,
+   they will be followed, independantly of the value of the followLinks
+   variable.
 
 ``monitordirs``
-    Space-separated list of files or directories to monitor for updates.
-    When running the real-time indexer, this allows monitoring only a
-    subset of the whole indexed area. The elements must be included in
-    the tree defined by the 'topdirs' members.
+   Space-separated list of files or directories to monitor for updates.
+   When running the real-time indexer, this allows monitoring only a
+   subset of the whole indexed area. The elements must be included in
+   the tree defined by the 'topdirs' members.
 
 ``skippedNames``
-    Files and directories which should be ignored. White space separated
-    list of wildcard patterns (simple ones, not paths, must contain no /
-    ), which will be tested against file and directory names. The list
-    in the default configuration does not exclude hidden directories
-    (names beginning with a dot), which means that it may index quite a
-    few things that you do not want. On the other hand, email user
-    agents like Thunderbird usually store messages in hidden
-    directories, and you probably want this indexed. One possible
-    solution is to have ".\*" in "skippedNames", and add things like
-    "~/.thunderbird" "~/.evolution" to "topdirs". Not even the file
-    names are indexed for patterns in this list, see the
-    "noContentSuffixes" variable for an alternative approach which
-    indexes the file names. Can be redefined for any subtree.
+   Files and directories which should be ignored. White space separated
+   list of wildcard patterns (simple ones, not paths, must contain no /
+   ), which will be tested against file and directory names. The list in
+   the default configuration does not exclude hidden directories (names
+   beginning with a dot), which means that it may index quite a few
+   things that you do not want. On the other hand, email user agents
+   like Thunderbird usually store messages in hidden directories, and
+   you probably want this indexed. One possible solution is to have ".*"
+   in "skippedNames", and add things like "~/.thunderbird"
+   "~/.evolution" to "topdirs". Not even the file names are indexed for
+   patterns in this list, see the "noContentSuffixes" variable for an
+   alternative approach which indexes the file names. Can be redefined
+   for any subtree.
 
 ``skippedNames-``
-    List of name endings to remove from the default skippedNames list.
+   List of name endings to remove from the default skippedNames list.
 
 ``skippedNames+``
-    List of name endings to add to the default skippedNames list.
+   List of name endings to add to the default skippedNames list.
 
 ``noContentSuffixes``
-    List of name endings (not necessarily dot-separated suffixes) for
-    which we don't try MIME type identification, and don't uncompress or
-    index content. Only the names will be indexed. This complements the
-    now obsoleted recoll\_noindex list from the mimemap file, which will
-    go away in a future release (the move from mimemap to recoll.conf
-    allows editing the list through the GUI). This is different from
-    skippedNames because these are name ending matches only (not
-    wildcard patterns), and the file name itself gets indexed normally.
-    This can be redefined for subdirectories.
+   List of name endings (not necessarily dot-separated suffixes) for
+   which we don't try MIME type identification, and don't uncompress or
+   index content. Only the names will be indexed. This complements the
+   now obsoleted recoll_noindex list from the mimemap file, which will
+   go away in a future release (the move from mimemap to recoll.conf
+   allows editing the list through the GUI). This is different from
+   skippedNames because these are name ending matches only (not wildcard
+   patterns), and the file name itself gets indexed normally. This can
+   be redefined for subdirectories.
 
 ``noContentSuffixes-``
-    List of name endings to remove from the default noContentSuffixes
-    list.
+   List of name endings to remove from the default noContentSuffixes
+   list.
 
 ``noContentSuffixes+``
-    List of name endings to add to the default noContentSuffixes list.
+   List of name endings to add to the default noContentSuffixes list.
 
 ``skippedPaths``
-    Absolute paths we should not go into. Space-separated list of
-    wildcard expressions for absolute filesystem paths. Must be defined
-    at the top level of the configuration file, not in a subsection. Can
-    contain files and directories. The database and configuration
-    directories will automatically be added. The expressions are matched
-    using 'fnmatch(3)' with the FNM\_PATHNAME flag set by default. This
-    means that '/' characters must be matched explicitely. You can set
-    'skippedPathsFnmPathname' to 0 to disable the use of FNM\_PATHNAME
-    (meaning that '/\*/dir3' will match '/dir1/dir2/dir3'). The default
-    value contains the usual mount point for removable media to remind
-    you that it is a bad idea to have Recoll work on these (esp. with
-    the monitor: media gets indexed on mount, all data gets erased on
-    unmount). Explicitely adding '/media/xxx' to the 'topdirs' variable
-    will override this.
+   Absolute paths we should not go into. Space-separated list of
+   wildcard expressions for absolute filesystem paths. Must be defined
+   at the top level of the configuration file, not in a subsection. Can
+   contain files and directories. The database and configuration
+   directories will automatically be added. The expressions are matched
+   using 'fnmatch(3)' with the FNM_PATHNAME flag set by default. This
+   means that '/' characters must be matched explicitely. You can set
+   'skippedPathsFnmPathname' to 0 to disable the use of FNM_PATHNAME
+   (meaning that '/*/dir3' will match '/dir1/dir2/dir3'). The default
+   value contains the usual mount point for removable media to remind
+   you that it is a bad idea to have Recoll work on these (esp. with the
+   monitor: media gets indexed on mount, all data gets erased on
+   unmount). Explicitely adding '/media/xxx' to the 'topdirs' variable
+   will override this.
 
 ``skippedPathsFnmPathname``
-    Set to 0 to override use of FNM\_PATHNAME for matching skipped
-    paths.
+   Set to 0 to override use of FNM_PATHNAME for matching skipped paths.
 
 ``nowalkfn``
-    File name which will cause its parent directory to be skipped. Any
-    directory containing a file with this name will be skipped as if it
-    was part of the skippedPaths list. Ex: .recoll-noindex
+   File name which will cause its parent directory to be skipped. Any
+   directory containing a file with this name will be skipped as if it
+   was part of the skippedPaths list. Ex: .recoll-noindex
 
 ``daemSkippedPaths``
-    skippedPaths equivalent specific to real time indexing. This enables
-    having parts of the tree which are initially indexed but not
-    monitored. If daemSkippedPaths is not set, the daemon uses
-    skippedPaths.
+   skippedPaths equivalent specific to real time indexing. This enables
+   having parts of the tree which are initially indexed but not
+   monitored. If daemSkippedPaths is not set, the daemon uses
+   skippedPaths.
 
 ``zipUseSkippedNames``
-    Use skippedNames inside Zip archives. Fetched directly by the rclzip
-    handler. Skip the patterns defined by skippedNames inside Zip
-    archives. Can be redefined for subdirectories. See
-    https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
+   Use skippedNames inside Zip archives. Fetched directly by the rclzip
+   handler. Skip the patterns defined by skippedNames inside Zip
+   archives. Can be redefined for subdirectories. See
+   https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
 
 ``zipSkippedNames``
-    Space-separated list of wildcard expressions for names that should
-    be ignored inside zip archives. This is used directly by the zip
-    handler. If zipUseSkippedNames is not set, zipSkippedNames defines
-    the patterns to be skipped inside archives. If zipUseSkippedNames is
-    set, the two lists are concatenated and used. Can be redefined for
-    subdirectories. See
-    https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
+   Space-separated list of wildcard expressions for names that should be
+   ignored inside zip archives. This is used directly by the zip
+   handler. If zipUseSkippedNames is not set, zipSkippedNames defines
+   the patterns to be skipped inside archives. If zipUseSkippedNames is
+   set, the two lists are concatenated and used. Can be redefined for
+   subdirectories. See
+   https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
 
 ``followLinks``
-    Follow symbolic links during indexing. The default is to ignore
-    symbolic links to avoid multiple indexing of linked files. No effort
-    is made to avoid duplication when this option is set to true. This
-    option can be set individually for each of the 'topdirs' members by
-    using sections. It can not be changed below the 'topdirs' level.
-    Links in the 'topdirs' list itself are always followed.
+   Follow symbolic links during indexing. The default is to ignore
+   symbolic links to avoid multiple indexing of linked files. No effort
+   is made to avoid duplication when this option is set to true. This
+   option can be set individually for each of the 'topdirs' members by
+   using sections. It can not be changed below the 'topdirs' level.
+   Links in the 'topdirs' list itself are always followed.
 
 ``indexedmimetypes``
-    Restrictive list of indexed mime types. Normally not set (in which
-    case all supported types are indexed). If it is set, only the types
-    from the list will have their contents indexed. The names will be
-    indexed anyway if indexallfilenames is set (default). MIME type
-    names should be taken from the mimemap file (the values may be
-    different from xdg-mime or file -i output in some cases). Can be
-    redefined for subtrees.
+   Restrictive list of indexed mime types. Normally not set (in which
+   case all supported types are indexed). If it is set, only the types
+   from the list will have their contents indexed. The names will be
+   indexed anyway if indexallfilenames is set (default). MIME type names
+   should be taken from the mimemap file (the values may be different
+   from xdg-mime or file -i output in some cases). Can be redefined for
+   subtrees.
 
 ``excludedmimetypes``
-    List of excluded MIME types. Lets you exclude some types from
-    indexing. MIME type names should be taken from the mimemap file (the
-    values may be different from xdg-mime or file -i output in some
-    cases) Can be redefined for subtrees.
+   List of excluded MIME types. Lets you exclude some types from
+   indexing. MIME type names should be taken from the mimemap file (the
+   values may be different from xdg-mime or file -i output in some
+   cases) Can be redefined for subtrees.
 
 ``nomd5types``
-    Don't compute md5 for these types. md5 checksums are used only for
-    deduplicating results, and can be very expensive to compute on
-    multimedia or other big files. This list lets you turn off md5
-    computation for selected types. It is global (no redefinition for
-    subtrees). At the moment, it only has an effect for external
-    handlers (exec and execm). The file types can be specified by
-    listing either MIME types (e.g. audio/mpeg) or handler names (e.g.
-    rclaudio).
+   Don't compute md5 for these types. md5 checksums are used only for
+   deduplicating results, and can be very expensive to compute on
+   multimedia or other big files. This list lets you turn off md5
+   computation for selected types. It is global (no redefinition for
+   subtrees). At the moment, it only has an effect for external handlers
+   (exec and execm). The file types can be specified by listing either
+   MIME types (e.g. audio/mpeg) or handler names (e.g. rclaudio).
 
 ``compressedfilemaxkbs``
-    Size limit for compressed files. We need to decompress these in a
-    temporary directory for identification, which can be wasteful in
-    some cases. Limit the waste. Negative means no limit. 0 results in
-    no processing of any compressed file. Default 50 MB.
+   Size limit for compressed files. We need to decompress these in a
+   temporary directory for identification, which can be wasteful in some
+   cases. Limit the waste. Negative means no limit. 0 results in no
+   processing of any compressed file. Default 50 MB.
 
 ``textfilemaxmbs``
-    Size limit for text files. Mostly for skipping monster logs. Default
-    20 MB.
+   Size limit for text files. Mostly for skipping monster logs. Default
+   20 MB.
 
 ``indexallfilenames``
-    Index the file names of unprocessed files Index the names of files
-    the contents of which we don't index because of an excluded or
-    unsupported MIME type.
+   Index the file names of unprocessed files Index the names of files
+   the contents of which we don't index because of an excluded or
+   unsupported MIME type.
 
 ``usesystemfilecommand``
-    Use a system command for file MIME type guessing as a final step in
-    file type identification This is generally useful, but will usually
-    cause the indexing of many bogus 'text' files. See
-    'systemfilecommand' for the command used.
+   Use a system command for file MIME type guessing as a final step in
+   file type identification This is generally useful, but will usually
+   cause the indexing of many bogus 'text' files. See
+   'systemfilecommand' for the command used.
 
 ``systemfilecommand``
-    Command used to guess MIME types if the internal methods fails This
-    should be a "file -i" workalike. The file path will be added as a
-    last parameter to the command line. 'xdg-mime' works better than the
-    traditional 'file' command, and is now the configured default (with
-    a hard-coded fallback to 'file')
+   Command used to guess MIME types if the internal methods fails This
+   should be a "file -i" workalike. The file path will be added as a
+   last parameter to the command line. 'xdg-mime' works better than the
+   traditional 'file' command, and is now the configured default (with a
+   hard-coded fallback to 'file')
 
 ``processwebqueue``
-    Decide if we process the Web queue. The queue is a directory where
-    the Recoll Web browser plugins create the copies of visited pages.
+   Decide if we process the Web queue. The queue is a directory where
+   the Recoll Web browser plugins create the copies of visited pages.
 
 ``textfilepagekbs``
-    Page size for text files. If this is set, text/plain files will be
-    divided into documents of approximately this size. Will reduce
-    memory usage at index time and help with loading data in the preview
-    window at query time. Particularly useful with very big files, such
-    as application or system logs. Also see textfilemaxmbs and
-    compressedfilemaxkbs.
+   Page size for text files. If this is set, text/plain files will be
+   divided into documents of approximately this size. Will reduce memory
+   usage at index time and help with loading data in the preview window
+   at query time. Particularly useful with very big files, such as
+   application or system logs. Also see textfilemaxmbs and
+   compressedfilemaxkbs.
 
 ``membermaxkbs``
-    Size limit for archive members. This is passed to the filters in the
-    environment as RECOLL\_FILTER\_MAXMEMBERKB.
+   Size limit for archive members. This is passed to the filters in the
+   environment as RECOLL_FILTER_MAXMEMBERKB.
+
+.. _RCL.INSTALL.CONFIG.RECOLLCONF.TERMS:
 
 Parameters affecting how we generate terms and organize the index
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``indexStripChars``
-    Decide if we store character case and diacritics in the index. If we
-    do, searches sensitive to case and diacritics can be performed, but
-    the index will be bigger, and some marginal weirdness may sometimes
-    occur. The default is a stripped index. When using multiple indexes
-    for a search, this parameter must be defined identically for all.
-    Changing the value implies an index reset.
+   Decide if we store character case and diacritics in the index. If we
+   do, searches sensitive to case and diacritics can be performed, but
+   the index will be bigger, and some marginal weirdness may sometimes
+   occur. The default is a stripped index. When using multiple indexes
+   for a search, this parameter must be defined identically for all.
+   Changing the value implies an index reset.
 
 ``indexStoreDocText``
-    Decide if we store the documents' text content in the index. Storing
-    the text allows extracting snippets from it at query time, instead
-    of building them from index position data. Newer Xapian index
-    formats have rendered our use of positions list unacceptably slow in
-    some cases. The last Xapian index format with good performance for
-    the old method is Chert, which is default for 1.2, still supported
-    but not default in 1.4 and will be dropped in 1.6. The stored
-    document text is translated from its original format to UTF-8 plain
-    text, but not stripped of upper-case, diacritics, or punctuation
-    signs. Storing it increases the index size by 10-20% typically, but
-    also allows for nicer snippets, so it may be worth enabling it even
-    if not strictly needed for performance if you can afford the space.
-    The variable only has an effect when creating an index, meaning that
-    the xapiandb directory must not exist yet. Its exact effect depends
-    on the Xapian version. For Xapian 1.4, if the variable is set to 0,
-    the Chert format will be used, and the text will not be stored. If
-    the variable is 1, Glass will be used, and the text stored. For
-    Xapian 1.2, and for versions after 1.5 and newer, the index format
-    is always the default, but the variable controls if the text is
-    stored or not, and the abstract generation method. With Xapian 1.5
-    and later, and the variable set to 0, abstract generation may be
-    very slow, but this setting may still be useful to save space if you
-    do not use abstract generation at all.
+   Decide if we store the documents' text content in the index. Storing
+   the text allows extracting snippets from it at query time, instead of
+   building them from index position data. Newer Xapian index formats
+   have rendered our use of positions list unacceptably slow in some
+   cases. The last Xapian index format with good performance for the old
+   method is Chert, which is default for 1.2, still supported but not
+   default in 1.4 and will be dropped in 1.6. The stored document text
+   is translated from its original format to UTF-8 plain text, but not
+   stripped of upper-case, diacritics, or punctuation signs. Storing it
+   increases the index size by 10-20% typically, but also allows for
+   nicer snippets, so it may be worth enabling it even if not strictly
+   needed for performance if you can afford the space. The variable only
+   has an effect when creating an index, meaning that the xapiandb
+   directory must not exist yet. Its exact effect depends on the Xapian
+   version. For Xapian 1.4, if the variable is set to 0, the Chert
+   format will be used, and the text will not be stored. If the variable
+   is 1, Glass will be used, and the text stored. For Xapian 1.2, and
+   for versions after 1.5 and newer, the index format is always the
+   default, but the variable controls if the text is stored or not, and
+   the abstract generation method. With Xapian 1.5 and later, and the
+   variable set to 0, abstract generation may be very slow, but this
+   setting may still be useful to save space if you do not use abstract
+   generation at all.
 
 ``nonumbers``
-    Decides if terms will be generated for numbers. For example "123",
-    "1.5e6", 192.168.1.4, would not be indexed if nonumbers is set
-    ("value123" would still be). Numbers are often quite interesting to
-    search for, and this should probably not be set except for special
-    situations, ie, scientific documents with huge amounts of numbers in
-    them, where setting nonumbers will reduce the index size. This can
-    only be set for a whole index, not for a subtree.
+   Decides if terms will be generated for numbers. For example "123",
+   "1.5e6", 192.168.1.4, would not be indexed if nonumbers is set
+   ("value123" would still be). Numbers are often quite interesting to
+   search for, and this should probably not be set except for special
+   situations, ie, scientific documents with huge amounts of numbers in
+   them, where setting nonumbers will reduce the index size. This can
+   only be set for a whole index, not for a subtree.
 
 ``dehyphenate``
-    Determines if we index 'coworker' also when the input is
-    'co-worker'. This is new in version 1.22, and on by default. Setting
-    the variable to off allows restoring the previous behaviour.
+   Determines if we index 'coworker' also when the input is 'co-worker'.
+   This is new in version 1.22, and on by default. Setting the variable
+   to off allows restoring the previous behaviour.
 
 ``backslashasletter``
-    Process backslash as normal letter This may make sense for people
-    wanting to index TeX commands as such but is not of much general
-    use.
+   Process backslash as normal letter This may make sense for people
+   wanting to index TeX commands as such but is not of much general use.
 
 ``maxtermlength``
-    Maximum term length. Words longer than this will be discarded. The
-    default is 40 and used to be hard-coded, but it can now be adjusted.
-    You need an index reset if you change the value.
+   Maximum term length. Words longer than this will be discarded. The
+   default is 40 and used to be hard-coded, but it can now be adjusted.
+   You need an index reset if you change the value.
 
 ``nocjk``
-    Decides if specific East Asian (Chinese Korean Japanese)
-    characters/word splitting is turned off. This will save a small
-    amount of CPU if you have no CJK documents. If your document base
-    does include such text but you are not interested in searching it,
-    setting nocjk may be a significant time and space saver.
+   Decides if specific East Asian (Chinese Korean Japanese)
+   characters/word splitting is turned off. This will save a small
+   amount of CPU if you have no CJK documents. If your document base
+   does include such text but you are not interested in searching it,
+   setting nocjk may be a significant time and space saver.
 
 ``cjkngramlen``
-    This lets you adjust the size of n-grams used for indexing CJK text.
-    The default value of 2 is probably appropriate in most cases. A
-    value of 3 would allow more precision and efficiency on longer
-    words, but the index will be approximately twice as large.
+   This lets you adjust the size of n-grams used for indexing CJK text.
+   The default value of 2 is probably appropriate in most cases. A value
+   of 3 would allow more precision and efficiency on longer words, but
+   the index will be approximately twice as large.
 
 ``indexstemminglanguages``
-    Languages for which to create stemming expansion data. Stemmer names
-    can be found by executing 'recollindex -l', or this can also be set
-    from a list in the GUI.
+   Languages for which to create stemming expansion data. Stemmer names
+   can be found by executing 'recollindex -l', or this can also be set
+   from a list in the GUI.
 
 ``defaultcharset``
-    Default character set. This is used for files which do not contain a
-    character set definition (e.g.: text/plain). Values found inside
-    files, e.g. a 'charset' tag in HTML documents, will override it. If
-    this is not set, the default character set is the one defined by the
-    NLS environment ($LC\_ALL, $LC\_CTYPE, $LANG), or ultimately
-    iso-8859-1 (cp-1252 in fact). If for some reason you want a general
-    default which does not match your LANG and is not 8859-1, use this
-    variable. This can be redefined for any sub-directory.
+   Default character set. This is used for files which do not contain a
+   character set definition (e.g.: text/plain). Values found inside
+   files, e.g. a 'charset' tag in HTML documents, will override it. If
+   this is not set, the default character set is the one defined by the
+   NLS environment ($LC_ALL, $LC_CTYPE, $LANG), or ultimately iso-8859-1
+   (cp-1252 in fact). If for some reason you want a general default
+   which does not match your LANG and is not 8859-1, use this variable.
+   This can be redefined for any sub-directory.
 
 ``unac_except_trans``
-    A list of characters, encoded in UTF-8, which should be handled
-    specially when converting text to unaccented lowercase. For example,
-    in Swedish, the letter a with diaeresis has full alphabet
-    citizenship and should not be turned into an a. Each element in the
-    space-separated list has the special character as first element and
-    the translation following. The handling of both the lowercase and
-    upper-case versions of a character should be specified, as
-    appartenance to the list will turn-off both standard accent and case
-    processing. The value is global and affects both indexing and
-    querying. Examples: Swedish: unac\_except\_trans = ää Ää öö Öö üü Üü
-    ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl åå Åå . German: unac\_except\_trans
-    = ää Ää öö Öö üü Üü ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl In French, you
-    probably want to decompose oe and ae and nobody would type a German
-    ß unac\_except\_trans = ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl . The
-    default for all until someone protests follows. These decompositions
-    are not performed by unac, but it is unlikely that someone would
-    type the composed forms in a search. unac\_except\_trans = ßss œoe
-    Œoe æae Æae ﬀff ﬁfi ﬂfl
+   A list of characters, encoded in UTF-8, which should be handled
+   specially when converting text to unaccented lowercase. For example,
+   in Swedish, the letter a with diaeresis has full alphabet citizenship
+   and should not be turned into an a. Each element in the
+   space-separated list has the special character as first element and
+   the translation following. The handling of both the lowercase and
+   upper-case versions of a character should be specified, as
+   appartenance to the list will turn-off both standard accent and case
+   processing. The value is global and affects both indexing and
+   querying. Examples: Swedish: unac_except_trans = ää Ää öö Öö üü Üü
+   ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl åå Åå . German: unac_except_trans =
+   ää Ää öö Öö üü Üü ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl In French, you
+   probably want to decompose oe and ae and nobody would type a German ß
+   unac_except_trans = ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl . The default for
+   all until someone protests follows. These decompositions are not
+   performed by unac, but it is unlikely that someone would type the
+   composed forms in a search. unac_except_trans = ßss œoe Œoe æae Æae
+   ﬀff ﬁfi ﬂfl
 
 ``maildefcharset``
-    Overrides the default character set for email messages which don't
-    specify one. This is mainly useful for readpst (libpst) dumps, which
-    are utf-8 but do not say so.
+   Overrides the default character set for email messages which don't
+   specify one. This is mainly useful for readpst (libpst) dumps, which
+   are utf-8 but do not say so.
 
 ``localfields``
-    Set fields on all files (usually of a specific fs area). Syntax is
-    the usual: name = value ; attr1 = val1 ; [...] value is empty so
-    this needs an initial semi-colon. This is useful, e.g., for setting
-    the rclaptg field for application selection inside mimeview.
+   Set fields on all files (usually of a specific fs area). Syntax is
+   the usual: name = value ; attr1 = val1 ; [...] value is empty so this
+   needs an initial semi-colon. This is useful, e.g., for setting the
+   rclaptg field for application selection inside mimeview.
 
 ``testmodifusemtime``
-    Use mtime instead of ctime to test if a file has been modified. The
-    time is used in addition to the size, which is always used. Setting
-    this can reduce re-indexing on systems where extended attributes are
-    used (by some other application), but not indexed, because changing
-    extended attributes only affects ctime. Notes: - This may prevent
-    detection of change in some marginal file rename cases (the target
-    would need to have the same size and mtime). - You should probably
-    also set noxattrfields to 1 in this case, except if you still prefer
-    to perform xattr indexing, for example if the local file update
-    pattern makes it of value (as in general, there is a risk for pure
-    extended attributes updates without file modification to go
-    undetected). Perform a full index reset after changing this.
+   Use mtime instead of ctime to test if a file has been modified. The
+   time is used in addition to the size, which is always used. Setting
+   this can reduce re-indexing on systems where extended attributes are
+   used (by some other application), but not indexed, because changing
+   extended attributes only affects ctime. Notes: - This may prevent
+   detection of change in some marginal file rename cases (the target
+   would need to have the same size and mtime). - You should probably
+   also set noxattrfields to 1 in this case, except if you still prefer
+   to perform xattr indexing, for example if the local file update
+   pattern makes it of value (as in general, there is a risk for pure
+   extended attributes updates without file modification to go
+   undetected). Perform a full index reset after changing this.
 
 ``noxattrfields``
-    Disable extended attributes conversion to metadata fields. This
-    probably needs to be set if testmodifusemtime is set.
+   Disable extended attributes conversion to metadata fields. This
+   probably needs to be set if testmodifusemtime is set.
 
 ``metadatacmds``
-    Define commands to gather external metadata, e.g. tmsu tags. There
-    can be several entries, separated by semi-colons, each defining
-    which field name the data goes into and the command to use. Don't
-    forget the initial semi-colon. All the field names must be
-    different. You can use aliases in the "field" file if necessary. As
-    a not too pretty hack conceded to convenience, any field name
-    beginning with "rclmulti" will be taken as an indication that the
-    command returns multiple field values inside a text blob formatted
-    as a recoll configuration file ("fieldname = fieldvalue" lines). The
-    rclmultixx name will be ignored, and field names and values will be
-    parsed from the data. Example: metadatacmds = ; tags = tmsu tags %f;
-    rclmulti1 = cmdOutputsConf %f
+   Define commands to gather external metadata, e.g. tmsu tags. There
+   can be several entries, separated by semi-colons, each defining which
+   field name the data goes into and the command to use. Don't forget
+   the initial semi-colon. All the field names must be different. You
+   can use aliases in the "field" file if necessary. As a not too pretty
+   hack conceded to convenience, any field name beginning with
+   "rclmulti" will be taken as an indication that the command returns
+   multiple field values inside a text blob formatted as a recoll
+   configuration file ("fieldname = fieldvalue" lines). The rclmultixx
+   name will be ignored, and field names and values will be parsed from
+   the data. Example: metadatacmds = ; tags = tmsu tags %f; rclmulti1 =
+   cmdOutputsConf %f
+
+.. _RCL.INSTALL.CONFIG.RECOLLCONF.STORE:
 
 Parameters affecting where and how we store things
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``cachedir``
-    Top directory for Recoll data. Recoll data directories are normally
-    located relative to the configuration directory (e.g.
-    ~/.recoll/xapiandb, ~/.recoll/mboxcache). If 'cachedir' is set, the
-    directories are stored under the specified value instead (e.g. if
-    cachedir is ~/.cache/recoll, the default dbdir would be
-    ~/.cache/recoll/xapiandb). This affects dbdir, webcachedir,
-    mboxcachedir, aspellDicDir, which can still be individually
-    specified to override cachedir. Note that if you have multiple
-    configurations, each must have a different cachedir, there is no
-    automatic computation of a subpath under cachedir.
+   Top directory for Recoll data. Recoll data directories are normally
+   located relative to the configuration directory (e.g.
+   ~/.recoll/xapiandb, ~/.recoll/mboxcache). If 'cachedir' is set, the
+   directories are stored under the specified value instead (e.g. if
+   cachedir is ~/.cache/recoll, the default dbdir would be
+   ~/.cache/recoll/xapiandb). This affects dbdir, webcachedir,
+   mboxcachedir, aspellDicDir, which can still be individually specified
+   to override cachedir. Note that if you have multiple configurations,
+   each must have a different cachedir, there is no automatic
+   computation of a subpath under cachedir.
 
 ``maxfsoccuppc``
-    Maximum file system occupation over which we stop indexing. The
-    value is a percentage, corresponding to what the "Capacity" df
-    output column shows. The default value is 0, meaning no checking.
+   Maximum file system occupation over which we stop indexing. The value
+   is a percentage, corresponding to what the "Capacity" df output
+   column shows. The default value is 0, meaning no checking.
 
 ``dbdir``
-    Xapian database directory location. This will be created on first
-    indexing. If the value is not an absolute path, it will be
-    interpreted as relative to cachedir if set, or the configuration
-    directory (-c argument or $RECOLL\_CONFDIR). If nothing is
-    specified, the default is then ~/.recoll/xapiandb/
+   Xapian database directory location. This will be created on first
+   indexing. If the value is not an absolute path, it will be
+   interpreted as relative to cachedir if set, or the configuration
+   directory (-c argument or $RECOLL_CONFDIR). If nothing is specified,
+   the default is then ~/.recoll/xapiandb/
 
 ``idxstatusfile``
-    Name of the scratch file where the indexer process updates its
-    status. Default: idxstatus.txt inside the configuration directory.
+   Name of the scratch file where the indexer process updates its
+   status. Default: idxstatus.txt inside the configuration directory.
 
 ``mboxcachedir``
-    Directory location for storing mbox message offsets cache files.
-    This is normally 'mboxcache' under cachedir if set, or else under
-    the configuration directory, but it may be useful to share a
-    directory between different configurations.
+   Directory location for storing mbox message offsets cache files. This
+   is normally 'mboxcache' under cachedir if set, or else under the
+   configuration directory, but it may be useful to share a directory
+   between different configurations.
 
 ``mboxcacheminmbs``
-    Minimum mbox file size over which we cache the offsets. There is
-    really no sense in caching offsets for small files. The default is 5
-    MB.
+   Minimum mbox file size over which we cache the offsets. There is
+   really no sense in caching offsets for small files. The default is 5
+   MB.
 
 ``webcachedir``
-    Directory where we store the archived web pages. This is only used
-    by the web history indexing code Default: cachedir/webcache if
-    cachedir is set, else $RECOLL\_CONFDIR/webcache
+   Directory where we store the archived web pages. This is only used by
+   the web history indexing code Default: cachedir/webcache if cachedir
+   is set, else $RECOLL_CONFDIR/webcache
 
 ``webcachemaxmbs``
-    Maximum size in MB of the Web archive. This is only used by the web
-    history indexing code. Default: 40 MB. Reducing the size will not
-    physically truncate the file.
+   Maximum size in MB of the Web archive. This is only used by the web
+   history indexing code. Default: 40 MB. Reducing the size will not
+   physically truncate the file.
 
 ``webqueuedir``
-    The path to the Web indexing queue. This used to be hard-coded in
-    the old plugin as ~/.recollweb/ToIndex so there would be no need or
-    possibility to change it, but the WebExtensions plugin now downloads
-    the files to the user Downloads directory, and a script moves them
-    to webqueuedir. The script reads this value from the config so it
-    has become possible to change it.
+   The path to the Web indexing queue. This used to be hard-coded in the
+   old plugin as ~/.recollweb/ToIndex so there would be no need or
+   possibility to change it, but the WebExtensions plugin now downloads
+   the files to the user Downloads directory, and a script moves them to
+   webqueuedir. The script reads this value from the config so it has
+   become possible to change it.
 
 ``webdownloadsdir``
-    The path to browser downloads directory. This is where the new
-    browser add-on extension has to create the files. They are then
-    moved by a script to webqueuedir.
+   The path to browser downloads directory. This is where the new
+   browser add-on extension has to create the files. They are then moved
+   by a script to webqueuedir.
 
 ``aspellDicDir``
-    Aspell dictionary storage directory location. The aspell dictionary
-    (aspdict.(lang).rws) is normally stored in the directory specified
-    by cachedir if set, or under the configuration directory.
+   Aspell dictionary storage directory location. The aspell dictionary
+   (aspdict.(lang).rws) is normally stored in the directory specified by
+   cachedir if set, or under the configuration directory.
 
 ``filtersdir``
-    Directory location for executable input handlers. If
-    RECOLL\_FILTERSDIR is set in the environment, we use it instead.
-    Defaults to $prefix/share/recoll/filters. Can be redefined for
-    subdirectories.
+   Directory location for executable input handlers. If
+   RECOLL_FILTERSDIR is set in the environment, we use it instead.
+   Defaults to $prefix/share/recoll/filters. Can be redefined for
+   subdirectories.
 
 ``iconsdir``
-    Directory location for icons. The only reason to change this would
-    be if you want to change the icons displayed in the result list.
-    Defaults to $prefix/share/recoll/images
+   Directory location for icons. The only reason to change this would be
+   if you want to change the icons displayed in the result list.
+   Defaults to $prefix/share/recoll/images
+
+.. _RCL.INSTALL.CONFIG.RECOLLCONF.PERFS:
 
 Parameters affecting indexing performance and resource usage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``idxflushmb``
-    Threshold (megabytes of new data) where we flush from memory to disk
-    index. Setting this allows some control over memory usage by the
-    indexer process. A value of 0 means no explicit flushing, which lets
-    Xapian perform its own thing, meaning flushing every
-    $XAPIAN\_FLUSH\_THRESHOLD documents created, modified or deleted: as
-    memory usage depends on average document size, not only document
-    count, the Xapian approach is is not very useful, and you should let
-    Recoll manage the flushes. The program compiled value is 0. The
-    configured default value (from this file) is now 50 MB, and should
-    be ok in many cases. You can set it as low as 10 to conserve memory,
-    but if you are looking for maximum speed, you may want to experiment
-    with values between 20 and 200. In my experience, values beyond this
-    are always counterproductive. If you find otherwise, please drop me
-    a note.
+   Threshold (megabytes of new data) where we flush from memory to disk
+   index. Setting this allows some control over memory usage by the
+   indexer process. A value of 0 means no explicit flushing, which lets
+   Xapian perform its own thing, meaning flushing every
+   $XAPIAN_FLUSH_THRESHOLD documents created, modified or deleted: as
+   memory usage depends on average document size, not only document
+   count, the Xapian approach is is not very useful, and you should let
+   Recoll manage the flushes. The program compiled value is 0. The
+   configured default value (from this file) is now 50 MB, and should be
+   ok in many cases. You can set it as low as 10 to conserve memory, but
+   if you are looking for maximum speed, you may want to experiment with
+   values between 20 and 200. In my experience, values beyond this are
+   always counterproductive. If you find otherwise, please drop me a
+   note.
 
 ``filtermaxseconds``
-    Maximum external filter execution time in seconds. Default 1200
-    (20mn). Set to 0 for no limit. This is mainly to avoid infinite
-    loops in postscript files (loop.ps)
+   Maximum external filter execution time in seconds. Default 1200
+   (20mn). Set to 0 for no limit. This is mainly to avoid infinite loops
+   in postscript files (loop.ps)
 
 ``filtermaxmbytes``
-    Maximum virtual memory space for filter processes
-    (setrlimit(RLIMIT\_AS)), in megabytes. Note that this includes any
-    mapped libs (there is no reliable Linux way to limit the data space
-    only), so we need to be a bit generous here. Anything over 2000 will
-    be ignored on 32 bits machines.
+   Maximum virtual memory space for filter processes
+   (setrlimit(RLIMIT_AS)), in megabytes. Note that this includes any
+   mapped libs (there is no reliable Linux way to limit the data space
+   only), so we need to be a bit generous here. Anything over 2000 will
+   be ignored on 32 bits machines.
 
 ``thrQSizes``
-    Stage input queues configuration. There are three internal queues in
-    the indexing pipeline stages (file data extraction, terms
-    generation, index update). This parameter defines the queue depths
-    for each stage (three integer values). If a value of -1 is given for
-    a given stage, no queue is used, and the thread will go on
-    performing the next stage. In practise, deep queues have not been
-    shown to increase performance. Default: a value of 0 for the first
-    queue tells Recoll to perform autoconfiguration based on the
-    detected number of CPUs (no need for the two other values in this
-    case). Use thrQSizes = -1 -1 -1 to disable multithreading entirely.
+   Stage input queues configuration. There are three internal queues in
+   the indexing pipeline stages (file data extraction, terms generation,
+   index update). This parameter defines the queue depths for each stage
+   (three integer values). If a value of -1 is given for a given stage,
+   no queue is used, and the thread will go on performing the next
+   stage. In practise, deep queues have not been shown to increase
+   performance. Default: a value of 0 for the first queue tells Recoll
+   to perform autoconfiguration based on the detected number of CPUs (no
+   need for the two other values in this case). Use thrQSizes = -1 -1 -1
+   to disable multithreading entirely.
 
 ``thrTCounts``
-    Number of threads used for each indexing stage. The three stages
-    are: file data extraction, terms generation, index update). The use
-    of the counts is also controlled by some special values in
-    thrQSizes: if the first queue depth is 0, all counts are ignored
-    (autoconfigured); if a value of -1 is used for a queue depth, the
-    corresponding thread count is ignored. It makes no sense to use a
-    value other than 1 for the last stage because updating the Xapian
-    index is necessarily single-threaded (and protected by a mutex).
+   Number of threads used for each indexing stage. The three stages are:
+   file data extraction, terms generation, index update). The use of the
+   counts is also controlled by some special values in thrQSizes: if the
+   first queue depth is 0, all counts are ignored (autoconfigured); if a
+   value of -1 is used for a queue depth, the corresponding thread count
+   is ignored. It makes no sense to use a value other than 1 for the
+   last stage because updating the Xapian index is necessarily
+   single-threaded (and protected by a mutex).
+
+.. _RCL.INSTALL.CONFIG.RECOLLCONF.MISC:
 
 Miscellaneous parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``loglevel``
-    Log file verbosity 1-6. A value of 2 will print only errors and
-    warnings. 3 will print information like document updates, 4 is quite
-    verbose and 6 very verbose.
+   Log file verbosity 1-6. A value of 2 will print only errors and
+   warnings. 3 will print information like document updates, 4 is quite
+   verbose and 6 very verbose.
 
 ``logfilename``
-    Log file destination. Use 'stderr' (default) to write to the
-    console.
+   Log file destination. Use 'stderr' (default) to write to the console.
 
 ``idxloglevel``
-    Override loglevel for the indexer.
+   Override loglevel for the indexer.
 
 ``idxlogfilename``
-    Override logfilename for the indexer.
+   Override logfilename for the indexer.
 
 ``daemloglevel``
-    Override loglevel for the indexer in real time mode. The default is
-    to use the idx... values if set, else the log... values.
+   Override loglevel for the indexer in real time mode. The default is
+   to use the idx... values if set, else the log... values.
 
 ``daemlogfilename``
-    Override logfilename for the indexer in real time mode. The default
-    is to use the idx... values if set, else the log... values.
+   Override logfilename for the indexer in real time mode. The default
+   is to use the idx... values if set, else the log... values.
 
 ``orgidxconfdir``
-    Original location of the configuration directory. This is used
-    exclusively for movable datasets. Locating the configuration
-    directory inside the directory tree makes it possible to provide
-    automatic query time path translations once the data set has moved
-    (for example, because it has been mounted on another location).
+   Original location of the configuration directory. This is used
+   exclusively for movable datasets. Locating the configuration
+   directory inside the directory tree makes it possible to provide
+   automatic query time path translations once the data set has moved
+   (for example, because it has been mounted on another location).
 
 ``curidxconfdir``
-    Current location of the configuration directory. Complement
-    orgidxconfdir for movable datasets. This should be used if the
-    configuration directory has been copied from the dataset to another
-    location, either because the dataset is readonly and an r/w copy is
-    desired, or for performance reasons. This records the original moved
-    location before copy, to allow path translation computations. For
-    example if a dataset originally indexed as '/home/me/mydata/config'
-    has been mounted to '/media/me/mydata', and the GUI is running from
-    a copied configuration, orgidxconfdir would be
-    '/home/me/mydata/config', and curidxconfdir (as set in the copied
-    configuration) would be '/media/me/mydata/config'.
+   Current location of the configuration directory. Complement
+   orgidxconfdir for movable datasets. This should be used if the
+   configuration directory has been copied from the dataset to another
+   location, either because the dataset is readonly and an r/w copy is
+   desired, or for performance reasons. This records the original moved
+   location before copy, to allow path translation computations. For
+   example if a dataset originally indexed as '/home/me/mydata/config'
+   has been mounted to '/media/me/mydata', and the GUI is running from a
+   copied configuration, orgidxconfdir would be
+   '/home/me/mydata/config', and curidxconfdir (as set in the copied
+   configuration) would be '/media/me/mydata/config'.
 
 ``idxrundir``
-    Indexing process current directory. The input handlers sometimes
-    leave temporary files in the current directory, so it makes sense to
-    have recollindex chdir to some temporary directory. If the value is
-    empty, the current directory is not changed. If the value is
-    (literal) tmp, we use the temporary directory as set by the
-    environment (RECOLL\_TMPDIR else TMPDIR else /tmp). If the value is
-    an absolute path to a directory, we go there.
+   Indexing process current directory. The input handlers sometimes
+   leave temporary files in the current directory, so it makes sense to
+   have recollindex chdir to some temporary directory. If the value is
+   empty, the current directory is not changed. If the value is
+   (literal) tmp, we use the temporary directory as set by the
+   environment (RECOLL_TMPDIR else TMPDIR else /tmp). If the value is an
+   absolute path to a directory, we go there.
 
 ``checkneedretryindexscript``
-    Script used to heuristically check if we need to retry indexing
-    files which previously failed. The default script checks the
-    modified dates on /usr/bin and /usr/local/bin. A relative path will
-    be looked up in the filters dirs, then in the path. Use an absolute
-    path to do otherwise.
+   Script used to heuristically check if we need to retry indexing files
+   which previously failed. The default script checks the modified dates
+   on /usr/bin and /usr/local/bin. A relative path will be looked up in
+   the filters dirs, then in the path. Use an absolute path to do
+   otherwise.
 
 ``recollhelperpath``
-    Additional places to search for helper executables. This is only
-    used on Windows for now.
+   Additional places to search for helper executables. This is only used
+   on Windows for now.
 
 ``idxabsmlen``
-    Length of abstracts we store while indexing. Recoll stores an
-    abstract for each indexed file. The text can come from an actual
-    'abstract' section in the document or will just be the beginning of
-    the document. It is stored in the index so that it can be displayed
-    inside the result lists without decoding the original file. The
-    idxabsmlen parameter defines the size of the stored abstract. The
-    default value is 250 bytes. The search interface gives you the
-    choice to display this stored text or a synthetic abstract built by
-    extracting text around the search terms. If you always prefer the
-    synthetic abstract, you can reduce this value and save a little
-    space.
+   Length of abstracts we store while indexing. Recoll stores an
+   abstract for each indexed file. The text can come from an actual
+   'abstract' section in the document or will just be the beginning of
+   the document. It is stored in the index so that it can be displayed
+   inside the result lists without decoding the original file. The
+   idxabsmlen parameter defines the size of the stored abstract. The
+   default value is 250 bytes. The search interface gives you the choice
+   to display this stored text or a synthetic abstract built by
+   extracting text around the search terms. If you always prefer the
+   synthetic abstract, you can reduce this value and save a little
+   space.
 
 ``idxmetastoredlen``
-    Truncation length of stored metadata fields. This does not affect
-    indexing (the whole field is processed anyway), just the amount of
-    data stored in the index for the purpose of displaying fields inside
-    result lists or previews. The default value is 150 bytes which may
-    be too low if you have custom fields.
+   Truncation length of stored metadata fields. This does not affect
+   indexing (the whole field is processed anyway), just the amount of
+   data stored in the index for the purpose of displaying fields inside
+   result lists or previews. The default value is 150 bytes which may be
+   too low if you have custom fields.
 
 ``idxtexttruncatelen``
-    Truncation length for all document texts. Only index the beginning
-    of documents. This is not recommended except if you are sure that
-    the interesting keywords are at the top and have severe disk space
-    issues.
+   Truncation length for all document texts. Only index the beginning of
+   documents. This is not recommended except if you are sure that the
+   interesting keywords are at the top and have severe disk space
+   issues.
 
 ``aspellLanguage``
-    Language definitions to use when creating the aspell dictionary. The
-    value must match a set of aspell language definition files. You can
-    type "aspell dicts" to see a list The default if this is not set is
-    to use the NLS environment to guess the value.
+   Language definitions to use when creating the aspell dictionary. The
+   value must match a set of aspell language definition files. You can
+   type "aspell dicts" to see a list The default if this is not set is
+   to use the NLS environment to guess the value.
 
 ``aspellAddCreateParam``
-    Additional option and parameter to aspell dictionary creation
-    command. Some aspell packages may need an additional option (e.g. on
-    Debian Jessie: --local-data-dir=/usr/lib/aspell). See Debian bug
-    772415.
+   Additional option and parameter to aspell dictionary creation
+   command. Some aspell packages may need an additional option (e.g. on
+   Debian Jessie: --local-data-dir=/usr/lib/aspell). See Debian bug
+   772415.
 
 ``aspellKeepStderr``
-    Set this to have a look at aspell dictionary creation errors. There
-    are always many, so this is mostly for debugging.
+   Set this to have a look at aspell dictionary creation errors. There
+   are always many, so this is mostly for debugging.
 
 ``noaspell``
-    Disable aspell use. The aspell dictionary generation takes time, and
-    some combinations of aspell version, language, and local terms,
-    result in aspell crashing, so it sometimes makes sense to just
-    disable the thing.
+   Disable aspell use. The aspell dictionary generation takes time, and
+   some combinations of aspell version, language, and local terms,
+   result in aspell crashing, so it sometimes makes sense to just
+   disable the thing.
 
 ``monauxinterval``
-    Auxiliary database update interval. The real time indexer only
-    updates the auxiliary databases (stemdb, aspell) periodically,
-    because it would be too costly to do it for every document change.
-    The default period is one hour.
+   Auxiliary database update interval. The real time indexer only
+   updates the auxiliary databases (stemdb, aspell) periodically,
+   because it would be too costly to do it for every document change.
+   The default period is one hour.
 
 ``monixinterval``
-    Minimum interval (seconds) between processings of the indexing
-    queue. The real time indexer does not process each event when it
-    comes in, but lets the queue accumulate, to diminish overhead and to
-    aggregate multiple events affecting the same file. Default 30 S.
+   Minimum interval (seconds) between processings of the indexing queue.
+   The real time indexer does not process each event when it comes in,
+   but lets the queue accumulate, to diminish overhead and to aggregate
+   multiple events affecting the same file. Default 30 S.
 
 ``mondelaypatterns``
-    Timing parameters for the real time indexing. Definitions for files
-    which get a longer delay before reindexing is allowed. This is for
-    fast-changing files, that should only be reindexed once in a while.
-    A list of wildcardPattern:seconds pairs. The patterns are matched
-    with fnmatch(pattern, path, 0) You can quote entries containing
-    white space with double quotes (quote the whole entry, not the
-    pattern). The default is empty. Example: mondelaypatterns =
-    \*.log:20 "\*with spaces.\*:30"
+   Timing parameters for the real time indexing. Definitions for files
+   which get a longer delay before reindexing is allowed. This is for
+   fast-changing files, that should only be reindexed once in a while. A
+   list of wildcardPattern:seconds pairs. The patterns are matched with
+   fnmatch(pattern, path, 0) You can quote entries containing white
+   space with double quotes (quote the whole entry, not the pattern).
+   The default is empty. Example: mondelaypatterns = \*.log:20 "*with
+   spaces.*:30"
 
 ``monioniceclass``
-    ionice class for the real time indexing process On platforms where
-    this is supported. The default value is 3.
+   ionice class for the real time indexing process On platforms where
+   this is supported. The default value is 3.
 
 ``monioniceclassdata``
-    ionice class parameter for the real time indexing process. On
-    platforms where this is supported. The default is empty.
+   ionice class parameter for the real time indexing process. On
+   platforms where this is supported. The default is empty.
+
+.. _RCL.INSTALL.CONFIG.RECOLLCONF.QUERY:
 
 Query-time parameters (no impact on the index)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``autodiacsens``
-    auto-trigger diacritics sensitivity (raw index only). IF the index
-    is not stripped, decide if we automatically trigger diacritics
-    sensitivity if the search term has accented characters (not in
-    unac\_except\_trans). Else you need to use the query language and
-    the "D" modifier to specify diacritics sensitivity. Default is no.
+   auto-trigger diacritics sensitivity (raw index only). IF the index is
+   not stripped, decide if we automatically trigger diacritics
+   sensitivity if the search term has accented characters (not in
+   unac_except_trans). Else you need to use the query language and the
+   "D" modifier to specify diacritics sensitivity. Default is no.
 
 ``autocasesens``
-    auto-trigger case sensitivity (raw index only). IF the index is not
-    stripped (see indexStripChars), decide if we automatically trigger
-    character case sensitivity if the search term has upper-case
-    characters in any but the first position. Else you need to use the
-    query language and the "C" modifier to specify character-case
-    sensitivity. Default is yes.
+   auto-trigger case sensitivity (raw index only). IF the index is not
+   stripped (see indexStripChars), decide if we automatically trigger
+   character case sensitivity if the search term has upper-case
+   characters in any but the first position. Else you need to use the
+   query language and the "C" modifier to specify character-case
+   sensitivity. Default is yes.
 
 ``maxTermExpand``
-    Maximum query expansion count for a single term (e.g.: when using
-    wildcards). This only affects queries, not indexing. We used to not
-    limit this at all (except for filenames where the limit was too low
-    at 1000), but it is unreasonable with a big index. Default 10000.
+   Maximum query expansion count for a single term (e.g.: when using
+   wildcards). This only affects queries, not indexing. We used to not
+   limit this at all (except for filenames where the limit was too low
+   at 1000), but it is unreasonable with a big index. Default 10000.
 
 ``maxXapianClauses``
-    Maximum number of clauses we add to a single Xapian query. This only
-    affects queries, not indexing. In some cases, the result of term
-    expansion can be multiplicative, and we want to avoid eating all the
-    memory. Default 50000.
+   Maximum number of clauses we add to a single Xapian query. This only
+   affects queries, not indexing. In some cases, the result of term
+   expansion can be multiplicative, and we want to avoid eating all the
+   memory. Default 50000.
 
 ``snippetMaxPosWalk``
-    Maximum number of positions we walk while populating a snippet for
-    the result list. The default of 1,000,000 may be insufficient for
-    very big documents, the consequence would be snippets with possibly
-    meaning-altering missing words.
+   Maximum number of positions we walk while populating a snippet for
+   the result list. The default of 1,000,000 may be insufficient for
+   very big documents, the consequence would be snippets with possibly
+   meaning-altering missing words.
+
+.. _RCL.INSTALL.CONFIG.RECOLLCONF.PDF:
 
 Parameters for the PDF input script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``pdfocr``
-    Attempt OCR of PDF files with no text content if both tesseract and
-    pdftoppm are installed. The default is off because OCR is so very
-    slow.
+   Attempt OCR of PDF files with no text content if both tesseract and
+   pdftoppm are installed. The default is off because OCR is so very
+   slow.
 
 ``pdfocrlang``
-    Language to assume for PDF OCR. This is very important for having a
-    reasonable rate of errors with tesseract. This can also be set
-    through a configuration variable or directory-local parameters. See
-    the rclpdf.py script.
+   Language to assume for PDF OCR. This is very important for having a
+   reasonable rate of errors with tesseract. This can also be set
+   through a configuration variable or directory-local parameters. See
+   the rclpdf.py script.
 
 ``pdfattach``
-    Enable PDF attachment extraction by executing pdftk (if available).
-    This is normally disabled, because it does slow down PDF indexing a
-    bit even if not one attachment is ever found.
+   Enable PDF attachment extraction by executing pdftk (if available).
+   This is normally disabled, because it does slow down PDF indexing a
+   bit even if not one attachment is ever found.
 
 ``pdfextrameta``
-    Extract text from selected XMP metadata tags. This is a
-    space-separated list of qualified XMP tag names. Each element can
-    also include a translation to a Recoll field name, separated by a
-    '\|' character. If the second element is absent, the tag name is
-    used as the Recoll field names. You will also need to add
-    specifications to the 'fields' file to direct processing of the
-    extracted data.
+   Extract text from selected XMP metadata tags. This is a
+   space-separated list of qualified XMP tag names. Each element can
+   also include a translation to a Recoll field name, separated by a '|'
+   character. If the second element is absent, the tag name is used as
+   the Recoll field names. You will also need to add specifications to
+   the 'fields' file to direct processing of the extracted data.
 
 ``pdfextrametafix``
-    Define name of XMP field editing script. This defines the name of a
-    script to be loaded for editing XMP field values. The script should
-    define a 'MetaFixer' class with a metafix() method which will be
-    called with the qualified tag name and value of each selected field,
-    for editing or erasing. A new instance is created for each document,
-    so that the object can keep state for, e.g. eliminating duplicate
-    values.
+   Define name of XMP field editing script. This defines the name of a
+   script to be loaded for editing XMP field values. The script should
+   define a 'MetaFixer' class with a metafix() method which will be
+   called with the qualified tag name and value of each selected field,
+   for editing or erasing. A new instance is created for each document,
+   so that the object can keep state for, e.g. eliminating duplicate
+   values.
+
+.. _RCL.INSTALL.CONFIG.RECOLLCONF.SPECLOCATIONS:
 
 Parameters set for specific locations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``mhmboxquirks``
-    Enable thunderbird/mozilla-seamonkey mbox format quirks Set this for
-    the directory where the email mbox files are stored.
+   Enable thunderbird/mozilla-seamonkey mbox format quirks Set this for
+   the directory where the email mbox files are stored.
+
+.. _RCL.INSTALL.CONFIG.FIELDS:
 
 The fields file
 ~~~~~~~~~~~~~~~
@@ -5609,39 +5840,39 @@ comments inside the default file for more detailed information.
 Field names should be lowercase alphabetic ASCII.
 
 [prefixes]
-    A field becomes indexed (searchable) by having a prefix defined in
-    this section. There is a more complete explanation of what prefixes
-    are in used by a standard recoll installation. In a nutshell:
-    extension prefixes should be all caps, begin with XY, and short.
-    E.g. XYMFLD.
+   A field becomes indexed (searchable) by having a prefix defined in
+   this section. There is a more complete explanation of what prefixes
+   are in used by a standard recoll installation. In a nutshell:
+   extension prefixes should be all caps, begin with XY, and short. E.g.
+   XYMFLD.
 
 [values]
-    Fields listed in this section will be stored as XAP ``values``
-    inside the index. This makes them available for range queries,
-    allowing to filter results according to the field value. This
-    feature currently supports string and integer data. See the comments
-    in the file for more detail
+   Fields listed in this section will be stored as XAP ``values`` inside
+   the index. This makes them available for range queries, allowing to
+   filter results according to the field value. This feature currently
+   supports string and integer data. See the comments in the file for
+   more detail
 
 [stored]
-    A field becomes stored (displayable inside results) by having its
-    name listed in this section (typically with an empty value).
+   A field becomes stored (displayable inside results) by having its
+   name listed in this section (typically with an empty value).
 
 [aliases]
-    This section defines lists of synonyms for the canonical names used
-    inside the ``[prefixes]`` and ``[stored]`` sections
+   This section defines lists of synonyms for the canonical names used
+   inside the ``[prefixes]`` and ``[stored]`` sections
 
 [queryaliases]
-    This section also defines aliases for the canonic field names, with
-    the difference that the substitution will only be used at query
-    time, avoiding any possibility that the value would pick-up random
-    metadata from documents.
+   This section also defines aliases for the canonic field names, with
+   the difference that the substitution will only be used at query time,
+   avoiding any possibility that the value would pick-up random metadata
+   from documents.
 
 handler-specific sections
-    Some input handlers may need specific configuration for handling
-    fields. Only the email message handler currently has such a section
-    (named ``[mail]``). It allows indexing arbitrary email headers in
-    addition to the ones indexed by default. Other such sections may
-    appear in the future.
+   Some input handlers may need specific configuration for handling
+   fields. Only the email message handler currently has such a section
+   (named ``[mail]``). It allows indexing arbitrary email headers in
+   addition to the ones indexed by default. Other such sections may
+   appear in the future.
 
 Here follows a small example of a personal ``fields`` file. This would
 extract a specific email header and use it as a searchable field, with
@@ -5652,24 +5883,26 @@ several times).
 
 ::
 
-    [prefixes]
-            # Index mailmytag contents (with the given prefix)
-            mailmytag = XMTAG
+   [prefixes]
+           # Index mailmytag contents (with the given prefix)
+           mailmytag = XMTAG
 
-            [stored]
-            # Store mailmytag inside the document data record (so that it can be
-            # displayed - as %(mailmytag) - in result lists).
-            mailmytag = 
+           [stored]
+           # Store mailmytag inside the document data record (so that it can be
+           # displayed - as %(mailmytag) - in result lists).
+           mailmytag = 
 
-            [queryaliases]
-            filename = fn
-            containerfilename = cfn
+           [queryaliases]
+           filename = fn
+           containerfilename = cfn
 
-            [mail]
-            # Extract the X-My-Tag mail header, and use it internally with the
-            # mailmytag field name
-            x-my-tag = mailmytag
-            
+           [mail]
+           # Extract the X-My-Tag mail header, and use it internally with the
+           # mailmytag field name
+           x-my-tag = mailmytag
+           
+
+.. _RCL.INSTALL.CONFIG.FIELDS.XATTR:
 
 Extended attributes in the fields file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -5683,6 +5916,8 @@ Attributes are processed as fields of the same name, after removing the
 The ``[xattrtofields]`` section of the ``fields`` file allows specifying
 translations from extended attributes names to RCL field names. An empty
 translation disables use of the corresponding attribute data.
+
+.. _RCL.INSTALL.CONFIG.MIMEMAP:
 
 The mimemap file
 ~~~~~~~~~~~~~~~~
@@ -5705,14 +5940,16 @@ usually all located in one place. Example:
 
 ::
 
-    [~/.kde/share/apps/okular/docdata]
-            .xml = application/x-okular-notes
+   [~/.kde/share/apps/okular/docdata]
+           .xml = application/x-okular-notes
 
 The ``recoll_noindex`` ``mimemap`` variable has been moved to
 ``recoll.conf`` and renamed to ``noContentSuffixes``, while keeping the
 same function, as of RCL version 1.21. For older RCL versions, see the
 documentation for ``noContentSuffixes`` but use ``recoll_noindex`` in
 ``mimemap``.
+
+.. _RCL.INSTALL.CONFIG.MIMECONF:
 
 The mimeconf file
 ~~~~~~~~~~~~~~~~~
@@ -5749,13 +5986,13 @@ A simple exemple will hopefully make things clearer.
 
 ::
 
-    [guifilters]
+   [guifilters]
 
-    Big Books = dir:"~/My Books" size>10K
-    My Docs = dir:"~/My Documents"
-    Small Books = dir:"~/My Books" size<10K
-    System Docs = dir:/usr/share/doc
-            
+   Big Books = dir:"~/My Books" size>10K
+   My Docs = dir:"~/My Documents"
+   Small Books = dir:"~/My Books" size<10K
+   System Docs = dir:/usr/share/doc
+           
 
 The above definition would create four filter checkboxes, labelled
 ``Big Books``, ``My Docs``, etc.
@@ -5771,27 +6008,29 @@ above, but ordering the checkboxes in the reverse order.
 
 ::
 
-    [guifilters]
+   [guifilters]
 
-    d:Big Books = dir:"~/My Books" size>10K
-    c:My Docs = dir:"~/My Documents"
-    b:Small Books = dir:"~/My Books" size<10K
-    a:System Docs = dir:/usr/share/doc
-            
+   d:Big Books = dir:"~/My Books" size>10K
+   c:My Docs = dir:"~/My Documents"
+   b:Small Books = dir:"~/My Books" size<10K
+   a:System Docs = dir:/usr/share/doc
+           
 
 As you may have guessed, The default ``[guifilters]`` section looks
 like:
 
 ::
 
-    [guifilters]
-    text = rclcat:text
-    spreadsheet = rclcat:spreadsheet
-    presentation = rclcat:presentation
-    media = rclcat:media
-    message = rclcat:message
-    other = rclcat:other
-            
+   [guifilters]
+   text = rclcat:text
+   spreadsheet = rclcat:spreadsheet
+   presentation = rclcat:presentation
+   media = rclcat:media
+   message = rclcat:message
+   other = rclcat:other
+           
+
+.. _RCL.INSTALL.CONFIG.MIMEVIEW:
 
 The mimeview file
 ~~~~~~~~~~~~~~~~~
@@ -5878,6 +6117,8 @@ In addition to the predefined values above, all strings like
 ``fieldname`` for the document. This could be used in combination with
 field customisation to help with opening the document.
 
+.. _RCL.INSTALL.CONFIG.PTRANS:
+
 The ``ptrans`` file
 ~~~~~~~~~~~~~~~~~~~
 
@@ -5892,16 +6133,20 @@ things sufficiently clear
 
 ::
 
-              [/home/me/.recoll/xapiandb]
-              /this/directory/moved = /to/this/place
+             [/home/me/.recoll/xapiandb]
+             /this/directory/moved = /to/this/place
 
-              [/path/to/additional/xapiandb]
-              /server/volume1/docdir = /net/server/volume1/docdir
-              /server/volume2/docdir = /net/server/volume2/docdir
-            
+             [/path/to/additional/xapiandb]
+             /server/volume1/docdir = /net/server/volume1/docdir
+             /server/volume2/docdir = /net/server/volume2/docdir
+           
+
+.. _RCL.INSTALL.CONFIG.EXAMPLES:
 
 Examples of configuration adjustments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _RCL.INSTALL.CONFIG.EXAMPLES.ADDVIEW:
 
 Adding an external viewer for an non-indexed type
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -5918,8 +6163,8 @@ You need two entries in the configuration files for this to work:
 
    ::
 
-                   .blob = application/x-blobapp
-                 
+                  .blob = application/x-blobapp
+                
 
    Note that the MIME type is made up here, and you could call it
    diesel/oil just the same.
@@ -5928,8 +6173,8 @@ You need two entries in the configuration files for this to work:
 
    ::
 
-                     application/x-blobapp = blobviewer %f
-                   
+                    application/x-blobapp = blobviewer %f
+                  
 
    We are supposing that blobviewer wants a file name parameter here,
    you would use ``%u`` if it liked URLs better.
@@ -5939,6 +6184,8 @@ MIME type which it already knows, you would just need to edit
 ``mimeview``. The entries you add in your personal file override those
 in the central configuration, which you do not need to alter.
 ``mimeview`` can also be modified from the Gui.
+
+.. _RCL.INSTALL.CONFIG.EXAMPLES.ADDINDEX:
 
 Adding indexing support for a new file type
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -5954,14 +6201,14 @@ alteration, and also to add data to the ``mimeconf`` file (typically in
 
    ::
 
-       application/x-blobapp = exec rclblob
+      application/x-blobapp = exec rclblob
 
    Or if the files are mostly text and you don't need to process them
    for indexing:
 
    ::
 
-       application/x-blobapp = internal text/plain
+      application/x-blobapp = internal text/plain
 
 -  Under the ``[icons]`` section, you should choose an icon to be
    displayed for the files inside the result lists. Icons are normally
