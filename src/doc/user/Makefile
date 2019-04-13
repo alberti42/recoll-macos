@@ -54,17 +54,26 @@ recoll-conf-xml:
         --idprefix=RCL.INSTALL.CONFIG.RECOLLCONF  \
         ../../sampleconf/recoll.conf  > recoll.conf.xml
 
-usermanual-rst: recoll-conf-xml
-	tail -n +2 recoll.conf.xml > rcl-conf-tail.xml
-	sed -e '/xi:include/r rcl-conf-tail.xml' \
-		< usermanual.xml > full-man.xml
-	sed -i -e '/xi:include/d' -e '/<?xml version="1.0"?>/d' full-man.xml
-	pandoc -s -f docbook -t rst full-man.xml  > \
-		../../../docs/index.rst
-	rm -f rcl-conf-tail.xml full-man.xml
+# Generating a restructured text version, for uploading to readthedocs.
+# Does not really work, the internal links are botched. pandoc
+# generates something like:
+#  `configuration <#RCL.INDEXING.CONFIG>`__
+# when it should be:
+# :ref:`RCL.INDEXING.CONFIG`
+# Also with the second form, the link text is the section heading (can't be
+# chosen), which is not nice. Else, the change could probably be done by a
+# script. 
+# Also could not get readthedocs to generate the left pane TOC? could
+# probably be fixed...
+#usermanual-rst: recoll-conf-xml
+#	tail -n +2 recoll.conf.xml > rcl-conf-tail.xml
+#	sed -e '/xi:include/r rcl-conf-tail.xml' \
+#		< usermanual.xml > full-man.xml
+#	sed -i -e '/xi:include/d' -e '/<?xml version="1.0"?>/d' full-man.xml
+#	pandoc -s -f docbook -t rst full-man.xml  > \
+#		../../../docs/index.rst
+#	rm -f rcl-conf-tail.xml full-man.xml
 # not needed with pandoc 2.x -@echo fix termmatch and execute
-
-#(cd sphinx;make html)
 
 clean:
 	rm -f RCL.*.html usermanual.pdf usermanual.html index.html \
