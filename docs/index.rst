@@ -36,8 +36,8 @@ indexing completes.
 
 Do not do this if your home directory contains a huge number of
 documents and you do not want to wait or are very short on disk space.
-In this case, you may first want to customize the
-`configuration <#RCL.INDEXING.CONFIG>`__ to restrict the indexed area
+In this case, you may first want to customize the configuration:
+:ref:`RCL.INDEXING.CONFIG` to restrict the indexed area
 (shortcut: from the ``recoll`` GUI go to: Preferences > Indexing
 configuration, then adjust the Top directories section).
 
