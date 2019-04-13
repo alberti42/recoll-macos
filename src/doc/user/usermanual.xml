@@ -74,15 +74,15 @@
       <link linkend="RCL.INSTALL.BINARY">install</link> the application
       and start the <command>recoll</command> graphical user
       interface (GUI), which will ask permission to index your home
-      directory by default, allowing you to search immediately after
+      directory, allowing you to search immediately after
       indexing completes.</para>
 
       <para>Do not do this if your home directory contains a huge
       number of documents and you do not want to wait or are very
       short on disk space. In this case, you may first want to customize
       the <link linkend="RCL.INDEXING.CONFIG">configuration</link>
-      to restrict the indexed area (for the very impatient with a
-      completed package install, from the <command>recoll</command> GUI:
+      to restrict the indexed area (shortcut: from the
+      <command>recoll</command> GUI go to:
       <menuchoice> 
         <guimenu>Preferences</guimenu>
         <guimenuitem>Indexing configuration</guimenuitem>
@@ -94,11 +94,9 @@
       <link linkend="RCL.INSTALL.EXTERNAL">supporting applications</link> 
       for document types that need them (for
       example <application>antiword</application> for
-      <application>Microsoft Word</application> files).</para>
-
-      <para>The &RCL; for &WIN; package is self-contained and includes
-      most useful auxiliary programs. You will just need to install
-      <application>Python</application> 2.7.</para>
+      <application>Microsoft Word</application> files).
+      The &RCL; for &WIN; package is self-contained and includes
+      most useful auxiliary programs.</para>
 
     </sect1>
 

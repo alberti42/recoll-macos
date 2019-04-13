@@ -31,23 +31,20 @@ Giving it a try
 If you do not like reading manuals (who does?) but wish to give RCL a
 try, just `install <#RCL.INSTALL.BINARY>`__ the application and start
 the ``recoll`` graphical user interface (GUI), which will ask permission
-to index your home directory by default, allowing you to search
-immediately after indexing completes.
+to index your home directory, allowing you to search immediately after
+indexing completes.
 
 Do not do this if your home directory contains a huge number of
 documents and you do not want to wait or are very short on disk space.
 In this case, you may first want to customize the
 `configuration <#RCL.INDEXING.CONFIG>`__ to restrict the indexed area
-(for the very impatient with a completed package install, from the
-``recoll`` GUI: Preferences > Indexing configuration, then adjust the
-Top directories section).
+(shortcut: from the ``recoll`` GUI go to: Preferences > Indexing
+configuration, then adjust the Top directories section).
 
 On Unix/Linux, you may need to install the appropriate `supporting
 applications <#RCL.INSTALL.EXTERNAL>`__ for document types that need
-them (for example antiword for Microsoft Word files).
-
-The RCL for WIN package is self-contained and includes most useful
-auxiliary programs. You will just need to install Python 2.7.
+them (for example antiword for Microsoft Word files). The RCL for WIN
+package is self-contained and includes most useful auxiliary programs.
 
 Full text search
 ----------------
