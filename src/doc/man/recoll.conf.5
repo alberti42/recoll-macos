@@ -54,27 +54,43 @@ home directory.
 Where values are lists, white space is used for separation, and elements with
 embedded spaces can be quoted with double-quotes.
 .SH OPTIONS
+
+
 .TP
 .BI "topdirs = "string
 Space-separated list of files or
 directories to recursively index. Default to ~ (indexes
 $HOME). You can use symbolic links in the list, they will be followed,
-independently of the value of the followLinks variable.
+independantly of the value of the followLinks variable.
+.TP
+.BI "monitordirs = "string
+Space-separated list of files or directories to monitor for
+updates. When running the real-time indexer, this allows monitoring only a
+subset of the whole indexed area. The elements must be included in the
+tree defined by the 'topdirs' members.
 .TP
 .BI "skippedNames = "string
-Files and directories which should be ignored.
+Files and directories which should be ignored. 
 White space separated list of wildcard patterns (simple ones, not paths,
 must contain no / ), which will be tested against file and directory
 names.  The list in the default configuration does not exclude hidden
 directories (names beginning with a dot), which means that it may index
 quite a few things that you do not want. On the other hand, email user
 agents like Thunderbird usually store messages in hidden directories, and
-you probably want this indexed. One possible solution is to have '.*'
-in 'skippedNames', and add things like '~/.thunderbird' '~/.evolution'
-to 'topdirs'.  Not even the file names are indexed for patterns in this
-list, see the 'noContentSuffixes' variable for an alternative approach
+you probably want this indexed. One possible solution is to have ".*" in
+"skippedNames", and add things like "~/.thunderbird" "~/.evolution" to
+"topdirs".  Not even the file names are indexed for patterns in this
+list, see the "noContentSuffixes" variable for an alternative approach
 which indexes the file names. Can be redefined for any
 subtree.
+.TP
+.BI "skippedNames- = "string
+List of name endings to remove from the default skippedNames
+list. 
+.TP
+.BI "skippedNames+ = "string
+List of name endings to add to the default skippedNames
+list. 
 .TP
 .BI "noContentSuffixes = "string
 List of name endings (not necessarily dot-separated suffixes) for
@@ -87,24 +103,37 @@ from skippedNames because these are name ending matches only (not
 wildcard patterns), and the file name itself gets indexed normally. This
 can be redefined for subdirectories.
 .TP
+.BI "noContentSuffixes- = "string
+List of name endings to remove from the default noContentSuffixes
+list. 
+.TP
+.BI "noContentSuffixes+ = "string
+List of name endings to add to the default noContentSuffixes
+list. 
+.TP
 .BI "skippedPaths = "string
-Paths we should not go into. Space-separated list of
-wildcard expressions for filesystem paths. Can contain files and
-directories. The database and configuration directories will
-automatically be added. The expressions are matched using 'fnmatch(3)'
-with the FNM_PATHNAME flag set by default. This means that '/' characters
-must be matched explicitly. You can set 'skippedPathsFnmPathname' to 0
-to disable the use of FNM_PATHNAME (meaning that '/*/dir3' will
-match '/dir1/dir2/dir3').  The default value contains the usual mount point
-for removable media to remind you that it is a bad idea to have Recoll work
-on these (esp. with the monitor: media gets indexed on mount, all data
-gets erased on unmount).  Explicitly adding '/media/xxx' to the topdirs
-will override this.
+Absolute paths we should not go into. Space-separated list of wildcard expressions for absolute
+filesystem paths. Must be defined at the top level of the configuration
+file, not in a subsection. Can contain files and directories. The database and
+configuration directories will automatically be added. The expressions
+are matched using 'fnmatch(3)' with the FNM_PATHNAME flag set by
+default. This means that '/' characters must be matched explicitely. You
+can set 'skippedPathsFnmPathname' to 0 to disable the use of FNM_PATHNAME
+(meaning that '/*/dir3' will match '/dir1/dir2/dir3'). The default value
+contains the usual mount point for removable media to remind you that it
+is a bad idea to have Recoll work on these (esp. with the monitor: media
+gets indexed on mount, all data gets erased on unmount). Explicitely
+adding '/media/xxx' to the 'topdirs' variable will override
+this.
 .TP
 .BI "skippedPathsFnmPathname = "bool
 Set to 0 to
 override use of FNM_PATHNAME for matching skipped
-paths.
+paths. 
+.TP
+.BI "nowalkfn = "string
+File name which will cause its parent directory to be skipped. Any directory containing a file with this name will be skipped as
+if it was part of the skippedPaths list. Ex: .recoll-noindex
 .TP
 .BI "daemSkippedPaths = "string
 skippedPaths equivalent specific to
@@ -112,13 +141,21 @@ real time indexing. This enables having parts of the tree
 which are initially indexed but not monitored. If daemSkippedPaths is
 not set, the daemon uses skippedPaths.
 .TP
+.BI "zipUseSkippedNames = "bool
+Use skippedNames inside Zip archives. Fetched
+directly by the rclzip handler. Skip the patterns defined by skippedNames
+inside Zip archives. Can be redefined for subdirectories.
+See https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
+
+.TP
 .BI "zipSkippedNames = "string
 Space-separated list of wildcard expressions for names that should
 be ignored inside zip archives. This is used directly by
-the zip handler, and has a function similar to skippedNames, but works
-independently. Can be redefined for subdirectories. Supported by recoll
-1.20 and newer. See
-https://bitbucket.org/medoc/recoll/wiki/Filtering%20out%20Zip%20archive%20members
+the zip handler. If zipUseSkippedNames is not set, zipSkippedNames
+defines the patterns to be skipped inside archives. If zipUseSkippedNames
+is set, the two lists are concatenated and used. Can be redefined for
+subdirectories.
+See https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
 
 .TP
 .BI "followLinks = "bool
@@ -133,16 +170,27 @@ followed.
 .BI "indexedmimetypes = "string
 Restrictive list of
 indexed mime types. Normally not set (in which case all
-supported types are indexed). If it is set,
-only the types from the list will have their contents indexed. The names
-will be indexed anyway if indexallfilenames is set (default). MIME
-type names should be taken from the mimemap file. Can be redefined for
-subtrees.
+supported types are indexed). If it is set, only the types from the list
+will have their contents indexed. The names will be indexed anyway if
+indexallfilenames is set (default). MIME type names should be taken from
+the mimemap file (the values may be different from xdg-mime or file -i
+output in some cases). Can be redefined for subtrees.
 .TP
 .BI "excludedmimetypes = "string
 List of excluded MIME
-types. Lets you exclude some types from indexing. Can be
-redefined for subtrees.
+types. Lets you exclude some types from indexing. MIME type
+names should be taken from the mimemap file (the values may be different
+from xdg-mime or file -i output in some cases) Can be redefined for
+subtrees.
+.TP
+.BI "nomd5types = "string
+Don't compute md5 for these types. md5 checksums are used only for deduplicating results, and can be
+very expensive to compute on multimedia or other big files. This list
+lets you turn off md5 computation for selected types. It is global (no
+redefinition for subtrees). At the moment, it only has an effect for
+external handlers (exec and execm). The file types can be specified by
+listing either MIME types (e.g. audio/mpeg) or handler names
+(e.g. rclaudio).
 .TP
 .BI "compressedfilemaxkbs = "int
 Size limit for compressed
@@ -173,9 +221,9 @@ for the command used.
 Command used to guess
 MIME types if the internal methods fails This should be a
 "file -i" workalike.  The file path will be added as a last parameter to
-the command line. 'xdg-mime' works better than the traditional 'file'
-command, and is now the configured default (with a hard-coded fallback
-to 'file')
+the command line. "xdg-mime" works better than the traditional "file"
+command, and is now the configured default (with a hard-coded fallback to
+"file")
 .TP
 .BI "processwebqueue = "bool
 Decide if we process the
@@ -205,6 +253,34 @@ default is a stripped index. When using multiple indexes for a search,
 this parameter must be defined identically for all. Changing the value
 implies an index reset.
 .TP
+.BI "indexStoreDocText = "bool
+Decide if we store the
+documents' text content in the index. Storing the text
+allows extracting snippets from it at query time, instead of building
+them from index position data.
+Newer Xapian index formats have rendered our use of positions list
+unacceptably slow in some cases. The last Xapian index format with good
+performance for the old method is Chert, which is default for 1.2, still
+supported but not default in 1.4 and will be dropped in 1.6.
+The stored document text is translated from its original format to UTF-8
+plain text, but not stripped of upper-case, diacritics, or punctuation
+signs. Storing it increases the index size by 10-20% typically, but also
+allows for nicer snippets, so it may be worth enabling it even if not
+strictly needed for performance if you can afford the space.
+The variable only has an effect when creating an index, meaning that the
+xapiandb directory must not exist yet. Its exact effect depends on the
+Xapian version.
+For Xapian 1.4, if the variable is set to 0, the Chert format will be
+used, and the text will not be stored. If the variable is 1, Glass will
+be used, and the text stored.
+For Xapian 1.2, and for versions after 1.5 and newer, the index format is
+always the default, but the variable controls if the text is stored or
+not, and the abstract generation method. With Xapian 1.5 and later, and
+the variable set to 0, abstract generation may be very slow, but this
+setting may still be useful to save space if you do not use abstract
+generation at all.
+
+.TP
 .BI "nonumbers = "bool
 Decides if terms will be
 generated for numbers. For example "123", "1.5e6",
@@ -216,9 +292,19 @@ will reduce the index size. This can only be set for a whole index, not
 for a subtree.
 .TP
 .BI "dehyphenate = "bool
-Determines if we index 'coworker' also when the input is 'co-worker'.
-This is new in version 1.22, and on by default. Setting the variable to off
-allows restoring the previous behaviour.
+Determines if we index
+'coworker' also when the input is 'co-worker'. This is new
+in version 1.22, and on by default. Setting the variable to off allows
+restoring the previous behaviour.
+.TP
+.BI "backslashasletter = "bool
+Process backslash as normal letter This may make sense for people wanting to index TeX commands as
+such but is not of much general use.
+.TP
+.BI "maxtermlength = "int
+Maximum term length. Words longer than this will be discarded.
+The default is 40 and used to be hard-coded, but it can now be
+adjusted. You need an index reset if you change the value.
 .TP
 .BI "nocjk = "bool
 Decides if specific East Asian
@@ -263,24 +349,16 @@ lowercase and upper-case versions of a character should be specified, as
 appartenance to the list will turn-off both standard accent and case
 processing. The value is global and affects both indexing and querying.
 Examples:
-
 Swedish:
-
 unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl åå Åå
-
-German:
-
+. German:
 unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl
-
 In French, you probably want to decompose oe and ae and nobody would type
 a German ß
-
 unac_except_trans = ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl
-
-The default for all until someone protests follows. These decompositions
+. The default for all until someone protests follows. These decompositions
 are not performed by unac, but it is unlikely that someone would type the
 composed forms in a search.
-
 unac_except_trans = ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl
 .TP
 .BI "maildefcharset = "string
@@ -321,7 +399,7 @@ set if testmodifusemtime is set.
 .TP
 .BI "metadatacmds = "string
 Define commands to
-gather external metadata, e.g. tmsu tags.
+gather external metadata, e.g. tmsu tags. 
 There can be several entries, separated by semi-colons, each defining
 which field name the data goes into and the command to use. Don't forget the
 initial semi-colon. All the field names must be different. You can use
@@ -352,7 +430,7 @@ over which we stop indexing. The value is a percentage,
 corresponding to what the "Capacity" df output column shows. The default
 value is 0, meaning no checking.
 .TP
-.BI "xapiandb = "dfn
+.BI "dbdir = "dfn
 Xapian database directory
 location. This will be created on first indexing. If the
 value is not an absolute path, it will be interpreted as relative to
@@ -386,9 +464,17 @@ Default: 40 MB.
 Reducing the size will not physically truncate the file.
 .TP
 .BI "webqueuedir = "fn
-The path to the Web indexing queue. This is
-hard-coded in the plugin as ~/.recollweb/ToIndex so there should be no
-need or possibility to change it.
+The path to the Web indexing queue. This used to be
+hard-coded in the old plugin as ~/.recollweb/ToIndex so there would be no
+need or possibility to change it, but the WebExtensions plugin now downloads
+the files to the user Downloads directory, and a script moves them to
+webqueuedir. The script reads this value from the config so it has become
+possible to change it.
+.TP
+.BI "webdownloadsdir = "fn
+The path to browser downloads directory. This is
+where the new browser add-on extension has to create the files. They are
+then moved by a script to webqueuedir.
 .TP
 .BI "aspellDicDir = "dfn
 Aspell dictionary storage directory location. The
@@ -415,10 +501,11 @@ which lets Xapian perform its own thing, meaning flushing every
 $XAPIAN_FLUSH_THRESHOLD documents created, modified or deleted: as memory
 usage depends on average document size, not only document count, the
 Xapian approach is is not very useful, and you should let Recoll manage
-the flushes.  The default value of idxflushmb is 10 MB, and may be a bit
-low. If you are looking for maximum speed, you may want to experiment
-with values between 20 and
-80. In my experience, values beyond 100 are always counterproductive. If
+the flushes. The program compiled value is 0. The configured default
+value (from this file) is now 50 MB, and should be ok in many cases.
+You can set it as low as 10 to conserve memory, but if you are looking
+for maximum speed, you may want to experiment with values between 20 and
+200. In my experience, values beyond this are always counterproductive. If
 you find otherwise, please drop me a note.
 .TP
 .BI "filtermaxseconds = "int
@@ -463,13 +550,13 @@ only errors and warnings. 3 will print information like document updates,
 .TP
 .BI "logfilename = "fn
 Log file destination. Use 'stderr' (default) to write to the
-console.
+console. 
 .TP
 .BI "idxloglevel = "int
-Override loglevel for the indexer.
+Override loglevel for the indexer. 
 .TP
 .BI "idxlogfilename = "fn
-Override logfilename for the indexer.
+Override logfilename for the indexer. 
 .TP
 .BI "daemloglevel = "int
 Override loglevel for the indexer in real time
@@ -480,6 +567,25 @@ the log... values.
 Override logfilename for the indexer in real time
 mode. The default is to use the idx... values if set, else
 the log... values.
+.TP
+.BI "orgidxconfdir = "dfn
+Original location of the configuration directory. This is used exclusively for movable datasets. Locating the
+configuration directory inside the directory tree makes it possible to
+provide automatic query time path translations once the data set has
+moved (for example, because it has been mounted on another
+location).
+.TP
+.BI "curidxconfdir = "dfn
+Current location of the configuration directory. Complement orgidxconfdir for movable datasets. This should be used
+if the configuration directory has been copied from the dataset to
+another location, either because the dataset is readonly and an r/w copy
+is desired, or for performance reasons. This records the original moved
+location before copy, to allow path translation computations.  For
+example if a dataset originally indexed as '/home/me/mydata/config' has
+been mounted to '/media/me/mydata', and the GUI is running from a copied
+configuration, orgidxconfdir would be '/home/me/mydata/config', and
+curidxconfdir (as set in the copied configuration) would be
+'/media/me/mydata/config'.
 .TP
 .BI "idxrundir = "dfn
 Indexing process current directory. The input
@@ -518,6 +624,12 @@ does not affect indexing (the whole field is processed anyway), just the
 amount of data stored in the index for the purpose of displaying fields
 inside result lists or previews. The default value is 150 bytes which
 may be too low if you have custom fields.
+.TP
+.BI "idxtexttruncatelen = "int
+Truncation length for all document texts. Only index
+the beginning of documents. This is not recommended except if you are
+sure that the interesting keywords are at the top and have severe disk
+space issues.
 .TP
 .BI "aspellLanguage = "string
 Language definitions to use when creating the aspell
@@ -612,15 +724,38 @@ Attempt OCR of PDF files with no text content if both tesseract and
 pdftoppm are installed. The default is off because OCR is so
 very slow.
 .TP
+.BI "pdfocrlang = "string
+Language to assume for PDF OCR. This is very important for having a reasonable rate of errors
+with tesseract. This can also be set through a configuration variable
+or directory-local parameters. See the rclpdf.py script.
+.TP
 .BI "pdfattach = "bool
 Enable PDF attachment extraction by executing pdftk (if
 available). This is
 normally disabled, because it does slow down PDF indexing a bit even if
 not one attachment is ever found.
 .TP
+.BI "pdfextrameta = "string
+Extract text from selected XMP metadata tags. This
+is a space-separated list of qualified XMP tag names. Each element can also
+include a translation to a Recoll field name, separated by a '|'
+character. If the second element is absent, the tag name is used as the
+Recoll field names. You will also need to add specifications to the
+"fields" file to direct processing of the extracted data.
+.TP
+.BI "pdfextrametafix = "fn
+Define name of XMP field editing script. This
+defines the name of a script to be loaded for editing XMP field
+values. The script should define a 'MetaFixer' class with a metafix()
+method which will be called with the qualified tag name and value of each
+selected field, for editing or erasing. A new instance is created for
+each document, so that the object can keep state for, e.g. eliminating
+duplicate values.
+.TP
 .BI "mhmboxquirks = "string
 Enable thunderbird/mozilla-seamonkey mbox format quirks Set this for the directory where the email mbox files are
 stored.
+
 
 .SH SEE ALSO
 .PP
