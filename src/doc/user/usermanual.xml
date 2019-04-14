@@ -10,9 +10,15 @@
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
 <!ENTITY FAQS "https://www.lesbonscomptes.com/recoll/faqsandhowtos/">
+<!ENTITY RCLCONF SYSTEM "recoll.conf.xml">
 ]>
 
 <book lang="en">
+
+
+  <!-- A nice overview of docbook elements:
+
+       https://tdg.docbook.org/tdg/4.5/ch02.html#ch02-logdiv -->
   
   <bookinfo>
     <title>Recoll user manual</title>
@@ -6353,7 +6359,7 @@ for i in range(nres):
       </sect2>
 
       <!-- <sect2 id="RCL.INSTALL.CONFIG.RECOLLCONF"> -->
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="recoll.conf.xml" /> 
+&RCLCONF;
 
 
       <sect2 id="RCL.INSTALL.CONFIG.FIELDS">

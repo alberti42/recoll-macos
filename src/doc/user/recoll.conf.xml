@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <sect2 id="RCL.INSTALL.CONFIG.RECOLLCONF">
 <title>Recoll main configuration file, recoll.conf </title>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.WHATDOCS">
@@ -168,9 +168,9 @@ for the command used.</para></listitem></varlistentry>
 <listitem><para>Command used to guess
 MIME types if the internal methods fails This should be a
 "file -i" workalike.  The file path will be added as a last parameter to
-the command line. 'xdg-mime' works better than the traditional 'file'
+the command line. "xdg-mime" works better than the traditional "file"
 command, and is now the configured default (with a hard-coded fallback to
-'file')</para></listitem></varlistentry>
+"file")</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PROCESSWEBQUEUE">
 <term><varname>processwebqueue</varname></term>
 <listitem><para>Decide if we process the
@@ -706,7 +706,7 @@ is a space-separated list of qualified XMP tag names. Each element can also
 include a translation to a Recoll field name, separated by a '|'
 character. If the second element is absent, the tag name is used as the
 Recoll field names. You will also need to add specifications to the
-'fields' file to direct processing of the extracted data.</para></listitem></varlistentry>
+"fields" file to direct processing of the extracted data.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">
 <term><varname>pdfextrametafix</varname></term>
 <listitem><para>Define name of XMP field editing script. This
