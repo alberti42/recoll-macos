@@ -1051,11 +1051,174 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
         which you might nevertheless want to backup first...</para>
 
       </sect2>
-
     </sect1>
 
+    <sect1 id="RCL.INDEXING.REMOVABLE">
+      <title>Removable volumes</title>
+
+      <para>&RCL; used to have no support for indexing removable volumes
+      (portable disks, USB keys, etc.). Recent versions have improved the
+      situation and support indexing removable volumes in two different
+      ways:</para>
+
+    <itemizedlist>
+      <listitem><para>By indexing the volume in the main, fixed, index, and
+      ensuring that the volume data is not purged if the indexing runs
+      while the volume is mounted. (&RCL; 1.25.2).</para></listitem>
+      <listitem><para>By storing a volume index on the volume
+      itself (&RCL; 1.24).</para></listitem>
+    </itemizedlist>
+
+    <simplesect id="RCL.INDEXING.REMOVABLE.MAIN">
+      <title>Indexing removable volumes in the main index</title>
+
+      <para>As of version 1.25.2, &RCL; provides a simple way to ensure
+      that the index data for an absent volume will not be purged. Two
+      conditions must be met:
+      <itemizedlist>
+        <listitem><para>The volume mount 
+        point must be a member of the <literal>topdirs</literal>
+        list.</para></listitem> 
+        <listitem><para>The mount directory must be empty (when the volume
+        is not mounted).</para></listitem>
+      </itemizedlist>
+      </para>
+
+      <para>If <command>recollindex</command> finds that one of the
+      <literal>topdirs</literal> is empty when starting up, any existing
+      data for the tree will be preserved by the indexing
+      pass (no purge for this area).</para> 
+
+    </simplesect>
+    
+    <simplesect id="RCL.INDEXING.REMOVABLE.SELF">
+      <title>Self contained volumes</title>
+      
+      <para>As of &RCL; 1.24, it has become possible to build
+      self-contained datasets including a &RCL; configuration directory and
+      index together with the indexed documents, and to move such a dataset
+      around (for example copying it to an USB drive), without having to
+      adjust the configuration for querying the index.</para>
+
+      <note><para>This is a query-time feature only. The index must only be
+      updated in its original location. If an update is necessary in a
+      different location, the index must be reset.</para></note>
+
+      <para>The principle of operation is that the configuration stores the
+      location of the original configuration directory, which must reside
+      on the movable volume. If the volume is later mounted elsewhere,
+      &RCL; adjusts the paths stored inside the index by the difference
+      between the original and current locations of the configuration
+      directory.</para>
+      
+      <para>To make a long story short, here follows a script to create a
+      &RCL; configuration and index under a given directory (given as single
+      parameter). The resulting data set (files + recoll directory) can later
+      to be moved to a CDROM or thumb drive. Longer explanations come after
+      the script.</para>
+      
+    <programlisting>#!/bin/sh
+
+fatal()
+{
+    echo $*;exit 1
+}
+usage()
+{
+    fatal "Usage: init-recoll-volume.sh &lt;top-directory>"
+}
+
+test $# = 1 || usage
+topdir=$1
+test -d "$topdir" || fatal $topdir should be a directory
+
+confdir="$topdir/recoll-config"
+test ! -d "$confdir" || fatal $confdir should not exist
+
+mkdir "$confdir"
+cd "$topdir"
+topdir=`pwd`
+cd "$confdir"
+confdir=`pwd`
+
+(echo topdirs = '"'$topdir'"'; \
+ echo orgidxconfdir = $topdir/recoll-config) > "$confdir/recoll.conf"
+
+recollindex -c "$confdir"
+</programlisting>
+    
+    <para>The examples below will assume that you have a dataset under
+    <filename>/home/me/mydata/</filename>, with the index configuration and
+    data stored inside
+    <filename>/home/me/mydata/recoll-confdir</filename>.</para> 
+    
+    <para>In order to be able to run queries after the dataset has been
+    moved, you must ensure the following:
+    <itemizedlist>
+      <listitem><para>The main configuration file must define the
+      <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</link>
+      variable to be the original location of the configuration directory
+      (<filename>orgidxconfdir=/home/me/mydata/recoll-confdir</filename>
+      must be set inside
+      <filename>/home/me/mydata/recoll-confdir/recoll.conf</filename> in
+      the example above).</para></listitem>
+
+      <listitem><para>The configuration directory must exist with the
+      documents, somewhere under the directory which will be
+      moved. E.g. if you are moving <filename>/home/me/mydata</filename>
+      around, the configuration directory must exist somewhere below this
+      point, for example
+      <filename>/home/me/mydata/recoll-confdir</filename>, or
+      <filename>/home/me/mydata/sub/recoll-confdir</filename>.</para></listitem>
+
+      <listitem><para>You should keep the default locations for the index
+      elements which are relative to the configuration directory by
+      default (principally <literal>dbdir</literal>). Only the paths
+      referring to the documents themselves
+      (e.g. <literal>topdirs</literal> values) should be absolute (in
+      general, they are only used when indexing anyway).</para></listitem>
+      
+    </itemizedlist>
+    </para>
+
+    <para>Only the first point needs an explicit user action, the &RCL;
+    defaults are compatible with the third one, and the second is
+    natural.</para>
+    
+    <para>If, after the move, the configuration directory needs to be
+    copied out of the dataset (for example because the thumb drive is too
+    slow), you can set the
+    <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">curidxconfdir</link>,
+    variable inside the copied configuration to
+    define the location of the moved one. For example if
+    <filename>/home/me/mydata</filename> is now mounted onto
+    <filename>/media/me/somelabel</filename>, but the configuration
+    directory and index has been copied to
+    <filename>/tmp/tempconfig</filename>, you would set
+    <literal>curidxconfdir</literal> to
+    <filename>/media/me/somelabel/recoll-confdir</filename> inside
+    <filename>/tmp/tempconfig/recoll.conf</filename>.
+    <literal>orgidxconfdir</literal> would still be
+    <filename>/home/me/mydata/recoll-confdir</filename> in the original and
+    the copy.</para>
+
+    <para>If you are regularly copying the configuration out of the
+    dataset, it will be useful to write a script to automate the
+    procedure. This can't really be done inside &RCL; because there are
+    probably many possible variants. One example would be to copy the
+    configuration to make it writable, but keep the index data on the
+    medium because it is too big - in this case, the script would also need
+    to set <literal>dbdir</literal> in the copied configuration.</para>
+    
+    <para>The same set of modifications (&RCL; 1.24) has also made it
+    possible to run queries from a readonly configuration directory (with
+    slightly reduced function of course, such as not recording the query
+    history).</para>
+  </simplesect>
+  </sect1>
+
     <sect1 id="RCL.INDEXING.WEBQUEUE">
-      <title>Indexing the WEB pages which you wisit.</title>
+      <title>&LIN;: indexing visited WEB pages</title>
 
       <para>With the help of a <application>Firefox</application>
       extension, &RCL; can index the Internet pages that you visit. The
@@ -1108,14 +1271,13 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
     </sect1>
 
     <sect1 id="RCL.INDEXING.EXTATTR">
-      <title>Extended attributes data</title>
+      <title>&LIN;: using extended attributes</title>
 
       <para>User extended attributes are named pieces of information
       that most modern file systems can attach to any file.</para>
 
-      <para>&RCL; versions 1.19 and later process extended attributes
-      as document fields by default. For older versions, this has to
-      be activated at build time.</para>
+      <para>&RCL; processes extended attributes as document fields by
+      default.</para>
 
       <para>A 
       <ulink url="http://www.freedesktop.org/wiki/CommonExtendedAttributes">
@@ -1135,20 +1297,24 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
         </variablelist>
       </para>
 
-      <para>By default, other attributes are handled as &RCL; fields.
-      On Linux, the <literal>user</literal> prefix is removed from
-      the name. This can be configured more precisely inside
-      the <link linkend="RCL.INSTALL.CONFIG.FIELDS"><filename>fields</filename> configuration file</link>.
+      <para>By default, other attributes are handled as &RCL; fields of the
+      same name.</para>
+
+      <para>On Linux, the <literal>user</literal> prefix is removed from
+      the name.</para>
+
+      <para>The name translation can be configured more precisely inside the
+      <link linkend="RCL.INSTALL.CONFIG.FIELDS"><filename>fields</filename> configuration file</link>.
       </para>
 
     </sect1>
 
     <sect1 id="RCL.INDEXING.EXTTAGS">
-      <title>Importing external tags</title>
+      <title>&LIN;: importing external tags</title>
 
-      <para>During indexing, it is possible to import metadata for
-      each file by executing commands. For example, this could
-      extract user tag data for the file and store it in a field for
+      <para>During indexing, it is possible to import metadata for each
+      file by executing commands. This allows, for example, extracting tag
+      data from an external application and storing it in a field for
       indexing.</para>
 
       <para>See the 
@@ -1156,12 +1322,13 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       in the main configuration chapter for a description of the
       configuration syntax.</para>
 
-      <para>As an example, if you would want &RCL; to use tags managed by
-      <application>tmsu</application>, you would add the following to the
+      <para>For example, if you would want &RCL; to use tags managed by
+      <application>tmsu</application> in a field named
+      <replaceable>tags</replaceable>, you would add the following to the
       configuration file:</para>
 
       <programlisting>[/some/area/of/the/fs]
-      metadatacmds = ; tags = tmsu tags %f
+metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
       </programlisting>
 
       <note><para>Depending on the <application>tmsu</application> version,
@@ -1174,25 +1341,27 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       <para>Note the initial semi-colon after the equal sign.</para>
 
       <para>In the example above, the output of <command>tmsu</command> is
-      used to set a field named <literal>tags</literal>. The field name is
-      arbitrary and could be <literal>tmsu</literal> or
-      <literal>myfield</literal> just the same, but <literal>tags</literal>
-      is an alias for the standard &RCL; <literal>keywords</literal> field,
-      and the <command>tmsu</command> output will just augment its
-      contents. This will avoid the need to extend the
-      <link linkend="RCL.PROGRAM.FIELDS">field configuration</link>.</para>
+      used to set a field named <replaceable>tags</replaceable>. The field
+      name is arbitrary and could be <replaceable>tmsu</replaceable> or
+      <replaceable>myfield</replaceable> just the same, but
+      <replaceable>tags</replaceable> is an alias for the standard &RCL;
+      <literal>keywords</literal> field, and the <command>tmsu</command>
+      output will just augment its contents. This will avoid the need to
+      extend the <link linkend="RCL.PROGRAM.FIELDS">field
+      configuration</link>.</para>
 
-      <para>Once re-indexing is performed (you'll need to force the file
-      reindexing, &RCL; will not detect the need by itself), you will 
-      be able to search from the query language, through any of its
-      aliases: <literal>tags:some/alternate/values</literal> or
-      <literal>tags:all,these,values</literal> (the compact field search
-      syntax is supported for recoll 1.20 and later. For 
-      older versions, you would need to repeat the <literal>tags:</literal>
-      specifier for each term, e.g.
-      <literal>tags:some OR tags:alternate</literal>).</para> 
+      <para>Once re-indexing is performed (you will need to force the file
+      reindexing, &RCL; will not detect the need by itself), you will be
+      able to search from the query language, through any of its aliases:
+      <replaceable>tags:some/alternate/values</replaceable> or
+      <replaceable>tags:all,these,values</replaceable> (the compact field search
+      syntax is supported for recoll 1.20 and later. For older versions,
+      you would need to repeat the <replaceable>tags:</replaceable>
+      specifier for each term, e.g.  <replaceable>tags:some</replaceable>
+      <literal>OR</literal>
+      <replaceable>tags:alternate</replaceable>).</para>
 
-      <para>You should be aware that tags changes will not be detected by
+      <para>Tags changes will not be detected by
       the indexer if the file itself did not change. One possible
       workaround would be to update the file <literal>ctime</literal> when
       you modify the tags, which 
@@ -1200,7 +1369,7 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       <command>chmod</command> commands could accomplish this, or a
       <literal>touch -a</literal> . Alternatively, just
       couple the tag update with a
-      <literal>recollindex -e -i filename.</literal></para>
+      <literal>recollindex -e -i</literal> <replaceable>/path/to/the/file</replaceable>.</para>
 
     </sect1>
 
@@ -1320,18 +1489,17 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       <title>Periodic indexing</title>
 
       <simplesect id="RCL.INDEXING.PERIODIC.EXEC">
-        <title>Running indexing</title>
+        <title>Running the indexer</title>
 
-        <para>Indexing is always performed by the
-        <command>recollindex</command> program, which can be started
-        either from the command line or from the <guimenu>File</guimenu>
-        menu in the <command>recoll</command> GUI program. When started
-        from the GUI, the indexing will run on the same configuration
-        <command>recoll</command> was started on. When started from the
-        command line, <command>recollindex</command> will use the
-        <envar>RECOLL_CONFDIR</envar> variable or accept a
-        <option>-c</option> <replaceable>confdir</replaceable> option
-        to specify a non-default configuration directory.</para>
+        <para>The <command>recollindex</command> program performs index
+        updates. You can start it either from the command line or from the
+        <guimenu>File</guimenu> menu in the <command>recoll</command> GUI
+        program. When started from the GUI, the indexing will run on the
+        same configuration <command>recoll</command> was started on. When
+        started from the command line, <command>recollindex</command> will
+        use the <envar>RECOLL_CONFDIR</envar> variable or accept a
+        <option>-c</option> <replaceable>confdir</replaceable> option to
+        specify a non-default configuration directory.</para>
 
         <para>If the <command>recoll</command> program finds no index
         when it starts, it will automatically start indexing (except
@@ -1605,6 +1773,50 @@ fs.inotify.max_user_watches=32768
 
   <chapter id="RCL.SEARCH">
     <title>Searching</title>
+
+    <sect1 id="RCL.SEARCH.INTRODUCTION">
+      <title>Introduction</title>
+
+      <para>Getting answers to specific queries is of course the whole
+      point of &RCL;. The multiple provided interfaces always understand
+      simple queries made of one or several words, and return appropriate
+      results in most cases.</para>
+
+      <para>In order to make the most of &RCL; though, it may be worthwhile
+      to understand how it processes your input. Five different modes
+      exist:
+      <itemizedlist>
+        <listitem><para>In <literal>All Terms</literal> mode, &RCL; looks
+        for documents containing all your input terms.</para></listitem>
+        <listitem><para><literal>Query Language</literal> mode behaves like
+
+        <literal>All Terms</literal> in the absence of special input, but
+        it can also do much more. This is the best mode for getting the
+        most of &RCL;.</para></listitem>
+        
+        <listitem><para>In <literal>Any Term</literal> mode, &RCL; looks
+        for documents containing any your input terms, preferring those
+        which contain more.</para></listitem>
+        
+        <listitem><para>In <literal>File Name</literal> mode, &RCL; will
+        only match file names, not content. Using a small subset of the
+        index allows things like left-hand wildcards without performance
+        issues, and may sometimes be useful.</para></listitem>
+
+        <listitem><para>The GUI <literal>Advanced Search</literal> mode is
+        actually not more powerful than the query language, but it helps
+        you build complex queries without having to remember the language,
+        and avoids any interpretation ambiguity, as it bypasses the user
+        input parser.</para></listitem>
+
+      </itemizedlist>
+      </para>
+
+      <para>These five input modes are supported by the different user
+      interfaces which are described in the following sections.</para>
+      
+    </sect1>
+
 
     <sect1 id="RCL.SEARCH.GUI">
       <title>Searching with the Qt graphical user interface</title>
@@ -3380,43 +3592,46 @@ fs.inotify.max_user_watches=32768
       <para><command>recollq</command> has a
       <ulink url="https://www.lesbonscomptes.com/recoll/manpages/recollq.1.html">man page</ulink>. 
 
-      The Usage string is as follows:</para>
-      <programlisting>
+      The Usage string follows:</para>
+      <programlisting><![CDATA[
 recollq: usage:
--P: Show the date span for all the documents present in the index
-[-o|-a|-f] [-q] &lt;query string&gt;
-Runs a recoll query and displays result lines. 
-Default: will interpret the argument(s) as a xesam query string
-query may be like: 
-implicit AND, Exclusion, field spec:    t1 -t2 title:t3
-OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)
-Phrase: "t1 t2" (needs additional quoting on cmd line)
--o Emulate the GUI simple search in ANY TERM mode
--a Emulate the GUI simple search in ALL TERMS mode
--f Emulate the GUI simple search in filename mode
--q is just ignored (compatibility with the recoll GUI command line)
+ -P: Show the date span for all the documents present in the index
+ [-o|-a|-f] [-q] <query string>
+ Runs a recoll query and displays result lines. 
+  Default: will interpret the argument(s) as a xesam query string
+  Query elements: 
+   * Implicit AND, exclusion, field spec:  t1 -t2 title:t3
+   * OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)
+   * Phrase: "t1 t2" (needs additional quoting on cmd line)
+ -o Emulate the GUI simple search in ANY TERM mode
+ -a Emulate the GUI simple search in ALL TERMS mode
+ -f Emulate the GUI simple search in filename mode
+ -q is just ignored (compatibility with the recoll GUI command line)
 Common options:
--c &lt;configdir&gt; : specify config directory, overriding $RECOLL_CONFDIR
--d also dump file contents
--n [first-]&lt;cnt&gt; define the result slice. The default value for [first]
-is 0. Without the option, the default max count is 2000.
-Use n=0 for no limit
--b : basic. Just output urls, no mime types or titles
--Q : no result lines, just the processed query and result count
--m : dump the whole document meta[] array for each result
--A : output the document abstracts
--S fld : sort by field &lt;fld&gt;
--s stemlang : set stemming language to use (must exist in index...)
-Use -s "" to turn off stem expansion
--D : sort descending
--i &lt;dbdir&gt; : additional index, several can be given
--e use url encoding (%xx) for urls
--F &lt;field name list&gt; : output exactly these fields for each result.
-The field values are encoded in base64, output in one line and 
-separated by one space character. This is the recommended format 
-for use by other programs. Use a normal query with option -m to 
-see the field names.
-      </programlisting>
+ -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR
+ -d also dump file contents
+ -n [first-]<cnt> define the result slice. The default value for [first]
+    is 0. Without the option, the default max count is 2000.
+    Use n=0 for no limit
+ -b : basic. Just output urls, no mime types or titles
+ -Q : no result lines, just the processed query and result count
+ -m : dump the whole document meta[] array for each result
+ -A : output the document abstracts
+ -S fld : sort by field <fld>
+   -D : sort descending
+ -s stemlang : set stemming language to use (must exist in index...)
+    Use -s "" to turn off stem expansion
+ -T <synonyms file>: use the parameter (Thesaurus) for word expansion 
+ -i <dbdir> : additional index, several can be given
+ -e use url encoding (%xx) for urls
+ -F <field name list> : output exactly these fields for each result.
+    The field values are encoded in base64, output in one line and 
+    separated by one space character. This is the recommended format 
+    for use by other programs. Use a normal query with option -m to 
+    see the field names. Use -F '' to output all fields, but you probably
+    also want option -N in this case
+  -N : with -F, print the (plain text) field names before the field values
+      ]]></programlisting>
 
       <para>Sample execution:</para>
       <programlisting>
@@ -3429,137 +3644,6 @@ text/html       [file:///Users/uncrypted-dockes/projets/pagepers/index.html]    
 text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
       </programlisting>
     </sect1>
-
-    <sect1 id="RCL.SEARCH.SYNONYMS">
-      <title>Using Synonyms (1.22)</title>
-
-      <formalpara><title>Term synonyms:</title>
-      <para>there are a number of ways to use term synonyms for searching text:
-      <itemizedlist>
-        <listitem><para>At index creation time, they can be used to alter the 
-        indexed terms, either increasing or decreasing their number, by
-        expanding the original terms to all synonyms, or by
-        reducing all synonym terms to a canonical one.</para></listitem>
-        <listitem><para>At query time, they can be used to match texts
-        containing terms which are synonyms of the ones specified by the user,
-        either by expanding the query for all synonyms, or by reducing the user
-        entry to canonical terms (the latter only works if the corresponding
-        processing has been performed while creating the index).</para></listitem>
-      </itemizedlist>
-      </para>
-      </formalpara>
-      
-      <para>&RCL; only uses synonyms at query time. A user query term which
-      part of a synonym group will be optionally expanded into an
-      <literal>OR</literal> query for all terms in the group.</para>
-
-      <para>Synonym groups are defined inside ordinary text files. Each line
-      in the file defines a group.</para> 
-
-      <para>Example:
-      <programlisting>
-        hi hello "good morning"
-
-        # not sure about "au revoir" though. Is this english ?
-        bye goodbye "see you" \
-        "au revoir" 
-      </programlisting>
-      </para>
-
-      <para>As usual, lines beginning with a <literal>#</literal> are comments,
-      empty lines are ignored, and lines can be continued by ending them with
-      a backslash.
-      </para>
-
-      <para>Multi-word synonyms are supported, but be aware that these will
-      generate phrase queries, which may degrade performance and will disable
-      stemming expansion for the phrase terms.</para>
-
-      <para>The synonyms file can be specified in the <guilabel>Search
-      parameters</guilabel> tab of the <guilabel>GUI configuration</guilabel>
-      <guilabel>Preferences</guilabel> menu entry, or as an option for
-      command-line searches.</para>
-
-      <para>Once the file is defined, the use of synonyms can be enabled or
-      disabled directly from the <guilabel>Preferences</guilabel>
-      menu.</para>
-      
-      <para>The synonyms are searched for matches with user terms after the
-      latter are stem-expanded, but the contents of the synonyms file itself
-      is not subjected to stem expansion. This means that a match will not be
-      found if the form present in the synonyms file is not present anywhere
-      in the document set.</para>
-
-      <para>The synonyms function is probably not going to help you find your
-      letters to Mr. Smith. It is best used for domain-specific searches. For
-      example, it was initially suggested by a user performing searches among
-      historical documents: the synonyms file would contains nicknames and
-      aliases for each of the persons of interest.</para>
-
-      
-    </sect1>
-    
-    <sect1 id="RCL.SEARCH.PTRANS">
-      <title>Path translations</title>
-      
-      <para>In some cases, the document paths stored inside the index do
-      not match the actual ones, so that document
-      previews and accesses will fail. This can occur in a number of
-      circumstances:</para>
-      <itemizedlist>
-        <listitem><para>When using multiple indexes it is a relatively common
-        occurrence that some will actually reside on a remote volume, for
-        exemple mounted via NFS. In this case, the paths used to access
-        the documents on the local machine are not necessarily the same
-        than the ones used while indexing on the remote machine. For
-        example, <filename>/home/me</filename> may have been used as
-        a <literal>topdirs</literal> elements while indexing, but the
-        directory might be mounted
-        as <filename>/net/server/home/me</filename> on the local
-        machine.</para></listitem>
-
-        <listitem><para>The case may also occur with removable
-        disks. It is perfectly possible to configure an index to
-        live with the documents on the removable disk, but it may
-        happen that the disk is not mounted at the same place so
-        that the documents paths from the index are
-        invalid.</para></listitem>
-        
-        <listitem><para>As a last exemple, one could imagine that a big
-        directory has been moved, but that it is currently
-        inconvenient to run the indexer.</para></listitem>
-      </itemizedlist>
-
-      <para>&RCL; has a facility for rewriting access paths when
-      extracting the data from the index. The translations can be
-      defined for the main index and for any additional query
-      index.</para>
-
-      <para>The path translation facility will be useful
-      whenever the documents paths seen by the indexer are not the same
-      as the ones which should be used at query time.</para>
-
-      <para>In the above NFS example, &RCL; could be instructed to
-      rewrite any <filename>file:///home/me</filename> URL from the
-      index to <filename>file:///net/server/home/me</filename>,
-      allowing accesses from the client.</para>
-
-      <para>The translations are defined in the 
-      <link linkend="RCL.INSTALL.CONFIG.PTRANS"><filename>ptrans</filename></link>
-      configuration file, which
-        can be edited by hand or from the GUI external indexes
-        configuration dialog: <menuchoice>
-        <guimenu>Preferences</guimenu>
-        <guimenuitem>External index dialog</guimenuitem>
-        </menuchoice>, then click the <guilabel>Paths
-        translations</guilabel> button on the right below the index
-      list.</para>
-
-      <note><para>Due to a current bug, the GUI must be restarted
-      after changing the <filename>ptrans</filename> values (even when they
-      were changed from the GUI).</para></note>
-    </sect1>
-
 
 
     <sect1 id="RCL.SEARCH.LANG">
@@ -3653,14 +3737,18 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       </para>
 
       <para>To save you some typing, recent &RCL; versions (1.20 and later)
-      interpret a comma-separated list of terms as an AND list inside the
-      field. Use slash characters ('/') for an OR list. No white space
-      is allowed. So
+      interpret a comma-separated list of terms for a field as an AND list
+      inside the field. Use slash characters ('/') for an OR list. No white
+      space is allowed. So
       <programlisting>author:john,lennon</programlisting> will search for
       documents with <literal>john</literal> and <literal>lennon</literal>
       inside the <literal>author</literal> field (in any order), and
       <programlisting>author:john/ringo</programlisting> would search for
-      <literal>john</literal> or <literal>ringo</literal>.</para>
+      <literal>john</literal> or <literal>ringo</literal>. This behaviour
+      only happens for field queries (input without a field, comma- or
+      slash- separated input will produce a phrase search). You can use a
+      <literal>text</literal> field name to search the main text this
+      way.</para>
 
       <para>Modifiers can be set on a double-quote value, for example to specify
       a proximity search (unordered). See 
@@ -3948,80 +4036,6 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
     </sect1> <!-- rcl.search.lang -->
     
-
-    <sect1 id="RCL.SEARCH.CASEDIAC">
-      <title>Search case and diacritics sensitivity</title>
-
-      <para>For &RCL; versions 1.18 and later, and <emphasis>when working
-      with a raw index</emphasis> (not the default), searches can be
-      sensitive to character case and diacritics. How this happens
-      is controlled by configuration variables and what search data is
-      entered.</para>
-
-      <para>The general default is that searches entered without upper-case
-      or accented characters are insensitive to case and diacritics. An
-      entry of <literal>resume</literal> will match any of
-      <literal>Resume</literal>, <literal>RESUME</literal>,
-      <literal>résumé</literal>, <literal>Résumé</literal> etc.</para>
-
-      <para>Two configuration variables can automate switching on
-      sensitivity (they were documented but actually did nothing until
-      &RCL; 1.22):</para>
-
-      <variablelist>
-
-        <varlistentry>
-          <term>autodiacsens</term><listitem><para>If this is set, search
-          sensitivity to diacritics will be turned on as soon as an
-          accented character exists in a search term. When the variable
-          is set to true, <literal>resume</literal> will start a
-          diacritics-unsensitive search, but <literal>résumé</literal>
-          will be matched exactly. The default value is
-          <emphasis>false</emphasis>.</para></listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term>autocasesens</term><listitem><para>If this is set, search
-          sensitivity to character case will be turned on as soon as an
-          upper-case character exists in a search term <emphasis>except
-          for the first one</emphasis>. When the variable is set to
-          true, <literal>us</literal> or <literal>Us</literal> will
-          start a diacritics-unsensitive search, but
-          <literal>US</literal> will be matched exactly. The default
-          value is <emphasis>true</emphasis> (contrary to
-          <literal>autodiacsens</literal>).</para></listitem>
-        </varlistentry>
-
-      </variablelist>
-      
-      <para>As in the past, capitalizing the first letter of a word will
-      turn off its stem expansion and have no effect on
-      case-sensitivity.</para>
-
-      <para>You can also explicitely activate case and diacritics
-      sensitivity by using modifiers with the query
-      language. <literal>C</literal> will make the term case-sensitive, and
-      <literal>D</literal> will make it
-      diacritics-sensitive. Examples:</para>
-      <programlisting>
-        "us"C
-      </programlisting>
-
-      <para>will search for the term <literal>us</literal> exactly
-      (<literal>Us</literal> will not be a match).</para>
-
-      <programlisting>
-        "resume"D
-      </programlisting>
-      <para>will search for the term <literal>resume</literal> exactly
-      (<literal>résumé</literal> will not be a match).</para>
-
-
-      <para>When either case or diacritics sensitivity is activated, stem
-      expansion is turned off. Having both does not make much sense.</para>
-
-    </sect1>
-
     <sect1 id="RCL.SEARCH.ANCHORWILD">
       <title>Anchored searches and wildcards</title>
 
@@ -4152,6 +4166,212 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
     </sect1> <!-- wildchars and anchors -->
 
+
+    
+    <sect1 id="RCL.SEARCH.SYNONYMS">
+      <title>Using Synonyms (1.22)</title>
+
+      <formalpara><title>Term synonyms:</title>
+      <para>there are a number of ways to use term synonyms for searching text:
+      <itemizedlist>
+        <listitem><para>At index creation time, they can be used to alter the 
+        indexed terms, either increasing or decreasing their number, by
+        expanding the original terms to all synonyms, or by
+        reducing all synonym terms to a canonical one.</para></listitem>
+        <listitem><para>At query time, they can be used to match texts
+        containing terms which are synonyms of the ones specified by the user,
+        either by expanding the query for all synonyms, or by reducing the user
+        entry to canonical terms (the latter only works if the corresponding
+        processing has been performed while creating the index).</para></listitem>
+      </itemizedlist>
+      </para>
+      </formalpara>
+      
+      <para>&RCL; only uses synonyms at query time. A user query term which
+      part of a synonym group will be optionally expanded into an
+      <literal>OR</literal> query for all terms in the group.</para>
+
+      <para>Synonym groups are defined inside ordinary text files. Each line
+      in the file defines a group.</para> 
+
+      <para>Example:
+      <programlisting>
+        hi hello "good morning"
+
+        # not sure about "au revoir" though. Is this english ?
+        bye goodbye "see you" \
+        "au revoir" 
+      </programlisting>
+      </para>
+
+      <para>As usual, lines beginning with a <literal>#</literal> are comments,
+      empty lines are ignored, and lines can be continued by ending them with
+      a backslash.
+      </para>
+
+      <para>Multi-word synonyms are supported, but be aware that these will
+      generate phrase queries, which may degrade performance and will disable
+      stemming expansion for the phrase terms.</para>
+
+      <para>The synonyms file can be specified in the <guilabel>Search
+      parameters</guilabel> tab of the <guilabel>GUI configuration</guilabel>
+      <guilabel>Preferences</guilabel> menu entry, or as an option for
+      command-line searches.</para>
+
+      <para>Once the file is defined, the use of synonyms can be enabled or
+      disabled directly from the <guilabel>Preferences</guilabel>
+      menu.</para>
+      
+      <para>The synonyms are searched for matches with user terms after the
+      latter are stem-expanded, but the contents of the synonyms file itself
+      is not subjected to stem expansion. This means that a match will not be
+      found if the form present in the synonyms file is not present anywhere
+      in the document set.</para>
+
+      <para>The synonyms function is probably not going to help you find your
+      letters to Mr. Smith. It is best used for domain-specific searches. For
+      example, it was initially suggested by a user performing searches among
+      historical documents: the synonyms file would contains nicknames and
+      aliases for each of the persons of interest.</para>
+
+      
+    </sect1>
+    
+    <sect1 id="RCL.SEARCH.PTRANS">
+      <title>Path translations</title>
+      
+      <para>In some cases, the document paths stored inside the index do
+      not match the actual ones, so that document
+      previews and accesses will fail. This can occur in a number of
+      circumstances:</para>
+      <itemizedlist>
+        <listitem><para>When using multiple indexes it is a relatively common
+        occurrence that some will actually reside on a remote volume, for
+        exemple mounted via NFS. In this case, the paths used to access
+        the documents on the local machine are not necessarily the same
+        than the ones used while indexing on the remote machine. For
+        example, <filename>/home/me</filename> may have been used as
+        a <literal>topdirs</literal> elements while indexing, but the
+        directory might be mounted
+        as <filename>/net/server/home/me</filename> on the local
+        machine.</para></listitem>
+
+        <listitem><para>The case may also occur with removable
+        disks. It is perfectly possible to configure an index to
+        live with the documents on the removable disk, but it may
+        happen that the disk is not mounted at the same place so
+        that the documents paths from the index are
+        invalid.</para></listitem>
+        
+        <listitem><para>As a last exemple, one could imagine that a big
+        directory has been moved, but that it is currently
+        inconvenient to run the indexer.</para></listitem>
+      </itemizedlist>
+
+      <para>&RCL; has a facility for rewriting access paths when
+      extracting the data from the index. The translations can be
+      defined for the main index and for any additional query
+      index.</para>
+
+      <para>The path translation facility will be useful
+      whenever the documents paths seen by the indexer are not the same
+      as the ones which should be used at query time.</para>
+
+      <para>In the above NFS example, &RCL; could be instructed to
+      rewrite any <filename>file:///home/me</filename> URL from the
+      index to <filename>file:///net/server/home/me</filename>,
+      allowing accesses from the client.</para>
+
+      <para>The translations are defined in the 
+      <link linkend="RCL.INSTALL.CONFIG.PTRANS"><filename>ptrans</filename></link>
+      configuration file, which
+        can be edited by hand or from the GUI external indexes
+        configuration dialog: <menuchoice>
+        <guimenu>Preferences</guimenu>
+        <guimenuitem>External index dialog</guimenuitem>
+        </menuchoice>, then click the <guilabel>Paths
+        translations</guilabel> button on the right below the index
+      list.</para>
+
+      <note><para>Due to a current bug, the GUI must be restarted
+      after changing the <filename>ptrans</filename> values (even when they
+      were changed from the GUI).</para></note>
+    </sect1>
+
+    <sect1 id="RCL.SEARCH.CASEDIAC">
+      <title>Search case and diacritics sensitivity</title>
+
+      <para>For &RCL; versions 1.18 and later, and <emphasis>when working
+      with a raw index</emphasis> (not the default), searches can be
+      sensitive to character case and diacritics. How this happens
+      is controlled by configuration variables and what search data is
+      entered.</para>
+
+      <para>The general default is that searches entered without upper-case
+      or accented characters are insensitive to case and diacritics. An
+      entry of <literal>resume</literal> will match any of
+      <literal>Resume</literal>, <literal>RESUME</literal>,
+      <literal>résumé</literal>, <literal>Résumé</literal> etc.</para>
+
+      <para>Two configuration variables can automate switching on
+      sensitivity (they were documented but actually did nothing until
+      &RCL; 1.22):</para>
+
+      <variablelist>
+
+        <varlistentry>
+          <term>autodiacsens</term><listitem><para>If this is set, search
+          sensitivity to diacritics will be turned on as soon as an
+          accented character exists in a search term. When the variable
+          is set to true, <literal>resume</literal> will start a
+          diacritics-unsensitive search, but <literal>résumé</literal>
+          will be matched exactly. The default value is
+          <emphasis>false</emphasis>.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>autocasesens</term><listitem><para>If this is set, search
+          sensitivity to character case will be turned on as soon as an
+          upper-case character exists in a search term <emphasis>except
+          for the first one</emphasis>. When the variable is set to
+          true, <literal>us</literal> or <literal>Us</literal> will
+          start a diacritics-unsensitive search, but
+          <literal>US</literal> will be matched exactly. The default
+          value is <emphasis>true</emphasis> (contrary to
+          <literal>autodiacsens</literal>).</para></listitem>
+        </varlistentry>
+
+      </variablelist>
+      
+      <para>As in the past, capitalizing the first letter of a word will
+      turn off its stem expansion and have no effect on
+      case-sensitivity.</para>
+
+      <para>You can also explicitely activate case and diacritics
+      sensitivity by using modifiers with the query
+      language. <literal>C</literal> will make the term case-sensitive, and
+      <literal>D</literal> will make it
+      diacritics-sensitive. Examples:</para>
+      <programlisting>
+        "us"C
+      </programlisting>
+
+      <para>will search for the term <literal>us</literal> exactly
+      (<literal>Us</literal> will not be a match).</para>
+
+      <programlisting>
+        "resume"D
+      </programlisting>
+      <para>will search for the term <literal>resume</literal> exactly
+      (<literal>résumé</literal> will not be a match).</para>
+
+
+      <para>When either case or diacritics sensitivity is activated, stem
+      expansion is turned off. Having both does not make much sense.</para>
+
+    </sect1>
+
+
     <sect1 id="RCL.SEARCH.DESKTOP">
       <title>Desktop integration</title>
 
@@ -4222,154 +4442,6 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
     </sect1> <!-- rcl.search.desktop -->
 
   </chapter> <!-- Search -->
-
-  <chapter id="RCL.REMOVABLE">
-    <title>Removable volumes</title>
-
-    <para>&RCL; used to have no support for indexing removable volumes
-    (portable disks, USB keys, etc.). Recent versions have improved the
-    situation and support indexing removable volumes in two different
-    ways:</para>
-
-    <itemizedlist>
-      <listitem><para>By storing a volume index on the volume
-      itself (&RCL; 1.24).</para></listitem>
-      <listitem><para>By indexing the volume in the main, fixed, index, and
-      ensuring that the volume data is not purged if the indexing runs
-      while the volume is mounted. (&RCL; 1.25.2).</para></listitem>
-    </itemizedlist>
-
-    <sect1 id="RCL.REMOVABLE.MAIN">
-      <title>Indexing removable volumes in the main index</title>
-
-      <para>As of version 1.25.2, &RCL; has a simple way to ensure that the
-      index data for an absent volume will not be purged: the volume mount
-      point must be a member of the <literal>topdirs</literal> list, and
-      the mount directory must be empty (when the volume is not
-      mounted). If <command>recollindex</command> finds that one of the
-      <literal>topdirs</literal> is empty when starting up, any existing
-      data for the tree will be preserved by the indexing
-      pass (no purge for this area).</para> 
-    </sect1>
-    
-    <sect1 id="RCL.REMOVABLE.SELF">
-      <title>Self contained volumes</title>
-      
-      <para>As of &RCL; 1.24, it has become easy to build self-contained
-      datasets including a &RCL; configuration directory and index together
-      with the indexed documents, and to move such a dataset around (for
-      example copying it to an USB drive), without having to adjust the
-      configuration for querying the index.</para>
-
-      <note><para>This is a query-time feature only. The index must only be
-      updated in its original location. If an update is necessary in a
-      different location, the index must be reset.</para></note>
-
-      <para>To make a long story short, here follows a script to create a
-      &RCL; configuration and index under a given directory (given as single
-      parameter). The resulting data set (files + recoll directory) can later
-      to be moved to a CDROM or thumb drive. Longer explanations come after
-      the script.</para>
-      
-    <programlisting>#!/bin/sh
-
-fatal()
-{
-    echo $*;exit 1
-}
-usage()
-{
-    fatal "Usage: init-recoll-volume.sh &lt;top-directory>"
-}
-
-test $# = 1 || usage
-topdir=$1
-test -d "$topdir" || fatal $topdir should be a directory
-
-confdir="$topdir/recoll-config"
-test ! -d "$confdir" || fatal $confdir should not exist
-
-mkdir "$confdir"
-cd "$topdir"
-topdir=`pwd`
-cd "$confdir"
-confdir=`pwd`
-
-(echo topdirs = '"'$topdir'"'; \
- echo orgidxconfdir = $topdir/recoll-config) > "$confdir/recoll.conf"
-
-recollindex -c "$confdir"
-</programlisting>
-    
-    <para>The examples below will assume that you have a dataset under
-    <filename>/home/me/mydata/</filename>, with the index configuration and
-    data stored inside
-    <filename>/home/me/mydata/recoll-confdir</filename>.</para> 
-    
-    <para>In order to be able to run queries after the dataset has been
-    moved, you must ensure the following:
-    <itemizedlist>
-      <listitem><para>The main configuration file must define the
-      <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</link>
-      variable to be the original location of the configuration directory
-      (<filename>orgidxconfdir=/home/me/mydata/recoll-confdir</filename>
-      must be set inside
-      <filename>/home/me/mydata/recoll-confdir/recoll.conf</filename> in
-      the example above).</para></listitem>
-
-      <listitem><para>The configuration directory must exist with the
-      documents, somewhere under the directory which will be
-      moved. E.g. if you are moving <filename>/home/me/mydata</filename>
-      around, the configuration directory must exist somewhere below this
-      point, for example
-      <filename>/home/me/mydata/recoll-confdir</filename>, or
-      <filename>/home/me/mydata/sub/recoll-confdir</filename>.</para></listitem>
-
-      <listitem><para>You should keep the default locations for the index
-      elements (they are relative to the configuration directory by
-      default). Only the paths referring to the documents themselves
-      (e.g. <literal>topdirs</literal> values) should be
-      absolute (in general, they are only used when indexing
-      anyway).</para></listitem> 
-      
-    </itemizedlist>
-    </para>
-
-    <para>Only the first point needs an explicit user action, the &RCL;
-    defaults are compatible with the second one, and the third is
-    natural.</para>
-    
-    <para>If, after the move, the configuration directory needs to be
-    copied out of the dataset (for example because the thumb drive is too
-    slow), you can set the
-    <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">curidxconfdir</link>,
-    variable inside the copied configuration to
-    define the location of the moved one. For example if
-    <filename>/home/me/mydata</filename> is now mounted onto
-    <filename>/media/me/somelabel</filename>, but the configuration
-    directory and index has been copied to
-    <filename>/tmp/tempconfig</filename>, you would set
-    <literal>curidxconfdir</literal> to
-    <filename>/media/me/somelabel/recoll-confdir</filename> inside
-    <filename>/tmp/tempconfig/recoll.conf</filename>.
-    <literal>orgidxconfdir</literal> would still be
-    <filename>/home/me/mydata/recoll-confdir</filename> in the original and
-    the copy.</para>
-
-    <para>If you are regularly copying the configuration out of the
-    dataset, it will be useful to write a script to automate the
-    procedure. This can't really be done inside &RCL; because there are
-    probably many possible variants. One example would be to copy the
-    configuration to make it writable, but keep the index data on the
-    medium because it is too big - in this case, the script would also need
-    to set <literal>dbdir</literal> in the copied configuration.</para>
-    
-    <para>The same set of modifications (&RCL; 1.24) has also made it
-    possible to run queries from a readonly configuration directory (with
-    slightly reduced function of course, such as not recording the query
-    history).</para>
-    </sect1>
-  </chapter>
 
   <chapter id="RCL.PROGRAM">
     <title>Programming interface</title>
@@ -5772,15 +5844,14 @@ for i in range(nres):
         <application>Recoll</application> WEB site downloads
       page</ulink></para> 
 
-      <para>There used to exist another form of binary install, as
-      pre-compiled source trees, but these are just less convenient than
-      the packages and don't exist any more.</para>
-
-      <para>The package management tools will usually automatically
-      deal with hard dependancies for packages obtained from a proper
-      package repository. You will have to deal with them by hand for
-      downloaded packages (for example, when <command>dpkg</command>
-      complains about missing dependancies).</para>
+      <para>The &WIN; version of Recoll comes in a self-contained setup
+      file, there is nothing else to install.</para>
+      
+      <para>On &LIN;, the package management tools will automatically
+      install hard dependancies for packages obtained from a proper package
+      repository. You will have to deal with them by hand for downloaded
+      packages (for example, when <command>dpkg</command> complains about
+      missing dependancies).</para>
 
       <para>In all cases, you will have to check or install
       <link linkend="RCL.INSTALL.EXTERNAL">supporting applications</link>
@@ -5870,27 +5941,30 @@ for i in range(nres):
         common Unix derivatives, and it should be quite uncommon that you
         would have to build one of them.</para>
 
+        <para>If you do not need the GUI, you can avoid all GUI
+        dependancies by disabling its build. (See the configure section
+        further).</para>
+        
         <para>The shopping list:</para>
         <itemizedlist>
 
-          <listitem><para>The <command>autoconf</command>,
-          <command>automake</command> and <command>libtool</command>
-          triad. Only <command>autoconf</command> is needed for &RCL;
-          1.21 and earlier.</para></listitem>
+          <listitem><para>If you start from git code, you will need the
+          <command>autoconf</command>, <command>automake</command> and
+          <command>libtool</command> triad. They are not needed for
+          building from tar distributions.</para></listitem>
 
           <listitem><para>C++ compiler. Recent versions require C++11
-          compatibility (1.23 and later).</para>
-          </listitem>
+          compatibility (1.23 and later).</para></listitem>
 
           <listitem><para><command>bison</command> command (for &RCL; 1.21
-          and later).</para>
-          </listitem>
+          and later).</para></listitem>
 
-          <listitem><para><command>xsltproc</command> command. For building
-          the documentation (for &RCL; 1.21 and later). This sometimes
-          comes with the <application>libxslt</application> package. And
-          also the Docbook XML and style sheet files.</para> </listitem>
-
+          <listitem><para>For building the documentation: the
+          <command>xsltproc</command> command, and the Docbook XML and
+          style sheet files. You can avoid this dependancy by disabling
+          documentation building with the
+          <literal>--disable-userdoc</literal> <command>configure</command>
+          option.</para></listitem>
           
           <listitem><para>Development files
           for <ulink url="http://www.xapian.org"> <application>Xapian
@@ -5905,35 +5979,27 @@ for i in range(nres):
           </important>
           </listitem>
 
-          <listitem>
-            <para>Development files for 
-            <ulink url="http://qt-project.org/downloads">
-              <application>Qt 4 or Qt 5</application> </ulink>. &RCL; 1.15.9
-              was the last version to support <application>Qt 3</application>.
-              If you do not want to install or build the
-              <application>Qt Webkit</application> module, &RCL;
-              has a configuration option to disable its use (see further in
-              the configuration section).
-            </para> 
-          </listitem>
+          <listitem> <para>Development files for 
+            <ulink url="http://qt-project.org/downloads"><application>Qt 5</application> </ulink>.
+            and its own dependancies (X11 etc.)</para> </listitem>
 
-          <listitem>
-            <para>Development files for <application>X11</application> and
-            <application>zlib</application>.</para>
-          </listitem>
+          <listitem><para>Development files for libxslt</para></listitem>
 
-          <listitem>
-            <para>Development files for <application>Python</application>
-            (or use <literal>--disable-python-module</literal>).</para>
-          </listitem>
+          <listitem><para>Development files for
+          <application>zlib</application>.</para> </listitem> 
 
-          <listitem>
-            <para>You may also need 
-            <ulink url="http://www.gnu.org/software/libiconv/">
-              libiconv</ulink>. On <application>Linux</application>
-              systems, the iconv interface is part of libc and you should not
-            need to do anything special.</para>
-          </listitem>
+          <listitem><para>Development files for
+          <application>Python</application> (or use
+          <literal>--disable-python-module</literal>).</para></listitem>
+
+          <listitem><para>Development files for libchm</para></listitem>
+          
+          <listitem><para>You may also need 
+            <ulink url="http://www.gnu.org/software/libiconv/">libiconv</ulink>.
+
+            On <application>Linux</application> systems, the iconv
+            interface is part of libc and you should not need to do
+            anything special.</para></listitem>
 
         </itemizedlist>
 
@@ -5948,7 +6014,7 @@ for i in range(nres):
 
         <para>&RCL; has been built on Linux, FreeBSD, Mac OS X, and Solaris,
         most versions after 2005 should be ok, maybe some older ones too
-        (Solaris 8 is ok). If you build on another system, and
+        (Solaris 8 used to be ok). If you build on another system, and
         need to modify things,
         <ulink url="mailto:jfd@recoll.org">I would
         very much welcome patches</ulink>.</para>
@@ -5981,6 +6047,15 @@ for i in range(nres):
               WebKit widget if you do not or can't depend on the
               latter.</para></listitem>
 
+              <listitem><para><option>--disable-qtgui</option> Disable the Qt
+              interface. Will allow building the indexer and the command line
+              search program in absence of a Qt environment.</para> 
+              </listitem>
+
+              <listitem><para><option>--enable-webengine</option> Enable the
+              use of Qt Webengine (only meaningful if the Qt GUI 
+              is enabled), in place or Qt Webkit.</para></listitem>
+
               <listitem><para><option>--disable-idxthreads</option> is available
               from version 1.19 to suppress multithreading inside the
               indexing process. You can also use the run-time
@@ -5994,6 +6069,10 @@ for i in range(nres):
               <listitem><para><option>--disable-python-module</option> will 
               avoid building the <application>Python</application>
               module.</para></listitem>
+
+              <listitem><para><option>--disable-python-chm</option> will
+              avoid building the Python libchm interface used to index CHM
+              files.</para></listitem>
 
               <listitem><para><option>--disable-xattr</option> will prevent
               fetching data from file extended attributes. Beyond a
@@ -6020,11 +6099,6 @@ for i in range(nres):
               enable the gnu version on systems where the native one is
               bad.</para> </listitem>
 
-              <listitem><para><option>--disable-qtgui</option> Disable the Qt
-              interface. Will allow building the indexer and the command line
-              search program in absence of a Qt environment.</para> 
-              </listitem>
-
               <listitem><para><option>--disable-x11mon</option> Disable
               <application>X11</application> connection monitoring
               inside recollindex. Together with --disable-qtgui, this
@@ -6036,6 +6110,12 @@ for i in range(nres):
               will avoid building the user manual. This avoids having to
               install the Docbook XML/XSL files and the TeX toolchain used for
               translating the manual to PDF.</para></listitem>
+
+              <listitem><para><option>--enable-recollq</option> Enable
+              building the <command>recollq</command> command line query
+              tool (recoll -t without need for Qt). This is done by 
+              default if --disable-qtgui is set but this option
+              enables forcing it.</para></listitem>
 
               <listitem><para><option>--disable-pic</option> (&RCL; versions up
               to 1.21 only) will compile
