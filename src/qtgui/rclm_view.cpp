@@ -416,9 +416,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     subs["U"] = url_encode(url);
     subs["u"] = url;
     // Let %(xx) access all metadata.
-    for (map<string,string>::const_iterator it = doc.meta.begin();
-         it != doc.meta.end(); it++) {
-        subs[it->first] = it->second;
+    for (const auto& ent :doc.meta) {
+        subs[ent.first] = ent.second;
     }
     execViewer(subs, enterHistory, execpath, lcmd, cmd, doc, execwflags);
 }

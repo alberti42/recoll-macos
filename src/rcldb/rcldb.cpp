@@ -1885,21 +1885,21 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
 
     // Clear the term lists for the incoming fields and index the new values
     map<string, string>::iterator meta_it;
-    for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
+    for (const auto& ent : doc.meta) {
 	const FieldTraits *ftp;
-	if (!m_rcldb->fieldToTraits(meta_it->first, &ftp) || ftp->pfx.empty()) {
+	if (!m_rcldb->fieldToTraits(ent.first, &ftp) || ftp->pfx.empty()) {
 	    LOGDEB0("Db::xattrOnly: no prefix for field [" <<
-                    meta_it->first << "], skipped\n");
+                    ent.first << "], skipped\n");
 	    continue;
 	}
 	// Clear the previous terms for the field
 	clearField(xdoc, ftp->pfx, ftp->wdfinc);
-	LOGDEB0("Db::xattrOnly: field [" << meta_it->first << "] pfx [" <<
+	LOGDEB0("Db::xattrOnly: field [" << ent.first << "] pfx [" <<
                 ftp->pfx << "] inc " << ftp->wdfinc << ": [" <<
-                meta_it->second << "]\n");
+                ent.second << "]\n");
 	splitter->setTraits(*ftp);
-	if (!splitter->text_to_words(meta_it->second)) {
-	    LOGDEB("Db::xattrOnly: split failed for " << meta_it->first << "\n");
+	if (!splitter->text_to_words(ent.second)) {
+	    LOGDEB("Db::xattrOnly: split failed for " << ent.first << "\n");
         }
     }
     xdoc.add_value(VALUE_SIG, doc.sig);

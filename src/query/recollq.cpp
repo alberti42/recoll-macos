@@ -61,8 +61,8 @@ void output_fields(vector<string> fields, Rcl::Doc& doc,
 {
     if (fields.empty()) {
         map<string,string>::const_iterator it;
-        for (it = doc.meta.begin();it != doc.meta.end(); it++) {
-            fields.push_back(it->first);
+        for (const auto& entry : doc.meta) {
+            fields.push_back(entry.first);
         }
     }
     for (vector<string>::const_iterator it = fields.begin();
@@ -406,9 +406,8 @@ endopts:
 		<< doc.fbytes << "\tbytes" << "\t"
 		<<  endl;
 	    if (op_flags & OPT_m) {
-		for (map<string,string>::const_iterator it = doc.meta.begin();
-		     it != doc.meta.end(); it++) {
-		    cout << it->first << " = " << it->second << endl;
+		for (const auto ent : doc.meta) {
+		    cout << ent.first << " = " << ent.second << endl;
 		}
 	    }
             if (op_flags & OPT_A) {

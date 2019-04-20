@@ -157,9 +157,8 @@ public:
         // way.  We need it because not all interesting doc fields are
         // in the meta array (ie: mimetype, url), and we want
         // something homogenous and easy to save.
-        for (map<string,string>::const_iterator it = doc.meta.begin();
-             it != doc.meta.end(); it++) {
-            m_fields.set((*it).first, (*it).second, cstr_null);
+        for (const auto& entry : doc.meta) {
+            m_fields.set(entry.first, entry.second, cstr_null);
         }
         m_fields.set(cstr_url, doc.url, cstr_null);
         m_fields.set(cstr_bgc_mimetype, doc.mimetype, cstr_null);

@@ -954,11 +954,10 @@ void PreviewTextEdit::displayFields()
         txt += "|" + QString::fromUtf8(m_ipath.c_str());
     txt += "</b><br><br>";
     txt += "<dl>\n";
-    for (map<string,string>::const_iterator it = m_fdoc.meta.begin();
-         it != m_fdoc.meta.end(); it++) {
-        if (!it->second.empty())
-            txt += "<dt>" + QString::fromUtf8(it->first.c_str()) + "</dt> " 
-                + "<dd>" + QString::fromUtf8(escapeHtml(it->second).c_str()) 
+    for (const auto& entry: m_fdoc.meta) {
+        if (!entry.second.empty())
+            txt += "<dt>" + QString::fromUtf8(entry.first.c_str()) + "</dt> " 
+                + "<dd>" + QString::fromUtf8(escapeHtml(entry.second).c_str()) 
                 + "</dd>\n";
     }
     txt += "</dl></body></html>";

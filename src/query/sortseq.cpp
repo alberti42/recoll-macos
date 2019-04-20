@@ -32,9 +32,8 @@ public:
     { 
 	LOGDEB1("Comparing .. \n" );
 
-	map<string,string>::const_iterator xit, yit;
-	xit = x->meta.find(ss.field);
-	yit = y->meta.find(ss.field);
+	const auto xit = x->meta.find(ss.field);
+	const auto yit = y->meta.find(ss.field);
 	if (xit == x->meta.end() || yit == y->meta.end())
 	    return 0;
 	return ss.desc ? yit->second < xit->second : xit->second < yit->second;

@@ -37,6 +37,8 @@
 #include "safesysstat.h"
 
 #include <mutex>
+#include <map>
+#include <unordered_map>
 
 #include "rclutil.h"
 #include "pathut.h"
@@ -49,15 +51,18 @@
 using namespace std;
 
 
-void map_ss_cp_noshr(const map<string, string> s, map<string, string> *d)
+template <class T> void map_ss_cp_noshr(T s, T *d)
 {
-    for (map<string, string>::const_iterator it = s.begin();
-            it != s.end(); it++) {
+    for (const auto& ent : s) {
         d->insert(
-            pair<string, string>(string(it->first.begin(), it->first.end()),
-                                 string(it->second.begin(), it->second.end())));
+            pair<string, string>(string(ent.first.begin(), ent.first.end()),
+                                 string(ent.second.begin(), ent.second.end())));
     }
 }
+template void map_ss_cp_noshr<map<string, string> >(
+    map<string, string> s, map<string, string>*d);
+template void map_ss_cp_noshr<unordered_map<string, string> >(
+    unordered_map<string,string> s, unordered_map<string,string>*d);
 
 #ifdef _WIN32
 static bool path_hasdrive(const string& s)

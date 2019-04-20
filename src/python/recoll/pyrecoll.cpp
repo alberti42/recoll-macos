@@ -1570,8 +1570,9 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 				     &confdir, &extradbs, &writable))
 	return -1;
 
-    // If the user creates several dbs, changing the confdir, we call 
-    // recollinit repeatedly, which *should* be ok...
+    // If the user creates several dbs, changing the confdir, we call
+    // recollinit repeatedly, which *should* be ok, except that it
+    // resets the log file.
     string reason;
     delete rclconfig;
     if (confdir) {

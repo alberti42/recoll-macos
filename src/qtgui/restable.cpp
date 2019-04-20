@@ -162,7 +162,7 @@ void ResTableDetailArea::createPopupMenu(const QPoint& pos)
 // little processing
 static string gengetter(const string& fld, const Rcl::Doc& doc)
 {
-    map<string, string>::const_iterator it = doc.meta.find(fld);
+    const auto it = doc.meta.find(fld);
     if (it == doc.meta.end()) {
 	return string();
     }
@@ -171,7 +171,7 @@ static string gengetter(const string& fld, const Rcl::Doc& doc)
 
 static string sizegetter(const string& fld, const Rcl::Doc& doc)
 {
-    map<string, string>::const_iterator it = doc.meta.find(fld);
+    const auto it = doc.meta.find(fld);
     if (it == doc.meta.end()) {
 	return string();
     }

@@ -94,10 +94,9 @@ private:
 extern bool thumbPathForUrl(const std::string& url, int size,
                             std::string& path);
 
-// Duplicate map<string,string> while ensuring no shared string data (to pass
-// to other thread):
-void map_ss_cp_noshr(const std::map<std::string, std::string> s,
-                     std::map<std::string, std::string> *d);
+// Duplicate (unordered)map<string,string> while ensuring no shared
+// string data (to pass to other thread):
+template <class T> void map_ss_cp_noshr(T s, T *d);
 
 
 #endif /* _RCLUTIL_H_INCLUDED_ */

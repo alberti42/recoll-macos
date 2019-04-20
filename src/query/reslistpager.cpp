@@ -313,10 +313,9 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     subs["x"] = xdocidbuf;
     
     // Let %(xx) access all metadata. HTML-neuter everything:
-    for (map<string,string>::iterator it = doc.meta.begin(); 
-	 it != doc.meta.end(); it++) {
-	if (!it->first.empty()) 
-	    subs[it->first] = maybeEscapeHtml(it->second);
+    for (const auto& entry : doc.meta) {
+	if (!entry.first.empty()) 
+	    subs[entry.first] = maybeEscapeHtml(entry.second);
     }
 
     string formatted;

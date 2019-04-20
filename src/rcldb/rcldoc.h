@@ -18,7 +18,7 @@
 #define _RCLDOC_H_INCLUDED_
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "smallut.h"
@@ -79,7 +79,7 @@ public:
     // Only some predefined fields are stored in the data record:
     // "title", "keywords", "abstract", "author", but if a field name is
     // in the "stored" configuration list, it will be stored too.
-    std::map<std::string, std::string> meta; 
+    std::unordered_map<std::string, std::string> meta; 
 
     // Attribute for the "abstract" entry. true if it is just the top
     // of doc, not a native document attribute. Not stored directly, but
