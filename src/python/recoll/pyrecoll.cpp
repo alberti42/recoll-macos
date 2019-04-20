@@ -1122,6 +1122,7 @@ Query_fetchmany(PyObject* _self, PyObject *args, PyObject *kwargs)
             break;
         }
         PyList_Append(reslist,  (PyObject*)docobj);
+        Py_DECREF(docobj);
     }
 
     if (PyErr_Occurred()) {
