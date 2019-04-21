@@ -23,7 +23,7 @@
 #include <strings.h>
 
 #include <string>
-using namespace std;
+#include <memory>
 
 #include "log.h"
 #include "rcldoc.h"
@@ -32,6 +32,8 @@ using namespace std;
 #include "rclinit.h"
 
 #include "pyrecoll.h"
+
+using namespace std;
 
 // Imported from pyrecoll
 static PyObject *recoll_DocType;
@@ -42,7 +44,7 @@ typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
     FileInterner *xtr;
-    RclConfig *rclconfig;
+    std::shared_ptr<RclConfig> rclconfig;
     recoll_DocObject *docobject;
 } rclx_ExtractorObject;
 
@@ -53,6 +55,7 @@ Extractor_dealloc(rclx_ExtractorObject *self)
     if (self->docobject) {
         Py_DECREF(&self->docobject);
     }
+    self->rclconfig.reset();
     delete self->xtr;
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
@@ -66,7 +69,6 @@ Extractor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (self == 0) 
 	return 0;
     self->xtr = 0;
-    self->rclconfig = 0;
     self->docobject = 0;
     return (PyObject *)self;
 }
@@ -90,7 +92,7 @@ Extractor_init(rclx_ExtractorObject *self, PyObject *args, PyObject *kwargs)
     Py_INCREF(dobj);
 
     self->rclconfig = dobj->rclconfig;
-    self->xtr = new FileInterner(*dobj->doc, self->rclconfig, 
+    self->xtr = new FileInterner(*dobj->doc, self->rclconfig.get(), 
 				 FileInterner::FIF_forPreview);
     return 0;
 }
@@ -198,7 +200,7 @@ Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args,
            mimetype << "] doc mimetype [" << self->docobject->doc->mimetype <<
            "\n");
     if (ipath.empty() && !mimetype.compare(self->docobject->doc->mimetype)) {
-        status = FileInterner::idocToFile(temp, outfile, self->rclconfig,
+        status = FileInterner::idocToFile(temp, outfile, self->rclconfig.get(),
                                                *self->docobject->doc);
     } else {
         self->xtr->setTargetMType(mimetype);

@@ -24,7 +24,6 @@
 #include <string>
 #include <iostream>
 #include <set>
-using namespace std;
 
 #include "rclinit.h"
 #include "rclconfig.h"
@@ -42,13 +41,20 @@ using namespace std;
 
 #include "pyrecoll.h"
 
-static RclConfig *rclconfig;
+using namespace std;
 
 #if PY_MAJOR_VERSION >=3
 #  define Py_TPFLAGS_HAVE_ITER 0
 #else
 #define PyLong_FromLong PyInt_FromLong 
 #endif
+
+// To keep old code going after we moved the static rclconfig to the
+// db object (to fix multiple dbs issues), we keep a copy of the last
+// created rclconfig in RCLCONFIG. This is set into the doc objec by
+// doc_init, then reset to the db's by db::doc() or query::iter_next,
+// the proper Doc creators.
+static shared_ptr<RclConfig> RCLCONFIG;
 
 //////////////////////////////////////////////////////////////////////
 /// SEARCHDATA SearchData code
@@ -308,7 +314,6 @@ Doc_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (self == 0) 
 	return 0;
     self->doc = 0;
-    self->rclconfig = 0;
     return (PyObject *)self;
 }
 
@@ -320,7 +325,7 @@ Doc_init(recoll_DocObject *self, PyObject *, PyObject *)
     self->doc = new Rcl::Doc;
     if (self->doc == 0)
 	return -1;
-    self->rclconfig = rclconfig;
+    self->rclconfig = RCLCONFIG;
     return 0;
 }
 
@@ -544,6 +549,11 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
         PyErr_SetString(PyExc_AttributeError, "doc");
 	return 0;
     }
+    if (!self->rclconfig || !self->rclconfig->ok()) {
+	PyErr_SetString(PyExc_AttributeError,
+                        "Configuration not initialized");
+	return 0;
+    }
 
     PyObject *meth = PyObject_GenericGetAttr((PyObject*)self, nameobj);
     if (meth) {
@@ -568,7 +578,7 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
 	Py_RETURN_NONE;
     }
 
-    string key = rclconfig->fieldQCanon(name);
+    string key = self->rclconfig->fieldQCanon(name);
     string value;
     if (idocget(self, key, value)) {
 	LOGDEB1("Doc_getattro: [" << key << "] -> [" << value << "]\n");
@@ -586,8 +596,8 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
         PyErr_SetString(PyExc_AttributeError, "doc??");
 	return -1;
     }
-    if (!rclconfig || !rclconfig->ok()) {
-	PyErr_SetString(PyExc_EnvironmentError,
+    if (!self->rclconfig || !self->rclconfig->ok()) {
+	PyErr_SetString(PyExc_AttributeError,
                         "Configuration not initialized");
 	return -1;
     }
@@ -615,7 +625,7 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
     }
     string uvalue = PyBytes_AsString(putf8);
     Py_DECREF(putf8);
-    string key = rclconfig->fieldQCanon(name);
+    string key = self->rclconfig->fieldQCanon(name);
 
     LOGDEB0("Doc_setattr: doc " << self->doc << " [" << key << "] (" << name <<
             ") -> [" << uvalue << "]\n");
@@ -693,6 +703,11 @@ Doc_subscript(recoll_DocObject *self, PyObject *key)
         PyErr_SetString(PyExc_AttributeError, "doc??");
 	return NULL;
     }
+    if (!self->rclconfig || !self->rclconfig->ok()) {
+	PyErr_SetString(PyExc_AttributeError,
+                        "Configuration not initialized");
+	return NULL;
+    }
     string name;
     if (PyUnicode_Check(key)) {
         PyObject* utf8o = PyUnicode_AsUTF8String(key);
@@ -710,7 +725,7 @@ Doc_subscript(recoll_DocObject *self, PyObject *key)
 	Py_RETURN_NONE;
     }
 
-    string skey = rclconfig->fieldQCanon(name);
+    string skey = self->rclconfig->fieldQCanon(name);
     string value;
     if (idocget(self, skey, value)) {
 	return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8","replace");
@@ -807,7 +822,13 @@ static PyTypeObject recoll_DocType = {
 //////////////////////////////////////////////////////
 /// QUERY Query object 
 
-struct recoll_DbObject;
+typedef struct recoll_DbObject {
+    PyObject_HEAD
+    /* Type-specific fields go here. */
+    Rcl::Db *db;
+    std::shared_ptr<RclConfig> rclconfig;
+} recoll_DbObject;
+
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
@@ -977,8 +998,8 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     // SearchData defaults to stemming in english
     // Use default for now but need to add way to specify language
     string reason;
-    Rcl::SearchData *sd = wasaStringToRcl(rclconfig, dostem ? stemlang : "",
-					  utf8, reason);
+    Rcl::SearchData *sd = wasaStringToRcl(
+        self->connection->rclconfig.get(),dostem ? stemlang : "", utf8, reason);
 
     if (!sd) {
 	PyErr_SetString(PyExc_ValueError, reason.c_str());
@@ -1034,7 +1055,7 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 // array when enumerating keys. Also for url which is also formatted.
 // But not that some fields are not copied, and are only reachable if
 // one knows their name (e.g. xdocid).
-static void movedocfields(Rcl::Doc *doc)
+static void movedocfields(const RclConfig* rclconfig, Rcl::Doc *doc)
 {
     printableUrl(rclconfig->getDefCharset(), doc->url, 
 		 doc->meta[Rcl::Doc::keyurl]);
@@ -1065,7 +1086,7 @@ Query_iternext(PyObject *_self)
         PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
 	return 0;
     }
-
+    result->rclconfig = self->connection->rclconfig;
     // We used to check against rowcount here, but this was wrong:
     // xapian result count estimate are sometimes wrong, we must go on
     // fetching until we fail
@@ -1074,7 +1095,7 @@ Query_iternext(PyObject *_self)
     }
     self->next++;
 
-    movedocfields(result->doc);
+    movedocfields(self->connection->rclconfig.get(), result->doc);
     return (PyObject *)result;
 }
 
@@ -1520,11 +1541,6 @@ static PyTypeObject recoll_QueryType = {
 
 ///////////////////////////////////////////////
 ////// DB Db object code
-typedef struct recoll_DbObject {
-    PyObject_HEAD
-    /* Type-specific fields go here. */
-    Rcl::Db *db;
-} recoll_DbObject;
 
 static PyObject *
 Db_close(recoll_DbObject *self)
@@ -1534,6 +1550,7 @@ Db_close(recoll_DbObject *self)
         delete self->db;
         self->db = 0;
     }
+    self->rclconfig.reset();
     Py_RETURN_NONE;
 }
 
@@ -1575,26 +1592,28 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
     // recollinit repeatedly, which *should* be ok, except that it
     // resets the log file.
     string reason;
-    delete rclconfig;
     if (confdir) {
 	string cfd = confdir;
-	rclconfig = recollinit(RCLINIT_PYTHON, 0, 0, reason, &cfd);
+	self->rclconfig = std::shared_ptr<RclConfig>(
+            recollinit(RCLINIT_PYTHON, 0, 0, reason, &cfd));
     } else {
-	rclconfig = recollinit(RCLINIT_PYTHON, 0, 0, reason, 0);
+	self->rclconfig = std::shared_ptr<RclConfig>(
+            recollinit(RCLINIT_PYTHON, 0, 0, reason, 0));
     }
+    RCLCONFIG = self->rclconfig;
     LOGDEB("Db_init\n");
 
-    if (rclconfig == 0) {
+    if (!self->rclconfig) {
 	PyErr_SetString(PyExc_EnvironmentError, reason.c_str());
 	return -1;
     }
-    if (!rclconfig->ok()) {
+    if (!self->rclconfig->ok()) {
 	PyErr_SetString(PyExc_EnvironmentError, "Bad config ?");
 	return -1;
     }
 
     delete self->db;
-    self->db = new Rcl::Db(rclconfig);
+    self->db = new Rcl::Db(self->rclconfig.get());
     if (!self->db->open(writable ? Rcl::Db::DbUpd : Rcl::Db::DbRO)) {
 	LOGERR("Db_init: db open error\n");
 	PyErr_SetString(PyExc_EnvironmentError, "Can't open index");
@@ -1658,6 +1677,25 @@ Db_query(recoll_DbObject* self)
 }
 
 static PyObject *
+Db_doc(recoll_DbObject* self)
+{
+    LOGDEB("Db_doc\n");
+    if (self->db == 0) {
+	LOGERR("Db_doc: db not found " << self->db << "\n");
+        PyErr_SetString(PyExc_AttributeError, "db");
+        return 0;
+    }
+    recoll_DocObject *result = (recoll_DocObject *)
+	PyObject_CallObject((PyObject *)&recoll_DocType, 0);
+    if (!result)
+	return 0;
+    result->rclconfig = self->rclconfig;
+    Py_INCREF(self);
+
+    return (PyObject *)result;
+}
+
+static PyObject *
 Db_setAbstractParams(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Db_setAbstractParams\n");
@@ -1667,7 +1705,7 @@ Db_setAbstractParams(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 				     &maxchars, &ctxwords))
 	return 0;
     if (self->db == 0) {
-	LOGERR("Db_query: db not found " << self->db << "\n");
+	LOGERR("Db_setAbstractParams: db not found " << self->db << "\n");
         PyErr_SetString(PyExc_AttributeError, "db id not found");
         return 0;
     }
@@ -1904,6 +1942,9 @@ static PyMethodDef Db_methods[] = {
     },
     {"query", (PyCFunction)Db_query, METH_NOARGS,
      "query() -> Query. Return a new, blank query object for this index."
+    },
+    {"doc", (PyCFunction)Db_doc, METH_NOARGS,
+     "doc() -> Doc. Return a new, blank doc object for this index."
     },
     {"cursor", (PyCFunction)Db_query, METH_NOARGS,
      "cursor() -> Query. Alias for query(). Return query object."

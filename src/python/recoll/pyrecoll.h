@@ -19,13 +19,16 @@
 
 #include <Python.h>
 
+#include <memory>
+
 class RclConfig;
+
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
     Rcl::Doc *doc;
     /* Each doc object has a pointer to the global config, for convenience */
-    RclConfig *rclconfig; 
+    std::shared_ptr<RclConfig> rclconfig; 
 } recoll_DocObject;
 
 #define PYRECOLL_PACKAGE "recoll."
