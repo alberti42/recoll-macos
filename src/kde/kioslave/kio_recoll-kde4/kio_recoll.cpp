@@ -51,8 +51,7 @@ using namespace KIO;
 RclConfig *RecollProtocol::o_rclconfig;
 
 RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app) 
-    : SlaveBase("recoll", pool, app), m_initok(false), m_rcldb(0),
-      m_alwaysdir(false)
+    : SlaveBase("recoll", pool, app), m_initok(false), m_alwaysdir(false)
 {
     kDebug() << endl;
     if (o_rclconfig == 0) {
@@ -71,7 +70,7 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
     }
     rwSettings(false);
 
-    m_rcldb = new Rcl::Db(o_rclconfig);
+    m_rcldb = std::shared_ptr<Rcl::Db>(new Rcl::Db(o_rclconfig));
     if (!m_rcldb) {
 	m_reason = "Could not build database object. (out of memory ?)";
 	return;
@@ -103,7 +102,6 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
 RecollProtocol::~RecollProtocol()
 {
     kDebug();
-    delete m_rcldb;
 }
 
 bool RecollProtocol::maybeOpenDb(string &reason)
@@ -333,7 +331,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     }
 
     std::shared_ptr<Rcl::SearchData> sdata(sd);
-    std::shared_ptr<Rcl::Query>query(new Rcl::Query(m_rcldb));
+    std::shared_ptr<Rcl::Query>query(new Rcl::Query(m_rcldb.get()));
     query->setCollapseDuplicates(prefs.collapseDuplicates);
     if (!query->setQuery(sdata)) {
 	m_reason = "Query execute failed. Invalid query or syntax error?";
@@ -342,7 +340,8 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     }
 
     DocSequenceDb *src = 
-	new DocSequenceDb(std::shared_ptr<Rcl::Query>(query), "Query results", sdata);
+	new DocSequenceDb(m_rcldb, std::shared_ptr<Rcl::Query>(query),
+                          "Query results", sdata);
     if (src == 0) {
 	error(KIO::ERR_SLAVE_DEFINED, "Can't build result sequence");
 	return false;
