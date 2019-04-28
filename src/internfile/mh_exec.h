@@ -70,8 +70,8 @@ class MimeHandlerExec : public RecollFilter {
 
     MimeHandlerExec(RclConfig *cnf, const std::string& id);
 
-    virtual bool next_document();
-    virtual bool skip_to_document(const std::string& ipath); 
+    virtual bool next_document() override;
+    virtual bool skip_to_document(const std::string& ipath) override;
 
     virtual void clear_impl() override {
 	m_fn.erase(); 
@@ -80,7 +80,7 @@ class MimeHandlerExec : public RecollFilter {
 
 protected:
     virtual bool set_document_file_impl(const std::string& mt, 
-                                        const std::string& file_path);
+                                        const std::string& file_path) override;
 
     std::string m_fn;
     std::string m_ipath;

@@ -108,14 +108,14 @@ class MimeHandlerExecMultiple : public MimeHandlerExec {
     // No resources to clean up, the ExecCmd destructor does it.
     virtual ~MimeHandlerExecMultiple() {}
 
-    virtual bool next_document();
+    virtual bool next_document() override;
 
     // skip_to and clear inherited from MimeHandlerExec
 
 protected:
         // This is the only 2nd-level derived handler class. Use call-super.
     virtual bool set_document_file_impl(const std::string& mt,
-                                        const std::string &file_path) {
+                                        const std::string &file_path) override {
         m_filefirst = true;
         return MimeHandlerExec::set_document_file_impl(mt, file_path);
     }

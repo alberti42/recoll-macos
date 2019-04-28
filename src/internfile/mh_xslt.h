@@ -36,9 +36,9 @@ class MimeHandlerXslt : public RecollFilter {
 
 protected:
     virtual bool set_document_file_impl(const std::string& mt, 
-                                        const std::string& file_path);
+                                        const std::string& file_path) override;
     virtual bool set_document_string_impl(const std::string& mt,
-                                          const std::string& data);
+                                          const std::string& data) override;
 
     class Internal;
 private:

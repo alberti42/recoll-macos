@@ -134,8 +134,7 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
     RclDHistoryEntry& hentry = m_history[m_history.size() - 1 - num];
 
     if (sh) {
-	if (m_prevtime < 0 || 
-            abs (float(m_prevtime) - float(hentry.unixtime)) > 86400) {
+	if (m_prevtime < 0 || abs(m_prevtime - hentry.unixtime) > 86400) {
 	    m_prevtime = hentry.unixtime;
 	    time_t t = (time_t)(hentry.unixtime);
 	    *sh = string(ctime(&t));

@@ -31,12 +31,12 @@ class MimeHandlerHtml : public RecollFilter {
     }
     virtual ~MimeHandlerHtml() {}
 
-    virtual bool is_data_input_ok(DataInput input) const {
+    virtual bool is_data_input_ok(DataInput input) const override {
 	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
 	    return true;
 	return false;
     }
-    virtual bool next_document();
+    virtual bool next_document() override;
     const std::string& get_html() {
 	return m_html;
     }
@@ -46,9 +46,9 @@ class MimeHandlerHtml : public RecollFilter {
     }
 protected:
     virtual bool set_document_file_impl(const std::string& mt,
-                                        const std::string &file_path);
+                                        const std::string &file_path) override;
     virtual bool set_document_string_impl(const std::string& mt,
-                                          const std::string &data);
+                                          const std::string &data) override;
 
 private:
     std::string m_filename;

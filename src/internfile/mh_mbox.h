@@ -34,8 +34,8 @@ public:
 	  m_lineno(0), m_fsize(0) {
     }
     virtual ~MimeHandlerMbox();
-    virtual bool next_document();
-    virtual bool skip_to_document(const std::string& ipath) {
+    virtual bool next_document() override;
+    virtual bool skip_to_document(const std::string& ipath) override{
 	m_ipath = ipath;
 	return true;
     }
@@ -44,7 +44,7 @@ public:
 
 protected:
     virtual bool set_document_file_impl(const std::string&,
-                                        const std::string&);
+                                        const std::string&) override;
 
 private:
     std::string m_fn;     // File name

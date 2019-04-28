@@ -36,13 +36,13 @@ public:
     }
     virtual ~MimeHandlerText() {}
 
-    virtual bool is_data_input_ok(DataInput input) const {
+    virtual bool is_data_input_ok(DataInput input) const override {
         if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
             return true;
         return false;
     }
-    virtual bool next_document();
-    virtual bool skip_to_document(const std::string& s);
+    virtual bool next_document() override;
+    virtual bool skip_to_document(const std::string& s) override;
     virtual void clear_impl() override {
         m_paging = false;
         m_text.clear(); 
@@ -54,9 +54,9 @@ public:
     
 protected:
     virtual bool set_document_file_impl(const std::string& mt,
-                                        const std::string &file_path);
+                                        const std::string &file_path) override;
     virtual bool set_document_string_impl(const std::string&,
-                                          const std::string&);
+                                          const std::string&) override;
 
 private:
     bool   m_paging{false};

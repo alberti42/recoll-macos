@@ -54,9 +54,9 @@ public:
     StrWildMatcher(const std::string& exp)
         : StrMatcher(exp) {}
     virtual ~StrWildMatcher() {}
-    virtual bool match(const std::string& val) const;
-    virtual std::string::size_type baseprefixlen() const;
-    virtual StrWildMatcher *clone() const {
+    virtual bool match(const std::string& val) const override;
+    virtual std::string::size_type baseprefixlen() const override;
+    virtual StrWildMatcher *clone() const override {
 	return new StrWildMatcher(m_sexp);
     }
 };
@@ -66,10 +66,10 @@ public:
     StrRegexpMatcher(const std::string& exp);
     virtual bool setExp(const std::string& newexp) override;
     virtual ~StrRegexpMatcher() {};
-    virtual bool match(const std::string& val) const;
-    virtual std::string::size_type baseprefixlen() const;
+    virtual bool match(const std::string& val) const override;
+    virtual std::string::size_type baseprefixlen() const override;
     virtual bool ok() const override;
-    virtual StrRegexpMatcher *clone() const {
+    virtual StrRegexpMatcher *clone() const override {
 	return new StrRegexpMatcher(m_sexp);
     }
 private:
