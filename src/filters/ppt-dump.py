@@ -5,7 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-import sys, os.path, getopt
+import sys, os.path, getopt, traceback
 sys.path.append(sys.path[0]+"/msodump.zip")
 from msodumper import ole, pptstream, globals, olestream
 from msodumper.globals import error
@@ -117,11 +117,16 @@ def main (args):
         usage(exname)
         return
 
-    dumper = PPTDumper(args[0], globals.params)
-    if not dumper.dump():
-        error("FAILURE\n")
-    if globals.params.dumpText:
-        globals.dumptext()
+    try:
+        dumper = PPTDumper(args[0], globals.params)
+        if not dumper.dump():
+            error("FAILURE\n")
+        if globals.params.dumpText:
+            globals.dumptext()
+    except Exception as ex:
+        traceback.print_exc()
+        error("Could not parse")
+        sys.exit(1)
 
 if __name__ == '__main__':
     main(sys.argv)
