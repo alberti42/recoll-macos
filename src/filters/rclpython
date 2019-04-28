@@ -157,11 +157,15 @@ class Parser:
         except tokenize.TokenError as ex:
             msg = ex[0]
             line = ex[1][0]
-            self.out.write("<h3>ERROR: %s</h3>%s\n" % (
-                msg, self.raw[self.lines[line]:]))
+            self.out.write(("<h3>ERROR: %s</h3>%s\n" % (
+                msg, self.raw[self.lines[line]:])).encode('utf-8'))
         except IndentationError as ex:
             msg = ex[0]
-            self.out.write("<h3>ERROR: %s</h3>\n" % (msg))
+            self.out.write(("<h3>ERROR: %s</h3>\n" % (msg)).encode('utf-8'))
+        except Exception as ex:
+            # There are other possible exceptions, for example for a
+            # bad encoding line (->SyntaxError). e.g. # -*- coding: lala -*-
+            self.out.write(("<h3>ERROR: %s</h3>\n" % ex).encode('utf-8'))
         self.out.write(b'\n</pre>')
 
     def __call__(self, toktype, toktext, startpos, endpos, line):
