@@ -2195,11 +2195,13 @@ bool Db::purge()
     // or deletions. Adding the flush before the delete pass ensured
     // that any added document would go to the index. Kept here
     // because it doesn't really hurt.
+    m_reason.clear();
     try {
-	m_ndb->xwdb.commit();
-    } catch (...) {
-	LOGERR("Db::purge: 1st flush failed\n");
-
+        m_ndb->xwdb.commit();
+    } XCATCHERROR(m_reason);
+    if (!m_reason.empty()) {
+        LOGERR("Db::purge: 1st flush failed: " << m_reason << "\n");
+        return false;
     }
 
     // Walk the document array and delete any xapian document whose
@@ -2241,10 +2243,13 @@ bool Db::purge()
 	}
     }
 
+    m_reason.clear();
     try {
-	m_ndb->xwdb.commit();
-    } catch (...) {
-	LOGERR("Db::purge: 2nd flush failed\n");
+        m_ndb->xwdb.commit();
+    } XCATCHERROR(m_reason);
+    if (!m_reason.empty()) {
+        LOGERR("Db::purge: 2nd flush failed: " << m_reason << "\n");
+        return false;
     }
     return true;
 }
