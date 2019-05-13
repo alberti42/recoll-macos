@@ -16,15 +16,14 @@
  */
 #ifndef _rclquery_h_included_
 #define _rclquery_h_included_
+
 #include <string>
 #include <vector>
-
 #include <memory>
+
 #include "searchdata.h"
 
-#ifndef NO_NAMESPACES
 namespace Rcl {
-#endif
 
 class Db;
 class Doc;
@@ -40,20 +39,17 @@ enum abstract_result {
 class Snippet {
 public:
     Snippet(int page, const std::string& snip) 
-	: page(page), snippet(snip)
-    {
-    }
-    Snippet& setTerm(const std::string& trm)
-    {
-	term = trm;
-	return *this;
+        : page(page), snippet(snip) { }
+    Snippet& setTerm(const std::string& trm) {
+        term = trm;
+        return *this;
     }
     int page;
     std::string term;
     std::string snippet;
 };
 
-	
+        
 /**
  * An Rcl::Query is a question (SearchData) applied to a
  * database. Handles access to the results. Somewhat equivalent to a
@@ -61,27 +57,27 @@ public:
  *
  */
 class Query {
- public:
+public:
     Query(Db *db);
     ~Query();
 
     /** Get explanation about last error */
     std::string getReason() const {
-	return m_reason;
+        return m_reason;
     }
 
     /** Choose sort order. Must be called before setQuery */
     void setSortBy(const std::string& fld, bool ascending = true);
     const std::string& getSortBy() const {
-	return m_sortField;
+        return m_sortField;
     }
     bool getSortAscending() const {
-	return m_sortAscending;
+        return m_sortAscending;
     }
 
     /** Return or filter results with identical content checksum */
     void setCollapseDuplicates(bool on) {
-	m_collapseDuplicates = on;
+        m_collapseDuplicates = on;
     }
 
     /** Accept data describing the search and query the index. This can
@@ -100,21 +96,20 @@ class Query {
     bool getQueryTerms(std::vector<std::string>& terms);
 
     /** Build synthetic abstract for document, extracting chunks relevant for
-     * the input query. This uses index data only (no access to the file) */
-    // Abstract returned as one string
-    bool makeDocAbstract(const Doc &doc, std::string& abstract);
-    // Returned as a snippets vector
-    bool makeDocAbstract(const Doc &doc, std::vector<std::string>& abstract);
-    // Returned as a vector of pair<page,snippet> page is 0 if unknown
+     * the input query. 
+     * This uses index data only (no access to the file) 
+     * For each returned snippet, page is 0 if unknown, else > 0
+     */
     int makeDocAbstract(const Doc &doc, std::vector<Snippet>& abst, 
-			int maxoccs= -1, int ctxwords = -1);
+                        int maxoccs= -1, int ctxwords = -1);
+
     /** Retrieve page number for first match for "significant" query term 
      *  @param term returns the chosen term */
     int getFirstMatchPage(const Doc &doc, std::string& term);
 
     /** Retrieve a reference to the searchData we are using */
     std::shared_ptr<SearchData> getSD() {
-	return m_sd;
+        return m_sd;
     }
 
     /** Expand query to look for documents like the one passed in */
@@ -122,7 +117,7 @@ class Query {
 
     /** Return the Db we're set for */
     Db *whatDb() const {
-	return m_db;
+        return m_db;
     }
 
     /* make this public for access from embedded Db::Native */
@@ -145,9 +140,7 @@ private:
     Query & operator=(const Query &) {return *this;};
 };
 
-#ifndef NO_NAMESPACES
 }
-#endif // NO_NAMESPACES
 
 
 #endif /* _rclquery_h_included_ */

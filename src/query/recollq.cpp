@@ -56,6 +56,19 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
     return true;
 }
 
+static const string cstr_ellipsis("...");
+
+static void stringAbstract(Rcl::Query& query, Rcl::Doc doc, string& abstract)
+{
+    abstract.clear();
+    vector<Rcl::Snippet> vpabs;
+    query.makeDocAbstract(doc, vpabs);
+    for (const auto& snippet : vpabs) {
+        abstract.append(snippet.snippet);
+        abstract.append(cstr_ellipsis);
+    }
+}
+
 void output_fields(vector<string> fields, Rcl::Doc& doc,
 		   Rcl::Query& query, Rcl::Db& rcldb, bool printnames)
 {
@@ -70,7 +83,7 @@ void output_fields(vector<string> fields, Rcl::Doc& doc,
 	string out;
 	if (!it->compare("abstract")) {
 	    string abstract;
-	    query.makeDocAbstract(doc, abstract);
+            stringAbstract(query, doc, abstract);
 	    base64_encode(abstract, out);
         } else if (!it->compare("xdocid")) {
             char cdocid[30];
@@ -412,7 +425,8 @@ endopts:
 	    }
             if (op_flags & OPT_A) {
                 string abstract;
-                if (query.makeDocAbstract(doc, abstract)) {
+                stringAbstract(query, doc, abstract);
+                if (abstract.size()) {
                     cout << "ABSTRACT" << endl;
                     cout << abstract << endl;
                     cout << "/ABSTRACT" << endl;
