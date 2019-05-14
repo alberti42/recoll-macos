@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -33,10 +33,10 @@ void RclMain::previewClosed(Preview *w)
 {
     LOGDEB("RclMain::previewClosed(" << w << ")\n");
     if (w == curPreview) {
-	LOGDEB("Active preview closed\n");
-	curPreview = 0;
+        LOGDEB("Active preview closed\n");
+        curPreview = 0;
     } else {
-	LOGDEB("Old preview closed\n");
+        LOGDEB("Old preview closed\n");
     }
     delete w;
 }
@@ -144,37 +144,39 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
     zg_send_event(ZGSEND_PREVIEW, doc);
 
     if (mod & Qt::ShiftModifier) {
-	// User wants new preview window
-	curPreview = 0;
+        // User wants new preview window
+        curPreview = 0;
     }
     if (curPreview == 0) {
-	HighlightData hdata;
-	m_source->getTerms(hdata);
-	curPreview = new Preview(this, reslist->listId(), hdata);
+        HighlightData hdata;
+        m_source->getTerms(hdata);
+        curPreview = new Preview(this, reslist->listId(), hdata);
 
-	if (curPreview == 0) {
-	    QMessageBox::warning(0, tr("Warning"), 
-				 tr("Can't create preview window"),
-				 QMessageBox::Ok, 
-				 QMessageBox::NoButton);
-	    return;
-	}
-	connect(new QShortcut(quitKeySeq, curPreview), SIGNAL (activated()), 
-		this, SLOT (fileExit()));
-	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
-		this, SLOT(previewClosed(Preview *)));
-	connect(curPreview, SIGNAL(wordSelect(QString)),
-		sSearch, SLOT(addTerm(QString)));
-	connect(curPreview, SIGNAL(showNext(Preview *, int, int)),
-		this, SLOT(previewNextInTab(Preview *, int, int)));
-	connect(curPreview, SIGNAL(showPrev(Preview *, int, int)),
-		this, SLOT(previewPrevInTab(Preview *, int, int)));
-	connect(curPreview, SIGNAL(previewExposed(Preview *, int, int)),
-		this, SLOT(previewExposed(Preview *, int, int)));
-	connect(curPreview, SIGNAL(saveDocToFile(Rcl::Doc)), 
-		this, SLOT(saveDocToFile(Rcl::Doc)));
-	curPreview->setWindowTitle(getQueryDescription());
-	curPreview->show();
+        if (curPreview == 0) {
+            QMessageBox::warning(0, tr("Warning"), 
+                                 tr("Can't create preview window"),
+                                 QMessageBox::Ok, 
+                                 QMessageBox::NoButton);
+            return;
+        }
+        connect(new QShortcut(quitKeySeq, curPreview), SIGNAL (activated()), 
+                this, SLOT (fileExit()));
+        connect(curPreview, SIGNAL(previewClosed(Preview *)), 
+                this, SLOT(previewClosed(Preview *)));
+        connect(curPreview, SIGNAL(wordSelect(QString)),
+                sSearch, SLOT(addTerm(QString)));
+        connect(curPreview, SIGNAL(showNext(Preview *, int, int)),
+                this, SLOT(previewNextInTab(Preview *, int, int)));
+        connect(curPreview, SIGNAL(showPrev(Preview *, int, int)),
+                this, SLOT(previewPrevInTab(Preview *, int, int)));
+        connect(curPreview, SIGNAL(previewExposed(Preview *, int, int)),
+                this, SLOT(previewExposed(Preview *, int, int)));
+        connect(curPreview, SIGNAL(saveDocToFile(Rcl::Doc)), 
+                this, SLOT(saveDocToFile(Rcl::Doc)));
+        connect(curPreview, SIGNAL(editRequested(Rcl::Doc)), 
+                this, SLOT(startNativeViewer(Rcl::Doc)));
+        curPreview->setWindowTitle(getQueryDescription());
+        curPreview->show();
     } 
     curPreview->makeDocCurrent(doc, docnum);
 }
@@ -190,16 +192,16 @@ void RclMain::startPreview(Rcl::Doc doc)
 {
     Preview *preview = new Preview(this, 0, HighlightData());
     if (preview == 0) {
-	QMessageBox::warning(0, tr("Warning"), 
-			     tr("Can't create preview window"),
-			     QMessageBox::Ok, 
-			     QMessageBox::NoButton);
-	return;
+        QMessageBox::warning(0, tr("Warning"), 
+                             tr("Can't create preview window"),
+                             QMessageBox::Ok, 
+                             QMessageBox::NoButton);
+        return;
     }
     connect(new QShortcut(quitKeySeq, preview), SIGNAL (activated()), 
-	    this, SLOT (fileExit()));
+            this, SLOT (fileExit()));
     connect(preview, SIGNAL(wordSelect(QString)),
-	    sSearch, SLOT(addTerm(QString)));
+            sSearch, SLOT(addTerm(QString)));
     // Do the zeitgeist thing
     zg_send_event(ZGSEND_PREVIEW, doc);
     preview->show();
@@ -225,30 +227,30 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
            ", listId " << reslist->listId() << "\n");
 
     if (w == 0) // ??
-	return;
+        return;
 
     if (sid != reslist->listId()) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("This search is not active any more"));
-	return;
+        QMessageBox::warning(0, "Recoll", 
+                             tr("This search is not active any more"));
+        return;
     }
 
     if (nxt)
-	docnum++;
+        docnum++;
     else 
-	docnum--;
+        docnum--;
     if (docnum < 0 || !m_source || docnum >= m_source->getResCnt()) {
-	QApplication::beep();
-	return;
+        QApplication::beep();
+        return;
     }
 
     Rcl::Doc doc;
     if (!reslist->getDoc(docnum, doc)) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("Cannot retrieve document info from database"));
-	return;
+        QMessageBox::warning(0, "Recoll", 
+                             tr("Cannot retrieve document info from database"));
+        return;
     }
-	
+        
     w->makeDocCurrent(doc, docnum, true);
 }
 
@@ -259,8 +261,7 @@ void RclMain::previewExposed(Preview *, int sid, int docnum)
     LOGDEB2("RclMain::previewExposed: sid " << sid << " docnum " << docnum <<
             ", m_sid " << reslist->listId() << "\n");
     if (sid != reslist->listId()) {
-	return;
+        return;
     }
     reslist->previewExposed(docnum);
 }
-

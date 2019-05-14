@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -138,6 +138,7 @@ void Preview::init()
     connect(nextPB, SIGNAL(clicked()), this, SLOT(nextPressed()));
     connect(prevPB, SIGNAL(clicked()), this, SLOT(prevPressed()));
     connect(clearPB, SIGNAL(clicked()), searchTextCMB, SLOT(clearEditText()));
+    connect(editPB, SIGNAL(clicked()), this, SLOT(emitEditRequested()));
     connect(pvTab, SIGNAL(currentChanged(int)), this, SLOT(currentChanged(int)));
     connect(pvTab, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
@@ -276,12 +277,20 @@ void Preview::searchTextFromIndex(int idx)
     m_searchTextFromIndex = idx;
 }
 
-// Save current document to file
+
 void Preview::emitSaveDocToFile()
 {
     PreviewTextEdit *ce = currentEditor();
     if (ce && !ce->m_dbdoc.url.empty()) {
         emit saveDocToFile(ce->m_dbdoc);
+    }
+}
+
+void Preview::emitEditRequested()
+{
+    PreviewTextEdit *ce = currentEditor();
+    if (ce && !ce->m_dbdoc.url.empty()) {
+        emit editRequested(ce->m_dbdoc);
     }
 }
 
@@ -924,11 +933,12 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
         popup->addAction(tr("Preserve indentation"), 
                          m_preview, SLOT(togglePlainPre()));
     }
-    // Need to check ipath until we fix the internfile bug that always
-    // has it convert to html for top level docs
-    if (!m_dbdoc.url.empty() && !m_dbdoc.ipath.empty())
+    if (!m_dbdoc.url.empty()) {
         popup->addAction(tr("Save document to file"), 
                          m_preview, SLOT(emitSaveDocToFile()));
+        popup->addAction(tr("Open document"), 
+                         m_preview, SLOT(emitEditRequested()));
+    }
     popup->popup(mapToGlobal(pos));
 }
 

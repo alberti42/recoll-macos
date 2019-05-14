@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes 
+/* Copyright (C) 2006-2019 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -114,10 +114,10 @@ class Preview : public QDialog, public Ui::Preview {
 public:
 
     Preview(RclMain *m, int sid, // Search Id
-	    const HighlightData& hdata) // Search terms etc. for highlighting
-	: m_rclmain(m), m_searchId(sid), m_hData(hdata) {
+            const HighlightData& hdata) // Search terms etc. for highlighting
+        : m_rclmain(m), m_searchId(sid), m_hData(hdata) {
         setupUi(this);
-	init();
+        init();
     }
 
     virtual void closeEvent(QCloseEvent *e);
@@ -130,7 +130,7 @@ public:
      *   paragraph when tab exposed etc.
      */
     virtual bool makeDocCurrent(const Rcl::Doc& idoc, int docnum, 
-				bool sametab = false);
+                                bool sametab = false);
     void emitWordSelect(QString);
     friend class PreviewTextEdit;
 
@@ -139,7 +139,7 @@ public slots:
     virtual void searchTextChanged(const QString& text);
     virtual void searchTextFromIndex(int);
     virtual void doSearch(const QString& str, bool next, bool reverse,
-			  bool wo = false);
+                          bool wo = false);
     virtual void nextPressed();
     virtual void prevPressed();
 
@@ -151,6 +151,7 @@ public slots:
     virtual void emitShowPrev();
 
     virtual void emitSaveDocToFile();
+    virtual void emitEditRequested();
     virtual void togglePlainPre();
 
 signals:
@@ -161,6 +162,7 @@ signals:
     void previewExposed(Preview *w, int sid, int docnum);
     void printCurrentPreviewRequest();
     void saveDocToFile(Rcl::Doc);
+    void editRequested(Rcl::Doc);
 
 private:
     RclMain *m_rclmain;
