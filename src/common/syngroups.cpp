@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 J.F.Dockes
+/* Copyright (C) 2014-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -14,19 +14,21 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef TEST_SYNGROUPS
+
 #include "autoconfig.h"
 
 #include "syngroups.h"
 
 #include "log.h"
 #include "smallut.h"
+#include "pathut.h"
 
 #include <errno.h>
 #include <unordered_map>
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include "safesysstat.h"
 
 using namespace std;
 
@@ -44,11 +46,28 @@ class SynGroups::Internal {
 public:
     Internal() : ok(false) {
     }
+    void setpath(const string& fn) {
+        path = path_canon(fn);
+        stat(path.c_str(), &st);
+    }
+    bool samefile(const string& fn) {
+        string p1 = path_canon(fn);
+        if (path != p1) {
+            return false;
+        }
+        struct stat st1;
+        if (stat(p1.c_str(), &st1) != 0) {
+            return false;
+        }
+        return st.st_mtime == st1.st_mtime && st.st_size == st1.st_size;
+    }
     bool ok;
     // Term to group num 
     std::unordered_map<string, unsigned int> terms;
     // Group num to group
     vector<vector<string> > groups;
+    std::string path;
+    struct stat st;
 };
 
 bool SynGroups::ok() 
@@ -83,6 +102,12 @@ bool SynGroups::setfile(const string& fn)
 	return true;
     }
 
+    if (m->samefile(fn)) {
+        LOGDEB("SynGroups::setfile: unchanged: " << fn << endl);
+        return true;
+    }
+    LOGDEB("SynGroups::setfile: parsing file " << fn << endl);
+    
     ifstream input;
     input.open(fn.c_str(), ios::in);
     if (!input.is_open()) {
@@ -163,6 +188,7 @@ bool SynGroups::setfile(const string& fn)
                 stringsToString(m->groups.back()) << "]\n");
     }
     m->ok = true;
+    m->setpath(fn);
     return true;
 }
 
@@ -174,7 +200,7 @@ vector<string> SynGroups::getgroup(const string& term)
 
     const auto it1 = m->terms.find(term);
     if (it1 == m->terms.end()) {
-	LOGDEB1("SynGroups::getgroup: [" << term<<"] not found in direct map\n");
+	LOGDEB0("SynGroups::getgroup: [" << term << "] not found in map\n");
 	return ret;
     }
 
@@ -183,69 +209,6 @@ vector<string> SynGroups::getgroup(const string& term)
         LOGERR("SynGroups::getgroup: line index higher than line count !\n");
         return ret;
     }
+    LOGDEB0("SynGroups::getgroup: result: " << stringsToString(m->groups[idx]));
     return m->groups[idx];
 }
-
-#else
-
-#include "syngroups.h"
-#include "log.h"
-
-
-#include <string>
-#include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <cstdio>
-
-using namespace std;
-
-static char *thisprog;
-
-static char usage [] =
-    "syngroups <synfilename> <word>\n"
-    "  \n\n"
-    ;
-static void Usage(void)
-{
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
-    exit(1);
-}
-
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_s     0x2
-#define OPT_b     0x4
-
-int main(int argc, char **argv)
-{
-    thisprog = argv[0];
-    argc--; argv++;
-
-    if (argc != 2) {
-        Usage();
-    }
-    string fn = *argv++;argc--;
-    string word = *argv++;argc--;
-
-    DebugLog::getdbl()->setloglevel(DEBDEB1);
-    DebugLog::setfilename("stderr");
-    SynGroups syns;
-    syns.setfile(fn);
-    if (!syns.ok()) {
-	cerr << "Initialization failed\n";
-	return 1;
-    }
-
-    vector<string> group = syns.getgroup(word);
-    cout << group.size() << " terms in group\n";
-    for (vector<string>::const_iterator it = group.begin();
-	 it != group.end(); it++) {
-	cout << "[" << *it << "] ";
-    }
-    cout << endl;
-    return 0;
-}
-
-#endif
-
