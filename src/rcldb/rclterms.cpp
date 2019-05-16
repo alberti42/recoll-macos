@@ -298,7 +298,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             }
 
             // Expand the resulting list for case (all stemdb content
-            // is lowercase)
+            // is case-folded)
             vector<string> exp1;
             for (const auto& term: lexp) {
                 synac.synExpand(term, exp1);
