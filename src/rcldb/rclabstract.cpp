@@ -39,6 +39,8 @@ using namespace std;
 
 namespace Rcl {
 
+static Chrono chron;
+
 // This is used as a marker inside the abstract frag lists, but
 // normally doesn't remain in final output (which is built with a
 // custom sep. by our caller).
@@ -140,8 +142,9 @@ double Query::Native::qualityTerms(Xapian::docid docid,
                                    const vector<string>& terms,
                                    multimap<double, vector<string> >& byQ)
 {
-    LOGABS("qualityTerms\n");
+    LOGABS("qualityTerms: entry " << chron.millis() << "mS\n");
     setDbWideQTermsFreqs();
+    LOGABS("qualityTerms: setDbWide..:  " << chron.millis() << "mS\n");
 
     map<string, double> termQcoefs;
     double totalweight = 0;
@@ -154,6 +157,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
     if (m_q->m_sd) {
         m_q->m_sd->getTerms(hld);
     }
+    LOGABS("qualityTerms: m_sd->getTerms():  " << chron.millis() << "mS\n");
 
     // Group the input terms by the user term they were possibly
     // expanded from (by stemming)
@@ -181,28 +185,47 @@ double Query::Native::qualityTerms(Xapian::docid docid,
             }
             byRootstr.append("\n");
         }
-        LOGABS("\nqualityTerms: uterms to terms: " << byRootstr << "\n");
+        LOGABS("qualityTerms: uterms to terms: " << chron.millis() << "mS " <<
+               byRootstr << endl);
     }
 #endif
 
-    // Compute in-document and global frequencies for the groups.
-    map<string, double> grpwdfs;
-    map<string, double> grptfreqs;
+    // Compute in-document and global frequencies for the groups. We
+    // used to call termlist_begin() for each term. This was very slow
+    // on big documents and long term lists. We now compute a sorted
+    // list of terms (with pointers back to their root through a map),
+    // and just call skip_to repeatedly
+    vector<string> allterms;
+    unordered_map<string, string> toRoot;
     for (const auto& group : byRoot) {
         for (const auto& term : group.second) {
-            Xapian::TermIterator xtermit = xrdb.termlist_begin(docid);
-            xtermit.skip_to(term);
-            if (xtermit != xrdb.termlist_end(docid) && *xtermit == term) {
-                if (grpwdfs.find(group.first) != grpwdfs.end()) {
-                    grpwdfs[group.first] = xtermit.get_wdf() / doclen;
-                    grptfreqs[group.first] = termfreqs[term];
-                } else {
-                    grpwdfs[group.first] += xtermit.get_wdf() / doclen;
-                    grptfreqs[group.first] += termfreqs[term];
-                }
-            }
-        }    
+            allterms.push_back(term);
+            toRoot[term] = group.first;
+        }
     }
+    sort(allterms.begin(), allterms.end());
+    allterms.erase(unique(allterms.begin(), allterms.end()), allterms.end());
+    
+    map<string, double> grpwdfs;
+    map<string, double> grptfreqs;
+    Xapian::TermIterator xtermit = xrdb.termlist_begin(docid);
+    for (const auto& term : allterms) {
+        const string& root = toRoot[term];
+        xtermit.skip_to(term);
+        if (xtermit != xrdb.termlist_end(docid) && *xtermit == term) {
+            if (grpwdfs.find(root) != grpwdfs.end()) {
+                grpwdfs[root] = xtermit.get_wdf() / doclen;
+                grptfreqs[root] = termfreqs[term];
+            } else {
+                grpwdfs[root] += xtermit.get_wdf() / doclen;
+                grptfreqs[root] += termfreqs[term];
+            }
+        } else {
+            LOGDEB("qualityTerms: term not found in doc term list: " << term <<
+                   endl);
+        }
+    }    
+    LOGABS("qualityTerms: freqs compute:  " << chron.millis() << "mS\n");
 
     // Build a sorted by quality container for the groups
     for (const auto& group : byRoot) {
@@ -237,6 +260,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 {
     LOGDEB("Query::Native::getFirstMatchPage\n");
+    chron.restart();
     if (!m_q|| !m_q->m_db || !m_q->m_db->m_ndb || !m_q->m_db->m_ndb->m_isopen) {
         LOGERR("Query::getFirstMatchPage: no db\n");
         return -1;
@@ -601,7 +625,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
                                 vector<Snippet>& vabs, 
                                 int imaxoccs, int ictxwords)
 {
-    Chrono chron;
+    chron.restart();
     LOGABS("makeAbstract: docid " << docid << " imaxoccs " <<
            imaxoccs << " ictxwords " << ictxwords << "\n");
 
