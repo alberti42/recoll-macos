@@ -37,6 +37,13 @@
 
 using namespace std;
 
+// #define DEBUGABSTRACT  
+#ifdef DEBUGABSTRACT
+#define LOGABS LOGDEB
+#else
+#define LOGABS LOGDEB2
+#endif
+
 // We now let plaintorich do the highlight tags insertions which is
 // wasteful because we have most of the information (but the perf hit
 // is small because it's only called on the output fragments, not on
@@ -104,9 +111,11 @@ public:
                  const HighlightData& hdata,
                  unordered_map<string, double>& wordcoefs,
                  unsigned int ctxwords,
-                 Flags flags = TXTS_NONE)
+                 Flags flags,
+                 unsigned int maxterms)
         :  TextSplit(flags), m_terms(matchTerms.begin(), matchTerms.end()),
-           m_hdata(hdata), m_wordcoefs(wordcoefs), m_ctxwords(ctxwords) {
+           m_hdata(hdata), m_wordcoefs(wordcoefs), m_ctxwords(ctxwords),
+           maxtermcount(maxterms) {
 
         // Take note of the group (phrase/near) terms because we need
         // to compute the position lists for them.
@@ -123,7 +132,12 @@ public:
     // add/update fragment definition.
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
         LOGDEB2("takeword: " << term << endl);
-
+        // Limit time taken with monster documents. The resulting
+        // abstract will be incorrect or inexistant, but this is
+        // better than taking forever (the default cutoff is 10E6)
+        if (maxtermcount && termcount++ > maxtermcount) {
+            return false;
+        }
         // Remember recent past
         m_prevterms.push_back(pair<int,int>(bts,bte));
         if (m_prevterms.size() > m_ctxwords+1) {
@@ -329,7 +343,10 @@ private:
     unsigned int m_ctxwords;
 
     // Result: begin and end byte positions of query terms/groups in text
-    vector<MatchFragment> m_fragments;  
+    vector<MatchFragment> m_fragments;
+
+    unsigned int termcount{0};
+    unsigned int maxtermcount{0};
 };
 
 int Query::Native::abstractFromText(
@@ -341,14 +358,18 @@ int Query::Native::abstractFromText(
     int ctxwords,
     unsigned int maxtotaloccs,
     vector<Snippet>& vabs,
-    Chrono&
+    Chrono& chron
     )
 {
+    (void)chron;
+    LOGABS("abstractFromText: entry: " << chron.millis() << "mS\n");
     string rawtext;
     if (!ndb->getRawText(docid, rawtext)) {
         LOGDEB0("abstractFromText: can't fetch text\n");
         return ABSRES_ERROR;
     }
+    LOGABS("abstractFromText: got raw text: size " << rawtext.size() << " " <<
+           chron.millis() << "mS\n");
 
 #if 0 && ! (XAPIAN_MAJOR_VERSION <= 1 && XAPIAN_MINOR_VERSION <= 2)  && \
     (defined(RAWTEXT_IN_DATA))
@@ -373,10 +394,13 @@ int Query::Native::abstractFromText(
     if (m_q->m_sd) {
         m_q->m_sd->getTerms(hld);
     }
+    LOGABS("abstractFromText: getterms: " << chron.millis() << "mS\n");
 
     TextSplitABS splitter(matchTerms, hld, wordcoefs, ctxwords,
-                          TextSplit::TXTS_ONLYSPANS);
+                          TextSplit::TXTS_ONLYSPANS,
+                          m_q->m_snipMaxPosWalk);
     splitter.text_to_words(rawtext);
+    LOGABS("abstractFromText: text_to_words: " << chron.millis() << "mS\n");
     splitter.updgroups();
 
     // Sort the fragments by decreasing weight
