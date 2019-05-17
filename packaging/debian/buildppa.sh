@@ -6,7 +6,7 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.25.12
+RCLVERS=1.25.16~pre1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=5
@@ -22,7 +22,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-#PPANAME=recollexp-ppa
+PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
