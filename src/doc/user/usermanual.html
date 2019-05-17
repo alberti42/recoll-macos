@@ -5498,6 +5498,14 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         these will generate phrase queries, which may degrade
         performance and will disable stemming expansion for the
         phrase terms.</p>
+        <p>The contents of the synonyms file must be casefolded
+        (not only lowercased), because this is what expected at the
+        point in the query processing where it is used. There are a
+        few cases where this makes a difference, for example,
+        German sharp s should be expressed as <code class=
+        "literal">ss</code>, Greek final sigma as sigma. For
+        reference, Python3 has an easy way to casefold words
+        (str.casefold()).</p>
         <p>The synonyms file can be specified in the <span class=
         "guilabel">Search parameters</span> tab of the <span class=
         "guilabel">GUI configuration</span> <span class=
@@ -5511,7 +5519,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         synonyms file itself is not subjected to stem expansion.
         This means that a match will not be found if the form
         present in the synonyms file is not present anywhere in the
-        document set.</p>
+        document set (same with accents when using a raw
+        index).</p>
         <p>The synonyms function is probably not going to help you
         find your letters to Mr. Smith. It is best used for
         domain-specific searches. For example, it was initially

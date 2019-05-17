@@ -4182,7 +4182,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         containing terms which are synonyms of the ones specified by the user,
         either by expanding the query for all synonyms, or by reducing the user
         entry to canonical terms (the latter only works if the corresponding
-        processing has been performed while creating the index).</para></listitem>
+        processing has been performed while creating the
+        index).</para></listitem> 
       </itemizedlist>
       </para>
       </formalpara>
@@ -4213,6 +4214,13 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       generate phrase queries, which may degrade performance and will disable
       stemming expansion for the phrase terms.</para>
 
+      <para>The contents of the synonyms file must be casefolded (not only
+      lowercased), because this is what expected at the point in the query
+      processing where it is used. There are a few cases where this makes a
+      difference, for example, German sharp s should be expressed as
+      <literal>ss</literal>, Greek final sigma as sigma. For reference,
+      Python3 has an easy way to casefold words (str.casefold()).</para>
+      
       <para>The synonyms file can be specified in the <guilabel>Search
       parameters</guilabel> tab of the <guilabel>GUI configuration</guilabel>
       <guilabel>Preferences</guilabel> menu entry, or as an option for
@@ -4226,7 +4234,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       latter are stem-expanded, but the contents of the synonyms file itself
       is not subjected to stem expansion. This means that a match will not be
       found if the form present in the synonyms file is not present anywhere
-      in the document set.</para>
+      in the document set (same with accents when using a raw index).</para>
 
       <para>The synonyms function is probably not going to help you find your
       letters to Mr. Smith. It is best used for domain-specific searches. For
