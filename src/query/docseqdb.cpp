@@ -20,8 +20,6 @@
 #include <time.h>
 
 #include <list>
-#include <sstream>
-#include <vector>
 
 #include "docseqdb.h"
 #include "rcldb.h"
@@ -29,7 +27,6 @@
 #include "wasatorcl.h"
 
 using std::list;
-using std::vector;
 
 DocSequenceDb::DocSequenceDb(std::shared_ptr<Rcl::Db> db,
                              std::shared_ptr<Rcl::Query> q, const string &t, 
@@ -117,18 +114,7 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
 	return false;
     if (m_q->whatDb() &&
 	m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
-        vector<Rcl::Snippet> vpabs;
-        m_q->makeDocAbstract(doc, vpabs);
-        for (const auto& snippet : vpabs) {
-            string chunk;
-            if (snippet.page > 0) {
-                std::ostringstream ss;
-                ss << snippet.page;
-                chunk += string(" [p ") + ss.str() + "] ";
-            }
-            chunk += snippet.snippet;
-            vabs.push_back(chunk);
-        }
+	m_q->makeDocAbstract(doc, vabs);
     }
     if (vabs.empty())
 	vabs.push_back(doc.meta[Rcl::Doc::keyabs]);

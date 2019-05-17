@@ -1,4 +1,4 @@
-/* Copyright (C) 2008-2019 J.F.Dockes
+/* Copyright (C) 2008 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -41,6 +41,10 @@
 using namespace std;
 
 namespace Rcl {
+// This is used as a marker inside the abstract frag lists, but
+// normally doesn't remain in final output (which is built with a
+// custom sep. by our caller).
+static const string cstr_ellipsis("...");
 
 // Field names inside the index data record may differ from the rcldoc ones
 // (esp.: caption / title)
@@ -281,6 +285,37 @@ int Query::makeDocAbstract(const Doc &doc, vector<Snippet>& abstract,
     return ret;
 }
 
+bool Query::makeDocAbstract(const Doc &doc, vector<string>& abstract)
+{
+    vector<Snippet> vpabs;
+    if (!makeDocAbstract(doc, vpabs))
+        return false;
+    for (vector<Snippet>::const_iterator it = vpabs.begin();
+         it != vpabs.end(); it++) {
+        string chunk;
+        if (it->page > 0) {
+            ostringstream ss;
+            ss << it->page;
+            chunk += string(" [p ") + ss.str() + "] ";
+        }
+        chunk += it->snippet;
+        abstract.push_back(chunk);
+    }
+    return true;
+}
+
+bool Query::makeDocAbstract(const Doc &doc, string& abstract)
+{
+    vector<Snippet> vpabs;
+    if (!makeDocAbstract(doc, vpabs))
+        return false;
+    for (vector<Snippet>::const_iterator it = vpabs.begin(); 
+         it != vpabs.end(); it++) {
+        abstract.append(it->snippet);
+        abstract.append(cstr_ellipsis);
+    }
+    return m_reason.empty() ? true : false;
+}
 
 int Query::getFirstMatchPage(const Doc &doc, string& term)
 {
