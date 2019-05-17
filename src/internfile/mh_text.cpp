@@ -81,6 +81,9 @@ bool MimeHandlerText::set_document_file_impl(const string& mt, const string &fn)
         m_pagesz = size_t(ps);
         if (!readnext())
             return false;
+    } else {
+        LOGINF("MimeHandlerText: file too big (textfilemaxmbs=" << maxmbs <<
+               "), contents will not be indexed: " << fn << endl);
     }
     if (!m_forPreview) {
 	string md5, xmd5;
