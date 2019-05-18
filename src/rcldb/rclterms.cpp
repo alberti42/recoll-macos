@@ -270,17 +270,18 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
                 exp1.swap(lexp);
                 sort(lexp.begin(), lexp.end());
                 lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
-                LOGDEB("ExpTerm: stemexp: "  << stringsToString(lexp) << "\n");
+                LOGDEB("Db::TermMatch: stemexp: " << stringsToString(lexp)
+                       << "\n");
             }
 
             if (m_syngroups.ok() && (typ_sens & ET_SYNEXP)) {
-                LOGDEB("ExpTerm: got syngroups\n");
+                LOGDEB("Db::TermMatch: got syngroups\n");
                 vector<string> exp1(lexp);
                 for (const auto& term : lexp) {
                     vector<string> sg = m_syngroups.getgroup(term);
                     if (!sg.empty()) {
-                        LOGDEB("ExpTerm: syns: " << term << " -> "  <<
-                               stringsToString(sg) << "\n");
+                        LOGDEB("Db::TermMatch: syngroups out: " <<
+                               term << " -> " << stringsToString(sg) << "\n");
                         for (const auto& synonym : sg) {
                             if (synonym.find_first_of(" ") != string::npos) {
                                 if (multiwords) {
@@ -297,8 +298,8 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
                 lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
             }
 
-            // Expand the resulting list for case (all stemdb content
-            // is case-folded)
+            // Expand the resulting list for case and diacritics (all
+            // stemdb content is case-folded)
             vector<string> exp1;
             for (const auto& term: lexp) {
                 synac.synExpand(term, exp1);
@@ -308,8 +309,10 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
         }
 
-        // Filter the result and get the stats, possibly add prefixes.
-        LOGDEB("ExpandTerm:TM: lexp: "  << stringsToString(lexp) << "\n");
+        // Filter the result against the index and get the stats,
+        // possibly add prefixes.
+        LOGDEB("Db::TermMatch: final lexp before idx filter: " <<
+               stringsToString(lexp) << "\n");
         for (const auto& term : lexp) {
             idxTermMatch(Rcl::Db::ET_WILD, "", term, res, max, field);
         }
