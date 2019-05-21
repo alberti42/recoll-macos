@@ -38,6 +38,7 @@
 #include "smallut.h"
 #include "execmd.h"
 #include "textsplit.h"
+#include "rcldb.h"
 
 std::thread::id mainthread_id;
 
@@ -337,7 +338,7 @@ RclConfig *recollinit(int flags,
 	int lev = atoi(loglevel.c_str());
         Logger::getTheLog("")->setLogLevel(Logger::LogLevel(lev));
     }
-    LOGINF("Configuration directory: " << config->getConfDir() << std::endl);
+    LOGINF(Rcl::version_string() << " [" << config->getConfDir() << "]\n");
 
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
