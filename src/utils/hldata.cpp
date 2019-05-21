@@ -166,7 +166,7 @@ bool matchGroup(const HighlightData& hldata,
     return true;
 }
 
-void HighlightData::toString(string& out)
+void HighlightData::toString(string& out) const
 {
     out.append("\nUser terms (orthograph): ");
     for (std::set<string>::const_iterator it = uterms.begin();

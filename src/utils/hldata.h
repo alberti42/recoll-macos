@@ -64,7 +64,7 @@ struct HighlightData {
     void append(const HighlightData&);
 
     // Print (debug)
-    void toString(std::string& out);
+    void toString(std::string& out) const;
 };
 
 inline void setWinMinMax(int pos, int& sta, int& sto)
