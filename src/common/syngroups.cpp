@@ -209,6 +209,7 @@ vector<string> SynGroups::getgroup(const string& term)
         LOGERR("SynGroups::getgroup: line index higher than line count !\n");
         return ret;
     }
-    LOGDEB0("SynGroups::getgroup: result: " << stringsToString(m->groups[idx]));
+    LOGDEB0("SynGroups::getgroup: result: " << stringsToString(m->groups[idx])
+            << endl);
     return m->groups[idx];
 }
