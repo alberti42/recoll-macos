@@ -22,6 +22,8 @@
 #include <map>
 #include <QPoint>
 
+#include "plaintorich.h"
+
 #if defined(USING_WEBENGINE)
 #  include <QWebEngineView>
 #  define RESLIST_PARENTCLASS QWebEngineView
@@ -180,5 +182,10 @@ private:
 
 #endif
 
+class PlainToRichQtReslist : public PlainToRich {
+public:
+    virtual string startMatch(unsigned int idx);
+    virtual string endMatch();
+};
 
 #endif /* _RESLIST_H_INCLUDED_ */

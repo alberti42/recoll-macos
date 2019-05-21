@@ -301,25 +301,28 @@ string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 
 /////// /////// End reslistpager methods
 
-class PlainToRichQtReslist : public PlainToRich {
-public:
-    virtual string startMatch(unsigned int idx) {
-        if (0 && m_hdata) {
-            string s1, s2;
-            stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
-            stringsToString<vector<string> >(
-                m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
-            LOGDEB2("Reslist startmatch: group " << s1 << " user group " <<
-                    s2 << "\n");
-        }
-                
-        return string("<span class='rclmatch' style='")
-            + qs2utf8s(prefs.qtermstyle) + string("'>");
+string PlainToRichQtReslist::startMatch(unsigned int idx)
+{
+    (void)idx;
+#if 0
+    if (m_hdata) {
+        string s1, s2;
+        stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
+        stringsToString<vector<string> >(
+            m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
+        LOGDEB2("Reslist startmatch: group " << s1 << " user group " <<
+                s2 << "\n");
     }
-    virtual string endMatch() {
-        return string("</span>");
-    }
-};
+#endif                
+    return string("<span class='rclmatch' style='")
+        + qs2utf8s(prefs.qtermstyle) + string("'>");
+}
+
+string PlainToRichQtReslist::endMatch()
+{
+    return string("</span>");
+}
+
 static PlainToRichQtReslist g_hiliter;
 
 /////////////////////////////////////

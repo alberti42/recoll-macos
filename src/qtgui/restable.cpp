@@ -62,19 +62,6 @@ static const QKeySequence closeKeySeq("Ctrl+w");
 static const int ROWHEIGHTPAD = 2;
 static const int TEXTINCELLVTRANS = -4;
 
-//////////////////////////////////////////////////////////////////////////////
-// Restable hiliter: to highlight search term in the table. This is actually
-// the same as reslist's, could be shared.
-class PlainToRichQtReslist : public PlainToRich {
-public:
-    virtual ~PlainToRichQtReslist() {}
-    virtual string startMatch(unsigned int) 
-    {
-	return string("<span style='")
-	    + qs2utf8s(prefs.qtermstyle) + string("'>");
-    }
-    virtual string endMatch() {return string("</span>");}
-};
 static PlainToRichQtReslist g_hiliter;
 
 //////////////////////////////////////////////////////////////////////////
@@ -99,7 +86,10 @@ bool ResTablePager::append(const string& data, int, const Rcl::Doc&)
 {
     m_parent->m_detail->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
     m_parent->m_detail->textCursor().insertBlock();
-    m_parent->m_detail->insertHtml(QString::fromUtf8(data.c_str()));
+    m_parent->m_detail->insertHtml(u8s2qs(data));
+
+//    LOGDEB("RESTABLEPAGER::APPEND: data : " << data << std::endl);
+//    m_parent->m_detail->setHtml(u8s2qs(data));
     return true;
 }
 
@@ -303,9 +293,12 @@ void RecollModel::setDocSource(std::shared_ptr<DocSequence> nsource)
     if (!nsource) {
 	m_source = std::shared_ptr<DocSequence>();
     } else {
-	m_source = std::shared_ptr<DocSequence>(new DocSource(theconfig, nsource));
+        // We used to allocate a new DocSource here instead of sharing
+        // the input, but I can't see why.
+        //m_source = std::shared_ptr<DocSequence>(new
+        //DocSource(theconfig,nsource));
+	m_source = nsource;
 	m_hdata.clear();
-	m_source->getTerms(m_hdata);
     }
 }
 
@@ -562,6 +555,7 @@ void ResTable::init()
             this, SLOT(onDoubleClick(const QModelIndex&)));
 
     m_pager = new ResTablePager(this);
+    m_pager->setHighLighter(&g_hiliter);
 
     QSettings settings;
     QVariant saved = settings.value("resTableSplitterSizes");
@@ -779,6 +773,7 @@ void ResTable::readDocSource(bool resetPos)
     if (resetPos)
 	tableView->verticalScrollBar()->setSliderPosition(0);
 
+    m_model->m_source->getTerms(m_model->m_hdata);
     m_model->readDocSource();
     m_detail->clear();
     m_detaildocnum = -1;
