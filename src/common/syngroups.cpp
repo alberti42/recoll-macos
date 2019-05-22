@@ -187,8 +187,7 @@ bool SynGroups::setfile(const string& fn)
 	LOGDEB0("SynGroups::setfile: group: [" <<
                 stringsToString(m->groups.back()) << "]\n");
     }
-    # Some stats
-    LOGDEB("SynGroups::setfile: got " << m_groups.size() <<
+    LOGDEB("SynGroups::setfile: got " << m->groups.size() <<
            " distinct terms." << endl);
     m->ok = true;
     m->setpath(fn);
