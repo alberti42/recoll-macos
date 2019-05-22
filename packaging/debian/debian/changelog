@@ -1,7 +1,18 @@
-recoll (1.25.16~pre3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.25.16-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
-  * Small improvements in synonyms handling
-  
+  * Small improvements in synonyms handling, significant for big synonym
+    files. 
+  * Raw indexes: fix test for capitals in user input in a few marginal
+    cases.
+  * ppt-dump: catch exceptions to avoid system reports.
+  * djvu: fix output from non-ASCII files  
+  * GUI: fix highlighting in table mode
+  * GUI: add "Open" button to preview window
+  * GUI: fix crash when reusing a result list after changing preferences
+    (and in other cases too  maybe).
+  * Python: fix memory leak in Python module.
+  * Python: properly manage querying multiple separate indexes.
+
  -- Jean-Francois Dockes <jf@dockes.org>  Wed, 22 May 2019 09:13:00 +0200
 
 recoll (1.25.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low

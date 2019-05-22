@@ -184,7 +184,7 @@ bool SynGroups::setfile(const string& fn)
 	for (const auto& word : words) {
 	    m->terms[word] = m->groups.size()-1;
 	}
-	LOGDEB0("SynGroups::setfile: group: [" <<
+	LOGDEB1("SynGroups::setfile: group: [" <<
                 stringsToString(m->groups.back()) << "]\n");
     }
     LOGDEB("SynGroups::setfile: got " << m->groups.size() <<
