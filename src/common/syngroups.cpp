@@ -184,9 +184,12 @@ bool SynGroups::setfile(const string& fn)
 	for (const auto& word : words) {
 	    m->terms[word] = m->groups.size()-1;
 	}
-	LOGDEB1("SynGroups::setfile: group: [" <<
+	LOGDEB0("SynGroups::setfile: group: [" <<
                 stringsToString(m->groups.back()) << "]\n");
     }
+    # Some stats
+    LOGDEB("SynGroups::setfile: got " << m_groups.size() <<
+           " distinct terms." << endl;
     m->ok = true;
     m->setpath(fn);
     return true;
