@@ -1,8 +1,8 @@
-recoll (1.25.16~pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.25.16~pre3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Small improvements in synonyms handling
   
- -- Jean-Francois Dockes <jf@dockes.org>  Wed, 11 Apr 2019 15:52:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 22 May 2019 09:13:00 +0200
 
 recoll (1.25.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
