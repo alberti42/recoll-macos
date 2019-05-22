@@ -157,8 +157,9 @@ copyrecoll()
 
     chkcp $RCL/python/recoll/recoll/rclconfig.py $FILTERS
     chkcp $RCL/python/recoll/recoll/conftree.py $FILTERS
+    rm -f $FILTERS/rclimg
     chkcp $RCL/filters/*       $FILTERS
-    rm $FILTERS/rclimg $FILTERS/rclimg.py
+    rm -f $FILTERS/rclimg $FILTERS/rclimg.py
     chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
     chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
     chkcp $RCL/qtgui/i18n/*.qm $DESTDIR/Share/translations
