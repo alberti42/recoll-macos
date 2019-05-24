@@ -136,6 +136,14 @@ public:
         // abstract will be incorrect or inexistant, but this is
         // better than taking forever (the default cutoff is 10E6)
         if (maxtermcount && termcount++ > maxtermcount) {
+            LOGINF("Rclabsfromtext: stopping because maxtermcount reached: "<<
+                   maxtermcount << endl);
+            return false;
+        }
+        // Also limit the number of fragments (just in case safety)
+        if (m_fragments.size() > maxtermcount / 100) {
+            LOGINF("Rclabsfromtext: stopping because maxfragments reached: "<<
+                   maxtermcount/100 << endl);
             return false;
         }
         // Remember recent past
@@ -157,8 +165,8 @@ public:
         if (m_terms.find(dumb) != m_terms.end()) {
             // This word is a search term. Extend or create fragment
             LOGDEB2("match: [" << dumb << "] current: " << m_curfrag.first <<
-                   ", " << m_curfrag.second << " remain " <<
-                   m_remainingWords << endl);
+                    ", " << m_curfrag.second << " remain " <<
+                    m_remainingWords << endl);
             double coef = m_wordcoefs[dumb];
             if (!m_remainingWords) {
                 // No current fragment. Start one
@@ -172,7 +180,7 @@ public:
                 m_curtermcoef = coef;
             } else {
                 LOGDEB2("Extending current fragment: " << m_remainingWords <<
-                       " -> " << m_ctxwords << endl);
+                        " -> " << m_ctxwords << endl);
                 m_extcount++;
 #ifdef COMPUTE_HLZONES
                 if (m_prevwordhit) {
@@ -223,18 +231,25 @@ public:
             m_remainingWords--;
             m_curfrag.second = bte;
             if (m_remainingWords == 0) {
-                if (m_totalcoef < 5.0 || m_curfragcoef >= 1.0) {
-                    // Don't push bad fragments if we have a lot already
-                    m_fragments.push_back(MatchFragment(m_curfrag.first,
-                                                     m_curfrag.second,
-                                                     m_curfragcoef,
+                // We used to not push weak fragments if we had a lot
+                // already. This can cause problems if the fragments
+                // we drop are actually group fragments (which have
+                // not got their boost yet). The right cut value is
+                // difficult to determine, because the absolute values
+                // of the coefs depend on many things (index size,
+                // etc.) The old test was if (m_totalcoef < 5.0 ||
+                // m_curfragcoef >= 1.0) We now just avoid creating a
+                // monster by testing the current fragments count at
+                // the top of the function
+                m_fragments.push_back(MatchFragment(m_curfrag.first,
+                                                    m_curfrag.second,
+                                                    m_curfragcoef,
 #ifdef COMPUTE_HLZONES
-                                                     m_curhlzones,
+                                                    m_curhlzones,
 #endif
-                                                     m_curhitpos,
-                                                     m_curterm
-                                              ));
-                }
+                                                    m_curhitpos,
+                                                    m_curterm
+                                          ));
                 m_totalcoef += m_curfragcoef;
                 m_curfragcoef = 0.0;
                 m_curtermcoef = 0.0;
@@ -252,6 +267,8 @@ public:
     // find the group matches. We process everything as NEAR (no
     // PHRASE specific processing).
     void updgroups() {
+        LOGDEB("TextSplitABS: stored total " << m_fragments.size() <<
+               " fragments" << endl);
         vector<GroupMatchEntry> tboffs;
 
         // Look for matches to PHRASE and NEAR term groups and finalize
@@ -283,7 +300,7 @@ public:
             );
 
         // Give a boost to fragments which contain a group match
-        // (phrase/near), they are dear to the user's heart.  list are
+        // (phrase/near), they are dear to the user's heart. Lists are
         // sorted, so we never go back in the fragment list (can
         // always start the search where we previously stopped).
         if (m_fragments.empty()) {
@@ -292,8 +309,8 @@ public:
         auto fragit = m_fragments.begin();
         for (const auto& grpmatch : tboffs) {
             LOGDEB2("LOOKING FOR FRAGMENT: group: " << grpmatch.offs.first <<
-                   "-" << grpmatch.offs.second << " curfrag " <<
-                   fragit->start << "-" << fragit->stop << endl);
+                    "-" << grpmatch.offs.second << " curfrag " <<
+                    fragit->start << "-" << fragit->stop << endl);
             while (fragit->stop < grpmatch.offs.first) {
                 fragit++;
                 if (fragit == m_fragments.end()) {
@@ -412,7 +429,6 @@ int Query::Native::abstractFromText(
                   return a.coef > b.coef; 
               }
         );
-
 
     vector<int> vpbreaks;
     ndb->getPagePositions(docid, vpbreaks);
