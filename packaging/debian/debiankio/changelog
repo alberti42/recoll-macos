@@ -1,9 +1,9 @@
-kio-recoll (1.25.16-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+kio-recoll (1.25.17-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
-  * New release 1.25.16
+  * New release 1.25.17
   * Keep kio in sync
   
- -- Jean-Francois Dockes <jf@dockes.org>  Wed, 22 May 2019 14:52:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 24 May 2019 08:58:00 +0200
 
 kio-recoll (1.25.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 

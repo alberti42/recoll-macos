@@ -1,5 +1,6 @@
-recoll (1.25.16-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
-                
+recoll (1.25.17-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fixed bug in snippets generation, possibly discarding the best snippets.
   * Small improvements in synonyms handling, significant for big synonym
     files. 
   * Raw indexes: fix test for capitals in user input in a few marginal
@@ -13,7 +14,7 @@ recoll (1.25.16-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Python: fix memory leak in Python module.
   * Python: properly manage querying multiple separate indexes.
 
- -- Jean-Francois Dockes <jf@dockes.org>  Wed, 22 May 2019 09:13:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 24 May 2019 08:58:00 +0200
 
 recoll (1.25.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
