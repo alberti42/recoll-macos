@@ -61,6 +61,9 @@
 # extracted message. Also used by Windows Live Mail
 .eml = message/rfc822
 
+.pst = application/vnd.ms-outlook
+.ost = application/vnd.ms-outlook
+
 .pdf = application/pdf
 
 .ps = application/postscript

@@ -78,6 +78,8 @@ class RclConfig:
 
     def getConfDir(self):
         return self.confdir
+    def getDataDir(self):
+        return self.datadir
     
     def setKeyDir(self, dir):
         self.keydir = dir
