@@ -25,6 +25,8 @@
 
 import sys
 import os
+import posixpath
+import pathlib
 import tempfile
 import shutil
 import getopt
@@ -48,26 +50,33 @@ class EmailBuilder(object):
         self.reset()
         self.mimemap = mimemap
         self.parser = email.parser.Parser(policy = email.policy.default)
+
     def reset(self):
         self.headers = ''
         self.body = ''
-        self.bodymime = ''
+        self.bodymimemain = ''
+        self.bodymimesub = ''
         self.attachments = []
+
     def setheaders(self, h):
         self.headers = h
+
     def setbody(self, body, main, sub):
         self.body = body
         self.bodymimemain = main
         self.bodymimesub = sub
+
     def addattachment(self, att, filename):
-        self.log("Adding attachment")
+        #self.log("Adding attachment")
         self.attachments.append((att, filename))
+
     def flush(self):
         if not (self.headers and (self.body or self.attachments)):
             self.log("Not flushing because no headers or no body/attach")
+            self.reset()
             return None
+
         newmsg = email.message.EmailMessage(policy=email.policy.default)
-            
         headerstr = self.headers.decode('utf-8')
         # print("%s" % headerstr)
         headers = self.parser.parsestr(headerstr, headersonly=True)
@@ -105,8 +114,8 @@ class EmailBuilder(object):
 
         #newmsg.set_unixfrom("From some@place.org Sun Jan 01 00:00:00 2000")
         #print("%s\n" % newmsg.as_string(unixfrom=True, maxheaderlen=80))
-        ret = newmsg.as_string(maxheaderlen=100)
 
+        ret = newmsg.as_string(maxheaderlen=100)
         self.reset()
         return ret
     
@@ -151,7 +160,8 @@ class PFFReader(object):
 
     def mainloop(self):
         basename = ''
-        path = ''
+        fullpath = ''
+        ipath = ''
         while 1:
             name, data = self.readparam()
             if name == "":
@@ -162,10 +172,10 @@ class PFFReader(object):
                 paramstr = ''
 
             if name == 'filename':
-                self.log("filename: %s" %  paramstr)
-                path = paramstr
-                basename = os.path.basename(path)
-                parentdir = os.path.basename(os.path.dirname(paramstr))
+                #self.log("filename: %s" %  paramstr)
+                fullpath = paramstr
+                basename = os.path.basename(fullpath)
+                parentdir = os.path.basename(os.path.dirname(fullpath))
             elif name == 'data':
                 if parentdir == 'Attachments':
                     #self.log("Attachment: %s" % basename)
@@ -174,13 +184,17 @@ class PFFReader(object):
                     if basename == 'OutlookHeaders.txt':
                         doc = self.msg.flush()
                         if doc:
-                            yield((doc, path))
-                    elif basename == 'ConversationIndex.txt':
-                        pass
-                    elif basename == 'Recipients.txt':
-                        pass
+                            yield((doc, ipath))
                     elif basename == 'InternetHeaders.txt':
                         #self.log("name: [%s] data: %s" % (name, paramstr))
+                        # This part is the indispensable one. Record
+                        # the ipath at this point: 
+                        p = pathlib.Path(fullpath)
+                        # Strip the top dir (/nonexistent.export/)
+                        p = p.relative_to(*p.parts[:2])
+                        # We use the parent directory as ipath: all
+                        # the message parts are in there
+                        ipath = str(p.parents[0])
                         self.msg.setheaders(data)
                     elif os.path.splitext(basename)[0] == 'Message':
                         ext = os.path.splitext(basename)[1]
@@ -192,25 +206,31 @@ class PFFReader(object):
                             self.msg.setbody(data, 'text', 'rtf')
                         else:
                             raise Exception("PST: Unknown body type %s"%ext)
-                        self.log("Message")
+                    elif basename == 'ConversationIndex.txt':
                         pass
-                basename = ''
-                parentdir = ''
+                    elif basename == 'Recipients.txt':
+                        pass
+            else:
+                raise Exception("Unknown param name: %s" % name)
+
         self.log("Out of loop")
         doc = self.msg.flush()
         if doc:
-            yield((doc, path))
+            yield((doc, ipath))
         return
 
 
 class PstExtractor(object):
     def __init__(self, em):
-        self.currentindex = 0
+        self.generator = None
         self.em = em
-        self.cmd = ["pffexport", "-q", "-t", "/nonexistent", "-s"]
+        self.target = "/nonexistent"
+        self.cmd = ["pffexport", "-q", "-t", self.target, "-s"]
 
-    def startCmd(self, filename):
+    def startCmd(self, filename, ipath=None):
         fullcmd = self.cmd + [rclexecm.subprocfile(filename)]
+        if ipath:
+            fullcmd += ["-p", ipath]
         try:
             self.proc = subprocess.Popen(fullcmd, stdout=subprocess.PIPE)
         except subprocess.CalledProcessError as err:
@@ -222,48 +242,57 @@ class PstExtractor(object):
         self.filein = self.proc.stdout
         return True
 
-    def extractone(self, ipath):
-        #self.em.rclog("extractone: [%s]" % ipath)
-        docdata = ""
-        ok = False
-        iseof = True
-        return (ok, docdata, rclexecm.makebytes(ipath), iseof)
-
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
-        filename = params["filename:"]
-        
-        if not self.startCmd(filename):
-            return False
-        
-        reader = PFFReader(self.em.rclog, infile=self.filein)
-        self.generator = reader.mainloop()
+        self.filename = params["filename:"]
+        self.em.rclog("openfile: %s" % self.filename)
         return True
 
-
     def getipath(self, params):
-        ipath = params["ipath:"]
-        ok, data, ipath, eof = self.extractone(ipath)
-        if ok:
-            return (ok, data, ipath, eof)
-        # Not found. Maybe we need to decode the path?
-        try:
-            ipath = ipath.decode("utf-8")
-            return self.extractone(ipath)
-        except Exception as err:
-            return (ok, data, ipath, eof)
-        
-    def getnext(self, params):
+        ipath = posixpath.join(self.target + ".export",
+                               params["ipath:"].decode("UTF-8"))
+        self.em.rclog("getipath: [%s]" % ipath)
+        if not self.startCmd(self.filename, ipath=ipath):
+            return (False, "", "", rclexecm.RclExecM.eofnow) 
+        reader = PFFReader(self.em.rclog, infile=self.filein)
+        self.generator = reader.mainloop()
         try:
             doc, ipath = next(self.generator)
             self.em.setmimetype("message/rfc822")
-            #self.em.rclog("doc %s ipath %s" % (doc[:40], ipath))
+            self.em.rclog("getipath doc len %d [%s] ipath %s" %
+                          (len(doc), doc[:20], ipath))
+            f = open("/tmp/document", "wb")
+            f.write(doc.encode('utf-8'))
+        except StopIteration:
+            self.em.rclog("getipath: StopIteration")
+            return(False, "", "", rclexecm.RclExecM.eofnow)
+        return (True, doc, ipath, False)
+        
+    def getnext(self, params):
+        self.em.rclog("getnext:")
+        if not self.generator:
+            if not self.startCmd(self.filename):
+                return False
+            reader = PFFReader(self.em.rclog, infile=self.filein)
+            self.generator = reader.mainloop()
+        try:
+            doc, ipath = next(self.generator)
+            self.em.setmimetype("message/rfc822")
+            self.em.rclog("getnext: ipath %s\ndoc\n%s" % (ipath, doc))
         except StopIteration:
             return(False, "", "", rclexecm.RclExecM.eofnow)
         return (True, doc, ipath, False)
     
 
-# Main program: create protocol handler and extractor and run them
-proto = rclexecm.RclExecM()
-extract = PstExtractor(proto)
-rclexecm.main(proto, extract)
+if True:
+    # Main program: create protocol handler and extractor and run them
+    proto = rclexecm.RclExecM()
+    extract = PstExtractor(proto)
+    rclexecm.main(proto, extract)
+else:
+    def _deb(s):
+        print("%s" % s, file=sys.stderr)
+    reader = PFFReader(_deb, infile=sys.stdin.buffer)
+    generator = reader.mainloop()
+    for doc, ipath in generator:
+        _deb("Got %s data len %d" % (ipath, len(doc)))

@@ -244,6 +244,7 @@ class RclExecM:
             else:
                 ok, data, ipath, eof = processor.getnext(params)
         except Exception as err:
+            self.rclog("getipath/next: exception: %s" %err)
             self.answer("", "", eof, RclExecM.fileerror)
             return
 
