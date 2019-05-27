@@ -101,7 +101,23 @@ function saveLoc(ev)
     }
 }
 )raw");
-#endif // webengine
+
+bool RclWebPage::acceptNavigationRequest(const QUrl& url, 
+                                         NavigationType tp, 
+                                         bool isMainFrame)
+{ 
+    Q_UNUSED(isMainFrame);
+    LOGDEB0("QWebEnginePage::acceptNavigationRequest. Type: " <<
+            tp << " isMainFrame " << isMainFrame << std::endl);
+    if (tp == QWebEnginePage::NavigationTypeLinkClicked) {
+        m_reslist->onLinkClicked(url);
+        return false;
+    } else {
+        return true;
+    }
+}
+#endif // WEBENGINE
+
 
 // Decide if we set font family and style with a css section in the
 // html <head> or with qwebsettings setfont... calls.  We currently do
@@ -268,8 +284,8 @@ void QtGuiResListPager::suggest(const vector<string>uterms,
             // Set up the links as a <href="Sold|new">. 
             for (auto& it : sugg[uit]) {
                 if (issimple) {
-                    it = string("<a href=\"S") + uit + "|" + it + "\">" +
-                        it + "</a>";
+                    it = string("<a href=\"") + linkPrefix() + "S" + uit +
+                        "|" + it + "\">" + it + "</a>";
                 }
             }
         }
@@ -445,9 +461,9 @@ void ResList::setFont()
         // For some reason there is (12-2014) an offset of 3 between what
         // we request from webkit and what we get.
         settings()->setFontSize(QWEBSETTINGS::DefaultFontSize, 
-                                 prefs.reslistfontsize + 3);
+                                prefs.reslistfontsize + 3);
         settings()->setFontFamily(QWEBSETTINGS::StandardFont, 
-                                   prefs.reslistfontfamily);
+                                  prefs.reslistfontfamily);
     } else {
         settings()->resetFontSize(QWEBSETTINGS::DefaultFontSize);
         settings()->resetFontFamily(QWEBSETTINGS::StandardFont);
@@ -664,7 +680,7 @@ void ResList::highlighted(const QString& )
 // fair enough, else we go to next/previous result page.
 void ResList::resPageUpOrBack()
 {
- #if defined(USING_WEBKIT)
+#if defined(USING_WEBKIT)
     if (scrollIsAtTop()) {
         resultPageBack();
     } else {
@@ -1095,7 +1111,7 @@ void ResList::onLinkClicked(const QUrl &qurl)
     break;
 
     default: 
-        LOGERR("ResList::onLinkClicked: bad link [" << strurl << "]\n");
+        LOGERR("ResList::onLinkClicked: bad link [" << strurl.substr(0,20) << "]\n");
         break;// ?? 
     }
 }

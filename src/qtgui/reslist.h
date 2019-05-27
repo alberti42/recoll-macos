@@ -157,21 +157,16 @@ private:
 #ifdef USING_WEBENGINE
 
 // Subclass the page to hijack the link clicks
-class RclWebPage: public QWebEnginePage {
+class RclWebPage : public QWebEnginePage {
     Q_OBJECT
 
 public:
     RclWebPage(ResList *parent) 
-    : QWebEnginePage((QWidget *)parent), m_reslist(parent) {}
+        : QWebEnginePage((QWidget *)parent), m_reslist(parent) {}
 
 protected:
-    virtual bool acceptNavigationRequest(const QUrl& url, 
-                                         NavigationType, 
-                                         bool) {
-        m_reslist->onLinkClicked(url);
-        return false;
-    }
-
+    virtual bool acceptNavigationRequest(
+        const QUrl& url, NavigationType tp, bool isMainFrame);
 private:
     ResList *m_reslist;
 };
