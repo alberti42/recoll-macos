@@ -1,3 +1,9 @@
+recoll (1.25.18-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * GUI: fixed webengine result list for newer qt versions (5.12 ok)
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 27 May 2019 17:07:00 +0200
+
 recoll (1.25.17-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fixed bug in snippets generation, possibly discarding the best snippets.

@@ -3,7 +3,7 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.25.17
+Version:        1.25.18
 Release:        2%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
