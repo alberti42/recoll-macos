@@ -25,21 +25,31 @@
 
 import sys
 import os
-import posixpath
 import pathlib
-import tempfile
-import shutil
-import getopt
-import traceback
 import email.parser
 import email.policy
 import mailbox
 import subprocess
-
 import rclexecm
 import rclconfig
 import conftree
 
+_mswindows = (sys.platform == "win32" or sys.platform == "msys")
+if _mswindows:
+    import ntpath
+    met_basename = ntpath.basename
+    met_dirname = ntpath.dirname
+    met_splitext = ntpath.splitext
+    met_join = ntpath.join
+    def _backslashize(s):
+        return s.replace("/", "\\")
+else:
+    met_basename = os.path.basename
+    met_dirname = os.path.dirname
+    met_splitext = os.path.splitext
+    met_join = os.path.join
+    def _backslashize(s):
+        return s
 
 # The pffexport stream yields the email in several pieces, with some
 # data missing (e.g. attachment MIME types). We rebuild a complete
@@ -103,7 +113,7 @@ class EmailBuilder(object):
                 
         for att in self.attachments:
             fn = att[1]
-            ext = os.path.splitext(fn)[1]
+            ext = met_splitext(fn)[1]
             mime = self.mimemap.get(ext)
             if not mime:
                 mime = 'application/octet-stream'
@@ -174,8 +184,9 @@ class PFFReader(object):
             if name == 'filename':
                 #self.log("filename: %s" %  paramstr)
                 fullpath = paramstr
-                basename = os.path.basename(fullpath)
-                parentdir = os.path.basename(os.path.dirname(fullpath))
+                basename = met_basename(fullpath)
+                parentdir = met_basename(met_dirname(fullpath))
+                #self.log("basename [%s] parentdir [%s]" % (basename, parentdir))
             elif name == 'data':
                 if parentdir == 'Attachments':
                     #self.log("Attachment: %s" % basename)
@@ -186,18 +197,21 @@ class PFFReader(object):
                         if doc:
                             yield((doc, ipath))
                     elif basename == 'InternetHeaders.txt':
-                        #self.log("name: [%s] data: %s" % (name, paramstr))
+                        #self.log("name: [%s] data: %s" % (name, paramstr[:20]))
                         # This part is the indispensable one. Record
-                        # the ipath at this point: 
-                        p = pathlib.Path(fullpath)
+                        # the ipath at this point:
+                        if _mswindows:
+                            p = pathlib.PureWindowsPath(fullpath)
+                        else:
+                            p = pathlib.Path(fullpath)
                         # Strip the top dir (/nonexistent.export/)
                         p = p.relative_to(*p.parts[:2])
                         # We use the parent directory as ipath: all
                         # the message parts are in there
                         ipath = str(p.parents[0])
                         self.msg.setheaders(data)
-                    elif os.path.splitext(basename)[0] == 'Message':
-                        ext = os.path.splitext(basename)[1]
+                    elif met_splitext(basename)[0] == 'Message':
+                        ext = met_splitext(basename)[1]
                         if ext == '.txt':
                             self.msg.setbody(data, 'text', 'plain')
                         elif ext == '.html':
@@ -224,13 +238,25 @@ class PstExtractor(object):
     def __init__(self, em):
         self.generator = None
         self.em = em
-        self.target = "/nonexistent"
-        self.cmd = ["pffexport", "-q", "-t", self.target, "-s"]
+        if _mswindows:
+            self.target = "\\\\?\\c:\\nonexistent"
+        else:
+            self.target = "/nonexistent"
+        self.pffexport = rclexecm.which("pffexport")
+        if not self.pffexport:
+            self.pffexport = rclexecm.which("pffinstall/mingw32/bin/pffexport")
+            if not self.pffexport:
+                # No need for anything else. openfile() will return an
+                # error at once
+                return
+        self.cmd = [self.pffexport, "-q", "-t", self.target, "-s"]
 
     def startCmd(self, filename, ipath=None):
-        fullcmd = self.cmd + [rclexecm.subprocfile(filename)]
+        fullcmd = self.cmd
         if ipath:
             fullcmd += ["-p", ipath]
+        fn = _backslashize(rclexecm.subprocfile(filename))
+        fullcmd += [fn,]
         try:
             self.proc = subprocess.Popen(fullcmd, stdout=subprocess.PIPE)
         except subprocess.CalledProcessError as err:
@@ -244,13 +270,16 @@ class PstExtractor(object):
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
+        if not self.pffexport:
+            print("RECFILTERROR HELPERNOTFOUND pffexport")
+            sys.exit(1);
         self.filename = params["filename:"]
-        self.em.rclog("openfile: %s" % self.filename)
+        self.em.rclog("openfile: sys.platform [%s] [%s]" % (sys.platform,self.filename))
         return True
 
     def getipath(self, params):
-        ipath = posixpath.join(self.target + ".export",
-                               params["ipath:"].decode("UTF-8"))
+        ipath = met_join(self.target + ".export",
+                         params["ipath:"].decode("UTF-8"))
         self.em.rclog("getipath: [%s]" % ipath)
         if not self.startCmd(self.filename, ipath=ipath):
             return (False, "", "", rclexecm.RclExecM.eofnow) 

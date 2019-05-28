@@ -94,6 +94,8 @@ application/javascript = internal text/plain
 # chose one.
 application/vnd.ms-office = execm python rcldoc.py
 
+application/vnd.ms-outlook = execm python rclpst.py
+
 application/ogg = execm python rclaudio
 
 application/x-awk = internal text/plain

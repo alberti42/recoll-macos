@@ -45,6 +45,7 @@ LIBWPD=${RCLDEPS}libwpd/libwpd-0.10.0/
 LIBREVENGE=${RCLDEPS}libwpd/librevenge-0.0.1.jfd/
 CHM=${RCLDEPS}pychm
 MISC=${RCLDEPS}misc
+LIBPFF=${RCLDEPS}pffinstall
 
 # Where to copy the Qt Dlls from:
 QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
@@ -261,6 +262,13 @@ copychm()
     cp -rp $CHM/chm $DEST || fatal "can't copy pychm"
 }
 
+copypff()
+{
+    DEST=$FILTERS
+    cp -rp $LIBPFF $DEST || fatal "can't copy pffinstall"
+    chkcp $LIBPFF/mingw32/bin/pffexport.exe $DEST/pffinstall/mingw32
+}
+
 for d in doc examples filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
         fatal mkdir $d failed
@@ -293,4 +301,5 @@ copyepub
 #copypyexiv2
 copywpd
 #copychm
+copypff
 copypython
