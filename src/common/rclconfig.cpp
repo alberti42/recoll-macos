@@ -659,7 +659,7 @@ vector<string> RclConfig::getAllMimeTypes() const
 class SfString {
 public:
     SfString(const string& s) : m_str(s) {}
-    bool operator==(const SfString& s2) {
+    bool operator==(const SfString& s2) const {
         string::const_reverse_iterator r1 = m_str.rbegin(), re1 = m_str.rend(),
             r2 = s2.m_str.rbegin(), re2 = s2.m_str.rend();
         while (r1 != re1 && r2 != re2) {
@@ -675,7 +675,7 @@ public:
 
 class SuffCmp {
 public:
-    int operator()(const SfString& s1, const SfString& s2) {
+    int operator()(const SfString& s1, const SfString& s2) const {
         //cout << "Comparing " << s1.m_str << " and " << s2.m_str << endl;
         string::const_reverse_iterator 
             r1 = s1.m_str.rbegin(), re1 = s1.m_str.rend(),
