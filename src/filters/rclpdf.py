@@ -43,6 +43,7 @@ import atexit
 import signal
 import rclconfig
 import glob
+import traceback
 
 tmpdir = None
 
@@ -174,9 +175,9 @@ class PDFExtractor:
             self.pdfinfo = None
             return
 
-        self.re_head = re.compile(r'<head>', re.IGNORECASE)
-        self.re_xmlpacket = re.compile(r'<\?xpacket[ 	]+begin.*\?>' +
-                                       r'(.*)' + r'<\?xpacket[ 	]+end',
+        self.re_head = re.compile(br'<head>', re.IGNORECASE)
+        self.re_xmlpacket = re.compile(br'<\?xpacket[ 	]+begin.*\?>' +
+                                       br'(.*)' + br'<\?xpacket[ 	]+end',
                                        flags = re.DOTALL)
 
     # Extract all attachments if any into temporary directory
@@ -268,7 +269,7 @@ class PDFExtractor:
 
         global tmpdir
         if not tmpdir:
-            return ""
+            return b""
 
         tesseractlang = self.guesstesseractlang()
         # self.em.rclog("tesseractlang %s" % tesseractlang)
@@ -283,7 +284,7 @@ class PDFExtractor:
                                    tmpfile])
         except Exception as e:
             self.em.rclog("pdftoppm failed: %s" % e)
-            return ""
+            return b""
 
         files = glob.glob(tmpfile + "*")
         for f in files:
@@ -300,17 +301,17 @@ class PDFExtractor:
 
         # Concatenate the result files
         files = glob.glob(tmpfile + "*" + ".txt")
-        data = ""
+        data = b""
         for f in files:
-            data += open(f, "r").read()
+            data += open(f, "rb").read()
 
         if not data:
-            return ""
-        return '''<html><head>
+            return b""
+        return b'''<html><head>
         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
         </head><body><pre>''' + \
         self.em.htmlescape(data) + \
-        '''</pre></body></html>'''
+        b'''</pre></body></html>'''
 
 
     # pdftotext (used to?) badly escape text inside the header
@@ -349,7 +350,7 @@ class PDFExtractor:
 
             elif inbody:
                 s = line[0:1]
-                if s != "\x0c" and s != "<":
+                if s != b"\x0c" and s != b"<":
                     isempty = False
                 # We used to remove end-of-line hyphenation (and join
                 # lines), but but it's not clear that we should do
@@ -366,17 +367,17 @@ class PDFExtractor:
         return b'\n'.join(output), isempty
 
     def _metatag(self, nm, val):
-        return "<meta name=\"" + nm + "\" content=\"" + \
-               self.em.htmlescape(val) + "\">"
+        return b"<meta name=\"" + rclexecm.makebytes(nm) + b"\" content=\"" + \
+               self.em.htmlescape(rclexecm.makebytes(val)) + b"\">"
 
     # metaheaders is a list of (nm, value) pairs
     def _injectmeta(self, html, metaheaders):
-        metatxt = ''
+        metatxt = b''
         for nm, val in metaheaders:
-            metatxt += self._metatag(nm, val) + '\n'
+            metatxt += self._metatag(nm, val) + b'\n'
         if not metatxt:
             return html
-        res = self.re_head.sub('<head>\n' + metatxt, html)
+        res = self.re_head.sub(b'<head>\n' + metatxt, html)
         #self.em.rclog("Substituted html: [%s]"%res)
         if res:
             return res
@@ -395,7 +396,7 @@ class PDFExtractor:
         
     def _setextrameta(self, html):
         if not self.pdfinfo:
-            return
+            return html
 
         all = subprocess.check_output([self.pdfinfo, "-meta", self.filename])
 
@@ -417,8 +418,9 @@ class PDFExtractor:
         namespaces = {'rdf' : "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
         rdf = root.find("rdf:RDF", namespaces)
         #self.em.rclog("RDF NSMAP: %s"% rdf.nsmap)
+        if rdf is None:
+            return html
         rdfdesclist = rdf.findall("rdf:Description", rdf.nsmap)
-        #self.em.rclog("RDFDESC NSMAP: %s"% rdfdesc.nsmap)
         for metanm,rclnm in self.extrameta:
             for rdfdesc in rdfdesclist:
                 try:
@@ -427,16 +429,29 @@ class PDFExtractor:
                     # We get an exception when this rdf:Description does not
                     # define the required namespace.
                     continue
+                text = None
                 if elt is not None:
                     text = self._xmltreetext(elt)
-                    if text:
-                        # Should we set empty values ?
-                        # Can't use setfield as it only works for
-                        # text/plain output at the moment.
-                        metaheaders.append((rclnm, text))
+                else:
+                    # Some docs define the values as attributes. don't
+                    # know if this is valid but anyway...
+                    try:
+                        prefix,nm = metanm.split(":")
+                        fullnm = "{%s}%s" % (rdfdesc.nsmap[prefix], nm)
+                    except:
+                        fullnm = nm
+                    text = rdfdesc.get(fullnm)
+                if text:
+                    # Should we set empty values ?
+                    # Can't use setfield as it only works for
+                    # text/plain output at the moment.
+                    #self.em.rclog("Appending: (%s,%s)"%(rclnm,text))
+                    metaheaders.append((rclnm, text))
         if metaheaders:
             return self._injectmeta(html, metaheaders)
-    
+        else:
+            return html
+
     def _selfdoc(self):
         '''Extract the text from the pdf doc (as opposed to attachment)'''
         self.em.setmimetype('text/html')
@@ -460,7 +475,7 @@ class PDFExtractor:
             try:
                 html = self._setextrameta(html)
             except Exception as err:
-                self.em.rclog("Metadata extraction failed: %s" % err)
+                self.em.rclog("Metadata extraction failed: %s %s" % (err, traceback.format_exc()))
 
         return (True, html, "", eof)
 
