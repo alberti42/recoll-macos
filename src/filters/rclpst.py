@@ -274,6 +274,7 @@ class PstExtractor(object):
             print("RECFILTERROR HELPERNOTFOUND pffexport")
             sys.exit(1);
         self.filename = params["filename:"]
+        self.generator = None
         self.em.rclog("openfile: sys.platform [%s] [%s]" % (sys.platform,self.filename))
         return True
 
@@ -297,20 +298,25 @@ class PstExtractor(object):
             return(False, "", "", rclexecm.RclExecM.eofnow)
         return (True, doc, ipath, False)
         
+
     def getnext(self, params):
         self.em.rclog("getnext:")
         if not self.generator:
+            self.em.rclog("starting generator")
             if not self.startCmd(self.filename):
                 return False
             reader = PFFReader(self.em.rclog, infile=self.filein)
             self.generator = reader.mainloop()
+
         try:
             doc, ipath = next(self.generator)
             self.em.setmimetype("message/rfc822")
-            self.em.rclog("getnext: ipath %s\ndoc\n%s" % (ipath, doc))
+            #self.em.rclog("getnext: ipath %s\ndoc\n%s" % (ipath, doc))
         except StopIteration:
-            return(False, "", "", rclexecm.RclExecM.eofnow)
-        return (True, doc, ipath, False)
+            self.em.rclog("getnext: end of iteration")
+            return(True, "", "", rclexecm.RclExecM.eofnext)
+
+        return (True, doc, ipath, rclexecm.RclExecM.noteof)
     
 
 if True:
