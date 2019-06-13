@@ -1,3 +1,9 @@
+recoll (1.25.19-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix issues in pdf handler
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 13 Jun 2019 08:41:00 +0200
+
 recoll (1.25.18-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * GUI: fixed webengine result list for newer qt versions (5.12 ok)

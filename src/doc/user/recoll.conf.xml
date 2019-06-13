@@ -686,8 +686,8 @@ with possibly meaning-altering missing words.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR">
 <term><varname>pdfocr</varname></term>
 <listitem><para>Attempt OCR of PDF files with no text content if both tesseract and
-pdftoppm are installed. The default is off because OCR is so
-very slow.</para></listitem></varlistentry>
+pdftoppm are installed. This can be defined in subdirectories. The default is off because
+OCR is so very slow.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCRLANG">
 <term><varname>pdfocrlang</varname></term>
 <listitem><para>Language to assume for PDF OCR. This is very important for having a reasonable rate of errors

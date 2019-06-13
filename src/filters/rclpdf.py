@@ -22,12 +22,13 @@
 #
 # If pdftotext produces no text and tesseract is available, we try to
 # perform OCR. As this can be very slow and the result not always
-# good, we only do this if a file named $RECOLL_CONFDIR/ocrpdf exists
+# good, we only do this if this is required by the configuration
 #
 # We guess the OCR language in order of preference:
 #  - From the content of a ".ocrpdflang" file if it exists in the same
 #    directory as the PDF
-#  - From an RECOLL_TESSERACT_LANG environment variable
+#  - Else from the pdfocrlang in recoll.conf
+#  - Else from an RECOLL_TESSERACT_LANG environment variable
 #  - From the content of $RECOLL_CONFDIR/ocrpdf
 #  - Default to "eng"
 
@@ -119,14 +120,12 @@ class PDFExtractor:
         # either the presence of a file in the config dir (historical)
         # or a set config variable.
         self.ocrpossible = False
-        cf_doocr = self.config.getConfParam("pdfocr")
-        if cf_doocr or os.path.isfile(os.path.join(self.confdir, "ocrpdf")):
-            self.tesseract = rclexecm.which("tesseract")
-            if self.tesseract:
-                self.pdftoppm = rclexecm.which("pdftoppm")
-                if self.pdftoppm:
-                    self.ocrpossible = True
-                    self.maybemaketmpdir()
+        self.tesseract = rclexecm.which("tesseract")
+        if self.tesseract:
+            self.pdftoppm = rclexecm.which("pdftoppm")
+            if self.pdftoppm:
+                self.ocrpossible = True
+                self.maybemaketmpdir()
         # self.em.rclog("OCRPOSSIBLE: %d" % self.ocrpossible)
 
         # Pdftk is optionally used to extract attachments. This takes
@@ -288,6 +287,7 @@ class PDFExtractor:
 
         files = glob.glob(tmpfile + "*")
         for f in files:
+            out = b''
             try:
                 out = subprocess.check_output([self.tesseract, f, f, "-l",
                                                tesseractlang],
@@ -305,8 +305,6 @@ class PDFExtractor:
         for f in files:
             data += open(f, "rb").read()
 
-        if not data:
-            return b""
         return b'''<html><head>
         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
         </head><body><pre>''' + \
@@ -469,7 +467,10 @@ class PDFExtractor:
         #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, html))
 
         if isempty and self.ocrpossible:
-            html = self.ocrpdf()
+            self.config.setKeyDir(os.path.dirname(self.filename))
+            cf_doocr = self.config.getConfParam("pdfocr")
+            if cf_doocr or os.path.isfile(os.path.join(self.confdir, "ocrpdf")):
+                html = self.ocrpdf()
 
         if self.extrameta:
             try:
