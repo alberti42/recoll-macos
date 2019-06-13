@@ -243,7 +243,7 @@ class PDFExtractor:
         tesseractlang = os.environ.get("RECOLL_TESSERACT_LANG", "");
         if tesseractlang:
             return tesseractlang
-        pdflangfile = os.path.join(self.confdir, b"ocrpdf")
+        pdflangfile = os.path.join(self.confdir, "ocrpdf")
         if os.path.isfile(pdflangfile):
             tesseractlang = open(pdflangfile, "r").read().strip()
         if tesseractlang:
