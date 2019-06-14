@@ -82,17 +82,18 @@ class RclExecM:
             import msvcrt
             msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
             msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
-        self.debugfile = None
+        self.debugfile = my_config.getConfParam("filterdebuglog")
         if self.debugfile:
             self.errfout = open(self.debugfile, "a")
         else:
             self.errfout = sys.stderr
-        
+    
     def rclog(self, s, doexit = 0, exitvalue = 1):
         # On windows, and I think that it changed quite recently (Qt change?)
         # we get stdout as stderr. So don't write at all
-        if sys.platform != "win32":
+        if self.debugfile or sys.platform != "win32":
             print("RCLMFILT: %s: %s" % (self.myname, s), file=self.errfout)
+            self.errfout.flush()
         if doexit:
             sys.exit(exitvalue)
 

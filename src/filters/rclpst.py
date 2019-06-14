@@ -33,6 +33,7 @@ import subprocess
 import rclexecm
 import rclconfig
 import conftree
+import base64
 
 _mswindows = (sys.platform == "win32" or sys.platform == "msys")
 if _mswindows:
@@ -42,7 +43,10 @@ if _mswindows:
     met_splitext = ntpath.splitext
     met_join = ntpath.join
     def _backslashize(s):
-        return s.replace("/", "\\")
+        if type(s) == type(""):
+            return s.replace("/", "\\")
+        else:
+            return s.replace(b"/", b"\\")
 else:
     met_basename = os.path.basename
     met_dirname = os.path.dirname
@@ -69,15 +73,17 @@ class EmailBuilder(object):
         self.attachments = []
 
     def setheaders(self, h):
+        #self.log("EmailBuilder: headers")
         self.headers = h
 
     def setbody(self, body, main, sub):
+        #self.log("EmailBuilder: body")
         self.body = body
         self.bodymimemain = main
         self.bodymimesub = sub
 
     def addattachment(self, att, filename):
-        #self.log("Adding attachment")
+        #self.log("EmailBuilder: attachment")
         self.attachments.append((att, filename))
 
     def flush(self):
@@ -87,7 +93,7 @@ class EmailBuilder(object):
             return None
 
         newmsg = email.message.EmailMessage(policy=email.policy.default)
-        headerstr = self.headers.decode('utf-8')
+        headerstr = self.headers.decode("UTF-8")
         # print("%s" % headerstr)
         headers = self.parser.parsestr(headerstr, headersonly=True)
         #self.log("EmailBuilder: content-type %s" % headers['content-type'])
@@ -177,7 +183,7 @@ class PFFReader(object):
             if name == "":
                 break
             try:
-                paramstr = data.decode('utf-8')
+                paramstr = data.decode("UTF-8")
             except:
                 paramstr = ''
 
@@ -254,7 +260,10 @@ class PstExtractor(object):
     def startCmd(self, filename, ipath=None):
         fullcmd = self.cmd
         if ipath:
-            fullcmd += ["-p", ipath]
+            # There is no way to pass an utf-8 string on the command
+            # line on Windows. Use base64 encoding
+            bip = base64.b64encode(ipath.encode("UTF-8"))
+            fullcmd += ["-p", bip.decode("UTF-8")]
         fn = _backslashize(rclexecm.subprocfile(filename))
         fullcmd += [fn,]
         try:
@@ -264,6 +273,9 @@ class PstExtractor(object):
             return False
         except OSError as err:
             self.em.rclog("Pst: Popen(%s) OS error: %s" % (fullcmd, err))
+            return (False, "")
+        except Exception as err:
+            self.em.rclog("Pst: Popen(%s) Exception: %s" % (fullcmd, err))
             return (False, "")
         self.filein = self.proc.stdout
         return True
@@ -291,8 +303,6 @@ class PstExtractor(object):
             self.em.setmimetype("message/rfc822")
             self.em.rclog("getipath doc len %d [%s] ipath %s" %
                           (len(doc), doc[:20], ipath))
-            f = open("/tmp/document", "wb")
-            f.write(doc.encode('utf-8'))
         except StopIteration:
             self.em.rclog("getipath: StopIteration")
             return(False, "", "", rclexecm.RclExecM.eofnow)
@@ -325,8 +335,6 @@ if True:
     extract = PstExtractor(proto)
     rclexecm.main(proto, extract)
 else:
-    def _deb(s):
-        print("%s" % s, file=sys.stderr)
     reader = PFFReader(_deb, infile=sys.stdin.buffer)
     generator = reader.mainloop()
     for doc, ipath in generator:
