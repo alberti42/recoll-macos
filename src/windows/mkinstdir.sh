@@ -266,7 +266,11 @@ copypff()
 {
     DEST=$FILTERS
     cp -rp $LIBPFF $DEST || fatal "can't copy pffinstall"
-    chkcp $LIBPFF/mingw32/bin/pffexport.exe $DEST/pffinstall/mingw32
+	DEST=$DEST/pffinstall/mingw32/bin
+    chkcp $LIBPFF/mingw32/bin/pffexport.exe $DEST
+    chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DEST
+    chkcp $MINGWBIN/libstdc++-6.dll $DEST
+    chkcp $QTBIN/libwinpthread-1.dll $DEST
 }
 
 for d in doc examples filters images translations; do
