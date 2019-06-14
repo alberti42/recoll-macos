@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -15,7 +15,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef TEST_TRANSCODE
 #include "autoconfig.h"
 
 #include <string>
@@ -42,7 +41,7 @@ using namespace std;
 #define ICONV_CACHE_OPEN
 
 bool transcode(const string &in, string &out, const string &icode,
-	       const string &ocode, int *ecnt)
+               const string &ocode, int *ecnt)
 {
     LOGDEB2("Transcode: " << icode << " -> " << ocode << "\n");
 #ifdef ICONV_CACHE_OPEN
@@ -66,69 +65,69 @@ bool transcode(const string &in, string &out, const string &icode,
 
 #ifdef ICONV_CACHE_OPEN
     if (cachedicode.compare(icode) || cachedocode.compare(ocode)) {
-	if (ic != (iconv_t)-1) {
-	    iconv_close(ic);
-	    ic = (iconv_t)-1;
-	}
+        if (ic != (iconv_t)-1) {
+            iconv_close(ic);
+            ic = (iconv_t)-1;
+        }
 #endif
-	if((ic = iconv_open(ocode.c_str(), icode.c_str())) == (iconv_t)-1) {
-	    out = string("iconv_open failed for ") + icode
-		+ " -> " + ocode;
+        if((ic = iconv_open(ocode.c_str(), icode.c_str())) == (iconv_t)-1) {
+            out = string("iconv_open failed for ") + icode
+                + " -> " + ocode;
 #ifdef ICONV_CACHE_OPEN
-	    cachedicode.erase();
-	    cachedocode.erase();
+            cachedicode.erase();
+            cachedocode.erase();
 #endif
-	    goto error;
-	}
+            goto error;
+        }
 
 #ifdef ICONV_CACHE_OPEN
-	cachedicode.assign(icode);
-	cachedocode.assign(ocode);
+        cachedicode.assign(icode);
+        cachedocode.assign(ocode);
     }
 #endif
 
     icopen = true;
 
     while (isiz > 0) {
-	size_t osiz;
-	op = obuf;
-	osiz = OBSIZ;
+        size_t osiz;
+        op = obuf;
+        osiz = OBSIZ;
 
-	if(iconv(ic, (ICONV_CONST char **)&ip, &isiz, &op, &osiz) == (size_t)-1
+        if(iconv(ic, (ICONV_CONST char **)&ip, &isiz, &op, &osiz) == (size_t)-1
            && errno != E2BIG) {
 #if 0
-	    out.erase();
-	    out = string("iconv failed for ") + icode + " -> " + ocode +
-		" : " + strerror(errno);
+            out.erase();
+            out = string("iconv failed for ") + icode + " -> " + ocode +
+                " : " + strerror(errno);
 #endif
-	    if (errno == EILSEQ) {
-		LOGDEB1("transcode:iconv: bad input seq.: shift, retry\n");
-		LOGDEB1(" Input consumed " << ip - in << " output produced " <<
+            if (errno == EILSEQ) {
+                LOGDEB1("transcode:iconv: bad input seq.: shift, retry\n");
+                LOGDEB1(" Input consumed " << ip - in << " output produced " <<
                         out.length() + OBSIZ - osiz << "\n");
-		out.append(obuf, OBSIZ - osiz);
-		out += "?";
-		mecnt++;
-		ip++;isiz--;
-		continue;
-	    }
-	    // Normally only EINVAL is possible here: incomplete
-	    // multibyte sequence at the end. This is not fatal. Any
-	    // other is supposedly impossible, we return an error
-	    if (errno == EINVAL)
-		goto out;
-	    else
-		goto error;
-	}
+                out.append(obuf, OBSIZ - osiz);
+                out += "?";
+                mecnt++;
+                ip++;isiz--;
+                continue;
+            }
+            // Normally only EINVAL is possible here: incomplete
+            // multibyte sequence at the end. This is not fatal. Any
+            // other is supposedly impossible, we return an error
+            if (errno == EINVAL)
+                goto out;
+            else
+                goto error;
+        }
 
-	out.append(obuf, OBSIZ - osiz);
+        out.append(obuf, OBSIZ - osiz);
     }
 
 #ifndef ICONV_CACHE_OPEN
     icopen = false;
     if(iconv_close(ic) == -1) {
-	out.erase();
-	out = string("iconv_close failed for ") + icode + " -> " + ocode;
-	goto error;
+        out.erase();
+        out = string("iconv_close failed for ") + icode + " -> " + ocode;
+        goto error;
     }
 #endif
 
@@ -139,18 +138,18 @@ error:
 
     if (icopen) {
 #ifndef ICONV_CACHE_OPEN
-	iconv_close(ic);
+        iconv_close(ic);
 #else
-	// Just reset conversion
+        // Just reset conversion
         iconv(ic, 0, 0, 0, 0);
 #endif
     }
 
     if (mecnt)
-	LOGDEB("transcode: [" << icode << "]->[" << ocode << "] " <<
+        LOGDEB("transcode: [" << icode << "]->[" << ocode << "] " <<
                mecnt << " errors\n");
     if (ecnt)
-	*ecnt = mecnt;
+        *ecnt = mecnt;
     return ret;
 }
 
@@ -158,10 +157,10 @@ bool wchartoutf8(const wchar_t *in, std::string& out)
 {
     static iconv_t ic = (iconv_t)-1;
     if (ic == (iconv_t)-1) {
-	if((ic = iconv_open("UTF-8", "WCHAR_T")) == (iconv_t)-1) {
+        if((ic = iconv_open("UTF-8", "WCHAR_T")) == (iconv_t)-1) {
             LOGERR("wchartoutf8: iconv_open failed\n");
             return false;
-	}
+        }
     }
     const int OBSIZ = 8192;
     char obuf[OBSIZ], *op;
@@ -171,16 +170,16 @@ bool wchartoutf8(const wchar_t *in, std::string& out)
     const char *ip = (const char *)in;
 
     while (isiz > 0) {
-	size_t osiz;
-	op = obuf;
-	osiz = OBSIZ;
+        size_t osiz;
+        op = obuf;
+        osiz = OBSIZ;
 
-	if(iconv(ic, (ICONV_CONST char **)&ip, &isiz, &op, &osiz) == (size_t)-1
+        if(iconv(ic, (ICONV_CONST char **)&ip, &isiz, &op, &osiz) == (size_t)-1
            && errno != E2BIG) {
             LOGERR("wchartoutf8: iconv error, errno: " << errno << endl);
             return false;
-	}
-	out.append(obuf, OBSIZ - osiz);
+        }
+        out.append(obuf, OBSIZ - osiz);
     }
     return true;
 }
@@ -189,10 +188,10 @@ bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
 {
     static iconv_t ic = (iconv_t)-1;
     if (ic == (iconv_t)-1) {
-	if((ic = iconv_open("WCHAR_T", "UTF-8")) == (iconv_t)-1) {
+        if((ic = iconv_open("WCHAR_T", "UTF-8")) == (iconv_t)-1) {
             LOGERR("utf8towchar: iconv_open failed\n");
             return false;
-	}
+        }
     }
     size_t isiz = in.size();
     const char *ip = in.c_str();
@@ -206,75 +205,3 @@ bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
     *op = 0;
     return true;
 }
-
-#else // -> TEST
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <fcntl.h>
-
-#include <string>
-#include <iostream>
-
-
-using namespace std;
-
-#include "readfile.h"
-#include "transcode.h"
-
-// Repeatedly transcode a small string for timing measurements
-static const string testword("\xc3\xa9\x6c\x69\x6d\x69\x6e\xc3\xa9\xc3\xa0");
-// Without cache 10e6 reps on y -> 6.68
-// With cache                   -> 4.73
-// With cache and lock          -> 4.9
-void looptest()
-{
-    cout << testword << endl;
-    string out;
-    for (int i = 0; i < 10*1000*1000; i++) {
-	if (!transcode(testword, out, "UTF-8", "UTF-16BE")) {
-	    cerr << "Transcode failed" << endl;
-	    break;
-	}
-    }
-}
-
-int main(int argc, char **argv)
-{
-#if 0
-    looptest();
-    exit(0);
-#endif
-    if (argc != 5) {
-	cerr << "Usage: transcode ifilename icode ofilename ocode" << endl;
-	exit(1);
-    }
-    const string ifilename = argv[1];
-    const string icode = argv[2];
-    const string ofilename = argv[3];
-    const string ocode = argv[4];
-
-    string text;
-    if (!file_to_string(ifilename, text)) {
-	cerr << "Couldnt read file, errno " << errno << endl;
-	exit(1);
-    }
-    string out;
-    if (!transcode(text, out, icode, ocode)) {
-	cerr << out << endl;
-	exit(1);
-    }
-    FILE *fp = fopen(ofilename.c_str(), "wb");
-    if (fp == 0) {
-	perror("Open/create output");
-	exit(1);
-    }
-    if (fwrite(out.c_str(), 1, out.length(), fp) != (int)out.length()) {
-	perror("fwrite");
-	exit(1);
-    }
-    fclose(fp);
-    exit(0);
-}
-#endif
