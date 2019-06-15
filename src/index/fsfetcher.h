@@ -28,6 +28,7 @@ class FSDocFetcher : public DocFetcher{
     
     /** Calls stat to retrieve file signature data */
     virtual bool makesig(RclConfig* cnf,const Rcl::Doc& idoc, std::string& sig);
+    virtual DocFetcher::Reason testAccess(RclConfig* cnf, const Rcl::Doc& idoc);
     virtual ~FSDocFetcher() {}
 };
 

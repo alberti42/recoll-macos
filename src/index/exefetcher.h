@@ -17,6 +17,7 @@
 #ifndef _EXEFETCHER_H_INCLUDED_
 #define _EXEFETCHER_H_INCLUDED_
 
+#include <memory>
 #include "fetcher.h"
 
 class RclConfig;
@@ -35,6 +36,7 @@ class RclConfig;
  * query time for previewing and opening the document.
  */
 class EXEDocFetcher : public DocFetcher {
+public:
     class Internal;
     EXEDocFetcher(const Internal&);
     virtual ~EXEDocFetcher() {}
@@ -42,12 +44,14 @@ class EXEDocFetcher : public DocFetcher {
     virtual bool fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out);
     /** Calls stat to retrieve file signature data */
     virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,std::string& sig);
-    friend EXEDocFetcher *exeDocFetcherMake(RclConfig *, const std::string&);
+    friend std::unique_ptr<EXEDocFetcher>
+    exeDocFetcherMake(RclConfig *, const std::string&);
 private:
     Internal *m;
 };
 
 // Lookup bckid in the config and create an appropriate fetcher.
-EXEDocFetcher *exeDocFetcherMake(RclConfig *config, const std::string& bckid);
+std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config,
+                                                 const std::string& bckid);
 
 #endif /* _EXEFETCHER_H_INCLUDED_ */

@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -33,7 +33,7 @@ using std::set;
 
 class RclConfig;
 namespace Rcl {
-    class Doc;
+class Doc;
 }
 
 class Uncomp;
@@ -51,9 +51,9 @@ public:
     FIMissingStore(const string& in);
     virtual ~FIMissingStore() {}
     virtual void addMissing(const string& prog, const string& mt)
-    {
-	m_typesForMissing[prog].insert(mt);
-    }
+        {
+            m_typesForMissing[prog].insert(mt);
+        }
     // Get simple progs list string
     virtual void getMissingExternal(string& out);
     // Get progs + assoc mtypes description string
@@ -87,7 +87,7 @@ public:
  * 
  */
 class FileInterner {
- public:
+public:
     /** Operation modifier flags */
     enum Flags {FIF_none, FIF_forPreview, FIF_doUseInputMimetype};
     /** Return values for internfile() */
@@ -115,7 +115,7 @@ class FileInterner {
      *   mime type for the uncompressed version.
      */
     FileInterner(const string &fn, const struct stat *stp, 
-		 RclConfig *cnf, int flags, const string *mtype = 0);
+                 RclConfig *cnf, int flags, const string *mtype = 0);
     
     /** 
      * Alternate constructor for the case where the data is in memory.
@@ -138,9 +138,8 @@ class FileInterner {
 
     ~FileInterner();
 
-    void setMissingStore(FIMissingStore *st)
-    {
-	m_missingdatap = st;
+    void setMissingStore(FIMissingStore *st) {
+        m_missingdatap = st;
     }
 
     /** 
@@ -160,9 +159,9 @@ class FileInterner {
     Status internfile(Rcl::Doc& doc, const string &ipath = "");
 
     /** Extract subdoc defined by ipath in idoc to file. See params for
-	idocToFile() */
+        idocToFile() */
     bool interntofile(TempFile& otemp, const string& tofile,
-		      const string& ipath, const string& mimetype);
+                      const string& ipath, const string& mimetype);
 
     /** Return the file's (top level object) mimetype (useful for 
      *  creating the pseudo-doc for container files) 
@@ -181,17 +180,17 @@ class FileInterner {
     const string& get_html() {return m_html;}
 
     /** If we happen to be processing an image file and need a temp file,
-	we keep it around to save work for our caller, which can get it here */
+        we keep it around to save work for our caller, which can get it here */
     TempFile get_imgtmp() {return m_imgtmp;}
 
     const string& getReason() const 
-    {
-	return m_reason;
-    }
+        {
+            return m_reason;
+        }
     bool ok() const
-    {
-	return m_ok;
-    }
+        {
+            return m_ok;
+        }
 
     /**
      * Get UDI for immediate parent for document. 
@@ -234,7 +233,7 @@ class FileInterner {
      *      anything for a top level document.
      */
     static bool idocToFile(TempFile& temp, const string& tofile, 
-			   RclConfig *cnf, const Rcl::Doc& doc,
+                           RclConfig *cnf, const Rcl::Doc& doc,
                            bool uncompress = true);
 
     /** Does file appear to be the compressed version of a document? */
@@ -248,7 +247,14 @@ class FileInterner {
     static bool maybeUncompressToTemp(TempFile& temp, const string& fn, 
                                       RclConfig *cnf, const Rcl::Doc& doc);
 
- private:
+    /** Try to get a top level reason after an operation failed. This
+     * is just for "simple" issues, like file missing, permissions,
+     * etc. */
+    enum ErrorPossibleCause{FetchMissing, FetchPerm, FetchNoBackend,
+                            InternfileOther};
+    static ErrorPossibleCause tryGetReason(RclConfig *, const Rcl::Doc&);
+
+private:
     static const unsigned int MAXHANDLERS = 20;
     RclConfig             *m_cfg;
     string                 m_fn;
@@ -287,7 +293,7 @@ class FileInterner {
     void init(const string &fn, const struct stat *stp, 
               RclConfig *cnf, int flags, const string *mtype = 0);
     void init(const string &data, RclConfig *cnf, int flags, 
-	      const string& mtype);
+              const string& mtype);
     void initcommon(RclConfig *cnf, int flags);
 
     bool dijontorcl(Rcl::Doc&);
@@ -298,7 +304,7 @@ class FileInterner {
     void checkExternalMissing(const string& msg, const string& mt);
     void processNextDocError(Rcl::Doc &doc);
     static bool tempFileForMT(TempFile& otemp, RclConfig *cnf, 
-                       const std::string& mimetype);
+                              const std::string& mimetype);
     static bool topdocToFile(TempFile& otemp, const std::string& tofile,
                              RclConfig *cnf, const Rcl::Doc& idoc,
                              bool uncompress);

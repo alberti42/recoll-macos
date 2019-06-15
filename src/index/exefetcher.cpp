@@ -77,7 +77,8 @@ bool EXEDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
 }
 
 // Lookup bckid in the config and create an appropriate fetcher.
-EXEDocFetcher *exeDocFetcherMake(RclConfig *config, const string& bckid)
+std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config,
+                                                 const string& bckid)
 {
     // The config we only read once, not gonna change.
     static ConfSimple *bconf;
@@ -122,5 +123,5 @@ EXEDocFetcher *exeDocFetcherMake(RclConfig *config, const string& bckid)
                " not found in exec path or filters dir\n");
         return 0;
     }
-    return new EXEDocFetcher(m);
+    return std::unique_ptr<EXEDocFetcher>(new EXEDocFetcher(m));
 }

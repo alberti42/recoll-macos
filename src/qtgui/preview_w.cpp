@@ -643,7 +643,6 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     if (CancelCheck::instance().cancelState())
         return false;
     if (lthr.status != 0) {
-        progress.close();
         QString explain;
         if (!lthr.missing.empty()) {
             explain = QString::fromUtf8("<br>") +
@@ -655,13 +654,40 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
                                  lthr.fdoc.mimetype.c_str() + explain);
         } else {
             if (progress.wasCanceled()) {
-                //QMessageBox::warning(0, "Recoll", tr("Canceled"));
+                QMessageBox::warning(0, "Recoll", tr("Canceled"));
             } else {
-                QMessageBox::warning(0, "Recoll", 
-                                     tr("Error while loading file"));
+                progress.close();
+                // Note that we can't easily check for a readable file
+                // because it's possible that only a region is locked
+                // (e.g. on Windows for an ost file the first block is
+                // readable even if Outlook is running).
+                QString msg;
+                switch (lthr.explain) {
+                case FileInterner::FetchMissing:
+                    msg = tr("Error loading the document: file missing");
+                    break;
+                case FileInterner::FetchPerm:
+                    msg = tr("Error loading the document: no permission");
+                    break;
+                case FileInterner::FetchNoBackend:
+                    msg =
+                        tr("Error loading the document: backend not configured");
+                    break;
+                case FileInterner::InternfileOther:
+#ifdef _WIN32
+                    msg = tr("Error loading the document: other handler error");
+#else
+                    msg = tr("Error loading the document: "
+                             "other handler error<br>"
+                             "Maybe the application is locking the file ?");
+#endif
+                    break;
+                }
+                QMessageBox::warning(0, "Recoll", msg);
             }
         }
 
+        progress.close();
         return false;
     }
     // Reset config just in case.
@@ -894,7 +920,7 @@ PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv)
 void PreviewTextEdit::onAnchorClicked(const QUrl& url)
 {
     LOGDEB("PreviewTextEdit::onAnchorClicked: " << qs2utf8s(url.toString())
-          << std::endl);
+           << std::endl);
     if (prefs.previewActiveLinks && m_preview->m_rclmain) {
         Rcl::Doc doc;
         doc.url = qs2utf8s(url.toString()).c_str();
@@ -1016,4 +1042,3 @@ void PreviewTextEdit::print()
     QTextEdit::print(&printer);
 #endif
 }
-

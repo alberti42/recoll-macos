@@ -62,6 +62,7 @@ void LoadThread::run()
         } else {
             fdoc.mimetype = interner.getMimetype();
             mst.getMissingExternal(missing);
+            explain = FileInterner::tryGetReason(&m_config, m_idoc);
             status = -1;
         }
     } catch (CancelExcept) {

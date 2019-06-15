@@ -25,6 +25,7 @@
 #include "pathut.h"
 #include "rclutil.h"
 #include "rclconfig.h"
+#include "internfile.h"
 
 /* 
  * A thread to perform the file reading / format conversion work for preview
@@ -48,7 +49,8 @@ public:
     Rcl::Doc fdoc;
     TempFile tmpimg;
     std::string missing;
-    
+    FileInterner::ErrorPossibleCause explain{FileInterner::InternfileOther};
+
 private:
     Rcl::Doc m_idoc;
     bool m_previewHtml;

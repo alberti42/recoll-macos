@@ -16,6 +16,8 @@
  */
 #include "autoconfig.h"
 
+#include <memory>
+
 #include "log.h"
 #include "rclconfig.h"
 #include "fetcher.h"
@@ -23,22 +25,23 @@
 #include "webqueuefetcher.h"
 #include "exefetcher.h"
 
-DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc)
+std::unique_ptr<DocFetcher> docFetcherMake(RclConfig *config,
+                                           const Rcl::Doc& idoc)
 {
     if (idoc.url.empty()) {
         LOGERR("docFetcherMakeg:: no url in doc!\n" );
-        return 0;
+        return std::unique_ptr<DocFetcher>();
     }
     string backend;
     idoc.getmeta(Rcl::Doc::keybcknd, &backend);
     if (backend.empty() || !backend.compare("FS")) {
-	return new FSDocFetcher;
+	return std::unique_ptr<DocFetcher>(new FSDocFetcher);
 #ifndef DISABLE_WEB_INDEXER
     } else if (!backend.compare("BGL")) {
-	return new WQDocFetcher;
+	return std::unique_ptr<DocFetcher>(new WQDocFetcher);
 #endif
     } else {
-        DocFetcher *f = exeDocFetcherMake(config, backend);
+        std::unique_ptr<DocFetcher> f(exeDocFetcherMake(config, backend));
         if (!f) {
             LOGERR("DocFetcherFactory: unknown backend [" << backend << "]\n");
         }

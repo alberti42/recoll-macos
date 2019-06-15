@@ -1,4 +1,4 @@
-/* Copyright (C) 2012 J.F.Dockes
+/* Copyright (C) 2012-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +19,7 @@
 
 #include "safesysstat.h"
 #include <string>
+#include <memory>
 
 #include "rcldoc.h"
 
@@ -45,12 +46,12 @@ class RclConfig;
 class DocFetcher {
 public:
     /** A RawDoc is the data for a document-holding entity either as a
-       memory block, or pointed to by a file name */
+        memory block, or pointed to by a file name */
     struct RawDoc {
-	enum RawDocKind {RDK_FILENAME, RDK_DATA, RDK_DATADIRECT};
-	RawDocKind kind;
-	std::string data; // Doc data or file name
-	struct stat st; // Only used if RDK_FILENAME
+        enum RawDocKind {RDK_FILENAME, RDK_DATA, RDK_DATADIRECT};
+        RawDocKind kind;
+        std::string data; // Doc data or file name
+        struct stat st; // Only used if RDK_FILENAME
     };
 
     /** 
@@ -73,11 +74,16 @@ public:
      */
     virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,
                          std::string& sig) = 0;
+    enum Reason{FetchOk, FetchNotExist, FetchNoPerm, FetchOther};
+    virtual Reason testAccess(RclConfig* cnf, const Rcl::Doc& idoc) {
+        return FetchOther;
+    }
     virtual ~DocFetcher() {}
 };
 
 /** Return an appropriate fetcher object given the backend string 
  * identifier inside idoc*/
-DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc);
+std::unique_ptr<DocFetcher> docFetcherMake(RclConfig *config,
+                                           const Rcl::Doc& idoc);
 
 #endif /* _FETCHER_H_INCLUDED_ */

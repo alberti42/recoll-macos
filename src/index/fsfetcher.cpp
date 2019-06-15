@@ -1,4 +1,4 @@
-/* Copyright (C) 2012 J.F.Dockes
+/* Copyright (C) 2012-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -28,31 +28,32 @@
 
 using std::string;
 
-static bool urltopath(RclConfig* cnf,
-		      const Rcl::Doc& idoc, string& fn, struct stat& st)
+static DocFetcher::Reason urltopath(RclConfig* cnf, const Rcl::Doc& idoc,
+                                    string& fn, struct stat& st)
 {
     // The url has to be like file://
     fn = fileurltolocalpath(idoc.url);
     if (fn.empty()) {
-	LOGERR("FSDocFetcher::fetch/sig: non fs url: ["  << (idoc.url) << "]\n" );
-	return false;
+        LOGERR("FSDocFetcher::fetch/sig: non fs url: [" << idoc.url << "]\n");
+        return DocFetcher::FetchOther;
     }
     cnf->setKeyDir(path_getfather(fn));
     bool follow = false;
     cnf->getConfParam("followLinks", &follow);
 
     if (path_fileprops(fn, &st, follow) < 0) {
-	LOGERR("FSDocFetcher::fetch: stat errno "  << (errno) << " for ["  << (fn) << "]\n" );
-	return false;
+        LOGERR("FSDocFetcher::fetch: stat errno " << errno << " for [" << fn
+               << "]\n");
+        return DocFetcher::FetchNotExist;
     }
-    return true;
+    return DocFetcher::FetchOk;
 }
 
 bool FSDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 {
     string fn;
-    if (!urltopath(cnf, idoc, fn, out.st))
-	return false;
+    if (urltopath(cnf, idoc, fn, out.st) != DocFetcher::FetchOk)
+        return false;
     out.kind = RawDoc::RDK_FILENAME;
     out.data = fn;
     return true;
@@ -62,10 +63,24 @@ bool FSDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
 {
     string fn;
     struct stat st;
-    if (!urltopath(cnf, idoc, fn, st))
-	return false;
+    if (urltopath(cnf, idoc, fn, st) != DocFetcher::FetchOk)
+        return false;
     FsIndexer::makesig(&st, sig);
     return true;
 }
 
-
+DocFetcher::Reason FSDocFetcher::testAccess(RclConfig* cnf, const Rcl::Doc& idoc)
+{
+    string fn;
+    struct stat st;
+    DocFetcher::Reason reason = urltopath(cnf, idoc, fn, st);
+    if (reason != DocFetcher::FetchOk) {
+        return reason;
+    }
+    if (!path_readable(fn)) {
+        return DocFetcher::FetchNoPerm;
+    }
+    // We have no way to know if the file is fully readable without
+    // trying (local Windows locks), which would take too much time.
+    return DocFetcher::FetchOther;
+}
