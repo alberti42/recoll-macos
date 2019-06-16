@@ -406,6 +406,9 @@ void Preview::currentChanged(int index)
         return;
     }
     edit->setFocus();
+
+    editPB->setEnabled(canOpen(&edit->m_dbdoc, theconfig));
+
     // Disconnect the print signal and reconnect it to the current editor
     LOGDEB1("Disconnecting reconnecting print signal\n");
     disconnect(this, SIGNAL(printCurrentPreviewRequest()), 0, 0);
@@ -643,6 +646,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     if (CancelCheck::instance().cancelState())
         return false;
     if (lthr.status != 0) {
+        bool canGetRawText = rcldb && rcldb->storesDocText();
         QString explain;
         if (!lthr.missing.empty()) {
             explain = QString::fromUtf8("<br>") +
@@ -656,7 +660,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             if (progress.wasCanceled()) {
                 QMessageBox::warning(0, "Recoll", tr("Canceled"));
             } else {
-                progress.close();
+                progress.reset();
                 // Note that we can't easily check for a readable file
                 // because it's possible that only a region is locked
                 // (e.g. on Windows for an ost file the first block is
@@ -664,14 +668,14 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
                 QString msg;
                 switch (lthr.explain) {
                 case FileInterner::FetchMissing:
-                    msg = tr("Error loading the document: file missing");
+                    msg = tr("Error loading the document: file missing.");
                     break;
                 case FileInterner::FetchPerm:
-                    msg = tr("Error loading the document: no permission");
+                    msg = tr("Error loading the document: no permission.");
                     break;
                 case FileInterner::FetchNoBackend:
                     msg =
-                        tr("Error loading the document: backend not configured");
+                        tr("Error loading: backend not configured.");
                     break;
                 case FileInterner::InternfileOther:
 #ifdef _WIN32
@@ -679,16 +683,29 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
                              "other handler error<br>"
                              "Maybe the application is locking the file ?");
 #else
-                    msg = tr("Error loading the document: other handler error");
+                    msg = tr("Error loading the document: other handler error.");
 #endif
                     break;
+                }
+                if (canGetRawText) {
+                    msg += tr("<br>Attempting to display from stored text.");
                 }
                 QMessageBox::warning(0, "Recoll", msg);
             }
         }
 
-        progress.close();
-        return false;
+
+        if (canGetRawText) {
+            lthr.fdoc = idoc;
+            if (!rcldb->getDocRawText(lthr.fdoc)) {
+                QMessageBox::warning(0, "Recoll",
+                                     tr("Could not fetch stored text"));
+                progress.close();
+                return false;
+            }
+        } else {
+            progress.close();
+        }
     }
     // Reset config just in case.
     theconfig->setKeyDir("");
@@ -838,6 +855,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         lthr.fdoc.text.clear(); 
     editor->m_fdoc = lthr.fdoc;
     editor->m_dbdoc = idoc;
+    editPB->setEnabled(canOpen(&editor->m_dbdoc, theconfig));
     if (textempty)
         editor->displayFields();
 
@@ -962,8 +980,10 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
     if (!m_dbdoc.url.empty()) {
         popup->addAction(tr("Save document to file"), 
                          m_preview, SLOT(emitSaveDocToFile()));
-        popup->addAction(tr("Open document"), 
-                         m_preview, SLOT(emitEditRequested()));
+        if (canOpen(&m_dbdoc, theconfig)) {
+            popup->addAction(tr("Open document"), 
+                             m_preview, SLOT(emitEditRequested()));
+        }
     }
     popup->popup(mapToGlobal(pos));
 }

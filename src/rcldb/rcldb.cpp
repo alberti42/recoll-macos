@@ -992,6 +992,24 @@ bool Db::open(OpenMode mode, OpenError *error)
     return false;
 }
 
+bool Db::storesDocText()
+{
+    if (!m_ndb || !m_ndb->m_isopen) {
+        LOGERR("Db::storesDocText: called on non-opened db\n");
+        return false;
+    }
+    return m_ndb->m_storetext;
+}
+
+bool Db::getDocRawText(Doc& doc)
+{
+    if (!m_ndb || !m_ndb->m_isopen) {
+        LOGERR("Db::getDocRawText: called on non-opened db\n");
+        return false;
+    }
+    return m_ndb->getRawText(doc.xdocid, doc.text);
+}
+
 // Note: xapian has no close call, we delete and recreate the db
 bool Db::close()
 {

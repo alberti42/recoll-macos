@@ -189,6 +189,9 @@ public:
     /** Return existing stemming databases */
     vector<string> getStemLangs();
 
+    /** Check if index stores the documents' texts. Only valid after open */
+    bool storesDocText();
+    
     /** Test word for spelling correction candidate: not too long, no 
      * special chars... 
      * @param with_aspell test for use with aspell, else for xapian speller
@@ -341,6 +344,12 @@ public:
        decide if we can update the index for it */
     bool fromMainIndex(const Doc& doc);
 
+    /** Retrieve the stored doc text. This returns false if the index does not
+        store raw text or other problems (discriminate with storesDocText(). 
+        On success, the data is stored in doc.text
+    */
+    bool getDocRawText(Doc& doc);
+    
     /** Retrieve an index designator for the document result. This is used 
      * by the GUI document history feature for remembering where a
      * doc comes from and allowing later retrieval (if the ext index

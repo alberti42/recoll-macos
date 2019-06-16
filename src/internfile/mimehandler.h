@@ -179,7 +179,14 @@ extern void returnMimeHandler(RecollFilter *);
 /// off recoll.
 extern void clearMimeHandlerCache();
 
+namespace Rcl {
+    class Doc;
+}
 /// Can this mime type be interned ?
 extern bool canIntern(const std::string mimetype, RclConfig *cfg);
+/// Same, getting MIME from doc
+extern bool canIntern(Rcl::Doc *doc, RclConfig *cfg);
+/// Can this MIME type be opened (has viewer def) ?
+extern bool canOpen(Rcl::Doc *doc, RclConfig *cfg);
 
 #endif /* _MIMEHANDLER_H_INCLUDED_ */

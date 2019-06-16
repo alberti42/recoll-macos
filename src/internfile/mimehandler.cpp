@@ -42,6 +42,7 @@ using namespace std;
 #include "mh_unknown.h"
 #include "mh_null.h"
 #include "mh_xslt.h"
+#include "rcldoc.h"
 
 // Performance help: we use a pool of already known and created
 // handlers. There can be several instances for a given mime type
@@ -380,6 +381,24 @@ bool canIntern(const std::string mtype, RclConfig *cfg)
     if (hs.empty())
 	return false;
     return true;
+}
+/// Same, getting MIME from doc
+bool canIntern(Rcl::Doc *doc, RclConfig *cfg)
+{
+    if (doc) {
+        return canIntern(doc->mimetype, cfg);
+    }
+    return false;
+}
+
+/// Can this MIME type be opened (has viewer def) ?
+bool canOpen(Rcl::Doc *doc, RclConfig *cfg) {
+    if (!doc) {
+        return false;
+    }
+    string apptag;
+    doc->getmeta(Rcl::Doc::keyapptg, &apptag);
+    return !cfg->getMimeViewerDef(doc->mimetype, apptag, false).empty();
 }
 
 string RecollFilter::metadataAsString()
