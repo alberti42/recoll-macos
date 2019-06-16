@@ -675,11 +675,11 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
                     break;
                 case FileInterner::InternfileOther:
 #ifdef _WIN32
-                    msg = tr("Error loading the document: other handler error");
-#else
                     msg = tr("Error loading the document: "
                              "other handler error<br>"
                              "Maybe the application is locking the file ?");
+#else
+                    msg = tr("Error loading the document: other handler error");
 #endif
                     break;
                 }
