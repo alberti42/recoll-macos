@@ -36,35 +36,31 @@ public:
     ResListPager(int pagesize=10);
     virtual ~ResListPager() {}
 
-    void setHighLighter(PlainToRich *ptr) 
-    {
-        m_hiliter = ptr;
+    void setHighLighter(PlainToRich *ptr) {
+            m_hiliter = ptr;
     }
-    void setDocSource(std::shared_ptr<DocSequence> src, int winfirst = -1)
-    {
-        m_pagesize = m_newpagesize;
-	m_winfirst = winfirst;
-	m_hasNext = true;
-	m_docSource = src;
-	m_respage.clear();
+    void setDocSource(std::shared_ptr<DocSequence> src, int winfirst = -1) {
+            m_pagesize = m_newpagesize;
+            m_winfirst = winfirst;
+            m_hasNext = true;
+            m_docSource = src;
+            m_respage.clear();
     }
-    void setPageSize(int ps) 
-    {
-        m_newpagesize = ps;
+    void setPageSize(int ps) {
+            m_newpagesize = ps;
     }
-    int pageNumber() 
-    {
-	if (m_winfirst < 0 || m_pagesize <= 0)
-	    return -1;
-	return m_winfirst / m_pagesize;
+    int pageNumber() {
+            if (m_winfirst < 0 || m_pagesize <= 0)
+                return -1;
+            return m_winfirst / m_pagesize;
     }
     int pageFirstDocNum() {
-	return m_winfirst;
+        return m_winfirst;
     }
     int pageLastDocNum() {
-	if (m_winfirst < 0 || m_respage.size() == 0)
-	    return -1;
-	return m_winfirst + int(m_respage.size()) - 1;
+        if (m_winfirst < 0 || m_respage.size() == 0)
+            return -1;
+        return m_winfirst + int(m_respage.size()) - 1;
     }
     virtual int pageSize() const {return m_pagesize;}
     void pageNext();
@@ -72,33 +68,32 @@ public:
     bool hasPrev() {return m_winfirst > 0;}
     bool atBot() {return m_winfirst <= 0;}
     void resultPageFirst() {
-	m_winfirst = -1;
+        m_winfirst = -1;
         m_pagesize = m_newpagesize;
-	resultPageNext();
+        resultPageNext();
     }
     void resultPageBack() {
-	if (m_winfirst <= 0) return;
-	m_winfirst -= m_resultsInCurrentPage + m_pagesize;
-	resultPageNext();
+        if (m_winfirst <= 0) return;
+        m_winfirst -= m_resultsInCurrentPage + m_pagesize;
+        resultPageNext();
     }
     void resultPageNext();
     void resultPageFor(int docnum);
     void displayPage(RclConfig *);
     void displayDoc(RclConfig *, int idx, Rcl::Doc& doc, 
-		    const HighlightData& hdata, const string& sh = "");
+                    const HighlightData& hdata, const string& sh = "");
     bool pageEmpty() {return m_respage.size() == 0;}
 
     string queryDescription() {
-	return m_docSource ? m_docSource->getDescription() : "";
+        return m_docSource ? m_docSource->getDescription() : "";
     }
 
     bool getDoc(int num, Rcl::Doc &doc);
 
     // Things that need to be reimplemented in the subclass:
     virtual bool append(const string& data);
-    virtual bool append(const string& data, int, const Rcl::Doc&)
-    {
-	return append(data);
+    virtual bool append(const string& data, int, const Rcl::Doc&) {
+            return append(data);
     }
     // Translation function. This is reimplemented in the qt reslist
     // object For this to work, the strings must be duplicated inside
@@ -116,9 +111,8 @@ public:
     virtual string headerContent() {return string();}
     virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
     virtual void suggest(const std::vector<std::string>, 
-			std::map<std::string, std::vector<std::string> >& sugg) 
-    {
-        sugg.clear();
+                         std::map<std::string, std::vector<std::string> >& sugg){
+            sugg.clear();
     }
     virtual string absSep() {return "&hellip;";}
     virtual string linkPrefix() {return "";}
