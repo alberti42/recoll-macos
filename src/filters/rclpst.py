@@ -318,6 +318,7 @@ class PstExtractor(object):
             reader = PFFReader(self.em.rclog, infile=self.filein)
             self.generator = reader.mainloop()
 
+        ipath = ""
         try:
             doc, ipath = next(self.generator)
             self.em.setmimetype("message/rfc822")
@@ -325,7 +326,10 @@ class PstExtractor(object):
         except StopIteration:
             self.em.rclog("getnext: end of iteration")
             return(True, "", "", rclexecm.RclExecM.eofnext)
-
+        except Exception as ex:
+            self.em.rclog("getnext: exception: %s" % ex)
+            return(False, "", "", rclexecm.RclExecM.eofnow)
+            
         return (True, doc, ipath, rclexecm.RclExecM.noteof)
     
 

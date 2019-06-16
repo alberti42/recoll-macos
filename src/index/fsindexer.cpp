@@ -745,8 +745,8 @@ FsIndexer::processonefile(RclConfig *config,
 		}
 	    } else {
 		hadNonNullIpath = true;
-		make_udi(fn, doc.ipath, udi);
 	    }
+            make_udi(fn, doc.ipath, udi);
 
 	    // Set file name, mod time and url if not done by
             // filter. We used to set the top-level container file
