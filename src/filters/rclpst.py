@@ -258,7 +258,7 @@ class PstExtractor(object):
         self.cmd = [self.pffexport, "-q", "-t", self.target, "-s"]
 
     def startCmd(self, filename, ipath=None):
-        fullcmd = self.cmd
+        fullcmd = list(self.cmd)
         if ipath:
             # There is no way to pass an utf-8 string on the command
             # line on Windows. Use base64 encoding
@@ -266,6 +266,7 @@ class PstExtractor(object):
             fullcmd += ["-p", bip.decode("UTF-8")]
         fn = _backslashize(rclexecm.subprocfile(filename))
         fullcmd += [fn,]
+        #self.em.rclog("PstExtractor: command: [%s]" % fullcmd)
         try:
             self.proc = subprocess.Popen(fullcmd, stdout=subprocess.PIPE)
         except subprocess.CalledProcessError as err:
