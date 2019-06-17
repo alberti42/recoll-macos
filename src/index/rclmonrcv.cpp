@@ -235,6 +235,7 @@ void *rclMonRcvRun(void *q)
             // skippedPaths here, this would be incorrect (because a
             // topdir can be under a skippedPath and this was handled
             // while adding the watches).
+            // Also we let the other side process onlyNames.
             lconfig.setKeyDir(path_getfather(ev.m_path));
             walker.setSkippedNames(lconfig.getSkippedNames());
             if (walker.inSkippedNames(path_getsimple(ev.m_path)))

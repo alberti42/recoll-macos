@@ -37,7 +37,7 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     -D_GNU_SOURCE \
     $(DEFS)
 
-noinst_PROGRAMS = textsplit utf8iter fstreewalk
+noinst_PROGRAMS = textsplit utf8iter fstreewalk rclconfig
 
 textsplit_SOURCES = trtextsplit.cpp
 textsplit_LDADD = ../librecoll.la
@@ -47,4 +47,7 @@ utf8iter_LDADD = ../librecoll.la
 
 fstreewalk_SOURCES = trfstreewalk.cpp
 fstreewalk_LDADD = ../librecoll.la
+
+rclconfig_SOURCES = trrclconfig.cpp
+rclconfig_LDADD = ../librecoll.la
 

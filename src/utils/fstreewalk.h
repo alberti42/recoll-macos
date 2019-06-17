@@ -108,6 +108,8 @@ class FsTreeWalker {
     bool addSkippedName(const string &pattern); 
     /** Set the ignored patterns set */
     bool setSkippedNames(const vector<string> &patterns);
+    /** Set the exclusive patterns set */
+    bool setOnlyNames(const vector<string> &patterns);
 
     /** Same for skipped paths: this are paths, not names, under which we
 	do not descend (ie: /home/me/.recoll) */
@@ -119,6 +121,7 @@ class FsTreeWalker {
       * an actual tree walk */
     bool inSkippedPaths(const string& path, bool ckparents = false);
     bool inSkippedNames(const string& name);
+    bool inOnlyNames(const string& name);
 
  private:
     Status iwalk(const string &dir, struct stat *stp, FsTreeWalkerCB& cb);

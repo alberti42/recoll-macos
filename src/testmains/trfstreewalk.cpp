@@ -29,8 +29,8 @@ using namespace std;
 
 static int     op_flags;
 #define OPT_MOINS 0x1
-#define OPT_p	  0x2 
-#define OPT_P	  0x4 
+#define OPT_p     0x2 
+#define OPT_P     0x4 
 #define OPT_r     0x8
 #define OPT_c     0x10
 #define OPT_b     0x20
@@ -41,24 +41,31 @@ static int     op_flags;
 #define OPT_M     0x400
 #define OPT_D     0x800
 #define OPT_k     0x1000
+#define OPT_y     0x2000
+#define OPT_s     0x4000
+
 class myCB : public FsTreeWalkerCB {
- public:
+public:
     FsTreeWalker::Status processone(const string &path, 
                                     const struct stat *st,
-                                    FsTreeWalker::CbFlag flg)
-    {
-	if (flg == FsTreeWalker::FtwDirEnter) {
-            if (op_flags & OPT_r) 
+                                    FsTreeWalker::CbFlag flg) {
+            if (flg == FsTreeWalker::FtwDirEnter) {
+                if (op_flags & OPT_r) {
+                    cout << path << endl;
+                } else {
+                    if (!(op_flags&OPT_s)) {
+                        cout << "[Entering " << path << "]" << endl;
+                    }
+                }
+            } else if (flg == FsTreeWalker::FtwDirReturn) {
+                    if (!(op_flags&OPT_s)) {
+                        cout << "[Returning to " << path << "]" << endl;
+                    }
+            } else if (flg == FsTreeWalker::FtwRegular) {
                 cout << path << endl;
-            else
-                cout << "[Entering " << path << "]" << endl;
-	} else if (flg == FsTreeWalker::FtwDirReturn) {
-	    cout << "[Returning to " << path << "]" << endl;
-	} else if (flg == FsTreeWalker::FtwRegular) {
-	    cout << path << endl;
-	}
-	return FsTreeWalker::FtwOk;
-    }
+            }
+            return FsTreeWalker::FtwOk;
+        }
 };
 
 static const char *thisprog;
@@ -83,16 +90,20 @@ static const char *thisprog;
 
 static char usage [] =
 "trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] [-L] topdir\n"
-" -r : norecurse\n"
-" -c : no path canonification\n"
-" -L : follow symbolic links\n"
-" -b : use breadth first walk\n"
-" -d : use almost depth first (dir files, then subdirs)\n"
-" -m : use breadth up to 4 deep then switch to -d\n"
-" -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
-" -M <depth>: limit depth (works with -b/m/d)\n"
 " -D : skip dotfiles\n"
-"-k : like du\n"
+" -L : follow symbolic links\n"
+" -M <depth>: limit depth (works with -b/m/d)\n"
+" -P <pattern> : add skippedPaths entry\n"
+" -p <pattern> : add skippedNames entry\n"
+" -b : use breadth first walk\n"
+" -c : no path canonification\n"
+" -d : use almost depth first (dir files, then subdirs)\n"
+" -k : like du\n"
+" -m : use breadth up to 4 deep then switch to -d\n"
+" -r : norecurse\n"
+" -s : don't print dir change info\n"
+" -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
+" -y <pattern> : add onlyNames entry\n"
 ;
 static void
 Usage(void)
@@ -103,47 +114,53 @@ Usage(void)
 
 int main(int argc, const char **argv)
 {
-    vector<string> patterns;
-    vector<string> paths;
+    vector<string> skpnames;
+    vector<string> onlynames;
+    vector<string> skppaths;
     int maxdepth = -1;
 
     thisprog = argv[0];
     argc--; argv++;
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'b':	op_flags |= OPT_b; break;
-	    case 'c':	op_flags |= OPT_c; break;
-	    case 'd':	op_flags |= OPT_d; break;
-	    case 'D':	op_flags |= OPT_D; break;
-	    case 'k':	op_flags |= OPT_k; break;
-	    case 'L':	op_flags |= OPT_L; break;
-	    case 'm':	op_flags |= OPT_m; break;
-	    case 'M':	op_flags |= OPT_M; if (argc < 2)  Usage();
-		maxdepth = atoi(*(++argv));
-		argc--; 
-		goto b1;
-	    case 'p':	op_flags |= OPT_p; if (argc < 2)  Usage();
-		patterns.push_back(*(++argv));
-		argc--; 
-		goto b1;
-	    case 'P':	op_flags |= OPT_P; if (argc < 2)  Usage();
-		paths.push_back(*(++argv));
-		argc--; 
-		goto b1;
-	    case 'r':	op_flags |= OPT_r; break;
-	    case 'w':	op_flags |= OPT_w; break;
-	    default: Usage();	break;
-	    }
+        (*argv)++;
+        if (!(**argv))
+            /* Cas du "adb - core" */
+            Usage();
+        while (**argv)
+            switch (*(*argv)++) {
+            case 'b':   op_flags |= OPT_b; break;
+            case 'c':   op_flags |= OPT_c; break;
+            case 'd':   op_flags |= OPT_d; break;
+            case 'D':   op_flags |= OPT_D; break;
+            case 'k':   op_flags |= OPT_k; break;
+            case 'L':   op_flags |= OPT_L; break;
+            case 'm':   op_flags |= OPT_m; break;
+            case 'M':   op_flags |= OPT_M; if (argc < 2)  Usage();
+                maxdepth = atoi(*(++argv));
+                argc--; 
+                goto b1;
+            case 'p':   op_flags |= OPT_p; if (argc < 2)  Usage();
+                skpnames.push_back(*(++argv));
+                argc--; 
+                goto b1;
+            case 'P':   op_flags |= OPT_P; if (argc < 2)  Usage();
+                skppaths.push_back(*(++argv));
+                argc--; 
+                goto b1;
+            case 'r':   op_flags |= OPT_r; break;
+            case 's':   op_flags |= OPT_s; break;
+            case 'w':   op_flags |= OPT_w; break;
+            case 'y':   op_flags |= OPT_y; if (argc < 2)  Usage();
+                onlynames.push_back(*(++argv));
+                argc--; 
+                goto b1;
+            default: Usage();   break;
+            }
     b1: argc--; argv++;
     }
 
     if (argc != 1)
-	Usage();
+        Usage();
     string topdir = *argv++;argc--;
 
     if (op_flags & OPT_k) {
@@ -159,36 +176,37 @@ int main(int argc, const char **argv)
     
     int opt = 0;
     if (op_flags & OPT_r)
-	opt |= FsTreeWalker::FtwNoRecurse;
+        opt |= FsTreeWalker::FtwNoRecurse;
     if (op_flags & OPT_c)
-	opt |= FsTreeWalker::FtwNoCanon;
+        opt |= FsTreeWalker::FtwNoCanon;
     if (op_flags & OPT_L)
-	opt |= FsTreeWalker::FtwFollow;
+        opt |= FsTreeWalker::FtwFollow;
     if (op_flags & OPT_D)
-	opt |= FsTreeWalker::FtwSkipDotFiles;
+        opt |= FsTreeWalker::FtwSkipDotFiles;
 
     if (op_flags & OPT_b)
-	opt |= FsTreeWalker::FtwTravBreadth;
+        opt |= FsTreeWalker::FtwTravBreadth;
     else if (op_flags & OPT_d)
-	opt |= FsTreeWalker::FtwTravFilesThenDirs;
+        opt |= FsTreeWalker::FtwTravFilesThenDirs;
     else if (op_flags & OPT_m)
-	opt |= FsTreeWalker::FtwTravBreadthThenDepth;
+        opt |= FsTreeWalker::FtwTravBreadthThenDepth;
 
     string reason;
     if (!recollinit(0, 0, 0, reason)) {
-	fprintf(stderr, "Init failed: %s\n", reason.c_str());
-	exit(1);
+        fprintf(stderr, "Init failed: %s\n", reason.c_str());
+        exit(1);
     }
     if (op_flags & OPT_w) {
-	FsTreeWalker::setNoFnmPathname();
+        FsTreeWalker::setNoFnmPathname();
     }
     FsTreeWalker walker;
     walker.setOpts(opt); 
     walker.setMaxDepth(maxdepth);
-    walker.setSkippedNames(patterns);
-    walker.setSkippedPaths(paths);
+    walker.setSkippedNames(skpnames);
+    walker.setOnlyNames(onlynames);
+    walker.setSkippedPaths(skppaths);
     myCB cb;
     walker.walk(topdir, cb);
     if (walker.getErrCnt() > 0)
-	cout << walker.getReason();
+        cout << walker.getReason();
 }
