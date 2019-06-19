@@ -738,7 +738,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Ouvrir le document parent</translation>
+        <translation>&amp;Ouvrir le document/dossier parent</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
