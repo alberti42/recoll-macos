@@ -202,16 +202,24 @@ text/xml = internal text/plain
 [icons]
 application/epub+zip = book
 application/javascript = source
+application/javascript = source
 application/msword = wordprocessing
 application/ogg = sownd
 application/pdf = pdf
 application/postscript = postscript
 application/sql = source
 application/vnd.ms-excel = spreadsheet
+application/vnd.ms-office = document
+application/vnd.ms-outlook = document
 application/vnd.ms-powerpoint = presentation
 application/vnd.oasis.opendocument.presentation = presentation
 application/vnd.oasis.opendocument.spreadsheet = spreadsheet
 application/vnd.oasis.opendocument.text = wordprocessing
+application/vnd.oasis.opendocument.graphics = presentation
+application/vnd.oasis.opendocument.presentation-flat-xml = presentation
+application/vnd.oasis.opendocument.spreadsheet-flat-xml = spreadsheet
+application/vnd.oasis.opendocument.text-flat-xml = wordprocessing
+application/vnd.oasis.opendocument.text-template = wordprocessing
 application/vnd.openxmlformats-officedocument.presentationml.presentation = presentation
 application/vnd.openxmlformats-officedocument.presentationml.template = presentation
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = spreadsheet
@@ -229,6 +237,7 @@ application/vnd.sun.xml.writer = wordprocessing
 application/vnd.sun.xml.writer.global = wordprocessing
 application/vnd.sun.xml.writer.template = wordprocessing
 application/vnd.wordperfect = wordprocessing
+application/x-7z-compressed = archive
 application/x-abiword = wordprocessing
 application/x-awk = source
 application/x-chm = book
@@ -255,9 +264,13 @@ application/x-tex = wordprocessing
 application/x-webarchive = archive
 application/xml = document
 application/zip = archive
-application/x-7z-compressed = archive
+audio/aac = sownd
+audio/ape = sownd
+audio/mp4 = sownd
 audio/mpeg = sownd
 audio/x-karaoke = sownd
+audio/x-musepack = sownd
+audio/x-wavpack = sownd
 image/bmp = image
 image/gif = image
 image/jp2 = image
@@ -266,35 +279,40 @@ image/png = image
 image/svg+xml = drawing
 image/tiff = image
 image/vnd.djvu = document
+image/x-nikon-nef = image
 image/x-xcf = image
 image/x-xpmi = image
-image/x-nikon-nef = image
 inode/directory = folder
 inode/symlink = emblem-symbolic-link
 message/rfc822 = message
+text/css = html
 text/html = html
 text/html|chm = bookchap
 text/html|epub = bookchap
 text/html|gnuinfo = bookchap
 text/plain = txt
 text/rtf = wordprocessing
+text/x-bibtex = txt
 text/x-c = source
 text/x-c+ = source
 text/x-c++ = source
+text/x-chm-html = html
+text/x-csharp = source
 text/x-csv = txt
-text/x-fictionbook = document
+text/x-fictionbook = book
 text/x-html-aptosid-man = aptosid-book
 text/x-ini = txt
-text/x-bibtex = txt
-text/x-lua = source
 text/x-java = source
+text/x-lua = source
 text/x-mail = message
 text/x-man = document
 text/x-perl = source
+text/x-php = source
 text/x-purple-html-log = pidgin
 text/x-purple-log = pidgin
 text/x-python = text-x-python
 text/x-shellscript = source
+text/x-srt = source
 text/x-tex = wordprocessing
 text/xml = document
 video/3gpp = video
@@ -316,11 +334,14 @@ video/x-msvideo = video
 # "guifilters" section below.
 text = \
       application/epub+zip \
+      application/javascript \
       application/msword \
       application/pdf \
       application/postscript \
       application/sql \
       application/vnd.oasis.opendocument.text \
+      application/vnd.oasis.opendocument.text-flat-xml \
+      application/vnd.oasis.opendocument.text-template \
       application/vnd.openxmlformats-officedocument.wordprocessingml.document \
       application/vnd.openxmlformats-officedocument.wordprocessingml.template \
       application/vnd.sun.xml.writer \
@@ -328,6 +349,7 @@ text = \
       application/vnd.sun.xml.writer.template \
       application/vnd.wordperfect \
       application/x-abiword \
+      application/vnd.ms-office \
       application/x-awk \
       application/x-chm \
       application/x-dvi \
@@ -338,6 +360,7 @@ text = \
       application/x-mobipocket-ebook \
       application/x-okular-notes \
       application/x-perl \
+      application/x-php \
       application/x-scribus \
       application/x-shellscript \
       application/x-tex \
@@ -347,6 +370,7 @@ text = \
       text/x-tex \
       image/vnd.djvu \
       text/calendar \
+      text/css \
       text/html \
       text/plain \
       text/rtf \
@@ -354,6 +378,8 @@ text = \
       text/x-c \
       text/x-c++ \
       text/x-c+ \
+      text/x-chm-html \
+      text/x-csharp \
       text/x-lua \
       text/x-fictionbook \
       text/x-html-aptosid-man \
@@ -362,25 +388,30 @@ text = \
       text/x-java \
       text/x-man \
       text/x-perl \
+      text/x-php \
       text/x-python \
-      text/x-shellscript
+      text/x-shellscript \
+      text/x-srt \
 
 spreadsheet = \
    application/vnd.ms-excel \
    application/vnd.oasis.opendocument.spreadsheet \
+   application/vnd.oasis.opendocument.spreadsheet-flat-xml \
    application/vnd.openxmlformats-officedocument.spreadsheetml.sheet \
    application/vnd.openxmlformats-officedocument.spreadsheetml.template \
    application/vnd.sun.xml.calc \
    application/vnd.sun.xml.calc.template \
-   application/x-gnumeric
+   application/x-gnumeric \
 
 presentation = \
   application/vnd.ms-powerpoint \
+  application/vnd.oasis.opendocument.graphics \
   application/vnd.oasis.opendocument.presentation \
+  application/vnd.oasis.opendocument.presentation-flat-xml \
   application/vnd.openxmlformats-officedocument.presentationml.presentation \
   application/vnd.openxmlformats-officedocument.presentationml.template \
   application/vnd.sun.xml.impress \
-  application/vnd.sun.xml.impress.template
+  application/vnd.sun.xml.impress.template \
 
 media = \
       application/ogg \
@@ -389,25 +420,30 @@ media = \
       image/* \
       video/* \
 
-message = message/rfc822 \
-	  text/x-gaim-log \
-	  text/x-mail \
-	  text/x-purple-log \
-	  text/x-purple-html-log \
+message = \
+        message/rfc822 \
+        text/x-gaim-log \
+        text/x-mail \
+        text/x-purple-html-log \
+        text/x-purple-log \
 
-other = application/vnd.sun.xml.draw \
+other = \
+        application/vnd.ms-outlook \
+        application/vnd.sun.xml.draw \
         application/vnd.sun.xml.draw.template \
         application/vnd.sun.xml.math \
+        application/x-7z-compressed \
         application/x-dia-diagram \
         application/x-fsdirectory \
         application/x-mimehtml \
         application/x-rar \
         application/x-tar \
         application/x-webarchive \
+        application/x-zerosize \
         application/zip \
-        application/x-7z-compressed \
         inode/directory \
         inode/symlink \
+        inode/x-empty \
 
 [guifilters]
 # This defines the top level filters in the GUI (accessed by the the

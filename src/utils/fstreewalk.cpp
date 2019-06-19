@@ -70,6 +70,7 @@ public:
     int basedepth;
     stringstream reason;
     vector<string> skippedNames;
+    vector<string> onlyNames;
     vector<string> skippedPaths;
     // When doing Breadth or FilesThenDirs traversal, we keep a list
     // of directory paths to be processed, and we do not recurse.
@@ -149,9 +150,26 @@ bool FsTreeWalker::setSkippedNames(const vector<string> &patterns)
 }
 bool FsTreeWalker::inSkippedNames(const string& name)
 {
-    for (vector<string>::const_iterator it = data->skippedNames.begin(); 
-	 it != data->skippedNames.end(); it++) {
-	if (fnmatch(it->c_str(), name.c_str(), 0) == 0) {
+    for (const auto& pattern : data->skippedNames) {
+	if (fnmatch(pattern.c_str(), name.c_str(), 0) == 0) {
+	    return true;
+	}
+    }
+    return false;
+}
+bool FsTreeWalker::setOnlyNames(const vector<string> &patterns)
+{
+    data->onlyNames = patterns;
+    return true;
+}
+bool FsTreeWalker::inOnlyNames(const string& name)
+{
+    if (data->onlyNames.empty()) {
+        // Not set: all match
+        return true;
+    }
+    for (const auto& pattern : data->onlyNames) {
+	if (fnmatch(pattern.c_str(), name.c_str(), 0) == 0) {
 	    return true;
 	}
     }
@@ -463,6 +481,11 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
                     & (FtwStop|FtwError))
                     goto out;
         } else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
+            // Filtering patterns match ?
+            if (!data->onlyNames.empty()) {
+                if (!inOnlyNames(dname))
+                    continue;
+            }
             if ((status = cb.processone(fn, &st, FtwRegular)) & 
                 (FtwStop|FtwError)) {
                 goto out;

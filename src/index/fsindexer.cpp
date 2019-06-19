@@ -360,6 +360,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
 	bool follow = false;
 	m_config->getConfParam("followLinks", &follow);
 
+        walker.setOnlyNames(m_config->getOnlyNames());
         walker.setSkippedNames(m_config->getSkippedNames());
 	// Check path against indexed areas and skipped names/paths
         if (!(flags & ConfIndexer::IxFIgnoreSkip) && 
@@ -376,7 +377,13 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
             it++; 
 	    continue;
 	}
-
+        if (!(flags & ConfIndexer::IxFIgnoreSkip) &&
+            (S_ISREG(stb.st_mode) || S_ISLNK(stb.st_mode))) {
+            if (!walker.inOnlyNames(path_getsimple(*it))) {
+                it++;
+                continue;
+            }
+        }
 	if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
 	    FsTreeWalker::FtwOk) {
 	    LOGERR("FsIndexer::indexFiles: processone failed\n");
@@ -583,7 +590,8 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	flg == FsTreeWalker::FtwDirReturn) {
 	m_config->setKeyDir(fn);
 
-	// Set up skipped patterns for this subtree. 
+	// Set up filter/skipped patterns for this subtree. 
+	m_walker.setOnlyNames(m_config->getOnlyNames());
 	m_walker.setSkippedNames(m_config->getSkippedNames());
 
         // Adjust local fields from config for this subtree

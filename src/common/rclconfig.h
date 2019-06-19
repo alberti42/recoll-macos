@@ -214,6 +214,9 @@ class RclConfig {
 
     /** Get list of skipped file names for current keydir */
     vector<string>& getSkippedNames();
+    /** Get list of file name filters for current keydir (only those
+       names indexed) */
+    vector<string>& getOnlyNames();
 
     /** Get list of skipped paths patterns. Doesn't depend on the keydir */
     vector<string> getSkippedPaths() const;
@@ -390,8 +393,13 @@ class RclConfig {
     ParamStale   m_stpsuffstate;
     vector<string> m_stopsuffvec;
 
+    // skippedNames state 
     ParamStale   m_skpnstate;
     vector<string> m_skpnlist;
+
+    // onlyNames state 
+    ParamStale   m_onlnstate;
+    vector<string> m_onlnlist;
 
     // Original current working directory. Set once at init before we do any
     // chdir'ing and used for converting user args to absolute paths.
