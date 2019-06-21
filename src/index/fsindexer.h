@@ -1,4 +1,4 @@
-/* Copyright (C) 2009 J.F.Dockes
+/* Copyright (C) 2009-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -33,19 +33,23 @@ struct stat;
 class DbUpdTask;
 class InternfileTask;
 
+namespace Rcl {
+class Doc;
+}
+
 /** Index selected parts of the file system
  
-Tree indexing: we inherits FsTreeWalkerCB so that, the processone()
-method is called by the file-system tree walk code for each file and
-directory. We keep all state needed while indexing, and finally call
-the methods to purge the db of stale entries and create the stemming
-databases.
+    Tree indexing: we inherits FsTreeWalkerCB so that, the processone()
+    method is called by the file-system tree walk code for each file and
+    directory. We keep all state needed while indexing, and finally call
+    the methods to purge the db of stale entries and create the stemming
+    databases.
 
-Single file(s) indexing: there are also calls to index or purge lists of files.
-No database purging or stem db updating in this case.
+    Single file(s) indexing: there are also calls to index or purge lists of files.
+    No database purging or stem db updating in this case.
 */
 class FsIndexer : public FsTreeWalkerCB {
- public:
+public:
     /** Constructor does nothing but store parameters 
      *
      * @param cnf Configuration data
@@ -76,38 +80,39 @@ class FsIndexer : public FsTreeWalkerCB {
     /** Make signature for file up to date checks */
     static void makesig(const struct stat *stp, string& out);
 
- private:
+    
+private:
 
     class PurgeCandidateRecorder {
     public:
-	PurgeCandidateRecorder() 
-	    : dorecord(false) {}
-	void setRecord(bool onoff) 
-	{
-	    dorecord = onoff;
-	}
-	void record(const string& udi)
-	{
-	    // This test does not need to be protected: the value is set at
-	    // init and never changed.
-	    if (!dorecord)
-		return;
+        PurgeCandidateRecorder() 
+            : dorecord(false) {}
+        void setRecord(bool onoff) {
+            dorecord = onoff;
+        }
+        void record(const string& udi) {
+            // This test does not need to be protected: the value is set at
+            // init and never changed.
+            if (!dorecord)
+                return;
 #ifdef IDX_THREADS
-	    std::unique_lock<std::mutex> locker(mutex);
+            std::unique_lock<std::mutex> locker(mutex);
 #endif
-	    udis.push_back(udi);
-	}
-	const vector<string>& getCandidates() 
-	{
-	    return udis;
-	}
+            udis.push_back(udi);
+        }
+        const vector<string>& getCandidates() {
+            return udis;
+        }
     private:
 #ifdef IDX_THREADS
         std::mutex mutex;
 #endif
-	bool dorecord;
-	std::vector<std::string> udis;
+        bool dorecord;
+        std::vector<std::string> udis;
     };
+
+    bool launchAddOrUpdate(const std::string& udi,
+                           const std::string& parent_udi, Rcl::Doc& doc);
 
     FsTreeWalker m_walker;
     RclConfig   *m_config;
@@ -155,7 +160,7 @@ class FsIndexer : public FsTreeWalkerCB {
     string getDbDir() {return m_config->getDbDir();}
     FsTreeWalker::Status 
     processonefile(RclConfig *config, const string &fn, 
-		   const struct stat *, const map<string,string>& localfields);
+                   const struct stat *, const map<string,string>& localfields);
 };
 
 #endif /* _fsindexer_h_included_ */

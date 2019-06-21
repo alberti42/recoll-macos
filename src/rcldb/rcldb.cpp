@@ -2590,7 +2590,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 // used for absent FS mountable volumes.
 bool Db::udiTreeMarkExisting(const string& udi)
 {
-    LOGDEB("Db::udiTreeWalk: " << udi << endl);
+    LOGDEB("Db::udiTreeMarkExisting: " << udi << endl);
     string wrapd = wrap_prefix(udi_prefix);
     string expr = udi + "*";
 
