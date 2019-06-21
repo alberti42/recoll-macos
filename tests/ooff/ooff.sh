@@ -7,9 +7,9 @@ initvariables $0
 
 (
 
-recollq OpenofficeWriter_uniqueterm 
-recollq SoffTabsUnique
-recollq FirstSlideUnique
+recollq -S url -D OpenofficeWriter_uniqueterm 
+recollq -S url -D SoffTabsUnique
+recollq -S url -D FirstSlideUnique
 
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 

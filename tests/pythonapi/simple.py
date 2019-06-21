@@ -17,6 +17,7 @@ def utf8string(s):
 db = recoll.connect()
 query = db.query()
 
+query.sortby("url")
 nres = query.execute("huniique", stemlang="english")
 qs = "Xapian query: [%s]" % query.getxquery()
 print(utf8string(qs))
