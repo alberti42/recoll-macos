@@ -2584,6 +2584,53 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
     return false;
 }
 
+bool Db::getContainerDoc(const Doc &idoc, Doc& ctdoc)
+{
+    if (m_ndb == 0)
+	return false;
+
+    string inudi;
+    if (!idoc.getmeta(Doc::keyudi, &inudi) || inudi.empty()) {
+	LOGERR("Db::getContainerDoc: no input udi or empty\n");
+	return false;
+    }
+
+    string rootudi;
+    string ipath = idoc.ipath;
+    LOGDEB0("Db::getContainerDoc: idxi " << idoc.idxi << " inudi [" << inudi <<
+            "] ipath [" << ipath << "]\n");
+    if (ipath.empty()) {
+	// File-level doc ??
+        ctdoc = idoc;
+        return true;
+    } 
+    // See if we have a parent term
+    Xapian::Document xdoc;
+    if (!m_ndb->getDoc(inudi, idoc.idxi, xdoc)) {
+        LOGERR("Db::getContainerDoc: can't get Xapian document\n");
+        return false;
+    }
+    Xapian::TermIterator xit;
+    XAPTRY(xit = xdoc.termlist_begin();
+           xit.skip_to(wrap_prefix(parent_prefix)),
+           m_ndb->xrdb, m_reason);
+    if (!m_reason.empty()) {
+        LOGERR("Db::getContainerDoc: xapian error: " << m_reason << "\n");
+        return false;
+    }
+    if (xit == xdoc.termlist_end()) {
+        LOGERR("Db::getContainerDoc: parent term not found\n");
+        return false;
+    }
+    rootudi = strip_prefix(*xit);
+
+    if (!getDoc(rootudi, idoc.idxi, ctdoc)) {
+        LOGERR("Db::getContainerDoc: can't get container document\n");
+        return false;
+    }
+    return true;
+}
+
 // Walk an UDI section (all UDIs beginning with input prefix), and
 // mark all docs and subdocs as existing. Caller beware: Makes sense
 // or not depending on the UDI structure for the data store. In practise,
@@ -2614,7 +2661,7 @@ bool Db::udiTreeMarkExisting(const string& udi)
                 return false;
             }
             i_setExistingFlags(udi, *docid);
-            LOGDEB("Db::udiTreeWalk: uniterm: " << term << endl);
+            LOGDEB0("Db::udiTreeWalk: uniterm: " << term << endl);
             return true;
         }, wrapd);
     return ret;

@@ -87,6 +87,13 @@ void RclMain::updateIdxStatus()
 void RclMain::periodic100()
 {
     LOGDEB2("Periodic100\n" );
+    if (!m_idxreasontmp || !m_idxreasontmp->ok()) {
+        // We just store the pointer and let the tempfile cleaner deal
+        // with delete on exiting
+        TempFile temp(".txt");
+        m_idxreasontmp = rememberTempFile(temp);
+    }
+
     if (m_idxproc) {
 	// An indexing process was launched. If its' done, see status.
 	int status;
@@ -237,13 +244,6 @@ bool RclMain::checkIdxPaths()
 // re-enabled by the indexing status check
 void RclMain::toggleIndexing()
 {
-    if (!m_idxreasontmp || !m_idxreasontmp->ok()) {
-        // We just store the pointer and let the tempfile cleaner deal
-        // with delete on exiting
-        TempFile temp(".txt");
-        m_idxreasontmp = rememberTempFile(temp);
-    }
-    
     switch (m_indexerState) {
     case IXST_RUNNINGMINE:
 	if (m_idxproc) {
@@ -537,7 +537,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 	
     vector<string> paths;
     if (Rcl::docsToPaths(docs, paths)) {
-	vector<string> args{"-c", theconfig->getConfDir(), "-e", "-i"};
+	vector<string> args{"-c", theconfig->getConfDir(), "-i",};
         if (m_idxreasontmp && m_idxreasontmp->ok()) {
             args.push_back("-R");
             args.push_back(m_idxreasontmp->filename());
@@ -545,8 +545,12 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 	args.insert(args.end(), paths.begin(), paths.end());
 	m_idxproc = new ExecCmd;
 	m_idxproc->startExec("recollindex", args, false, false);
-	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+        // Call periodic100 to update the menu entries states
+        periodic100();
+    } else {
+	QMessageBox::warning(0, tr("Warning"), 
+			     tr("Can't update index: internal error"),
+			     QMessageBox::Ok, QMessageBox::NoButton);
+	return;
     }
-    fileToggleIndexingAction->setEnabled(false);
-    actionSpecial_Indexing->setEnabled(false);
 }

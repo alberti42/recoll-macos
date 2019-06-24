@@ -455,6 +455,12 @@ public:
      */
     bool getSubDocs(const Doc& idoc, vector<Doc>& subdocs);
 
+    /** Get container (top level file) document. 
+     *
+     * If the input is not a subdocument, this returns a copy of the input.
+     */
+    bool getContainerDoc(const Doc &idoc, Doc& ctdoc);
+    
     /** Get duplicates (md5) of document */
     bool docDups(const Doc& idoc, std::vector<Doc>& odocs);
 

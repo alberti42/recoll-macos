@@ -20,9 +20,9 @@
 \#*
 libtool
 ptrans
-src/python/pychm/setup.py
 src/Makefile
 src/Makefile.in
+src/TAGS
 src/aclocal.m4
 src/autom4te.cache
 src/common/autoconfig.h
@@ -50,6 +50,7 @@ src/m4/ltsugar.m4
 src/m4/ltversion.m4
 src/m4/lt~obsolete.m4
 src/missing
+src/python/pychm/setup.py
 src/python/recoll/Makefile
 src/python/recoll/build
 src/python/recoll/recoll/__init__.pyc
