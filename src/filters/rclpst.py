@@ -326,7 +326,12 @@ class PstExtractor(object):
             #self.em.rclog("getnext: ipath %s\ndoc\n%s" % (ipath, doc))
         except StopIteration:
             self.em.rclog("getnext: end of iteration")
-            return(True, "", "", rclexecm.RclExecM.eofnext)
+            self.proc.wait(3)
+            if self.proc.returncode == 0:
+                return(True, "", "", rclexecm.RclExecM.eofnext)
+            else:
+                self.em.rclog("getnext: subprocess returned code %d" % self.proc.returncode)
+                return(False, "", "", rclexecm.RclExecM.eofnow)
         except Exception as ex:
             self.em.rclog("getnext: exception: %s" % ex)
             return(False, "", "", rclexecm.RclExecM.eofnow)
