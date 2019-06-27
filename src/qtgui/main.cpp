@@ -17,6 +17,7 @@
 #include "autoconfig.h"
 
 #include <cstdlib>
+#include <list>
 
 #include <qapplication.h>
 #include <qtranslator.h>
@@ -50,7 +51,9 @@
 extern RclConfig *theconfig;
 
 std::mutex thetempfileslock;
-static vector<TempFile>  o_tempfiles;
+// Use a list not a vector so that contained objects have stable
+// addresses when extending.
+static list<TempFile>  o_tempfiles;
 /* Keep an array of temporary files for deletion at exit. It happens that we
    erase some of them before exiting (ie: when closing a preview tab), we don't 
    reuse the array holes for now */
