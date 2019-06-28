@@ -1,3 +1,13 @@
+recoll (1.25.20~pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Allow controlling the GUI snippets window sort order and length.
+  * Improvements in GUI preview up to date checks.
+  * Added 'onlyNames' configuration variable for filtering file names.
+  * Avoid purging existing data when reindexing a file fails, for example,
+    on Windows, because the file is locked.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 28 Jun 2019 15:30:00 +0200
+
 recoll (1.25.19-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix issues in pdf handler
