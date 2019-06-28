@@ -623,11 +623,12 @@ int Query::Native::abstractFromIndex(
 // @param[out] vabs the abstract is returned as a vector of snippets.
 int Query::Native::makeAbstract(Xapian::docid docid,
                                 vector<Snippet>& vabs, 
-                                int imaxoccs, int ictxwords)
+                                int imaxoccs, int ictxwords, bool sortbypage)
 {
     chron.restart();
-    LOGABS("makeAbstract: docid " << docid << " imaxoccs " <<
-           imaxoccs << " ictxwords " << ictxwords << "\n");
+    LOGDEB("makeAbstract: docid " << docid << " imaxoccs " <<
+           imaxoccs << " ictxwords " << ictxwords << " sort by page " <<
+           sortbypage << "\n");
 
     // The (unprefixed) terms matched by this document
     vector<string> matchedTerms;
@@ -675,7 +676,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     if (ndb->m_storetext) {
         return abstractFromText(ndb, docid, matchedTerms, byQ,
                                 totalweight, ctxwords, maxtotaloccs, vabs,
-                                chron);
+                                chron, sortbypage);
     } else {
         return abstractFromIndex(ndb, docid, matchedTerms, byQ,
                                  totalweight, ctxwords, maxtotaloccs, vabs,

@@ -164,10 +164,6 @@ void rwSettings(bool writing)
         }
     }
 
-    // Abstract snippet separator
-    SETTING_RW(prefs.abssep, "/Recoll/prefs/reslist/abssep", String,"&hellip;");
-    if (!writing && prefs.abssep == "")
-	prefs.abssep = "&hellip;";
     SETTING_RW(prefs.reslistdateformat, "/Recoll/prefs/reslist/dateformat", 
 	       String,"&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z");
     if (!writing && prefs.reslistdateformat == "")
@@ -224,6 +220,13 @@ void rwSettings(bool writing)
 	       Int, 250);
     SETTING_RW(prefs.syntAbsCtx, "/Recoll/prefs/query/syntAbsCtx", 
 	       Int, 4);
+    // Abstract snippet separator
+    SETTING_RW(prefs.abssep, "/Recoll/prefs/reslist/abssep", String,"&hellip;");
+    if (!writing && prefs.abssep == "")
+	prefs.abssep = "&hellip;";
+    SETTING_RW(prefs.snipwMaxLength, "/Recoll/prefs/snipwin/maxlen", Int, 1000);
+    SETTING_RW(prefs.snipwSortByPage,"/Recoll/prefs/snipwin/bypage", Bool, false); 
+
     SETTING_RW(prefs.autoSuffs, "/Recoll/prefs/query/autoSuffs", String, "");
     SETTING_RW(prefs.autoSuffsEnable, 
 	       "/Recoll/prefs/query/autoSuffsEnable", Bool, false);

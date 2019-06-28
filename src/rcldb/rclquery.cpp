@@ -267,7 +267,7 @@ bool Query::getQueryTerms(vector<string>& terms)
 }
 
 int Query::makeDocAbstract(const Doc &doc, vector<Snippet>& abstract, 
-                           int maxoccs, int ctxwords)
+                           int maxoccs, int ctxwords, bool sortbypage)
 {
     LOGDEB("makeDocAbstract: maxoccs " << maxoccs << " ctxwords "  <<
            ctxwords << "\n");
@@ -276,7 +276,7 @@ int Query::makeDocAbstract(const Doc &doc, vector<Snippet>& abstract,
         return ABSRES_ERROR;
     }
     int ret = ABSRES_ERROR;
-    XAPTRY(ret = m_nq->makeAbstract(doc.xdocid, abstract, maxoccs, ctxwords),
+    XAPTRY(ret = m_nq->makeAbstract(doc.xdocid, abstract, maxoccs, ctxwords, sortbypage),
            m_db->m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
         LOGDEB("makeDocAbstract: makeAbstract: reason: " << m_reason << "\n");

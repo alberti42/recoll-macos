@@ -107,7 +107,7 @@ public:
     bool makeDocAbstract(const Doc &doc, std::vector<std::string>& abstract);
     // Returned as a vector of pair<page,snippet> page is 0 if unknown
     int makeDocAbstract(const Doc &doc, std::vector<Snippet>& abst, 
-                        int maxoccs= -1, int ctxwords = -1);
+                        int maxoccs= -1, int ctxwords = -1, bool sortbypage=false);
     /** Retrieve page number for first match for "significant" query term 
      *  @param term returns the chosen term */
     int getFirstMatchPage(const Doc &doc, std::string& term);

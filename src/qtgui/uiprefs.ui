@@ -45,14 +45,14 @@
              </item>
              <item>
               <widget class="QLineEdit" name="qtermStyleLE">
-               <property name="toolTip">
-                <string>Query terms highlighting in results. &lt;br&gt;Maybe try something like "color:red;background:yellow" for something more lively than the default blue...</string>
-               </property>
                <property name="minimumSize">
                 <size>
                  <width>50</width>
                  <height>0</height>
                 </size>
+               </property>
+               <property name="toolTip">
+                <string>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</string>
                </property>
               </widget>
              </item>
@@ -137,12 +137,12 @@
            </item>
            <item>
             <widget class="QCheckBox" name="previewActiveLinksCB">
+             <property name="toolTip">
+              <string>Make links inside the preview window clickable, and start an external browser when they are clicked.</string>
+             </property>
              <property name="text">
               <string>Activate links in preview.</string>
              </property>
-               <property name="toolTip">
-                <string>Make links inside the preview window clickable, and start an external browser when they are clicked.</string>
-               </property>
              <property name="checked">
               <bool>false</bool>
              </property>
@@ -527,6 +527,52 @@
              </item>
             </layout>
            </item>
+           <item>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="snipwMaxLenLBL">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Maximum number of snippets displayed in the snippets window</string>
+               </property>
+               <property name="wordWrap">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="snipwMaxLenSB">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>10000000</number>
+               </property>
+               <property name="singleStep">
+                <number>10</number>
+               </property>
+               <property name="value">
+                <number>1000</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="snipwByPageCB">
+             <property name="text">
+              <string>Sort snippets by page number (default: by weigth).</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
          <item>
@@ -903,11 +949,11 @@ May be slow for big documents.</string>
              </item>
              <item>
               <widget class="QPushButton" name="ptransPB">
-               <property name="text">
-                <string>Paths translations</string>
-               </property>
                <property name="toolTip">
                 <string>Set path translations for the selected index or for the main one if no selection exists.</string>
+               </property>
+               <property name="text">
+                <string>Paths translations</string>
                </property>
               </widget>
              </item>

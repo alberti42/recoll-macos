@@ -138,12 +138,14 @@ public:
         if (maxtermcount && termcount++ > maxtermcount) {
             LOGINF("Rclabsfromtext: stopping because maxtermcount reached: "<<
                    maxtermcount << endl);
+            retflags |= ABSRES_TRUNC;
             return false;
         }
         // Also limit the number of fragments (just in case safety)
         if (m_fragments.size() > maxtermcount / 100) {
             LOGINF("Rclabsfromtext: stopping because maxfragments reached: "<<
                    maxtermcount/100 << endl);
+            retflags |= ABSRES_TRUNC;
             return false;
         }
         // Remember recent past
@@ -326,6 +328,10 @@ public:
 
         return;
     }
+
+    int getretflags() {
+        return retflags;
+    }
     
 private:
     // Past terms because we need to go back for context before a hit
@@ -364,6 +370,7 @@ private:
 
     unsigned int termcount{0};
     unsigned int maxtermcount{0};
+    int retflags{0};
 };
 
 int Query::Native::abstractFromText(
@@ -375,7 +382,8 @@ int Query::Native::abstractFromText(
     int ctxwords,
     unsigned int maxtotaloccs,
     vector<Snippet>& vabs,
-    Chrono& chron
+    Chrono& chron,
+    bool sortbypage
     )
 {
     (void)chron;
@@ -423,13 +431,21 @@ int Query::Native::abstractFromText(
     // Sort the fragments by decreasing weight
     const vector<MatchFragment>& res1 = splitter.getFragments();
     vector<MatchFragment> result(res1.begin(), res1.end());
-    std::sort(result.begin(), result.end(),
-              [](const MatchFragment& a,
-                 const MatchFragment& b) -> bool { 
-                  return a.coef > b.coef; 
-              }
-        );
-
+    if (sortbypage) {
+        std::sort(result.begin(), result.end(),
+                  [](const MatchFragment& a,
+                     const MatchFragment& b) -> bool { 
+                      return a.hitpos < b.hitpos; 
+                  }
+            );
+    } else {
+        std::sort(result.begin(), result.end(),
+                  [](const MatchFragment& a,
+                     const MatchFragment& b) -> bool { 
+                      return a.coef > b.coef; 
+                  }
+            );
+    }
     vector<int> vpbreaks;
     ndb->getPagePositions(docid, vpbreaks);
 
@@ -464,7 +480,7 @@ int Query::Native::abstractFromText(
         if (count++ >= maxtotaloccs)
             break;
     }
-    return ABSRES_OK;
+    return ABSRES_OK | splitter.getretflags();
 }
 
 }
