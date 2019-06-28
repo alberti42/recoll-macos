@@ -57,8 +57,6 @@ class PrefsPack {
     QString reslistformat;
     string  creslistformat;
     QString reslistheadertext;
-    // Abstract snippet separator
-    QString abssep;
     // Date strftime format
     QString reslistdateformat;
     string creslistdateformat;
@@ -86,6 +84,15 @@ class PrefsPack {
     // Abstract preferences. Building abstracts can slow result display
     bool queryBuildAbstract;
     bool queryReplaceAbstract;
+    // Synthetized abstract length (chars) and word context size (words)
+    int syntAbsLen;
+    int syntAbsCtx;
+    // Abstract snippet separator
+    QString abssep;
+    // Snippets window max list size
+    int snipwMaxLength;
+    // Snippets window sort by page (dflt: by weight)
+    bool snipwSortByPage;
     bool startWithAdvSearchOpen;
     // Try to display html if it exists in the internfile stack.
     bool previewHtml;
@@ -121,10 +128,6 @@ class PrefsPack {
 
     QStringList restableFields;
     vector<int> restableColWidths;
-
-    // Synthetized abstract length and word context size
-    int syntAbsLen;
-    int syntAbsCtx;
 
     // Remembered term match mode
     int termMatchType;

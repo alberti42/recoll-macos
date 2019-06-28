@@ -184,7 +184,8 @@ void UIPrefsDialog::setFromPrefs()
 	string nm = path_getsimple((const char *)snipCssFile.toLocal8Bit());
 	snipCssPB->setText(QString::fromLocal8Bit(nm.c_str()));
     }
-
+    snipwMaxLenSB->setValue(prefs.snipwMaxLength);
+    snipwByPageCB->setChecked(prefs.snipwSortByPage);
     paraFormat = prefs.reslistformat;
     headerText = prefs.reslistheadertext;
 
@@ -301,6 +302,8 @@ void UIPrefsDialog::accept()
 	prefs.reslistformat = prefs.dfltResListFormat;
 	paraFormat = prefs.reslistformat;
     }
+    prefs.snipwMaxLength = snipwMaxLenSB->value();
+    prefs.snipwSortByPage = snipwByPageCB->isChecked();
 
     prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
 

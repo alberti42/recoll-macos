@@ -107,6 +107,7 @@ void SnippetsW::init()
     connect(nextPB, SIGNAL(clicked()), this, SLOT(slotEditFindNext()));
     connect(prevPB, SIGNAL(clicked()), this, SLOT(slotEditFindPrevious()));
 
+    delete browserw;
 #if defined(USING_WEBKIT)
     browserw = new QWebView(this);
     verticalLayout->insertWidget(0, browserw);
@@ -165,7 +166,8 @@ void SnippetsW::init()
     setWindowTitle(title);
 
     vector<Rcl::Snippet> vpabs;
-    m_source->getAbstract(m_doc, vpabs);
+    m_source->getAbstract(m_doc, vpabs,
+                          prefs.snipwMaxLength, prefs.snipwSortByPage);
 
     HighlightData hdata;
     m_source->getTerms(hdata);
