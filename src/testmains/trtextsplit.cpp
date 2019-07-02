@@ -196,7 +196,7 @@ int main(int argc, char **argv)
 
     RclConfig *config = new RclConfig(&cffn);
     TextSplit::staticConfInit(config);
-
+    Logger::getTheLog("stderr")->setLogLevel(Logger::LLDEB0);
 
     Rcl::StopList stoplist;
     if (op_flags & OPT_S) {
