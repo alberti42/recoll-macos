@@ -44,6 +44,9 @@
 // ngrams
 #undef KATAKANA_AS_WORDS
 
+// Same for Korean syllabic
+#define HANGUL_AS_WORDS
+
 using namespace std;
 
 /**
@@ -190,12 +193,13 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 
 // CJK Unicode character detection:
 //
+// 1100..11FF; Hangul Jamo (optional: see UNICODE_IS_HANGUL)
 // 2E80..2EFF; CJK Radicals Supplement
 // 3000..303F; CJK Symbols and Punctuation
 // 3040..309F; Hiragana
 // 30A0..30FF; Katakana
 // 3100..312F; Bopomofo
-// 3130..318F; Hangul Compatibility Jamo
+// 3130..318F; Hangul Compatibility Jamo (optional: see UNICODE_IS_HANGUL)
 // 3190..319F; Kanbun
 // 31A0..31BF; Bopomofo Extended
 // 31C0..31EF; CJK Strokes
@@ -206,14 +210,15 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 // 4DC0..4DFF; Yijing Hexagram Symbols
 // 4E00..9FFF; CJK Unified Ideographs
 // A700..A71F; Modifier Tone Letters
-// AC00..D7AF; Hangul Syllables
+// AC00..D7AF; Hangul Syllables (optional: see UNICODE_IS_HANGUL)
 // F900..FAFF; CJK Compatibility Ideographs
 // FE30..FE4F; CJK Compatibility Forms
 // FF00..FFEF; Halfwidth and Fullwidth Forms
 // 20000..2A6DF; CJK Unified Ideographs Extension B
 // 2F800..2FA1F; CJK Compatibility Ideographs Supplement
 #define UNICODE_IS_CJK(p)                                               \
-    (((p) >= 0x2E80 && (p) <= 0x2EFF) ||                                \
+    (((p) >= 0x1100 && (p) <= 0x11FF) ||                                \
+     ((p) >= 0x2E80 && (p) <= 0x2EFF) ||                                \
      ((p) >= 0x3000 && (p) <= 0x9FFF) ||                                \
      ((p) >= 0xA700 && (p) <= 0xA71F) ||                                \
      ((p) >= 0xAC00 && (p) <= 0xD7AF) ||                                \
@@ -236,20 +241,42 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 #define UNICODE_IS_KATAKANA(p) false
 #endif
 
+#ifdef HANGUL_AS_WORDS
+#define UNICODE_IS_HANGUL(p) (                 \
+        ((p) >= 0x1100 && (p) <= 0x11FF) ||    \
+        ((p) >= 0x3130 && (p) <= 0x318F) ||    \
+        ((p) >= 0x3200 && (p) <= 0x321e) ||    \
+        ((p) >= 0x3248 && (p) <= 0x327F) ||    \
+        ((p) >= 0x3281 && (p) <= 0x32BF) ||    \
+        ((p) >= 0xAC00 && (p) <= 0xD7AF)       \
+        )
+#else
+#define UNICODE_IS_HANGUL(p) false
+#endif
+
 bool TextSplit::isCJK(int c)
 {
-    return UNICODE_IS_CJK(c) && !UNICODE_IS_KATAKANA(c);
+    return UNICODE_IS_CJK(c) && !UNICODE_IS_KATAKANA(c) &&
+        !UNICODE_IS_HANGUL(c);
 }
 bool TextSplit::isKATAKANA(int c)
 {
     return UNICODE_IS_KATAKANA(c);
 }
+bool TextSplit::isHANGUL(int c)
+{
+    return UNICODE_IS_HANGUL(c);
+}
+
 
 // This is used to detect katakana/other transitions, which must
 // trigger a word split (there is not always a separator, and katakana
 // is otherwise treated like other, in the same routine, unless cjk
 // which has its span reader causing a word break)
-enum CharSpanClass {CSC_CJK, CSC_KATAKANA, CSC_OTHER};
+enum CharSpanClass {CSC_HANGUL, CSC_CJK, CSC_KATAKANA, CSC_OTHER};
+std::vector<CharFlags> csc_names {CHARFLAGENTRY(CSC_HANGUL),
+        CHARFLAGENTRY(CSC_CJK), CHARFLAGENTRY(CSC_KATAKANA),
+        CHARFLAGENTRY(CSC_OTHER)};
 
 bool          TextSplit::o_processCJK{true};
 unsigned int  TextSplit::o_CJKNgramLen{2};
@@ -577,7 +604,7 @@ bool TextSplit::text_to_words(const string &in)
     int nonalnumcnt = 0;
 
     Utf8Iter it(in);
-#ifdef KATAKANA_AS_WORDS
+#if defined(KATAKANA_AS_WORDS) || defined(HANGUL_AS_WORDS)
     int prev_csc = -1;
 #endif
     for (; !it.eof(); it++) {
@@ -592,6 +619,8 @@ bool TextSplit::text_to_words(const string &in)
         CharSpanClass csc;
         if (UNICODE_IS_KATAKANA(c)) {
             csc = CSC_KATAKANA;
+        } else if (UNICODE_IS_HANGUL(c)) {
+            csc = CSC_HANGUL;
         } else if (UNICODE_IS_CJK(c)) {
             csc = CSC_CJK;
         } else {
@@ -618,12 +647,17 @@ bool TextSplit::text_to_words(const string &in)
                 break;
         }
 
-#ifdef KATAKANA_AS_WORDS
+#if defined(KATAKANA_AS_WORDS) || defined(HANGUL_AS_WORDS)
         // Only needed if we have script transitions inside this
-        // routine, else the call to cjk_to_words does the job.
-        if (csc != prev_csc && (m_wordLen || m_span.length())) {
-            LOGDEB("csc " << csc << " pcsc " << prev_csc << " wl " <<
-                   m_wordLen << " spl " << m_span.length() << endl);
+        // routine, else the call to cjk_to_words does the job (so do
+        // nothing right after a CJK section). Because
+        // katakana-western transitions sometimes have no whitespace
+        // (and maybe hangul too, but probably not).
+        if (prev_csc != CSC_CJK && csc != prev_csc &&
+            (m_wordLen || m_span.length())) {
+            LOGDEB2("csc " << valToString(csc_names, csc) << " prev_csc " <<
+                    valToString(csc_names, prev_csc) << " wl " <<
+                    m_wordLen << " spl " << m_span.length() << endl);
             if (!doemit(true, it.getBpos())) {
                 return false;
             }
