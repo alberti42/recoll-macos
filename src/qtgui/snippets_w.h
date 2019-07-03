@@ -35,13 +35,15 @@ class SnippetsW : public QWidget, public Ui::Snippets
 public:
     SnippetsW(Rcl::Doc doc, std::shared_ptr<DocSequence> source,
               QWidget* parent = 0) 
-        : QWidget(parent), m_doc(doc), m_source(source) {
+        : QWidget(parent) {
         setupUi((QDialog*)this);
         init();
+        onSetDoc(doc, source);
     }
 
 public slots:
     virtual void onLinkClicked(const QUrl &);
+    virtual void onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source);
 
 protected slots:
     virtual void slotEditFind();
@@ -54,7 +56,6 @@ signals:
 private:
     void init();
     Rcl::Doc m_doc;
-    std::shared_ptr<DocSequence> m_source;
 };
 
 #ifdef USING_WEBENGINE

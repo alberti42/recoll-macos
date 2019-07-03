@@ -31,6 +31,7 @@
 #include "specialindex.h"
 #include "rclmain_w.h"
 #include "webcache.h"
+#include "restable.h"
 
 using namespace std;
 
@@ -453,16 +454,23 @@ void RclMain::newDupsW(const Rcl::Doc, const vector<Rcl::Doc> dups)
 
 void RclMain::showSnippets(Rcl::Doc doc)
 {
-    if (m_snippets) {
-        deleteZ(m_snippets);
+    if (!m_snippets) {
+        m_snippets = new SnippetsW(doc, m_source);
+        connect(m_snippets, SIGNAL(startNativeViewer(Rcl::Doc, int, QString)),
+                this, SLOT(startNativeViewer(Rcl::Doc, int, QString)));
+        connect(new QShortcut(quitKeySeq, m_snippets), SIGNAL (activated()), 
+                this, SLOT (fileExit()));
+        connect(new QShortcut(closeKeySeq, m_snippets), SIGNAL (activated()), 
+                m_snippets, SLOT (close()));
+        if (restable) {
+            connect(
+                restable,
+                SIGNAL(detailDocChanged(Rcl::Doc, std::shared_ptr<DocSequence>)),
+                m_snippets,
+                SLOT(onSetDoc(Rcl::Doc, std::shared_ptr<DocSequence>)));
+        }
+    } else {
+        m_snippets->onSetDoc(doc, m_source);
     }
-    m_snippets = new SnippetsW(doc, m_source);
-    connect(m_snippets, SIGNAL(startNativeViewer(Rcl::Doc, int, QString)),
-	    this, SLOT(startNativeViewer(Rcl::Doc, int, QString)));
-    connect(new QShortcut(quitKeySeq, m_snippets), SIGNAL (activated()), 
-	    this, SLOT (fileExit()));
-    connect(new QShortcut(closeKeySeq, m_snippets), SIGNAL (activated()), 
-	    m_snippets, SLOT (close()));
     m_snippets->show();
 }
-

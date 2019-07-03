@@ -670,6 +670,7 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
 	m_detaildoc = doc;
 	m_pager->displayDoc(theconfig, index.row(), m_detaildoc, 
 			    m_model->m_hdata);
+        emit(detailDocChanged(doc, m_model->getDocSource()));
     } else {
 	m_detaildocnum = -1;
     }
