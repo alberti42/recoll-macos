@@ -167,7 +167,8 @@ signals:
     void docExpand(Rcl::Doc);
     void showSubDocs(Rcl::Doc);
     void showSnippets(Rcl::Doc);
-
+    void detailDocChanged(Rcl::Doc, std::shared_ptr<DocSequence>);
+    
     friend class ResTablePager;
     friend class ResTableDetailArea;
 private:
