@@ -72,7 +72,7 @@ string  PlainToRichQtPreview::PlainToRichQtPreview::header()
 string PlainToRichQtPreview::startMatch(unsigned int grpidx)
 {
     LOGDEB2("startMatch, grpidx "  << (grpidx) << "\n" );
-    grpidx = m_hdata->grpsugidx[grpidx];
+    grpidx = m_hdata->index_term_groups[grpidx].grpsugidx;
     LOGDEB2("startMatch, ugrpidx "  << (grpidx) << "\n" );
     m_groupanchors[grpidx].push_back(++m_lastanchor);
     m_groupcuranchors[grpidx] = 0; 

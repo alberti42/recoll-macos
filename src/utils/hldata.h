@@ -5,6 +5,7 @@
 #include <string>
 #include <set>
 #include <map>
+#include <unordered_map>
 
 /** Store data about user search terms and their expansions. This is used
  * mostly for highlighting result text and walking the matches, generating 
@@ -22,7 +23,7 @@ struct HighlightData {
      * This is used for aggregating term stats when generating snippets (for 
      * choosing the best terms, allocating slots, etc. )
      */
-    std::map<std::string, std::string> terms;
+    std::unordered_map<std::string, std::string> terms;
 
     /** The original user terms-or-groups. This is for display
      * purposes: ie when creating a menu to look for a specific
@@ -33,40 +34,39 @@ struct HighlightData {
     std::vector<std::vector<std::string> > ugroups;
 
     /** Processed/expanded terms and groups. Used for looking for
-     * regions to highlight. A group can be a PHRASE or NEAR entry (we
-     * process everything as NEAR to keep things reasonably
-     * simple. Terms are just groups with 1 entry. All
+     * regions to highlight. A group can be a PHRASE or NEAR entry
+     * Terms are just groups with 1 entry. All
      * terms are transformed to be compatible with index content
      * (unaccented and lowercased as needed depending on
      * configuration), and the list may include values
      * expanded from the original terms by stem or wildcard expansion.
-     * NEAR clauses are expanded to all possible combinations of the 
-     * stem-expanded member terms. Ex: 
-     * "clean floor"p -> (clean floor) (clean floors) (cleaning floor)...
      */
-    std::vector<std::vector<std::string> > index_term_groups;
-    /** Group slacks. Parallel to groups */
-    std::vector<int> slacks;
+    struct TermGroup {
+        // We'd use an union but no can do
+        std::string term;
+        std::vector<std::vector<std::string> > orgroups;
+        int slack{0};
 
-    /** Index into ugroups for each group. Parallel to groups. As a
-     * user term or group may generate many processed/expanded terms
-     * or groups, this is how we relate an expansion to its source
-     * (used, e.g. for generating anchors for walking search matches
-     * in the preview window).
-     */
-    std::vector<size_t> grpsugidx;
+        /* Index into ugroups. As a user term or group may generate
+         * many processed/expanded terms or groups, this is how we
+         * relate an expansion to its source (used, e.g. for
+         * generating anchors for walking search matches in the
+         * preview window). */
+        size_t grpsugidx{0};
+        enum TGK {TGK_TERM, TGK_NEAR, TGK_PHRASE};
+        TGK kind{TGK_TERM};
+    };
+    std::vector<TermGroup> index_term_groups;
 
     void clear() {
 	uterms.clear();
 	ugroups.clear();
 	index_term_groups.clear();
-	slacks.clear();
-	grpsugidx.clear();
     }
     void append(const HighlightData&);
 
     // Print (debug)
-    void toString(std::string& out) const;
+    std::string toString() const;
 };
 
 /* The following is used by plaintorich.cpp for finding zones to
@@ -109,8 +109,7 @@ extern bool matchGroup(
     unsigned int grpidx,
     const std::map<std::string, std::vector<int>>& inplists,
     const std::map<int, std::pair<int,int>>& gpostobytes,
-    std::vector<GroupMatchEntry>& tboffs,
-    bool isphrase = false
+    std::vector<GroupMatchEntry>& tboffs
     );
 
 #endif /* _hldata_h_included_ */
