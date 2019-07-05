@@ -526,7 +526,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Error while loading file</source>
-        <translation>Chyba při nahrávání souboru</translation>
+        <translation type="vanished">Chyba při nahrávání souboru</translation>
     </message>
     <message>
         <source>Form</source>
@@ -534,6 +534,42 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Tab 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">Otevřít</translation>
+    </message>
+    <message>
+        <source>Canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: file missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: no permission.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading: backend not configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error&lt;br&gt;Maybe the application is locking the file ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;br&gt;Attempting to display from stored text.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not fetch stored text</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -578,6 +614,10 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     <message>
         <source>Preserve indentation</source>
         <translation>Zachovat odsazení</translation>
+    </message>
+    <message>
+        <source>Open document</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1122,11 +1162,11 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
-        <translation>Rejstřík není pro tento soubor nejnovější. Ukázání nesprávného záznamu bylo zamítnuto. </translation>
+        <translation type="vanished">Rejstřík není pro tento soubor nejnovější. Ukázání nesprávného záznamu bylo zamítnuto. </translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation>Klepněte na tlačítko pro aktualizaci rejstříku pro tento soubor, potom hledání, až bude rejstříkování hotovo, spusťte znovu. </translation>
+        <translation type="vanished">Klepněte na tlačítko pro aktualizaci rejstříku pro tento soubor, potom hledání, až bude rejstříkování hotovo, spusťte znovu. </translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
@@ -1185,7 +1225,7 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
-        <translation>Klepněte na tlačítko Zrušit pro návrat do seznamu. &lt;br&gt;Klepněte na tlačítko Přehlížet pro ukázání náhledu tak jako tak (zapamatovat si pro toto sezení).</translation>
+        <translation type="vanished">Klepněte na tlačítko Zrušit pro návrat do seznamu. &lt;br&gt;Klepněte na tlačítko Přehlížet pro ukázání náhledu tak jako tak (zapamatovat si pro toto sezení).</translation>
     </message>
     <message>
         <source>No search</source>
@@ -1306,6 +1346,26 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t update index: internal error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;em&gt;Also, it seems that the last index update for the file failed.&lt;/em&gt;&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to try to update the index for this file. You will need to run the query again when indexing is done.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3568,6 +3628,14 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Start search on completer popup activation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of snippets displayed in the snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort snippets by page number (default: by weigth).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
