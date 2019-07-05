@@ -1085,7 +1085,7 @@ p, li { white-space: pre-wrap; }
         <translation>Выполняется: [</translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="+324"/>
+        <location filename="../rclm_wins.cpp" line="+325"/>
         <source>About Recoll</source>
         <translation>О программе</translation>
     </message>
@@ -2747,12 +2747,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 <context>
     <name>SnippetsW</name>
     <message>
-        <location filename="../snippets_w.cpp" line="+85"/>
+        <location filename="../snippets_w.cpp" line="+80"/>
         <source>Search</source>
         <translation>Искать</translation>
     </message>
     <message>
-        <location line="+131"/>
+        <location line="+140"/>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;К сожалению, точные совпадения с заданными параметрами не найдены. Возможно, документ слишком большой, и генератор фрагментов дал сбой...&lt;/p&gt;</translation>
     </message>
@@ -3065,7 +3065,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 <context>
     <name>UIPrefsDialog</name>
     <message>
-        <location filename="../uiprefs_w.cpp" line="+621"/>
+        <location filename="../uiprefs_w.cpp" line="+624"/>
         <source>The selected directory does not appear to be a Xapian index</source>
         <translation>Выбранный каталог не является каталогом индексов Xapian</translation>
     </message>
@@ -3084,15 +3084,15 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="obsolete">Выберите каталог индекса Xapian (например, /home/приятель/.recoll/xapiandb)</translation>
     </message>
     <message>
-        <location line="-443"/>
+        <location line="-445"/>
         <source>error retrieving stemming languages</source>
         <translation>ошибка получения списка языков</translation>
     </message>
     <message>
-        <location line="-24"/>
+        <location line="-25"/>
         <location line="+8"/>
-        <location line="+43"/>
-        <location line="+218"/>
+        <location line="+44"/>
+        <location line="+220"/>
         <location line="+7"/>
         <location line="+11"/>
         <source>Choose</source>
@@ -3129,12 +3129,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Невозможно добавить индекс с другими настройками учёта регистра и диакритических знаков</translation>
     </message>
     <message>
-        <location line="-372"/>
+        <location line="-374"/>
         <source>Default QtWebkit font</source>
         <translation>Шрифт QtWebkit по умолчанию</translation>
     </message>
     <message>
-        <location line="-192"/>
+        <location line="-193"/>
         <source>Any term</source>
         <translation>Любое слово</translation>
     </message>
@@ -3901,7 +3901,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Количество записей на странице результатов</translation>
     </message>
     <message>
-        <location line="+184"/>
+        <location line="+230"/>
         <source>If checked, results with the same content under different names will only be shown once.</source>
         <translation>Показывать результаты с одинаковым содержанием под разными именами не более одного раза.</translation>
     </message>
@@ -3915,7 +3915,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="vanished">Цвет выделения ключевых слов</translation>
     </message>
     <message>
-        <location line="-160"/>
+        <location line="-206"/>
         <source>Result list font</source>
         <translation>Шрифт списка результатов</translation>
     </message>
@@ -3996,17 +3996,27 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Просмотр простого текста в формате HTML.</translation>
     </message>
     <message>
-        <location line="-82"/>
+        <location line="-76"/>
         <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+227"/>
+        <location line="+221"/>
         <source>Start search on completer popup activation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+273"/>
+        <location line="+265"/>
+        <source>Maximum number of snippets displayed in the snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Sort snippets by page number (default: by weigth).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>Search parameters</source>
         <translation>Параметры поиска</translation>
     </message>
@@ -4135,7 +4145,7 @@ May be slow for big documents.</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location line="-544"/>
+        <location line="-590"/>
         <source>Abstract snippet separator</source>
         <translation>Разделитель фрагментов в результатах</translation>
     </message>
@@ -4160,12 +4170,12 @@ May be slow for big documents.</source>
     <message>
         <location line="+3"/>
         <location line="+435"/>
-        <location line="+327"/>
+        <location line="+373"/>
         <source>Choose</source>
         <translation>Выбрать</translation>
     </message>
     <message>
-        <location line="-755"/>
+        <location line="-801"/>
         <source>Resets the style sheet to default</source>
         <translation>Сброс таблицы стилей к значению по умолчанию</translation>
     </message>
@@ -4198,7 +4208,7 @@ May be slow for big documents.</source>
         <translation>Формат даты (по strftime(3))</translation>
     </message>
     <message>
-        <location line="+166"/>
+        <location line="+212"/>
         <source>Frequency percentage threshold over which we do not use terms inside autophrase. 
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
@@ -4214,7 +4224,7 @@ The default value is 2 (percent). </source>
         <translation>Порог частоты появления слов в автофразе в процентах</translation>
     </message>
     <message>
-        <location line="-463"/>
+        <location line="-509"/>
         <source>Plain text to HTML line style</source>
         <translation>Стиль отображения простого текста в HTML</translation>
     </message>
@@ -4248,17 +4258,17 @@ The default value is 2 (percent). </source>
         <translation type="vanished">Искать по мере ввода.</translation>
     </message>
     <message>
-        <location line="+641"/>
+        <location line="+690"/>
         <source>Paths translations</source>
         <translation>Корректировка путей</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+50"/>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
         <translation>Щёлкните, чтобы добавить другой каталог индекса в список. Можно выбрать каталог конфигурации Recoll или индекс Xapian.</translation>
     </message>
     <message>
-        <location line="-459"/>
+        <location line="-505"/>
         <source>Snippets window CSS file</source>
         <translation>CSS-файл для окна «Фрагменты»</translation>
     </message>
@@ -4318,12 +4328,12 @@ The default value is 2 (percent). </source>
         <translation>Применить пользовательский стиль окна фрагментов.&lt;br&gt; Примечание: вставка заголовка страницы результатов также включена в заголовок окна фрагментов.</translation>
     </message>
     <message>
-        <location line="+320"/>
+        <location line="+366"/>
         <source>Synonyms file</source>
         <translation>Файл синонимов</translation>
     </message>
     <message>
-        <location line="-492"/>
+        <location line="-538"/>
         <source>Show warning when opening temporary file.</source>
         <translation>Показывать предупреждение при открытии временного файла.</translation>
     </message>
@@ -4338,17 +4348,17 @@ The default value is 2 (percent). </source>
         <translation>Recoll — Пользовательская настройка</translation>
     </message>
     <message>
-        <location line="+896"/>
+        <location line="+939"/>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation>Задать корректировку путей для выбранного или главного индекса, если ничего не выбрано.</translation>
     </message>
     <message>
-        <location line="-769"/>
+        <location line="-809"/>
         <source>Activate links in preview.</source>
         <translation>Активировать ссылки в просмотре.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-3"/>
         <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
         <translation>Делать ссылки внутри окна просмотра активными и открывать их в браузере по щелчку.</translation>
     </message>

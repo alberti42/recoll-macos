@@ -3738,5 +3738,13 @@ La valeur par défaut est 2%</translation>
         <source>Start search on completer popup activation.</source>
         <translation>Démarrer la recherche quand un choix est fait dans les suggestions</translation>
     </message>
+    <message>
+        <source>Maximum number of snippets displayed in the snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort snippets by page number (default: by weigth).</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

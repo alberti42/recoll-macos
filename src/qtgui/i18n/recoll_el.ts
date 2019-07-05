@@ -3283,5 +3283,13 @@ May be slow for big documents.</source>
         <source>Start search on completer popup activation.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Maximum number of snippets displayed in the snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort snippets by page number (default: by weigth).</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>
