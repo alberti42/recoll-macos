@@ -1,3 +1,21 @@
+recoll (1.26.0~pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Bumped version to 1.26 because the changes are too extensive for a
+    minor release.
+  * Reworked the group matching code used for highlighting and snippets.
+  * Properly highlight phrases, not treating them as NEAR.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 03 Jul 2019 14:00:00 +0200
+
+recoll (1.25.20~pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Allow displaying snippets for successive documents in the snippet
+    window, link to result table hovering.
+  * Process all Korean Hangul as alphabetic, not cjk (split as space
+    separated terms).
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 03 Jul 2019 14:00:00 +0200
+
 recoll (1.25.20~pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Allow controlling the GUI snippets window sort order and length.

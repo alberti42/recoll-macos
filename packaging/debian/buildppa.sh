@@ -6,7 +6,7 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.25.18
+RCLVERS=1.26.0~pre1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=1
@@ -22,7 +22,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-#PPANAME=recollexp-ppa
+PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -49,11 +49,11 @@ debdir=debian
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
 series="xenial bionic cosmic disco"
-#series=
+series=disco
 
 if test "X$series" != X ; then
     check_recoll_orig
-    test -d recoll-${RCLVERS} || tar xvzf recoll_${RCLVERS}.orig.tar.gz
+    test -d recoll-${RCLVERS} || tar xzf recoll_${RCLVERS}.orig.tar.gz
 fi
 
 for series in $series ; do
@@ -86,7 +86,7 @@ done
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
 series="xenial bionic cosmic disco"
-#series=
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -99,7 +99,7 @@ if test "X$series" != X ; then
     if test ! -d $topdir ; then 
         mkdir temp
         cd temp
-        tar xvzf ../recoll_${RCLVERS}.orig.tar.gz || exit 1
+        tar xzf ../recoll_${RCLVERS}.orig.tar.gz || exit 1
         mv recoll-${RCLVERS} ../$topdir || exit 1
         cd ..
     fi
@@ -150,7 +150,7 @@ if test "X$series" != X ; then
             fi
         fi
     fi
-    test -d $topdir || tar xvzf gssp-recoll_${GSSPVERS}.orig.tar.gz || exit 1
+    test -d $topdir || tar xzf gssp-recoll_${GSSPVERS}.orig.tar.gz || exit 1
 fi
 for series in $series ; do
 
@@ -195,7 +195,7 @@ if test "X$series" != X ; then
             fi
         fi
     fi
-    test -d $topdir ||  tar xvzf unity-scope-recoll_${SCOPEVERS}.orig.tar.gz \
+    test -d $topdir ||  tar xzf unity-scope-recoll_${SCOPEVERS}.orig.tar.gz \
         || exit 1
 fi
 for series in $series ; do
