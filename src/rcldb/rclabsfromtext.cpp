@@ -119,10 +119,12 @@ public:
 
         // Take note of the group (phrase/near) terms because we need
         // to compute the position lists for them.
-        for (const auto& group : hdata.groups) {
-            if (group.size() > 1) {
-                for (const auto& term: group) {
-                    m_gterms.insert(term);
+        for (const auto& tg : hdata.index_term_groups) {
+            if (tg.kind != HighlightData::TermGroup::TGK_TERM) {
+                for (const auto& group : tg.orgroups) {
+                    for (const auto& term: group) {
+                        m_gterms.insert(term);
+                    }
                 }
             }
         }
@@ -134,7 +136,9 @@ public:
         LOGDEB2("takeword: " << term << endl);
         // Limit time taken with monster documents. The resulting
         // abstract will be incorrect or inexistant, but this is
-        // better than taking forever (the default cutoff is 10E6)
+        // better than taking forever (the default cutoff value comes
+        // from the snippetMaxPosWalk configuration parameter, and is
+        // 10E6)
         if (maxtermcount && termcount++ > maxtermcount) {
             LOGINF("Rclabsfromtext: stopping because maxtermcount reached: "<<
                    maxtermcount << endl);
@@ -276,8 +280,9 @@ public:
         // Look for matches to PHRASE and NEAR term groups and finalize
         // the matched regions list (sort it by increasing start then
         // decreasing length). We process all groups as NEAR (ignore order).
-        for (unsigned int i = 0; i < m_hdata.groups.size(); i++) {
-            if (m_hdata.groups[i].size() > 1) {
+        for (unsigned int i = 0; i < m_hdata.index_term_groups.size(); i++) {
+            if (m_hdata.index_term_groups[i].kind !=
+                HighlightData::TermGroup::TGK_TERM) {
                 matchGroup(m_hdata, i, m_plists, m_gpostobytes, tboffs);
             }
         }

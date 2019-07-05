@@ -163,7 +163,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
     // expanded from (by stemming)
     map<string, vector<string> > byRoot;
     for (const auto& term: terms) {
-        map<string, string>::const_iterator eit = hld.terms.find(term);
+        const auto eit = hld.terms.find(term);
         if (eit != hld.terms.end()) {
             byRoot[eit->second].push_back(term);
         } else {
@@ -174,9 +174,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 
 #ifdef DEBUGABSTRACT
     {
-        string deb;
-        hld.toString(deb);
-        LOGABS("qualityTerms: hld: " << deb << "\n");
+        LOGABS("qualityTerms: hld: " << hld.toString() << "\n");
         string byRootstr;
         for (const auto& entry : byRoot) {
             byRootstr.append("[").append(entry.first).append("]->");

@@ -603,11 +603,11 @@ void SearchDataClauseSimple::processSimpleSpan(
 	return;
     
     // Set up the highlight data. No prefix should go in there
-    for (vector<string>::const_iterator it = exp.begin(); 
-	 it != exp.end(); it++) {
-	m_hldata.groups.push_back(vector<string>(1, it->substr(prefix.size())));
-	m_hldata.slacks.push_back(0);
-	m_hldata.grpsugidx.push_back(m_hldata.ugroups.size() - 1);
+    for (const auto& term : exp) {
+        HighlightData::TermGroup tg;
+        tg.term = term.substr(prefix.size());
+        tg.grpsugidx =  m_hldata.ugroups.size() - 1;
+        m_hldata.index_term_groups.push_back(tg);
     }
 
     // Push either term or OR of stem-expanded set
@@ -735,18 +735,16 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
 			   original_term_wqf_booster);
     pqueries.push_back(xq);
 
-    // Add all combinations of NEAR/PHRASE groups to the highlighting data. 
-    vector<vector<string> > allcombs;
-    vector<string> comb;
-    multiply_groups(groups.begin(), groups.end(), comb, allcombs);
-    
     // Insert the search groups and slacks in the highlight data, with
     // a reference to the user entry that generated them:
-    m_hldata.groups.insert(m_hldata.groups.end(), 
-			   allcombs.begin(), allcombs.end());
-    m_hldata.slacks.insert(m_hldata.slacks.end(), allcombs.size(), slack);
-    m_hldata.grpsugidx.insert(m_hldata.grpsugidx.end(), allcombs.size(), 
-			      m_hldata.ugroups.size() - 1);
+    HighlightData::TermGroup tg;
+    tg.orgroups = groups;
+    tg.slack = slack;
+    tg.grpsugidx =  m_hldata.ugroups.size() - 1;
+    tg.kind = (op == Xapian::Query::OP_PHRASE) ?
+        HighlightData::TermGroup::TGK_PHRASE :
+        HighlightData::TermGroup::TGK_NEAR;
+    m_hldata.index_term_groups.push_back(tg);
 }
 
 // Trim string beginning with ^ or ending with $ and convert to flags
