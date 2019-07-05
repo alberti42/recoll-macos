@@ -44,8 +44,8 @@
 // ngrams
 #undef KATAKANA_AS_WORDS
 
-// Same for Korean syllabic
-#define HANGUL_AS_WORDS
+// Same for Korean syllabic, and same problem, not used.
+#undef HANGUL_AS_WORDS
 
 using namespace std;
 
