@@ -40,8 +40,11 @@ struct HighlightData {
      * (unaccented and lowercased as needed depending on
      * configuration), and the list may include values
      * expanded from the original terms by stem or wildcard expansion.
+     * NEAR clauses are expanded to all possible combinations of the 
+     * stem-expanded member terms. Ex: 
+     * "clean floor"p -> (clean floor) (clean floors) (cleaning floor)...
      */
-    std::vector<std::vector<std::string> > groups;
+    std::vector<std::vector<std::string> > index_term_groups;
     /** Group slacks. Parallel to groups */
     std::vector<int> slacks;
 
@@ -53,11 +56,10 @@ struct HighlightData {
      */
     std::vector<size_t> grpsugidx;
 
-    void clear()
-    {
+    void clear() {
 	uterms.clear();
 	ugroups.clear();
-	groups.clear();
+	index_term_groups.clear();
 	slacks.clear();
 	grpsugidx.clear();
     }
@@ -67,35 +69,7 @@ struct HighlightData {
     void toString(std::string& out) const;
 };
 
-inline void setWinMinMax(int pos, int& sta, int& sto)
-{
-    if (pos < sta) {
-        sta = pos;
-    }
-    if (pos > sto) {
-        sto = pos;
-    }
-}
-
-// Check that at least an entry from the first position list is inside
-// the window and recurse on next list. The window is readjusted as
-// the successive terms are found. Mostly copied from Xapian code.
-//
-// @param window the search window width
-// @param plists the position list vector
-// @param i the position list to process (we then recurse with the next list)
-// @param min the current minimum pos for a found term
-// @param max the current maximum pos for a found term
-// @param sp, ep output: the found area
-// @param minpos bottom of search: this is the highest point of
-//    any previous match. We don't look below this as overlapping matches 
-//    make no sense for highlighting.
-extern bool do_proximity_test(
-    int window, std::vector<const std::vector<int>*>& plists, 
-    unsigned int i, int min, int max, int *sp, int *ep, int minpos);
-
-
-/**** The following is used by plaintorich.cpp for finding zones to
+/* The following is used by plaintorich.cpp for finding zones to
    highlight and by rclabsfromtext.cpp to choose fragments for the
    abstract */
 
@@ -112,17 +86,31 @@ struct GroupMatchEntry {
 
 // Find NEAR matches for one group of terms.
 //
-// @param hldata Data about the user query
-// @param grpidx Index in hldata.groups for the group we process
-// @param inplists Position lists for the the group terms
-// @param gpostobytes Translation of term position to start/end byte offsets
-// @param[out] tboffs Found matches
+// @param hldata User query expansion descriptor (see above).
+//
+// @param grpidx Index in hldata.index_term_groups for the group we
+//     process. This is used by us to get the terms and slacks, and
+//     set in the output GroupMatchEntry structures to allow the
+//     caller to link a match with a specific user input (e.g. for
+//     walking the match in the GUI preview)
+//
+// @param inplists Position lists for the the group terms. This is the
+//     data used to look for matches.
+//
+// @param gpostobytes Translation of term position to start/end byte
+//     offsets. This is used to translate term positions to byte
+//     positions in the output, for ease of use by caller.
+//
+// @param[out] tboffs Found matches. Each match has a begin and end
+//     byte offset and an index linking to the origin data in the
+//     HighlightData structure.
 extern bool matchGroup(
     const HighlightData& hldata,
     unsigned int grpidx,
     const std::map<std::string, std::vector<int>>& inplists,
     const std::map<int, std::pair<int,int>>& gpostobytes,
-    std::vector<GroupMatchEntry>& tboffs
+    std::vector<GroupMatchEntry>& tboffs,
+    bool isphrase = false
     );
 
 #endif /* _hldata_h_included_ */

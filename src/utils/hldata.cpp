@@ -29,42 +29,6 @@ using std::map;
 using std::vector;
 using std::pair;
 
-bool do_proximity_test(int window, vector<const vector<int>*>& plists,
-                       unsigned int i, int min, int max, 
-                       int *sp, int *ep, int minpos)
-{
-    LOGDEB1("do_prox_test: win " << window << " i " << i << " min " <<
-            min << " max " << max << " minpos " << minpos << "\n");
-    int tmp = max + 1 - window;
-    if (tmp < minpos)
-        tmp = minpos;
-
-    // Find 1st position bigger than window start
-    auto it = plists[i]->begin();
-    while (it != plists[i]->end() && *it < tmp)
-        it++;
-
-    // Look for position inside window. If not found, no match. If
-    // found: if this is the last list we're done, else recurse on
-    // next list after adjusting the window
-    while (it != plists[i]->end()) {
-        int pos = *it;
-        if (pos > min + window - 1) 
-            return false;
-        if (i + 1 == plists.size()) {
-            setWinMinMax(pos, *sp, *ep);
-            return true;
-        }
-        setWinMinMax(pos, min, max);
-        if (do_proximity_test(window,plists, i + 1, min, max, sp, ep, minpos)) {
-            setWinMinMax(pos, *sp, *ep);
-            return true;
-        }
-        it++;
-    }
-    return false;
-}
-
 #undef DEBUGGROUPS
 #ifdef DEBUGGROUPS
 #define LOGRP LOGDEB
@@ -72,19 +36,91 @@ bool do_proximity_test(int window, vector<const vector<int>*>& plists,
 #define LOGRP LOGDEB1
 #endif
 
-// Find NEAR matches for one group of terms
+static inline void setWinMinMax(int pos, int& sta, int& sto)
+{
+    if (pos < sta) {
+        sta = pos;
+    }
+    if (pos > sto) {
+        sto = pos;
+    }
+}
+
+/*
+ * @param window the total width for the "near" area, in positions.
+
+ * @param plists the position vectors for the terms. The array is
+ *    sorted shorted first for optimization. The function does a
+ *    recursive call on the next array if the match is still possible
+ *    after dealing with the current one
+
+ * @param plist_idx the index for the position list we will work with.
+ * @param min, max the current minimum and maximum term positions.
+ * @param[output] sp, ep, the start and end positions of the found match.
+ * @param minpos  Highest end of a found match. While looking for
+ *   further matches, we don't want the search to extend before
+ *   this, because it does not make sense for highlight regions to
+ *   overlap.
+ * @param isphrase if true, the position lists are in term order, and
+ *     we only look for the next match beyond the current window top.
+ */
+static bool do_proximity_test(
+    const int window, vector<const vector<int>*>& plists,
+    unsigned int plist_idx, int min, int max, int *sp, int *ep, int minpos,
+    bool isphrase)
+{
+    LOGINF("do_prox_test: win " << window << " plist_idx " << plist_idx <<
+           " min " <<  min << " max " << max << " minpos " << minpos <<
+           " isphrase " << isphrase << "\n");
+
+    // Overlap interdiction: possibly adjust window start by input minpos
+    int actualminpos = isphrase ? max + 1 : max + 1 - window;
+    if (actualminpos < minpos)
+        actualminpos = minpos;
+
+    // Find 1st position bigger than window start
+    auto it = plists[plist_idx]->begin();
+    while (it != plists[plist_idx]->end() && *it < actualminpos)
+        it++;
+
+    // Look for position inside window. If not found, no match. If
+    // found: if this is the last list we're done, else recurse on
+    // next list after adjusting the window
+    while (it != plists[plist_idx]->end()) {
+        int pos = *it;
+        if (pos > min + window - 1) 
+            return false;
+        if (plist_idx + 1 == plists.size()) {
+            // Done: set return values
+            setWinMinMax(pos, *sp, *ep);
+            return true;
+        }
+        setWinMinMax(pos, min, max);
+        if (do_proximity_test(window,plists, plist_idx + 1,
+                              min, max, sp, ep, minpos)) {
+            return true;
+        }
+        it++;
+    }
+    return false;
+}
+
+
+// Find matches for one group of terms
 bool matchGroup(const HighlightData& hldata,
                 unsigned int grpidx,
                 const map<string, vector<int>>& inplists,
                 const map<int, pair<int,int>>& gpostobytes,
-                vector<GroupMatchEntry>& tboffs
+                vector<GroupMatchEntry>& tboffs,
+                bool isphrase
     )
 {
-    const vector<string>& terms = hldata.groups[grpidx];
-    int window = int(hldata.groups[grpidx].size() + hldata.slacks[grpidx]);
+    isphrase=true;
+    const vector<string>& terms = hldata.index_term_groups[grpidx];
+    int window = int(terms.size() + hldata.slacks[grpidx]);
 
     LOGRP("TextSplitPTR::matchGroup:d " << window << ": " <<
-            stringsToString(terms) << "\n");
+          stringsToString(terms) << "\n");
 
     // The position lists we are going to work with. We extract them from the 
     // (string->plist) map
@@ -100,7 +136,7 @@ bool matchGroup(const HighlightData& hldata,
         map<string, vector<int> >::const_iterator pl = inplists.find(term);
         if (pl == inplists.end()) {
             LOGRP("TextSplitPTR::matchGroup: [" << term <<
-                    "] not found in plists\n");
+                  "] not found in plists\n");
             return false;
         }
         plists.push_back(&(pl->second));
@@ -112,13 +148,16 @@ bool matchGroup(const HighlightData& hldata,
         LOGRP("TextSplitPTR::matchGroup: no actual groups found\n");
         return false;
     }
-    // Sort the positions lists so that the shorter is first
-    std::sort(plists.begin(), plists.end(),
-              [](const vector<int> *a, const vector<int> *b) -> bool {
-                  return a->size() < b->size();
-              }
-        );
 
+    if (!isphrase) {
+        // Sort the positions lists so that the shorter is first
+        std::sort(plists.begin(), plists.end(),
+                  [](const vector<int> *a, const vector<int> *b) -> bool {
+                      return a->size() < b->size();
+                  }
+            );
+    }
+    
     if (0) { // Debug
         auto it = plistToTerm.find(plists[0]);
         if (it == plistToTerm.end()) {
@@ -127,7 +166,7 @@ bool matchGroup(const HighlightData& hldata,
             return false;
         }
         LOGRP("matchGroup: walking the shortest plist. Term [" <<
-                it->second << "], len " << plists[0]->size() << "\n");
+              it->second << "], len " << plists[0]->size() << "\n");
     }
 
     // Minpos is the highest end of a found match. While looking for
@@ -139,12 +178,11 @@ bool matchGroup(const HighlightData& hldata,
     for (int pos : *(plists[0])) {
         int sta = INT_MAX, sto = 0;
         LOGDEB2("MatchGroup: Testing at pos " << pos << "\n");
-        if (do_proximity_test(window,plists, 1, pos, pos, &sta, &sto, minpos)) {
-            LOGRP("TextSplitPTR::matchGroup: MATCH termpos [" << sta <<
-                    "," << sto << "]\n"); 
-            // Maybe extend the window by 1st term position, this was not
-            // done by do_prox..
+        if (do_proximity_test(
+                window, plists, 1, pos, pos, &sta, &sto, minpos, isphrase)) {
             setWinMinMax(pos, sta, sto);
+            LOGINF("TextSplitPTR::matchGroup: MATCH termpos [" << sta <<
+                   "," << sto << "]\n"); 
             minpos = sto + 1;
             // Translate the position window into a byte offset window
             auto i1 =  gpostobytes.find(sta);
@@ -153,7 +191,7 @@ bool matchGroup(const HighlightData& hldata,
                 LOGDEB2("TextSplitPTR::matchGroup: pushing bpos " <<
                         i1->second.first << " " << i2->second.second << "\n");
                 tboffs.push_back(GroupMatchEntry(i1->second.first, 
-                                            i2->second.second, grpidx));
+                                                 i2->second.second, grpidx));
             } else {
                 LOGDEB0("matchGroup: no bpos found for " << sta << " or "
                         << sto << "\n");
@@ -169,24 +207,23 @@ bool matchGroup(const HighlightData& hldata,
 void HighlightData::toString(string& out) const
 {
     out.append("\nUser terms (orthograph): ");
-    for (std::set<string>::const_iterator it = uterms.begin();
-            it != uterms.end(); it++) {
-        out.append(" [").append(*it).append("]");
+    for (const auto& term : uterms) {
+        out.append(" [").append(term).append("]");
     }
     out.append("\nUser terms to Query terms:");
-    for (map<string, string>::const_iterator it = terms.begin();
-            it != terms.end(); it++) {
-        out.append("[").append(it->first).append("]->[");
-        out.append(it->second).append("] ");
+    for (const auto& entry: terms) {
+        out.append("[").append(entry.first).append("]->[");
+        out.append(entry.second).append("] ");
     }
     out.append("\nGroups: ");
     char cbuf[200];
     sprintf(cbuf, "Groups size %d grpsugidx size %d ugroups size %d",
-            int(groups.size()), int(grpsugidx.size()), int(ugroups.size()));
+            int(index_term_groups.size()), int(grpsugidx.size()),
+            int(ugroups.size()));
     out.append(cbuf);
 
     size_t ugidx = (size_t) - 1;
-    for (unsigned int i = 0; i < groups.size(); i++) {
+    for (unsigned int i = 0; i < index_term_groups.size(); i++) {
         if (ugidx != grpsugidx[i]) {
             ugidx = grpsugidx[i];
             out.append("\n(");
@@ -196,8 +233,8 @@ void HighlightData::toString(string& out) const
             out.append(") ->");
         }
         out.append(" {");
-        for (unsigned int j = 0; j < groups[i].size(); j++) {
-            out.append("[").append(groups[i][j]).append("]");
+        for (unsigned int j = 0; j < index_term_groups[i].size(); j++) {
+            out.append("[").append(index_term_groups[i][j]).append("]");
         }
         sprintf(cbuf, "%d", slacks[i]);
         out.append("}").append(cbuf);
@@ -212,10 +249,12 @@ void HighlightData::append(const HighlightData& hl)
     size_t ugsz0 = ugroups.size();
     ugroups.insert(ugroups.end(), hl.ugroups.begin(), hl.ugroups.end());
 
-    groups.insert(groups.end(), hl.groups.begin(), hl.groups.end());
+    index_term_groups.insert(index_term_groups.end(),
+                             hl.index_term_groups.begin(),
+                             hl.index_term_groups.end());
     slacks.insert(slacks.end(), hl.slacks.begin(), hl.slacks.end());
     for (std::vector<size_t>::const_iterator it = hl.grpsugidx.begin();
-            it != hl.grpsugidx.end(); it++) {
+         it != hl.grpsugidx.end(); it++) {
         grpsugidx.push_back(*it + ugsz0);
     }
 }
