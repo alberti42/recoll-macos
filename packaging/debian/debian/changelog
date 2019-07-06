@@ -1,10 +1,12 @@
-recoll (1.26.0~pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.26.0~pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Bumped version to 1.26 because the changes are too extensive for a
     minor release.
   * Reworked the group matching code used for highlighting and snippets.
   * Properly highlight phrases, not treating them as NEAR.
-    
+  * Fix the CJK phrase processing, the slack was wrong, resulting in bogus
+    matches     
+
  -- Jean-Francois Dockes <jf@dockes.org>  Wed, 03 Jul 2019 14:00:00 +0200
 
 recoll (1.25.20~pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
