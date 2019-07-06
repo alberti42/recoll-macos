@@ -80,7 +80,7 @@ void SnippetsW::init()
     QPushButton *searchButton = new QPushButton(tr("Search"));
     searchButton->setAutoDefault(false);
     buttonBox->addButton(searchButton, QDialogButtonBox::ActionRole);
-
+//    setWindowFlags(Qt::WindowStaysOnTopHint);
     searchFM->hide();
 
     new QShortcut(QKeySequence::Find, this, SLOT(slotEditFind()));
@@ -229,6 +229,7 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
     browser->moveCursor (QTextCursor::Start);
     browser->ensureCursorVisible();
 #endif
+    raise();
 }
 
 void SnippetsW::slotEditFind()
