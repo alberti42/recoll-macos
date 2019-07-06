@@ -1425,8 +1425,9 @@ Query_getgroups(recoll_QueryObject* self, PyObject *, PyObject *)
     // We walk the groups vector. For each we retrieve the user group,
     // make a python list of each, then group those in a pair, and
     // append this to the main list.
-    for (unsigned int i = 0; i < hld.groups.size(); i++) {
-	unsigned int ugidx = hld.grpsugidx[i];
+    for (unsigned int i = 0; i < hld.index_term_groups.size(); i++) {
+        HighlightData::TermGroup& tg{hld.index_term_groups[i]};
+	unsigned int ugidx = tg.grpsugidx;
 	ulist = PyList_New(hld.ugroups[ugidx].size());
 	for (unsigned int j = 0; j < hld.ugroups[ugidx].size(); j++) {
 	    PyList_SetItem(ulist, j, 
@@ -1435,12 +1436,21 @@ Query_getgroups(recoll_QueryObject* self, PyObject *, PyObject *)
 					    "UTF-8", "replace"));
 	}
 
-	xlist = PyList_New(hld.groups[i].size());
-	for (unsigned int j = 0; j < hld.groups[i].size(); j++) {
-	    PyList_SetItem(xlist, j, 
-			   PyUnicode_Decode(hld.groups[i][j].c_str(), 
-					    hld.groups[i][j].size(), 
+        // Not sure that this makes any sense after we changed from
+        // multiply_groups to using or-plists. TBD: check
+        if (tg.kind == HighlightData::TermGroup::TGK_TERM) {
+            xlist = PyList_New(1);
+            PyList_SetItem(xlist, 0, 
+                           PyUnicode_Decode(tg.term.c_str(), tg.term.size(), 
 					    "UTF-8", "replace"));
+        } else {
+            xlist = PyList_New(tg.orgroups.size());
+            for (unsigned int j = 0; j < tg.orgroups.size(); j++) {
+                PyList_SetItem(xlist, j, 
+                               PyUnicode_Decode(tg.orgroups[j][0].c_str(),
+                                                tg.orgroups[j][0].size(), 
+                                                "UTF-8", "replace"));
+            }
 	}
 	PyList_Append(mainlist,  Py_BuildValue("(OO)", ulist, xlist));
     }
