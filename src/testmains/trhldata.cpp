@@ -105,6 +105,9 @@ vector<HLDataInitializer> hldvec {
     {{{"2"}, {"0"}}, 1, HighlightData::TermGroup::TGK_NEAR, true},
     {{{"4"}, {"0"}}, 2, HighlightData::TermGroup::TGK_NEAR, false},
     {{{"4"}, {"0"}}, 3, HighlightData::TermGroup::TGK_NEAR, true},
+    {{{"4"}, {"3"}, {"1"}, {"2"}, {"0"}}, 1, HighlightData::TermGroup::TGK_NEAR, true},
+    {{{"4"}, {"3"}, {"1"}, {"0"}}, 1, HighlightData::TermGroup::TGK_NEAR, true},
+    {{{"4"}, {"3"}, {"0"}}, 1, HighlightData::TermGroup::TGK_NEAR, false},
 };
 
 int main(int argc, char **argv)
