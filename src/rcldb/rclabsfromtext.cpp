@@ -206,7 +206,7 @@ public:
 #endif
             m_curfragcoef += coef;
             m_remainingWords = m_ctxwords + 1;
-            if (m_extcount > 3) {
+            if (m_extcount > 5) {
                 // Limit expansion of contiguous fragments (this is to
                 // avoid common terms in search causing long
                 // heavyweight meaningless fragments. Also, limit length).
@@ -474,13 +474,14 @@ int Query::Native::abstractFromText(
             inslen += endhit.size();
         }
 #endif
-        LOGDEB0("=== FRAGMENT: Coef: " << entry.coef << ": " << frag << endl);
         int page = 0;
         if (vpbreaks.size() > 1) {
             page = ndb->getPageNumberForPosition(vpbreaks, entry.hitpos);
             if (page < 0)
                 page = 0;
         }
+        LOGDEB0("=== FRAGMENT: p. " << page << " Coef: " << entry.coef <<
+                ": " << frag << endl);
         vabs.push_back(Snippet(page, frag).setTerm(entry.term));
         if (count++ >= maxtotaloccs)
             break;
