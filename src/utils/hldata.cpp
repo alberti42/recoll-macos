@@ -206,7 +206,7 @@ bool matchGroup(const HighlightData& hldata,
             orplists.back().addplist(pl->first, &(pl->second));
         }
         if (orplists.back().plists.empty()) {
-            LOGINF("No positions list found for group " <<
+            LOGRP("No positions list found for group " <<
                    stringsToString(group) << std::endl);
             orplists.pop_back();
         }
@@ -215,7 +215,7 @@ bool matchGroup(const HighlightData& hldata,
     // I think this can't actually happen, was useful when we used to
     // prune the groups, but doesn't hurt.
     if (orplists.size() < 2) {
-        LOGINF("TextSplitPTR::matchGroup: no actual groups found\n");
+        LOGRP("TextSplitPTR::matchGroup: no actual groups found\n");
         return false;
     }
 
@@ -261,7 +261,7 @@ bool matchGroup(const HighlightData& hldata,
         }
     }
 
-    return true;
+    return !tboffs.empty();
 }
 
 string HighlightData::toString() const

@@ -86,7 +86,8 @@ struct GroupMatchEntry {
 
 // Find NEAR matches for one group of terms.
 //
-// @param hldata User query expansion descriptor (see above).
+// @param hldata User query expansion descriptor (see above). We only use
+//      the index_term_groups entry
 //
 // @param grpidx Index in hldata.index_term_groups for the group we
 //     process. This is used by us to get the terms and slacks, and
