@@ -241,8 +241,8 @@ bool matchGroup(const HighlightData& hldata,
         if (do_proximity_test(
                 window, orplists, 1, pos, pos, &sta, &sto, minpos, isphrase)) {
             setWinMinMax(pos, sta, sto);
-            LOGINF("TextSplitPTR::matchGroup: MATCH termpos [" << sta <<
-                   "," << sto << "]\n"); 
+            LOGRP("TextSplitPTR::matchGroup: MATCH termpos [" << sta <<
+                    "," << sto << "]\n"); 
             minpos = sto + 1;
             // Translate the position window into a byte offset window
             auto i1 =  gpostobytes.find(sta);
