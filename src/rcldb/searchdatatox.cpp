@@ -695,7 +695,7 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
     LOGDEB2("PHRASE/NEAR:  alltermcount " << splitData->alltermcount() <<
             " lastpos " << splitData->lastpos() << "\n");
     Xapian::Query xq(op, orqueries.begin(), orqueries.end(),
-		     splitData->lastpos() + 1 + slack);
+		     orqueries.size() + slack);
     if (op == Xapian::Query::OP_PHRASE)
 	xq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, xq, 
 			   original_term_wqf_booster);
@@ -706,10 +706,6 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
     HighlightData::TermGroup tg;
     tg.orgroups = groups;
     tg.slack = slack;
-    if (splitData->lastpos() > splitData->alltermcount()) {
-        // Adjust for multiple pos per span (e.g. cjk)
-        tg.slack += splitData->lastpos() - splitData->alltermcount();
-    }
     tg.grpsugidx =  m_hldata.ugroups.size() - 1;
     tg.kind = (op == Xapian::Query::OP_PHRASE) ?
         HighlightData::TermGroup::TGK_PHRASE :
