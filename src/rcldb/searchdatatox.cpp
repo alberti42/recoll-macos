@@ -540,40 +540,6 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     return true;
 }
 
-// Do distribution of string vectors: a,b c,d -> a,c a,d b,c b,d
-void multiply_groups(vector<vector<string> >::const_iterator vvit,
-		     vector<vector<string> >::const_iterator vvend, 
-		     vector<string>& comb,
-		     vector<vector<string> >&allcombs)
-{
-    // Remember my string vector and compute next, for recursive calls.
-    vector<vector<string> >::const_iterator myvit = vvit++;
-
-    // Walk the string vector I'm called upon and, for each string,
-    // add it to current result, an call myself recursively on the
-    // next string vector. The last call (last element of the vector of
-    // vectors), adds the elementary result to the output
-
-    // Walk my string vector
-    for (vector<string>::const_iterator strit = (*myvit).begin();
-	 strit != (*myvit).end(); strit++) {
-
-	// Add my current value to the string vector we're building
-	comb.push_back(*strit);
-
-	if (vvit == vvend) {
-	    // Last call: store current result
-	    allcombs.push_back(comb);
-	} else {
-	    // Call recursively on next string vector
-	    multiply_groups(vvit, vvend, comb, allcombs);
-	}
-	// Pop the value I just added (make room for the next element in my
-	// vector)
-	comb.pop_back();
-    }
-}
-
 static void prefix_vector(vector<string>& v, const string& prefix)
 {
     for (vector<string>::iterator it = v.begin(); it != v.end(); it++) {
@@ -740,6 +706,10 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
     HighlightData::TermGroup tg;
     tg.orgroups = groups;
     tg.slack = slack;
+    if (splitData->lastpos() > splitData->alltermcount()) {
+        // Adjust for multiple pos per span (e.g. cjk)
+        tg.slack += splitData->lastpos() - splitData->alltermcount();
+    }
     tg.grpsugidx =  m_hldata.ugroups.size() - 1;
     tg.kind = (op == Xapian::Query::OP_PHRASE) ?
         HighlightData::TermGroup::TGK_PHRASE :
