@@ -506,6 +506,7 @@ void ResTable::init()
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableView->setItemDelegate(new ResTableDelegate(this));
     tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    new QShortcut(QKeySequence("Return"), this, SLOT(menuEdit()));
     new QShortcut(QKeySequence("Ctrl+o"), this, SLOT(menuEdit()));
     new QShortcut(QKeySequence("Ctrl+Shift+o"), this, SLOT(menuEditAndQuit()));
     new QShortcut(QKeySequence("Ctrl+d"), this, SLOT(menuPreview()));
