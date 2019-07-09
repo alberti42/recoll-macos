@@ -965,12 +965,17 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     // characters which we still need to use.
     assert(o_CJKNgramLen < o_CJKMaxNgramLen);
     unsigned int boffs[o_CJKMaxNgramLen+1];
-
+    string mybuf;
+    unsigned int myboffs[o_CJKMaxNgramLen+1];
+    
     // Current number of valid offsets;
     unsigned int nchars = 0;
     unsigned int c = 0;
     for (; !it.eof(); it++) {
         c = *it;
+        if (c == ' ' || c == '\t' || c == '\n') {
+            continue;
+        }
         if (!UNICODE_IS_CJK(c)) {
             // Return to normal handler
             break;
@@ -987,11 +992,17 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
             for (unsigned int i = 0; i < nchars-1; i++) {
                 boffs[i] = boffs[i+1];
             }
+            for (unsigned int i = 0; i < nchars-1; i++) {
+                myboffs[i] = myboffs[i+1];
+            }
         }  else {
             nchars++;
         }
 
-        // Take note of byte offset for this character.
+        // Copy to local buffer, and note local offset
+        myboffs[nchars-1] = mybuf.size();
+        it.appendchartostring(mybuf);
+        // Take note of document byte offset for this character.
         boffs[nchars-1] = int(it.getBpos());
 
         // Output all new ngrams: they begin at each existing position
@@ -1002,9 +1013,8 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
             int loopbeg = (m_flags & TXTS_NOSPANS) ? nchars-1 : 0;
             int loopend = (m_flags & TXTS_ONLYSPANS) ? 1 : nchars;
             for (int i = loopbeg; i < loopend; i++) {
-                if (!takeword(it.buffer().substr(boffs[i], 
-                                                       btend-boffs[i]),
-                                m_wordpos - (nchars-i-1), boffs[i], btend)) {
+                if (!takeword(mybuf.substr(myboffs[i], mybuf.size()-myboffs[i]),
+                              m_wordpos - (nchars-i-1), boffs[i], btend)) {
                     return false;
                 }
             }
@@ -1012,6 +1022,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
             if ((m_flags & TXTS_ONLYSPANS)) {
                 // Only spans: don't overlap: flush buffer
                 nchars = 0;
+                mybuf.clear();
             }
         }
         // Increase word position by one, other words are at an
@@ -1023,9 +1034,9 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     // first
     if ((m_flags & TXTS_ONLYSPANS) && nchars > 0 && nchars != o_CJKNgramLen)  {
         int btend = int(it.getBpos()); // Current char is out
-        if (!takeword(it.buffer().substr(boffs[0], btend-boffs[0]),
-                            m_wordpos - nchars,
-                            boffs[0], btend)) {
+        if (!takeword(mybuf.substr(myboffs[0], mybuf.size()-myboffs[0]),
+                      m_wordpos - nchars,
+                      boffs[0], btend)) {
             return false;
         }
     }
