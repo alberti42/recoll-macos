@@ -1,17 +1,20 @@
-/* Copyright (C) 2016 J.F.Dockes
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+/* Copyright (C) 2017-2019 J.F.Dockes
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ * License: GPL 2.1
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the
- *   Free Software Foundation, Inc.,
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 #include "autoconfig.h"
@@ -25,7 +28,7 @@
 #include "smallut.h"
 
 using std::string;
-using std::map;
+using std::unordered_map;
 using std::vector;
 using std::pair;
 
@@ -169,8 +172,8 @@ static bool do_proximity_test(
 // Find matches for one group of terms
 bool matchGroup(const HighlightData& hldata,
                 unsigned int grpidx,
-                const map<string, vector<int>>& inplists,
-                const map<int, pair<int,int>>& gpostobytes,
+                const unordered_map<string, vector<int>>& inplists,
+                const unordered_map<int, pair<int,int>>& gpostobytes,
                 vector<GroupMatchEntry>& tboffs)
 {
 
