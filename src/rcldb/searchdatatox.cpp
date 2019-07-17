@@ -493,7 +493,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     }
 
 
-    if (noexpansion) {
+    if (!m_exclude && noexpansion) {
 	oexp.push_back(prefix + term);
 	m_hldata.terms[term] = term;
 	LOGDEB("ExpandTerm: noexpansion: final: "<<stringsToString(oexp)<< "\n");
@@ -533,8 +533,10 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	oexp.push_back(prefix + term);
 
     // Remember the uterm-to-expansion links
-    for (const auto& entry : oexp) {
-	m_hldata.terms[strip_prefix(entry)] = term;
+    if (!m_exclude) {
+        for (const auto& entry : oexp) {
+            m_hldata.terms[strip_prefix(entry)] = term;
+        }
     }
     LOGDEB("ExpandTerm: final: " << stringsToString(oexp) << "\n");
     return true;
@@ -569,13 +571,15 @@ void SearchDataClauseSimple::processSimpleSpan(
 	return;
     
     // Set up the highlight data. No prefix should go in there
-    for (const auto& term : exp) {
-        HighlightData::TermGroup tg;
-        tg.term = term.substr(prefix.size());
-        tg.grpsugidx =  m_hldata.ugroups.size() - 1;
-        m_hldata.index_term_groups.push_back(tg);
+    if (!m_exclude) {
+        for (const auto& term : exp) {
+            HighlightData::TermGroup tg;
+            tg.term = term.substr(prefix.size());
+            tg.grpsugidx =  m_hldata.ugroups.size() - 1;
+            m_hldata.index_term_groups.push_back(tg);
+        }
     }
-
+    
     // Push either term or OR of stem-expanded set
     Xapian::Query xq(Xapian::Query::OP_OR, exp.begin(), exp.end());
     m_curcl += exp.size();
@@ -703,14 +707,16 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
 
     // Insert the search groups and slacks in the highlight data, with
     // a reference to the user entry that generated them:
-    HighlightData::TermGroup tg;
-    tg.orgroups = groups;
-    tg.slack = slack;
-    tg.grpsugidx =  m_hldata.ugroups.size() - 1;
-    tg.kind = (op == Xapian::Query::OP_PHRASE) ?
-        HighlightData::TermGroup::TGK_PHRASE :
-        HighlightData::TermGroup::TGK_NEAR;
-    m_hldata.index_term_groups.push_back(tg);
+    if (!m_exclude) {
+        HighlightData::TermGroup tg;
+        tg.orgroups = groups;
+        tg.slack = slack;
+        tg.grpsugidx =  m_hldata.ugroups.size() - 1;
+        tg.kind = (op == Xapian::Query::OP_PHRASE) ?
+            HighlightData::TermGroup::TGK_PHRASE :
+            HighlightData::TermGroup::TGK_NEAR;
+        m_hldata.index_term_groups.push_back(tg);
+    }
 }
 
 // Trim string beginning with ^ or ending with $ and convert to flags
@@ -828,13 +834,17 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 		int lmods = mods;
 		if (tpq.nostemexps().front())
 		    lmods |= SearchDataClause::SDCM_NOSTEMMING;
-		m_hldata.ugroups.push_back(tpq.terms());
+                if (!m_exclude) {
+                    m_hldata.ugroups.push_back(tpq.terms());
+                }
 		processSimpleSpan(db, ermsg, tpq.terms().front(),
 				  lmods, &pqueries);
 	    }
 		break;
 	    default:
-		m_hldata.ugroups.push_back(tpq.terms());
+                if (!m_exclude) {
+                    m_hldata.ugroups.push_back(tpq.terms());
+                }
 		processPhraseOrNear(db, ermsg, &tpq, mods, &pqueries,
 				    useNear, slack);
 	    }
