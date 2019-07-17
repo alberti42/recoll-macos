@@ -44,18 +44,24 @@ public:
 public slots:
     virtual void onLinkClicked(const QUrl &);
     virtual void onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source);
+    virtual void createPopupMenu(const QPoint& pos);
 
 protected slots:
     virtual void slotEditFind();
     virtual void slotEditFindNext();
     virtual void slotEditFindPrevious();
     virtual void slotSearchTextChanged(const QString&);
+    virtual void reloadByRelevance();
+    virtual void reloadByPage();
+    
 signals:
     void startNativeViewer(Rcl::Doc, int pagenum, QString term);
         
 private:
     void init();
+    std::shared_ptr<DocSequence> m_source;
     Rcl::Doc m_doc;
+    bool m_sortingByPage;
 };
 
 #ifdef USING_WEBENGINE
