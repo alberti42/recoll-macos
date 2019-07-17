@@ -1,8 +1,14 @@
-recoll (1.26.0~pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.26.0~pre4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Add popup menu to snippets window to toggle page/relevance ordering.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 17 Jul 2019 15:45:00 +0200
+
+recoll (1.26.0~pre3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Experiment: ignore all ASCII whitespace when generating CJK ngrams.
 
- -- Jean-Francois Dockes <jf@dockes.org>  Wed, 03 Jul 2019 14:00:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 09 Jul 2019 14:00:00 +0200
 
 recoll (1.26.0~pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
