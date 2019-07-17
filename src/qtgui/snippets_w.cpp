@@ -77,6 +77,7 @@ static PlainToRichQtSnippets g_hiliter;
 
 void SnippetsW::init()
 {
+    m_sortingByPage = prefs.snipwSortByPage;
     QPushButton *searchButton = new QPushButton(tr("Search"));
     searchButton->setAutoDefault(false);
     buttonBox->addButton(searchButton, QDialogButtonBox::ActionRole);
@@ -102,6 +103,7 @@ void SnippetsW::init()
     connect(nextPB, SIGNAL(clicked()), this, SLOT(slotEditFindNext()));
     connect(prevPB, SIGNAL(clicked()), this, SLOT(slotEditFindPrevious()));
 
+
     delete browserw;
 #if defined(USING_WEBKIT)
     browserw = new QWebView(this);
@@ -119,6 +121,9 @@ void SnippetsW::init()
     }
     if (!prefs.snipCssFile.isEmpty())
         ws->setUserStyleSheetUrl(QUrl::fromLocalFile(prefs.snipCssFile));
+    browserw->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(browserw, SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(createPopupMenu(const QPoint&)));
 #elif defined(USING_WEBENGINE)
     browserw = new QWebEngineView(this);
     verticalLayout->insertWidget(0, browserw);
@@ -129,6 +134,9 @@ void SnippetsW::init()
         ws->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize);
     }
     // Stylesheet TBD
+    browserw->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(browserw, SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(createPopupMenu(const QPoint&)));
 #else
     browserw = new QTextBrowser(this);
     verticalLayout->insertWidget(0, browserw);
@@ -147,9 +155,33 @@ void SnippetsW::init()
 #endif
 }
 
+void SnippetsW::createPopupMenu(const QPoint& pos)
+{
+    QMenu *popup = new QMenu(this);
+    if (m_sortingByPage) {
+        popup->addAction(tr("Sort By Relevance"), this,
+                         SLOT(reloadByRelevance()));
+    } else {
+        popup->addAction(tr("Sort By Page"), this, SLOT(reloadByPage()));
+    }
+    popup->popup(mapToGlobal(pos));
+}
+
+void SnippetsW::reloadByRelevance()
+{
+    m_sortingByPage = false;
+    onSetDoc(m_doc, m_source);
+}
+void SnippetsW::reloadByPage()
+{
+    m_sortingByPage = true;
+    onSetDoc(m_doc, m_source);
+}
+
 void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
 {
     m_doc = doc;
+    m_source = source;
     if (!source)
         return;
 
@@ -168,8 +200,7 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
     setWindowTitle(title);
 
     vector<Rcl::Snippet> vpabs;
-    source->getAbstract(m_doc, vpabs,
-                          prefs.snipwMaxLength, prefs.snipwSortByPage);
+    source->getAbstract(m_doc, vpabs, prefs.snipwMaxLength, m_sortingByPage);
 
     HighlightData hdata;
     source->getTerms(hdata);
