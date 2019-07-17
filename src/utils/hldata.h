@@ -1,10 +1,28 @@
+/* Copyright (C) 2017-2019 J.F.Dockes
+ *
+ * License: GPL 2.1
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 #ifndef _hldata_h_included_
 #define _hldata_h_included_
 
 #include <vector>
 #include <string>
 #include <set>
-#include <map>
 #include <unordered_map>
 
 /** Store data about user search terms and their expansions. This is used
@@ -84,16 +102,17 @@ struct GroupMatchEntry {
     }
 };
 
-// Find NEAR matches for one group of terms.
+// Find NEAR or PHRASE matches for one group of terms.
 //
 // @param hldata User query expansion descriptor (see above). We only use
 //      the index_term_groups entry
 //
 // @param grpidx Index in hldata.index_term_groups for the group we
-//     process. This is used by us to get the terms and slacks, and
-//     set in the output GroupMatchEntry structures to allow the
-//     caller to link a match with a specific user input (e.g. for
-//     walking the match in the GUI preview)
+//     process. This is used by us to get the terms, group type
+//     (phrase/near) and slacks. We also set it in the output
+//     GroupMatchEntry structures to allow the caller to link a match
+//     with a specific user input (e.g. for walking the match in the
+//     GUI preview)
 //
 // @param inplists Position lists for the the group terms. This is the
 //     data used to look for matches.
@@ -108,8 +127,8 @@ struct GroupMatchEntry {
 extern bool matchGroup(
     const HighlightData& hldata,
     unsigned int grpidx,
-    const std::map<std::string, std::vector<int>>& inplists,
-    const std::map<int, std::pair<int,int>>& gpostobytes,
+    const std::unordered_map<std::string, std::vector<int>>& inplists,
+    const std::unordered_map<int, std::pair<int,int>>& gpostobytes,
     std::vector<GroupMatchEntry>& tboffs
     );
 

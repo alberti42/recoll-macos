@@ -18,7 +18,6 @@
 
 #include <math.h>
 
-#include <map>
 #include <unordered_map>
 #include <deque>
 #include <algorithm>
@@ -270,8 +269,7 @@ public:
 
 
     // After the text is split: use the group terms positions lists to
-    // find the group matches. We process everything as NEAR (no
-    // PHRASE specific processing).
+    // find the group matches.
     void updgroups() {
         LOGDEB("TextSplitABS: stored total " << m_fragments.size() <<
                " fragments" << endl);
@@ -361,8 +359,8 @@ private:
     // Group terms, extracted from m_hdata 
     unordered_set<string> m_gterms;
     // group/near terms word positions.
-    map<string, vector<int> > m_plists;
-    map<int, pair<int, int> > m_gpostobytes;
+    unordered_map<string, vector<int> > m_plists;
+    unordered_map<int, pair<int, int> > m_gpostobytes;
     
     // Input
     unordered_set<string> m_terms;

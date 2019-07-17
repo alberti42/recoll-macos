@@ -21,7 +21,7 @@
 #include <list>
 #include <set>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <algorithm>
 #include <regex>
 
@@ -29,6 +29,7 @@ using std::vector;
 using std::list;
 using std::pair;
 using std::set;
+using std::unordered_map;
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -123,8 +124,8 @@ private:
     const HighlightData& m_hdata;
 
     // group/near terms word positions.
-    map<string, vector<int> > m_plists;
-    map<int, pair<int, int> > m_gpostobytes;
+    unordered_map<string, vector<int> > m_plists;
+    unordered_map<int, pair<int, int> > m_gpostobytes;
 };
 
 
