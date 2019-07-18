@@ -91,7 +91,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Enter search terms here. Type ESC SPC for completions of current term.</string>
+        <string>Enter search terms here.</string>
        </property>
       </widget>
      </item>

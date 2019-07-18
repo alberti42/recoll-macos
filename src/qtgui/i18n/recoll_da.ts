@@ -496,7 +496,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Error while loading file</source>
-        <translation>Fejl ved indlæsning af filen</translation>
+        <translation type="vanished">Fejl ved indlæsning af filen</translation>
     </message>
     <message>
         <source>Form</source>
@@ -504,6 +504,42 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Tab 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">Åbn</translation>
+    </message>
+    <message>
+        <source>Canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: file missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: no permission.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading: backend not configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error&lt;br&gt;Maybe the application is locking the file ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;br&gt;Attempting to display from stored text.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not fetch stored text</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -548,6 +584,10 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Preserve indentation</source>
         <translation>Bevar indrykning</translation>
+    </message>
+    <message>
+        <source>Open document</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1026,11 +1066,11 @@ Kontroller venligst mimeview-filen</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
-        <translation>Indeks er ikke opdateret for denne fil. Nægter at risikere at vise den forkerte indgang.</translation>
+        <translation type="vanished">Indeks er ikke opdateret for denne fil. Nægter at risikere at vise den forkerte indgang.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation>Klik OK for at opdatere indekset for denne fil, du bliver så nødt til at gentage forespørgslen når indeksering er færdig. </translation>
+        <translation type="vanished">Klik OK for at opdatere indekset for denne fil, du bliver så nødt til at gentage forespørgslen når indeksering er færdig. </translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
@@ -1149,7 +1189,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
-        <translation>Klik på Annuller for at vende tilbage til listen. &lt;br&gt;Klik på Ignorer for at vise forhåndsvisningen alligevel. (og husk for denne session).</translation>
+        <translation type="vanished">Klik på Annuller for at vende tilbage til listen. &lt;br&gt;Klik på Ignorer for at vise forhåndsvisningen alligevel. (og husk for denne session).</translation>
     </message>
     <message>
         <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
@@ -1214,6 +1254,26 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t update index: internal error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;em&gt;Also, it seems that the last index update for the file failed.&lt;/em&gt;&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to try to update the index for this file. You will need to run the query again when indexing is done.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1790,7 +1850,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Indtast søgeord her. Tast ESC SPC for færdiggørelse af nuværende ord.</translation>
+        <translation type="vanished">Indtast søgeord her. Tast ESC SPC for færdiggørelse af nuværende ord.</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -1843,6 +1903,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
         <source>Autophrase is unset but it was set for stored query</source>
         <translation>Autofrase er deaktiveret, men var aktiveret for gemte forespørgsel</translation>
     </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -1872,7 +1936,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Indtast søgeord her. Type ESC SPC for færdiggørelse af nuværende ord.</translation>
+        <translation type="vanished">Indtast søgeord her. Type ESC SPC for færdiggørelse af nuværende ord.</translation>
     </message>
     <message>
         <source>Choose search type.</source>
@@ -1880,6 +1944,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

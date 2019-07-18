@@ -522,7 +522,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Error while loading file</source>
-        <translation>Fehler beim Lesen der Datei</translation>
+        <translation type="vanished">Fehler beim Lesen der Datei</translation>
     </message>
     <message>
         <source>Form</source>
@@ -530,6 +530,42 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Tab 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">Öffnen</translation>
+    </message>
+    <message>
+        <source>Canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: file missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: no permission.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading: backend not configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error&lt;br&gt;Maybe the application is locking the file ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;br&gt;Attempting to display from stored text.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not fetch stored text</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -574,6 +610,10 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     <message>
         <source>Preserve indentation</source>
         <translation>Einrückung erhalten</translation>
+    </message>
+    <message>
+        <source>Open document</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1115,14 +1155,6 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
         <translation type="unfinished"></translation>
     </message>
@@ -1220,10 +1252,6 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1286,6 +1314,26 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t update index: internal error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;em&gt;Also, it seems that the last index update for the file failed.&lt;/em&gt;&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to try to update the index for this file. You will need to run the query again when indexing is done.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2015,7 +2063,7 @@ Im Zweifelsfalle verwenden Sie den Link &lt;b&gt;Suchanfrage zeigen&lt;/b&gt; un
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Suchbegriffe hier eingeben.
+        <translation type="vanished">Suchbegriffe hier eingeben.
 Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</translation>
     </message>
     <message>
@@ -2058,6 +2106,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Autophrase is unset but it was set for stored query</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -2087,7 +2139,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Suchbegriffe hier eingeben.
+        <translation type="vanished">Suchbegriffe hier eingeben.
 Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</translation>
     </message>
     <message>
@@ -2096,6 +2148,10 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
