@@ -2019,6 +2019,14 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;Desværre blev der ikke, inden for rimelige grænser, fundet en nøjagtig match. Sandsynligvis fordi dokumentet er meget stort, så tekststump-generatoren for vild i mængden...&lt;/ p&gt;</translation>
     </message>
+    <message>
+        <source>Sort By Relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort By Page</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpecIdxW</name>

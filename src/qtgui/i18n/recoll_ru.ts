@@ -2293,7 +2293,7 @@ Please check the desktop file</source>
 <context>
     <name>ResTable</name>
     <message>
-        <location filename="../restable.cpp" line="+788"/>
+        <location filename="../restable.cpp" line="+789"/>
         <source>&amp;Reset sort</source>
         <translation>&amp;Сбросить сортировку</translation>
     </message>
@@ -2747,12 +2747,22 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 <context>
     <name>SnippetsW</name>
     <message>
-        <location filename="../snippets_w.cpp" line="+80"/>
+        <location filename="../snippets_w.cpp" line="+81"/>
         <source>Search</source>
         <translation>Искать</translation>
     </message>
     <message>
-        <location line="+140"/>
+        <location line="+81"/>
+        <source>Sort By Relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Sort By Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+86"/>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;К сожалению, точные совпадения с заданными параметрами не найдены. Возможно, документ слишком большой, и генератор фрагментов дал сбой...&lt;/p&gt;</translation>
     </message>
