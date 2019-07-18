@@ -2346,6 +2346,14 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;Désolé, aucun résultat trouvé dans les limites de recherche. Peut-être que le document est très gros et que le générateur d&apos;extraits s&apos;est perdu...&lt;p&gt;</translation>
     </message>
+    <message>
+        <source>Sort By Relevance</source>
+        <translation>Trier Par Pertinence</translation>
+    </message>
+    <message>
+        <source>Sort By Page</source>
+        <translation>Trier Par Page</translation>
+    </message>
 </context>
 <context>
     <name>SortForm</name>
@@ -3740,11 +3748,11 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Maximum number of snippets displayed in the snippets window</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre maximum d&apos;extraits affichés dans la fenêtre des extraits</translation>
     </message>
     <message>
         <source>Sort snippets by page number (default: by weigth).</source>
-        <translation type="unfinished"></translation>
+        <translation>Trier les extraits par numéro de page (défaut: par pertinence).</translation>
     </message>
 </context>
 </TS>

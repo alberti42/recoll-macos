@@ -2208,6 +2208,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;Λυπάμαι, δεν βρέθηκε μια ακριβής αντιστοιχία εντός ορίων. Πιθανώς το έγγραφο να είναι ογκώδες και ο δημιουργός αποσπασμάτων χάθηκε σε έναν λαβύρινθο...&lt;/p&gt;</translation>
     </message>
+    <message>
+        <source>Sort By Relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort By Page</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpecIdxW</name>

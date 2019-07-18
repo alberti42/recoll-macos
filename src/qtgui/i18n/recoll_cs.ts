@@ -2316,6 +2316,14 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;V rámci omezení hledání nebyla bohužel nalezena žádná shoda. Pravděpodobně je dokument velice velký a vyvíječ úryvků se v něm ztratil (nebo skončil ve škarpě)...&lt;/p&gt;</translation>
     </message>
+    <message>
+        <source>Sort By Relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort By Page</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SortForm</name>
