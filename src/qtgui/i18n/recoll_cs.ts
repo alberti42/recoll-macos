@@ -2110,7 +2110,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Zde zadejte hledané výrazy. Stiskněte ESC SPC pro doplnění současného výrazu.</translation>
+        <translation type="vanished">Zde zadejte hledané výrazy. Stiskněte ESC SPC pro doplnění současného výrazu.</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -2164,6 +2164,10 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
         <source>Autophrase is unset but it was set for stored query</source>
         <translation>Automatické tvoření slovních obratů je zrušeno, ale bylo nastaveno pro uložené hledání</translation>
     </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -2193,7 +2197,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Zde zadejte hledané výrazy. Stiskněte ESC SPC pro doplnění současného výrazu.</translation>
+        <translation type="vanished">Zde zadejte hledané výrazy. Stiskněte ESC SPC pro doplnění současného výrazu.</translation>
     </message>
     <message>
         <source>Choose search type.</source>
@@ -2201,6 +2205,10 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

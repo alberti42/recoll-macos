@@ -2065,7 +2065,7 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Ingrese términos de búsqueda aquí. Presione ESC ESPACIO para completar el término actual.</translation>
+        <translation type="vanished">Ingrese términos de búsqueda aquí. Presione ESC ESPACIO para completar el término actual.</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -2107,6 +2107,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Autophrase is unset but it was set for stored query</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -2136,7 +2140,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Ingrese términos de búsqueda aquí. Presione ESC ESP para completar el término actual.</translation>
+        <translation type="vanished">Ingrese términos de búsqueda aquí. Presione ESC ESP para completar el término actual.</translation>
     </message>
     <message>
         <source>Choose search type.</source>
@@ -2144,6 +2148,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

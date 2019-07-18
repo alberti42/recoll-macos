@@ -319,10 +319,7 @@ void SSearch::searchTypeChanged(int typ)
     case SST_ANY:
     case SST_ALL:
     default:
-        queryText->setToolTip(
-            tr(
-        "Enter search terms here. Type ESC SPC for completions of current term."
-                ));
+        queryText->setToolTip(tr("Enter search terms here."));
     }
 }
 

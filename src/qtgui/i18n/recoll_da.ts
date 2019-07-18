@@ -1850,7 +1850,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Indtast søgeord her. Tast ESC SPC for færdiggørelse af nuværende ord.</translation>
+        <translation type="vanished">Indtast søgeord her. Tast ESC SPC for færdiggørelse af nuværende ord.</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -1903,6 +1903,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
         <source>Autophrase is unset but it was set for stored query</source>
         <translation>Autofrase er deaktiveret, men var aktiveret for gemte forespørgsel</translation>
     </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -1932,7 +1936,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Indtast søgeord her. Type ESC SPC for færdiggørelse af nuværende ord.</translation>
+        <translation type="vanished">Indtast søgeord her. Type ESC SPC for færdiggørelse af nuværende ord.</translation>
     </message>
     <message>
         <source>Choose search type.</source>
@@ -1940,6 +1944,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

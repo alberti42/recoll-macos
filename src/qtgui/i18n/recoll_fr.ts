@@ -541,39 +541,39 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">Ouvrir</translation>
+        <translation>Ouvrir</translation>
     </message>
     <message>
         <source>Canceled</source>
-        <translation type="unfinished"></translation>
+        <translation>Annulé</translation>
     </message>
     <message>
         <source>Error loading the document: file missing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de chargement : fichier manquant.</translation>
     </message>
     <message>
         <source>Error loading the document: no permission.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de chargement : accès refusé.</translation>
     </message>
     <message>
         <source>Error loading: backend not configured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de chargement : gestionnaire de stockage non configuré.</translation>
     </message>
     <message>
         <source>Error loading the document: other handler error&lt;br&gt;Maybe the application is locking the file ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de chargement : erreur indéterminée&lt;br&gt;Fichier verrouillé par l&apos;application ?</translation>
     </message>
     <message>
         <source>Error loading the document: other handler error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de chargement : erreur indéterminée.</translation>
     </message>
     <message>
         <source>&lt;br&gt;Attempting to display from stored text.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;Essai d&apos;affichage à partir du texte stocké.</translation>
     </message>
     <message>
         <source>Could not fetch stored text</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de récupérer le texte stocké</translation>
     </message>
 </context>
 <context>
@@ -620,7 +620,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Open document</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir le document</translation>
     </message>
 </context>
 <context>
@@ -1364,23 +1364,23 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Can&apos;t update index: internal error</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de mettre à jour l&apos;index : erreur interne</translation>
     </message>
     <message>
         <source>Index not up to date for this file.&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;index n&apos;est pas à jour pour ce fichier.&lt;br&gt;</translation>
     </message>
     <message>
         <source>&lt;em&gt;Also, it seems that the last index update for the file failed.&lt;/em&gt;&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;em&gt;Par ailleurs, il semble que la dernière mise à jour pour ce fichier a échoué.&lt;/em&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <source>Click Ok to try to update the index for this file. You will need to run the query again when indexing is done.&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Cliquer Ok pour essayer de mettre à jour l&apos;index. Vous devrez lancer la recherche à nouveau quand l&apos;indexation sera terminée.&lt;br&gt;</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Cliquer Annuler pour retourner à la liste.&lt;br&gt;Cliquer Ignorer pour afficher la prévisualisation (et enregister l&apos;option pour cette session). Il y a un risque d&apos;afficher le mauvais document.&lt;br/&gt;</translation>
     </message>
 </context>
 <context>
@@ -2140,7 +2140,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Entrer les termes recherchés ici. Taper ESC SPC pour afficher les mots commençant par l&apos;entrée en cours.</translation>
+        <translation type="vanished">Entrer les termes recherchés ici. Taper ESC SPC pour afficher les mots commençant par l&apos;entrée en cours.</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -2156,18 +2156,18 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation>Entrer une expression du langage de recherche. Indications:&lt;br&gt;
-&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; et &apos;term2&apos; dans un champ quelconque.&lt;br&gt;
-&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; dans le champ &apos;field&apos;.&lt;br&gt;
- Standard field names/synonyms:&lt;br&gt;
+        <translation>Entrer une expression du langage de recherche. Antisèche :&lt;br&gt;
+&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; ET &apos;term2&apos; champ non spécifié.&lt;br&gt;
+&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; recherche dans le champ &apos;field&apos;.&lt;br&gt;
+ Noms de champs standards (utiliser les mots anglais)/alias:&lt;br&gt;
   title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
- Pseudo-fields: dir, mime/format, type/rclcat, date, size.&lt;br&gt;
- Two date interval exemples: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+ Pseudo-champs: dir, mime/format, type/rclcat, date.&lt;br&gt;
+ Examples d&apos;intervalles de dates: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
 &lt;i&gt;term1 term2 OR term3&lt;/i&gt; : term1 AND (term2 OR term3).&lt;br&gt;
-  You can use parentheses to make things clearer.&lt;br&gt;
-&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase (must occur exactly). Possible modifiers:&lt;br&gt;
-&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
-Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
+  NE PAS mettre les parenthèses.&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase exacte. Options::&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : proximité (pas d&apos;ordre).&lt;br&gt;
+Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de doute sur les résultats et consulter le manuel (en anglais) (&amp;lt;F1&gt;) pour plus de détails.
 </translation>
     </message>
     <message>
@@ -2193,6 +2193,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Autophrase is unset but it was set for stored query</source>
         <translation>L&apos;option autophrase est désactivée  mais était active pour la recherche sauvegardée</translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation>Entrer les termes recherchés ici.</translation>
     </message>
 </context>
 <context>
@@ -2223,7 +2227,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Entrer les termes recherchés ici. Taper ESC SPC pour afficher les mots commençant par l&apos;entrée en cours.</translation>
+        <translation type="vanished">Entrer les termes recherchés ici. Taper ESC SPC pour afficher les mots commençant par l&apos;entrée en cours.</translation>
     </message>
     <message>
         <source>Choose search type.</source>
@@ -2232,6 +2236,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Show query history</source>
         <translation>Afficher l&apos;historique des recherches</translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation>Entrer les termes recherchés ici.</translation>
     </message>
 </context>
 <context>

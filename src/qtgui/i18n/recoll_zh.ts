@@ -2061,7 +2061,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>在此输入要搜索的词语。按Esc 空格来查看针对当前词语的补全选项。</translation>
+        <translation type="vanished">在此输入要搜索的词语。按Esc 空格来查看针对当前词语的补全选项。</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -2103,6 +2103,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Autophrase is unset but it was set for stored query</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -2132,7 +2136,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>在此输入要搜索的词语。按Esc 空格来查看针对当前词语的补全选项。</translation>
+        <translation type="vanished">在此输入要搜索的词语。按Esc 空格来查看针对当前词语的补全选项。</translation>
     </message>
     <message>
         <source>Choose search type.</source>
@@ -2140,6 +2144,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

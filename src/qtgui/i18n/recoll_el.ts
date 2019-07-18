@@ -2018,7 +2018,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Εισάγετε εδώ τους όρους της αναζήτησης. Πατήστε ESC SPC για να εμφανίσετε τις λέξεις που αρχίζουν με τον τρέχοντα όρο.</translation>
+        <translation type="vanished">Εισάγετε εδώ τους όρους της αναζήτησης. Πατήστε ESC SPC για να εμφανίσετε τις λέξεις που αρχίζουν με τον τρέχοντα όρο.</translation>
     </message>
     <message>
         <source>Bad query string</source>
@@ -2092,6 +2092,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Autophrase is unset but it was set for stored query</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -2125,10 +2129,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Εισάγετε εδώ τους όρους αναζήτησης. Πατήστε ESC SPC για να εμφανίσετε τις λέξεις που αρχίζουν από τον τρέχοντα όρο.</translation>
+        <translation type="vanished">Εισάγετε εδώ τους όρους αναζήτησης. Πατήστε ESC SPC για να εμφανίσετε τις λέξεις που αρχίζουν από τον τρέχοντα όρο.</translation>
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

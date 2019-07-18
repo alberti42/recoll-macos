@@ -2480,7 +2480,7 @@ Please check the desktop file</source>
         <translation>Язык запроса</translation>
     </message>
     <message>
-        <location line="+224"/>
+        <location line="+221"/>
         <source>Bad query string</source>
         <translation>Ошибка в строке запроса</translation>
     </message>
@@ -2518,17 +2518,16 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 </translation>
     </message>
     <message>
-        <location line="-76"/>
+        <location line="-73"/>
         <source>Enter file name wildcard expression.</source>
         <translation>Укажите маску имени файла.</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Укажите искомые слова. Введите Esc-пробел для автозаполнения.</translation>
+        <translation type="vanished">Укажите искомые слова. Введите Esc-пробел для автозаполнения.</translation>
     </message>
     <message>
-        <location line="-22"/>
+        <location line="-16"/>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
 &lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; and &apos;term2&apos; in any field.&lt;br&gt;
 &lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; in field &apos;field&apos;.&lt;br&gt;
@@ -2557,7 +2556,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 </translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+21"/>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+125"/>
         <source>Stemming languages for stored query: </source>
         <translation>Языки со словоформами для сохранённого запроса: </translation>
     </message>
@@ -2607,7 +2611,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+45"/>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Show query history</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2627,12 +2636,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Начать поиск</translation>
     </message>
     <message>
-        <location line="+35"/>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Укажите искомые слова. Введите Esc-пробел для автозаполнения.</translation>
+        <translation type="vanished">Укажите искомые слова. Введите Esc-пробел для автозаполнения.</translation>
     </message>
     <message>
-        <location line="-19"/>
+        <location line="+16"/>
         <source>Choose search type.</source>
         <translation>Выберите тип поиска.</translation>
     </message>

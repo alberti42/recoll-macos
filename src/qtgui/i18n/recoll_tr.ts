@@ -1823,7 +1823,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Aranacak ifadeleri buraya girin. Geçerli sözcüğün tamamlanması için ESC SPACE kullanın.</translation>
+        <translation type="vanished">Aranacak ifadeleri buraya girin. Geçerli sözcüğün tamamlanması için ESC SPACE kullanın.</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -1865,6 +1865,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Autophrase is unset but it was set for stored query</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -1894,7 +1898,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Aranacak ifadeleri buraya girin. Geçerli sözcüğün tamamlanması için ESC SPACE kullanın.</translation>
+        <translation type="vanished">Aranacak ifadeleri buraya girin. Geçerli sözcüğün tamamlanması için ESC SPACE kullanın.</translation>
     </message>
     <message>
         <source>Choose search type.</source>
@@ -1902,6 +1906,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
