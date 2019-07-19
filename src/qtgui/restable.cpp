@@ -38,6 +38,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTimer>
+#include <QKeyEvent>
 
 #include "recoll.h"
 #include "docseq.h"
@@ -506,7 +507,6 @@ void ResTable::init()
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableView->setItemDelegate(new ResTableDelegate(this));
     tableView->setContextMenuPolicy(Qt::CustomContextMenu);
-    new QShortcut(QKeySequence("Return"), this, SLOT(menuEdit()));
     new QShortcut(QKeySequence("Ctrl+o"), this, SLOT(menuEdit()));
     new QShortcut(QKeySequence("Ctrl+Shift+o"), this, SLOT(menuEditAndQuit()));
     new QShortcut(QKeySequence("Ctrl+d"), this, SLOT(menuPreview()));
@@ -574,6 +574,23 @@ void ResTable::init()
 	    this, SLOT(linkWasClicked(const QUrl &)));
     splitter->addWidget(m_detail);
     splitter->setOrientation(Qt::Vertical);
+    installEventFilter(this);
+}
+
+bool ResTable::eventFilter(QObject* obj, QEvent* event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent* key = static_cast<QKeyEvent*>(event);
+        if ((key->key() == Qt::Key_Enter) || (key->key() == Qt::Key_Return)) {
+            menuEdit();
+            return true;
+        } else {
+            return QObject::eventFilter(obj, event);
+        }
+    } else {
+        return QObject::eventFilter(obj, event);
+    }
+    return false;
 }
 
 void ResTable::setRclMain(RclMain *m, bool ismain) 

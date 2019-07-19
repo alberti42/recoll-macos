@@ -171,6 +171,8 @@ signals:
     
     friend class ResTablePager;
     friend class ResTableDetailArea;
+protected:
+    bool eventFilter(QObject* obj, QEvent* event);
 private:
     void init();
     RecollModel   *m_model;
