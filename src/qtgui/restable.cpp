@@ -290,15 +290,11 @@ void RecollModel::readDocSource()
 void RecollModel::setDocSource(std::shared_ptr<DocSequence> nsource)
 {
     LOGDEB("RecollModel::setDocSource\n");
-    if (!nsource) {
-	m_source = std::shared_ptr<DocSequence>();
+    m_source = nsource;
+    if (m_source) {
+        m_source->getTerms(m_hdata);
     } else {
-        // We used to allocate a new DocSource here instead of sharing
-        // the input, but I can't see why.
-        //m_source = std::shared_ptr<DocSequence>(new
-        //DocSource(theconfig,nsource));
-	m_source = nsource;
-	m_hdata.clear();
+        m_hdata.clear();
     }
 }
 
@@ -705,6 +701,7 @@ void ResTable::resetSource()
 {
     LOGDEB("ResTable::resetSource\n");
     setDocSource(std::shared_ptr<DocSequence>());
+    readDocSource();
 }
 
 void ResTable::saveAsCSV()
@@ -773,7 +770,6 @@ void ResTable::readDocSource(bool resetPos)
     if (resetPos)
 	tableView->verticalScrollBar()->setSliderPosition(0);
 
-    m_model->m_source->getTerms(m_model->m_hdata);
     m_model->readDocSource();
     m_detail->clear();
     m_detaildocnum = -1;
