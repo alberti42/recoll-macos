@@ -52,6 +52,7 @@ class rclEPUB:
         data = data.encode('UTF-8')
         self.em.setmimetype('text/html')
         if len(self.contents) == 0:
+            self.closefile()
             eof = rclexecm.RclExecM.eofnext
         else:
             eof = rclexecm.RclExecM.noteof
@@ -97,6 +98,9 @@ class rclEPUB:
             alltxt += txt
         return alltxt
 
+    def closefile(self):
+        self.book.close()
+
     def openfile(self, params):
         """Open the EPUB file, create a contents array"""
         self.currentindex = -1
@@ -118,6 +122,7 @@ class rclEPUB:
     def getnext(self, params):
         if self.catenate:
             alltxt = self.dumpall()
+            self.closefile()
             if alltxt:
                 return (True, alltxt, "", rclexecm.RclExecM.eofnext)
             else:
@@ -128,9 +133,13 @@ class rclEPUB:
             return self._selfdoc()
 
         if self.currentindex >= len(self.contents):
+            self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
-            ret= self.extractone(self.contents[self.currentindex])
+            ret = self.extractone(self.contents[self.currentindex])
+            if ret[3] == rclexecm.RclExecM.eofnext or \
+               ret[3] == rclexecm.RclExecM.eofnow:
+                self.closefile()
             self.currentindex += 1
             return ret
 

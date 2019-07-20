@@ -73,6 +73,7 @@ class EPUBConcatExtractor(RclBaseHandler):
             data += doc
 
         data += b'</body></html>'
+        self.book.close()
         return data
 
 proto = rclexecm.RclExecM()
