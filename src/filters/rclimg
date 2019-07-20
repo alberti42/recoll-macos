@@ -66,6 +66,7 @@ sub imgTagsToHtml {
     }
     $info = ImageInfo(\*IMGF);
     return $output unless $info;
+    close(\*IMGF);
     $fields = [];
     $other = [];
     $titleHtmlTag = "";
