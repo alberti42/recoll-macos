@@ -284,7 +284,10 @@ class rclCHM:
                 charset = 'cp1252'
             text = text.decode(charset, errors='replace')
         return text, charset
-    
+
+    def closefile(self):
+        self.chm.CloseCHM()
+
     def openfile(self, params):
         """Open the chm file and build the contents list by extracting and
         parsing the Topics object"""
@@ -339,6 +342,7 @@ class rclCHM:
         if self.catenate:
             self.em.setmimetype("text/plain")
             alltxt = self.dumpall()
+            self.closefile()
             if alltxt:
                 return (True, alltxt, "", rclexecm.RclExecM.eofnext)
             else:
@@ -349,15 +353,20 @@ class rclCHM:
             self.currentindex = 0
             self.em.setmimetype('text/plain')
             if len(self.contents) == 0:
+                self.closefile()
                 eof = rclexecm.RclExecM.eofnext
             else:
                 eof = rclexecm.RclExecM.noteof
             return (True, "", "", eof)
 
         if self.currentindex >= len(self.contents):
+            self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
-            ret= self.extractone(self.contents[self.currentindex])
+            ret = self.extractone(self.contents[self.currentindex])
+            if ret[3] == rclexecm.RclExecM.eofnext or \
+               ret[3] == rclexecm.RclExecM.eofnow:
+                self.closefile()
             self.currentindex += 1
             return ret
 
