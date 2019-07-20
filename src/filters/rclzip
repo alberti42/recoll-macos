@@ -75,9 +75,21 @@ if not hasrclconfig:
 #
 class ZipExtractor:
     def __init__(self, em):
+        self.filename = None
+        self.f = None
+        self.zip = None
         self.currentindex = 0
         self.em = em
-            
+
+    def closefile(self):
+        #self.em.rclog("Closing %s" % self.filename)
+        if self.zip:
+            self.zip.close()
+        if self.f:
+            self.f.close()
+        self.f = None
+        self.zip = None
+
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
         docdata = ""
@@ -107,12 +119,15 @@ class ZipExtractor:
             ok = False
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.zip.namelist()) -1:
+            self.closefile()
             iseof = rclexecm.RclExecM.eofnext
         return (ok, docdata, rclexecm.makebytes(ipath), iseof)
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
+        self.closefile()
         filename = params["filename:"]
+        self.filename = filename
         self.currentindex = -1
         self.skiplist = []
 
@@ -132,8 +147,8 @@ class ZipExtractor:
                 # Note: py3 ZipFile wants an str file name, which
                 # is wrong: file names are binary. But it accepts an
                 # open file, and open() has no such restriction
-                f = open(filename, 'rb')
-                self.zip = ZipFile(f)
+                self.f = open(filename, 'rb')
+                self.zip = ZipFile(self.f)
             else:
                 self.zip = ZipFile(filename)
             return True
@@ -159,6 +174,7 @@ class ZipExtractor:
             self.currentindex = 0
             self.em.setmimetype('text/plain')
             if len(self.zip.namelist()) == 0:
+                self.closefile()
                 eof = rclexecm.RclExecM.eofnext
             else:
                 eof = rclexecm.RclExecM.noteof
@@ -166,6 +182,7 @@ class ZipExtractor:
 
         if self.currentindex >= len(self.zip.namelist()):
             #self.em.rclog("getnext: EOF hit")
+            self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
             entryname = self.zip.namelist()[self.currentindex]
@@ -181,6 +198,7 @@ class ZipExtractor:
                         break
                     self.currentindex += 1
                 if entryname is None:
+                    self.closefile()
                     return (False, "", "", rclexecm.RclExecM.eofnow)
                 
             ret= self.extractone(entryname)
