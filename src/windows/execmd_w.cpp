@@ -108,6 +108,13 @@ static string argvToCmdLine(const string& cmd, const vector<string>& args)
     return cmdline;
 }
 
+// Because we build with UNICODE defined, GetEnvironmentStrings is
+// defined as GetEnvironmentStringsW. Because of a Windows problem teh
+// GetEnvironmentStrings function is really a GetEnvironmentStringsA,
+// which is what we want.
+// See: https://devblogs.microsoft.com/oldnewthing/20130117-00/?p=5533
+#undef GetEnvironmentStrings
+
 // Merge the father environment with the variable specified in m_env
 static char *mergeEnvironment(const std::unordered_map<string, string>& addenv)
 {
@@ -131,7 +138,7 @@ static char *mergeEnvironment(const std::unordered_map<string, string>& addenv)
         }
     }
 
-    FreeEnvironmentStrings(envir);
+    FreeEnvironmentStringsA(envir);
 
     // Merge our values
     for (auto it = addenv.begin(); it != addenv.end(); it++) {
@@ -614,7 +621,7 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
         // attribute, and the options are important.
         // use CreateFile to open a new handle to the existing pipe...
         sa.bInheritHandle = TRUE; 
-        hOutputWrite = CreateFile(
+        hOutputWrite = CreateFileA(
             pipeName.c_str(),
             FILE_WRITE_DATA | SYNCHRONIZE,
             0, &sa, OPEN_EXISTING, // very important flag!
@@ -659,7 +666,7 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
         }
 
         sa.bInheritHandle = TRUE;
-        hInputRead = CreateFile(
+        hInputRead = CreateFileA(
             pipeName.c_str(),
             FILE_READ_DATA | SYNCHRONIZE,
             0, &sa, OPEN_EXISTING, // very important flag!
@@ -782,13 +789,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     char *envir = mergeEnvironment(m->m_env);
 
     // Create the child process. 
-    // Need a writable buffer for the command line, for some reason.
     LOGDEB("ExecCmd:startExec: cmdline [" << cmdline << "]\n");
-#if 0
-    LPSTR buf = (LPSTR)malloc(cmdline.size() + 1);
-    memcpy(buf, cmdline.c_str(), cmdline.size());
-    buf[cmdline.size()] = 0;
-#endif
     SYSPATH(cmdline, wcmdline);
     bSuccess = CreateProcessW(NULL,
                              wcmdline, // command line 
@@ -805,7 +806,6 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     }
     
     free(envir);
-//    free(buf);
     // Close child-side handles else we'll never see eofs
     if (!CloseHandle(hOutputWrite))
         printError("CloseHandle");

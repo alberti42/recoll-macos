@@ -274,8 +274,8 @@ bool fsocc(const string& path, int *pc, long long *avmbs)
 #ifdef _WIN32
     ULARGE_INTEGER freebytesavail;
     ULARGE_INTEGER totalbytes;
-    if (!GetDiskFreeSpaceEx(path.c_str(), &freebytesavail,
-                            &totalbytes, NULL)) {
+    if (!GetDiskFreeSpaceExA(path.c_str(), &freebytesavail,
+							 &totalbytes, NULL)) {
         return false;
     }
     if (pc) {
