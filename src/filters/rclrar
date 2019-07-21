@@ -97,6 +97,9 @@ class RarExtractor:
             iseof = rclexecm.RclExecM.eofnext
         return (ok, docdata, rclexecm.makebytes(ipath), iseof)
 
+    def closefile(self):
+        self.rar = None
+        
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
         self.currentindex = -1
@@ -139,6 +142,7 @@ class RarExtractor:
             self.currentindex = 0
             self.em.setmimetype('text/plain')
             if len(self.rar.namelist()) == 0:
+                self.closefile()
                 eof = rclexecm.RclExecM.eofnext
             else:
                 eof = rclexecm.RclExecM.noteof
@@ -146,10 +150,14 @@ class RarExtractor:
 
         if self.currentindex >= len(self.rar.namelist()):
             #self.em.rclog("getnext: EOF hit")
+            self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
-            ret= self.extractone(self.rar.namelist()[self.currentindex])
+            ret = self.extractone(self.rar.namelist()[self.currentindex])
             self.currentindex += 1
+            if ret[3] == rclexecm.RclExecM.eofnext or \
+               ret[3] == rclexecm.RclExecM.eofnow:
+                self.closefile()
             return ret
 
 # Main program: create protocol handler and extractor and run them

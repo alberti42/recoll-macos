@@ -42,6 +42,9 @@ class TarExtractor:
             iseof = rclexecm.RclExecM.eofnext
         return (ok, docdata, rclexecm.makebytes(ipath), iseof)
 
+    def closefile(self):
+        self.tar = None
+
     def openfile(self, params):
         self.currentindex = -1
         try:
@@ -71,6 +74,7 @@ class TarExtractor:
             self.currentindex = 0
             self.em.setmimetype('text/plain')
             if len(self.namen) == 0:
+                self.closefile()
                 eof = rclexecm.RclExecM.eofnext
             else:
                 eof = rclexecm.RclExecM.noteof
@@ -78,10 +82,14 @@ class TarExtractor:
 
         if self.currentindex >= len(self.namen):
             self.namen=[]
+            self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
-            ret= self.extractone(self.namen[self.currentindex])
+            ret = self.extractone(self.namen[self.currentindex])
             self.currentindex += 1
+            if ret[3] == rclexecm.RclExecM.eofnext or \
+               ret[3] == rclexecm.RclExecM.eofnow:
+                self.closefile()
             return ret
 
 
