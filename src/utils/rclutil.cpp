@@ -117,14 +117,14 @@ string path_wingettempfilename(wchar_t *pref)
     utf8towchar(tdir, dbuf, MAX_PATH);
     wchar_t buf[MAX_PATH + 1];
     GetTempFileNameW(dbuf, pref, 0, buf);
+    string filename;
+    wchartoutf8(buf, filename);
     // Windows will have created a temp file, we delete it.
     if (!DeleteFileW(buf)) {
         LOGSYSERR("path_wingettempfilename", "DeleteFileW", filename);
     } else {
         LOGDEB1("path_wingettempfilename: DeleteFile " << filename << " Ok\n");
     }
-    string filename;
-    wchartoutf8(buf, filename);
     path_slashize(filename);
     return filename;
 }
