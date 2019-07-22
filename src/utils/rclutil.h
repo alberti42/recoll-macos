@@ -58,11 +58,15 @@ public:
     const std::string& getreason() const;
     void setnoremove(bool onoff);
     bool ok() const;
-	// Attempt to delete all files which could not be deleted on the
-	// first try (typically on Windows: because they are open by some
-	// process). Called after clearing the mimeHandler cache. Does
-	// nothing if not _WIN32
-	static void tryRemoveAgain();
+    // Attempt to delete all files which could not be deleted on the
+    // first try (typically on Windows: because they are open by some
+    // process). Called after clearing the mimeHandler cache. Does
+    // nothing if not _WIN32
+    static void tryRemoveAgain();
+    // Also for Windows: for adding the temp files path to the default
+    // skippedPaths
+    static const std::string& rcltmpdir();
+
     class Internal;
 private:
     std::shared_ptr<Internal> m;

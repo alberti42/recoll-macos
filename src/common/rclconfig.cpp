@@ -1559,6 +1559,9 @@ vector<string> RclConfig::getSkippedPaths() const
     // don't do this.
     skpl.push_back(getDbDir());
     skpl.push_back(getConfDir());
+#ifdef _WIN32
+	skpl.push_back(TempFile::rcltmpdir());
+#endif
     if (getCacheDir().compare(getConfDir())) {
         skpl.push_back(getCacheDir());
     }
