@@ -56,9 +56,12 @@ static const int margin = 2;
 
 void ConfParamW::setValue(const QString& value)
 {
+#ifndef _WIN32
+    // On Windows all paths are unicode.
     if (m_fsencoding)
         m_cflink->set(string((const char *)value.toLocal8Bit()));
     else
+#endif
         m_cflink->set(string((const char *)value.toUtf8()));
 }
 
@@ -76,8 +79,8 @@ void ConfParamW::setValue(bool value)
 }
 
 void setSzPol(QWidget *w, QSizePolicy::Policy hpol, 
-		   QSizePolicy::Policy vpol,
-		   int hstretch, int vstretch)
+              QSizePolicy::Policy vpol,
+              int hstretch, int vstretch)
 {
     QSizePolicy policy(hpol, vpol);
     policy.setHorizontalStretch(hstretch);
@@ -102,15 +105,15 @@ bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
 }
 
 ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink, 
-			     const QString& lbltxt,
-			     const QString& tltptxt,
-			     int minvalue, 
-			     int maxvalue,
+                             const QString& lbltxt,
+                             const QString& tltptxt,
+                             int minvalue, 
+                             int maxvalue,
                              int defaultvalue)
     : ConfParamW(parent, cflink), m_defaultvalue(defaultvalue)
 {
     if (!createCommon(lbltxt, tltptxt))
-	return;
+        return;
 
     m_sb = new QSpinBox(this);
     m_sb->setMinimum(minvalue);
@@ -124,7 +127,7 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink,
 
     loadValue();
     QObject::connect(m_sb, SIGNAL(valueChanged(int)), 
-		     this, SLOT(setValue(int)));
+                     this, SLOT(setValue(int)));
 }
 
 void ConfParamIntW::loadValue()
@@ -137,12 +140,12 @@ void ConfParamIntW::loadValue()
 }
 
 ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink cflink, 
-			     const QString& lbltxt,
-			     const QString& tltptxt)
+                             const QString& lbltxt,
+                             const QString& tltptxt)
     : ConfParamW(parent, cflink)
 {
     if (!createCommon(lbltxt, tltptxt))
-	return;
+        return;
 
     m_le = new QLineEdit(this);
     setSzPol(m_le, QSizePolicy::Preferred, QSizePolicy::Fixed, 1, 0);
@@ -151,28 +154,31 @@ ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink cflink,
 
     loadValue();
     QObject::connect(m_le, SIGNAL(textChanged(const QString&)), 
-		     this, SLOT(setValue(const QString&)));
+                     this, SLOT(setValue(const QString&)));
 }
 
 void ConfParamStrW::loadValue()
 {
     string s;
     m_cflink->get(s);
+#ifndef _WIN32
+    // On Windows all paths are unicode.
     if (m_fsencoding)
         m_le->setText(QString::fromLocal8Bit(s.c_str()));
     else
+#endif
         m_le->setText(QString::fromUtf8(s.c_str()));
 }
 
 ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink cflink, 
-			       const QString& lbltxt,
-			       const QString& tltptxt,
-			       const QStringList &sl
-			       )
+                               const QString& lbltxt,
+                               const QString& tltptxt,
+                               const QStringList &sl
+    )
     : ConfParamW(parent, cflink)
 {
     if (!createCommon(lbltxt, tltptxt))
-	return;
+        return;
     m_cmb = new QComboBox(this);
     m_cmb->setEditable(false);
     m_cmb->insertItems(0, sl);
@@ -183,7 +189,7 @@ ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink cflink,
 
     loadValue();
     QObject::connect(m_cmb, SIGNAL(activated(const QString&)), 
-		     this, SLOT(setValue(const QString&)));
+                     this, SLOT(setValue(const QString&)));
 }
 
 void ConfParamCStrW::loadValue()
@@ -191,22 +197,25 @@ void ConfParamCStrW::loadValue()
     string s;
     m_cflink->get(s);
     QString cs;
+#ifndef _WIN32
+    // On Windows all paths are unicode.
     if (m_fsencoding)
         cs = QString::fromLocal8Bit(s.c_str());
     else
+#endif
         cs = QString::fromUtf8(s.c_str());
         
     for (int i = 0; i < m_cmb->count(); i++) {
-	if (!cs.compare(m_cmb->itemText(i))) {
-	    m_cmb->setCurrentIndex(i);
-	    break;
-	}
+        if (!cs.compare(m_cmb->itemText(i))) {
+            m_cmb->setCurrentIndex(i);
+            break;
+        }
     }
 }
 
 ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink, 
-			       const QString& lbltxt,
-			       const QString& tltptxt)
+                               const QString& lbltxt,
+                               const QString& tltptxt)
     : ConfParamW(parent, cflink)
 {
     // No createCommon because the checkbox has a label
@@ -234,17 +243,17 @@ void ConfParamBoolW::loadValue()
 }
 
 ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink, 
-			   const QString& lbltxt,
-			   const QString& tltptxt,
-			   bool isdir,
+                           const QString& lbltxt,
+                           const QString& tltptxt,
+                           bool isdir,
                            QString dirloc,
                            QString dfltnm
-			   )
+    )
     : ConfParamW(parent, cflink), m_isdir(isdir), m_dirloc(dirloc),
       m_dfltnm(dfltnm)
 {
     if (!createCommon(lbltxt, tltptxt))
-	return;
+        return;
 
     m_fsencoding = true;
 
@@ -265,14 +274,19 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
     loadValue();
     QObject::connect(m_pb, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
     QObject::connect(m_le, SIGNAL(textChanged(const QString&)), 
-		     this, SLOT(setValue(const QString&)));
+                     this, SLOT(setValue(const QString&)));
 }
 
 void ConfParamFNW::loadValue()
 {
     string s;
     m_cflink->get(s);
+#ifndef _WIN32
+    // On Windows all paths are unicode.
     m_le->setText(QString::fromLocal8Bit(s.c_str()));
+#else
+    m_le->setText(QString::fromUtf8(s.c_str()));
+#endif
 }
 
 void ConfParamFNW::showBrowserDialog()
@@ -286,13 +300,13 @@ class SmallerListWidget: public QListWidget
 {
 public:
     SmallerListWidget(QWidget *parent)
-	: QListWidget(parent) {}
+        : QListWidget(parent) {}
     virtual QSize sizeHint() const {return QSize(150, 40);}
 };
 
 ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink, 
-			   const QString& lbltxt,
-			   const QString& tltptxt)
+                           const QString& lbltxt,
+                           const QString& tltptxt)
     : ConfParamW(parent, cflink)
 {
     // Can't use createCommon here cause we want the buttons below the label
@@ -346,9 +360,12 @@ void ConfParamSLW::loadValue()
     stringToStrings(s, ls);
     QStringList qls;
     for (list<string>::const_iterator it = ls.begin(); it != ls.end(); it++) {
+        // On Windows all paths are unicode.
+#ifndef _WIN32
         if (m_fsencoding)
             qls.push_back(QString::fromLocal8Bit(it->c_str()));
         else
+#endif
             qls.push_back(QString::fromUtf8(it->c_str()));
     }
     m_lb->clear();
@@ -359,27 +376,27 @@ void ConfParamSLW::showInputDialog()
 {
     bool ok;
     QString s = QInputDialog::getText (this, 
-				       "", // title 
-				       "", // label, 
-				       QLineEdit::Normal, // EchoMode mode
-				       "", // const QString & text 
-				       &ok);
+                                       "", // title 
+                                       "", // label, 
+                                       QLineEdit::Normal, // EchoMode mode
+                                       "", // const QString & text 
+                                       &ok);
 
     if (ok && !s.isEmpty()) {
-	QList<QListWidgetItem *>items = 
-	    m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
-	if (items.empty()) {
-	    m_lb->insertItem(0, s);
-	    m_lb->sortItems();
-	    listToConf();
-	}
+        QList<QListWidgetItem *>items = 
+            m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
+        if (items.empty()) {
+            m_lb->insertItem(0, s);
+            m_lb->sortItems();
+            listToConf();
+        }
     }
 }
 
 void ConfParamSLW::listToConf()
 {
     list<string> ls;
-    LOGDEB2("ConfParamSLW::listToConf. m_fsencoding "  << (int(m_fsencoding)) << "\n" );
+    LOGDEB2("ConfParamSLW::listToConf. m_fsencoding " << m_fsencoding << "\n");
     for (int i = 0; i < m_lb->count(); i++) {
         // General parameters are encoded as utf-8. File names as
         // local8bit There is no hope for 8bit file names anyway
@@ -388,10 +405,11 @@ void ConfParamSLW::listToConf()
         // backslashes to slashes. This is an awful hack because
         // fsencoding does not necessarily imply that the values are
         // paths, and it will come back to haunt us one day.
-	QString text = m_lb->item(i)->text();
+        QString text = m_lb->item(i)->text();
         if (m_fsencoding) {
+            // On Windows all paths are unicode.
 #ifdef _WIN32
-            string pth((const char *)(text.toLocal8Bit()));
+            string pth((const char *)(text.toUtf8()));
             path_slashize(pth);
             ls.push_back(pth);
 #else
@@ -420,16 +438,16 @@ void ConfParamSLW::deleteSelected()
 
     vector<int> idxes;
     for (int i = 0; i < m_lb->count(); i++) {
-	if (m_lb->item(i)->isSelected()) {
-	    idxes.push_back(i);
-	}
+        if (m_lb->item(i)->isSelected()) {
+            idxes.push_back(i);
+        }
     }
     for (vector<int>::reverse_iterator it = idxes.rbegin(); 
-	 it != idxes.rend(); it++) {
-	LOGDEB0("deleteSelected: "  << (*it) << " was selected\n" );
-	QListWidgetItem *item = m_lb->takeItem(*it);
-	emit entryDeleted(item->text());
-	delete item;
+         it != idxes.rend(); it++) {
+        LOGDEB0("deleteSelected: " << *it << " was selected\n");
+        QListWidgetItem *item = m_lb->takeItem(*it);
+        emit entryDeleted(item->text());
+        delete item;
     }
 
     listToConf();
@@ -440,18 +458,18 @@ void ConfParamDNLW::showInputDialog()
 {
     QString s = myGetFileName(true);
     if (!s.isEmpty()) {
-	QList<QListWidgetItem *>items = 
-	    m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
-	if (items.empty()) {
-	    m_lb->insertItem(0, s);
-	    m_lb->sortItems();
-	    QList<QListWidgetItem *>items = 
-		m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
-	    if (m_lb->selectionMode() == QAbstractItemView::SingleSelection && 
-		!items.empty())
-		m_lb->setCurrentItem(*items.begin());
-	    listToConf();
-	}
+        QList<QListWidgetItem *>items = 
+            m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
+        if (items.empty()) {
+            m_lb->insertItem(0, s);
+            m_lb->sortItems();
+            QList<QListWidgetItem *>items = 
+                m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
+            if (m_lb->selectionMode() == QAbstractItemView::SingleSelection && 
+                !items.empty())
+                m_lb->setCurrentItem(*items.begin());
+            listToConf();
+        }
     }
 }
 
@@ -460,23 +478,22 @@ void ConfParamCSLW::showInputDialog()
 {
     bool ok;
     QString s = QInputDialog::getItem (this, // parent
-				       "", // title 
-				       "", // label, 
-				       m_sl, // items, 
-				       0, // current = 0
-				       false, // editable = true, 
-				       &ok);
+                                       "", // title 
+                                       "", // label, 
+                                       m_sl, // items, 
+                                       0, // current = 0
+                                       false, // editable = true, 
+                                       &ok);
 
     if (ok && !s.isEmpty()) {
-	QList<QListWidgetItem *>items = 
-	    m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
-	if (items.empty()) {
-	    m_lb->insertItem(0, s);
-	    m_lb->sortItems();
-	    listToConf();
-	}
+        QList<QListWidgetItem *>items = 
+            m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
+        if (items.empty()) {
+            m_lb->insertItem(0, s);
+            m_lb->sortItems();
+            listToConf();
+        }
     }
 }
 
 } // Namespace confgui
-
