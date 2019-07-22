@@ -57,30 +57,27 @@ static const int margin = 3;
 class ConfLinkRclRep : public ConfLinkRep {
 public:
     ConfLinkRclRep(ConfNull *conf, const string& nm, 
-		   string *sk = 0)
-	: m_conf(conf), m_nm(nm), m_sk(sk) /* KEEP THE POINTER, shared data */
-    {
-    }
+                   string *sk = 0)
+        : m_conf(conf), m_nm(nm), m_sk(sk) /* KEEP THE POINTER, shared data */
+        { }
     virtual ~ConfLinkRclRep() {}
 
-    virtual bool set(const string& val) 
-    {
-	if (!m_conf)
-	    return false;
-	LOGDEB1("Setting [" << m_nm << "] value to ["  << val << "]\n");
-	bool ret = m_conf->set(m_nm, val, getSk());
-	if (!ret)
-	    LOGERR("Value set failed\n" );
-	return ret;
+    virtual bool set(const string& val) {
+        if (!m_conf)
+            return false;
+        LOGDEB1("Setting [" << m_nm << "] value to ["  << val << "]\n");
+        bool ret = m_conf->set(m_nm, val, getSk());
+        if (!ret)
+            LOGERR("Value set failed\n" );
+        return ret;
     }
-    virtual bool get(string& val) 
-    {
-	if (!m_conf)
-	    return false;
-	bool ret = m_conf->get(m_nm, val, getSk());
-	LOGDEB1("ConfLinkRcl::get: [" << m_nm << "] sk [" <<
+    virtual bool get(string& val) {
+        if (!m_conf)
+            return false;
+        bool ret = m_conf->get(m_nm, val, getSk());
+        LOGDEB1("ConfLinkRcl::get: [" << m_nm << "] sk [" <<
                 getSk() << "] -> ["  << (ret ? val : "no value") << "]\n" );
-	return ret;
+        return ret;
     }
 private:
     string getSk() {
@@ -99,18 +96,18 @@ typedef std::function<vector<string>()> RclConfVecValueGetter;
 class ConfLinkPlusMinus : public ConfLinkRep {
 public:
     ConfLinkPlusMinus(RclConfig *rclconf, ConfNull *conf,
-                 const string& basename, RclConfVecValueGetter getter,
-                 string *sk = 0)
-	: m_rclconf(rclconf), m_conf(conf),
+                      const string& basename, RclConfVecValueGetter getter,
+                      string *sk = 0)
+        : m_rclconf(rclconf), m_conf(conf),
           m_basename(basename), m_getter(getter),
           m_sk(sk) /* KEEP THE POINTER, shared data */
-    {
-    }
+        {
+        }
     virtual ~ConfLinkPlusMinus() {}
 
     virtual bool set(const string& snval) {
-	if (!m_conf || !m_rclconf)
-	    return false;
+        if (!m_conf || !m_rclconf)
+            return false;
 
         string sbase;
         m_conf->get(m_basename, sbase, getSk());
@@ -130,14 +127,14 @@ public:
     }
 
     virtual bool get(string& val) {
-	if (!m_conf || !m_rclconf)
-	    return false;
+        if (!m_conf || !m_rclconf)
+            return false;
 
         m_rclconf->setKeyDir(getSk());
         vector<string> vval = m_getter();
         val = stringsToString(vval);
         LOGDEB1("ConfLinkPlusMinus: "<<m_basename<<" -> " << val <<std::endl);
-	return true;
+        return true;
     }
 
 private:
@@ -163,7 +160,7 @@ ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
     reloadPanels();
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
-				     | QDialogButtonBox::Cancel);
+                                     | QDialogButtonBox::Cancel);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(tabWidget);
@@ -180,13 +177,13 @@ void ConfIndexW::acceptChanges()
 {
     LOGDEB("ConfIndexW::acceptChanges()\n" );
     if (!m_conf) {
-	LOGERR("ConfIndexW::acceptChanges: no config\n" );
-	return;
+        LOGERR("ConfIndexW::acceptChanges: no config\n" );
+        return;
     }
     // Let the changes to disk
     if (!m_conf->holdWrites(false)) {
-	QMessageBox::critical(0, "Recoll",  
-			      tr("Can't write configuration file"));
+        QMessageBox::critical(0, "Recoll",  
+                              tr("Can't write configuration file"));
     }
     // Delete local copy and update the main one from the file
     delete m_conf;
@@ -208,7 +205,7 @@ void ConfIndexW::rejectChanges()
 void ConfIndexW::reloadPanels()
 {
     if ((m_conf = m_rclconf->cloneMainConfig()) == 0) 
-	return;
+        return;
     m_conf->holdWrites(true);
     tabWidget->clear();
     m_widgets.clear();
@@ -216,7 +213,7 @@ void ConfIndexW::reloadPanels()
     QWidget *w = new ConfTopPanelW(this, m_conf);
     m_widgets.push_back(w);
     tabWidget->addTab(w, QObject::tr("Global parameters"));
-	
+    
     w = new ConfSubPanelW(this, m_conf, m_rclconf);
     m_widgets.push_back(w);
     tabWidget->addTab(w, QObject::tr("Local parameters"));
@@ -242,17 +239,17 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
     ConfParamBoolW* cp1 = 
         new ConfParamBoolW(this, lnk1, tr("Process the WEB history queue"),
                            tr("Enables indexing Firefox visited pages.<br>"
-			     "(you need also install the Firefox Recoll plugin)"
-			  ));
+                              "(you need also install the Firefox Recoll plugin)"
+                               ));
     vboxLayout->addWidget(cp1);
 
     ConfLink lnk2(new ConfLinkRclRep(config, "webcachedir"));
     ConfParamFNW* cp2 = 
         new ConfParamFNW(this, lnk2, tr("Web page store directory name"),
-		     tr("The name for a directory where to store the copies "
-			"of visited web pages.<br>"
-                        "A non-absolute path is taken relative to the "
-			"configuration directory."), true);
+                         tr("The name for a directory where to store the copies "
+                            "of visited web pages.<br>"
+                            "A non-absolute path is taken relative to the "
+                            "configuration directory."), true);
     cp2->setEnabled(cp1->m_cb->isChecked());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp2, SLOT(setEnabled(bool)));
     vboxLayout->addWidget(cp2);
@@ -260,12 +257,12 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
     ConfLink lnk3(new ConfLinkRclRep(config, "webcachemaxmbs"));
     ConfParamIntW *cp3 =
         new ConfParamIntW(this, lnk3, tr("Max. size for the web store (MB)"),
-		      tr("Entries will be recycled once the size is reached."
-                         "<br>"
-                         "Only increasing the size really makes sense because "
-                         "reducing the value will not truncate an existing "
-                         "file (only waste space at the end)."
-                          ),
+                          tr("Entries will be recycled once the size is reached."
+                             "<br>"
+                             "Only increasing the size really makes sense because "
+                             "reducing the value will not truncate an existing "
+                             "file (only waste space at the end)."
+                              ),
                           -1, 1000*1000); // Max 1TB...
     cp3->setEnabled(cp1->m_cb->isChecked());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp3, SLOT(setEnabled(bool)));
@@ -281,58 +278,58 @@ ConfSearchPanelW::ConfSearchPanelW(QWidget *parent, ConfNull *config)
     vboxLayout->setMargin(margin);
 
     if (!o_index_stripchars) {
-	ConfLink lnk1(new ConfLinkRclRep(config, "autodiacsens"));
-	ConfParamBoolW* cp1 = 
-	    new ConfParamBoolW(this, lnk1, tr("Automatic diacritics sensitivity"),
-			       tr("<p>Automatically trigger diacritics sensitivity "
-				  "if the search term has accented characters "
-				  "(not in unac_except_trans). Else you need to "
-				  "use the query language and the <i>D</i> "
-				  "modifier to specify "
-				  "diacritics sensitivity."
-				   ));
-	vboxLayout->addWidget(cp1);
+        ConfLink lnk1(new ConfLinkRclRep(config, "autodiacsens"));
+        ConfParamBoolW* cp1 = 
+            new ConfParamBoolW(this, lnk1, tr("Automatic diacritics sensitivity"),
+                               tr("<p>Automatically trigger diacritics sensitivity "
+                                  "if the search term has accented characters "
+                                  "(not in unac_except_trans). Else you need to "
+                                  "use the query language and the <i>D</i> "
+                                  "modifier to specify "
+                                  "diacritics sensitivity."
+                                   ));
+        vboxLayout->addWidget(cp1);
 
-	ConfLink lnk2(new ConfLinkRclRep(config, "autocasesens"));
-	ConfParamBoolW* cp2 = 
-	    new ConfParamBoolW(this, lnk2, 
-			       tr("Automatic character case sensitivity"),
-			       tr("<p>Automatically trigger character case "
-				  "sensitivity if the entry has upper-case "
-				  "characters in any but the first position. "
-				  "Else you need to use the query language and "
-				  "the <i>C</i> modifier to specify character-case "
-				  "sensitivity."
-				   ));
-	vboxLayout->addWidget(cp2);
+        ConfLink lnk2(new ConfLinkRclRep(config, "autocasesens"));
+        ConfParamBoolW* cp2 = 
+            new ConfParamBoolW(this, lnk2, 
+                               tr("Automatic character case sensitivity"),
+                               tr("<p>Automatically trigger character case "
+                                  "sensitivity if the entry has upper-case "
+                                  "characters in any but the first position. "
+                                  "Else you need to use the query language and "
+                                  "the <i>C</i> modifier to specify character-case "
+                                  "sensitivity."
+                                   ));
+        vboxLayout->addWidget(cp2);
     }
 
     ConfLink lnk3(new ConfLinkRclRep(config, "maxTermExpand"));
     ConfParamIntW* cp3 = 
         new ConfParamIntW(this, lnk3, 
-			   tr("Maximum term expansion count"),
-			   tr("<p>Maximum expansion count for a single term "
-			      "(e.g.: when using wildcards). The default "
-			      "of 10 000 is reasonable and will avoid "
-			      "queries that appear frozen while the engine is "
-			      "walking the term list."
-			       ));
+                          tr("Maximum term expansion count"),
+                          tr("<p>Maximum expansion count for a single term "
+                             "(e.g.: when using wildcards). The default "
+                             "of 10 000 is reasonable and will avoid "
+                             "queries that appear frozen while the engine is "
+                             "walking the term list."
+                              ));
     vboxLayout->addWidget(cp3);
 
 
     ConfLink lnk4(new ConfLinkRclRep(config, "maxXapianClauses"));
     ConfParamIntW* cp4 = 
         new ConfParamIntW(this, lnk4, 
-			   tr("Maximum Xapian clauses count"),
-			   tr("<p>Maximum number of elementary clauses we "
-			      "add to a single Xapian query. In some cases, "
-			      "the result of term expansion can be "
-			      "multiplicative, and we want to avoid using "
-			      "excessive memory. The default of 100 000 "
-			      "should be both high enough in most cases "
-			      "and compatible with current typical hardware "
-			      "configurations."
-			       ));
+                          tr("Maximum Xapian clauses count"),
+                          tr("<p>Maximum number of elementary clauses we "
+                             "add to a single Xapian query. In some cases, "
+                             "the result of term expansion can be "
+                             "multiplicative, and we want to avoid using "
+                             "excessive memory. The default of 100 000 "
+                             "should be both high enough in most cases "
+                             "and compatible with current typical hardware "
+                             "configurations."
+                              ));
     vboxLayout->addWidget(cp4);
 
     vboxLayout->insertStretch(-1);
@@ -358,17 +355,17 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     gl1->addWidget(w, gridrow++, 0, 1, 2);
 
     ConfParamSLW *eskp = new 
-	ConfParamSLW(this, 
+        ConfParamSLW(this, 
                      ConfLink(new ConfLinkRclRep(config, "skippedPaths")), 
                      tr("Skipped paths"),
-		     tr("These are pathnames of directories which indexing "
-			"will not enter.<br>"
+                     tr("These are pathnames of directories which indexing "
+                        "will not enter.<br>"
                         "Path elements may contain wildcards. "
-			"The entries must match the paths seen by the indexer "
+                        "The entries must match the paths seen by the indexer "
                         "(e.g.: if topdirs includes '/home/me' and '/home' is "
                         "actually a link "
-			"to '/usr/home', a correct skippedPath entry "
-			"would be '/home/me/tmp*', not '/usr/home/me/tmp*')"));
+                        "to '/usr/home', a correct skippedPath entry "
+                        "would be '/home/me/tmp*', not '/usr/home/me/tmp*')"));
     eskp->setFsEncoding(true);
     setSzPol(eskp, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 3);
     gl1->addWidget(eskp, gridrow++, 0, 1, 2);
@@ -376,16 +373,16 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     vector<string> cstemlangs = Rcl::Db::getStemmerNames();
     QStringList stemlangs;
     for (vector<string>::const_iterator it = cstemlangs.begin(); 
-	 it != cstemlangs.end(); it++) {
-	stemlangs.push_back(QString::fromUtf8(it->c_str()));
+         it != cstemlangs.end(); it++) {
+        stemlangs.push_back(QString::fromUtf8(it->c_str()));
     }
     w = new 
-	ConfParamCSLW(this, 
+        ConfParamCSLW(this, 
                       ConfLink(new ConfLinkRclRep(config, 
                                                   "indexstemminglanguages")),
                       tr("Stemming languages"),
-		      tr("The languages for which stemming expansion<br>"
-			 "dictionaries will be built."), stemlangs);
+                      tr("The languages for which stemming expansion<br>"
+                         "dictionaries will be built."), stemlangs);
     setSzPol(w, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 1);
     gl1->addWidget(w, gridrow, 0);
     
@@ -412,9 +409,9 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
                           ConfLink(new ConfLinkRclRep(config, "idxflushmb")),
                           tr("Index flush megabytes interval"),
                           tr("This value adjust the amount of "
-			 "data which is indexed between flushes to disk.<br>"
-			 "This helps control the indexer memory usage. "
-			 "Default 10MB "), 0, 1000);
+                             "data which is indexed between flushes to disk.<br>"
+                             "This helps control the indexer memory usage. "
+                             "Default 10MB "), 0, 1000);
     gl1->addWidget(w, gridrow++, 1);
 
     w = new ConfParamIntW(this, 
@@ -443,10 +440,10 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
                       tr("The language for the aspell dictionary. "
                          "This should look like 'en' or 'fr' ...<br>"
                          "If this value is not set, the NLS environment "
-			 "will be used to compute it, which usually works. "
-			 "To get an idea of what is installed on your system, "
-			 "type 'aspell config' and look for .dat files inside "
-			 "the 'data-dir' directory. "));
+                         "will be used to compute it, which usually works. "
+                         "To get an idea of what is installed on your system, "
+                         "type 'aspell config' and look for .dat files inside "
+                         "the 'data-dir' directory. "));
     cpaspl->setEnabled(!cpasp->m_cb->isChecked());
     connect(cpasp->m_cb, SIGNAL(toggled(bool)), cpaspl,SLOT(setDisabled(bool)));
     gl1->addWidget(cpaspl, gridrow++, 1);
@@ -456,13 +453,13 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
                      ConfLink(new ConfLinkRclRep(config, "dbdir")),
                      tr("Database directory name"),
                      tr("The name for a directory where to store the index<br>"
-			"A non-absolute path is taken relative to the "
-			"configuration directory. The default is 'xapiandb'."
-			), true);
+                        "A non-absolute path is taken relative to the "
+                        "configuration directory. The default is 'xapiandb'."
+                         ), true);
     gl1->addWidget(w, gridrow++, 0, 1, 2);
     
     w = new 
-	ConfParamStrW(this, 
+        ConfParamStrW(this, 
                       ConfLink(new ConfLinkRclRep(config, "unac_except_trans")),
                       tr("Unac exceptions"),
                       tr("<p>These are exceptions to the unac mechanism "
@@ -486,19 +483,19 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
     vboxLayout->setMargin(margin);
 
     m_subdirs = new 
-	ConfParamDNLW(this, 
+        ConfParamDNLW(this, 
                       ConfLink(new ConfLinkNullRep()), 
-		      QObject::tr("<b>Customised subtrees"),
-		      QObject::tr("The list of subdirectories in the indexed "
-				  "hierarchy <br>where some parameters need "
-				  "to be redefined. Default: empty."));
+                      QObject::tr("<b>Customised subtrees"),
+                      QObject::tr("The list of subdirectories in the indexed "
+                                  "hierarchy <br>where some parameters need "
+                                  "to be redefined. Default: empty."));
     m_subdirs->getListBox()->setSelectionMode(QAbstractItemView::SingleSelection);
     connect(m_subdirs->getListBox(), 
-	    SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-	    this, 
-	    SLOT(subDirChanged(QListWidgetItem *, QListWidgetItem *)));
+            SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
+            this, 
+            SLOT(subDirChanged(QListWidgetItem *, QListWidgetItem *)));
     connect(m_subdirs, SIGNAL(entryDeleted(QString)),
-	    this, SLOT(subDirDeleted(QString)));
+            this, SLOT(subDirDeleted(QString)));
 
     // We only retrieve the subkeys from the user's config (shallow),
     // no use to confuse the user by showing the subtrees which are
@@ -509,8 +506,8 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
 
     QStringList qls;
     for (vector<string>::const_iterator it = allkeydirs.begin(); 
-	 it != allkeydirs.end(); it++) {
-	qls.push_back(QString::fromUtf8(it->c_str()));
+         it != allkeydirs.end(); it++) {
+        qls.push_back(QString::fromUtf8(it->c_str()));
     }
     m_subdirs->getListBox()->insertItems(0, qls);
     vboxLayout->addWidget(m_subdirs);
@@ -523,13 +520,13 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
     QLabel *explain = new QLabel(this);
     explain->setWordWrap(true);
     explain->setText(
-		     QObject::
-		     tr("<i>The parameters that follow are set either at the "
-			"top level, if nothing "
-			"or an empty line is selected in the listbox above, "
-			"or for the selected subdirectory. "
-			"You can add or remove directories by clicking "
-			"the +/- buttons."));
+        QObject::
+        tr("<i>The parameters that follow are set either at the "
+           "top level, if nothing "
+           "or an empty line is selected in the listbox above, "
+           "or for the selected subdirectory. "
+           "You can add or remove directories by clicking "
+           "the +/- buttons."));
     vboxLayout->addWidget(explain);
 
 
@@ -556,8 +553,8 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
     vector<string> amimes = rclconf->getAllMimeTypes();
     QStringList amimesq;
     for (vector<string>::const_iterator it = amimes.begin(); 
-	 it != amimes.end(); it++) {
-	amimesq.push_back(QString::fromUtf8(it->c_str()));
+         it != amimes.end(); it++) {
+        amimesq.push_back(QString::fromUtf8(it->c_str()));
     }
 
     ConfParamCSLW *eincm = new ConfParamCSLW(
@@ -597,7 +594,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
     string cmd = "iconv";
     int status = ex.doexec(cmd, args, 0, &icout);
     if (status) {
-	LOGERR("Can't get list of charsets from 'iconv -l'" );
+        LOGERR("Can't get list of charsets from 'iconv -l'" );
     }
     icout = neutchars(icout, ",");
     list<string> ccsets;
@@ -605,8 +602,8 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
     QStringList charsets;
     charsets.push_back("");
     for (list<string>::const_iterator it = ccsets.begin(); 
-	 it != ccsets.end(); it++) {
-	charsets.push_back(QString::fromUtf8(it->c_str()));
+         it != ccsets.end(); it++) {
+        charsets.push_back(QString::fromUtf8(it->c_str()));
     }
 
     ConfParamCStrW *e21 = new ConfParamCStrW(
@@ -692,21 +689,21 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
 void ConfSubPanelW::reloadAll()
 {
     for (list<ConfParamW*>::iterator it = m_widgets.begin();
-	 it != m_widgets.end(); it++) {
-	(*it)->loadValue();
+         it != m_widgets.end(); it++) {
+        (*it)->loadValue();
     }
 }
 
 void ConfSubPanelW::subDirChanged(QListWidgetItem *current, QListWidgetItem *)
 {
     LOGDEB("ConfSubPanelW::subDirChanged\n" );
-	
+    
     if (current == 0 || current->text() == "") {
-	m_sk = "";
-	m_groupbox->setTitle(tr("Global"));
+        m_sk = "";
+        m_groupbox->setTitle(tr("Global"));
     } else {
-	m_sk = (const char *) current->text().toUtf8();
-	m_groupbox->setTitle(current->text());
+        m_sk = (const char *) current->text().toUtf8();
+        m_groupbox->setTitle(current->text());
     }
     LOGDEB("ConfSubPanelW::subDirChanged: now ["  << (m_sk) << "]\n" );
     reloadAll();
@@ -716,9 +713,9 @@ void ConfSubPanelW::subDirDeleted(QString sbd)
 {
     LOGDEB("ConfSubPanelW::subDirDeleted("  << ((const char *)sbd.toUtf8()) << ")\n" );
     if (sbd == "") {
-	// Can't do this, have to reinsert it
-	QTimer::singleShot(0, this, SLOT(restoreEmpty()));
-	return;
+        // Can't do this, have to reinsert it
+        QTimer::singleShot(0, this, SLOT(restoreEmpty()));
+        return;
     }
     // Have to delete all entries for submap
     m_config->eraseKey((const char *)sbd.toUtf8());
@@ -731,4 +728,3 @@ void ConfSubPanelW::restoreEmpty()
 }
 
 } // Namespace confgui
-
