@@ -1,3 +1,16 @@
+recoll (1.25.20-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * GUI: preview: improve operation when the original file has changed or
+    can't be read: use stored data.
+  * GUI: result table contents were not reset when the search was cleared.
+  * Windows: fix paths accented character processing in configuration GUI.
+  * Windows: fix temporary file deletion. Many were not deleted because
+    they were still opened by the handler when we tried to remove
+    them. Fixed a number of handlers to properly close the file, and add a
+    cleanup pass after the handler cache is cleaned at the end of indexing.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 22 Jul 2019 15:52:00 +0200
+
 recoll (1.25.19-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix issues in pdf handler
