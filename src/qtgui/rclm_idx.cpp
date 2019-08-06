@@ -497,6 +497,8 @@ void RclMain::specialIndex()
             args.push_back("-Z");
         } else {
             args.push_back("-e");
+            // -e also needs -i, else we don't reindex, just erase
+            args.push_back("-i");
         }
     } 
 

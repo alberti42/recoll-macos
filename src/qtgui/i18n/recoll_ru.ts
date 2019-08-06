@@ -748,7 +748,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="+218"/>
+        <location filename="../confgui/confguiindex.cpp" line="+215"/>
         <source>Global parameters</source>
         <translation>Общие параметры</translation>
     </message>
@@ -1064,8 +1064,8 @@ p, li { white-space: pre-wrap; }
         <translation>Невозможно извлечь сведения о документе из БД</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+261"/>
-        <location line="+271"/>
+        <location filename="../rclm_idx.cpp" line="+263"/>
+        <location line="+273"/>
         <location line="+19"/>
         <location filename="../rclm_preview.cpp" line="-138"/>
         <location line="+44"/>
@@ -1101,7 +1101,7 @@ p, li { white-space: pre-wrap; }
         <translation>История</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-507"/>
+        <location filename="../rclm_idx.cpp" line="-511"/>
         <source>Indexing in progress: </source>
         <translation>Идёт индексирование: </translation>
     </message>
@@ -1162,7 +1162,7 @@ Please check the mimeconf file</source>
         <translation>ошибка получения списка языков</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="+121"/>
+        <location filename="../rclm_idx.cpp" line="+123"/>
         <source>Update &amp;Index</source>
         <translation>Обновить &amp;индекс</translation>
     </message>
@@ -1172,7 +1172,42 @@ Please check the mimeconf file</source>
         <translation>Индексирование прервано</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="-66"/>
+        <source>documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>errors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+94"/>
         <location line="+27"/>
         <source>Stop &amp;Indexing</source>
         <translation>О&amp;становить индексирование</translation>
@@ -1309,7 +1344,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Поиск не дал результатов</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-136"/>
+        <location filename="../rclm_idx.cpp" line="-138"/>
         <source>None</source>
         <translation>Отсутствует</translation>
     </message>
@@ -1329,17 +1364,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Монитор</translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>(%d documents/%d files/%d errors/%d total files) </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>(%d documents/%d files/%d errors) </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+58"/>
+        <location line="+74"/>
         <source>Indexing failed</source>
         <translation>Не удалось выполнить индексирование</translation>
     </message>
@@ -1370,7 +1395,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Сбросить индекс и начать заново?</translation>
     </message>
     <message>
-        <location line="+193"/>
+        <location line="+195"/>
         <source>Can&apos;t update index: internal error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1501,7 +1526,7 @@ Please check the desktop file</source>
         <translation type="vanished">Для запуска текущего процесса индексирования был использован другой интерфейс. Прекратить выполнение процесса невозможно</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-303"/>
+        <location filename="../rclm_idx.cpp" line="-305"/>
         <source>Bad paths</source>
         <translation>Неверные пути</translation>
     </message>
@@ -1512,7 +1537,7 @@ Please check the desktop file</source>
 </translation>
     </message>
     <message>
-        <location line="+279"/>
+        <location line="+281"/>
         <source>Selection patterns need topdir</source>
         <translation>Для шаблонов отбора требуется topdir</translation>
     </message>
@@ -1622,7 +1647,7 @@ Please check the desktop file</source>
         <translation>Больше не показывать (для восстановления значений используйте окно настройки интерфейса).</translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="-342"/>
+        <location filename="../rclm_idx.cpp" line="-344"/>
         <source>Index locked</source>
         <translation>Индекс заблокирован</translation>
     </message>
@@ -2138,12 +2163,12 @@ Please check the desktop file</source>
         <translation>Дата и время</translation>
     </message>
     <message>
-        <location line="+193"/>
+        <location line="+189"/>
         <source>Can&apos;t sort by inverse relevance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-202"/>
+        <location line="-198"/>
         <source>Ipath</source>
         <translation>Ipath</translation>
     </message>
@@ -2293,7 +2318,7 @@ Please check the desktop file</source>
 <context>
     <name>ResTable</name>
     <message>
-        <location filename="../restable.cpp" line="+787"/>
+        <location filename="../restable.cpp" line="+783"/>
         <source>&amp;Reset sort</source>
         <translation>&amp;Сбросить сортировку</translation>
     </message>
@@ -2311,7 +2336,7 @@ Please check the desktop file</source>
         <translation type="obsolete">&quot;</translation>
     </message>
     <message>
-        <location line="-313"/>
+        <location line="-312"/>
         <source>Save table to CSV file</source>
         <translation>Сохранить таблицу в CSV-файл</translation>
     </message>
@@ -2353,7 +2378,7 @@ Please check the desktop file</source>
         <translation type="obsolete">&amp;Открыть родительский документ/каталог</translation>
     </message>
     <message>
-        <location line="+301"/>
+        <location line="+300"/>
         <source>&amp;Save as CSV</source>
         <translation>&amp;Сохранить как CSV</translation>
     </message>
@@ -2833,8 +2858,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <location line="+10"/>
+        <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Start directory (else use regular topdirs):</source>
-        <translation>Корневой каталог (или использовать стандартный topdirs):</translation>
+        <translation type="vanished">Корневой каталог (или использовать стандартный topdirs):</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -3599,7 +3628,7 @@ This should give higher precedence to the results where the search terms appear 
         <translation type="obsolete">Просмотр</translation>
     </message>
     <message>
-        <location filename="../confgui/confgui.cpp" line="+258"/>
+        <location filename="../confgui/confgui.cpp" line="+267"/>
         <source>Choose</source>
         <translation>Выбрать</translation>
     </message>
@@ -3607,7 +3636,7 @@ This should give higher precedence to the results where the search terms appear 
 <context>
     <name>confgui::ConfParamSLW</name>
     <message>
-        <location line="+54"/>
+        <location line="+59"/>
         <source>+</source>
         <translation>+</translation>
     </message>
