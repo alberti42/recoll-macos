@@ -772,7 +772,11 @@ void ResTable::readDocSource(bool resetPos)
     if (resetPos)
 	tableView->verticalScrollBar()->setSliderPosition(0);
 
-    m_model->m_source->getTerms(m_model->m_hdata);
+    if (m_model->m_source) {
+        m_model->m_source->getTerms(m_model->m_hdata);
+    } else {
+        m_model->m_hdata.clear();
+    }
     m_model->readDocSource();
     m_detail->clear();
     m_detaildocnum = -1;
