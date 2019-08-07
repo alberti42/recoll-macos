@@ -654,18 +654,18 @@ bool path_makepath(const string& ipath, int mode)
     vector<string> elems;
     stringToTokens(path, elems, "/");
     path = "/";
-    for (vector<string>::const_iterator it = elems.begin();
-            it != elems.end(); it++) {
+    for (const auto& elem : elems) {
 #ifdef _WIN32
-        if (it == elems.begin() && path_strlookslikedrive(*it)) {
+        if (path == "/" && path_strlookslikedrive(*it)) {
             path = "";
         }
 #endif
-        path += *it;
+        path += elem;
         // Not using path_isdir() here, because this cant grok symlinks
         // If we hit an existing file, no worry, mkdir will just fail.
         if (access(path.c_str(), 0) != 0) {
             if (mkdir(path.c_str(), mode) != 0)  {
+                //cerr << "mkdir " << path << " failed, errno " << errno << endl;
                 return false;
             }
         }
