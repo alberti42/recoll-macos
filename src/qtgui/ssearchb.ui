@@ -90,9 +90,6 @@
          <height>0</height>
         </size>
        </property>
-       <property name="toolTip">
-        <string>Enter search terms here.</string>
-       </property>
       </widget>
      </item>
      <item>
