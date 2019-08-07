@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <inttypes.h>
 
 #include "mimehandler.h"
 
@@ -40,7 +41,6 @@ public:
 	return true;
     }
     virtual void clear_impl() override;
-    typedef long long mbhoff_type;
 
 protected:
     virtual bool set_document_file_impl(const std::string&,
@@ -51,9 +51,9 @@ private:
     void      *m_vfp;    // File pointer for folder
     int        m_msgnum; // Current message number in folder. Starts at 1
     std::string m_ipath;
-    int        m_lineno; // debug 
-    mbhoff_type m_fsize;
-    std::vector<mbhoff_type> m_offsets;
+    int64_t     m_lineno; // debug 
+    int64_t     m_fsize;
+    std::vector<int64_t> m_offsets;
     enum Quirks {MBOXQUIRK_TBIRD=1};
     int        m_quirks;
 };

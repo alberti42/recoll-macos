@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
-#include "safesysstat.h"
 #include <time.h>
 
 #include <cstring>
@@ -38,6 +37,10 @@
 #include "pathut.h"
 
 using namespace std;
+#ifdef _WIN32
+#define fseeko _fseeki64
+#define ftello _ftelli64
+#endif
 
 // Define maximum message size for safety. 100MB would seem reasonable
 static const unsigned int max_mbox_member_size = 100 * 1024 * 1024;
@@ -72,16 +75,10 @@ static std::mutex o_mcache_mutex;
  * binary, values are not even byte-swapped to be proc-idependant.
  */
 
-#ifdef _WIN32
-// vc++ does not let define an array of size o_b1size because non-const??
 #define M_o_b1size 1024
-#else
-#define M_o_b1size o_b1size
-#endif
 
 class MboxCache {
 public:
-    typedef MimeHandlerMbox::mbhoff_type mbhoff_type;
     MboxCache()
         : m_ok(false), m_minfsize(0) { 
             // Can't access rclconfig here, we're a static object, would
@@ -90,7 +87,7 @@ public:
 
     ~MboxCache() {}
 
-    mbhoff_type get_offset(RclConfig *config, const string& udi, int msgnum) {
+    int64_t get_offset(RclConfig *config, const string& udi, int msgnum) {
         LOGDEB0("MboxCache::get_offsets: udi [" << udi << "] msgnum "
                 << msgnum << "\n");
         if (!ok(config)) {
@@ -100,43 +97,44 @@ public:
         std::unique_lock<std::mutex> locker(o_mcache_mutex);
         string fn = makefilename(udi);
         FILE *fp = 0;
-        if ((fp = fopen(fn.c_str(), "r")) == 0) {
+        if ((fp = fopen(fn.c_str(), "rb")) == 0) {
             LOGSYSERR("MboxCache::get_offsets", "open", fn);
             return -1;
         }
         FpKeeper keeper(&fp);
 
         char blk1[M_o_b1size];
-        if (fread(blk1, 1, o_b1size, fp) != o_b1size) {
+        if (fread(blk1, M_o_b1size, 1, fp) != 1) {
             LOGSYSERR("MboxCache::get_offsets", "read blk1", "");
             return -1;
         }
-        ConfSimple cf(string(blk1, o_b1size));
+        ConfSimple cf(string(blk1, M_o_b1size));
         string fudi;
         if (!cf.get("udi", fudi) || fudi.compare(udi)) {
             LOGINFO("MboxCache::get_offset:badudi fn " << fn << " udi ["
                     << udi << "], fudi [" << fudi << "]\n");
             return -1;
         }
+        LOGDEB1("MboxCache::get_offsets: reading offsets file at offs "
+                << cacheoffset(msgnum) << "\n");
         if (fseeko(fp, cacheoffset(msgnum), SEEK_SET) != 0) {
             LOGSYSERR("MboxCache::get_offsets", "seek",
                       lltodecstr(cacheoffset(msgnum)));
             return -1;
         }
-        mbhoff_type offset = -1;
+        int64_t offset = -1;
         size_t ret;
-        if ((ret = fread(&offset, 1, sizeof(mbhoff_type), fp))
-            != sizeof(mbhoff_type)) {
+        if ((ret = fread(&offset, sizeof(int64_t), 1, fp)) != 1) {
             LOGSYSERR("MboxCache::get_offsets", "read", "");
             return -1;
         }
-        LOGDEB0("MboxCache::get_offsets: ret " << lltodecstr(offset) << "\n");
+        LOGDEB0("MboxCache::get_offsets: ret " << offset << "\n");
         return offset;
     }
 
     // Save array of offsets for a given file, designated by Udi
-    void put_offsets(RclConfig *config, const string& udi, mbhoff_type fsize,
-                     vector<mbhoff_type>& offs) {
+    void put_offsets(RclConfig *config, const string& udi, int64_t fsize,
+                     vector<int64_t>& offs) {
         LOGDEB0("MboxCache::put_offsets: " << offs.size() << " offsets\n");
         if (!ok(config) || !maybemakedir())
             return;
@@ -148,7 +146,7 @@ public:
         std::unique_lock<std::mutex> locker(o_mcache_mutex);
         string fn = makefilename(udi);
         FILE *fp;
-        if ((fp = fopen(fn.c_str(), "w")) == 0) {
+        if ((fp = fopen(fn.c_str(), "wb")) == 0) {
             LOGSYSERR("MboxCache::put_offsets", "fopen", fn);
             return;
         }
@@ -156,15 +154,16 @@ public:
         string blk1("udi=");
         blk1.append(udi);
         blk1.append(cstr_newline);
-        blk1.resize(o_b1size, 0);
-        if (fwrite(blk1.c_str(), 1, o_b1size, fp) != o_b1size) {
+        blk1.resize(M_o_b1size, 0);
+        if (fwrite(blk1.c_str(), M_o_b1size, 1, fp) != 1) {
             LOGSYSERR("MboxCache::put_offsets", "fwrite blk1", "");
             return;
         }
 
         for (const auto& off : offs) {
-            if (fwrite((char*)&off, 1, sizeof(mbhoff_type), fp) != 
-                sizeof(mbhoff_type)) {
+            LOGDEB1("MboxCache::put_offsets: writing value " << off <<
+                    " at offset " << ftello(fp) << endl);
+            if (fwrite((char*)&off, sizeof(int64_t), 1, fp) != 1) {
                 LOGSYSERR("MboxCache::put_offsets", "fwrite", "");
                 return;
             }
@@ -198,8 +197,7 @@ private:
     // Place where we store things
     string m_dir;
     // Don't cache smaller files. If -1, don't do anything.
-    mbhoff_type m_minfsize;
-    static const size_t o_b1size;
+    int64_t m_minfsize;
 
     // Create the cache directory if it does not exist
     bool maybemakedir() {
@@ -219,12 +217,11 @@ private:
 
     // Compute offset in cache file for the mbox offset of msgnum
     // Msgnums are from 1
-    mbhoff_type cacheoffset(int msgnum) {
-        return o_b1size + (msgnum-1) * sizeof(mbhoff_type);
+    int64_t cacheoffset(int msgnum) {
+        return M_o_b1size + (msgnum-1) * sizeof(int64_t);
     }
 };
 
-const size_t MboxCache::o_b1size = 1024;
 static class MboxCache o_mcache;
 
 static const string cstr_keyquirks("mhmboxquirks");
@@ -255,9 +252,9 @@ bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
         m_vfp = 0;
     }
 
-    m_vfp = fopen(fn.c_str(), "r");
+    m_vfp = fopen(fn.c_str(), "rb");
     if (m_vfp == 0) {
-        LOGSYSERR("MimeHandlerMail::set_document_file", "fopen r", fn);
+        LOGSYSERR("MimeHandlerMail::set_document_file", "fopen rb", fn);
         return false;
     }
 #if defined O_NOATIME && O_NOATIME != 0
@@ -266,13 +263,7 @@ bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
     }
 #endif
     // Used to use ftell() here: no good beyond 2GB
-    {struct stat st;
-        if (fstat(fileno((FILE*)m_vfp), &st) < 0) {
-            LOGSYSERR("MimeHandlerMbox:setdocfile", "fstat", fn);
-            return false;
-        }
-        m_fsize = st.st_size;
-    }
+    m_fsize = path_filesize(fn);
     m_havedoc = true;
     m_offsets.clear();
     m_quirks = 0;
@@ -408,21 +399,35 @@ bool MimeHandlerMbox::next_document()
     // object).  So:
     bool storeoffsets = true;
     if (mtarg > 0) {
-        mbhoff_type off;
+        int64_t off;
         line_type line;
         LOGDEB0("MimeHandlerMbox::next_doc: mtarg " << mtarg << " m_udi[" <<
                 m_udi << "]\n");
-        if (!m_udi.empty() && 
-            (off = o_mcache.get_offset(m_config, m_udi, mtarg)) >= 0 && 
-            fseeko(fp, (off_t)off, SEEK_SET) >= 0 && 
-            fgets(line, LL, fp) &&
-            (fromregex(line) || ((m_quirks & MBOXQUIRK_TBIRD) && 
-                                 minifromregex(line)))  ) {
-            LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
-            fseeko(fp, (off_t)off, SEEK_SET);
-            m_msgnum = mtarg -1;
-            storeoffsets = false;
-        } else {
+        if (!m_udi.empty()) {
+            LOGDEB("MimeHandlerMbox::next_doc: udi not empty\n");
+            if ((off = o_mcache.get_offset(m_config, m_udi, mtarg)) >= 0) {
+                LOGDEB1("MimeHandlerMbox::next_doc: got offset " << off <<
+                        " from cache\n");
+                if (fseeko(fp, off, SEEK_SET) >= 0) {
+                    LOGDEB1("MimeHandlerMbox::next_doc: fseeko ok\n");
+                    if (fgets(line, LL, fp)) {
+                        LOGDEB1("MimeHandlerMbox::next_doc: fgets  ok. line:[" <<
+                                line << "]\n");
+                        if ((fromregex(line) || ((m_quirks & MBOXQUIRK_TBIRD) && 
+                                                 minifromregex(line)))  ) {
+                            LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
+                            fseeko(fp, off, SEEK_SET);
+                            m_msgnum = mtarg -1;
+                            storeoffsets = false;
+                        } else {
+                            LOGDEB0("MimeHandlerMbox: cache: regex failed\n");
+                        }
+                    }
+                }
+            }
+        }
+        if (storeoffsets) {
+            // No cached result: scan.
             fseek(fp, 0, SEEK_SET);
             m_msgnum = 0;
         }
@@ -466,8 +471,10 @@ bool MimeHandlerMbox::next_document()
                     LOGDEB0("MimeHandlerMbox: msgnum " << m_msgnum <<
                             ", From_ at line " << m_lineno << ": [" << line
                             << "]\n");
-                    if (storeoffsets)
+                    if (storeoffsets) {
+                        LOGDEB1("Pushing offset: " << message_end << endl);
                         m_offsets.push_back(message_end);
+                    }
                     m_msgnum++;
                     if ((mtarg <= 0 && m_msgnum > 1) || 
                         (mtarg > 0 && m_msgnum > mtarg)) {
