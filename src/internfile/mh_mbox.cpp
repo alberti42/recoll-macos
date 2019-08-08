@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -37,6 +37,7 @@
 #include "pathut.h"
 
 using namespace std;
+
 #ifdef _WIN32
 #define fseeko _fseeki64
 #define ftello _ftelli64
@@ -44,6 +45,69 @@ using namespace std;
 
 // Define maximum message size for safety. 100MB would seem reasonable
 static const unsigned int max_mbox_member_size = 100 * 1024 * 1024;
+
+// The mbox format uses lines beginning with 'From ' as separator.
+// Mailers are supposed to quote any other lines beginning with 
+// 'From ', turning it into '>From '. This should make it easy to detect
+// message boundaries by matching a '^From ' regular expression
+// Unfortunately this quoting is quite often incorrect in the real world.
+//
+// The rest of the format for the line is somewhat variable, but there will 
+// be a 4 digit year somewhere... 
+// The canonic format is the following, with a 24 characters date: 
+//         From toto@tutu.com Sat Sep 30 16:44:06 2000
+// This resulted into the pattern for versions up to 1.9.0: 
+//         "^From .* [1-2][0-9][0-9][0-9]$"
+//
+// Some mailers add a time zone to the date, this is non-"standard", 
+// but happens, like in: 
+//    From toto@truc.com Sat Sep 30 16:44:06 2000 -0400 
+//
+// This is taken into account in the new regexp, which also matches more
+// of the date format, to catch a few actual issues like
+//     From http://www.itu.int/newsroom/press/releases/1998/NP-2.html:
+// Note that this *should* have been quoted.
+//
+// http://www.qmail.org/man/man5/mbox.html seems to indicate that the
+// fact that From_ is normally preceded by a blank line should not be
+// used, but we do it anyway (for now).
+// The same source indicates that arbitrary data can follow the date field
+//
+// A variety of pathologic From_ lines:
+//   Bad date format:
+//      From uucp Wed May 22 11:28 GMT 1996
+//   Added timezone at the end (ok, part of the "any data" after the date)
+//      From qian2@fas.harvard.edu Sat Sep 30 16:44:06 2000 -0400
+//  Emacs VM botch ? Adds tz between hour and year
+//      From dockes Wed Feb 23 10:31:20 +0100 2005
+//      From dockes Fri Dec  1 20:36:39 +0100 2006
+// The modified regexp gives the exact same results on the ietf mail archive
+// and my own's.
+// Update, 2008-08-29: some old? Thunderbird versions apparently use a date
+// in "Date: " header format, like:   From - Mon, 8 May 2006 10:57:32
+// This was added as an alternative format. By the way it also fools "mail" and
+// emacs-vm, Recoll is not alone
+// Update: 2009-11-27: word after From may be quoted string: From "john bull"
+static const string frompat{
+    "^From[ ]+([^ ]+|\"[^\"]+\")[ ]+"    // 'From (toto@tutu|"john bull") '
+        "[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Fri Oct 26
+        "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?[ ]+"             // Time, seconds optional
+        "([^ ]+[ ]+)?"                                        // Optional tz
+        "[12][0-9][0-9][0-9]"            // Year, unanchored, more data may follow
+        "|"      // Or standard mail Date: header format
+        "^From[ ]+[^ ]+[ ]+"                                   // From toto@tutu
+        "[[:alpha:]]{3},[ ]+[0-3]?[0-9][ ]+[[:alpha:]]{3}[ ]+" // Mon, 8 May
+        "[12][0-9][0-9][0-9][ ]+"                              // Year
+        "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?"                  // Time, secs optional
+        };
+
+// Extreme thunderbird brokiness. Will sometimes use From lines
+// exactly like: From ^M (From followed by space and eol). We only
+// test for this if QUIRKS_TBIRD is set
+static const string miniTbirdFrom{"^From $"};
+
+static SimpleRegexp fromregex(frompat, SimpleRegexp::SRE_NOSUB);
+static SimpleRegexp minifromregex(miniTbirdFrom, SimpleRegexp::SRE_NOSUB);
 
 // Automatic fp closing
 class FpKeeper { 
@@ -79,11 +143,10 @@ static std::mutex o_mcache_mutex;
 
 class MboxCache {
 public:
-    MboxCache()
-        : m_ok(false), m_minfsize(0) { 
-            // Can't access rclconfig here, we're a static object, would
-            // have to make sure it's initialized.
-        }
+    MboxCache() { 
+        // Can't access rclconfig here, we're a static object, would
+        // have to make sure it's initialized.
+    }
 
     ~MboxCache() {}
 
@@ -192,12 +255,11 @@ public:
     }
 
 private:
-    bool m_ok;
-
+    bool m_ok{false};
     // Place where we store things
     string m_dir;
     // Don't cache smaller files. If -1, don't do anything.
-    int64_t m_minfsize;
+    int64_t m_minfsize{0};
 
     // Create the cache directory if it does not exist
     bool maybemakedir() {
@@ -214,7 +276,6 @@ private:
         MD5HexPrint(digest, xdigest);
         return path_cat(m_dir, xdigest);
     }
-
     // Compute offset in cache file for the mbox offset of msgnum
     // Msgnums are from 1
     int64_t cacheoffset(int msgnum) {
@@ -234,18 +295,20 @@ MimeHandlerMbox::~MimeHandlerMbox()
 void MimeHandlerMbox::clear_impl()
 {
     m_fn.erase();
+    m_ipath.erase();
     if (m_vfp) {
         fclose((FILE *)m_vfp);
         m_vfp = 0;
     }
-    m_msgnum =  m_lineno = 0;
-    m_ipath.erase();
+    m_msgnum = m_lineno = m_fsize = 0;
     m_offsets.clear();
+    m_quirks = 0;
 }
 
 bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
 {
     LOGDEB("MimeHandlerMbox::set_document_file(" << fn << ")\n");
+    clear_impl();
     m_fn = fn;
     if (m_vfp) {
         fclose((FILE *)m_vfp);
@@ -253,7 +316,7 @@ bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
     }
 
     m_vfp = fopen(fn.c_str(), "rb");
-    if (m_vfp == 0) {
+    if (m_vfp == nullptr) {
         LOGSYSERR("MimeHandlerMail::set_document_file", "fopen rb", fn);
         return false;
     }
@@ -262,12 +325,10 @@ bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
         // perror("fcntl");
     }
 #endif
-    // Used to use ftell() here: no good beyond 2GB
+
     m_fsize = path_filesize(fn);
     m_havedoc = true;
-    m_offsets.clear();
-    m_quirks = 0;
-
+    
     // Check for location-based quirks:
     string quirks;
     if (m_config && m_config->getConfParam(cstr_keyquirks, quirks)) {
@@ -279,16 +340,15 @@ bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
 
     // And double check for thunderbird 
     string tbirdmsf = fn + ".msf";
-    if ((m_quirks&MBOXQUIRK_TBIRD) == 0 && path_exists(tbirdmsf)) {
-        LOGDEB("MimeHandlerMbox: detected unconfigured tbird mbox in " << fn <<
-               "\n");
+    if (!(m_quirks & MBOXQUIRK_TBIRD) && path_exists(tbirdmsf)) {
+        LOGDEB("MimeHandlerMbox: detected unconf'd tbird mbox in " << fn <<"\n");
         m_quirks |= MBOXQUIRK_TBIRD;
     }
 
     return true;
 }
 
-#define LL 1024
+#define LL 20000
 typedef char line_type[LL+10];
 static inline void stripendnl(line_type& line, int& ll)
 {
@@ -302,79 +362,60 @@ static inline void stripendnl(line_type& line, int& ll)
     }
 }
 
-// The mbox format uses lines beginning with 'From ' as separator.
-// Mailers are supposed to quote any other lines beginning with 
-// 'From ', turning it into '>From '. This should make it easy to detect
-// message boundaries by matching a '^From ' regular expression
-// Unfortunately this quoting is quite often incorrect in the real world.
-//
-// The rest of the format for the line is somewhat variable, but there will 
-// be a 4 digit year somewhere... 
-// The canonic format is the following, with a 24 characters date: 
-//         From toto@tutu.com Sat Sep 30 16:44:06 2000
-// This resulted into the pattern for versions up to 1.9.0: 
-//         "^From .* [1-2][0-9][0-9][0-9]$"
-//
-// Some mailers add a time zone to the date, this is non-"standard", 
-// but happens, like in: 
-//    From toto@truc.com Sat Sep 30 16:44:06 2000 -0400 
-//
-// This is taken into account in the new regexp, which also matches more
-// of the date format, to catch a few actual issues like
-//     From http://www.itu.int/newsroom/press/releases/1998/NP-2.html:
-// Note that this *should* have been quoted.
-//
-// http://www.qmail.org/man/man5/mbox.html seems to indicate that the
-// fact that From_ is normally preceded by a blank line should not be
-// used, but we do it anyway (for now).
-// The same source indicates that arbitrary data can follow the date field
-//
-// A variety of pathologic From_ lines:
-//   Bad date format:
-//      From uucp Wed May 22 11:28 GMT 1996
-//   Added timezone at the end (ok, part of the "any data" after the date)
-//      From qian2@fas.harvard.edu Sat Sep 30 16:44:06 2000 -0400
-//  Emacs VM botch ? Adds tz between hour and year
-//      From dockes Wed Feb 23 10:31:20 +0100 2005
-//      From dockes Fri Dec  1 20:36:39 +0100 2006
-// The modified regexp gives the exact same results on the ietf mail archive
-// and my own's.
-// Update, 2008-08-29: some old? Thunderbird versions apparently use a date
-// in "Date: " header format, like:   From - Mon, 8 May 2006 10:57:32
-// This was added as an alternative format. By the way it also fools "mail" and
-// emacs-vm, Recoll is not alone
-// Update: 2009-11-27: word after From may be quoted string: From "john bull"
-static const string frompat{
-    "^From[ ]+([^ ]+|\"[^\"]+\")[ ]+"    // 'From (toto@tutu|"john bull") '
-        "[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Fri Oct 26
-        "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?[ ]+"             // Time, seconds optional
-        "([^ ]+[ ]+)?"                                        // Optional tz
-        "[12][0-9][0-9][0-9]"            // Year, unanchored, more data may follow
-        "|"      // Or standard mail Date: header format
-        "^From[ ]+[^ ]+[ ]+"                                   // From toto@tutu
-        "[[:alpha:]]{3},[ ]+[0-3]?[0-9][ ]+[[:alpha:]]{3}[ ]+" // Mon, 8 May
-        "[12][0-9][0-9][0-9][ ]+"                              // Year
-        "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?"                  // Time, secs optional
-        };
+bool MimeHandlerMbox::tryUseCache(int mtarg)
+{
+    bool cachefound = false;
+    
+    int64_t off;
+    line_type line;
+    LOGDEB0("MimeHandlerMbox::next_doc: mtarg " << mtarg << " m_udi[" <<
+            m_udi << "]\n");
+    if (m_udi.empty()) {
+        goto out;
+    }
+    if ((off = o_mcache.get_offset(m_config, m_udi, mtarg)) < 0) {
+        goto out;
+    }
+    LOGDEB1("MimeHandlerMbox::next_doc: got offset " << off <<
+            " from cache\n");
+    if (fseeko((FILE*)m_vfp, off, SEEK_SET) < 0) {
+        goto out;
+    }
+    LOGDEB1("MimeHandlerMbox::next_doc: fseeko ok\n");
+    if (!fgets(line, LL, (FILE*)m_vfp)) {
+        goto out;
+    }
+    LOGDEB1("MimeHandlerMbox::next_doc: fgets  ok. line:[" << line << "]\n");
 
-// Extreme thunderbird brokiness. Will sometimes use From lines
-// exactly like: From ^M (From followed by space and eol). We only
-// test for this if QUIRKS_TBIRD is set
-static const string miniTbirdFrom{"^From $"};
+    if ((fromregex(line) ||
+         ((m_quirks & MBOXQUIRK_TBIRD) && minifromregex(line)))  ) {
+        LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
+        fseeko((FILE*)m_vfp, off, SEEK_SET);
+        m_msgnum = mtarg -1;
+        cachefound = true;
+    } else {
+        LOGDEB0("MimeHandlerMbox: cache: regex failed for [" << line << "]\n");
+    }
 
-static SimpleRegexp fromregex(frompat, SimpleRegexp::SRE_NOSUB);
-static SimpleRegexp minifromregex(miniTbirdFrom, SimpleRegexp::SRE_NOSUB);
+out:
+    if (!cachefound) {
+        // No cached result: scan.
+        fseek((FILE*)m_vfp, 0, SEEK_SET);
+        m_msgnum = 0;
+    }
+    return cachefound;
+}
 
 bool MimeHandlerMbox::next_document()
 {
-    if (m_vfp == 0) {
+    if (nullptr == m_vfp) {
         LOGERR("MimeHandlerMbox::next_document: not open\n");
         return false;
     }
     if (!m_havedoc) {
         return false;
     }
-    FILE *fp = (FILE *)m_vfp;
+    
     int mtarg = 0;
     if (!m_ipath.empty()) {
         sscanf(m_ipath.c_str(), "%d", &mtarg);
@@ -385,63 +426,27 @@ bool MimeHandlerMbox::next_document()
     }
     LOGDEB0("MimeHandlerMbox::next_document: fn " << m_fn << ", msgnum " <<
             m_msgnum << " mtarg " << mtarg << " \n");
+
     if (mtarg == 0)
         mtarg = -1;
 
-
-    // If we are called to retrieve a specific message, seek to bof
-    // (then scan up to the message). This is for the case where the
-    // same object is reused to fetch several messages (else the fp is
-    // just opened no need for a seek).  We could also check if the
-    // current message number is lower than the requested one and
-    // avoid rereading the whole thing in this case. But I'm not sure
-    // we're ever used in this way (multiple retrieves on same
-    // object).  So:
+    // If we are called to retrieve a specific message, try to use the
+    // offsets cache to try and position to the right header.
     bool storeoffsets = true;
     if (mtarg > 0) {
-        int64_t off;
-        line_type line;
-        LOGDEB0("MimeHandlerMbox::next_doc: mtarg " << mtarg << " m_udi[" <<
-                m_udi << "]\n");
-        if (!m_udi.empty()) {
-            LOGDEB("MimeHandlerMbox::next_doc: udi not empty\n");
-            if ((off = o_mcache.get_offset(m_config, m_udi, mtarg)) >= 0) {
-                LOGDEB1("MimeHandlerMbox::next_doc: got offset " << off <<
-                        " from cache\n");
-                if (fseeko(fp, off, SEEK_SET) >= 0) {
-                    LOGDEB1("MimeHandlerMbox::next_doc: fseeko ok\n");
-                    if (fgets(line, LL, fp)) {
-                        LOGDEB1("MimeHandlerMbox::next_doc: fgets  ok. line:[" <<
-                                line << "]\n");
-                        if ((fromregex(line) || ((m_quirks & MBOXQUIRK_TBIRD) && 
-                                                 minifromregex(line)))  ) {
-                            LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
-                            fseeko(fp, off, SEEK_SET);
-                            m_msgnum = mtarg -1;
-                            storeoffsets = false;
-                        } else {
-                            LOGDEB0("MimeHandlerMbox: cache: regex failed\n");
-                        }
-                    }
-                }
-            }
-        }
-        if (storeoffsets) {
-            // No cached result: scan.
-            fseek(fp, 0, SEEK_SET);
-            m_msgnum = 0;
-        }
+        storeoffsets = !tryUseCache(mtarg);
     }
 
-    off_t message_end = 0;
+    int64_t message_end = 0;
+    int64_t message_end1 = 0;
     bool iseof = false;
     bool hademptyline = true;
     string& msgtxt = m_metaData[cstr_dj_keycontent];
     msgtxt.erase();
     line_type line;
     for (;;) {
-        message_end = ftello(fp);
-        if (!fgets(line, LL, fp)) {
+        message_end = ftello((FILE*)m_vfp);
+        if (!fgets(line, LL, (FILE*)m_vfp)) {
             LOGDEB2("MimeHandlerMbox:next: eof\n");
             iseof = true;
             m_msgnum++;
@@ -469,10 +474,10 @@ bool MimeHandlerMbox::next_document()
                         ((m_quirks & MBOXQUIRK_TBIRD) && minifromregex(line)))
                     ) {
                     LOGDEB0("MimeHandlerMbox: msgnum " << m_msgnum <<
-                            ", From_ at line " << m_lineno << ": [" << line
-                            << "]\n");
+                            ", From_ at line " << m_lineno << " foffset " <<
+                            message_end << " line: [" << line << "]\n");
+                    
                     if (storeoffsets) {
-                        LOGDEB1("Pushing offset: " << message_end << endl);
                         m_offsets.push_back(message_end);
                     }
                     m_msgnum++;

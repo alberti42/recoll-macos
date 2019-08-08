@@ -48,14 +48,16 @@ protected:
 
 private:
     std::string m_fn;     // File name
+    std::string m_ipath;
     void      *m_vfp;    // File pointer for folder
     int        m_msgnum; // Current message number in folder. Starts at 1
-    std::string m_ipath;
     int64_t     m_lineno; // debug 
     int64_t     m_fsize;
     std::vector<int64_t> m_offsets;
     enum Quirks {MBOXQUIRK_TBIRD=1};
     int        m_quirks;
+
+    bool tryUseCache(int mtarg);
 };
 
 #endif /* _MBOX_H_INCLUDED_ */
