@@ -14,9 +14,10 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#include "autoconfig.h"
 
-#include <stdio.h>
+#include "autoconfig.h"
+#define _FILE_OFFSET_BITS 64
+
 #include <errno.h>
 #include <sys/types.h>
 #include <time.h>
@@ -24,11 +25,11 @@
 #include <cstring>
 #include <map>
 #include <mutex>
+#include <fstream>
 
 #include "cstr.h"
 #include "mimehandler.h"
 #include "log.h"
-#include "readfile.h"
 #include "mh_mbox.h"
 #include "smallut.h"
 #include "rclconfig.h"
@@ -37,11 +38,6 @@
 #include "pathut.h"
 
 using namespace std;
-
-#ifdef _WIN32
-#define fseeko _fseeki64
-#define ftello _ftelli64
-#endif
 
 // Define maximum message size for safety. 100MB would seem reasonable
 static const unsigned int max_mbox_member_size = 100 * 1024 * 1024;
@@ -109,21 +105,6 @@ static const string miniTbirdFrom{"^From $"};
 static SimpleRegexp fromregex(frompat, SimpleRegexp::SRE_NOSUB);
 static SimpleRegexp minifromregex(miniTbirdFrom, SimpleRegexp::SRE_NOSUB);
 
-// Automatic fp closing
-class FpKeeper { 
-public:
-    FpKeeper(FILE **fpp)
-        : m_fpp(fpp) {}
-    ~FpKeeper() {
-        if (m_fpp && *m_fpp) {
-            fclose(*m_fpp);
-            *m_fpp = 0;
-        }
-    }
-private:
-    FILE **m_fpp;
-};
-
 static std::mutex o_mcache_mutex;
 
 /**
@@ -154,20 +135,19 @@ public:
         LOGDEB0("MboxCache::get_offsets: udi [" << udi << "] msgnum "
                 << msgnum << "\n");
         if (!ok(config)) {
-            LOGDEB0("MboxCache::get_offsets: init failed\n");
+            LOGDEB("MboxCache::get_offsets: init failed\n");
             return -1;
         }
         std::unique_lock<std::mutex> locker(o_mcache_mutex);
         string fn = makefilename(udi);
-        FILE *fp = 0;
-        if ((fp = fopen(fn.c_str(), "rb")) == 0) {
+        ifstream instream(fn.c_str(),  std::ifstream::binary);
+        if (!instream.good()) {
             LOGSYSERR("MboxCache::get_offsets", "open", fn);
-            return -1;
+            return false;
         }
-        FpKeeper keeper(&fp);
-
         char blk1[M_o_b1size];
-        if (fread(blk1, M_o_b1size, 1, fp) != 1) {
+        instream.read(blk1, M_o_b1size);
+        if (!instream.good()) {
             LOGSYSERR("MboxCache::get_offsets", "read blk1", "");
             return -1;
         }
@@ -180,14 +160,15 @@ public:
         }
         LOGDEB1("MboxCache::get_offsets: reading offsets file at offs "
                 << cacheoffset(msgnum) << "\n");
-        if (fseeko(fp, cacheoffset(msgnum), SEEK_SET) != 0) {
+        instream.seekg(cacheoffset(msgnum));
+        if (!instream.good()) {
             LOGSYSERR("MboxCache::get_offsets", "seek",
                       lltodecstr(cacheoffset(msgnum)));
             return -1;
         }
         int64_t offset = -1;
-        size_t ret;
-        if ((ret = fread(&offset, sizeof(int64_t), 1, fp)) != 1) {
+        instream.read((char*)&offset, sizeof(int64_t));
+        if (!instream.good()) {
             LOGSYSERR("MboxCache::get_offsets", "read", "");
             return -1;
         }
@@ -202,34 +183,40 @@ public:
         if (!ok(config) || !maybemakedir())
             return;
         if (fsize < m_minfsize) {
-            LOGDEB0("MboxCache::put_offsets: fsize " << fsize << " < minsize " <<
-                    m_minfsize << endl);
+            LOGDEB0("MboxCache::put_offsets: fsize " << fsize << " < minsize "
+                    << m_minfsize << endl);
             return;
         }
         std::unique_lock<std::mutex> locker(o_mcache_mutex);
-        string fn = makefilename(udi);
-        FILE *fp;
-        if ((fp = fopen(fn.c_str(), "wb")) == 0) {
-            LOGSYSERR("MboxCache::put_offsets", "fopen", fn);
+        string fn = makefilename(udi);        
+        std::ofstream os(fn.c_str(), std::ios::out|std::ios::binary);
+        if (!os.good()) {
+            LOGSYSERR("MboxCache::put_offsets", "open", fn);
             return;
         }
-        FpKeeper keeper(&fp);
         string blk1("udi=");
         blk1.append(udi);
         blk1.append(cstr_newline);
         blk1.resize(M_o_b1size, 0);
-        if (fwrite(blk1.c_str(), M_o_b1size, 1, fp) != 1) {
-            LOGSYSERR("MboxCache::put_offsets", "fwrite blk1", "");
+        os.write(blk1.c_str(), M_o_b1size);
+        if (!os.good()) {
+            LOGSYSERR("MboxCache::put_offsets", "write blk1", "");
             return;
         }
 
         for (const auto& off : offs) {
             LOGDEB1("MboxCache::put_offsets: writing value " << off <<
                     " at offset " << ftello(fp) << endl);
-            if (fwrite((char*)&off, sizeof(int64_t), 1, fp) != 1) {
-                LOGSYSERR("MboxCache::put_offsets", "fwrite", "");
+            os.write((char*)&off, sizeof(int64_t));
+            if (!os.good()) {
+                LOGSYSERR("MboxCache::put_offsets", "write", "");
                 return;
             }
+        }
+        os.flush();
+        if (!os.good()) {
+            LOGSYSERR("MboxCache::put_offsets", "flush", "");
+            return;
         }
     }
 
@@ -294,7 +281,7 @@ public:
     Internal(MimeHandlerMbox *p) : pthis(p) {}
     std::string fn;     // File name
     std::string ipath;
-    void      *vfp{nullptr};    // File pointer for folder
+    ifstream instream;
     int        msgnum{0}; // Current message number in folder. Starts at 1
     int64_t    lineno{0}; // debug 
     int64_t    fsize{0};
@@ -322,10 +309,7 @@ void MimeHandlerMbox::clear_impl()
 {
     m->fn.erase();
     m->ipath.erase();
-    if (m->vfp) {
-        fclose((FILE *)m->vfp);
-        m->vfp = 0;
-    }
+    m->instream = ifstream();
     m->msgnum = m->lineno = m->fsize = 0;
     m->offsets.clear();
     m->quirks = 0;
@@ -341,17 +325,14 @@ bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
     LOGDEB("MimeHandlerMbox::set_document_file(" << fn << ")\n");
     clear_impl();
     m->fn = fn;
-    if (m->vfp) {
-        fclose((FILE *)m->vfp);
-        m->vfp = 0;
-    }
-
-    m->vfp = fopen(fn.c_str(), "rb");
-    if (m->vfp == nullptr) {
-        LOGSYSERR("MimeHandlerMail::set_document_file", "fopen rb", fn);
+    m->instream = ifstream(fn.c_str(), std::ifstream::binary);
+    if (!m->instream.good()) {
+        LOGSYSERR("MimeHandlerMail::set_document_file", "ifstream", fn);
         return false;
     }
-#if defined O_NOATIME && O_NOATIME != 0
+
+    // TBD
+#if 0 && defined O_NOATIME && O_NOATIME != 0
     if (fcntl(fileno((FILE *)m->vfp), F_SETFL, O_NOATIME) < 0) {
         // perror("fcntl");
     }
@@ -372,33 +353,19 @@ bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
     // And double check for thunderbird 
     string tbirdmsf = fn + ".msf";
     if (!(m->quirks & MBOXQUIRK_TBIRD) && path_exists(tbirdmsf)) {
-        LOGDEB("MimeHandlerMbox: detected unconf'd tbird mbox in " << fn <<"\n");
+        LOGDEB("MimeHandlerMbox: detected unconf'd tbird mbox in "<< fn <<"\n");
         m->quirks |= MBOXQUIRK_TBIRD;
     }
 
     return true;
 }
 
-#define LL 20000
-typedef char line_type[LL+10];
-static inline void stripendnl(line_type& line, int& ll)
-{
-    ll = int(strlen(line));
-    while (ll > 0) {
-        if (line[ll-1] == '\n' || line[ll-1] == '\r') {
-            line[ll-1] = 0;
-            ll--;
-        } else 
-            break;
-    }
-}
-
 bool MimeHandlerMbox::Internal::tryUseCache(int mtarg)
 {
     bool cachefound = false;
-    
+    string line;
     int64_t off;
-    line_type line;
+    
     LOGDEB0("MimeHandlerMbox::next_doc: mtarg " << mtarg << " m_udi[" <<
             pthis->m_udi << "]\n");
     if (pthis->m_udi.empty()) {
@@ -407,21 +374,22 @@ bool MimeHandlerMbox::Internal::tryUseCache(int mtarg)
     if ((off = o_mcache.get_offset(pthis->m_config, pthis->m_udi, mtarg)) < 0) {
         goto out;
     }
-    LOGDEB1("MimeHandlerMbox::next_doc: got offset " << off <<
-            " from cache\n");
-    if (fseeko((FILE*)vfp, off, SEEK_SET) < 0) {
+    instream.seekg(off);
+    if (!instream.good()) {
+        LOGSYSERR("tryUseCache", "seekg", "");
         goto out;
     }
-    LOGDEB1("MimeHandlerMbox::next_doc: fseeko ok\n");
-    if (!fgets(line, LL, (FILE*)vfp)) {
+    getline(instream, line, '\n');
+    if (!instream.good()) {
+        LOGSYSERR("tryUseCache", "getline", "");
         goto out;
     }
-    LOGDEB1("MimeHandlerMbox::next_doc: fgets  ok. line:[" << line << "]\n");
+    LOGDEB1("MimeHandlerMbox::tryUseCache:getl ok. line:[" << line << "]\n");
 
     if ((fromregex(line) ||
          ((quirks & MBOXQUIRK_TBIRD) && minifromregex(line)))  ) {
         LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
-        fseeko((FILE*)vfp, off, SEEK_SET);
+        instream.seekg(off);
         msgnum = mtarg -1;
         cachefound = true;
     } else {
@@ -431,7 +399,7 @@ bool MimeHandlerMbox::Internal::tryUseCache(int mtarg)
 out:
     if (!cachefound) {
         // No cached result: scan.
-        fseek((FILE*)vfp, 0, SEEK_SET);
+        instream.seekg(0);
         msgnum = 0;
     }
     return cachefound;
@@ -439,7 +407,7 @@ out:
 
 bool MimeHandlerMbox::next_document()
 {
-    if (nullptr == m->vfp) {
+    if (!m->instream.good()) {
         LOGERR("MimeHandlerMbox::next_document: not open\n");
         return false;
     }
@@ -469,25 +437,40 @@ bool MimeHandlerMbox::next_document()
     }
 
     int64_t message_end = 0;
-    int64_t message_end1 = 0;
     bool iseof = false;
     bool hademptyline = true;
     string& msgtxt = m_metaData[cstr_dj_keycontent];
     msgtxt.erase();
-    line_type line;
+    string line;
     for (;;) {
-        message_end = ftello((FILE*)m->vfp);
-        if (!fgets(line, LL, (FILE*)m->vfp)) {
-            LOGDEB2("MimeHandlerMbox:next: eof\n");
+        message_end = m->instream.tellg();
+        getline(m->instream, line, '\n');
+        if (!m->instream.good()) {
+            ifstream::iostate st = m->instream.rdstate();
+            if (st &  std::ifstream::eofbit) {
+                LOGDEB0("MimeHandlerMbox:next: eof\n");
+            }
+            if (st &  std::ifstream::failbit) {
+                LOGDEB0("MimeHandlerMbox:next: fail\n");
+                LOGSYSERR("MimeHandlerMbox:next:", "", "");
+            }
+            if (st &  std::ifstream::badbit) {
+                LOGDEB0("MimeHandlerMbox:next: bad\n");
+                LOGSYSERR("MimeHandlerMbox:next:", "", "");
+            }
+            if (st &  std::ifstream::goodbit) {
+                LOGDEB0("MimeHandlerMbox:next: good\n");
+            }
+            LOGDEB0("MimeHandlerMbox:next: eof at " << message_end << endl);
             iseof = true;
             m->msgnum++;
             break;
         }
         m->lineno++;
-        int ll;
-        stripendnl(line, ll);
+        rtrimstring(line, "\r\n");
+        int ll = line.size();
         LOGDEB2("mhmbox:next: hadempty " << hademptyline << " lineno " <<
-                m->lineno << " ll " << ll << " Line: [" << line << "]\n");
+               m->lineno << " ll " << ll << " Line: [" << line << "]\n");
         if (hademptyline) {
             if (ll > 0) {
                 // Non-empty line with empty line flag set, reset flag
@@ -504,7 +487,7 @@ bool MimeHandlerMbox::next_document()
                         fromregex(line) || 
                         ((m->quirks & MBOXQUIRK_TBIRD) && minifromregex(line)))
                     ) {
-                    LOGDEB0("MimeHandlerMbox: msgnum " << m->msgnum <<
+                    LOGDEB1("MimeHandlerMbox: msgnum " << m->msgnum <<
                             ", From_ at line " << m->lineno << " foffset " <<
                             message_end << " line: [" << line << "]\n");
                     
@@ -527,8 +510,7 @@ bool MimeHandlerMbox::next_document()
 
         if (mtarg <= 0 || m->msgnum == mtarg) {
             // Accumulate message lines
-            line[ll] = '\n';
-            line[ll+1] = 0;
+            line += '\n';
             msgtxt += line;
             if (msgtxt.size() > max_mbox_member_size) {
                 LOGERR("mh_mbox: huge message (more than " <<
