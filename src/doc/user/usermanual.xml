@@ -377,22 +377,23 @@
         <title>Configurations, multiple indexes</title>
 
         <para>&RCL; supports defining multiple indexes, each defined by its
-        own <link linkend="RCL.INDEXING.CONFIG">configuration directory</link>,
-        in which several configuration files describe
-        what should be indexed and how.</para>
+        own configuration directory. A configuration directory contains
+        <link linkend="RCL.INDEXING.CONFIG">several files</link> which
+        describe what should be indexed and how.</para>
 
         <para>When <command>recoll</command> or
         <command>recollindex</command> is first executed, it creates a
         default configuration directory. This configuration is the one used
         for indexing and querying when no specific configuration is
         specified. It is located in <filename>$HOME/.recoll/</filename> for
-        &LIN; and <filename>%LOCALAPPDATA%</filename> on &WIN;
-        (typically <filename>C:\Users\[me]\Appdata\Local</filename>).</para>
+        &LIN; and <filename>%LOCALAPPDATA%\Recoll</filename> on &WIN;
+        (typically
+        <filename>C:\Users\[me]\Appdata\Local\Recoll</filename>).</para> 
 
         <para>All configuration parameters have defaults, defined in
         system-wide files. Without further customisation, the default
         configuration will process your complete home directory, with a
-        reasonable set of defaults. It can be changed to process a
+        reasonable set of defaults. It can be adjusted to process a
         different area of the file system, select files in different ways,
         and many other things.</para>
 
@@ -401,6 +402,29 @@
         shared indexes, or to take advantage of the organization of your
         data to improve search precision.</para>
 
+        <para>In order to do this, you would create an empty directory in a
+        location of your choice, and then instruct
+        <command>recoll</command> or <command>recollindex</command> to use
+        it by setting either a command line option (<literal>-c</literal>
+        <replaceable>/some/directory</replaceable>), or an environment
+        variable
+        (<envar>RECOLL_CONFDIR</envar>=<replaceable>/some/directory</replaceable>).
+        Any modification performed by the commands (e.g. configuration
+        customisation or searches by <command>recoll</command> or index
+        creation by <command>recollindex</command>) would then apply to the
+        new directory and not to the default one.</para>
+
+        <para>Once multiple indexes are created, you can use each of them
+        separately by setting the <literal>-c</literal> option or the
+        <envar>RECOLL_CONFDIR</envar> environment variable when starting a
+        command, to select the desired index.</para>
+
+        <para>It is also possible to instruct one configuration to
+        query one or several other indexes in addition to its own, by using
+        the <guimenuitem>External index</guimenuitem> function in the
+        <command>recoll</command> GUI, or some other functions in the
+        command line and programming tools.</para>
+        
         <para>A plausible usage scenario for the multiple index feature
         would be for a system administrator to set up a central index for
         shared data, that you choose to search or not in addition to your

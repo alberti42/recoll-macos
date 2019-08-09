@@ -1240,14 +1240,6 @@ Tjek venligst desktopfilen</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>(%d documents/%d files/%d errors/%d total files) </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>(%d documents/%d files/%d errors) </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
 </source>
         <translation type="unfinished"></translation>
@@ -1274,6 +1266,34 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>errors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>total files)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2056,7 +2076,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Start directory (else use regular topdirs):</source>
-        <translation>Startmappe (ellers brug de regulære øverste mapper):</translation>
+        <translation type="vanished">Startmappe (ellers brug de regulære øverste mapper):</translation>
     </message>
     <message>
         <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
@@ -2072,6 +2092,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Retry previously failed files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

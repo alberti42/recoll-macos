@@ -55,20 +55,22 @@ void RclMain::updateIdxStatus()
     }
     msg += phs + " ";
     if (status.phase == DbIxStatus::DBIXS_FILES) {
-	char cnts[100];
-	if (status.dbtotdocs > 0) {
-            string format =
-               qs2utf8s(tr("(%d documents/%d files/%d errors/%d total files) "));
-	    sprintf(cnts, format.c_str(),
-                    status.docsdone, status.filesdone, status.fileerrors,
-		    status.totfiles);
+        QString sdocs = status.docsdone > 1 ?tr("documents") : tr("document");
+        QString sfiles = status.filesdone > 1 ? tr("files") : tr("file");
+        QString serrors = status.fileerrors > 1 ? tr("errors") : tr("error");
+        QString stats;
+        if (status.dbtotdocs > 0) {
+            stats = QString("(%1 ") + sdocs + "/%2 " + sfiles +
+                "/%3 " + serrors + "/%4 " + tr("total files)");
+            stats = stats.arg(status.docsdone).arg(status.filesdone).
+                arg(status.fileerrors).arg(status.totfiles);
         } else {
-            string format =
-                qs2utf8s(tr("(%d documents/%d files/%d errors) "));
-            sprintf(cnts, format.c_str(),
-                    status.docsdone, status.filesdone, status.fileerrors);
+            stats = QString("(%1 ") + sdocs + "/%2 " + sfiles +
+                "/%3 " + serrors + ") ";
+            stats = stats.arg(status.docsdone).arg(status.filesdone).
+                arg(status.fileerrors);
         }
-	msg += QString::fromUtf8(cnts) + " ";
+        msg += stats + " ";
     }
     string mf;int ecnt = 0;
     string fcharset = theconfig->getDefCharset(true);
@@ -95,10 +97,10 @@ void RclMain::periodic100()
     }
 
     if (m_idxproc) {
-	// An indexing process was launched. If its' done, see status.
-	int status;
-	bool exited = m_idxproc->maybereap(&status);
-	if (exited) {
+        // An indexing process was launched. If its' done, see status.
+        int status;
+        bool exited = m_idxproc->maybereap(&status);
+        if (exited) {
             QString reasonmsg;
             if (m_idxreasontmp && m_idxreasontmp->ok()) {
                 string reasons;
@@ -115,8 +117,8 @@ void RclMain::periodic100()
                     }
                 }
             }
-	    deleteZ(m_idxproc);
-	    if (status) {
+            deleteZ(m_idxproc);
+            if (status) {
                 if (m_idxkilled) {
                     QMessageBox::warning(0, "Recoll", 
                                          tr("Indexing interrupted"));
@@ -129,58 +131,58 @@ void RclMain::periodic100()
                     }
                     QMessageBox::warning(0, "Recoll", msg);
                 }
-	    } else {
-		// On the first run, show missing helpers. We only do this once
-		if (m_firstIndexing)
-		    showMissingHelpers();
+            } else {
+                // On the first run, show missing helpers. We only do this once
+                if (m_firstIndexing)
+                    showMissingHelpers();
                 if (!reasonmsg.isEmpty()) {
                     QString msg = tr("Non-fatal indexing message: ");
                     msg.append(reasonmsg);
                     QMessageBox::warning(0, "Recoll", msg);
                 }
-	    }
-	    string reason;
-	    maybeOpenDb(reason, 1);
-	} else {
-	    // update/show status even if the status file did not
-	    // change (else the status line goes blank during
-	    // lengthy operations).
-	    updateIdxStatus();
-	}
+            }
+            string reason;
+            maybeOpenDb(reason, 1);
+        } else {
+            // update/show status even if the status file did not
+            // change (else the status line goes blank during
+            // lengthy operations).
+            updateIdxStatus();
+        }
     }
     // Update the "start/stop indexing" menu entry, can't be done from
     // the "start/stop indexing" slot itself
     IndexerState prevstate = m_indexerState;
     if (m_idxproc) {
-	m_indexerState = IXST_RUNNINGMINE;
-	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
-	fileToggleIndexingAction->setEnabled(true);
-	fileRebuildIndexAction->setEnabled(false);
+        m_indexerState = IXST_RUNNINGMINE;
+        fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+        fileToggleIndexingAction->setEnabled(true);
+        fileRebuildIndexAction->setEnabled(false);
         actionSpecial_Indexing->setEnabled(false);
-	periodictimer->setInterval(200);
+        periodictimer->setInterval(200);
     } else {
-	Pidfile pidfile(theconfig->getPidfile());
+        Pidfile pidfile(theconfig->getPidfile());
         pid_t pid = pidfile.open();
         fileBumpIndexingAction->setEnabled(false);
         if (pid == getpid()) {
             // Locked by me
-	    m_indexerState = IXST_NOTRUNNING;
-	    fileToggleIndexingAction->setText(tr("Index locked"));
-	    fileToggleIndexingAction->setEnabled(false);
-	    fileRebuildIndexAction->setEnabled(false);
+            m_indexerState = IXST_NOTRUNNING;
+            fileToggleIndexingAction->setText(tr("Index locked"));
+            fileToggleIndexingAction->setEnabled(false);
+            fileRebuildIndexAction->setEnabled(false);
             actionSpecial_Indexing->setEnabled(false);
-	    periodictimer->setInterval(1000);
+            periodictimer->setInterval(1000);
         } else if (pid == 0) {
-	    m_indexerState = IXST_NOTRUNNING;
-	    fileToggleIndexingAction->setText(tr("Update &Index"));
-	    fileToggleIndexingAction->setEnabled(true);
-	    fileRebuildIndexAction->setEnabled(true);
+            m_indexerState = IXST_NOTRUNNING;
+            fileToggleIndexingAction->setText(tr("Update &Index"));
+            fileToggleIndexingAction->setEnabled(true);
+            fileRebuildIndexAction->setEnabled(true);
             actionSpecial_Indexing->setEnabled(true);
-	    periodictimer->setInterval(1000);
-	} else {
-	    // Real time or externally started batch indexer running
-	    m_indexerState = IXST_RUNNINGNOTMINE;
-	    fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+            periodictimer->setInterval(1000);
+        } else {
+            // Real time or externally started batch indexer running
+            m_indexerState = IXST_RUNNINGNOTMINE;
+            fileToggleIndexingAction->setText(tr("Stop &Indexing"));
             DbIxStatus status;
             readIdxStatus(theconfig, status);
             if (status.hasmonitor) {
@@ -188,11 +190,11 @@ void RclMain::periodic100()
                 // incremental pass
                 fileBumpIndexingAction->setEnabled(true);
             }
-	    fileToggleIndexingAction->setEnabled(true);
-	    fileRebuildIndexAction->setEnabled(false);
+            fileToggleIndexingAction->setEnabled(true);
+            fileRebuildIndexAction->setEnabled(false);
             actionSpecial_Indexing->setEnabled(false);
-	    periodictimer->setInterval(200);
-	}	    
+            periodictimer->setInterval(200);
+        }           
     }
 
     if ((prevstate == IXST_RUNNINGMINE || prevstate == IXST_RUNNINGNOTMINE)
@@ -202,22 +204,22 @@ void RclMain::periodic100()
 
     // Possibly cleanup the dead viewers
     for (vector<ExecCmd*>::iterator it = m_viewers.begin();
-	 it != m_viewers.end(); it++) {
-	int status;
-	if ((*it)->maybereap(&status)) {
-	    deleteZ(*it);
-	}
+         it != m_viewers.end(); it++) {
+        int status;
+        if ((*it)->maybereap(&status)) {
+            deleteZ(*it);
+        }
     }
     vector<ExecCmd*> v;
     for (vector<ExecCmd*>::iterator it = m_viewers.begin();
-	 it != m_viewers.end(); it++) {
-	if (*it)
-	    v.push_back(*it);
+         it != m_viewers.end(); it++) {
+        if (*it)
+            v.push_back(*it);
     }
     m_viewers = v;
 
     if (recollNeedsExit)
-	fileExit();
+        fileExit();
 }
 
 bool RclMain::checkIdxPaths()
@@ -246,43 +248,43 @@ void RclMain::toggleIndexing()
 {
     switch (m_indexerState) {
     case IXST_RUNNINGMINE:
-	if (m_idxproc) {
-	    // Indexing was in progress, request stop. Let the periodic
-	    // routine check for the results.
+        if (m_idxproc) {
+            // Indexing was in progress, request stop. Let the periodic
+            // routine check for the results.
             if (m_idxproc->requestChildExit()) {
                 m_idxkilled = true;
             }
-	}
-	break;
+        }
+        break;
     case IXST_RUNNINGNOTMINE:
     {
-	int rep = 
-	    QMessageBox::information(
+        int rep = 
+            QMessageBox::information(
                 0, tr("Warning"), 
                 tr("The current indexing process was not started from this "
                    "interface. Click Ok to kill it "
                    "anyway, or Cancel to leave it alone"),
                 QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
-	if (rep == QMessageBox::Ok) {
+        if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
             // No simple way to signal the process. Use the stop file
             ::close(::creat(theconfig->getIdxStopFile().c_str(), 0666));
 #else
-	    Pidfile pidfile(theconfig->getPidfile());
-	    pid_t pid = pidfile.open();
-	    if (pid > 0)
-		kill(pid, SIGTERM);
+            Pidfile pidfile(theconfig->getPidfile());
+            pid_t pid = pidfile.open();
+            if (pid > 0)
+                kill(pid, SIGTERM);
 #endif // !_WIN32
-	}
+        }
     }
     break;
     case IXST_NOTRUNNING:
     {
-	// Could also mean that no helpers are missing, but then we
-	// won't try to show a message anyway (which is what
-	// firstIndexing is used for)
-	string mhd;
-	m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
+        // Could also mean that no helpers are missing, but then we
+        // won't try to show a message anyway (which is what
+        // firstIndexing is used for)
+        string mhd;
+        m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
 
         if (!checkIdxPaths()) {
             return;
@@ -292,8 +294,8 @@ void RclMain::toggleIndexing()
             args.push_back("-R");
             args.push_back(m_idxreasontmp->filename());
         }
-	m_idxproc = new ExecCmd;
-	m_idxproc->startExec("recollindex", args, false, false);
+        m_idxproc = new ExecCmd;
+        m_idxproc->startExec("recollindex", args, false, false);
     }
     break;
     case IXST_UNKNOWN:
@@ -347,21 +349,21 @@ void RclMain::rebuildIndex()
     case IXST_UNKNOWN:
     case IXST_RUNNINGMINE:
     case IXST_RUNNINGNOTMINE:
-	return; //?? Should not have been called
+        return; //?? Should not have been called
     case IXST_NOTRUNNING:
     {
         if (m_idxproc) {
             LOGERR("RclMain::rebuildIndex: current indexer exec not null\n" );
             return;
         }
-	int rep = 
-	    QMessageBox::warning(0, tr("Erasing index"), 
-				     tr("Reset the index and start "
-					"from scratch ?"),
-					 QMessageBox::Ok,
-					 QMessageBox::Cancel,
-					 QMessageBox::NoButton);
-	if (rep == QMessageBox::Ok) {
+        int rep = 
+            QMessageBox::warning(0, tr("Erasing index"), 
+                                 tr("Reset the index and start "
+                                    "from scratch ?"),
+                                 QMessageBox::Ok,
+                                 QMessageBox::Cancel,
+                                 QMessageBox::NoButton);
+        if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
             // Under windows, it is necessary to close the db here,
             // else Xapian won't be able to do what it wants with the
@@ -382,24 +384,24 @@ void RclMain::rebuildIndex()
                 rcldb->close();
             }
 #endif // _WIN32
-	    // Could also mean that no helpers are missing, but then we
-	    // won't try to show a message anyway (which is what
-	    // firstIndexing is used for)
-	    string mhd;
-	    m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
+            // Could also mean that no helpers are missing, but then we
+            // won't try to show a message anyway (which is what
+            // firstIndexing is used for)
+            string mhd;
+            m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
 
             if (!checkIdxPaths()) {
                 return;
             }
             
-	    vector<string> args{"-c", theconfig->getConfDir(), "-z"};
+            vector<string> args{"-c", theconfig->getConfDir(), "-z"};
             if (m_idxreasontmp && m_idxreasontmp->ok()) {
                 args.push_back("-R");
                 args.push_back(m_idxreasontmp->filename());
             }
-	    m_idxproc = new ExecCmd;
-	    m_idxproc->startExec("recollindex", args, false, false);
-	}
+            m_idxproc = new ExecCmd;
+            m_idxproc->startExec("recollindex", args, false, false);
+        }
     }
     break;
     }
@@ -467,7 +469,7 @@ void RclMain::specialIndex()
     case IXST_UNKNOWN:
     case IXST_RUNNINGMINE:
     case IXST_RUNNINGNOTMINE:
-	return; //?? Should not have been called
+        return; //?? Should not have been called
     case IXST_NOTRUNNING:
     default:
         break;
@@ -495,6 +497,8 @@ void RclMain::specialIndex()
             args.push_back("-Z");
         } else {
             args.push_back("-e");
+            // -e also needs -i, else we don't reindex, just erase
+            args.push_back("-i");
         }
     } 
 
@@ -529,28 +533,28 @@ void RclMain::specialIndex()
 void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 {
     if (m_idxproc) {
-	QMessageBox::warning(0, tr("Warning"), 
-			     tr("Can't update index: indexer running"),
-			     QMessageBox::Ok, QMessageBox::NoButton);
-	return;
+        QMessageBox::warning(0, tr("Warning"), 
+                             tr("Can't update index: indexer running"),
+                             QMessageBox::Ok, QMessageBox::NoButton);
+        return;
     }
-	
+        
     vector<string> paths;
     if (Rcl::docsToPaths(docs, paths)) {
-	vector<string> args{"-c", theconfig->getConfDir(), "-i",};
+        vector<string> args{"-c", theconfig->getConfDir(), "-i",};
         if (m_idxreasontmp && m_idxreasontmp->ok()) {
             args.push_back("-R");
             args.push_back(m_idxreasontmp->filename());
         }
-	args.insert(args.end(), paths.begin(), paths.end());
-	m_idxproc = new ExecCmd;
-	m_idxproc->startExec("recollindex", args, false, false);
+        args.insert(args.end(), paths.begin(), paths.end());
+        m_idxproc = new ExecCmd;
+        m_idxproc->startExec("recollindex", args, false, false);
         // Call periodic100 to update the menu entries states
         periodic100();
     } else {
-	QMessageBox::warning(0, tr("Warning"), 
-			     tr("Can't update index: internal error"),
-			     QMessageBox::Ok, QMessageBox::NoButton);
-	return;
+        QMessageBox::warning(0, tr("Warning"), 
+                             tr("Can't update index: internal error"),
+                             QMessageBox::Ok, QMessageBox::NoButton);
+        return;
     }
 }

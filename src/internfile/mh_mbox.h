@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <inttypes.h>
 
 #include "mimehandler.h"
 
@@ -29,33 +30,19 @@
  */
 class MimeHandlerMbox : public RecollFilter {
 public:
-    MimeHandlerMbox(RclConfig *cnf, const std::string& id) 
-	: RecollFilter(cnf, id), m_vfp(0), m_msgnum(0), 
-	  m_lineno(0), m_fsize(0) {
-    }
+    MimeHandlerMbox(RclConfig *cnf, const std::string& id);
     virtual ~MimeHandlerMbox();
     virtual bool next_document() override;
-    virtual bool skip_to_document(const std::string& ipath) override{
-	m_ipath = ipath;
-	return true;
-    }
+    virtual bool skip_to_document(const std::string& ipath) override;
     virtual void clear_impl() override;
-    typedef long long mbhoff_type;
 
 protected:
     virtual bool set_document_file_impl(const std::string&,
                                         const std::string&) override;
 
+    class Internal;
 private:
-    std::string m_fn;     // File name
-    void      *m_vfp;    // File pointer for folder
-    int        m_msgnum; // Current message number in folder. Starts at 1
-    std::string m_ipath;
-    int        m_lineno; // debug 
-    mbhoff_type m_fsize;
-    std::vector<mbhoff_type> m_offsets;
-    enum Quirks {MBOXQUIRK_TBIRD=1};
-    int        m_quirks;
+    Internal *m{nullptr};
 };
 
 #endif /* _MBOX_H_INCLUDED_ */

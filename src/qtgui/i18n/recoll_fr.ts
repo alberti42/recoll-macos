@@ -1347,11 +1347,11 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>(%d documents/%d files/%d errors/%d total files) </source>
-        <translation>(%d documents/%d fichiers/%d erreurs/%d fichiers en tout) </translation>
+        <translation type="vanished">(%d documents/%d fichiers/%d erreurs/%d fichiers en tout) </translation>
     </message>
     <message>
         <source>(%d documents/%d files/%d errors) </source>
-        <translation>(%d documents/%d fichiers/%d erreurs) </translation>
+        <translation type="vanished">(%d documents/%d fichiers/%d erreurs) </translation>
     </message>
     <message>
         <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
@@ -1381,6 +1381,34 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
         <translation>Cliquer Annuler pour retourner à la liste.&lt;br&gt;Cliquer Ignorer pour afficher la prévisualisation (et enregister l&apos;option pour cette session). Il y a un risque d&apos;afficher le mauvais document.&lt;br/&gt;</translation>
+    </message>
+    <message>
+        <source>documents</source>
+        <translation>documents</translation>
+    </message>
+    <message>
+        <source>document</source>
+        <translation>document</translation>
+    </message>
+    <message>
+        <source>files</source>
+        <translation>fichiers</translation>
+    </message>
+    <message>
+        <source>file</source>
+        <translation>fichier</translation>
+    </message>
+    <message>
+        <source>errors</source>
+        <translation>erreurs</translation>
+    </message>
+    <message>
+        <source>error</source>
+        <translation>erreur</translation>
+    </message>
+    <message>
+        <source>total files)</source>
+        <translation>fichiers totaux)</translation>
     </message>
 </context>
 <context>
@@ -2421,7 +2449,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Start directory (else use regular topdirs):</source>
-        <translation>Répertoire de départ (sinon utiliser la variable normale topdirs) :</translation>
+        <translation type="vanished">Répertoire de départ (sinon utiliser la variable normale topdirs) :</translation>
     </message>
     <message>
         <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
@@ -2442,6 +2470,14 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Retry previously failed files.</source>
         <translation>Ne pas réessayer les fichiers en erreur.</translation>
+    </message>
+    <message>
+        <source>Start directory. Must be part of the indexed tree. We use  topdirs if empty.</source>
+        <translation type="vanished">Répertoire de départ. Doit faire partie de la zone indexée. topdirs est utilisé si non renseigné.</translation>
+    </message>
+    <message>
+        <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
+        <translation>Répertoire de départ. Doit faire partie de la zone indexée. Traite toute la zone si non renseigné.</translation>
     </message>
 </context>
 <context>

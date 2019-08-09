@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
  *   the Free Software Foundation; either version 2.1 of the License, or
@@ -57,9 +57,9 @@
 #include "safesysstat.h"
 #include "transcode.h"
 
-#define STAT _wstat
-#define LSTAT _wstat
-#define STATBUF _stat
+#define STAT _wstati64
+#define LSTAT _wstati64
+#define STATBUF _stati64
 #define ACCESS _waccess
 
 #else // Not windows ->
@@ -654,18 +654,18 @@ bool path_makepath(const string& ipath, int mode)
     vector<string> elems;
     stringToTokens(path, elems, "/");
     path = "/";
-    for (vector<string>::const_iterator it = elems.begin();
-            it != elems.end(); it++) {
+    for (const auto& elem : elems) {
 #ifdef _WIN32
-        if (it == elems.begin() && path_strlookslikedrive(*it)) {
+        if (path == "/" && path_strlookslikedrive(elem)) {
             path = "";
         }
 #endif
-        path += *it;
+        path += elem;
         // Not using path_isdir() here, because this cant grok symlinks
         // If we hit an existing file, no worry, mkdir will just fail.
         if (access(path.c_str(), 0) != 0) {
             if (mkdir(path.c_str(), mode) != 0)  {
+                //cerr << "mkdir " << path << " failed, errno " << errno << endl;
                 return false;
             }
         }

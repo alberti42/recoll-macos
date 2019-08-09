@@ -83,7 +83,7 @@ static bool path_isdriveabs(const string& s)
 #include <Shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
 
-string path_thisexecpath()
+static string path_thisexecpath()
 {
     wchar_t text[MAX_PATH];
     GetModuleFileNameW(NULL, text, MAX_PATH);
@@ -100,25 +100,38 @@ string path_thisexecpath()
 
     return path;
 }
-string path_wingettempfilename(wchar_t *pref)
+
+// On Windows, we ese a subdirectory named "rcltmp" inside the windows
+// temp location to create the temporary files in.
+static const string& path_wingetrcltmpdir()
 {
-    // Use a subdirectory named "rcltmp" inside the windows temp
-    // location.
-    wchar_t dbuf[MAX_PATH + 1];
-    GetTempPathW(MAX_PATH + 1, dbuf);
-    string tdir;
-    wchartoutf8(dbuf, tdir);
-    tdir = path_cat(tdir, "rcltmp");;
-    if (!path_exists(tdir)) {
-        if (path_makepath(tdir, 0700)) {
-            LOGSYSERR("path_wingettempfilename", "path_makepath", tdir);
+    // Constant: only need to compute once
+    static string tdir;
+    if (tdir.empty()) {
+        wchar_t dbuf[MAX_PATH + 1];
+        GetTempPathW(MAX_PATH + 1, dbuf);
+        wchartoutf8(dbuf, tdir);
+        tdir = path_cat(tdir, "rcltmp");;
+        if (!path_exists(tdir)) {
+            if (path_makepath(tdir, 0700)) {
+                LOGSYSERR("path_wingettempfilename", "path_makepath", tdir);
+            }
         }
     }
+    return tdir;
+}
+
+static bool path_gettempfilename(string& filename, string& reason)
+{
+    string tdir = path_wingetrcltmpdir();
+    wchar_t dbuf[MAX_PATH + 1];
     utf8towchar(tdir, dbuf, MAX_PATH);
+
     wchar_t buf[MAX_PATH + 1];
-    GetTempFileNameW(dbuf, pref, 0, buf);
-    string filename;
+    static wchar_t prefix[]{L"rcl"};
+    GetTempFileNameW(dbuf, prefix, 0, buf);
     wchartoutf8(buf, filename);
+
     // Windows will have created a temp file, we delete it.
     if (!DeleteFileW(buf)) {
         LOGSYSERR("path_wingettempfilename", "DeleteFileW", filename);
@@ -126,10 +139,35 @@ string path_wingettempfilename(wchar_t *pref)
         LOGDEB1("path_wingettempfilename: DeleteFile " << filename << " Ok\n");
     }
     path_slashize(filename);
-    return filename;
+    return true;
 }
 
-#endif // _WIN32
+#else // _WIN32 above
+
+static bool path_gettempfilename(string& filename, string& reason)
+{
+    filename = path_cat(tmplocation(), "rcltmpfXXXXXX");
+    char *cp = strdup(filename.c_str());
+    if (!cp) {
+        reason = "Out of memory (for file name !)\n";
+        return false;
+    }
+
+    // Using mkstemp this way is awful (bot the suffix adding and
+    // using mkstemp() instead of mktemp just to avoid the warnings)
+    int fd;
+    if ((fd = mkstemp(cp)) < 0) {
+        free(cp);
+        reason = "TempFileInternal: mkstemp failed\n";
+        return false;
+    }
+    close(fd);
+    unlink(cp);
+    filename = cp;
+    free(cp);
+    return true;
+}
+#endif // posix
 
 // Check if path is either non-existing or an empty directory.
 bool path_empty(const string& path)
@@ -259,21 +297,21 @@ bool maketmpdir(string& tdir, string& reason)
     // There is a race condition between name computation and
     // mkdir. try to make sure that we at least don't shoot ourselves
     // in the foot
-#if !defined(HAVE_MKDTEMP) || defined(_WIN32)
+#if !defined(HAVE_MKDTEMP)
     static std::mutex mmutex;
     std::unique_lock<std::mutex> lock(mmutex);
 #endif
 
     if (!
 #ifdef HAVE_MKDTEMP
-		mkdtemp(cp)
+        mkdtemp(cp)
 #else
-		mktemp(cp)
+        mktemp(cp)
 #endif // HAVE_MKDTEMP
-		) {
+        ) {
         free(cp);
         reason = "maketmpdir: mktemp failed for [" + tdir + "] : " +
-			strerror(errno);
+            strerror(errno);
         tdir.erase();
         return false;
     }
@@ -285,8 +323,9 @@ bool maketmpdir(string& tdir, string& reason)
     // in the foot
     static std::mutex mmutex;
     std::unique_lock<std::mutex> lock(mmutex);
-    static wchar_t tmpbasename[]{L"rcltmp"};
-    tdir = path_wingettempfilename(tmpbasename);
+    if (!path_gettempfilename(tdir, reason)) {
+        return false;
+    }
 #endif
 
     // At this point the directory does not exist yet except if we used
@@ -356,32 +395,10 @@ TempFile::Internal::Internal(const string& suffix)
     static std::mutex mmutex;
     std::unique_lock<std::mutex> lock(mmutex);
 
-#ifndef _WIN32
-    string filename = path_cat(tmplocation(), "rcltmpfXXXXXX");
-    char *cp = strdup(filename.c_str());
-    if (!cp) {
-        m_reason = "Out of memory (for file name !)\n";
+    if (!path_gettempfilename(m_filename, m_reason)) {
         return;
     }
-
-    // Using mkstemp this way is awful (bot the suffix adding and
-    // using mkstemp() instead of mktemp just to avoid the warnings)
-    int fd;
-    if ((fd = mkstemp(cp)) < 0) {
-        free(cp);
-        m_reason = "TempFileInternal: mkstemp failed\n";
-        return;
-    }
-    close(fd);
-    unlink(cp);
-    filename = cp;
-    free(cp);
-#else
-    static wchar_t tmpbasename[]{L"rcl"};
-    string filename = path_wingettempfilename(tmpbasename);
-#endif
-
-    m_filename = filename + suffix;
+    m_filename += suffix;
     LOGDEB1("TempFile: filename: " << m_filename << endl);
     int fd1 = open(m_filename.c_str(), O_CREAT | O_EXCL, 0600);
     if (fd1 < 0) {
@@ -391,6 +408,15 @@ TempFile::Internal::Internal(const string& suffix)
     } else {
         close(fd1);
     }
+}
+
+const std::string& TempFile::rcltmpdir()
+{
+#ifdef _WIN32
+    return path_wingetrcltmpdir();
+#else
+    return tmplocation();
+#endif
 }
 
 #ifdef _WIN32
@@ -423,8 +449,8 @@ TempFile::Internal::~Internal()
 void TempFile::tryRemoveAgain()
 {
 #ifdef _WIN32
-	LOGDEB1("TempFile::tryRemoveAgain. List size: " <<
-			remainingTempFileNames.size() << endl);
+    LOGDEB1("TempFile::tryRemoveAgain. List size: " <<
+            remainingTempFileNames.size() << endl);
     std::unique_lock<std::mutex> lock(remTmpFNMutex);
     std::list<string>::iterator pos = remainingTempFileNames.begin();
     while (pos != remainingTempFileNames.end()) {

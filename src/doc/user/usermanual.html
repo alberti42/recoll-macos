@@ -92,11 +92,11 @@ alink="#0000FF">
                 "#RCL.INDEXING.INTRODUCTION.CONFIG">Configurations,
                 multiple indexes</a></span></dt>
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idm218">Document types</a></span></dt>
+                "#idm233">Document types</a></span></dt>
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idm259">Indexing failures</a></span></dt>
+                "#idm274">Indexing failures</a></span></dt>
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idm271">Recovery</a></span></dt>
+                "#idm286">Recovery</a></span></dt>
               </dl>
             </dd>
             <dt><span class="sect1">2.2. <a href=
@@ -851,10 +851,10 @@ alink="#0000FF">
           </div>
           <p><span class="application">Recoll</span> supports
           defining multiple indexes, each defined by its own
-          <a class="link" href="#RCL.INDEXING.CONFIG" title=
-          "2.3.&nbsp;Index configuration">configuration
-          directory</a>, in which several configuration files
-          describe what should be indexed and how.</p>
+          configuration directory. A configuration directory
+          contains <a class="link" href="#RCL.INDEXING.CONFIG"
+          title="2.3.&nbsp;Index configuration">several files</a>
+          which describe what should be indexed and how.</p>
           <p>When <span class=
           "command"><strong>recoll</strong></span> or <span class=
           "command"><strong>recollindex</strong></span> is first
@@ -864,14 +864,14 @@ alink="#0000FF">
           is located in <code class=
           "filename">$HOME/.recoll/</code> for <span class=
           "application">Unix</span>-like systems and <code class=
-          "filename">%LOCALAPPDATA%</code> on <span class=
+          "filename">%LOCALAPPDATA%\Recoll</code> on <span class=
           "application">Windows</span> (typically <code class=
-          "filename">C:\Users\[me]\Appdata\Local</code>).</p>
+          "filename">C:\Users\[me]\Appdata\Local\Recoll</code>).</p>
           <p>All configuration parameters have defaults, defined in
           system-wide files. Without further customisation, the
           default configuration will process your complete home
           directory, with a reasonable set of defaults. It can be
-          changed to process a different area of the file system,
+          adjusted to process a different area of the file system,
           select files in different ways, and many other
           things.</p>
           <p>In some cases, it may be useful to create additional
@@ -879,6 +879,35 @@ alink="#0000FF">
           personal and shared indexes, or to take advantage of the
           organization of your data to improve search
           precision.</p>
+          <p>In order to do this, you would create an empty
+          directory in a location of your choice, and then instruct
+          <span class="command"><strong>recoll</strong></span> or
+          <span class="command"><strong>recollindex</strong></span>
+          to use it by setting either a command line option
+          (<code class="literal">-c</code> <em class=
+          "replaceable"><code>/some/directory</code></em>), or an
+          environment variable (<code class=
+          "envar">RECOLL_CONFDIR</code>=<em class=
+          "replaceable"><code>/some/directory</code></em>). Any
+          modification performed by the commands (e.g.
+          configuration customisation or searches by <span class=
+          "command"><strong>recoll</strong></span> or index
+          creation by <span class=
+          "command"><strong>recollindex</strong></span>) would then
+          apply to the new directory and not to the default
+          one.</p>
+          <p>Once multiple indexes are created, you can use each of
+          them separately by setting the <code class=
+          "literal">-c</code> option or the <code class=
+          "envar">RECOLL_CONFDIR</code> environment variable when
+          starting a command, to select the desired index.</p>
+          <p>It is also possible to instruct one configuration to
+          query one or several other indexes in addition to its
+          own, by using the <span class="guimenuitem">External
+          index</span> function in the <span class=
+          "command"><strong>recoll</strong></span> GUI, or some
+          other functions in the command line and programming
+          tools.</p>
           <p>A plausible usage scenario for the multiple index
           feature would be for a system administrator to set up a
           central index for shared data, that you choose to search
@@ -904,8 +933,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm218" id=
-                "idm218"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idm233" id=
+                "idm233"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1002,8 +1031,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm259" id=
-                "idm259"></a>2.1.4.&nbsp;Indexing failures</h3>
+                <h3 class="title"><a name="idm274" id=
+                "idm274"></a>2.1.4.&nbsp;Indexing failures</h3>
               </div>
             </div>
           </div>
@@ -1038,8 +1067,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm271" id=
-                "idm271"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idm286" id=
+                "idm286"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -1390,8 +1419,8 @@ alink="#0000FF">
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm392" id=
-                  "idm392"></a>In practise: creating and using an
+                  <h4 class="title"><a name="idm407" id=
+                  "idm407"></a>In practise: creating and using an
                   additional index</h4>
                 </div>
               </div>

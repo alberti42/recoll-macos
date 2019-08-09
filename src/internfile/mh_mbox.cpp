@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -14,301 +14,33 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef TEST_MH_MBOX
-#include "autoconfig.h"
 
-#include <stdio.h>
+#include "autoconfig.h"
+#define _FILE_OFFSET_BITS 64
+
 #include <errno.h>
 #include <sys/types.h>
-#include "safesysstat.h"
 #include <time.h>
 
 #include <cstring>
 #include <map>
 #include <mutex>
+#include <fstream>
 
 #include "cstr.h"
 #include "mimehandler.h"
 #include "log.h"
-#include "readfile.h"
 #include "mh_mbox.h"
 #include "smallut.h"
 #include "rclconfig.h"
 #include "md5ut.h"
 #include "conftree.h"
+#include "pathut.h"
 
 using namespace std;
 
 // Define maximum message size for safety. 100MB would seem reasonable
 static const unsigned int max_mbox_member_size = 100 * 1024 * 1024;
-
-class FpKeeper { 
-public:
-    FpKeeper(FILE **fpp) : m_fpp(fpp) {}
-    ~FpKeeper() 
-    {
-        if (m_fpp && *m_fpp) {
-            fclose(*m_fpp);
-            *m_fpp = 0;
-        }
-    }
-private: FILE **m_fpp;
-};
-
-static std::mutex o_mcache_mutex;
-
-/**
- * Handles a cache for message numbers to offset translations. Permits direct
- * accesses inside big folders instead of having to scan up to the right place
- *
- * Message offsets are saved to files stored under cfg(mboxcachedir), default
- * confdir/mboxcache. Mbox files smaller than cfg(mboxcacheminmbs) are not
- * cached.
- * Cache files are named as the md5 of the file UDI, which is kept in
- * the first block for possible collision detection. The 64 bits
- * offsets for all message "From_" lines follow. The format is purely
- * binary, values are not even byte-swapped to be proc-idependant.
- */
-
-#ifdef _WIN32
-// vc++ does not let define an array of size o_b1size because non-const??
-#define M_o_b1size 1024
-#else
-#define M_o_b1size o_b1size
-#endif
-
-class MboxCache {
-public:
-    typedef MimeHandlerMbox::mbhoff_type mbhoff_type;
-    MboxCache()
-        : m_ok(false), m_minfsize(0)
-    { 
-        // Can't access rclconfig here, we're a static object, would
-        // have to make sure it's initialized.
-    }
-
-    ~MboxCache() {}
-    mbhoff_type get_offset(RclConfig *config, const string& udi, int msgnum)
-    {
-        LOGDEB0("MboxCache::get_offsets: udi [" << (udi) << "] msgnum " << (msgnum) << "\n");
-        if (!ok(config)) {
-            LOGDEB0("MboxCache::get_offsets: init failed\n");
-            return -1;
-        }
-        std::unique_lock<std::mutex> locker(o_mcache_mutex);
-        string fn = makefilename(udi);
-        FILE *fp = 0;
-        if ((fp = fopen(fn.c_str(), "r")) == 0) {
-            LOGDEB("MboxCache::get_offsets: open failed, errno " << (errno) << "\n");
-            return -1;
-        }
-        FpKeeper keeper(&fp);
-
-        char blk1[M_o_b1size];
-        if (fread(blk1, 1, o_b1size, fp) != o_b1size) {
-            LOGDEB0("MboxCache::get_offsets: read blk1 errno " << (errno) << "\n");
-            return -1;
-        }
-        ConfSimple cf(string(blk1, o_b1size));
-        string fudi;
-        if (!cf.get("udi", fudi) || fudi.compare(udi)) {
-            LOGINFO("MboxCache::get_offset:badudi fn " << (fn) << " udi [" << (udi) << "], fudi [" << (fudi) << "]\n");
-            return -1;
-        }
-        if (fseeko(fp, cacheoffset(msgnum), SEEK_SET) != 0) {
-            LOGDEB0("MboxCache::get_offsets: seek " << (lltodecstr(cacheoffset(msgnum))) << " errno " << (errno) << "\n");
-            return -1;
-        }
-        mbhoff_type offset = -1;
-        size_t ret;
-        if ((ret = fread(&offset, 1, sizeof(mbhoff_type), fp))
-            != sizeof(mbhoff_type)) {
-            LOGDEB0("MboxCache::get_offsets: read ret " << (ret) << " errno " << (errno) << "\n");
-            return -1;
-        }
-        LOGDEB0("MboxCache::get_offsets: ret " << (lltodecstr(offset)) << "\n");
-        return offset;
-    }
-
-    // Save array of offsets for a given file, designated by Udi
-    void put_offsets(RclConfig *config, const string& udi, mbhoff_type fsize,
-                     vector<mbhoff_type>& offs)
-    {
-        LOGDEB0("MboxCache::put_offsets: " << (offs.size()) << " offsets\n");
-        if (!ok(config) || !maybemakedir())
-            return;
-        if (fsize < m_minfsize)
-            return;
-        std::unique_lock<std::mutex> locker(o_mcache_mutex);
-        string fn = makefilename(udi);
-        FILE *fp;
-        if ((fp = fopen(fn.c_str(), "w")) == 0) {
-            LOGDEB("MboxCache::put_offsets: fopen errno " << (errno) << "\n");
-            return;
-        }
-        FpKeeper keeper(&fp);
-        string blk1;
-        blk1.append("udi=");
-        blk1.append(udi);
-        blk1.append(cstr_newline);
-        blk1.resize(o_b1size, 0);
-        if (fwrite(blk1.c_str(), 1, o_b1size, fp) != o_b1size) {
-            LOGDEB("MboxCache::put_offsets: fwrite errno " << (errno) << "\n");
-            return;
-        }
-
-        for (vector<mbhoff_type>::const_iterator it = offs.begin();
-             it != offs.end(); it++) {
-            mbhoff_type off = *it;
-            if (fwrite((char*)&off, 1, sizeof(mbhoff_type), fp) != 
-                sizeof(mbhoff_type)) {
-                return;
-            }
-        }
-    }
-
-    // Check state, possibly initialize
-    bool ok(RclConfig *config) {
-        std::unique_lock<std::mutex> locker(o_mcache_mutex);
-        if (m_minfsize == -1)
-            return false;
-        if (!m_ok) {
-            int minmbs = 5;
-            config->getConfParam("mboxcacheminmbs", &minmbs);
-            if (minmbs < 0) {
-                // minmbs set to negative to disable cache
-                m_minfsize = -1;
-                return false;
-            }
-            m_minfsize = minmbs * 1000 * 1000;
-
-            m_dir = config->getMboxcacheDir();
-            m_ok = true;
-        }
-        return m_ok;
-    }
-
-private:
-    bool m_ok;
-
-    // Place where we store things
-    string m_dir;
-    // Don't cache smaller files. If -1, don't do anything.
-    mbhoff_type m_minfsize;
-    static const size_t o_b1size;
-
-    // Create the cache directory if it does not exist
-    bool maybemakedir()
-    {
-        struct stat st;
-        if (stat(m_dir.c_str(), &st) != 0 && mkdir(m_dir.c_str(), 0700) != 0) {
-            return false;
-        }
-        return true;
-    }
-    // Compute file name from udi
-    string makefilename(const string& udi)
-    {
-        string digest, xdigest;
-        MD5String(udi, digest);
-        MD5HexPrint(digest, xdigest);
-        return path_cat(m_dir, xdigest);
-    }
-
-    // Compute offset in cache file for the mbox offset of msgnum
-    mbhoff_type cacheoffset(int msgnum)
-    {// Msgnums are from 1
-        return o_b1size + (msgnum-1) * sizeof(mbhoff_type);
-    }
-};
-
-const size_t MboxCache::o_b1size = 1024;
-static class MboxCache o_mcache;
-
-static const string cstr_keyquirks("mhmboxquirks");
-
-MimeHandlerMbox::~MimeHandlerMbox()
-{
-    clear();
-}
-
-void MimeHandlerMbox::clear_impl()
-{
-    m_fn.erase();
-    if (m_vfp) {
-	fclose((FILE *)m_vfp);
-	m_vfp = 0;
-    }
-    m_msgnum =  m_lineno = 0;
-    m_ipath.erase();
-    m_offsets.clear();
-}
-
-bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
-{
-    LOGDEB("MimeHandlerMbox::set_document_file(" << fn << ")\n");
-    m_fn = fn;
-    if (m_vfp) {
-	fclose((FILE *)m_vfp);
-	m_vfp = 0;
-    }
-
-    m_vfp = fopen(fn.c_str(), "r");
-    if (m_vfp == 0) {
-	LOGERR("MimeHandlerMail::set_document_file: error opening " << fn <<
-               "\n");
-	return false;
-    }
-#if defined O_NOATIME && O_NOATIME != 0
-    if (fcntl(fileno((FILE *)m_vfp), F_SETFL, O_NOATIME) < 0) {
-        // perror("fcntl");
-    }
-#endif
-    // Used to use ftell() here: no good beyond 2GB
-    {struct stat st;
-	if (fstat(fileno((FILE*)m_vfp), &st) < 0) {
-	    LOGERR("MimeHandlerMbox:setdocfile: fstat(" << fn <<
-                   ") failed errno " << errno << "\n");
-	    return false;
-	}
-	m_fsize = st.st_size;
-    }
-    m_havedoc = true;
-    m_offsets.clear();
-    m_quirks = 0;
-
-    // Check for location-based quirks:
-    string quirks;
-    if (m_config && m_config->getConfParam(cstr_keyquirks, quirks)) {
-	if (quirks == "tbird") {
-	    LOGDEB("MimeHandlerMbox: setting quirks TBIRD\n");
-	    m_quirks |= MBOXQUIRK_TBIRD;
-	}
-    }
-
-    // And double check for thunderbird 
-    string tbirdmsf = fn + ".msf";
-    if ((m_quirks&MBOXQUIRK_TBIRD) == 0 && path_exists(tbirdmsf)) {
-	LOGDEB("MimeHandlerMbox: detected unconfigured tbird mbox in " << (fn) << "\n");
-	m_quirks |= MBOXQUIRK_TBIRD;
-    }
-
-    return true;
-}
-
-#define LL 1024
-typedef char line_type[LL+10];
-static inline void stripendnl(line_type& line, int& ll)
-{
-    ll = int(strlen(line));
-    while (ll > 0) {
-	if (line[ll-1] == '\n' || line[ll-1] == '\r') {
-	    line[ll-1] = 0;
-	    ll--;
-	} else 
-	    break;
-    }
-}
 
 // The mbox format uses lines beginning with 'From ' as separator.
 // Mailers are supposed to quote any other lines beginning with 
@@ -353,17 +85,17 @@ static inline void stripendnl(line_type& line, int& ll)
 // emacs-vm, Recoll is not alone
 // Update: 2009-11-27: word after From may be quoted string: From "john bull"
 static const string frompat{
-"^From[ ]+([^ ]+|\"[^\"]+\")[ ]+"    // 'From (toto@tutu|"john bull") '
-"[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Fri Oct 26
-"[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?[ ]+"             // Time, seconds optional
-"([^ ]+[ ]+)?"                                        // Optional tz
-"[12][0-9][0-9][0-9]"            // Year, unanchored, more data may follow
-"|"      // Or standard mail Date: header format
-"^From[ ]+[^ ]+[ ]+"                                   // From toto@tutu
-"[[:alpha:]]{3},[ ]+[0-3]?[0-9][ ]+[[:alpha:]]{3}[ ]+" // Mon, 8 May
-"[12][0-9][0-9][0-9][ ]+"                              // Year
-"[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?"                  // Time, secs optional
-    };
+    "^From[ ]+([^ ]+|\"[^\"]+\")[ ]+"    // 'From (toto@tutu|"john bull") '
+        "[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Fri Oct 26
+        "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?[ ]+"             // Time, seconds optional
+        "([^ ]+[ ]+)?"                                        // Optional tz
+        "[12][0-9][0-9][0-9]"            // Year, unanchored, more data may follow
+        "|"      // Or standard mail Date: header format
+        "^From[ ]+[^ ]+[ ]+"                                   // From toto@tutu
+        "[[:alpha:]]{3},[ ]+[0-3]?[0-9][ ]+[[:alpha:]]{3}[ ]+" // Mon, 8 May
+        "[12][0-9][0-9][0-9][ ]+"                              // Year
+        "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?"                  // Time, secs optional
+        };
 
 // Extreme thunderbird brokiness. Will sometimes use From lines
 // exactly like: From ^M (From followed by space and eol). We only
@@ -373,259 +105,435 @@ static const string miniTbirdFrom{"^From $"};
 static SimpleRegexp fromregex(frompat, SimpleRegexp::SRE_NOSUB);
 static SimpleRegexp minifromregex(miniTbirdFrom, SimpleRegexp::SRE_NOSUB);
 
-bool MimeHandlerMbox::next_document()
-{
-    if (m_vfp == 0) {
-	LOGERR("MimeHandlerMbox::next_document: not open\n");
-	return false;
-    }
-    if (!m_havedoc) {
-	return false;
-    }
-    FILE *fp = (FILE *)m_vfp;
-    int mtarg = 0;
-    if (!m_ipath.empty()) {
-	sscanf(m_ipath.c_str(), "%d", &mtarg);
-    } else if (m_forPreview) {
-	// Can't preview an mbox. 
-	LOGDEB("MimeHandlerMbox::next_document: can't preview folders!\n");
-	return false;
-    }
-    LOGDEB0("MimeHandlerMbox::next_document: fn " << m_fn << ", msgnum " <<
-            m_msgnum << " mtarg " << mtarg << " \n");
-    if (mtarg == 0)
-	mtarg = -1;
+static std::mutex o_mcache_mutex;
 
+/**
+ * Handles a cache for message numbers to offset translations. Permits direct
+ * accesses inside big folders instead of having to scan up to the right place
+ *
+ * Message offsets are saved to files stored under cfg(mboxcachedir), default
+ * confdir/mboxcache. Mbox files smaller than cfg(mboxcacheminmbs) are not
+ * cached.
+ * Cache files are named as the md5 of the file UDI, which is kept in
+ * the first block for possible collision detection. The 64 bits
+ * offsets for all message "From_" lines follow. The format is purely
+ * binary, values are not even byte-swapped to be proc-idependant.
+ */
 
-    // If we are called to retrieve a specific message, seek to bof
-    // (then scan up to the message). This is for the case where the
-    // same object is reused to fetch several messages (else the fp is
-    // just opened no need for a seek).  We could also check if the
-    // current message number is lower than the requested one and
-    // avoid rereading the whole thing in this case. But I'm not sure
-    // we're ever used in this way (multiple retrieves on same
-    // object).  So:
-    bool storeoffsets = true;
-    if (mtarg > 0) {
-        mbhoff_type off;
-        line_type line;
-        LOGDEB0("MimeHandlerMbox::next_doc: mtarg " << mtarg << " m_udi[" <<
-                m_udi << "]\n");
-        if (!m_udi.empty() && 
-            (off = o_mcache.get_offset(m_config, m_udi, mtarg)) >= 0 && 
-            fseeko(fp, (off_t)off, SEEK_SET) >= 0 && 
-            fgets(line, LL, fp) &&
-            (fromregex(line) || ((m_quirks & MBOXQUIRK_TBIRD) && 
-                                 minifromregex(line)))	) {
-                LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
-                fseeko(fp, (off_t)off, SEEK_SET);
-                m_msgnum = mtarg -1;
-		storeoffsets = false;
-        } else {
-            fseek(fp, 0, SEEK_SET);
-            m_msgnum = 0;
+#define M_o_b1size 1024
+
+class MboxCache {
+public:
+    MboxCache() { 
+        // Can't access rclconfig here, we're a static object, would
+        // have to make sure it's initialized.
+    }
+
+    ~MboxCache() {}
+
+    int64_t get_offset(RclConfig *config, const string& udi, int msgnum) {
+        LOGDEB0("MboxCache::get_offsets: udi [" << udi << "] msgnum "
+                << msgnum << "\n");
+        if (!ok(config)) {
+            LOGDEB("MboxCache::get_offsets: init failed\n");
+            return -1;
+        }
+        std::unique_lock<std::mutex> locker(o_mcache_mutex);
+        string fn = makefilename(udi);
+        ifstream instream(fn.c_str(),  std::ifstream::binary);
+        if (!instream.good()) {
+            LOGSYSERR("MboxCache::get_offsets", "open", fn);
+            return false;
+        }
+        char blk1[M_o_b1size];
+        instream.read(blk1, M_o_b1size);
+        if (!instream.good()) {
+            LOGSYSERR("MboxCache::get_offsets", "read blk1", "");
+            return -1;
+        }
+        ConfSimple cf(string(blk1, M_o_b1size));
+        string fudi;
+        if (!cf.get("udi", fudi) || fudi.compare(udi)) {
+            LOGINFO("MboxCache::get_offset:badudi fn " << fn << " udi ["
+                    << udi << "], fudi [" << fudi << "]\n");
+            return -1;
+        }
+        LOGDEB1("MboxCache::get_offsets: reading offsets file at offs "
+                << cacheoffset(msgnum) << "\n");
+        instream.seekg(cacheoffset(msgnum));
+        if (!instream.good()) {
+            LOGSYSERR("MboxCache::get_offsets", "seek",
+                      lltodecstr(cacheoffset(msgnum)));
+            return -1;
+        }
+        int64_t offset = -1;
+        instream.read((char*)&offset, sizeof(int64_t));
+        if (!instream.good()) {
+            LOGSYSERR("MboxCache::get_offsets", "read", "");
+            return -1;
+        }
+        LOGDEB0("MboxCache::get_offsets: ret " << offset << "\n");
+        return offset;
+    }
+
+    // Save array of offsets for a given file, designated by Udi
+    void put_offsets(RclConfig *config, const string& udi, int64_t fsize,
+                     vector<int64_t>& offs) {
+        LOGDEB0("MboxCache::put_offsets: " << offs.size() << " offsets\n");
+        if (!ok(config) || !maybemakedir())
+            return;
+        if (fsize < m_minfsize) {
+            LOGDEB0("MboxCache::put_offsets: fsize " << fsize << " < minsize "
+                    << m_minfsize << endl);
+            return;
+        }
+        std::unique_lock<std::mutex> locker(o_mcache_mutex);
+        string fn = makefilename(udi);        
+        std::ofstream os(fn.c_str(), std::ios::out|std::ios::binary);
+        if (!os.good()) {
+            LOGSYSERR("MboxCache::put_offsets", "open", fn);
+            return;
+        }
+        string blk1("udi=");
+        blk1.append(udi);
+        blk1.append(cstr_newline);
+        blk1.resize(M_o_b1size, 0);
+        os.write(blk1.c_str(), M_o_b1size);
+        if (!os.good()) {
+            LOGSYSERR("MboxCache::put_offsets", "write blk1", "");
+            return;
+        }
+
+        for (const auto& off : offs) {
+            LOGDEB1("MboxCache::put_offsets: writing value " << off <<
+                    " at offset " << ftello(fp) << endl);
+            os.write((char*)&off, sizeof(int64_t));
+            if (!os.good()) {
+                LOGSYSERR("MboxCache::put_offsets", "write", "");
+                return;
+            }
+        }
+        os.flush();
+        if (!os.good()) {
+            LOGSYSERR("MboxCache::put_offsets", "flush", "");
+            return;
         }
     }
 
-    off_t message_end = 0;
+    // Check state, possibly initialize
+    bool ok(RclConfig *config) {
+        std::unique_lock<std::mutex> locker(o_mcache_mutex);
+        if (m_minfsize == -1)
+            return false;
+        if (!m_ok) {
+            int minmbs = 5;
+            config->getConfParam("mboxcacheminmbs", &minmbs);
+            if (minmbs < 0) {
+                // minmbs set to negative to disable cache
+                m_minfsize = -1;
+                return false;
+            }
+            m_minfsize = minmbs * 1000 * 1000;
+
+            m_dir = config->getMboxcacheDir();
+            m_ok = true;
+        }
+        return m_ok;
+    }
+
+private:
+    bool m_ok{false};
+    // Place where we store things
+    string m_dir;
+    // Don't cache smaller files. If -1, don't do anything.
+    int64_t m_minfsize{0};
+
+    // Create the cache directory if it does not exist
+    bool maybemakedir() {
+        if (!path_makepath(m_dir, 0700)) {
+            LOGSYSERR("MboxCache::maybemakedir", "path_makepath", m_dir);
+            return false;
+        }
+        return true;
+    }
+    // Compute file name from udi
+    string makefilename(const string& udi) {
+        string digest, xdigest;
+        MD5String(udi, digest);
+        MD5HexPrint(digest, xdigest);
+        return path_cat(m_dir, xdigest);
+    }
+    // Compute offset in cache file for the mbox offset of msgnum
+    // Msgnums are from 1
+    int64_t cacheoffset(int msgnum) {
+        return M_o_b1size + (msgnum-1) * sizeof(int64_t);
+    }
+};
+
+static class MboxCache o_mcache;
+
+static const string cstr_keyquirks("mhmboxquirks");
+
+enum Quirks {MBOXQUIRK_TBIRD=1};
+
+class MimeHandlerMbox::Internal {
+public:
+    Internal(MimeHandlerMbox *p) : pthis(p) {}
+    std::string fn;     // File name
+    std::string ipath;
+    ifstream instream;
+    int        msgnum{0}; // Current message number in folder. Starts at 1
+    int64_t    lineno{0}; // debug 
+    int64_t    fsize{0};
+    std::vector<int64_t> offsets;
+    int        quirks;
+    MimeHandlerMbox *pthis;
+    bool tryUseCache(int mtarg);
+};
+
+MimeHandlerMbox::MimeHandlerMbox(RclConfig *cnf, const std::string& id) 
+	: RecollFilter(cnf, id)
+{
+    m = new Internal(this);
+}
+
+MimeHandlerMbox::~MimeHandlerMbox()
+{
+    if (m) {
+        clear();
+        delete m;
+    }
+}
+
+void MimeHandlerMbox::clear_impl()
+{
+    m->fn.erase();
+    m->ipath.erase();
+    m->instream = ifstream();
+    m->msgnum = m->lineno = m->fsize = 0;
+    m->offsets.clear();
+    m->quirks = 0;
+}
+
+bool MimeHandlerMbox::skip_to_document(const std::string& ipath) {
+    m->ipath = ipath;
+    return true;
+}
+
+bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
+{
+    LOGDEB("MimeHandlerMbox::set_document_file(" << fn << ")\n");
+    clear_impl();
+    m->fn = fn;
+    m->instream = ifstream(fn.c_str(), std::ifstream::binary);
+    if (!m->instream.good()) {
+        LOGSYSERR("MimeHandlerMail::set_document_file", "ifstream", fn);
+        return false;
+    }
+
+    // TBD
+#if 0 && defined O_NOATIME && O_NOATIME != 0
+    if (fcntl(fileno((FILE *)m->vfp), F_SETFL, O_NOATIME) < 0) {
+        // perror("fcntl");
+    }
+#endif
+
+    m->fsize = path_filesize(fn);
+    m_havedoc = true;
+    
+    // Check for location-based quirks:
+    string quirks;
+    if (m_config && m_config->getConfParam(cstr_keyquirks, quirks)) {
+        if (quirks == "tbird") {
+            LOGDEB("MimeHandlerMbox: setting quirks TBIRD\n");
+            m->quirks |= MBOXQUIRK_TBIRD;
+        }
+    }
+
+    // And double check for thunderbird 
+    string tbirdmsf = fn + ".msf";
+    if (!(m->quirks & MBOXQUIRK_TBIRD) && path_exists(tbirdmsf)) {
+        LOGDEB("MimeHandlerMbox: detected unconf'd tbird mbox in "<< fn <<"\n");
+        m->quirks |= MBOXQUIRK_TBIRD;
+    }
+
+    return true;
+}
+
+bool MimeHandlerMbox::Internal::tryUseCache(int mtarg)
+{
+    bool cachefound = false;
+    string line;
+    int64_t off;
+    
+    LOGDEB0("MimeHandlerMbox::next_doc: mtarg " << mtarg << " m_udi[" <<
+            pthis->m_udi << "]\n");
+    if (pthis->m_udi.empty()) {
+        goto out;
+    }
+    if ((off = o_mcache.get_offset(pthis->m_config, pthis->m_udi, mtarg)) < 0) {
+        goto out;
+    }
+    instream.seekg(off);
+    if (!instream.good()) {
+        LOGSYSERR("tryUseCache", "seekg", "");
+        goto out;
+    }
+    getline(instream, line, '\n');
+    if (!instream.good()) {
+        LOGSYSERR("tryUseCache", "getline", "");
+        goto out;
+    }
+    LOGDEB1("MimeHandlerMbox::tryUseCache:getl ok. line:[" << line << "]\n");
+
+    if ((fromregex(line) ||
+         ((quirks & MBOXQUIRK_TBIRD) && minifromregex(line)))  ) {
+        LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
+        instream.seekg(off);
+        msgnum = mtarg -1;
+        cachefound = true;
+    } else {
+        LOGDEB0("MimeHandlerMbox: cache: regex failed for [" << line << "]\n");
+    }
+
+out:
+    if (!cachefound) {
+        // No cached result: scan.
+        instream.seekg(0);
+        msgnum = 0;
+    }
+    return cachefound;
+}
+
+bool MimeHandlerMbox::next_document()
+{
+    if (!m->instream.good()) {
+        LOGERR("MimeHandlerMbox::next_document: not open\n");
+        return false;
+    }
+    if (!m_havedoc) {
+        return false;
+    }
+    
+    int mtarg = 0;
+    if (!m->ipath.empty()) {
+        sscanf(m->ipath.c_str(), "%d", &mtarg);
+    } else if (m_forPreview) {
+        // Can't preview an mbox. 
+        LOGDEB("MimeHandlerMbox::next_document: can't preview folders!\n");
+        return false;
+    }
+    LOGDEB0("MimeHandlerMbox::next_document: fn " << m->fn << ", msgnum " <<
+            m->msgnum << " mtarg " << mtarg << " \n");
+
+    if (mtarg == 0)
+        mtarg = -1;
+
+    // If we are called to retrieve a specific message, try to use the
+    // offsets cache to try and position to the right header.
+    bool storeoffsets = true;
+    if (mtarg > 0) {
+        storeoffsets = !m->tryUseCache(mtarg);
+    }
+
+    int64_t message_end = 0;
     bool iseof = false;
     bool hademptyline = true;
     string& msgtxt = m_metaData[cstr_dj_keycontent];
     msgtxt.erase();
-    line_type line;
+    string line;
     for (;;) {
-	message_end = ftello(fp);
-	if (!fgets(line, LL, fp)) {
-	    LOGDEB2("MimeHandlerMbox:next: eof\n");
-	    iseof = true;
-	    m_msgnum++;
-	    break;
-	}
-	m_lineno++;
-	int ll;
-	stripendnl(line, ll);
-	LOGDEB2("mhmbox:next: hadempty " << hademptyline << " lineno " <<
-                m_lineno << " ll " << ll << " Line: [" << line << "]\n");
-	if (hademptyline) {
-	    if (ll > 0) {
-		// Non-empty line with empty line flag set, reset flag
-		// and check regex.
-		if (!(m_quirks & MBOXQUIRK_TBIRD)) {
-		    // Tbird sometimes ommits the empty line, so avoid
-		    // resetting state (initially true) and hope for
-		    // the best
-		    hademptyline = false;
-		}
-		/* The 'F' compare is redundant but it improves performance
-		   A LOT */
-		if (line[0] == 'F' && (
+        message_end = m->instream.tellg();
+        getline(m->instream, line, '\n');
+        if (!m->instream.good()) {
+            ifstream::iostate st = m->instream.rdstate();
+            if (st &  std::ifstream::eofbit) {
+                LOGDEB0("MimeHandlerMbox:next: eof\n");
+            }
+            if (st &  std::ifstream::failbit) {
+                LOGDEB0("MimeHandlerMbox:next: fail\n");
+                LOGSYSERR("MimeHandlerMbox:next:", "", "");
+            }
+            if (st &  std::ifstream::badbit) {
+                LOGDEB0("MimeHandlerMbox:next: bad\n");
+                LOGSYSERR("MimeHandlerMbox:next:", "", "");
+            }
+            if (st &  std::ifstream::goodbit) {
+                LOGDEB0("MimeHandlerMbox:next: good\n");
+            }
+            LOGDEB0("MimeHandlerMbox:next: eof at " << message_end << endl);
+            iseof = true;
+            m->msgnum++;
+            break;
+        }
+        m->lineno++;
+        rtrimstring(line, "\r\n");
+        int ll = line.size();
+        LOGDEB2("mhmbox:next: hadempty " << hademptyline << " lineno " <<
+               m->lineno << " ll " << ll << " Line: [" << line << "]\n");
+        if (hademptyline) {
+            if (ll > 0) {
+                // Non-empty line with empty line flag set, reset flag
+                // and check regex.
+                if (!(m->quirks & MBOXQUIRK_TBIRD)) {
+                    // Tbird sometimes ommits the empty line, so avoid
+                    // resetting state (initially true) and hope for
+                    // the best
+                    hademptyline = false;
+                }
+                /* The 'F' compare is redundant but it improves performance
+                   A LOT */
+                if (line[0] == 'F' && (
                         fromregex(line) || 
-                        ((m_quirks & MBOXQUIRK_TBIRD) && minifromregex(line)))
-		    ) {
-		    LOGDEB0("MimeHandlerMbox: msgnum " << m_msgnum <<
-                            ", From_ at line " << m_lineno << ": [" << line
-                            << "]\n");
-		    if (storeoffsets)
-			m_offsets.push_back(message_end);
-		    m_msgnum++;
-		    if ((mtarg <= 0 && m_msgnum > 1) || 
-			(mtarg > 0 && m_msgnum > mtarg)) {
-			// Got message, go do something with it
-			break;
-		    }
-		    // From_ lines are not part of messages
-		    continue;
-		} 
-	    }
-	} else if (ll <= 0) {
-	    hademptyline = true;
-	}
+                        ((m->quirks & MBOXQUIRK_TBIRD) && minifromregex(line)))
+                    ) {
+                    LOGDEB1("MimeHandlerMbox: msgnum " << m->msgnum <<
+                            ", From_ at line " << m->lineno << " foffset " <<
+                            message_end << " line: [" << line << "]\n");
+                    
+                    if (storeoffsets) {
+                        m->offsets.push_back(message_end);
+                    }
+                    m->msgnum++;
+                    if ((mtarg <= 0 && m->msgnum > 1) || 
+                        (mtarg > 0 && m->msgnum > mtarg)) {
+                        // Got message, go do something with it
+                        break;
+                    }
+                    // From_ lines are not part of messages
+                    continue;
+                } 
+            }
+        } else if (ll <= 0) {
+            hademptyline = true;
+        }
 
-	if (mtarg <= 0 || m_msgnum == mtarg) {
-	    // Accumulate message lines
-	    line[ll] = '\n';
-	    line[ll+1] = 0;
-	    msgtxt += line;
-	    if (msgtxt.size() > max_mbox_member_size) {
-		LOGERR("mh_mbox: huge message (more than " <<
+        if (mtarg <= 0 || m->msgnum == mtarg) {
+            // Accumulate message lines
+            line += '\n';
+            msgtxt += line;
+            if (msgtxt.size() > max_mbox_member_size) {
+                LOGERR("mh_mbox: huge message (more than " <<
                        max_mbox_member_size/(1024*1024) << " MB) inside " <<
-                       m_fn << ", giving up\n");
-		return false;
-	    }
-	}
+                       m->fn << ", giving up\n");
+                return false;
+            }
+        }
     }
     LOGDEB2("Message text length " << msgtxt.size() << "\n");
     LOGDEB2("Message text: [" << msgtxt << "]\n");
     char buf[20];
-    // m_msgnum was incremented when hitting the next From_ or eof, so the data
-    // is for m_msgnum - 1
-    sprintf(buf, "%d", m_msgnum - 1); 
+    // m->msgnum was incremented when hitting the next From_ or eof, so the data
+    // is for m->msgnum - 1
+    sprintf(buf, "%d", m->msgnum - 1); 
     m_metaData[cstr_dj_keyipath] = buf;
     m_metaData[cstr_dj_keymt] = "message/rfc822";
     if (iseof) {
-	LOGDEB2("MimeHandlerMbox::next: eof hit\n");
-	m_havedoc = false;
-	if (!m_udi.empty() && storeoffsets) {
-	    o_mcache.put_offsets(m_config, m_udi, m_fsize, m_offsets);
-	}
+        LOGDEB2("MimeHandlerMbox::next: eof hit\n");
+        m_havedoc = false;
+        if (!m_udi.empty() && storeoffsets) {
+            o_mcache.put_offsets(m_config, m_udi, m->fsize, m->offsets);
+        }
     }
     return msgtxt.empty() ? false : true;
 }
-
-#else // Test driver ->
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-
-#include <iostream>
-#include <string>
-using namespace std;
-
-#include "rclconfig.h"
-#include "rclinit.h"
-#include "cstr.h"
-#include "mh_mbox.h"
-
-static char *thisprog;
-
-static char usage [] = 
-"Test driver for mbox walking function\n"
-"mh_mbox [-m num] mboxfile\n"
-"  \n\n"
-;
-static void
-Usage(void)
-{
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
-    exit(1);
-}
-static RclConfig *config;
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_m	  0x2
-//#define OPT_t     0x4
-
-int main(int argc, char **argv)
-{
-    string msgnum;
-    thisprog = argv[0];
-    argc--; argv++;
-
-    while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'm':	op_flags |= OPT_m; if (argc < 2)  Usage();
-		msgnum = *(++argv);
-		argc--; 
-		goto b1;
-//	    case 't':	op_flags |= OPT_t;break;
-	    default: Usage();	break;
-	    }
-    b1: argc--; argv++;
-    }
-
-    if (argc != 1)
-	Usage();
-    string filename = *argv++;argc--;
-    string reason;
-    config = recollinit(RclInitFlags(0), 0, 0, reason, 0);
-    if (config == 0) {
-	cerr << "init failed " << reason << endl;
-	exit(1);
-    }
-    config->setKeyDir(path_getfather(filename));
-    MimeHandlerMbox mh(config, "some_id");
-    if (!mh.set_document_file("text/x-mail", filename)) {
-	cerr << "set_document_file failed" << endl;
-	exit(1);
-    }
-    if (!msgnum.empty()) {
-	mh.skip_to_document(msgnum);
-	if (!mh.next_document()) {
-	    cerr << "next_document failed after skipping to " << msgnum << endl;
-	    exit(1);
-	}
-	map<string, string>::const_iterator it = 
-	    mh.get_meta_data().find(cstr_dj_keycontent);
-	int size;
-	if (it == mh.get_meta_data().end()) {
-	    size = -1;
-	    cerr << "No content!!" << endl;
-	    exit(1);
-	}
-	cout << "Doc " << msgnum << ":" << endl;
-	cout << it->second << endl;
-	exit(0);
-    }
-
-    int docnt = 0;
-    while (mh.has_documents()) {
-	if (!mh.next_document()) {
-	    cerr << "next_document failed" << endl;
-	    exit(1);
-	}
-	docnt++;
-	map<string, string>::const_iterator it = 
-	    mh.get_meta_data().find(cstr_dj_keycontent);
-	int size;
-	if (it == mh.get_meta_data().end()) {
-	    size = -1;
-	} else {
-	    size = it->second.length();
-	}
-	cout << "Doc " << docnt << " size " << size << endl;
-    }
-    cout << docnt << " documents found in " << filename << endl;
-    exit(0);
-}
-
-
-#endif // TEST_MH_MBOX
-

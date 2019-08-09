@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>413</width>
-    <height>191</height>
+    <width>610</width>
+    <height>192</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,7 +70,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="textLabel1">
          <property name="text">
-          <string>Start directory (else use regular topdirs):</string>
+          <string>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</string>
          </property>
          <property name="wordWrap">
           <bool>false</bool>
