@@ -5032,25 +5032,9 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         ones, through the GUI or any of the query interfaces.</para>
 
         <para>The search API is modeled along the Python database API
-        specification. There were two major changes along &RCL; versions:
-        <itemizedlist>
-          <listitem><para>The basis for the &RCL; API changed from Python
-          database API version 1.0 (&RCL; versions up to 1.18.1),
-          to version 2.0 (&RCL; 1.18.2 and later).</para></listitem>
-          <listitem><para>The <literal>recoll</literal> module became a
-          package (with an internal <literal>recoll</literal>
-          module) as of &RCL; version 1.19, in order to add more
-          functions. For existing code, this only changes the way
-          the interface must be imported.</para></listitem>
-        </itemizedlist>
-        </para>
+        version 2.0 specification (early versions used the version 1.0 spec).</para>
 
-        <para>We will describe the new API and package structure here. A
-        paragraph at the end of this section will explain a few differences
-        and ways to write code compatible with both versions.</para>
-
-        <para>The <literal>recoll</literal> package now contains two
-        modules:</para>
+        <para>The <literal>recoll</literal> package contains two modules:</para>
         <itemizedlist>
           <listitem><para>The <literal>recoll</literal> module contains
           functions and classes used to query (or update) the
@@ -5058,7 +5042,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
           <listitem><para>The <literal>rclextract</literal> module contains
           functions and classes used at query time to access document
-          data.</para>
+          data. The <literal>recoll</literal> module must be imported
+          before <literal>rclextract</literal></para>
           </listitem>
         </itemizedlist>
 
@@ -5068,8 +5053,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         refer to the <link linkend="RCL.INSTALL.BUILDING">Building from source chapter</link>.</para>
 
         <para>As an introduction, the following small sample will run a
-        query and list the title and url for each of the results. It would
-        work with &RCL; 1.19 and later. The
+        query and list the title and url for each of the results. The
         <filename>python/samples</filename> source directory contains
         several examples of Python programming with &RCL;, exercising the
         extension more completely, and especially its data extraction
@@ -5186,6 +5170,17 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
       </sect2>
 
+      <sect2 id="RCL.PROGRAM.PYTHONAPI.LOG">
+        <title>Log messages for Python scripts</title>
+
+      <para>Two specific configuration variables:
+      <literal>pyloglevel</literal> and <literal>pylogfilename</literal>
+      allow overriding the generic values for Python programs. Set
+      <literal>pyloglevel</literal> to 2 to suppress default startup messages
+      (printed at level 3).</para>
+
+      </sect2>
+      
       <sect2 id="RCL.PROGRAM.PYTHONAPI.SEARCH">
         <title>Python search interface</title>
 

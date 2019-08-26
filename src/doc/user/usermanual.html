@@ -337,12 +337,15 @@ alink="#0000FF">
                 "#RCL.PROGRAM.PYTHONAPI.ELEMENTS">Interface
                 elements</a></span></dt>
                 <dt><span class="sect2">4.3.3. <a href=
+                "#RCL.PROGRAM.PYTHONAPI.LOG">Log messages for
+                Python scripts</a></span></dt>
+                <dt><span class="sect2">4.3.4. <a href=
                 "#RCL.PROGRAM.PYTHONAPI.SEARCH">Python search
                 interface</a></span></dt>
-                <dt><span class="sect2">4.3.4. <a href=
+                <dt><span class="sect2">4.3.5. <a href=
                 "#RCL.PROGRAM.PYTHONAPI.UPDATE">Creating Python
                 external indexers</a></span></dt>
-                <dt><span class="sect2">4.3.5. <a href=
+                <dt><span class="sect2">4.3.6. <a href=
                 "#RCL.PROGRAM.PYTHONAPI.COMPAT">Package
                 compatibility with the previous
                 version</a></span></dt>
@@ -6530,34 +6533,9 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           conjunction with regular ones, through the GUI or any of
           the query interfaces.</p>
           <p>The search API is modeled along the Python database
-          API specification. There were two major changes along
-          <span class="application">Recoll</span> versions:</p>
-          <div class="itemizedlist">
-            <ul class="itemizedlist" style=
-            "list-style-type: disc;">
-              <li class="listitem">
-                <p>The basis for the <span class=
-                "application">Recoll</span> API changed from Python
-                database API version 1.0 (<span class=
-                "application">Recoll</span> versions up to 1.18.1),
-                to version 2.0 (<span class=
-                "application">Recoll</span> 1.18.2 and later).</p>
-              </li>
-              <li class="listitem">
-                <p>The <code class="literal">recoll</code> module
-                became a package (with an internal <code class=
-                "literal">recoll</code> module) as of <span class=
-                "application">Recoll</span> version 1.19, in order
-                to add more functions. For existing code, this only
-                changes the way the interface must be imported.</p>
-              </li>
-            </ul>
-          </div>
-          <p>We will describe the new API and package structure
-          here. A paragraph at the end of this section will explain
-          a few differences and ways to write code compatible with
-          both versions.</p>
-          <p>The <code class="literal">recoll</code> package now
+          API version 2.0 specification (early versions used the
+          version 1.0 spec).</p>
+          <p>The <code class="literal">recoll</code> package
           contains two modules:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
@@ -6570,7 +6548,9 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               <li class="listitem">
                 <p>The <code class="literal">rclextract</code>
                 module contains functions and classes used at query
-                time to access document data.</p>
+                time to access document data. The <code class=
+                "literal">recoll</code> module must be imported
+                before <code class="literal">rclextract</code></p>
               </li>
             </ul>
           </div>
@@ -6583,13 +6563,11 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           chapter</a>.</p>
           <p>As an introduction, the following small sample will
           run a query and list the title and url for each of the
-          results. It would work with <span class=
-          "application">Recoll</span> 1.19 and later. The
-          <code class="filename">python/samples</code> source
-          directory contains several examples of Python programming
-          with <span class="application">Recoll</span>, exercising
-          the extension more completely, and especially its data
-          extraction features.</p>
+          results. The <code class="filename">python/samples</code>
+          source directory contains several examples of Python
+          programming with <span class="application">Recoll</span>,
+          exercising the extension more completely, and especially
+          its data extraction features.</p>
           <pre class="programlisting">
         #!/usr/bin/env python
 
@@ -6735,8 +6713,26 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             <div>
               <div>
                 <h3 class="title"><a name=
+                "RCL.PROGRAM.PYTHONAPI.LOG" id=
+                "RCL.PROGRAM.PYTHONAPI.LOG"></a>4.3.3.&nbsp;Log
+                messages for Python scripts</h3>
+              </div>
+            </div>
+          </div>
+          <p>Two specific configuration variables: <code class=
+          "literal">pyloglevel</code> and <code class=
+          "literal">pylogfilename</code> allow overriding the
+          generic values for Python programs. Set <code class=
+          "literal">pyloglevel</code> to 2 to suppress default
+          startup messages (printed at level 3).</p>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name=
                 "RCL.PROGRAM.PYTHONAPI.SEARCH" id=
-                "RCL.PROGRAM.PYTHONAPI.SEARCH"></a>4.3.3.&nbsp;Python
+                "RCL.PROGRAM.PYTHONAPI.SEARCH"></a>4.3.4.&nbsp;Python
                 search interface</h3>
               </div>
             </div>
@@ -7307,7 +7303,7 @@ for i in range(nres):
               <div>
                 <h3 class="title"><a name=
                 "RCL.PROGRAM.PYTHONAPI.UPDATE" id=
-                "RCL.PROGRAM.PYTHONAPI.UPDATE"></a>4.3.4.&nbsp;Creating
+                "RCL.PROGRAM.PYTHONAPI.UPDATE"></a>4.3.5.&nbsp;Creating
                 Python external indexers</h3>
               </div>
             </div>
@@ -7529,7 +7525,7 @@ for i in range(nres):
               <div>
                 <h3 class="title"><a name=
                 "RCL.PROGRAM.PYTHONAPI.COMPAT" id=
-                "RCL.PROGRAM.PYTHONAPI.COMPAT"></a>4.3.5.&nbsp;Package
+                "RCL.PROGRAM.PYTHONAPI.COMPAT"></a>4.3.6.&nbsp;Package
                 compatibility with the previous version</h3>
               </div>
             </div>
@@ -8422,6 +8418,16 @@ for i in range(nres):
                   skippedNames list.</p>
                 </dd>
                 <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ONLYNAMES" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ONLYNAMES"></a><span class="term"><code class="varname">onlyNames</code></span></dt>
+                <dd>
+                  <p>Regular file name filter patterns If this is
+                  set, only the file names not in skippedNames and
+                  matching one of the patterns will be considered
+                  for indexing. Can be redefined per subtree. Does
+                  not apply to directories.</p>
+                </dd>
+                <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES"
                 id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES"></a><span class="term"><code class="varname">noContentSuffixes</code></span></dt>
@@ -9266,6 +9272,19 @@ for i in range(nres):
                   <p>Override logfilename for the indexer in real
                   time mode. The default is to use the idx...
                   values if set, else the log... values.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PYLOGLEVEL" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PYLOGLEVEL"></a><span class="term"><code class="varname">pyloglevel</code></span></dt>
+                <dd>
+                  <p>Override loglevel for the python module.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PYLOGFILENAME" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PYLOGFILENAME"></a><span class="term"><code class="varname">pylogfilename</code></span></dt>
+                <dd>
+                  <p>Override logfilename for the python
+                  module.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR" id=

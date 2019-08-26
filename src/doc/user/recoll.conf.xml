@@ -38,6 +38,11 @@ list. </para></listitem></varlistentry>
 <term><varname>skippedNames+</varname></term>
 <listitem><para>List of name endings to add to the default skippedNames
 list. </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ONLYNAMES">
+<term><varname>onlyNames</varname></term>
+<listitem><para>Regular file name filter patterns If this is set, only the file names not in skippedNames and
+matching one of the patterns will be considered for indexing. Can be
+redefined per subtree. Does not apply to directories.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES">
 <term><varname>noContentSuffixes</varname></term>
 <listitem><para>List of name endings (not necessarily dot-separated suffixes) for
@@ -526,6 +531,12 @@ the log... values.</para></listitem></varlistentry>
 <listitem><para>Override logfilename for the indexer in real time
 mode. The default is to use the idx... values if set, else
 the log... values.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PYLOGLEVEL">
+<term><varname>pyloglevel</varname></term>
+<listitem><para>Override loglevel for the python module. </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PYLOGFILENAME">
+<term><varname>pylogfilename</varname></term>
+<listitem><para>Override logfilename for the python module. </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">
 <term><varname>orgidxconfdir</varname></term>
 <listitem><para>Original location of the configuration directory. This is used exclusively for movable datasets. Locating the
