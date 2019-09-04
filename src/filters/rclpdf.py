@@ -100,6 +100,7 @@ class PDFExtractor:
         # (xmltag,rcltag) pairs
         self.extrameta = self.config.getConfParam("pdfextrameta")
         if self.extrameta:
+            self.extrametafix = self.config.getConfParam("pdfextrametafix")
             self._initextrameta()
 
         # Check if we need to escape portions of text where old
@@ -147,8 +148,8 @@ class PDFExtractor:
             self.extrameta = None
             return
 
-        # extrameta is like "samename metanm|rclnm ..."
-        # we turn it into a list of pairs
+        # extrameta is like "metanm|rclnm ...", where |rclnm maybe absent (keep
+        # original name). Parse into a list of pairs.
         l = self.extrameta.split()
         self.extrameta = []
         for e in l:
@@ -178,6 +179,18 @@ class PDFExtractor:
         self.re_xmlpacket = re.compile(br'<\?xpacket[ 	]+begin.*\?>' +
                                        br'(.*)' + br'<\?xpacket[ 	]+end',
                                        flags = re.DOTALL)
+        global EMF
+        EMF = None
+        if self.extrametafix:
+            try:
+                import importlib.util
+                spec = importlib.util.spec_from_file_location(
+                    'pdfextrametafix', self.extrametafix)
+                EMF = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(EMF)
+            except Exception as err:
+                self.em.rclog("Import extrametafix failed: %s" % err)
+                pass
 
     # Extract all attachments if any into temporary directory
     def extractAttach(self):
@@ -396,13 +409,12 @@ class PDFExtractor:
         if not self.pdfinfo:
             return html
 
-        all = subprocess.check_output([self.pdfinfo, "-meta", self.filename])
+        emf = EMF.MetaFixer() if EMF else None
 
-        # Extract the XML packet
+        # Execute pdfinfo and extract the XML packet
+        all = subprocess.check_output([self.pdfinfo, "-meta", self.filename])
         res = self.re_xmlpacket.search(all)
-        xml = ''
-        if res:
-            xml = res.group(1)
+        xml = res.group(1) if res else ''
         # self.em.rclog("extrameta: XML: [%s]" % xml)
         if not xml:
             return html
@@ -439,13 +451,23 @@ class PDFExtractor:
                     except:
                         fullnm = nm
                     text = rdfdesc.get(fullnm)
+                # Should we set empty values ?
                 if text:
-                    # Should we set empty values ?
+                    if emf:
+                        try:
+                            text = emf.metafix(metanm, text)
+                        except:
+                            pass
                     # Can't use setfield as it only works for
                     # text/plain output at the moment.
                     #self.em.rclog("Appending: (%s,%s)"%(rclnm,text))
                     metaheaders.append((rclnm, text))
         if metaheaders:
+            if emf:
+                try:
+                    emf.wrapup(metaheaders)
+                except:
+                    pass
             return self._injectmeta(html, metaheaders)
         else:
             return html

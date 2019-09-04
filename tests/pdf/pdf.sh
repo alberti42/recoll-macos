@@ -11,7 +11,7 @@ initvariables $0
     # defaults field file, and this can't be overruled afaics, so
     # url is prefixed for the dc:identifier search to work
     recollq dc:identifier:10.12345/sampledoi
-    recollq 'pdf:Producer:"GPL Ghostscript 9.18"'
+    recollq 'pdf:Producer:"GPL Ghostscript 9.18" metafixerunique'
     recollq '"bubbleupnp server to simulate openhome"'
     
 )  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
