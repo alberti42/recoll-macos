@@ -53,6 +53,7 @@ using namespace std;
 #define OPT_p     0x200
 #define OPT_I     0x400
 #define OPT_d     0x800
+#define OPT_l     0x1000
 
 static string thisprog;
 
@@ -69,6 +70,7 @@ static string usage =
     "   -u : use unac\n"
     "   -C [charset] : input charset\n"
     "   -S [stopfile] : stopfile to use for commongrams\n"
+    "   -l <maxtermlen> : set max term length (bytes)\n"
     "    if filename is 'stdin', will read stdin for data (end with ^D)\n\n"
     "   -p somephrase : display results from stringToStrings()\n"
     "  \n"
@@ -196,6 +198,7 @@ static string teststring1 = " nouvel-an ";
 int main(int argc, char **argv)
 {
     string charset, stopfile;
+    int maxtermlen{-1};
 
     thisprog = argv[0];
     argc--; argv++;
@@ -214,6 +217,9 @@ int main(int argc, char **argv)
             case 'd':   op_flags |= OPT_d|OPT_q; break;
             case 'I':   op_flags |= OPT_I; break;
             case 'k':   op_flags |= OPT_k; break;
+            case 'l':   op_flags |= OPT_l; if (argc < 2)  Usage();
+                maxtermlen = atoi(*(++argv)); argc--; 
+                goto b1;
             case 'n':   op_flags |= OPT_n; break;
             case 'p':   op_flags |= OPT_p; break;
             case 'q':   op_flags |= OPT_q; break;
@@ -239,18 +245,26 @@ int main(int argc, char **argv)
 
 
     // We need a configuration file, which we build in a temp file
-    TempFile tmpconf("conf");
-    string cffn(tmpconf.filename());
-    FILE *fp = fopen(tmpconf.filename(), "w");
+    TempDir tmpconf;
+    string cffn(path_cat(tmpconf.dirname(), "recoll.conf"));
+    FILE *fp = fopen(cffn.c_str(), "w");
     if (op_flags & OPT_n) {
-        fprintf(fp, "nonumbers = 1");
+        fprintf(fp, "nonumbers = 1\n");
+    }
+    if (op_flags & OPT_l) {
+        fprintf(fp, "maxtermlength = %d\n", maxtermlen);
     }
     fclose(fp);
 
-    RclConfig *config = new RclConfig(&cffn);
-    TextSplit::staticConfInit(config);
+    string dn(tmpconf.dirname());
+    RclConfig *config = new RclConfig(&dn);
+    if (!config->ok()) {
+        cerr << "Could not build configuration: " << config->getReason() <<endl;
+    }
     Logger::getTheLog("stderr")->setLogLevel(Logger::LLDEB0);
-
+    TextSplit::staticConfInit(config);
+    LOGDEB("Trtextsplit starting up\n");
+    
     Rcl::StopList stoplist;
     if (op_flags & OPT_S) {
         if (!stoplist.setFile(stopfile)) {
