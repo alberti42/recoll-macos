@@ -45,16 +45,11 @@ class RTIToolW;
 class FragButs;
 class SpecIdxW;
 class WebcacheEdit;
+class ConfIndexW;
+class RclTrayIcon;
 
 #include "ui_rclmain.h"
 
-namespace confgui {
-class ConfIndexW;
-}
-
-using confgui::ConfIndexW;
-
-class RclTrayIcon;
 
 class RclMain : public QMainWindow, public Ui::RclMainBase {
     Q_OBJECT;

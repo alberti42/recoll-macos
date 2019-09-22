@@ -175,20 +175,15 @@ void RclMain::execIndexConfig()
 void RclMain::showIndexConfig(bool modal)
 {
     LOGDEB("showIndexConfig()\n" );
+    bool created{false};
     if (indexConfig == 0) {
+        created = true;
 	indexConfig = new ConfIndexW(0, theconfig);
-	connect(new QShortcut(quitKeySeq, indexConfig), SIGNAL (activated()), 
-		this, SLOT (fileExit()));
-    } else {
-	// Close and reopen, in hope that makes us visible...
-	indexConfig->close();
-	indexConfig->reloadPanels();
     }
-    if (modal) {
-	indexConfig->exec();
-	indexConfig->setModal(false);
-    } else {
-	indexConfig->show();
+    indexConfig->showPrefs(modal);
+    if (created) {
+	connect(new QShortcut(quitKeySeq, indexConfig->getDialog()),
+                SIGNAL (activated()), this, SLOT (fileExit()));
     }
 }
 
