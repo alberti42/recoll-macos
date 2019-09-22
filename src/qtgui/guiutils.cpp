@@ -237,6 +237,8 @@ void rwSettings(bool writing)
     
     SETTING_RW(prefs.termMatchType, "/Recoll/prefs/query/termMatchType", 
                Int, 0);
+    SETTING_RW(prefs.noBeeps, "/Recoll/prefs/query/noBeeps", Bool, false);
+
     // This is not really the current program version, just a value to
     // be used in case we have incompatible changes one day
     SETTING_RW(prefs.rclVersion, "/Recoll/prefs/rclVersion", Int, 1009);

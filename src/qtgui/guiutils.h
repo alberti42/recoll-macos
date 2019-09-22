@@ -135,7 +135,9 @@ class PrefsPack {
     // Program version that wrote this. Not used for now, in prevision
     // of the case where we might need an incompatible change
     int rclVersion;
-
+    // Suppress all noises
+    bool noBeeps;
+    
     bool showTrayIcon;
     bool closeToTray;
 

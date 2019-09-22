@@ -126,6 +126,7 @@ void UIPrefsDialog::setFromPrefs()
 	filterBT_RB->setChecked(1);
 	break;
     }
+    noBeepsCB->setChecked(prefs.noBeeps);
     ssNoCompleteCB->setChecked(prefs.ssearchNoComplete);
     ssSearchOnCompleteCB->setChecked(prefs.ssearchStartOnComplete);
     ssSearchOnCompleteCB->setEnabled(!prefs.ssearchNoComplete);
@@ -261,6 +262,7 @@ void UIPrefsDialog::setupReslistFontPB()
 
 void UIPrefsDialog::accept()
 {
+    prefs.noBeeps = noBeepsCB->isChecked();
     prefs.ssearchNoComplete = ssNoCompleteCB->isChecked();
     prefs.ssearchStartOnComplete = ssSearchOnCompleteCB->isChecked();
 

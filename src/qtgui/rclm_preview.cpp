@@ -250,7 +250,12 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
     else 
         docnum--;
     if (docnum < 0 || !m_source || docnum >= m_source->getResCnt()) {
-        QApplication::beep();
+        if (!prefs.noBeeps) {
+            LOGDEB("Beeping\n");
+            QApplication::beep();
+        } else {
+            LOGDEB("Not beeping because nobeep is set\n");
+        }
         return;
     }
 

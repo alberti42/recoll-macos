@@ -375,7 +375,7 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     if (found) {
         m_canBeep = true;
     } else {
-        if (m_canBeep)
+        if (m_canBeep && !prefs.noBeeps)
             QApplication::beep();
         m_canBeep = false;
     }

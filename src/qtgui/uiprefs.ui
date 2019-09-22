@@ -261,6 +261,16 @@
             </layout>
            </item>
            <item>
+            <widget class="QCheckBox" name="noBeepsCB">
+             <property name="text">
+              <string>Suppress all beeps.</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QCheckBox" name="ssNoCompleteCB">
              <property name="text">
               <string>Disable Qt autocompletion in search entry.</string>
