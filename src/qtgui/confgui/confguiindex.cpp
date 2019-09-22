@@ -272,7 +272,8 @@ bool ConfIndexW::setupTopPanel(int idx)
                      "Default 10MB "), 0, 1000);
 
     m_w->addParam(idx, ConfTabsW::CFPT_INT, "maxfsoccuppc",
-                  tr("Max disk occupation (%, 0 means no limit)"),
+                  tr("Disk full threshold to stop indexing<br>"
+                     "(e.g. 90%, 0 means no limit)"),
                   tr("This is the percentage of disk usage "
                      "- total disk usage, not index size - at which "
                      "indexing will fail and stop.<br>"
