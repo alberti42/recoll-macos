@@ -343,6 +343,7 @@ public:
     QListWidget *getListBox() {
         return m_lb;
     }
+    virtual void setEditable(bool onoff);
 
 public slots:
     virtual void setEnabled(bool i) {
@@ -353,12 +354,14 @@ public slots:
 protected slots:
     virtual void showInputDialog();
     void deleteSelected();
+    void editSelected();
 signals:
     void entryDeleted(QString);
 protected:
     QListWidget *m_lb;
     void listToConf();
     std::string m_origvalue;
+    QPushButton *m_pbE;
 };
 
 // Dir name list

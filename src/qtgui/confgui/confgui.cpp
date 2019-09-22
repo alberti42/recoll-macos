@@ -197,10 +197,9 @@ ConfParamW *ConfTabsW::addParam(
 
 ConfParamW *ConfTabsW::findParamW(const QString& varname)
 {
-    for (vector<ConfParamW *>::iterator it = m_params.begin();
-            it != m_params.end(); it++) {
-        if (!varname.compare((*it)->getVarName())) {
-            return *it;
+    for (const auto& param : m_params) {
+        if (!varname.compare(param->getVarName())) {
+            return param;
         }
     }
     return 0;
@@ -216,7 +215,7 @@ void ConfTabsW::endOfList(int tabindex)
 bool ConfTabsW::enableLink(ConfParamW* boolw, ConfParamW* otherw, bool revert)
 {
     if (std::find(m_params.begin(), m_params.end(), boolw) == m_params.end() ||
-            std::find(m_params.begin(), m_params.end(), otherw) ==
+        std::find(m_params.begin(), m_params.end(), otherw) ==
         m_params.end()) {
         cerr << "ConfTabsW::enableLink: param not found\n";
         return false;
@@ -259,21 +258,18 @@ void ConfPanelW::endOfList()
 
 void ConfPanelW::storeValues()
 {
-    for (vector<QWidget *>::iterator it = m_widgets.begin();
-            it != m_widgets.end(); it++) {
-        ConfParamW *p = (ConfParamW*)*it;
-        p->storeValue();
+    for (auto& widgetp : m_widgets) {
+        ((ConfParamW*)widgetp)->storeValue();
     }
 }
 
 void ConfPanelW::loadValues()
 {
-    for (vector<QWidget *>::iterator it = m_widgets.begin();
-            it != m_widgets.end(); it++) {
-        ConfParamW *p = (ConfParamW*)*it;
-        p->loadValue();
+    for (auto& widgetp : m_widgets) {
+        ((ConfParamW*)widgetp)->loadValue();
     }
 }
+
 static QString myGetFileName(bool isdir, QString caption = QString(),
                              bool filenosave = false);
 
@@ -615,19 +611,34 @@ ConfParamSLW::ConfParamSLW(
     QPushButton *pbA = new QPushButton(this);
     QString text = tr("+");
     pbA->setText(text);
+    pbA->setToolTip(tr("Add entry"));
     int width = pbA->fontMetrics().boundingRect(text).width() + 15;
     pbA->setMaximumWidth(width);
     setSzPol(pbA, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(pbA);
+    QObject::connect(pbA, SIGNAL(clicked()), this, SLOT(showInputDialog()));
 
     QPushButton *pbD = new QPushButton(this);
     text = tr("-");
     pbD->setText(text);
+    pbD->setToolTip(tr("Delete selected entries"));
     width = pbD->fontMetrics().boundingRect(text).width() + 15;
     pbD->setMaximumWidth(width);
     setSzPol(pbD, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(pbD);
+    QObject::connect(pbD, SIGNAL(clicked()), this, SLOT(deleteSelected()));
 
+    m_pbE = new QPushButton(this);
+    text = tr("~");
+    m_pbE->setText(text);
+    m_pbE->setToolTip(tr("Edit selected entries"));
+    width = m_pbE->fontMetrics().boundingRect(text).width() + 15;
+    m_pbE->setMaximumWidth(width);
+    setSzPol(m_pbE, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
+    hl1->addWidget(m_pbE);
+    QObject::connect(m_pbE, SIGNAL(clicked()), this, SLOT(editSelected()));
+    m_pbE->hide();
+    
     vl1->addLayout(hl1);
     m_hl->addLayout(vl1);
 
@@ -638,8 +649,15 @@ ConfParamSLW::ConfParamSLW(
 
     setSzPol(this, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 1);
     loadValue();
-    QObject::connect(pbA, SIGNAL(clicked()), this, SLOT(showInputDialog()));
-    QObject::connect(pbD, SIGNAL(clicked()), this, SLOT(deleteSelected()));
+}
+
+void ConfParamSLW::setEditable(bool onoff)
+{
+    if (onoff) {
+        m_pbE->show();
+    } else {
+        m_pbE->hide();
+    }
 }
 
 void ConfParamSLW::storeValue()
@@ -670,11 +688,11 @@ void ConfParamSLW::loadValue()
     vector<string> ls;
     stringToStrings(m_origvalue, ls);
     QStringList qls;
-    for (vector<string>::const_iterator it = ls.begin(); it != ls.end(); it++) {
+    for (const auto& str : ls) {
         if (m_fsencoding) {
-            qls.push_back(QString::fromLocal8Bit(it->c_str()));
+            qls.push_back(QString::fromLocal8Bit(str.c_str()));
         } else {
-            qls.push_back(QString::fromUtf8(it->c_str()));
+            qls.push_back(QString::fromUtf8(str.c_str()));
         }
     }
     m_lb->clear();
@@ -720,10 +738,24 @@ void ConfParamSLW::deleteSelected()
         }
     }
     for (vector<int>::reverse_iterator it = idxes.rbegin();
-            it != idxes.rend(); it++) {
+         it != idxes.rend(); it++) {
         QListWidgetItem *item = m_lb->takeItem(*it);
         emit entryDeleted(item->text());
         delete item;
+    }
+}
+
+void ConfParamSLW::editSelected()
+{
+    for (int i = 0; i < m_lb->count(); i++) {
+        if (m_lb->item(i)->isSelected()) {
+            bool ok;
+            QString s = QInputDialog::getText(
+                this, "", "", QLineEdit::Normal, m_lb->item(i)->text(), &ok);
+            if (ok && !s.isEmpty()) {
+                m_lb->item(i)->setText(s);
+            }
+        }
     }
 }
 
@@ -738,9 +770,9 @@ void ConfParamDNLW::showInputDialog()
             m_lb->insertItem(0, s);
             m_lb->sortItems();
             QList<QListWidgetItem *>items =
-                m_lb->findItems(s, Qt::MatchFixedString | Qt::MatchCaseSensitive);
+                m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
             if (m_lb->selectionMode() == QAbstractItemView::SingleSelection &&
-                    !items.empty()) {
+                !items.empty()) {
                 m_lb->setCurrentItem(*items.begin());
             }
         }
@@ -947,7 +979,7 @@ ConfTabsW *xmlToConfGUI(const string& xml, string& toptext,
                 string nvarname = looksLikeAssign(data);
                 if (!nvarname.empty() && nvarname.compare(m_curvar)) {
                     cerr << "Var assigned [" << nvarname << "] mismatch "
-                         "with current variable [" << m_curvar << "]\n";
+                        "with current variable [" << m_curvar << "]\n";
                 }
                 m_toptext += data;
             }

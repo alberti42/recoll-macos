@@ -234,7 +234,7 @@ bool ConfIndexW::setupTopPanel(int idx)
                      "indexing starts. Default: your home."));
 
     ConfParamW *cparam = m_w->addParam(
-        idx, ConfTabsW::CFPT_STRL, "skippedPaths", tr("Skipped paths"),
+        idx, ConfTabsW::CFPT_DNL, "skippedPaths", tr("Skipped paths"),
         tr("These are pathnames of directories which indexing "
            "will not enter.<br>Path elements may contain wildcards. "
            "The entries must match the paths seen by the indexer "
@@ -242,6 +242,7 @@ bool ConfIndexW::setupTopPanel(int idx)
            "actually a link to '/usr/home', a correct skippedPath entry "
            "would be '/home/me/tmp*', not '/usr/home/me/tmp*')"));
     cparam->setFsEncoding(true);
+    ((confgui::ConfParamSLW*)cparam)->setEditable(true);
     
     if (m_stemlangs.empty()) {
         vector<string> cstemlangs = Rcl::Db::getStemmerNames();
