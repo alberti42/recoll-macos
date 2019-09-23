@@ -133,7 +133,8 @@ public:
 
     ~MboxCache() {}
 
-    int64_t get_offset(RclConfig *config, const string& udi, int msgnum) {
+    int64_t get_offset(RclConfig *config, const string& udi, int msgnum,
+        int64_t filesize) {
         LOGDEB0("MboxCache::get_offset: udi [" << udi << "] msgnum "
                 << msgnum << "\n");
         if (!ok(config)) {
@@ -144,7 +145,11 @@ public:
         string fn = makefilename(udi);
         ifstream instream(fn.c_str(),  std::ifstream::binary);
         if (!instream.good()) {
-            LOGSYSERR("MboxCache::get_offset", "open", fn);
+            if (filesize > m_minfsize) {
+                LOGSYSERR("MboxCache::get_offset", "open", fn);
+            } else {
+                LOGDEB("MboxCache::get_offset: no cache for " << fn << endl);
+            }
             return -1;
         }
         char blk1[M_o_b1size];
@@ -373,7 +378,8 @@ bool MimeHandlerMbox::Internal::tryUseCache(int mtarg)
     if (pthis->m_udi.empty()) {
         goto out;
     }
-    if ((off = o_mcache.get_offset(pthis->m_config, pthis->m_udi, mtarg)) < 0) {
+    if ((off = o_mcache.get_offset(pthis->m_config, pthis->m_udi, mtarg,
+                                   fsize)) < 0) {
         goto out;
     }
     instream.seekg(off);
@@ -450,20 +456,20 @@ bool MimeHandlerMbox::next_document()
         if (!m->instream.good()) {
             ifstream::iostate st = m->instream.rdstate();
             if (st &  std::ifstream::eofbit) {
-                LOGDEB0("MimeHandlerMbox:next: eof\n");
+                LOGDEB0("MimeHandlerMbox:next: eof at " << message_end << endl);
+            } else {
+                if (st &  std::ifstream::failbit) {
+                    LOGDEB0("MimeHandlerMbox:next: failbit\n");
+                    LOGSYSERR("MimeHandlerMbox:next:", "", "");
+                }
+                if (st &  std::ifstream::badbit) {
+                    LOGDEB0("MimeHandlerMbox:next: badbit\n");
+                    LOGSYSERR("MimeHandlerMbox:next:", "", "");
+                }
+                if (st &  std::ifstream::goodbit) {
+                    LOGDEB1("MimeHandlerMbox:next: good\n");
+                }
             }
-            if (st &  std::ifstream::failbit) {
-                LOGDEB0("MimeHandlerMbox:next: fail\n");
-                LOGSYSERR("MimeHandlerMbox:next:", "", "");
-            }
-            if (st &  std::ifstream::badbit) {
-                LOGDEB0("MimeHandlerMbox:next: bad\n");
-                LOGSYSERR("MimeHandlerMbox:next:", "", "");
-            }
-            if (st &  std::ifstream::goodbit) {
-                LOGDEB0("MimeHandlerMbox:next: good\n");
-            }
-            LOGDEB0("MimeHandlerMbox:next: eof at " << message_end << endl);
             iseof = true;
             m->msgnum++;
             break;
