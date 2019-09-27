@@ -196,6 +196,227 @@
     </message>
 </context>
 <context>
+    <name>ConfIndexW</name>
+    <message>
+        <source>Can&apos;t write configuration file</source>
+        <translation type="unfinished">Неможливо записати файл конфіґурації</translation>
+    </message>
+    <message>
+        <source>Global parameters</source>
+        <translation type="unfinished">Загальні параметри</translation>
+    </message>
+    <message>
+        <source>Local parameters</source>
+        <translation type="unfinished">Місцеві параметри</translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished">Параметри пошуку</translation>
+    </message>
+    <message>
+        <source>Top directories</source>
+        <translation type="unfinished">Верхні теки</translation>
+    </message>
+    <message>
+        <source>The list of directories where recursive indexing starts. Default: your home.</source>
+        <translation type="unfinished">Список тек, з яких починається рекурсивне індексування. Типово: домашня тека.</translation>
+    </message>
+    <message>
+        <source>Skipped paths</source>
+        <translation type="unfinished">Пропускати шляхи</translation>
+    </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stemming languages</source>
+        <translation type="unfinished">Мови зі словоформами</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
+        <translation type="unfinished">Мови, для яких буде побудовано&lt;br&gt;словники розкриття словоформ.</translation>
+    </message>
+    <message>
+        <source>Log file name</source>
+        <translation type="unfinished">Файл журналу</translation>
+    </message>
+    <message>
+        <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
+        <translation type="unfinished">Файл, куди підуть повідомлення.&lt;br&gt;&apos;stderr&apos; для терміналу</translation>
+    </message>
+    <message>
+        <source>Log verbosity level</source>
+        <translation type="unfinished">Докладність журналу</translation>
+    </message>
+    <message>
+        <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
+        <translation type="unfinished">Встановити обсяг повідомлень,&lt;br&gt;від помилок до даних зневадження.</translation>
+    </message>
+    <message>
+        <source>Index flush megabytes interval</source>
+        <translation type="unfinished">Інтервал скидання індексу (Мб)</translation>
+    </message>
+    <message>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished">Скільки даних буде проіндексовано між скиданнями індексу на диск.&lt;br&gt;Допомагає контролювати використання пам&apos;яті індексатором. Типово: 10Мб </translation>
+    </message>
+    <message>
+        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No aspell usage</source>
+        <translation type="unfinished">Не використовувати aspell</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished">Вимикає використання aspell для генерації наближень у написання в навіґаторі термінів.&lt;br&gt;Корисне, коли aspell відсутній або зламаний. </translation>
+    </message>
+    <message>
+        <source>Aspell language</source>
+        <translation type="unfinished">Мова aspell</translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory name</source>
+        <translation type="unfinished">Тека бази даних</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Web page store directory name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. size for the web store (MB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConfSubPanelW</name>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished">Межа розміру стиснених файлів (KB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished">Це значення встановлює поріг розміру стиснених файлів, більші за нього не буде опрацьовано.  -1 вимикає ліміт, 0 вимикає декомпресію.</translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Global</source>
+        <translation type="unfinished">Глобальні</translation>
+    </message>
+</context>
+<context>
     <name>CronToolW</name>
     <message>
         <source>Cron Dialog</source>
@@ -580,11 +801,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation>Загальні параметри</translation>
+        <translation type="vanished">Загальні параметри</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation>Місцеві параметри</translation>
+        <translation type="vanished">Місцеві параметри</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
@@ -632,11 +853,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="unfinished">Параметри пошуку</translation>
-    </message>
-    <message>
-        <source>Web history</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Параметри пошуку</translation>
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
@@ -1065,10 +1282,6 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indexing did not run yet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
         <translation type="unfinished"></translation>
     </message>
@@ -1276,6 +1489,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No information: initial indexing not yet performed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1959,10 +2176,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Show query history</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2716,41 +2929,10 @@ This should give higher precedence to the results where the search terms appear 
     </message>
 </context>
 <context>
-    <name>confgui::ConfBeaglePanelW</name>
-    <message>
-        <source>Web page store directory name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max. size for the web store (MB)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Process the WEB history queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation>Неможливо записати файл конфіґурації</translation>
-    </message>
-    <message>
-        <source>Recoll - Index Settings: </source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Неможливо записати файл конфіґурації</translation>
     </message>
 </context>
 <context>
@@ -2774,39 +2956,20 @@ This should give higher precedence to the results where the search terms appear 
         <source>-</source>
         <translation>-</translation>
     </message>
-</context>
-<context>
-    <name>confgui::ConfSearchPanelW</name>
     <message>
-        <source>Automatic diacritics sensitivity</source>
+        <source>Add entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <source>Delete selected entries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Automatic character case sensitivity</source>
+        <source>~</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum term expansion count</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum Xapian clauses count</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <source>Edit selected entries</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2814,101 +2977,58 @@ This should give higher precedence to the results where the search terms appear 
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
-        <translation>Глобальні</translation>
+        <translation type="vanished">Глобальні</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>Межа розміру стиснених файлів (KB)</translation>
+        <translation type="vanished">Межа розміру стиснених файлів (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation>Це значення встановлює поріг розміру стиснених файлів, більші за нього не буде опрацьовано.  -1 вимикає ліміт, 0 вимикає декомпресію.</translation>
-    </message>
-    <message>
-        <source>Max. text file size (MB)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
-This is for excluding monster log files from the index.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text file page size (KB)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
-This will help searching very big text  files (ie: log files).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only mime types</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exclude mime types</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mime types not to be indexed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max. filter exec. time (s)</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Це значення встановлює поріг розміру стиснених файлів, більші за нього не буде опрацьовано.  -1 вимикає ліміт, 0 вимикає декомпресію.</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation>Верхні теки</translation>
+        <translation type="vanished">Верхні теки</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>Список тек, з яких починається рекурсивне індексування. Типово: домашня тека.</translation>
+        <translation type="vanished">Список тек, з яких починається рекурсивне індексування. Типово: домашня тека.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation>Пропускати шляхи</translation>
+        <translation type="vanished">Пропускати шляхи</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation>Мови зі словоформами</translation>
+        <translation type="vanished">Мови зі словоформами</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>Мови, для яких буде побудовано&lt;br&gt;словники розкриття словоформ.</translation>
+        <translation type="vanished">Мови, для яких буде побудовано&lt;br&gt;словники розкриття словоформ.</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation>Файл журналу</translation>
+        <translation type="vanished">Файл журналу</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation>Файл, куди підуть повідомлення.&lt;br&gt;&apos;stderr&apos; для терміналу</translation>
+        <translation type="vanished">Файл, куди підуть повідомлення.&lt;br&gt;&apos;stderr&apos; для терміналу</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation>Докладність журналу</translation>
+        <translation type="vanished">Докладність журналу</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation>Встановити обсяг повідомлень,&lt;br&gt;від помилок до даних зневадження.</translation>
+        <translation type="vanished">Встановити обсяг повідомлень,&lt;br&gt;від помилок до даних зневадження.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation>Інтервал скидання індексу (Мб)</translation>
+        <translation type="vanished">Інтервал скидання індексу (Мб)</translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
@@ -2920,11 +3040,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation>Не використовувати aspell</translation>
+        <translation type="vanished">Не використовувати aspell</translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation>Мова aspell</translation>
+        <translation type="vanished">Мова aspell</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
@@ -2932,7 +3052,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Database directory name</source>
-        <translation>Тека бази даних</translation>
+        <translation type="vanished">Тека бази даних</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
@@ -2952,39 +3072,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation>Скільки даних буде проіндексовано між скиданнями індексу на диск.&lt;br&gt;Допомагає контролювати використання пам&apos;яті індексатором. Типово: 10Мб </translation>
+        <translation type="vanished">Скільки даних буде проіндексовано між скиданнями індексу на диск.&lt;br&gt;Допомагає контролювати використання пам&apos;яті індексатором. Типово: 10Мб </translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation>Вимикає використання aspell для генерації наближень у написання в навіґаторі термінів.&lt;br&gt;Корисне, коли aspell відсутній або зламаний. </translation>
-    </message>
-    <message>
-        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unac exceptions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max disk occupation (%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Вимикає використання aspell для генерації наближень у написання в навіґаторі термінів.&lt;br&gt;Корисне, коли aspell відсутній або зламаний. </translation>
     </message>
 </context>
 <context>
@@ -3346,6 +3438,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Sort snippets by page number (default: by weigth).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suppress all beeps.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

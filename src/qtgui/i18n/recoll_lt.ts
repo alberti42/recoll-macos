@@ -196,6 +196,227 @@
     </message>
 </context>
 <context>
+    <name>ConfIndexW</name>
+    <message>
+        <source>Can&apos;t write configuration file</source>
+        <translation type="unfinished">Nepavyksta įrašyti nustatymų bylos</translation>
+    </message>
+    <message>
+        <source>Global parameters</source>
+        <translation type="unfinished">Globalūs parametrai</translation>
+    </message>
+    <message>
+        <source>Local parameters</source>
+        <translation type="unfinished">Lokalūs parametrai</translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished">Paieškos parametrai</translation>
+    </message>
+    <message>
+        <source>Top directories</source>
+        <translation type="unfinished">Aukščiausio lygmens direktorijos&lt;br&gt;kuriose vykdomas indeksavimas</translation>
+    </message>
+    <message>
+        <source>The list of directories where recursive indexing starts. Default: your home.</source>
+        <translation type="unfinished">Direktorijų, kuriose pradedamas rekursinis indeksavimas, sąrašas. Numatytoji: namų direktorija.</translation>
+    </message>
+    <message>
+        <source>Skipped paths</source>
+        <translation type="unfinished">Direktorijų, kurių turinys nein-&lt;br&gt;deksuojamas, sąrašas</translation>
+    </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stemming languages</source>
+        <translation type="unfinished">Kalbos naudojamos stemming&lt;br&gt; procesui</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
+        <translation type="unfinished">Kalbos, kurioms bus sukurti stemming &lt;br&gt;expansion žodynai.</translation>
+    </message>
+    <message>
+        <source>Log file name</source>
+        <translation type="unfinished">Log bylos vardas</translation>
+    </message>
+    <message>
+        <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
+        <translation type="unfinished">Byla, kurioje bus įrašomos žinutės.&lt;br&gt;Naudokite &apos;stderr&apos; norėdami išvesti į terminalo langą</translation>
+    </message>
+    <message>
+        <source>Log verbosity level</source>
+        <translation type="unfinished">Log išsamumo lygmuo</translation>
+    </message>
+    <message>
+        <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
+        <translation type="unfinished">Vertė nustato žiniučių apimtį, nuo vien tik &lt;br&gt;klaidų fiksavimo iki didelės apimties duomenų skirtų debugging.</translation>
+    </message>
+    <message>
+        <source>Index flush megabytes interval</source>
+        <translation type="unfinished">Indekso dalių, įrašomų į diską, dydis (MB)</translation>
+    </message>
+    <message>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished">Vertė nustato duomenų, kurie indeksuojami tarp įrašymo į diską, apimtį.&lt;br&gt;Padeda valdyti indeksavimo dalies atminties naudojimą. Numatyta vertė yra 10 MB</translation>
+    </message>
+    <message>
+        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No aspell usage</source>
+        <translation type="unfinished">Aspell nebus naudojama</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished">Nurodo nenaudoti aspell programos kuriant tarimo aproksimacijas raktinių žodžių tyrinėjimo įrankyje.&lt;br&gt;Naudinga, jei aspell neveikia arba neįdiegta.</translation>
+    </message>
+    <message>
+        <source>Aspell language</source>
+        <translation type="unfinished">Aspell kalba</translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory name</source>
+        <translation type="unfinished">Duomenų bazės direktorijos vardas</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Web page store directory name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. size for the web store (MB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConfSubPanelW</name>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished">Didžiausias suspaustų bylų dydis (KB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished">Viršijus pasirinktą suspaustų bylų dydį, jie nebus indeksuojami. Pasirinkite -1 jei nenorite nurodyti ribos, 0, jei nenorite, jog suspaustos bylos būtų indeksuojamos.</translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation type="unfinished">Didžiausias tekstinės bylos dydis (MB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation type="unfinished">Viršijus pasirinktą tekstinių bylų dydį, jie nebus indeksuojami. Pasirinkite -1 jei nenorite nurodyti ribos, 0, jei nenorite, jog suspaustos bylos būtų indeksuojamos.</translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation type="unfinished">Tekstinės bylos dydis (KB)</translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation type="unfinished">Jei vertė nurodyta (nelgyi -1) tekstinės bylos bus suskaidytos į nurodyto dydžio bylas, kurios bus atskirai indeksuojamos. Naudinga atliekant paiešką labai dideliose tekstinėse bylose (pav. log bylose).</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Global</source>
+        <translation type="unfinished">Globalus</translation>
+    </message>
+</context>
+<context>
     <name>CronToolW</name>
     <message>
         <source>Cron Dialog</source>
@@ -573,11 +794,11 @@ p, li { white-space: pre-wrap; }
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation>Globalūs parametrai</translation>
+        <translation type="vanished">Globalūs parametrai</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation>Lokalūs parametrai</translation>
+        <translation type="vanished">Lokalūs parametrai</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
@@ -629,11 +850,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="unfinished">Paieškos parametrai</translation>
-    </message>
-    <message>
-        <source>Web history</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Paieškos parametrai</translation>
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
@@ -1067,10 +1284,6 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indexing did not run yet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
         <translation type="unfinished"></translation>
     </message>
@@ -1278,6 +1491,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No information: initial indexing not yet performed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2009,10 +2226,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Show query history</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2802,40 +3015,12 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
         <source>Entries will be recycled once the size is reached</source>
         <translation type="obsolete">Įrašai bus trinami pasiekus nurodytą dydį</translation>
     </message>
-    <message>
-        <source>Web page store directory name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max. size for the web store (MB)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Process the WEB history queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation>Nepavyksta įrašyti nustatymų bylos</translation>
-    </message>
-    <message>
-        <source>Recoll - Index Settings: </source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Nepavyksta įrašyti nustatymų bylos</translation>
     </message>
 </context>
 <context>
@@ -2859,39 +3044,20 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
         <source>-</source>
         <translation>-</translation>
     </message>
-</context>
-<context>
-    <name>confgui::ConfSearchPanelW</name>
     <message>
-        <source>Automatic diacritics sensitivity</source>
+        <source>Add entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <source>Delete selected entries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Automatic character case sensitivity</source>
+        <source>~</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum term expansion count</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum Xapian clauses count</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <source>Edit selected entries</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2899,33 +3065,33 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
-        <translation>Globalus</translation>
+        <translation type="vanished">Globalus</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>Didžiausias suspaustų bylų dydis (KB)</translation>
+        <translation type="vanished">Didžiausias suspaustų bylų dydis (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation>Viršijus pasirinktą suspaustų bylų dydį, jie nebus indeksuojami. Pasirinkite -1 jei nenorite nurodyti ribos, 0, jei nenorite, jog suspaustos bylos būtų indeksuojamos.</translation>
+        <translation type="vanished">Viršijus pasirinktą suspaustų bylų dydį, jie nebus indeksuojami. Pasirinkite -1 jei nenorite nurodyti ribos, 0, jei nenorite, jog suspaustos bylos būtų indeksuojamos.</translation>
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>Didžiausias tekstinės bylos dydis (MB)</translation>
+        <translation type="vanished">Didžiausias tekstinės bylos dydis (MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation>Viršijus pasirinktą tekstinių bylų dydį, jie nebus indeksuojami. Pasirinkite -1 jei nenorite nurodyti ribos, 0, jei nenorite, jog suspaustos bylos būtų indeksuojamos.</translation>
+        <translation type="vanished">Viršijus pasirinktą tekstinių bylų dydį, jie nebus indeksuojami. Pasirinkite -1 jei nenorite nurodyti ribos, 0, jei nenorite, jog suspaustos bylos būtų indeksuojamos.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>Tekstinės bylos dydis (KB)</translation>
+        <translation type="vanished">Tekstinės bylos dydis (KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>Jei vertė nurodyta (nelgyi -1) tekstinės bylos bus suskaidytos į nurodyto dydžio bylas, kurios bus atskirai indeksuojamos. Naudinga atliekant paiešką labai dideliose tekstinėse bylose (pav. log bylose).</translation>
+        <translation type="vanished">Jei vertė nurodyta (nelgyi -1) tekstinės bylos bus suskaidytos į nurodyto dydžio bylas, kurios bus atskirai indeksuojamos. Naudinga atliekant paiešką labai dideliose tekstinėse bylose (pav. log bylose).</translation>
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
@@ -2936,45 +3102,20 @@ This will help searching very big text  files (ie: log files).</source>
 </source>
         <translation type="obsolete">Išorinių filtrų, dirbančių ilgiau nei numatyta, darbas bus nutraukiamas. Taikoma retiems atvejas (pav. postscript) kada dokumentas galėtų priversti filtrą kartoti veiksmus be galo ilgai. </translation>
     </message>
-    <message>
-        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only mime types</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exclude mime types</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mime types not to be indexed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max. filter exec. time (s)</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation>Aukščiausio lygmens direktorijos&lt;br&gt;kuriose vykdomas indeksavimas</translation>
+        <translation type="vanished">Aukščiausio lygmens direktorijos&lt;br&gt;kuriose vykdomas indeksavimas</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>Direktorijų, kuriose pradedamas rekursinis indeksavimas, sąrašas. Numatytoji: namų direktorija.</translation>
+        <translation type="vanished">Direktorijų, kuriose pradedamas rekursinis indeksavimas, sąrašas. Numatytoji: namų direktorija.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation>Direktorijų, kurių turinys nein-&lt;br&gt;deksuojamas, sąrašas</translation>
+        <translation type="vanished">Direktorijų, kurių turinys nein-&lt;br&gt;deksuojamas, sąrašas</translation>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
@@ -2982,35 +3123,35 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation>Kalbos naudojamos stemming&lt;br&gt; procesui</translation>
+        <translation type="vanished">Kalbos naudojamos stemming&lt;br&gt; procesui</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>Kalbos, kurioms bus sukurti stemming &lt;br&gt;expansion žodynai.</translation>
+        <translation type="vanished">Kalbos, kurioms bus sukurti stemming &lt;br&gt;expansion žodynai.</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation>Log bylos vardas</translation>
+        <translation type="vanished">Log bylos vardas</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation>Byla, kurioje bus įrašomos žinutės.&lt;br&gt;Naudokite &apos;stderr&apos; norėdami išvesti į terminalo langą</translation>
+        <translation type="vanished">Byla, kurioje bus įrašomos žinutės.&lt;br&gt;Naudokite &apos;stderr&apos; norėdami išvesti į terminalo langą</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation>Log išsamumo lygmuo</translation>
+        <translation type="vanished">Log išsamumo lygmuo</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation>Vertė nustato žiniučių apimtį, nuo vien tik &lt;br&gt;klaidų fiksavimo iki didelės apimties duomenų skirtų debugging.</translation>
+        <translation type="vanished">Vertė nustato žiniučių apimtį, nuo vien tik &lt;br&gt;klaidų fiksavimo iki didelės apimties duomenų skirtų debugging.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation>Indekso dalių, įrašomų į diską, dydis (MB)</translation>
+        <translation type="vanished">Indekso dalių, įrašomų į diską, dydis (MB)</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation>Vertė nustato duomenų, kurie indeksuojami tarp įrašymo į diską, apimtį.&lt;br&gt;Padeda valdyti indeksavimo dalies atminties naudojimą. Numatyta vertė yra 10 MB</translation>
+        <translation type="vanished">Vertė nustato duomenų, kurie indeksuojami tarp įrašymo į diską, apimtį.&lt;br&gt;Padeda valdyti indeksavimo dalies atminties naudojimą. Numatyta vertė yra 10 MB</translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
@@ -3022,11 +3163,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation>Aspell nebus naudojama</translation>
+        <translation type="vanished">Aspell nebus naudojama</translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation>Aspell kalba</translation>
+        <translation type="vanished">Aspell kalba</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
@@ -3034,7 +3175,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Database directory name</source>
-        <translation>Duomenų bazės direktorijos vardas</translation>
+        <translation type="vanished">Duomenų bazės direktorijos vardas</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
@@ -3050,35 +3191,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation>Nurodo nenaudoti aspell programos kuriant tarimo aproksimacijas raktinių žodžių tyrinėjimo įrankyje.&lt;br&gt;Naudinga, jei aspell neveikia arba neįdiegta.</translation>
-    </message>
-    <message>
-        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unac exceptions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max disk occupation (%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Nurodo nenaudoti aspell programos kuriant tarimo aproksimacijas raktinių žodžių tyrinėjimo įrankyje.&lt;br&gt;Naudinga, jei aspell neveikia arba neįdiegta.</translation>
     </message>
 </context>
 <context>
@@ -3443,6 +3556,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Sort snippets by page number (default: by weigth).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suppress all beeps.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

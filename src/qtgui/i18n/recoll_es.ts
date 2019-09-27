@@ -196,6 +196,228 @@
     </message>
 </context>
 <context>
+    <name>ConfIndexW</name>
+    <message>
+        <source>Can&apos;t write configuration file</source>
+        <translation type="unfinished">No se puede escribir archivo de configuración</translation>
+    </message>
+    <message>
+        <source>Global parameters</source>
+        <translation type="unfinished">Parámetros globales</translation>
+    </message>
+    <message>
+        <source>Local parameters</source>
+        <translation type="unfinished">Parámetros locales</translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished">Parámetros de búsqueda</translation>
+    </message>
+    <message>
+        <source>Top directories</source>
+        <translation type="unfinished">Directorios primarios</translation>
+    </message>
+    <message>
+        <source>The list of directories where recursive indexing starts. Default: your home.</source>
+        <translation type="unfinished">La lista de directorios donde la indexación recursiva comienza. Valor por defecto: su directorio personal.</translation>
+    </message>
+    <message>
+        <source>Skipped paths</source>
+        <translation type="unfinished">Directorios omitidos</translation>
+    </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stemming languages</source>
+        <translation type="unfinished">Lenguajes para raíces</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
+        <translation type="unfinished">Los lenguajes para los cuales los diccionarios de expansión de raíces serán creados.</translation>
+    </message>
+    <message>
+        <source>Log file name</source>
+        <translation type="unfinished">Nombre de archivo de registro</translation>
+    </message>
+    <message>
+        <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
+        <translation type="unfinished">El archivo donde los mensajes serán escritos.&lt;br&gt;Use &apos;stderr&apos; para salida a la terminal</translation>
+    </message>
+    <message>
+        <source>Log verbosity level</source>
+        <translation type="unfinished">Nivel de verbosidad del registro</translation>
+    </message>
+    <message>
+        <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
+        <translation type="unfinished">Este valor ajusta la cantidad de mensajes,&lt;br&gt;desde solamente errores hasta montones de información de depuración.</translation>
+    </message>
+    <message>
+        <source>Index flush megabytes interval</source>
+        <translation type="unfinished">Intervalo en megabytes de escritura del índice</translation>
+    </message>
+    <message>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished">Este valor ajusta la cantidad de datos indexados entre escrituras al disco.&lt;br&gt; Esto ayuda a controlar el uso de memoria del indexador. Valor estándar 10MB </translation>
+    </message>
+    <message>
+        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No aspell usage</source>
+        <translation type="unfinished">No utilizar aspell</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished">Deshabilita el uso de aspell para generar aproximaciones ortográficas en la herramienta explorador de términos.&lt;br&gt;Útil si aspell no se encuentra o no funciona.</translation>
+    </message>
+    <message>
+        <source>Aspell language</source>
+        <translation type="unfinished">Lenguaje Aspell</translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
+        <translation type="unfinished">El lenguaje para el diccionario aspell. Esto debería ser algo como &apos;en&apos; o &apos;fr&apos; ...&lt;br&gt;Si no se establece este valor, el ambiente NLS será utilizado para calcularlo, lo cual usualmente funciona. Para tener una idea de lo que está instalado en sus sistema, escriba &apos;aspell-config&apos; y busque archivos .dat dentro del directorio &apos;data-dir&apos;.</translation>
+    </message>
+    <message>
+        <source>Database directory name</source>
+        <translation type="unfinished">Nombre del directorio de base de datos</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished">El nombre de un directorio donde almacenar el índice.&lt;br&gt;Una ruta no absoluta se interpreta como relativa al directorio de configuración. El valor por defecto es &apos;xapiandb&apos;.</translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation type="unfinished">Excepciones Unac</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation type="unfinished">&lt;p&gt;Estas son excepciones al mecanismo unac, el cual, de forma predeterminada, elimina todos los diacríticos, y realiza una descomposición canónica. Es posible prevenir la eliminación de acentos para algunos caracteres, dependiendo de su lenguaje, y especificar descomposiciones adicionales, por ejemplo, para ligaturas. En cada entrada separada por espacios, el primer caracter es el origen, y el resto es la traducción.</translation>
+    </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished">Procesar la cola del historial WEB</translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished">Habilita la indexación de páginas visitadas en Firefox.&lt;br&gt;(necesita también el plugin Recoll para Firefox)</translation>
+    </message>
+    <message>
+        <source>Web page store directory name</source>
+        <translation type="unfinished">Nombre del directorio del almacén para páginas web</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished">El nombre del directorio dónde almacenar las copias de páginas web visitadas.&lt;br&gt;Una ruta de directorio no absoluta es utilizada, relativa al directorio de configuración.</translation>
+    </message>
+    <message>
+        <source>Max. size for the web store (MB)</source>
+        <translation type="unfinished">Tamaño máximo para el almacén web (MB)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation type="unfinished">Sensibilidad automática de diacríticos</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation type="unfinished">&lt;p&gt;Habilitar automáticamente la sensibilidad de diacríticos si el término de búsqueda tiene caracteres acentuados (no presentes en unac_except_trans). De otra forma necesita usar el lenguage de búsqueda y el modificador &lt;i&gt;D&lt;/i&gt; para especificar la sensibilidad de los diacríticos.</translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation type="unfinished">Sensibilidad automática a la distinción de mayúsculas/minúsculas de los caracteres</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation type="unfinished">&lt;p&gt;Habilitar automáticamente la sensibilidad a las mayúsculas/minúsculas si la entrada tiene caracteres en mayúscula en una posición distinta al primer caracter. De otra forma necesita usar el lenguaje de búsqueda y el modificador &lt;i&gt;C&lt;/i&gt; para especificar la sensibilidad a las mayúsculas y minúsculas.</translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation type="unfinished">Máximo conteo de expansión de términos</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation type="unfinished">&lt;p&gt;Máxima expansión de conteo para un solo término (ej: cuando se usan comodines). El valor por defecto de 10000 es razonable y evitará consultas que parecen congelarse mientras el motor de búsqueda recorre la lista de términos.</translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation type="unfinished">Máximo conteo de cláusulas de Xapian</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished">&lt;p&gt;Número máximo de cláusulas elementales agregadas a una consulta de Xapian. En algunos casos, el resultado de la expansión de términos puede ser multiplicativo, y deseamos evitar el uso excesivo de memoria. El valor por defecto de 100000 debería ser lo suficientemente alto en la mayoría de los casos, y compatible con las configuraciones de hardware típicas en la actualidad.</translation>
+    </message>
+</context>
+<context>
+    <name>ConfSubPanelW</name>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished">Tamaño máximo de archivo comprimido (KB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished">Este valor establece un umbral mas allá del cual los archivos&lt;br&gt;comprimidos no serán procesados. Escriba 1 para no tener límite,&lt;br&gt;o el número 0 para nunca hacer descompresión.</translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation type="unfinished">Tamaño máximo para archivo de texto (MB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation type="unfinished">Este valor establece un umbral más allá del cual los archivos de texto no serán procesados.&lt;br&gt;Escriba 1 para no tener límites. Este valor es utilizado para excluir archivos de registro gigantescos del índice.</translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation type="unfinished">Tamaño de página para archivo de texto (KB)</translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation type="unfinished">Si se utiliza este valor (diferente de -1), los archivos de texto serán separados en partes de este tamaño para ser indexados.
+Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de registro).</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
+</source>
+        <translation type="unfinished">Filtros externos que se ejecuten por más tiempo del establecido serán detenidos. Esto es por el caso inusual (ej: postscript) dónde un documento puede causar que un filtro entre en un ciclo infinito. Establezca el número -1 para indicar que no hay límite.</translation>
+    </message>
+    <message>
+        <source>Global</source>
+        <translation type="unfinished">Global</translation>
+    </message>
+</context>
+<context>
     <name>CronToolW</name>
     <message>
         <source>Cron Dialog</source>
@@ -614,11 +836,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation>Parámetros globales</translation>
+        <translation type="vanished">Parámetros globales</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation>Parámetros locales</translation>
+        <translation type="vanished">Parámetros locales</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
@@ -670,11 +892,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>Parámetros de búsqueda</translation>
+        <translation type="vanished">Parámetros de búsqueda</translation>
     </message>
     <message>
         <source>Web history</source>
-        <translation>Historial Web</translation>
+        <translation type="vanished">Historial Web</translation>
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
@@ -1122,7 +1344,7 @@ Por favor revise el archivo mimeconf</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation>La indexación no se ha ejecutado aún</translation>
+        <translation type="vanished">La indexación no se ha ejecutado aún</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
@@ -1344,6 +1566,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No information: initial indexing not yet performed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2170,10 +2396,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Show query history</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Enter search terms here.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -2719,38 +2941,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Web page store directory name</source>
-        <translation>Nombre del directorio del almacén para páginas web</translation>
+        <translation type="vanished">Nombre del directorio del almacén para páginas web</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation>El nombre del directorio dónde almacenar las copias de páginas web visitadas.&lt;br&gt;Una ruta de directorio no absoluta es utilizada, relativa al directorio de configuración.</translation>
+        <translation type="vanished">El nombre del directorio dónde almacenar las copias de páginas web visitadas.&lt;br&gt;Una ruta de directorio no absoluta es utilizada, relativa al directorio de configuración.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation>Tamaño máximo para el almacén web (MB)</translation>
+        <translation type="vanished">Tamaño máximo para el almacén web (MB)</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation>Procesar la cola del historial WEB</translation>
+        <translation type="vanished">Procesar la cola del historial WEB</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation>Habilita la indexación de páginas visitadas en Firefox.&lt;br&gt;(necesita también el plugin Recoll para Firefox)</translation>
-    </message>
-    <message>
-        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Habilita la indexación de páginas visitadas en Firefox.&lt;br&gt;(necesita también el plugin Recoll para Firefox)</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation>No se puede escribir archivo de configuración</translation>
-    </message>
-    <message>
-        <source>Recoll - Index Settings: </source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">No se puede escribir archivo de configuración</translation>
     </message>
 </context>
 <context>
@@ -2770,73 +2984,89 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>-</source>
         <translation>-</translation>
     </message>
+    <message>
+        <source>Add entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>~</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfSearchPanelW</name>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation>Sensibilidad automática de diacríticos</translation>
+        <translation type="vanished">Sensibilidad automática de diacríticos</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation>&lt;p&gt;Habilitar automáticamente la sensibilidad de diacríticos si el término de búsqueda tiene caracteres acentuados (no presentes en unac_except_trans). De otra forma necesita usar el lenguage de búsqueda y el modificador &lt;i&gt;D&lt;/i&gt; para especificar la sensibilidad de los diacríticos.</translation>
+        <translation type="vanished">&lt;p&gt;Habilitar automáticamente la sensibilidad de diacríticos si el término de búsqueda tiene caracteres acentuados (no presentes en unac_except_trans). De otra forma necesita usar el lenguage de búsqueda y el modificador &lt;i&gt;D&lt;/i&gt; para especificar la sensibilidad de los diacríticos.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation>Sensibilidad automática a la distinción de mayúsculas/minúsculas de los caracteres</translation>
+        <translation type="vanished">Sensibilidad automática a la distinción de mayúsculas/minúsculas de los caracteres</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation>&lt;p&gt;Habilitar automáticamente la sensibilidad a las mayúsculas/minúsculas si la entrada tiene caracteres en mayúscula en una posición distinta al primer caracter. De otra forma necesita usar el lenguaje de búsqueda y el modificador &lt;i&gt;C&lt;/i&gt; para especificar la sensibilidad a las mayúsculas y minúsculas.</translation>
+        <translation type="vanished">&lt;p&gt;Habilitar automáticamente la sensibilidad a las mayúsculas/minúsculas si la entrada tiene caracteres en mayúscula en una posición distinta al primer caracter. De otra forma necesita usar el lenguaje de búsqueda y el modificador &lt;i&gt;C&lt;/i&gt; para especificar la sensibilidad a las mayúsculas y minúsculas.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation>Máximo conteo de expansión de términos</translation>
+        <translation type="vanished">Máximo conteo de expansión de términos</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation>&lt;p&gt;Máxima expansión de conteo para un solo término (ej: cuando se usan comodines). El valor por defecto de 10000 es razonable y evitará consultas que parecen congelarse mientras el motor de búsqueda recorre la lista de términos.</translation>
+        <translation type="vanished">&lt;p&gt;Máxima expansión de conteo para un solo término (ej: cuando se usan comodines). El valor por defecto de 10000 es razonable y evitará consultas que parecen congelarse mientras el motor de búsqueda recorre la lista de términos.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation>Máximo conteo de cláusulas de Xapian</translation>
+        <translation type="vanished">Máximo conteo de cláusulas de Xapian</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation>&lt;p&gt;Número máximo de cláusulas elementales agregadas a una consulta de Xapian. En algunos casos, el resultado de la expansión de términos puede ser multiplicativo, y deseamos evitar el uso excesivo de memoria. El valor por defecto de 100000 debería ser lo suficientemente alto en la mayoría de los casos, y compatible con las configuraciones de hardware típicas en la actualidad.</translation>
+        <translation type="vanished">&lt;p&gt;Número máximo de cláusulas elementales agregadas a una consulta de Xapian. En algunos casos, el resultado de la expansión de términos puede ser multiplicativo, y deseamos evitar el uso excesivo de memoria. El valor por defecto de 100000 debería ser lo suficientemente alto en la mayoría de los casos, y compatible con las configuraciones de hardware típicas en la actualidad.</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
-        <translation>Global</translation>
+        <translation type="vanished">Global</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>Tamaño máximo de archivo comprimido (KB)</translation>
+        <translation type="vanished">Tamaño máximo de archivo comprimido (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation>Este valor establece un umbral mas allá del cual los archivos&lt;br&gt;comprimidos no serán procesados. Escriba 1 para no tener límite,&lt;br&gt;o el número 0 para nunca hacer descompresión.</translation>
+        <translation type="vanished">Este valor establece un umbral mas allá del cual los archivos&lt;br&gt;comprimidos no serán procesados. Escriba 1 para no tener límite,&lt;br&gt;o el número 0 para nunca hacer descompresión.</translation>
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>Tamaño máximo para archivo de texto (MB)</translation>
+        <translation type="vanished">Tamaño máximo para archivo de texto (MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation>Este valor establece un umbral más allá del cual los archivos de texto no serán procesados.&lt;br&gt;Escriba 1 para no tener límites. Este valor es utilizado para excluir archivos de registro gigantescos del índice.</translation>
+        <translation type="vanished">Este valor establece un umbral más allá del cual los archivos de texto no serán procesados.&lt;br&gt;Escriba 1 para no tener límites. Este valor es utilizado para excluir archivos de registro gigantescos del índice.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>Tamaño de página para archivo de texto (KB)</translation>
+        <translation type="vanished">Tamaño de página para archivo de texto (KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>Si se utiliza este valor (diferente de -1), los archivos de texto serán separados en partes de este tamaño para ser indexados.
+        <translation type="vanished">Si se utiliza este valor (diferente de -1), los archivos de texto serán separados en partes de este tamaño para ser indexados.
 Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de registro).</translation>
     </message>
     <message>
@@ -2851,42 +3081,22 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation>Filtros externos que se ejecuten por más tiempo del establecido serán detenidos. Esto es por el caso inusual (ej: postscript) dónde un documento puede causar que un filtro entre en un ciclo infinito. Establezca el número -1 para indicar que no hay límite.</translation>
-    </message>
-    <message>
-        <source>Only mime types</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exclude mime types</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mime types not to be indexed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max. filter exec. time (s)</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Filtros externos que se ejecuten por más tiempo del establecido serán detenidos. Esto es por el caso inusual (ej: postscript) dónde un documento puede causar que un filtro entre en un ciclo infinito. Establezca el número -1 para indicar que no hay límite.</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation>Directorios primarios</translation>
+        <translation type="vanished">Directorios primarios</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>La lista de directorios donde la indexación recursiva comienza. Valor por defecto: su directorio personal.</translation>
+        <translation type="vanished">La lista de directorios donde la indexación recursiva comienza. Valor por defecto: su directorio personal.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation>Directorios omitidos</translation>
+        <translation type="vanished">Directorios omitidos</translation>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
@@ -2894,35 +3104,35 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation>Lenguajes para raíces</translation>
+        <translation type="vanished">Lenguajes para raíces</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>Los lenguajes para los cuales los diccionarios de expansión de raíces serán creados.</translation>
+        <translation type="vanished">Los lenguajes para los cuales los diccionarios de expansión de raíces serán creados.</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation>Nombre de archivo de registro</translation>
+        <translation type="vanished">Nombre de archivo de registro</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation>El archivo donde los mensajes serán escritos.&lt;br&gt;Use &apos;stderr&apos; para salida a la terminal</translation>
+        <translation type="vanished">El archivo donde los mensajes serán escritos.&lt;br&gt;Use &apos;stderr&apos; para salida a la terminal</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation>Nivel de verbosidad del registro</translation>
+        <translation type="vanished">Nivel de verbosidad del registro</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation>Este valor ajusta la cantidad de mensajes,&lt;br&gt;desde solamente errores hasta montones de información de depuración.</translation>
+        <translation type="vanished">Este valor ajusta la cantidad de mensajes,&lt;br&gt;desde solamente errores hasta montones de información de depuración.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation>Intervalo en megabytes de escritura del índice</translation>
+        <translation type="vanished">Intervalo en megabytes de escritura del índice</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation>Este valor ajusta la cantidad de datos indexados entre escrituras al disco.&lt;br&gt; Esto ayuda a controlar el uso de memoria del indexador. Valor estándar 10MB </translation>
+        <translation type="vanished">Este valor ajusta la cantidad de datos indexados entre escrituras al disco.&lt;br&gt; Esto ayuda a controlar el uso de memoria del indexador. Valor estándar 10MB </translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
@@ -2934,11 +3144,11 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation>No utilizar aspell</translation>
+        <translation type="vanished">No utilizar aspell</translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation>Lenguaje Aspell</translation>
+        <translation type="vanished">Lenguaje Aspell</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
@@ -2946,7 +3156,7 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Database directory name</source>
-        <translation>Nombre del directorio de base de datos</translation>
+        <translation type="vanished">Nombre del directorio de base de datos</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
@@ -2962,35 +3172,23 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation>Deshabilita el uso de aspell para generar aproximaciones ortográficas en la herramienta explorador de términos.&lt;br&gt;Útil si aspell no se encuentra o no funciona.</translation>
+        <translation type="vanished">Deshabilita el uso de aspell para generar aproximaciones ortográficas en la herramienta explorador de términos.&lt;br&gt;Útil si aspell no se encuentra o no funciona.</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>El lenguaje para el diccionario aspell. Esto debería ser algo como &apos;en&apos; o &apos;fr&apos; ...&lt;br&gt;Si no se establece este valor, el ambiente NLS será utilizado para calcularlo, lo cual usualmente funciona. Para tener una idea de lo que está instalado en sus sistema, escriba &apos;aspell-config&apos; y busque archivos .dat dentro del directorio &apos;data-dir&apos;.</translation>
+        <translation type="vanished">El lenguaje para el diccionario aspell. Esto debería ser algo como &apos;en&apos; o &apos;fr&apos; ...&lt;br&gt;Si no se establece este valor, el ambiente NLS será utilizado para calcularlo, lo cual usualmente funciona. Para tener una idea de lo que está instalado en sus sistema, escriba &apos;aspell-config&apos; y busque archivos .dat dentro del directorio &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>El nombre de un directorio donde almacenar el índice.&lt;br&gt;Una ruta no absoluta se interpreta como relativa al directorio de configuración. El valor por defecto es &apos;xapiandb&apos;.</translation>
+        <translation type="vanished">El nombre de un directorio donde almacenar el índice.&lt;br&gt;Una ruta no absoluta se interpreta como relativa al directorio de configuración. El valor por defecto es &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation>Excepciones Unac</translation>
+        <translation type="vanished">Excepciones Unac</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation>&lt;p&gt;Estas son excepciones al mecanismo unac, el cual, de forma predeterminada, elimina todos los diacríticos, y realiza una descomposición canónica. Es posible prevenir la eliminación de acentos para algunos caracteres, dependiendo de su lenguaje, y especificar descomposiciones adicionales, por ejemplo, para ligaturas. En cada entrada separada por espacios, el primer caracter es el origen, y el resto es la traducción.</translation>
-    </message>
-    <message>
-        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max disk occupation (%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">&lt;p&gt;Estas son excepciones al mecanismo unac, el cual, de forma predeterminada, elimina todos los diacríticos, y realiza una descomposición canónica. Es posible prevenir la eliminación de acentos para algunos caracteres, dependiendo de su lenguaje, y especificar descomposiciones adicionales, por ejemplo, para ligaturas. En cada entrada separada por espacios, el primer caracter es el origen, y el resto es la traducción.</translation>
     </message>
 </context>
 <context>
@@ -3379,6 +3577,10 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Sort snippets by page number (default: by weigth).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suppress all beeps.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -200,6 +200,230 @@
     </message>
 </context>
 <context>
+    <name>ConfIndexW</name>
+    <message>
+        <source>Can&apos;t write configuration file</source>
+        <translation type="unfinished">Nelze zapsat soubor s nastavením</translation>
+    </message>
+    <message>
+        <source>Global parameters</source>
+        <translation type="unfinished">Celkové parametry</translation>
+    </message>
+    <message>
+        <source>Local parameters</source>
+        <translation type="unfinished">Místní parametry</translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Top directories</source>
+        <translation type="unfinished">Počáteční adresáře</translation>
+    </message>
+    <message>
+        <source>The list of directories where recursive indexing starts. Default: your home.</source>
+        <translation type="unfinished">Seznam adresářů, ve kterých začíná rejstříkování včetně podsložek. Výchozí: adresář Home.</translation>
+    </message>
+    <message>
+        <source>Skipped paths</source>
+        <translation type="unfinished">Přeskočené cesty</translation>
+    </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished">Názvy názvy cest adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v počátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
+    </message>
+    <message>
+        <source>Stemming languages</source>
+        <translation type="unfinished">Jazyky s kmeny slov</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
+        <translation type="unfinished">Jazyky, pro které se vytvoří &lt;br&gt;adresáře rozšíření kmenů slov.</translation>
+    </message>
+    <message>
+        <source>Log file name</source>
+        <translation type="unfinished">Název pro soubor se zápisem</translation>
+    </message>
+    <message>
+        <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
+        <translation type="unfinished">Soubor, do kterého se zapíše výstupní zpráva.&lt;br&gt;Pro výstupy na terminál použijte &apos;stderr&apos;</translation>
+    </message>
+    <message>
+        <source>Log verbosity level</source>
+        <translation type="unfinished">Úroveň podrobnosti zápisu</translation>
+    </message>
+    <message>
+        <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
+        <translation type="unfinished">Tato hodnota upravuje množství zpráv,&lt;br&gt;od pouze chyb až po velké množství dat zajímavých pro ladění.</translation>
+    </message>
+    <message>
+        <source>Index flush megabytes interval</source>
+        <translation type="unfinished">Interval v megabytech pro vymazání rejstříku</translation>
+    </message>
+    <message>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished">Tato hodnota upravuje množství dat, která jsou rejstříkována mezi spláchnutími na disk.&lt;br&gt;Pomáhá to řídit použití paměti rejstříkovače. Výchozí je 10 MB </translation>
+    </message>
+    <message>
+        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished">Toto je procentní podíl využívání disku - celkové využití disku, ne velikost rejstříku , kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;Výchozí hodnota 0 odstraní všechna omezení, znamená žádné omezení.</translation>
+    </message>
+    <message>
+        <source>No aspell usage</source>
+        <translation type="unfinished">Nepoužívat aspell</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished">Zakáže používání aspellu pro vytvoření přibližné podoby pravopisu v nástroji průzkumníka výrazů.&lt;br&gt; Užitečné, pokud aspell není přítomen anebo nepracuje. </translation>
+    </message>
+    <message>
+        <source>Aspell language</source>
+        <translation type="unfinished">Jazyk aspellu</translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
+        <translation type="unfinished">Jazyk pro adresář aspellu. Mělo by to vypadat jako &apos;en&apos; nebo &apos;fr&apos; nebo &apos;cs&apos;...&lt;br&gt;Pokud není tato hodnota nastavena, použije se pro její vypočítání prostředí NLS, což obvykle pracuje. Pro získání představy o tom, co je ve vašem systému nainstalováno, napište &apos;aspell config&apos; a hledejte soubory .dat v adresáři &apos;data-dir&apos;. </translation>
+    </message>
+    <message>
+        <source>Database directory name</source>
+        <translation type="unfinished">Název adresáře s databází</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished">Název pro adresář, v němž se má ukládat rejstřík.&lt;br&gt;Neabsolutní cesta je vzata relativně k adresáři s nastavením. Výchozí je &apos;xapiandb&apos;.</translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation type="unfinished">Výjimky unac</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation type="unfinished">&lt;p&gt;Toto jsou výjimky pro mechanismus unac, který ve výchozím nastavení odstraňuje všechny diakritické znaky a nahrazuje je kanonickými obdobami. Toto odstraňování akcentů můžete (v závislosti na vaší řeči) pro některé znaky potlačit a zadat dodatečná nahrazení, např. pro ligatury. V každém mezerou odděleném záznamu je první znak zdrojovým (výchozím) a zbytek je nahrazení.</translation>
+    </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished">Zpracovat řadu historie WEBu</translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished">Povolí rejstříkování Firefoxem navštívených stránek.&lt;br&gt;(také je potřeba, abyste nainstalovali přídavný modul Recollu pro Firefox)</translation>
+    </message>
+    <message>
+        <source>Web page store directory name</source>
+        <translation type="unfinished">Název adresáře pro ukládání internetové stránky</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished">Název pro adresář, kam se mají ukládat kopie navštívených internetových stránek.&lt;br&gt;Neabsolutní cesta je vzata relativně k adresáři s nastavením.</translation>
+    </message>
+    <message>
+        <source>Max. size for the web store (MB)</source>
+        <translation type="unfinished">Největší velikost pro ukládání internetových stránek (MB)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished">Záznamy budou po dosažení velikosti vráceny do původního stavu.&lt;br&gt;Skutečně dává smysl jen zvětšení velikosti, protože zmenšení hodnoty neoseká stávající soubor (na konci jen plýtvání místem).</translation>
+    </message>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation type="unfinished">Automaticky rozlišovat diakritická znaménka</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation type="unfinished">&lt;p&gt;Zapnout automaticky rozlišování diakritických znamének, když hledaný pojem obsahuje znaky a akcenty (ne v unac_except_trans). Jinak pro  musíte použít jazyk dotazu a modifikátor &lt;i&gt;D&lt;/i&gt;.</translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation type="unfinished">Automaticky rozlišovat velká a malá písmena</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation type="unfinished">&lt;p&gt;Zapnout automaticky rozlišování velkých a malých písmen, když záznam obsahuje velká písmena (mimo na prvním místě). Jinak pro  musíte použít jazyk dotazu a modifikátor &lt;i&gt;C&lt;/i&gt;.</translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation type="unfinished">Největší počet rozšíření výrazu</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation type="unfinished">&lt;p&gt;Největší počet rozšíření pro jeden výraz (např. při použití žolíků). Standardní výchozí hodnota 10 000 je rozumná a zabrání tomu, aby se hledaný pojem jevil jako zamrzlý, zatímco je procházen seznam pojmů.</translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation type="unfinished">Největší počet výrazů Xapian</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished">&lt;p&gt;Největší počet základních výrazů, které přidáme do jednoho dotazu Xapian. V některých případech se mohou výsledky rozšíření výrazu vynásobit, a my se chceme vyvarovat nadbytečné spotřebě paměti. Standardní výchozí hodnota 100 000 by měla ve většině případů naprosto postačovat a hodit se k typickému současnému sestavení zařízení (hardware).</translation>
+    </message>
+</context>
+<context>
+    <name>ConfSubPanelW</name>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished">Pouze typy MIME</translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished">Vybraný seznam rejstříkovaných typů MIME.&lt;br&gt;Nic jiného se nebude rejstříkovat. Obyčejně je seznam prázdný a nečinný</translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished">Vyloučené typy MIME</translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished">Typy MIME, které se nemají rejstříkovat</translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished">Největší velikost zabaleného souboru (KB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished">Tato hodnota nastavuje práh, za kterým nebudou zabalené soubory zpracovávány. Nastavte na -1 pro žádné omezení, na 0 pro vůbec žádné rozbalování.</translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation type="unfinished">Největší velikost textového souboru (KB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation type="unfinished">Tato hodnota nastavuje práh, za kterým nebudou textové soubory zpracovávány. Nastavte na -1 pro žádné omezení.
+Je to kvůli vyloučení obřích souborů se zápisem z rejstříkování.</translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation type="unfinished">Velikost stránky textového souboru (KB)</translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation type="unfinished">Pokud je nastavena tato hodnota (nerovná se -1), textové soubory budou pro rejstříkování rozděleny na kousky o této velikosti.
+To pomůže při prohledávání velmi velkých textových souborů (např. souborů se zápisem).</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
+</source>
+        <translation type="unfinished">Vnější filtry pracující déle než po tak dlouhou dobu budou přerušeny. Je to pro ten zřídkavý případ (např. postscript), kdy by dokument mohl zapříčinit vejití filtru do smyčky. Nastavte na -1 pro žádné omezení.
+</translation>
+    </message>
+    <message>
+        <source>Global</source>
+        <translation type="unfinished">Celkové</translation>
+    </message>
+</context>
+<context>
     <name>CronToolW</name>
     <message>
         <source>Cron Dialog</source>
@@ -624,11 +848,11 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation>Celkové parametry</translation>
+        <translation type="vanished">Celkové parametry</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation>Místní parametry</translation>
+        <translation type="vanished">Místní parametry</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
@@ -680,11 +904,11 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>Parametry hledání</translation>
+        <translation type="vanished">Parametry hledání</translation>
     </message>
     <message>
         <source>Web history</source>
-        <translation>Historie webu</translation>
+        <translation type="vanished">Historie webu</translation>
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
@@ -1134,7 +1358,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation>Rejstříkování ještě neběželo</translation>
+        <translation type="vanished">Rejstříkování ještě neběželo</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
@@ -1386,6 +1610,10 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No information: initial indexing not yet performed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2227,10 +2455,6 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
         <source>Show query history</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Enter search terms here.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
@@ -3001,38 +3225,34 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Web page store directory name</source>
-        <translation>Název adresáře pro ukládání internetové stránky</translation>
+        <translation type="vanished">Název adresáře pro ukládání internetové stránky</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation>Název pro adresář, kam se mají ukládat kopie navštívených internetových stránek.&lt;br&gt;Neabsolutní cesta je vzata relativně k adresáři s nastavením.</translation>
+        <translation type="vanished">Název pro adresář, kam se mají ukládat kopie navštívených internetových stránek.&lt;br&gt;Neabsolutní cesta je vzata relativně k adresáři s nastavením.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation>Největší velikost pro ukládání internetových stránek (MB)</translation>
+        <translation type="vanished">Největší velikost pro ukládání internetových stránek (MB)</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation>Zpracovat řadu historie WEBu</translation>
+        <translation type="vanished">Zpracovat řadu historie WEBu</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation>Povolí rejstříkování Firefoxem navštívených stránek.&lt;br&gt;(také je potřeba, abyste nainstalovali přídavný modul Recollu pro Firefox)</translation>
+        <translation type="vanished">Povolí rejstříkování Firefoxem navštívených stránek.&lt;br&gt;(také je potřeba, abyste nainstalovali přídavný modul Recollu pro Firefox)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation>Záznamy budou po dosažení velikosti vráceny do původního stavu.&lt;br&gt;Skutečně dává smysl jen zvětšení velikosti, protože zmenšení hodnoty neoseká stávající soubor (na konci jen plýtvání místem).</translation>
+        <translation type="vanished">Záznamy budou po dosažení velikosti vráceny do původního stavu.&lt;br&gt;Skutečně dává smysl jen zvětšení velikosti, protože zmenšení hodnoty neoseká stávající soubor (na konci jen plýtvání místem).</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation>Nelze zapsat soubor s nastavením</translation>
-    </message>
-    <message>
-        <source>Recoll - Index Settings: </source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Nelze zapsat soubor s nastavením</translation>
     </message>
 </context>
 <context>
@@ -3052,74 +3272,90 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <source>-</source>
         <translation>-</translation>
     </message>
+    <message>
+        <source>Add entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>~</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfSearchPanelW</name>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation>Automaticky rozlišovat diakritická znaménka</translation>
+        <translation type="vanished">Automaticky rozlišovat diakritická znaménka</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation>&lt;p&gt;Zapnout automaticky rozlišování diakritických znamének, když hledaný pojem obsahuje znaky a akcenty (ne v unac_except_trans). Jinak pro  musíte použít jazyk dotazu a modifikátor &lt;i&gt;D&lt;/i&gt;.</translation>
+        <translation type="vanished">&lt;p&gt;Zapnout automaticky rozlišování diakritických znamének, když hledaný pojem obsahuje znaky a akcenty (ne v unac_except_trans). Jinak pro  musíte použít jazyk dotazu a modifikátor &lt;i&gt;D&lt;/i&gt;.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation>Automaticky rozlišovat velká a malá písmena</translation>
+        <translation type="vanished">Automaticky rozlišovat velká a malá písmena</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation>&lt;p&gt;Zapnout automaticky rozlišování velkých a malých písmen, když záznam obsahuje velká písmena (mimo na prvním místě). Jinak pro  musíte použít jazyk dotazu a modifikátor &lt;i&gt;C&lt;/i&gt;.</translation>
+        <translation type="vanished">&lt;p&gt;Zapnout automaticky rozlišování velkých a malých písmen, když záznam obsahuje velká písmena (mimo na prvním místě). Jinak pro  musíte použít jazyk dotazu a modifikátor &lt;i&gt;C&lt;/i&gt;.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation>Největší počet rozšíření výrazu</translation>
+        <translation type="vanished">Největší počet rozšíření výrazu</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation>&lt;p&gt;Největší počet rozšíření pro jeden výraz (např. při použití žolíků). Standardní výchozí hodnota 10 000 je rozumná a zabrání tomu, aby se hledaný pojem jevil jako zamrzlý, zatímco je procházen seznam pojmů.</translation>
+        <translation type="vanished">&lt;p&gt;Největší počet rozšíření pro jeden výraz (např. při použití žolíků). Standardní výchozí hodnota 10 000 je rozumná a zabrání tomu, aby se hledaný pojem jevil jako zamrzlý, zatímco je procházen seznam pojmů.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation>Největší počet výrazů Xapian</translation>
+        <translation type="vanished">Největší počet výrazů Xapian</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation>&lt;p&gt;Největší počet základních výrazů, které přidáme do jednoho dotazu Xapian. V některých případech se mohou výsledky rozšíření výrazu vynásobit, a my se chceme vyvarovat nadbytečné spotřebě paměti. Standardní výchozí hodnota 100 000 by měla ve většině případů naprosto postačovat a hodit se k typickému současnému sestavení zařízení (hardware).</translation>
+        <translation type="vanished">&lt;p&gt;Největší počet základních výrazů, které přidáme do jednoho dotazu Xapian. V některých případech se mohou výsledky rozšíření výrazu vynásobit, a my se chceme vyvarovat nadbytečné spotřebě paměti. Standardní výchozí hodnota 100 000 by měla ve většině případů naprosto postačovat a hodit se k typickému současnému sestavení zařízení (hardware).</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
-        <translation>Celkové</translation>
+        <translation type="vanished">Celkové</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>Největší velikost zabaleného souboru (KB)</translation>
+        <translation type="vanished">Největší velikost zabaleného souboru (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation>Tato hodnota nastavuje práh, za kterým nebudou zabalené soubory zpracovávány. Nastavte na -1 pro žádné omezení, na 0 pro vůbec žádné rozbalování.</translation>
+        <translation type="vanished">Tato hodnota nastavuje práh, za kterým nebudou zabalené soubory zpracovávány. Nastavte na -1 pro žádné omezení, na 0 pro vůbec žádné rozbalování.</translation>
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>Největší velikost textového souboru (KB)</translation>
+        <translation type="vanished">Největší velikost textového souboru (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation>Tato hodnota nastavuje práh, za kterým nebudou textové soubory zpracovávány. Nastavte na -1 pro žádné omezení.
+        <translation type="vanished">Tato hodnota nastavuje práh, za kterým nebudou textové soubory zpracovávány. Nastavte na -1 pro žádné omezení.
 Je to kvůli vyloučení obřích souborů se zápisem z rejstříkování.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>Velikost stránky textového souboru (KB)</translation>
+        <translation type="vanished">Velikost stránky textového souboru (KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>Pokud je nastavena tato hodnota (nerovná se -1), textové soubory budou pro rejstříkování rozděleny na kousky o této velikosti.
+        <translation type="vanished">Pokud je nastavena tato hodnota (nerovná se -1), textové soubory budou pro rejstříkování rozděleny na kousky o této velikosti.
 To pomůže při prohledávání velmi velkých textových souborů (např. souborů se zápisem).</translation>
     </message>
     <message>
@@ -3135,43 +3371,39 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation>Vnější filtry pracující déle než po tak dlouhou dobu budou přerušeny. Je to pro ten zřídkavý případ (např. postscript), kdy by dokument mohl zapříčinit vejití filtru do smyčky. Nastavte na -1 pro žádné omezení.
+        <translation type="vanished">Vnější filtry pracující déle než po tak dlouhou dobu budou přerušeny. Je to pro ten zřídkavý případ (např. postscript), kdy by dokument mohl zapříčinit vejití filtru do smyčky. Nastavte na -1 pro žádné omezení.
 </translation>
     </message>
     <message>
         <source>Only mime types</source>
-        <translation>Pouze typy MIME</translation>
+        <translation type="vanished">Pouze typy MIME</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation>Vybraný seznam rejstříkovaných typů MIME.&lt;br&gt;Nic jiného se nebude rejstříkovat. Obyčejně je seznam prázdný a nečinný</translation>
+        <translation type="vanished">Vybraný seznam rejstříkovaných typů MIME.&lt;br&gt;Nic jiného se nebude rejstříkovat. Obyčejně je seznam prázdný a nečinný</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation>Vyloučené typy MIME</translation>
+        <translation type="vanished">Vyloučené typy MIME</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
-        <translation>Typy MIME, které se nemají rejstříkovat</translation>
-    </message>
-    <message>
-        <source>Max. filter exec. time (s)</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Typy MIME, které se nemají rejstříkovat</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation>Počáteční adresáře</translation>
+        <translation type="vanished">Počáteční adresáře</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>Seznam adresářů, ve kterých začíná rejstříkování včetně podsložek. Výchozí: adresář Home.</translation>
+        <translation type="vanished">Seznam adresářů, ve kterých začíná rejstříkování včetně podsložek. Výchozí: adresář Home.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation>Přeskočené cesty</translation>
+        <translation type="vanished">Přeskočené cesty</translation>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
@@ -3179,35 +3411,35 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation>Jazyky s kmeny slov</translation>
+        <translation type="vanished">Jazyky s kmeny slov</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>Jazyky, pro které se vytvoří &lt;br&gt;adresáře rozšíření kmenů slov.</translation>
+        <translation type="vanished">Jazyky, pro které se vytvoří &lt;br&gt;adresáře rozšíření kmenů slov.</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation>Název pro soubor se zápisem</translation>
+        <translation type="vanished">Název pro soubor se zápisem</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation>Soubor, do kterého se zapíše výstupní zpráva.&lt;br&gt;Pro výstupy na terminál použijte &apos;stderr&apos;</translation>
+        <translation type="vanished">Soubor, do kterého se zapíše výstupní zpráva.&lt;br&gt;Pro výstupy na terminál použijte &apos;stderr&apos;</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation>Úroveň podrobnosti zápisu</translation>
+        <translation type="vanished">Úroveň podrobnosti zápisu</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation>Tato hodnota upravuje množství zpráv,&lt;br&gt;od pouze chyb až po velké množství dat zajímavých pro ladění.</translation>
+        <translation type="vanished">Tato hodnota upravuje množství zpráv,&lt;br&gt;od pouze chyb až po velké množství dat zajímavých pro ladění.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation>Interval v megabytech pro vymazání rejstříku</translation>
+        <translation type="vanished">Interval v megabytech pro vymazání rejstříku</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation>Tato hodnota upravuje množství dat, která jsou rejstříkována mezi spláchnutími na disk.&lt;br&gt;Pomáhá to řídit použití paměti rejstříkovače. Výchozí je 10 MB </translation>
+        <translation type="vanished">Tato hodnota upravuje množství dat, která jsou rejstříkována mezi spláchnutími na disk.&lt;br&gt;Pomáhá to řídit použití paměti rejstříkovače. Výchozí je 10 MB </translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
@@ -3219,11 +3451,11 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation>Nepoužívat aspell</translation>
+        <translation type="vanished">Nepoužívat aspell</translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation>Jazyk aspellu</translation>
+        <translation type="vanished">Jazyk aspellu</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
@@ -3231,7 +3463,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Database directory name</source>
-        <translation>Název adresáře s databází</translation>
+        <translation type="vanished">Název adresáře s databází</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
@@ -3247,35 +3479,35 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation>Zakáže používání aspellu pro vytvoření přibližné podoby pravopisu v nástroji průzkumníka výrazů.&lt;br&gt; Užitečné, pokud aspell není přítomen anebo nepracuje. </translation>
+        <translation type="vanished">Zakáže používání aspellu pro vytvoření přibližné podoby pravopisu v nástroji průzkumníka výrazů.&lt;br&gt; Užitečné, pokud aspell není přítomen anebo nepracuje. </translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Jazyk pro adresář aspellu. Mělo by to vypadat jako &apos;en&apos; nebo &apos;fr&apos; nebo &apos;cs&apos;...&lt;br&gt;Pokud není tato hodnota nastavena, použije se pro její vypočítání prostředí NLS, což obvykle pracuje. Pro získání představy o tom, co je ve vašem systému nainstalováno, napište &apos;aspell config&apos; a hledejte soubory .dat v adresáři &apos;data-dir&apos;. </translation>
+        <translation type="vanished">Jazyk pro adresář aspellu. Mělo by to vypadat jako &apos;en&apos; nebo &apos;fr&apos; nebo &apos;cs&apos;...&lt;br&gt;Pokud není tato hodnota nastavena, použije se pro její vypočítání prostředí NLS, což obvykle pracuje. Pro získání představy o tom, co je ve vašem systému nainstalováno, napište &apos;aspell config&apos; a hledejte soubory .dat v adresáři &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>Název pro adresář, v němž se má ukládat rejstřík.&lt;br&gt;Neabsolutní cesta je vzata relativně k adresáři s nastavením. Výchozí je &apos;xapiandb&apos;.</translation>
+        <translation type="vanished">Název pro adresář, v němž se má ukládat rejstřík.&lt;br&gt;Neabsolutní cesta je vzata relativně k adresáři s nastavením. Výchozí je &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation>Výjimky unac</translation>
+        <translation type="vanished">Výjimky unac</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation>&lt;p&gt;Toto jsou výjimky pro mechanismus unac, který ve výchozím nastavení odstraňuje všechny diakritické znaky a nahrazuje je kanonickými obdobami. Toto odstraňování akcentů můžete (v závislosti na vaší řeči) pro některé znaky potlačit a zadat dodatečná nahrazení, např. pro ligatury. V každém mezerou odděleném záznamu je první znak zdrojovým (výchozím) a zbytek je nahrazení.</translation>
+        <translation type="vanished">&lt;p&gt;Toto jsou výjimky pro mechanismus unac, který ve výchozím nastavení odstraňuje všechny diakritické znaky a nahrazuje je kanonickými obdobami. Toto odstraňování akcentů můžete (v závislosti na vaší řeči) pro některé znaky potlačit a zadat dodatečná nahrazení, např. pro ligatury. V každém mezerou odděleném záznamu je první znak zdrojovým (výchozím) a zbytek je nahrazení.</translation>
     </message>
     <message>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Názvy názvy cest adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v počátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation type="vanished">Názvy názvy cest adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v počátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Max disk occupation (%, 0 means no limit)</source>
-        <translation>Největší obsazení disku (%, 0 znamená bez omezení)</translation>
+        <translation type="vanished">Největší obsazení disku (%, 0 znamená bez omezení)</translation>
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation>Toto je procentní podíl využívání disku - celkové využití disku, ne velikost rejstříku , kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;Výchozí hodnota 0 odstraní všechna omezení, znamená žádné omezení.</translation>
+        <translation type="vanished">Toto je procentní podíl využívání disku - celkové využití disku, ne velikost rejstříku , kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;Výchozí hodnota 0 odstraní všechna omezení, znamená žádné omezení.</translation>
     </message>
 </context>
 <context>
@@ -3676,6 +3908,10 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Sort snippets by page number (default: by weigth).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suppress all beeps.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
