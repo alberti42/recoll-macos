@@ -131,8 +131,6 @@ void Preview::init()
                            "RCL.SEARCH.GUI.PREVIEW");
 
     // signals and slots connections
-    connect(searchTextCMB, SIGNAL(activated(int)), 
-            this, SLOT(searchTextFromIndex(int)));
     connect(searchTextCMB, SIGNAL(editTextChanged(const QString&)), 
             this, SLOT(searchTextChanged(const QString&)));
     connect(nextPB, SIGNAL(clicked()), this, SLOT(nextPressed()));
@@ -259,24 +257,29 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 
 void Preview::searchTextChanged(const QString & text)
 {
-    LOGDEB1("Search line text changed. text: '" << qs2utf8s(text) << "'\n");
-    m_searchTextFromIndex = -1;
-    if (text.isEmpty()) {
-        m_dynSearchActive = false;
-        clearPB->setEnabled(false);
+    LOGDEB("Preview::searchTextChanged:(" << qs2utf8s(text) << ") current: ("<<
+            qs2utf8s(searchTextCMB->currentText()) << ") currentindex " <<
+            searchTextCMB->currentIndex() << "\n");
+    if (!searchTextCMB->itemText(searchTextCMB->currentIndex()).compare(text)) {
+        // Then we assume that the text was set by selecting in the
+        // combobox There does not seem to be another way to
+        // discriminate select and hand edit. Note that the
+        // activated() signal is called *after* the editTextChanged()
+        // one, so it is useless.
+        m_searchTextFromIndex = searchTextCMB->currentIndex();
+        doSearch("", false, false);
     } else {
-        m_dynSearchActive = true;
-        clearPB->setEnabled(true);
-        doSearch(text, false, false);
+        m_searchTextFromIndex = -1;
+        if (text.isEmpty()) {
+            m_dynSearchActive = false;
+            clearPB->setEnabled(false);
+        } else {
+            m_dynSearchActive = true;
+            clearPB->setEnabled(true);
+            doSearch(text, false, false);
+        }
     }
 }
-
-void Preview::searchTextFromIndex(int idx)
-{
-    LOGDEB1("search line from index " << idx << "\n");
-    m_searchTextFromIndex = idx;
-}
-
 
 void Preview::emitSaveDocToFile()
 {
