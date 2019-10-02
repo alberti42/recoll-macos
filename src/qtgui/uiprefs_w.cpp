@@ -42,6 +42,7 @@
 #include <qlist.h>
 #include <QTimer>
 #include <QListWidget>
+#include <QSettings>
 
 #include "recoll.h"
 #include "guiutils.h"
@@ -103,6 +104,10 @@ void UIPrefsDialog::init()
 // Update dialog state from stored prefs
 void UIPrefsDialog::setFromPrefs()
 {
+    // Most values are stored in the prefs struct. Some rarely used
+    // ones go directly through the settings
+    QSettings settings("Recoll.org", "recoll");
+
     // Entries per result page spinbox
     pageLenSB->setValue(prefs.respagesize);
     collapseDupsCB->setChecked(prefs.collapseDuplicates);
@@ -144,6 +149,7 @@ void UIPrefsDialog::setFromPrefs()
     closeToTrayCB->setEnabled(showTrayIconCB->checkState());
     closeToTrayCB->setChecked(prefs.closeToTray);
     showTempFileWarningCB->setChecked(prefs.showTempFileWarning == -1);
+    anchorTamilHackCB->setChecked(settings.value("anchorSpcHack", 0).toBool());
     previewHtmlCB->setChecked(prefs.previewHtml);
     previewActiveLinksCB->setChecked(prefs.previewActiveLinks);
     switch (prefs.previewPlainPre) {
@@ -262,6 +268,9 @@ void UIPrefsDialog::setupReslistFontPB()
 
 void UIPrefsDialog::accept()
 {
+    // Most values are stored in the prefs struct. Some rarely used
+    // ones go directly through the settings
+    QSettings settings("Recoll.org", "recoll");
     prefs.noBeeps = noBeepsCB->isChecked();
     prefs.ssearchNoComplete = ssNoCompleteCB->isChecked();
     prefs.ssearchStartOnComplete = ssSearchOnCompleteCB->isChecked();
@@ -330,6 +339,7 @@ void UIPrefsDialog::accept()
     prefs.closeToTray = closeToTrayCB->isChecked();
     prefs.showTempFileWarning = showTempFileWarningCB->isChecked() ?
         -1 : 1024;
+    settings.setValue("anchorSpcHack", anchorTamilHackCB->isChecked());
     prefs.previewHtml = previewHtmlCB->isChecked();
     prefs.previewActiveLinks = previewActiveLinksCB->isChecked();
 

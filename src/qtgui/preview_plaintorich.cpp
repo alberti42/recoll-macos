@@ -22,6 +22,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QSettings>
 
 #include "preview_plaintorich.h"
 
@@ -43,6 +44,8 @@ void PlainToRichQtPreview::clear()
     m_lastanchor = 0;
     m_groupanchors.clear();
     m_groupcuranchors.clear();
+    QSettings settings("Recoll.org", "recoll");
+    m_spacehack = settings.value("anchorSpcHack", 0).toBool();
 }
 
 bool PlainToRichQtPreview::haveAnchors()
@@ -82,9 +85,12 @@ string PlainToRichQtPreview::startMatch(unsigned int grpidx)
     // Tamil text (qt bug?). Just inserting a space character after
     // the opening <a tag, before the text, clears the problem, reason
     // unknown. We also inverted the <span and <a tags to avoid
-    // highlighting the spurious space.
+    // highlighting the spurious space. The space hack only work in a
+    // <pre> section. Also: having <a name=xxx></a> before the match
+    // term causes the same problem (so not a possible fix).
+    string hackspace = m_spacehack? " " : "";
     string startmarker{
-        "<a name='" + termAnchorName(m_lastanchor) + "'> " +
+        "<a name='" + termAnchorName(m_lastanchor) + "'>" + hackspace +
             "<span style='" + qs2utf8s(prefs.qtermstyle) + "'>"
             };
     return startmarker;
