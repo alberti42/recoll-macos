@@ -1,3 +1,22 @@
+/* Copyright (C) 2017-2019 J.F.Dockes
+ *
+ * License: GPL 2.1
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -85,8 +104,10 @@ int main(int argc, char **argv)
 
 	const char *encoding = *argv++; argc--;
 	string ifn = *argv++; argc--;
-	if (!ifn.compare("stdin"))
+	if (!ifn.compare("stdin") || !ifn.compare("-")) {
+            // file_read interprets an empty fn as "use stdin"
 	    ifn.clear();
+        }
 	const char *ofn = *argv++; argc--;
 
 	string reason;
@@ -104,7 +125,7 @@ int main(int argc, char **argv)
 	}
     
 	int fd;
-	if (strcmp(ofn, "stdout")) {
+	if (strcmp(ofn, "stdout") && strcmp(ofn, "-")) {
 	    fd = open(ofn, O_CREAT|O_EXCL|O_WRONLY, 0666);
 	} else {
 	    fd = 1;
