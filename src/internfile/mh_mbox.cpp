@@ -42,7 +42,7 @@
 using namespace std;
 
 // Define maximum message size for safety. 100MB would seem reasonable
-static const unsigned int max_mbox_member_size = 100 * 1024 * 1024;
+static unsigned int max_mbox_member_size = 100 * 1024 * 1024;
 
 // The mbox format uses lines beginning with 'From ' as separator.
 // Mailers are supposed to quote any other lines beginning with 
@@ -302,6 +302,14 @@ MimeHandlerMbox::MimeHandlerMbox(RclConfig *cnf, const std::string& id)
 	: RecollFilter(cnf, id)
 {
     m = new Internal(this);
+
+    string smbs;
+    m_config->getConfParam("mboxmaxmsgmbs", smbs);
+    if (!smbs.empty()) {
+        max_mbox_member_size  = (unsigned int)atoi(smbs.c_str()) *1024*1024;
+    }
+    LOGDEB0("MimeHandlerMbox::MimeHandlerMbox: max_mbox_member_size (MB): " <<
+            max_mbox_member_size / (1024*1024) << endl);
 }
 
 MimeHandlerMbox::~MimeHandlerMbox()
