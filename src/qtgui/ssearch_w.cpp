@@ -298,20 +298,40 @@ void SSearch::searchTypeChanged(int typ)
     switch (typ) {
     case SST_LANG:
         queryText->setToolTip(
-            tr(
-"Enter query language expression. Cheat sheet:<br>\n"
-"<i>term1 term2</i> : 'term1' and 'term2' in any field.<br>\n"
-"<i>field:term1</i> : 'term1' in field 'field'.<br>\n"
-" Standard field names/synonyms:<br>\n"
-"  title/subject/caption, author/from, recipient/to, filename, ext.<br>\n"
-" Pseudo-fields: dir, mime/format, type/rclcat, date, size.<br>\n"
-" Two date interval exemples: 2009-03-01/2009-05-20  2009-03-01/P2M.<br>\n"
-"<i>term1 term2 OR term3</i> : term1 AND (term2 OR term3).<br>\n"
-"  You can use parentheses to make things clearer.<br>\n"
-"<i>\"term1 term2\"</i> : phrase (must occur exactly). Possible modifiers:<br>\n"
-"<i>\"term1 term2\"p</i> : unordered proximity search with default distance.<br>\n"
-"Use <b>Show Query</b> link when in doubt about result and see manual (&lt;F1>) for more detail.\n"
-                ));
+tr("<html><head><style>") +
+tr("table, th, td {") +
+tr("border: 1px solid black;") +
+tr("border-collapse: collapse;") +
+tr("}") +
+tr("th,td {") +
+tr("text-align: center;") +
+tr("}") +
+tr("</style></head><body>") +
+tr("<p>Query language cheat-sheet. In doubt: click <b>Show Query</b>.&nbsp;") +
+tr("You should really look at the manual (F1)</p>") +
+tr("<table border='1' cellspacing='0'>") +
+tr("<tr><th>What</th><th>Examples</th>") +
+tr("<tr><td>And</td><td>one two&nbsp;&nbsp;&nbsp;one AND two&nbsp;&nbsp;&nbsp;one && two</td></tr>") +
+tr("<tr><td>Or</td><td>one OR two&nbsp;&nbsp;&nbsp;one || two</td></tr>") +
+tr("<tr><td>Complex boolean. OR has priority, use parentheses&nbsp;") +
+tr("where needed</td><td>(one AND two) OR three</td></tr>") +
+tr("<tr><td>Not</td><td>-term</td></tr>") +
+tr("<tr><td>Phrase</td><td>\"pride and prejudice\"</td></tr>") +
+tr("<tr><td>Ordered proximity (slack=1)</td><td>\"pride prejudice\"o1</td></tr>") +
+tr("<tr><td>Unordered proximity (slack=1)</td><td>\"prejudice pride\"po1</td></tr>") +
+tr("<tr><td>Unordered prox. (default slack=10)</td><td>\"prejudice&nbsp;pride\"p</td></tr>") +
+tr("<tr><td>No stem expansion: capitalize</td><td>Floor</td></tr>") +
+tr("<tr><td>Field-specific</td><td>author:austen&nbsp;&nbsp;title:prejudice</td></tr>") +
+tr("<tr><td>AND inside field (no order)</td><td>author:jane,austen</td></tr>") +
+tr("<tr><td>OR inside field</td><td>author:austen/bronte</td></tr>") +
+tr("<tr><td>Field names</td><td>title/subject/caption&nbsp;&nbsp;author/from<br>recipient/to&nbsp;&nbsp;filename&nbsp;&nbsp;ext</td></tr>") +
+tr("<tr><td>Directory path filter</td><td>dir:/home/me&nbsp;&nbsp;dir:doc</td></tr>") +
+tr("<tr><td>MIME type filter</td><td>mime:text/plain mime:video/*</td></tr>") +
+tr("<tr><td>Date intervals</td><td>date:2018-01-01/2018-31-12<br>") +
+tr("date:2018&nbsp;&nbsp;date:2018-01-01/P12M</td></tr>") +
+tr("<tr><td>Size</td><td>size&gt;100k size&lt;1M</td></tr>") +
+tr("</table></body></html>")
+            );
         break;
     case SST_FNM:
         queryText->setToolTip(tr("Enter file name wildcard expression."));
