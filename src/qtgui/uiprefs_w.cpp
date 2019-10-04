@@ -110,6 +110,7 @@ void UIPrefsDialog::setFromPrefs()
 
     // Entries per result page spinbox
     pageLenSB->setValue(prefs.respagesize);
+    maxHistSizeSB->setValue(prefs.historysize);
     collapseDupsCB->setChecked(prefs.collapseDuplicates);
     maxHLTSB->setValue(prefs.maxhltextmbs);
 
@@ -294,6 +295,7 @@ void UIPrefsDialog::accept()
     m_mainWindow->setFilterCtlStyle(prefs.filterCtlStyle);
 
     prefs.respagesize = pageLenSB->value();
+    prefs.historysize = maxHistSizeSB->value();
     prefs.collapseDuplicates = collapseDupsCB->isChecked();
     prefs.maxhltextmbs = maxHLTSB->value();
 

@@ -364,8 +364,16 @@ void SSearch::startSimpleSearch()
     QString txt = currentText().trimmed();
     if (txt.isEmpty())
         return;
-    prefs.ssearchHistory.insert(0, txt);
-    prefs.ssearchHistory.removeDuplicates();
+    if (prefs.historysize) {
+        prefs.ssearchHistory.insert(0, txt);
+        prefs.ssearchHistory.removeDuplicates();
+    }
+    if (prefs.historysize >= 0) {
+        for (int i = (int)prefs.ssearchHistory.count();
+             i > prefs.historysize; i--) {
+                prefs.ssearchHistory.removeLast();
+        }
+    }
 }
 
 void SSearch::setPrefs()

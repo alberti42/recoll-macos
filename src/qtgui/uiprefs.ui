@@ -61,7 +61,7 @@
             <item>
              <widget class="QLabel" name="tLSTL">
               <property name="text">
-               <string>Style sheet</string>
+               <string>Application Qt style sheet</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -259,14 +259,37 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="noBeepsCB">
-            <property name="text">
-             <string>Suppress all beeps.</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QLabel" name="hsLBL">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</string>
+              </property>
+              <property name="text">
+               <string>Maximum size of search history (0: disable, -1: unlimited):</string>
+              </property>
+              <property name="wordWrap">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="maxHistSizeSB">
+              <property name="minimum">
+               <number>-1</number>
+              </property>
+              <property name="value">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QCheckBox" name="ssNoCompleteCB">
@@ -335,6 +358,16 @@
             </property>
             <property name="checked">
              <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="noBeepsCB">
+            <property name="text">
+             <string>Suppress all beeps.</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
             </property>
            </widget>
           </item>

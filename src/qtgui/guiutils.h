@@ -44,7 +44,8 @@ class PrefsPack {
     // toolbar+combobox or as a button group under simple search
     enum FilterCtlStyle {FCS_BT, FCS_CMB, FCS_MN};
     int filterCtlStyle;
-    int respagesize;
+    int respagesize{8};
+    int historysize{0};
     int maxhltextmbs;
     QString reslistfontfamily;
     // Not saved in prefs for now. Computed from qt defaults and used to
@@ -73,7 +74,7 @@ class PrefsPack {
     int resArea; // Area for "results" toolbar
     bool ssearchTypSav; // Remember last search mode (else always
 			// start with same)
-    int ssearchTyp;
+    int ssearchTyp{0};
     // Use single app (default: xdg-open), instead of per-mime settings
     bool useDesktopOpen; 
     // Remember sort state between invocations ?
@@ -82,8 +83,8 @@ class PrefsPack {
     bool sortActive; 
     bool sortDesc; 
     // Abstract preferences. Building abstracts can slow result display
-    bool queryBuildAbstract;
-    bool queryReplaceAbstract;
+    bool queryBuildAbstract{true};
+    bool queryReplaceAbstract{false};
     // Synthetized abstract length (chars) and word context size (words)
     int syntAbsLen;
     int syntAbsCtx;
@@ -93,7 +94,7 @@ class PrefsPack {
     int snipwMaxLength;
     // Snippets window sort by page (dflt: by weight)
     bool snipwSortByPage;
-    bool startWithAdvSearchOpen;
+    bool startWithAdvSearchOpen{false};
     // Try to display html if it exists in the internfile stack.
     bool previewHtml;
     bool previewActiveLinks;
@@ -130,16 +131,16 @@ class PrefsPack {
     vector<int> restableColWidths;
 
     // Remembered term match mode
-    int termMatchType;
+    int termMatchType{0};
 
     // Program version that wrote this. Not used for now, in prevision
     // of the case where we might need an incompatible change
-    int rclVersion;
+    int rclVersion{1505};
     // Suppress all noises
     bool noBeeps;
     
-    bool showTrayIcon;
-    bool closeToTray;
+    bool showTrayIcon{false};
+    bool closeToTray{false};
 
     int showTempFileWarning;
     
@@ -151,18 +152,6 @@ class PrefsPack {
 
     std::string stemlang();
 
-    PrefsPack() :
-	respagesize(8), 
-	reslistfontsize(10),
-	ssearchTyp(0),
-	queryBuildAbstract(true),
-	queryReplaceAbstract(false),
-	startWithAdvSearchOpen(false),
-	termMatchType(0),
-	rclVersion(1505),
-        showTrayIcon(false),
-        closeToTray(false)
-        {}
 };
 
 /** Global preferences record */
