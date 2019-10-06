@@ -61,6 +61,8 @@ public:
     virtual bool set(const string& val) {
         if (!m_conf || !*m_conf)
             return false;
+        LOGDEB("ConfLinkRclRep: set " << m_nm << " -> " << val << " sk " <<
+               getSk() << std::endl);
         bool ret = (*m_conf)->set(m_nm, val, getSk());
         if (!ret)
             LOGERR("Value set failed\n" );
@@ -70,7 +72,7 @@ public:
         if (!m_conf || !*m_conf)
             return false;
         bool ret = (*m_conf)->get(m_nm, val, getSk());
-        LOGDEB1("ConfLinkRcl::get: [" << m_nm << "] sk [" <<
+        LOGDEB("ConfLinkRcl::get: [" << m_nm << "] sk [" <<
                 getSk() << "] -> ["  << (ret ? val : "no value") << "]\n");
         return ret;
     }
@@ -463,6 +465,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
         QObject::tr("These are patterns for file or directory "
                     " names which should not be indexed."));
     eskn->setFsEncoding(true);
+    eskn->setImmediate();
     m_widgets.push_back(eskn);
     gl1->addWidget(eskn, gridy, 0);
 
@@ -478,6 +481,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
         tr("Only mime types"),
         tr("An exclusive list of indexed mime types.<br>Nothing "
            "else will be indexed. Normally empty and inactive"), amimesq);
+    eincm->setImmediate();
     m_widgets.push_back(eincm);
     gl1->addWidget(eincm, gridy++, 1);
 
@@ -486,6 +490,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
         ConfLink(new ConfLinkRclRep(config, "excludedmimetypes", &m_sk)),
         tr("Exclude mime types"),
         tr("Mime types not to be indexed"), amimesq);
+    eexcm->setImmediate();
     m_widgets.push_back(eexcm);
     gl1->addWidget(eexcm, gridy, 0);
 
@@ -498,6 +503,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
         QObject::tr("These are file name endings for files which will be "
                     "indexed by name only \n(no MIME type identification "
                     "attempt, no decompression, no content indexing)."));
+    encs->setImmediate();
     encs->setFsEncoding(true);
     m_widgets.push_back(encs);
     gl1->addWidget(encs, gridy++, 1);
@@ -530,6 +536,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
                     "The default value is empty, "
                     "and the value from the NLS environnement is used."
             ), charsets);
+    e21->setImmediate();
     m_widgets.push_back(e21);
     gl1->addWidget(e21, gridy++, 0);
 
@@ -540,6 +547,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
         QObject::tr("Follow symbolic links while "
                     "indexing. The default is no, "
                     "to avoid duplicate indexing"));
+    e3->setImmediate();
     m_widgets.push_back(e3);
     gl1->addWidget(e3, gridy, 0);
 
@@ -550,6 +558,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
         QObject::tr("Index the names of files for which the contents "
                     "cannot be identified or processed (no or "
                     "unsupported mime type). Default true"));
+    eafln->setImmediate();
     m_widgets.push_back(eafln);
     gl1->addWidget(eafln, gridy++, 1);
 
@@ -560,6 +569,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
         tr("This value sets a threshold beyond which compressed"
            "files will not be processed. Set to -1 for no "
            "limit, to 0 for no decompression ever."), -1, 1000000, -1);
+    ezfmaxkbs->setImmediate();
     m_widgets.push_back(ezfmaxkbs);
     gl1->addWidget(ezfmaxkbs, gridy, 0);
 
@@ -571,6 +581,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
            "files will not be processed. Set to -1 for no "
            "limit. \nThis is for excluding monster "
            "log files from the index."), -1, 1000000);
+    etxtmaxmbs->setImmediate();
     m_widgets.push_back(etxtmaxmbs);
     gl1->addWidget(etxtmaxmbs, gridy++, 1);
 
@@ -582,6 +593,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
            "files will be split in chunks of this size for "
            "indexing.\nThis will help searching very big text "
            " files (ie: log files)."), -1, 1000000);
+    etxtpagekbs->setImmediate();
     m_widgets.push_back(etxtpagekbs);
     gl1->addWidget(etxtpagekbs, gridy, 0);
 
@@ -593,6 +605,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
            "aborted. This is for the rare case (ie: postscript) "
            "where a document could cause a filter to loop. "
            "Set to -1 for no limit.\n"), -1, 10000);
+    efiltmaxsecs->setImmediate();
     m_widgets.push_back(efiltmaxsecs);
     gl1->addWidget(efiltmaxsecs, gridy++, 1);
 
