@@ -184,7 +184,8 @@ public:
         {}
     virtual ~DocSeqModifier() {}
 
-    virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs) {
+    virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs)
+        override{
         if (!m_seq)
             return false;
         return m_seq->getAbstract(doc, abs);
@@ -196,46 +197,47 @@ public:
         return m_seq->getAbstract(doc, abs, maxlen, bypage);
     }
     /** Get duplicates. */
-    virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups) {
+    virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)
+        override {
         if (!m_seq)
             return false;
         return m_seq->docDups(doc, dups);
     }
 
-    virtual bool snippetsCapable() {
+    virtual bool snippetsCapable() override {
         if (!m_seq)
             return false;
         return m_seq->snippetsCapable();
     }
-    virtual std::string getDescription() {
+    virtual std::string getDescription() override {
         if (!m_seq)
             return "";
         return m_seq->getDescription();
     }
-    virtual void getTerms(HighlightData& hld) {
+    virtual void getTerms(HighlightData& hld) override {
         if (!m_seq)
             return;
         m_seq->getTerms(hld);
     }
-    virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) {
+    virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) override {
         if (!m_seq)
             return false;
         return m_seq->getEnclosing(doc, pdoc);
     }
-    virtual std::string getReason() {
+    virtual std::string getReason() override {
         if (!m_seq)
             return string();
         return m_seq->getReason();
     }
-    virtual std::string title() {
+    virtual std::string title() override {
         return m_seq->title();
     }
-    virtual std::shared_ptr<DocSequence> getSourceSeq() {
+    virtual std::shared_ptr<DocSequence> getSourceSeq() override {
         return m_seq;
     }
 
 protected:
-    virtual std::shared_ptr<Rcl::Db> getDb() {
+    virtual std::shared_ptr<Rcl::Db> getDb() override {
         if (!m_seq)
             return 0;
         return m_seq->getDb();
