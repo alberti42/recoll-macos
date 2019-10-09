@@ -143,12 +143,17 @@ void UIPrefsDialog::setFromPrefs()
     initStartAdvCB->setChecked(prefs.startWithAdvSearchOpen);
 
     keepSortCB->setChecked(prefs.keepSort);
+
     showTrayIconCB->setChecked(prefs.showTrayIcon);
     if (!prefs.showTrayIcon) {
         prefs.closeToTray = false;
+        prefs.trayMessages = false;
     }
     closeToTrayCB->setEnabled(showTrayIconCB->checkState());
+    trayMessagesCB->setEnabled(showTrayIconCB->checkState());
     closeToTrayCB->setChecked(prefs.closeToTray);
+    trayMessagesCB->setChecked(prefs.trayMessages);
+    
     showTempFileWarningCB->setChecked(prefs.showTempFileWarning == -1);
     anchorTamilHackCB->setChecked(settings.value("anchorSpcHack", 0).toBool());
     previewHtmlCB->setChecked(prefs.previewHtml);
@@ -339,6 +344,8 @@ void UIPrefsDialog::accept()
     prefs.showTrayIcon = showTrayIconCB->isChecked();
     m_mainWindow->enableTrayIcon(prefs.showTrayIcon);
     prefs.closeToTray = closeToTrayCB->isChecked();
+    prefs.trayMessages = trayMessagesCB->isChecked();
+
     prefs.showTempFileWarning = showTempFileWarningCB->isChecked() ?
         -1 : 1024;
     settings.setValue("anchorSpcHack", anchorTamilHackCB->isChecked());
@@ -598,8 +605,10 @@ void UIPrefsDialog::on_showTrayIconCB_clicked()
 {
     if (!showTrayIconCB->checkState()) {
         closeToTrayCB->setChecked(false);
+        trayMessagesCB->setChecked(false);
     }
     closeToTrayCB->setEnabled(showTrayIconCB->checkState());
+    trayMessagesCB->setEnabled(showTrayIconCB->checkState());
 }
 
 /** 

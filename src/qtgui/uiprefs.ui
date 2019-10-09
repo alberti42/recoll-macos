@@ -352,6 +352,16 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="trayMessagesCB">
+            <property name="text">
+             <string>Generate desktop notifications.</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="showTempFileWarningCB">
             <property name="text">
              <string>Show warning when opening temporary file.</string>

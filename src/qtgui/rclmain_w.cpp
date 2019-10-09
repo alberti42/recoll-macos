@@ -637,7 +637,7 @@ void RclMain::adjustPrefsMenu()
 
 void RclMain::showTrayMessage(const QString& text)
 {
-    if (m_trayicon)
+    if (m_trayicon && prefs.trayMessages)
         m_trayicon->showMessage("Recoll", text, 
                                 QSystemTrayIcon::Information, 1000);
 }

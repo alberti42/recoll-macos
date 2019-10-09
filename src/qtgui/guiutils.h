@@ -141,7 +141,8 @@ class PrefsPack {
     
     bool showTrayIcon{false};
     bool closeToTray{false};
-
+    bool trayMessages{false};
+    
     int showTempFileWarning;
     
     // Advanced search window clause list state
