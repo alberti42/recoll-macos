@@ -166,7 +166,7 @@ static MyConfLinkFactRCL conflinkfactory;
 void ConfIndexW::showPrefs(bool modal)
 {
     delete m_conf;
-    if (((m_conf = m_rclconf->cloneMainConfig()) == 0)) {
+    if ((m_conf = m_rclconf->cloneMainConfig()) == 0) {
         return;
     }
     m_conf->holdWrites(true);
