@@ -144,8 +144,10 @@ void Preview::init()
             this, SLOT (close()));
     connect(new QShortcut(nextDocInTabKS, this), SIGNAL (activated()), 
             this, SLOT (emitShowNext()));
+    connect(nextInTabPB, SIGNAL (clicked()), this, SLOT (emitShowNext()));
     connect(new QShortcut(prevDocInTabKS, this), SIGNAL (activated()), 
             this, SLOT (emitShowPrev()));
+    connect(prevInTabPB, SIGNAL (clicked()), this, SLOT (emitShowPrev()));
     connect(new QShortcut(closeTabKS, this), SIGNAL (activated()), 
             this, SLOT (closeCurrentTab()));
     connect(new QShortcut(printTabKS, this), SIGNAL (activated()), 
