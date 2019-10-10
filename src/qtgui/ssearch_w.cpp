@@ -151,6 +151,7 @@ void RclCompleterModel::onPartialWord(
         }
     }
     endResetModel();
+    QTimer::singleShot(0, m_parent, SLOT(onCompleterShown()));
 }
 
 void SSearch::init()
@@ -172,16 +173,18 @@ void SSearch::init()
             SLOT(searchTypeChanged(int)));
 
     m_completermodel = new RclCompleterModel(this);
-    QCompleter *completer = new QCompleter(m_completermodel, this);
-    completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
-    completer->setFilterMode(Qt::MatchContains);
-    completer->setCaseSensitivity(Qt::CaseInsensitive);
-    completer->setMaxVisibleItems(completervisibleitems);
-    queryText->setCompleter(completer);
+    m_completer = new QCompleter(m_completermodel, this);
+    m_completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+    m_completer->setFilterMode(Qt::MatchContains);
+    m_completer->setCaseSensitivity(Qt::CaseInsensitive);
+    m_completer->setMaxVisibleItems(completervisibleitems);
+    queryText->setCompleter(m_completer);
+    m_completer->popup()->installEventFilter(this);
+    queryText->installEventFilter(this);
     connect(this, SIGNAL(partialWord(int, const QString&, const QString&)),
             m_completermodel,
             SLOT(onPartialWord(int,const QString&,const QString&)));
-    connect(completer, SIGNAL(activated(const QString&)), this,
+    connect(m_completer, SIGNAL(activated(const QString&)), this,
             SLOT(onCompletionActivated(const QString&)));
     connect(historyPB, SIGNAL(clicked()), this, SLOT(onHistoryClicked()));
 }
@@ -203,6 +206,77 @@ QString SSearch::currentText()
 void SSearch::clearAll()
 {
     queryText->clear();
+}
+
+void SSearch::onCompleterShown()
+{
+    LOGDEB("SSearch::onCompleterShown\n");
+    QCompleter *completer = queryText->completer();
+    if (!completer) {
+        LOGDEB0("SSearch::onCompleterShown: no completer\n");
+        return;
+    }
+    QAbstractItemView *popup =  queryText->completer()->popup();
+    if (!popup) {
+        LOGDEB0("SSearch::onCompleterShown: no popup\n");
+        return;
+    }
+    QVariant data = popup->model()->data(popup->currentIndex());
+    if (!data.isValid()) {
+        LOGDEB0("SSearch::onCompleterShown: data not valid\n");
+        return;
+    }
+    // Test if the completer text begins with the current input.
+    QString text = data.toString();
+    if (!text.lastIndexOf(queryText->text()) == 0) {
+        return;
+    }
+    
+    LOGDEB0("SSearch::onCompleterShown:" <<  
+            " current [" << qs2utf8s(currentText()) <<
+            "] saved [" << qs2utf8s(m_savedEditText) <<
+            "] popup [" << qs2utf8s(text) << "]\n");
+
+    // We append the completion part to the end of the current input,
+    // line, and select it so that the user has a clear indication of
+    // what will happen if they type Enter.
+    int pos = queryText->cursorPosition();
+    int len = text.size() - currentText().size();
+    queryText->setText(text);
+    queryText->setCursorPosition(pos);
+    queryText->setSelection(pos, len);
+}
+
+// This is to avoid that if the user types Backspace or Del while we
+// have inserted / selected the current completion, the lineedit text
+// goes back to what it was, the completion fires, and it looks like
+// nothing was typed. So we disable the completion if a
+bool SSearch::eventFilter(QObject *target, QEvent *event)
+{
+    LOGDEB1("SSearch::eventFilter: event\n");
+    if (event->type() != QEvent::KeyPress) {
+        return false;
+    }
+    LOGDEB1("SSearch::eventFilter: KeyPress event. Target " << target <<
+            " popup "<<m_completer->popup() << " lineedit "<<queryText<< "\n");
+
+    QKeyEvent *keyEvent = (QKeyEvent *)event;
+    if (keyEvent->key() == Qt::Key_Backspace && target==m_completer->popup()) {
+        LOGDEB("SSearch::eventFilter: backspace\n");
+        queryText->setCompleter(nullptr);
+        queryText->backspace();
+        return true;
+    } else if (keyEvent->key()==Qt::Key_Delete &&target==m_completer->popup()) {
+        LOGDEB("SSearch::eventFilter: delete\n");
+        queryText->setCompleter(nullptr);
+        queryText->del();
+        return true;
+    } else {
+        if (nullptr == queryText->completer()) {
+            queryText->setCompleter(m_completer);
+        }
+    }        
+    return false;
 }
 
 // onCompletionActivated() is called when an entry is selected in the
