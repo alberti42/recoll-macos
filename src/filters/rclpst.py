@@ -93,7 +93,7 @@ class EmailBuilder(object):
             return None
 
         newmsg = email.message.EmailMessage(policy=email.policy.default)
-        headerstr = self.headers.decode("UTF-8")
+        headerstr = self.headers.decode("UTF-8", errors='replace')
         # print("%s" % headerstr)
         headers = self.parser.parsestr(headerstr, headersonly=True)
         #self.log("EmailBuilder: content-type %s" % headers['content-type'])
@@ -101,22 +101,59 @@ class EmailBuilder(object):
             if nm in headers:
                 newmsg.add_header(nm, headers[nm])
 
-        tolist = headers.get_all('to')
-        alldests = ""
-        for toheader in tolist:
-            for dest in toheader.addresses:
-                sd = str(dest).replace('\n', '').replace('\r','')
-                #self.log("EmailBuilder: dest %s" % sd)
-                alldests += sd + ", "
-            alldests = alldests.rstrip(", ")
-            newmsg.add_header('to', alldests)
+        for h in ('to', 'cc'):
+            tolist = headers.get_all(h)
+            if not tolist:
+                continue
+            alldests = ""
+            for toheader in tolist:
+                for dest in toheader.addresses:
+                    sd = str(dest).replace('\n', '').replace('\r','')
+                    #self.log("EmailBuilder: dest %s" % sd)
+                    alldests += sd + ", "
+            if alldests:
+                alldests = alldests.rstrip(", ")
+                newmsg.add_header(h, alldests)
 
-        # Also: CC
-            
+# Decoding the body: the .pst contains the text value decoded from qp
+# or base64 (at least that's what libpff sends). Unfortunately, it
+# appears that the charset value for subparts (e.g. the html part of a
+# multipart/related) is not saved (or not transmitted).
+#
+# This information is both necessary and unavailable, so we apply an heuristic
+# which works in 'most' cases: if we have a charset in the message
+# header, hopefully, this is a simple body and the charset
+# applies. Else try to decode from utf-8, and use charset=utf-8 if it
+# succeeds. Else, send binary and hope for the best (the HTML handler
+# still has a chance to get the charset from the HTML header).
+#
+# There are cases of an HTML UTF-8 text having charset=iso in the
+# head. Don't know if the original HTML was borked or if outlook or
+# libpff decoded to utf-8 without changing the head charset.
         if self.body:
-            newmsg.set_content(self.body, maintype = self.bodymimemain,
-                               subtype = self.bodymimesub)
-                
+            if self.bodymimemain == 'text':
+                charset = headers.get_content_charset()
+                body = ''
+                if charset:
+                    body = self.body.decode(charset, errors='replace')
+                    #self.log("DECODE FROM HEADER CHARSET %s SUCCEEDED"% charset)
+                else:
+                    try:
+                        body = self.body.decode('utf-8')
+                        #self.log("DECODE FROM GUESSED UTF-8 SUCCEEDED")
+                    except:
+                        pass
+                if body:
+                    #self.log("Unicode body: %s" % body)
+                    newmsg.set_content(body, subtype = self.bodymimesub)
+                else:
+                    newmsg.set_content(self.body, maintype = self.bodymimemain,
+                                       subtype = self.bodymimesub)
+            else:
+                newmsg.set_content(self.body, maintype = self.bodymimemain,
+                                   subtype = self.bodymimesub)
+
+
         for att in self.attachments:
             fn = att[1]
             ext = met_splitext(fn)[1]
@@ -128,10 +165,10 @@ class EmailBuilder(object):
             newmsg.add_attachment(att[0], maintype=mt, subtype=st,
                                   filename=fn)
 
+        ret = newmsg.as_string(maxheaderlen=100)
         #newmsg.set_unixfrom("From some@place.org Sun Jan 01 00:00:00 2000")
         #print("%s\n" % newmsg.as_string(unixfrom=True, maxheaderlen=80))
-
-        ret = newmsg.as_string(maxheaderlen=100)
+        #self.log("MESSAGE: %s" % ret)
         self.reset()
         return ret
     
@@ -225,7 +262,14 @@ class PFFReader(object):
                         elif ext == '.rtf':
                             self.msg.setbody(data, 'text', 'rtf')
                         else:
-                            raise Exception("PST: Unknown body type %s"%ext)
+                            # Note: I don't know what happens with a
+                            # message body of type, e.g. image/jpg.
+                            # This is probably not a big issue,
+                            # because there is nothing to index
+                            # We raised during dev to see if we would find one,
+                            # now just pass 
+                            # raise Exception("PST: Unknown body type %s"%ext)
+                            pass
                     elif basename == 'ConversationIndex.txt':
                         pass
                     elif basename == 'Recipients.txt':
@@ -233,7 +277,7 @@ class PFFReader(object):
             else:
                 raise Exception("Unknown param name: %s" % name)
 
-        self.log("Out of loop")
+        #self.log("Out of loop")
         doc = self.msg.flush()
         if doc:
             yield((doc, ipath))
@@ -248,9 +292,9 @@ class PstExtractor(object):
             self.target = "\\\\?\\c:\\nonexistent"
         else:
             self.target = "/nonexistent"
-        self.pffexport = rclexecm.which("pffexport")
+        self.pffexport = rclexecm.which("pffinstall/mingw32/bin/pffexport")
         if not self.pffexport:
-            self.pffexport = rclexecm.which("pffinstall/mingw32/bin/pffexport")
+            self.pffexport = rclexecm.which("pffexport")
             if not self.pffexport:
                 # No need for anything else. openfile() will return an
                 # error at once
