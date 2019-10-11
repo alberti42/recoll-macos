@@ -48,6 +48,21 @@ def subprocfile(fn):
     else:
         return fn
 
+def configparamtrue(value):
+    if not value:
+        return False
+    try:
+        ivalue = int(value)
+        if ivalue:
+            return True
+        else:
+            return False
+    except:
+        pass
+    if value[0] in 'tT':
+        return True
+    return False
+
 my_config = rclconfig.RclConfig()
 
 ############################################

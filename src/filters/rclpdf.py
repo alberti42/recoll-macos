@@ -138,6 +138,7 @@ class PDFExtractor:
         self.attextractdone = False
         self.attachlist = []
         cf_attach = self.config.getConfParam("pdfattach")
+        cf_attach = rclexecm.configparamtrue(cf_attach)
         if cf_attach:
             self.pdftk = rclexecm.which("pdftk")
         if self.pdftk:
@@ -494,17 +495,21 @@ class PDFExtractor:
 
         if isempty and self.ocrpossible:
             self.config.setKeyDir(os.path.dirname(self.filename))
-            cf_doocr = self.config.getConfParam("pdfocr")
-            if cf_doocr or os.path.isfile(os.path.join(self.confdir, "ocrpdf")):
+            s = self.config.getConfParam("pdfocr")
+            cf_doocr = rclexecm.configparamtrue(s)
+            file_doocr = os.path.isfile(os.path.join(self.confdir, "ocrpdf"))
+            if cf_doocr or file_doocr:
                 html = self.ocrpdf()
 
         if self.extrameta:
             try:
                 html = self._setextrameta(html)
             except Exception as err:
-                self.em.rclog("Metadata extraction failed: %s %s" % (err, traceback.format_exc()))
+                self.em.rclog("Metadata extraction failed: %s %s" %
+                              (err, traceback.format_exc()))
 
         return (True, html, "", eof)
+
 
     def maybemaketmpdir(self):
         global tmpdir
