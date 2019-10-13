@@ -96,6 +96,7 @@ SOURCES += \
 ../../utils/conftree.cpp \
 ../../utils/copyfile.cpp \
 ../../utils/cpuconf.cpp \
+../../utils/dlib.cpp \
 ../../utils/ecrontab.cpp \
 ../../utils/utf8iter.cpp \
 ../../utils/zlibut.cpp \

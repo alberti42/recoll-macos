@@ -6,10 +6,10 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
 /* Path to the aspell api include file */
-/* #undef ASPELL_INCLUDE "aspell-local.h" */
+#define ASPELL_INCLUDE "aspell-local.h"
 
-/* Path to the aspell program */
-/* #define ASPELL_PROG "/usr/bin/aspell" */
+/* Aspell program parameter to findFilter(). */
+#define ASPELL_PROG "aspell-installed/mingw32/bin/aspell"
 
 /* No X11 session monitoring support */
 #define DISABLE_X11MON
@@ -24,13 +24,15 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 #define HAVE_CXX0X_UNORDERED 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-#define HAVE_DLFCN_H 1
+#undef HAVE_DLFCN_H
+
+#undef HAVE_DLOPEN
+
+/* Define if you have the iconv() function and it works. */
+#define HAVE_ICONV 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
-
-/* Define to 1 if you have the `dl' library (-ldl). */
-#define HAVE_LIBDL 1
 
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #define HAVE_LIBPTHREAD 1
@@ -98,11 +100,16 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* Define to 1 if you have the <unistd.h> header file. */
 /* #undef HAVE_UNISTD_H */
 
+/* Define to 1 if you have the `vsnprintf' function. */
+#undef HAVE_VSNPRINTF
+
+/* Define as const if the declaration of iconv() needs const. */
+#define ICONV_CONST
+
 /* Use multiple threads for indexing */
 #define IDX_THREADS 1
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Define to the address where bug reports for this package should be sent. */
@@ -112,10 +119,10 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 #define PACKAGE_NAME "Recoll"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Recoll 1.25.21"
+#define PACKAGE_STRING "Recoll 1.26.0~pre4"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.25.21"
+#define PACKAGE_VERSION "1.26.0~pre4"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "recoll"
@@ -126,9 +133,6 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* putenv parameter is const */
 /* #undef PUTENV_ARG_CONST */
 
-/* Define as const if the declaration of iconv() needs const. */
-#define ICONV_CONST
-
 /* Real time monitoring option */
 #undef RCL_MONITOR
 
@@ -136,7 +140,7 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* #undef RCL_SPLIT_CAMELCASE */
 
 /* Compile the aspell interface */
-/* #undef RCL_USE_ASPELL */
+#define RCL_USE_ASPELL 1
 
 /* Compile the fam interface */
 /* #undef RCL_USE_FAM */

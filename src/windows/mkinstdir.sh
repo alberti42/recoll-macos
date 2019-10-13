@@ -46,12 +46,17 @@ LIBREVENGE=${RCLDEPS}libwpd/librevenge-0.0.1.jfd/
 CHM=${RCLDEPS}pychm
 MISC=${RCLDEPS}misc
 LIBPFF=${RCLDEPS}pffinstall
+ASPELL=${RCLDEPS}/aspell-0.60.7/aspell-installed
 
 # Where to copy the Qt Dlls from:
 QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
 QTGCCBIN=C:/qt/Qt5.8.0/Tools/mingw530_32/bin/
-# Where to find libgcc_s_dw2-1.dll for progs which need it copied
-MINGWBIN=$QTBIN
+
+# Where to find libgcc_s_dw2-1.dll et all for progs compiled with c:/MinGW
+# (as opposed to the mingw bundled with qt
+MINGWBIN=C:/MinGW/bin
+
+
 PATH=$MINGWBIN:$QTGCCBIN:$PATH
 export PATH
 
@@ -158,7 +163,7 @@ copyrecoll()
 
     chkcp $RCL/python/recoll/recoll/rclconfig.py $FILTERS
     chkcp $RCL/python/recoll/recoll/conftree.py $FILTERS
-    rm -f $FILTERS/rclimg
+    rm -f $FILTERS/rclimg*
     chkcp $RCL/filters/*       $FILTERS
     rm -f $FILTERS/rclimg $FILTERS/rclimg.py
     chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
@@ -273,6 +278,17 @@ copypff()
     chkcp $QTBIN/libwinpthread-1.dll $DEST
 }
 
+copyaspell()
+{
+    DEST=$FILTERS
+    cp -rp $ASPELL $DEST || fatal "can't copy $ASPELL"
+    DEST=$DEST/aspell-installed/mingw32/bin
+    # Check that we do have an aspell.exe.
+    chkcp $ASPELL/mingw32/bin/aspell.exe $DEST
+    chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DEST
+    chkcp $MINGWBIN/libstdc++-6.dll $DEST
+}
+
 for d in doc examples filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
         fatal mkdir $d failed
@@ -290,6 +306,7 @@ test "$VERSION" = "$CFVERS" ||
 
 echo Packaging version $CFVERS
 
+copyaspell
 # copyrecoll must stay before copyqt so that windeployqt can do its thing
 copyrecoll
 copyqt
