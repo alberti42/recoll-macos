@@ -423,10 +423,14 @@ bool Aspell::make_speller(string& reason)
     aapi.aspell_config_replace(config, "encoding", "utf-8");
     aapi.aspell_config_replace(config, "master", dicPath().c_str());
     aapi.aspell_config_replace(config, "sug-mode", "fast");
+#ifdef _WIN32
     aapi.aspell_config_replace(config, "data-dir", m_data->m_datadir.c_str());
-    aapi.aspell_config_replace(
-        config, "local-data-dir",
-        m_data->m_addCreateParam.substr(ldatadiroptsz).c_str());
+#endif
+    if (m_data->m_addCreateParam.size() > ldatadiroptsz) {
+        aapi.aspell_config_replace(
+            config, "local-data-dir",
+            m_data->m_addCreateParam.substr(ldatadiroptsz).c_str());
+    }
     //    aapi.aspell_config_replace(config, "sug-edit-dist", "2");
     ret = aapi.new_aspell_speller(config);
     aapi.delete_aspell_config(config);

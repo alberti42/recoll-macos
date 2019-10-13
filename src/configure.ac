@@ -267,7 +267,10 @@ AM_CONDITIONAL(MAKEPYTHONCHM, [test X$pythonChmEnabled = Xyes])
 
 AC_CHECK_FUNCS(mkdtemp)
 AC_CHECK_LIB([pthread], [pthread_create], [], [])
-AC_CHECK_LIB([dl], [dlopen], [], [])
+AC_SEARCH_LIBS([dlopen], [dl], [], [])
+if test X$ac_cv_search_function != Xno ; then
+   AC_DEFINE(HAVE_DLOPEN, 1, [dlopen function is available])
+fi   
 AC_CHECK_LIB([z], [zlibVersion], [], [])
 
 ############# Putenv

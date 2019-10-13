@@ -216,6 +216,8 @@ utils/copyfile.cpp \
 utils/copyfile.h \
 utils/cpuconf.cpp \
 utils/cpuconf.h \
+utils/dlib.cpp \
+utils/dlib.h \
 utils/ecrontab.cpp \
 utils/ecrontab.h \
 utils/execmd.cpp \
