@@ -6,12 +6,12 @@ topdir=`dirname $0`/..
 initvariables $0
 
 (
-recollq '"nokia ovi suite" wmdrm "windows media player version 11"' 
-recollq '"pour superposer mixer des fichiers son"'
-recollq '"Django comes with a user authentication system"'
-recollq '"establishment of a project cost accounting system of ledgers"'
+recollq -S url '"nokia ovi suite" wmdrm "windows media player version 11"' 
+recollq -S url '"pour superposer mixer des fichiers son"'
+recollq -S url '"Django comes with a user authentication system"'
+recollq -S url '"establishment of a project cost accounting system of ledgers"'
 # xxxCriticalDrugTherapy has encoded internal urls.
-recollq '"Cocaine-induced ACS"'
+recollq -S url '"Cocaine-induced ACS"'
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
