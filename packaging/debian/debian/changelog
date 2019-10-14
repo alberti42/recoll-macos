@@ -1,4 +1,4 @@
-recoll (1.26.0~pre5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.26.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Windows: aspell support.
   * Windows: pst file indexing.
