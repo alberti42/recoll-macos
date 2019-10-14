@@ -1,44 +1,69 @@
-recoll (1.26.0~pre4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.26.0~pre5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * Add popup menu to snippets window to toggle page/relevance ordering.
-
- -- Jean-Francois Dockes <jf@dockes.org>  Tue, 17 Jul 2019 15:45:00 +0200
-
-recoll (1.26.0~pre3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
-
-  * Experiment: ignore all ASCII whitespace when generating CJK ngrams.
-
- -- Jean-Francois Dockes <jf@dockes.org>  Tue, 09 Jul 2019 14:00:00 +0200
-
-recoll (1.26.0~pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
-
-  * Bumped version to 1.26 because the changes are too extensive for a
-    minor release.
+  * Windows: aspell support.
+  * Windows: pst file indexing.
+  * Windows: use the Windows task scheduler to schedule batch indexing.
+  * GUI: add Previous/Next buttons to the preview Window.
+  * GUI: improved search completer.
+  * GUI: add preference to turn off desktop notifications.
+  * GUI: add popup menu to snippets window to toggle page/relevance
+    ordering.
+  * GUI: add preference to limit search history length or disable it.
+  * GUI: improved query language help tooltip.
   * Reworked the group matching code used for highlighting and snippets.
+  * Allow displaying snippets for successive documents in the snippet
+    window, link to result table hovering.
   * Properly highlight phrases, not treating them as NEAR.
   * Fix the CJK phrase processing, the slack was wrong, resulting in bogus
     matches     
-
- -- Jean-Francois Dockes <jf@dockes.org>  Wed, 03 Jul 2019 14:00:00 +0200
-
-recoll (1.25.20~pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
-
-  * Allow displaying snippets for successive documents in the snippet
-    window, link to result table hovering.
-  * Process all Korean Hangul as alphabetic, not cjk (split as space
+  * Ignore all ASCII whitespace when generating CJK ngrams.
+  * Process all Korean Hangul as alphabetic, not CJK (split as space
     separated terms).
-    
- -- Jean-Francois Dockes <jf@dockes.org>  Wed, 03 Jul 2019 14:00:00 +0200
-
-recoll (1.25.20~pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
-
-  * Allow controlling the GUI snippets window sort order and length.
-  * Improvements in GUI preview up to date checks.
+  * GUI: improvements in preview up to date checks.
   * Added 'onlyNames' configuration variable for filtering file names.
   * Avoid purging existing data when reindexing a file fails, for example,
     on Windows, because the file is locked.
     
- -- Jean-Francois Dockes <jf@dockes.org>  Fri, 28 Jun 2019 15:30:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 14 Oct 2019 08:30:00 +0200
+
+recoll (1.25.23-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Small fixes: fix problem with some mbox formats, clickable urls in
+    about dialog, Fix F1 not starting help anymore. Windows: avoid purging
+    the index if a share is disconnected while we work. Windows: avoid
+    picking up the wrong pdftotext.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 07 Oct 2019 11:08:00 +0200
+
+recoll (1.25.22-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Small fixes: mbox offsets wrong in some cases, rcltex charset
+    detection, doctype action editor fixes, use xdg-open %U, fix restable
+    colwidths prefs size explosion.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Aug 2019 14:57:00 +0200
+
+recoll (1.25.21-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Windows: fix mbox cache offset which was not working at all
+  * GUI: fix restable highlighting, again.
+  * GUI: special indexing: no indexing was performed when erase was set,
+    only erase.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 08 Aug 2019 14:16:00 +0200
+
+recoll (1.25.20-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * GUI: preview: improve operation when the original file has changed or
+    can't be read: use stored data.
+  * GUI: result table contents were not reset when the search was cleared.
+  * Windows: fix paths accented character processing in configuration GUI.
+  * Windows: fix temporary file deletion. Many were not deleted because
+    they were still opened by the handler when we tried to remove
+    them. Fixed a number of handlers to properly close the file, and add a
+    cleanup pass after the handler cache is cleaned at the end of indexing.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 22 Jul 2019 15:52:00 +0200
 
 recoll (1.25.19-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
