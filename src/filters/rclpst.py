@@ -88,7 +88,7 @@ class EmailBuilder(object):
 
     def flush(self):
         if not (self.headers and (self.body or self.attachments)):
-            self.log("Not flushing because no headers or no body/attach")
+            #self.log("Not flushing because no headers or no body/attach")
             self.reset()
             return None
 
@@ -332,7 +332,6 @@ class PstExtractor(object):
             sys.exit(1);
         self.filename = params["filename:"]
         self.generator = None
-        self.em.rclog("openfile: sys.platform [%s] [%s]" % (sys.platform,self.filename))
         return True
 
     def getipath(self, params):
@@ -355,9 +354,9 @@ class PstExtractor(object):
         
 
     def getnext(self, params):
-        self.em.rclog("getnext:")
+        #self.em.rclog("getnext:")
         if not self.generator:
-            self.em.rclog("starting generator")
+            #self.em.rclog("starting generator")
             if not self.startCmd(self.filename):
                 return False
             reader = PFFReader(self.em.rclog, infile=self.filein)
@@ -369,7 +368,7 @@ class PstExtractor(object):
             self.em.setmimetype("message/rfc822")
             #self.em.rclog("getnext: ipath %s\ndoc\n%s" % (ipath, doc))
         except StopIteration:
-            self.em.rclog("getnext: end of iteration")
+            #self.em.rclog("getnext: end of iteration")
             self.proc.wait(3)
             if self.proc.returncode == 0:
                 return(True, "", "", rclexecm.RclExecM.eofnext)
