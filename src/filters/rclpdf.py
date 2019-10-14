@@ -454,7 +454,7 @@ class PDFExtractor:
                         prefix,nm = metanm.split(":")
                         fullnm = "{%s}%s" % (rdfdesc.nsmap[prefix], nm)
                     except:
-                        fullnm = nm
+                        fullnm = metanm
                     text = rdfdesc.get(fullnm)
                 # Should we set empty values ?
                 if text:
