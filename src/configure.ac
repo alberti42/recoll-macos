@@ -311,7 +311,7 @@ fi
 LIBXAPIAN=`$XAPIAN_CONFIG --libs`
 # The --static thing fails with older Xapians. Happily enough they don't
 # need it either (because there are no needed libraries (no uuid and we
-# deal explicitely with libz)
+# deal explicitly with libz)
 LIBXAPIANSTATICEXTRA=`$XAPIAN_CONFIG --static --libs 2> /dev/null`
 # Workaround for problem in xapian-config in some versions: wrongly lists
 # libstdc++.la in the lib list

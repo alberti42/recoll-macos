@@ -617,7 +617,7 @@
           <item>
            <widget class="QCheckBox" name="snipwByPageCB">
             <property name="text">
-             <string>Sort snippets by page number (default: by weigth).</string>
+             <string>Sort snippets by page number (default: by weight).</string>
             </property>
             <property name="checked">
              <bool>false</bool>

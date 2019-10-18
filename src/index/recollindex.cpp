@@ -875,7 +875,7 @@ int main(int argc, char **argv)
 	    LOGINFO("recollindex: reexecuting with -n after initial full "
                     "pass\n");
 	    // Note that -n will be inside the reexec when we come
-	    // back, but the monitor will explicitely strip it before
+	    // back, but the monitor will explicitly strip it before
 	    // starting a config change exec to ensure that we do a
 	    // purging pass in this latter case (full restart).
 	    o_reexec->reexec();

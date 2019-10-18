@@ -74,7 +74,7 @@ ConfIndexer::~ConfIndexer()
 
 // Determine if this is likely the first time that the user runs
 // indexing.  We don't look at the xapiandb as this may have been
-// explicitely removed for valid reasons, but at the indexing status
+// explicitly removed for valid reasons, but at the indexing status
 // file, which should be unexistant-or-empty only before any indexing
 // has ever run
 bool ConfIndexer::runFirstIndexing()

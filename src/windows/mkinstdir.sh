@@ -105,7 +105,7 @@ copyqt()
     export PATH
     $QTBIN/windeployqt recoll.exe
     # Apparently because the webkit part was grafted "by hand" on the
-    # Qt set, we need to copy some dll explicitely
+    # Qt set, we need to copy some dll explicitly
     addlibs="Qt5Core.dll Qt5Multimedia.dll \
 Qt5MultimediaWidgets.dll Qt5Network.dll Qt5OpenGL.dll \
 Qt5Positioning.dll Qt5PrintSupport.dll Qt5Sensors.dll \

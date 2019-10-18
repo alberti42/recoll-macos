@@ -254,7 +254,7 @@ void MyHtmlParser::decode_entities(string &s)
 }
 
 // Compress whitespace and suppress newlines
-// Note that we independantly add some newlines to the output text in the
+// Note that we independently add some newlines to the output text in the
 // tag processing code. Like this, the preview looks a bit more like what a
 // browser would display.
 // We keep whitespace inside <pre> tags
