@@ -154,6 +154,7 @@ void UIPrefsDialog::setFromPrefs()
     closeToTrayCB->setChecked(prefs.closeToTray);
     trayMessagesCB->setChecked(prefs.trayMessages);
     
+    // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
     showTempFileWarningCB->setChecked(prefs.showTempFileWarning == -1);
     anchorTamilHackCB->setChecked(settings.value("anchorSpcHack", 0).toBool());
     previewHtmlCB->setChecked(prefs.previewHtml);

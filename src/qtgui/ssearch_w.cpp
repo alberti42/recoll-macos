@@ -253,6 +253,7 @@ void SSearch::onCompleterShown()
 // nothing was typed. So we disable the completion if a
 bool SSearch::eventFilter(QObject *target, QEvent *event)
 {
+    Q_UNUSED(target);
     LOGDEB1("SSearch::eventFilter: event\n");
     if (event->type() != QEvent::KeyPress) {
         return false;

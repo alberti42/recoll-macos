@@ -143,6 +143,7 @@ class PrefsPack {
     bool closeToTray{false};
     bool trayMessages{false};
     
+    // See qxtconfirmationmessage. Needs to be -1 for the dialog to show
     int showTempFileWarning;
     
     // Advanced search window clause list state

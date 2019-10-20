@@ -306,6 +306,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);
     SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);
     SETTING_RW(prefs.trayMessages, "/Recoll/prefs/trayMessages", Bool, false);
+    // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
     SETTING_RW(prefs.showTempFileWarning, "Recoll/prefs/showTempFileWarning",
                Int, -1);
 
