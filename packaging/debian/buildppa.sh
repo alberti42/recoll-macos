@@ -6,7 +6,7 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.26.0
+RCLVERS=1.26.1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=1
@@ -22,7 +22,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -54,7 +54,7 @@ debdir=debian
 # 19.04    disco  2020-01
 # 19.10    eoan   2010-07
 series="xenial bionic disco eoan"
-#series="bionic disco"
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -90,7 +90,15 @@ done
 
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
-series="xenial bionic cosmic disco"
+# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
+# No new releases for trusty either because of risk of kio compat (kio
+# wont build)
+# Active series:
+# 16.04LTS xenial 2021-04
+# 18.04LTS bionic 2023-04
+# 19.04    disco  2020-01
+# 19.10    eoan   2010-07
+series="xenial bionic disco eoan"
 series=
 
 debdir=debiankio
@@ -130,8 +138,16 @@ for svers in $series ; do
 done
 
 ### GSSP
-series="bionic cosmic disco"
-series=
+# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
+# No new releases for trusty either because of risk of kio compat (kio
+# wont build)
+# Active series:
+# 16.04LTS xenial 2021-04
+# 18.04LTS bionic 2023-04
+# 19.04    disco  2020-01
+# 19.10    eoan   2010-07
+series="xenial bionic disco eoan"
+series=eoan
 
 debdir=debiangssp
 if test ! -d ${debdir}/ ; then

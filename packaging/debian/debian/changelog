@@ -1,3 +1,10 @@
+recoll (1.26.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix the default history size, 1.26.0 disabled the search history by default
+  * Fix memorizing the temp file warning when changed from dialog.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 25 Oct 2019 16:48:00 +0200
+
 recoll (1.26.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Windows: aspell support.
