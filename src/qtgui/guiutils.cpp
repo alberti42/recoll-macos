@@ -137,7 +137,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.ssearchAutoPhraseThreshPC, 
                "/Recoll/prefs/ssearchAutoPhraseThreshPC", Double, 2.0);
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Int, 8);
-    SETTING_RW(prefs.historysize, "/Recoll/prefs/historysize", Int, 0);
+    SETTING_RW(prefs.historysize, "/Recoll/prefs/historysize", Int, -1);
     SETTING_RW(prefs.collapseDuplicates, 
                "/Recoll/prefs/reslist/collapseDuplicates", Bool, false);
     SETTING_RW(prefs.showResultsAsTable, 
