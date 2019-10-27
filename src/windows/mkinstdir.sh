@@ -237,7 +237,7 @@ copypoppler()
 {
     test -d $FILTERS/poppler || mkdir $FILTERS/poppler || \
         fatal cant create poppler dir
-    for f in pdftotext.exe libpoppler.dll freetype6.dll jpeg62.dll \
+    for f in pdftotext.exe pdfinfo.exe libpoppler.dll freetype6.dll jpeg62.dll \
              libpng16-16.dll zlib1.dll libtiff3.dll \
              libgcc_s_dw2-1.dll libstdc++-6.dll; do
         chkcp $POPPLER/bin/$f $FILTERS/poppler
