@@ -310,16 +310,19 @@ RclConfig::RclConfig(const string *argcnf)
     m_cdirs.push_back(path_cat(m_datadir, "examples"));
 
     string cnferrloc;
-    for (vector<string>::const_iterator it = m_cdirs.begin();
-         it != m_cdirs.end(); it++) {
-        if (it != m_cdirs.begin())
-            cnferrloc += string(" or ");
-        cnferrloc += *it;
+    for (const auto& dir : m_cdirs) {
+        cnferrloc += "[" + dir + "] or ";
+    }
+    if (cnferrloc.size() > 4) {
+        cnferrloc.erase(cnferrloc.size()-4);
     }
 
     // Read and process "recoll.conf"
-    if (!updateMainConfig())
+    if (!updateMainConfig()) {
+        m_reason = string("No/bad main configuration file in: ") + cnferrloc;
         return;
+    }
+
     // Other files
     mimemap = new ConfStack<ConfTree>("mimemap", m_cdirs, true);
     if (mimemap == 0 || !mimemap->ok()) {
@@ -382,9 +385,6 @@ bool RclConfig::updateMainConfig()
     if (newconf == 0 || !newconf->ok()) {
         if (m_conf)
             return false;
-        string where;
-        stringsToString(m_cdirs, where);
-        m_reason = string("No/bad main configuration file in: ") + where;
         m_ok = false;
         initParamStale(0, 0);
         return false;
