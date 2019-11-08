@@ -1721,7 +1721,7 @@ static const char german_ex[] = "unac_except_trans = \303\244\303\244 \303\204\3
 
 // Create initial user config by creating commented empty files
 static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf", 
-                                    "mimeview"};
+                                    "mimeview", "fields"};
 static int ncffiles = sizeof(configfiles) / sizeof(char *);
 bool RclConfig::initUserConfig()
 {
