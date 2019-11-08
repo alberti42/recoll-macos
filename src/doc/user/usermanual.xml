@@ -1456,26 +1456,27 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
         variable can be used to designate a file with Python code to edit
         the metadata fields (available for &RCL; 1.23.3 and later. 1.23.2
         has equivalent code inside the handler script). Example:</para>
+
         <programlisting>import sys
         import re
 
         class MetaFixer(object):
-        def __init__(self):
-        pass
+            def __init__(self):
+                pass
 
-        def metafix(self, nm, txt):
-        if nm == 'bibtex:pages':
-        txt = re.sub(r'--', '-', txt)
-        elif nm == 'someothername':
-        # do something else
-        pass
-        elif nm == 'stillanother':
-        # etc.
-        pass
+            def metafix(self, nm, txt):
+                if nm == 'bibtex:pages':
+                    txt = re.sub(r'--', '-', txt)
+                elif nm == 'someothername':
+                    # do something else
+                    pass
+                elif nm == 'stillanother':
+                    # etc.
+                    pass
         
-        return txt
-        def wrapup(self, metaheaders):
-        pass
+                return txt
+            def wrapup(self, metaheaders):
+                pass
         </programlisting>
 
         <para>If the 'metafix()' method is defined, it is called for each

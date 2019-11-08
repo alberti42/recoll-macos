@@ -2204,22 +2204,22 @@ metadatacmds = ; <em class=
         import re
 
         class MetaFixer(object):
-        def __init__(self):
-        pass
+            def __init__(self):
+                pass
 
-        def metafix(self, nm, txt):
-        if nm == 'bibtex:pages':
-        txt = re.sub(r'--', '-', txt)
-        elif nm == 'someothername':
-        # do something else
-        pass
-        elif nm == 'stillanother':
-        # etc.
-        pass
+            def metafix(self, nm, txt):
+                if nm == 'bibtex:pages':
+                    txt = re.sub(r'--', '-', txt)
+                elif nm == 'someothername':
+                    # do something else
+                    pass
+                elif nm == 'stillanother':
+                    # etc.
+                    pass
         
-        return txt
-        def wrapup(self, metaheaders):
-        pass
+                return txt
+            def wrapup(self, metaheaders):
+                pass
         </pre>
           <p>If the 'metafix()' method is defined, it is called for
           each metadata field. A new MetaFixer object is created
