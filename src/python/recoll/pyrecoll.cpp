@@ -958,15 +958,16 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Query_execute\n");
     static const char *kwlist[] = {"query_string", "stemming", "stemlang",
-                                   "fetchtext", NULL};
+                                   "fetchtext", "collapseduplicates", NULL};
     char *sutf8 = 0; // needs freeing
     char *sstemlang = 0;
     PyObject *dostemobj = 0;
     PyObject *fetchtextobj = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|OesO:Query_execute", 
+    PyObject *collapseobj = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|OesOO:Query_execute", 
 				     (char**)kwlist, "utf-8", &sutf8,
-				     &dostemobj, 
-				     "utf-8", &sstemlang, &fetchtextobj)) {
+				     &dostemobj, "utf-8", &sstemlang,
+                                     &fetchtextobj, &collapseobj)) {
 	return 0;
     }
 
@@ -995,6 +996,12 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	return 0;
     }
 
+    if (collapseobj != 0 && PyObject_IsTrue(collapseobj)) {
+        self->query->setCollapseDuplicates(true);
+    } else {
+        self->query->setCollapseDuplicates(false);
+    }
+        
     // SearchData defaults to stemming in english
     // Use default for now but need to add way to specify language
     string reason;
@@ -1025,12 +1032,14 @@ static PyObject *
 Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Query_executeSD\n");
-    static const char *kwlist[] = {"searchdata", "fetchtext", NULL};
+    static const char *kwlist[] = {"searchdata", "fetchtext",
+                                   "collapseduplicates", NULL};
     recoll_SearchDataObject *pysd = 0;
     PyObject *fetchtextobj = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|O:Query_execute", 
+    PyObject *collapseobj = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|OO:Query_execute", 
 				     (char **)kwlist, &recoll_SearchDataType,
-                                     &pysd, &fetchtextobj)) {
+                                     &pysd, &fetchtextobj, &collapseobj)) {
 	return 0;
     }
     if (pysd == 0 || self->query == 0) {
@@ -1042,6 +1051,12 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     } else {
         self->fetchtext = false;
     }
+    if (collapseobj != 0 && PyObject_IsTrue(collapseobj)) {
+        self->query->setCollapseDuplicates(true);
+    } else {
+        self->query->setCollapseDuplicates(false);
+    }
+        
     self->query->setSortBy(*self->sortfield, self->ascending);
     self->query->setQuery(pysd->sd);
     int cnt = self->query->getResCnt();

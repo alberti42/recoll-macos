@@ -5271,7 +5271,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             </varlistentry>
             
             <varlistentry>
-<term>Query.execute(query_string, stemming=1, stemlang="english", fetchtext=False)</term>
+<term>Query.execute(query_string, stemming=1, stemlang="english", fetchtext=False, collapseduplicates=False)</term>
               <listitem><para>Starts a search
               for <replaceable>query_string</replaceable>, a &RCL;
               search language string. If the index stores the document
@@ -5281,7 +5281,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             </varlistentry>
 
             <varlistentry>
-              <term>Query.executesd(SearchData, fetchtext=False)</term>
+              <term>Query.executesd(SearchData, fetchtext=False, collapseduplicates=False)</term>
               <listitem><para>Starts a search for the query defined by
               the SearchData object. If the index stores the document
               texts and <literal>fetchtext</literal> is True, store the

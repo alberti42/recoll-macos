@@ -107,6 +107,7 @@ static char usage [] =
 " -q is just ignored (compatibility with the recoll GUI command line).\n"
 "Common options:\n"
 " -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR.\n"
+" -C : collapse duplicates\n"            
 " -d also dump file contents.\n"
 " -n [first-]<cnt> define the result slice. The default value for [first]\n"
 "    is 0. Without the option, the default max count is 2000.\n"
@@ -137,34 +138,43 @@ Usage(void)
     exit(1);
 }
 
-// BEWARE COMPATIBILITy WITH recoll OPTIONS letters
-// -q, -t and -l are accepted and ignored
-// -a/f/o -c have the same meaning
-// -h and -v -> Usage()
-
+// BEWARE COMPATIBILITY WITH recoll OPTIONS letters
 static int     op_flags;
+
 #define OPT_A     0x1
+// gui: -a same
 #define OPT_a     0x2
 #define OPT_b     0x4
-#define OPT_c     0x8
-#define OPT_D     0x10
-#define OPT_d     0x20
-#define OPT_e     0x40
-#define OPT_F     0x80
-#define OPT_f     0x100
-#define OPT_i     0x200
-#define OPT_l     0x400
-#define OPT_m     0x800
-#define OPT_N     0x1000
-#define OPT_n     0x2000
-#define OPT_o     0x4000
-#define OPT_P     0x8000
-#define OPT_Q     0x10000
-#define OPT_q     0x20000
-#define OPT_S     0x40000
-#define OPT_s     0x80000
-#define OPT_T     0x100000
-#define OPT_t     0x200000
+#define OPT_C     0x8
+// gui: -c same
+#define OPT_c     0x10 
+#define OPT_D     0x20 
+#define OPT_d     0x40 
+#define OPT_e     0x80 
+#define OPT_F     0x100
+// gui: -f same
+#define OPT_f     0x200
+// gui uses -h for help. us: usage
+#define OPT_i     0x400
+// gui uses -L to set language of messages
+// gui: -l same
+#define OPT_l     0x800
+#define OPT_m     0x1000
+#define OPT_N     0x2000
+#define OPT_n     0x4000
+// gui: -o same
+#define OPT_o     0x8000
+#define OPT_P     0x10000
+#define OPT_Q     0x20000
+// gui: -q same
+#define OPT_q     0x40000
+#define OPT_S     0x80000
+#define OPT_s     0x100000
+#define OPT_T     0x200000
+// gui: -t use command line, us: ignored
+#define OPT_t     0x400000
+// gui uses -v : show version. Us: usage
+// gui uses -w : open minimized
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -196,6 +206,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             case 'A':   op_flags |= OPT_A; break;
             case 'a':   op_flags |= OPT_a; break;
             case 'b':   op_flags |= OPT_b; break;
+            case 'C':   op_flags |= OPT_C; break;
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
@@ -344,6 +355,9 @@ endopts:
 
     std::shared_ptr<Rcl::SearchData> rq(sd);
     Rcl::Query query(&rcldb);
+    if (op_flags & OPT_C) {
+        query.setCollapseDuplicates(true);
+    }
     if (op_flags & OPT_S) {
 	query.setSortBy(sortfield, (op_flags & OPT_D) ? false : true);
     }
