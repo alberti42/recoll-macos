@@ -62,6 +62,7 @@
 #include <istream>
 #include <ostream>
 #endif
+#include <iostream>
 
 #include "pathut.h"
 
@@ -571,17 +572,23 @@ private:
     /// if some files were not readable/parsable. Now fail if any
     /// fails.
     void construct(const std::vector<std::string>& fns, bool ro) {
-        bool ok = true;
+        bool ok{true};
+        bool first{true};
         for (const auto& fn : fns) {
             T* p = new T(fn.c_str(), ro);
             if (p && p->ok()) {
                 m_confs.push_back(p);
             } else {
                 delete p;
-                ok = false;
+                // In ro mode, we accept a non-existing topmost file
+                // and treat it as an empty one.
+                if (!(ro && first && !path_exists(fn))) {
+                    ok = false;
+                }
             }
             // Only the first file is opened rw
             ro = true;
+            first = false;
         }
         m_ok = ok;
     }
