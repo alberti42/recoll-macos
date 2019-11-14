@@ -532,11 +532,6 @@ python/pychm/AUTHORS \
 python/pychm/COPYING \
 python/pychm/MANIFEST.in \
 python/pychm/README-RECOLL.txt \
-python/pychm/pychm.egg-info \
-python/pychm/pychm.egg-info/PKG-INFO \
-python/pychm/pychm.egg-info/SOURCES.txt \
-python/pychm/pychm.egg-info/dependency_links.txt \
-python/pychm/pychm.egg-info/top_level.txt \
 python/pychm/recollchm \
 python/pychm/recollchm/__init__.py \
 python/pychm/recollchm/chm.py \
@@ -759,7 +754,7 @@ dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 \
                doc/man/recollindex.1 doc/man/xadump.1
 dist_man5_MANS = doc/man/recoll.conf.5
 
-dist-hook:
+adist-hook:
 	(cd $(top_srcdir); find . \
             \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
 	test -z "`git status -s | grep -v '??' | grep -v Makefile.am`"
