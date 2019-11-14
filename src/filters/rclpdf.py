@@ -439,14 +439,35 @@ class PDFExtractor:
         for metanm,rclnm in self.extrameta:
             for rdfdesc in rdfdesclist:
                 try:
-                    elt = rdfdesc.find(metanm, rdfdesc.nsmap)
+                    elts = rdfdesc.findall(metanm, rdfdesc.nsmap)
                 except:
                     # We get an exception when this rdf:Description does not
                     # define the required namespace.
                     continue
-                text = None
-                if elt is not None:
-                    text = self._xmltreetext(elt)
+                
+                if elts:
+                    for elt in elts:
+                        text = None
+                        try:
+                            # First try to get text from a custom element handler
+                            text = emf.metafixelt(metanm, elt)
+                        except:
+                            pass
+                        
+                        if text is None:
+                            # still nothing here, read the element text
+                            text = self._xmltreetext(elt)
+                            try:
+                                # try to run metafix
+                                text = emf.metafix(metanm, text)
+                            except:
+                                pass
+
+                        if text:
+                            # Can't use setfield as it only works for
+                            # text/plain output at the moment.
+                            #self.em.rclog("Appending: (%s,%s)"%(rclnm,text))
+                            metaheaders.append((rclnm, text))
                 else:
                     # Some docs define the values as attributes. don't
                     # know if this is valid but anyway...
@@ -456,17 +477,13 @@ class PDFExtractor:
                     except:
                         fullnm = metanm
                     text = rdfdesc.get(fullnm)
-                # Should we set empty values ?
-                if text:
-                    if emf:
+                    if text:
                         try:
+                            # try to run metafix
                             text = emf.metafix(metanm, text)
                         except:
                             pass
-                    # Can't use setfield as it only works for
-                    # text/plain output at the moment.
-                    #self.em.rclog("Appending: (%s,%s)"%(rclnm,text))
-                    metaheaders.append((rclnm, text))
+                        metaheaders.append((rclnm, text))
         if metaheaders:
             if emf:
                 try:
