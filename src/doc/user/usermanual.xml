@@ -3006,7 +3006,8 @@ fs.inotify.max_user_watches=32768
           <keycap>Ctrl-o</keycap> to open the document from the current
           row, <keycap>Ctrl-Shift-o</keycap> to open the document and close
           <command>recoll</command>, <keycap>Ctrl-d</keycap> to preview
-          the document.</para>
+          the document, and <keycap>Ctrl-e</keycap> to open the document
+          snippets window.</para> 
           </formalpara>
 
           <formalpara><title>Editing a new search while the focus is not
