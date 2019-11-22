@@ -278,11 +278,6 @@ void RclMain::init()
     actionShowResultsAsTable->setChecked(prefs.showResultsAsTable);
     on_actionShowResultsAsTable_toggled(prefs.showResultsAsTable);
 
-    // Must not do this when restable is a child of rclmain
-    // sc = new QShortcut(quitKeySeq, restable);
-    // connect(sc, SIGNAL (activated()), this, SLOT (fileExit()));
-
-
     // A shortcut to get the focus back to the search entry. 
     QKeySequence seq("Ctrl+Shift+s");
     QShortcut *sc = new QShortcut(seq, this);
@@ -389,16 +384,8 @@ void RclMain::init()
 	    this, SLOT(docExpand(Rcl::Doc)));
     connect(restable, SIGNAL(showSubDocs(Rcl::Doc)), 
 	    this, SLOT(showSubDocs(Rcl::Doc)));
-    connect(restable, SIGNAL(previewRequested(Rcl::Doc)), 
-	    this, SLOT(startPreview(Rcl::Doc)));
-    connect(restable, SIGNAL(editRequested(Rcl::Doc)), 
-	    this, SLOT(startNativeViewer(Rcl::Doc)));
     connect(restable, SIGNAL(openWithRequested(Rcl::Doc, string)), 
 	    this, SLOT(openWith(Rcl::Doc, string)));
-    connect(restable, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
-	    this, SLOT(saveDocToFile(Rcl::Doc)));
-    connect(restable, SIGNAL(showSnippets(Rcl::Doc)), 
-	    this, SLOT(showSnippets(Rcl::Doc)));
 
     reslist->setRclMain(this, true);
     connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
