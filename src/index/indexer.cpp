@@ -33,6 +33,7 @@
 #include "pathut.h"
 #include "idxstatus.h"
 #include "execmd.h"
+#include "safesysstat.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -72,7 +73,7 @@ bool runWebFilesMoverScript(RclConfig *config)
     const static string cmdnm{"python"};
     args.push_back(config->findFilter("recoll-we-move-files.py"));
 #else
-    const static string cmdnm{"recoll-we-move-files.py"}:
+    const static string cmdnm{"recoll-we-move-files.py"};
 #endif
     if (cmdpath.empty()) {
         cmdpath = config->findFilter(cmdnm);
