@@ -29,6 +29,7 @@
 #include "safeunistd.h"
 #include <assert.h>
 #include <memory.h>
+#include <inttypes.h>
 
 #include <memory>
 
@@ -72,9 +73,6 @@ static ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 #include "md5.h"
 
 using namespace std;
-typedef unsigned char UCHAR;
-typedef unsigned int UINT;
-typedef unsigned long ULONG;
 
 /** Temp buffer with automatic deallocation */
 struct TempBuf {
@@ -125,17 +123,17 @@ struct TempBuf {
 #define CIRCACHE_FIRSTBLOCK_SIZE 1024
 
 // Entry header.
-// 3 x 32 bits sizes as hex integers + 1 x 16 bits flag + at least 1 zero
-//                          15 +             3x(9)  + 3 + 1 = 46
-static const char *headerformat = "circacheSizes = %x %x %x %hx";
+// 2x32 1x64 bits ints as hex integers + 1 x 16 bits flag + at least 1 zero
+//                          15 +             2x9 + 17 + 3 + 1 = 54
+static const char *headerformat = "circacheSizes = %x %x %llx %hx";
 #define CIRCACHE_HEADER_SIZE 64
 
 class EntryHeaderData {
 public:
     EntryHeaderData() : dicsize(0), datasize(0), padsize(0), flags(0) {}
-    UINT dicsize;
-    UINT datasize;
-    UINT padsize;
+    unsigned int dicsize;
+    unsigned int datasize;
+    uint64_t padsize;
     unsigned short flags;
 };
 enum EntryFlags {EFNone = 0, EFDataCompressed = 1};
@@ -158,13 +156,13 @@ public:
 #define UDIHLEN 4
 class UdiH {
 public:
-    UCHAR h[UDIHLEN];
+    unsigned char h[UDIHLEN];
 
     UdiH(const string& udi) {
         MD5_CTX ctx;
         MD5Init(&ctx);
-        MD5Update(&ctx, (const UCHAR*)udi.c_str(), udi.length());
-        UCHAR md[16];
+        MD5Update(&ctx, (const unsigned char*)udi.c_str(), udi.length());
+        unsigned char md[16];
         MD5Final(md, &ctx);
         memcpy(h, md, UDIHLEN);
     }
@@ -237,28 +235,28 @@ public:
     bool khEnter(const string& udi, int64_t ofs) {
         UdiH h(udi);
 
-        LOGDEB2("Circache::khEnter: h "  << (h.asHexString()) << " offs "  << ((ULONG)ofs) << " udi ["  << (udi) << "]\n" );
+        LOGDEB2("Circache::khEnter: h " << h.asHexString() << " offs " << ofs << " udi [" << udi << "]\n");
 
         pair<kh_type::iterator, kh_type::iterator> p = m_ofskh.equal_range(h);
 
         if (p.first != m_ofskh.end() && p.first->first == h) {
             for (kh_type::iterator it = p.first; it != p.second; it++) {
-                LOGDEB2("Circache::khEnter: col h "  << (it->first.asHexString()) << ", ofs "  << ((ULONG)it->second) << "\n" );
+                LOGDEB2("Circache::khEnter: col h " << it->first.asHexString() << ", ofs " << it->second << "\n");
                 if (it->second == ofs) {
                     // (h,offs) already there. Happens
-                    LOGDEB2("Circache::khEnter: already there\n" );
+                    LOGDEB2("Circache::khEnter: already there\n");
                     return true;
                 }
             }
         }
         m_ofskh.insert(kh_value_type(h, ofs));
-        LOGDEB2("Circache::khEnter: inserted\n" );
+        LOGDEB2("Circache::khEnter: inserted\n");
         return true;
     }
     void khDump() {
         for (kh_type::const_iterator it = m_ofskh.begin();
                 it != m_ofskh.end(); it++) {
-            LOGDEB("Circache::KHDUMP: "  << (it->first.asHexString()) << " "  << ((ULONG)it->second) << "\n" );
+            LOGDEB("Circache::KHDUMP: " << it->first.asHexString() << " " << it->second << "\n");
         }
     }
 
@@ -270,19 +268,19 @@ public:
 
         UdiH h(udi);
 
-        LOGDEB2("Circache::khFind: h "  << (h.asHexString()) << " udi ["  << (udi) << "]\n" );
+        LOGDEB2("Circache::khFind: h " << h.asHexString() << " udi [" << udi << "]\n");
 
         pair<kh_type::iterator, kh_type::iterator> p = m_ofskh.equal_range(h);
 
 #if 0
         if (p.first == m_ofskh.end()) {
-            LOGDEB("KHFIND: FIRST END()\n" );
+            LOGDEB("KHFIND: FIRST END()\n");
         }
         if (p.second == m_ofskh.end()) {
-            LOGDEB("KHFIND: SECOND END()\n" );
+            LOGDEB("KHFIND: SECOND END()\n");
         }
         if (!(p.first->first == h))
-            LOGDEB("KHFIND: NOKEY: "  << (p.first->first.asHexString()) << " "  << (p.second->first.asHexString()) << "\n" );
+            LOGDEB("KHFIND: NOKEY: " << p.first->first.asHexString() << " " << p.second->first.asHexString() << "\n");
 #endif
 
         if (p.first == m_ofskh.end() || !(p.first->first == h)) {
@@ -496,7 +494,8 @@ public:
                      offset << " [" << bf << "]";
             return CCScanHook::Error;
         }
-        LOGDEB2("Circache:readEntryHeader: dcsz "  << (d.dicsize) << " dtsz "  << (d.datasize) << " pdsz "  << (d.padsize) << " flgs "  << (d.flags) << "\n" );
+        LOGDEB2("Circache:readEntryHeader: dcsz " << d.dicsize << " dtsz " << d.datasize << " pdsz " << d.padsize <<
+                " flgs " << d.flags << "\n");
         return CCScanHook::Continue;
     }
 
@@ -630,7 +629,7 @@ public:
             }
 
             if (hd.flags & EFDataCompressed) {
-                LOGDEB1("Circache:readdicdata: data compressed\n" );
+                LOGDEB1("Circache:readdicdata: data compressed\n");
                 ZLibUtBuf buf;
                 if (!inflateToBuf(bf, hd.datasize, buf)) {
                     m_reason << "CirCache: decompression failed ";
@@ -638,7 +637,7 @@ public:
                 }
                 data->assign(buf.getBuf(), buf.getCnt());
             } else {
-                LOGDEB1("Circache:readdicdata: data NOT compressed\n" );
+                LOGDEB1("Circache:readdicdata: data NOT compressed\n");
                 data->assign(bf, hd.datasize);
             }
         } else {
@@ -653,7 +652,7 @@ CirCache::CirCache(const string& dir)
     : m_dir(dir)
 {
     m_d = new CirCacheInternal;
-    LOGDEB0("CirCache: ["  << (m_dir) << "]\n" );
+    LOGDEB0("CirCache: [" << m_dir << "]\n");
 }
 
 CirCache::~CirCache()
@@ -681,7 +680,7 @@ public:
                            const EntryHeaderData& d) {
         headoffs = offs;
         padsize = d.padsize;
-        LOGDEB2("CCScanHookRecord::takeone: offs "  << (lltodecstr(headoffs)) << " padsize "  << (lltodecstr(padsize)) << "\n" );
+        LOGDEB2("CCScanHookRecord::takeone: offs " << headoffs << " padsize " << padsize << "\n");
         return Continue;
     }
 };
@@ -693,9 +692,9 @@ string CirCache::getpath()
 
 bool CirCache::create(int64_t maxsize, int flags)
 {
-    LOGDEB("CirCache::create: ["  << (m_dir) << "] maxsz "  << (lltodecstr((long long)maxsize)) << " flags 0x"  << (flags) << "\n" );
+    LOGDEB("CirCache::create: [" << m_dir << "] maxsz " << maxsize << " flags 0x" << std::hex << flags <<std::dec<<"\n");
     if (m_d == 0) {
-        LOGERR("CirCache::create: null data\n" );
+        LOGERR("CirCache::create: null data\n");
         return false;
     }
 
@@ -717,7 +716,7 @@ bool CirCache::create(int64_t maxsize, int flags)
             }
             if (maxsize == m_d->m_maxsize &&
                     ((flags & CC_CRUNIQUE) != 0) == m_d->m_uniquentries) {
-                LOGDEB("Header unchanged, no rewrite\n" );
+                LOGDEB("Header unchanged, no rewrite\n");
                 return true;
             }
             // If the new maxsize is bigger than current size, we need
@@ -734,7 +733,9 @@ bool CirCache::create(int64_t maxsize, int flags)
             }
             m_d->m_maxsize = maxsize;
             m_d->m_uniquentries = ((flags & CC_CRUNIQUE) != 0);
-            LOGDEB2("CirCache::create: rewriting header with maxsize "  << (lltodecstr(m_d->m_maxsize)) << " oheadoffs "  << (lltodecstr(m_d->m_oheadoffs)) << " nheadoffs "  << (lltodecstr(m_d->m_nheadoffs)) << " npadsize "  << (m_d->m_npadsize) << " unient "  << (int(m_d->m_uniquentries)) << "\n" );
+            LOGDEB2("CirCache::create: rewriting header with maxsize " << m_d->m_maxsize << " oheadoffs " <<
+                    m_d->m_oheadoffs << " nheadoffs " << m_d->m_nheadoffs << " npadsize " << m_d->m_npadsize <<
+                    " unient " << m_d->m_uniquentries << "\n");
             return m_d->writefirstblock();
         }
         // Else fallthrough to create file
@@ -756,7 +757,7 @@ bool CirCache::create(int64_t maxsize, int flags)
     if (::write(m_d->m_fd, buf, CIRCACHE_FIRSTBLOCK_SIZE) !=
             CIRCACHE_FIRSTBLOCK_SIZE) {
         m_d->m_reason << "CirCache::create: write header failed, errno "
-                      << errno;
+                     << errno;
         return false;
     }
     return m_d->writefirstblock();
@@ -765,7 +766,7 @@ bool CirCache::create(int64_t maxsize, int flags)
 bool CirCache::open(OpMode mode)
 {
     if (m_d == 0) {
-        LOGERR("CirCache::open: null data\n" );
+        LOGERR("CirCache::open: null data\n");
         return false;
     }
 
@@ -788,7 +789,7 @@ public:
     virtual status takeone(int64_t offs, const string& udi,
                            const EntryHeaderData& d) {
         cout << "Scan: offs " << offs << " dicsize " << d.dicsize
-             << " datasize " << d.datasize << " padsize " << d.padsize <<
+            << " datasize " << d.datasize << " padsize " << d.padsize <<
              " flags " << d.flags <<
              " udi [" << udi << "]" << endl;
         return Continue;
@@ -836,7 +837,8 @@ public:
 
     virtual status takeone(int64_t offs, const string& udi,
                            const EntryHeaderData& d) {
-        LOGDEB2("Circache:Scan: off "  << (long(offs)) << " udi ["  << (udi) << "] dcsz "  << ((UINT)d.dicsize) << " dtsz "  << ((UINT)d.datasize) << " pdsz "  << ((UINT)d.padsize) << "  flgs "  << (d.flags) << "\n" );
+        LOGDEB2("Circache:Scan: off " << offs << " udi [" << udi << "] dcsz " << d.dicsize << " dtsz " << d.datasize <<
+                " pdsz " << d.padsize << " flgs " << d.flags << "\n");
         if (!m_udi.compare(udi)) {
             m_instance++;
             m_offs = offs;
@@ -858,21 +860,21 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
         return false;
     }
 
-    LOGDEB0("CirCache::get: udi ["  << (udi) << "], instance "  << (instance) << "\n" );
+    LOGDEB0("CirCache::get: udi [" << udi << "], instance " << instance << "\n");
 
     // If memory map is up to date, use it:
     if (m_d->m_ofskhcplt) {
-        LOGDEB1("CirCache::get: using ofskh\n" );
+        LOGDEB1("CirCache::get: using ofskh\n");
         //m_d->khDump();
         vector<int64_t> ofss;
         if (m_d->khFind(udi, ofss)) {
-            LOGDEB1("Circache::get: h found, colls "  << (ofss.size()) << "\n" );
+            LOGDEB1("Circache::get: h found, colls " << ofss.size() << "\n");
             int finst = 1;
             EntryHeaderData d_good;
             int64_t           o_good = 0;
             for (vector<int64_t>::iterator it = ofss.begin();
                     it != ofss.end(); it++) {
-                LOGDEB1("Circache::get: trying offs "  << ((ULONG)*it) << "\n" );
+                LOGDEB1("Circache::get: trying offs " << *it << "\n");
                 EntryHeaderData d;
                 string fudi;
                 if (!m_d->readHUdi(*it, d, fudi)) {
@@ -894,7 +896,7 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
             // Did we read an appropriate entry ?
             if (o_good != 0 && (instance == -1 || instance == finst)) {
                 bool ret = m_d->readDicData(o_good, d_good, dic, data);
-                LOGDEB0("Circache::get: hfound, "  << (chron.millis()) << " mS\n" );
+                LOGDEB0("Circache::get: hfound, " << chron.millis() << " mS\n");
                 return ret;
             }
             // Else try to scan anyway.
@@ -913,15 +915,14 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
         return false;
     }
     bool bret = m_d->readDicData(getter.m_offs, getter.m_hd, dic, data);
-    LOGDEB0("Circache::get: scanfound, "  << (chron.millis()) << " mS\n" );
-
+    LOGDEB0("Circache::get: scanfound, " << chron.millis() << " mS\n");
     return bret;
 }
 
 bool CirCache::erase(const string& udi, bool reallyclear)
 {
     if (m_d == 0) {
-        LOGERR("CirCache::erase: null data\n" );
+        LOGERR("CirCache::erase: null data\n");
         return false;
     }
     if (m_d->m_fd < 0) {
@@ -929,7 +930,7 @@ bool CirCache::erase(const string& udi, bool reallyclear)
         return false;
     }
 
-    LOGDEB0("CirCache::erase: udi ["  << (udi) << "]\n" );
+    LOGDEB0("CirCache::erase: udi [" << udi << "]\n");
 
     // If the mem cache is not up to date, update it, we're too lazy
     // to do a scan
@@ -937,7 +938,7 @@ bool CirCache::erase(const string& udi, bool reallyclear)
         string dic;
         get("nosuchudi probably exists", dic);
         if (!m_d->m_ofskhcplt) {
-            LOGERR("CirCache::erase : cache not updated after get\n" );
+            LOGERR("CirCache::erase : cache not updated after get\n");
             return false;
         }
     }
@@ -945,27 +946,27 @@ bool CirCache::erase(const string& udi, bool reallyclear)
     vector<int64_t> ofss;
     if (!m_d->khFind(udi, ofss)) {
         // Udi not in there,  erase ok
-        LOGDEB("CirCache::erase: khFind returns none\n" );
+        LOGDEB("CirCache::erase: khFind returns none\n");
         return true;
     }
 
     for (vector<int64_t>::iterator it = ofss.begin(); it != ofss.end(); it++) {
-        LOGDEB2("CirCache::erase: reading at "  << ((unsigned long)*it) << "\n" );
+        LOGDEB2("CirCache::erase: reading at " << *it << "\n");
         EntryHeaderData d;
         string fudi;
         if (!m_d->readHUdi(*it, d, fudi)) {
             return false;
         }
-        LOGDEB2("CirCache::erase: found fudi ["  << (fudi) << "]\n" );
+        LOGDEB2("CirCache::erase: found fudi [" << fudi << "]\n");
         if (!fudi.compare(udi)) {
             EntryHeaderData nd;
             nd.padsize = d.dicsize + d.datasize + d.padsize;
-            LOGDEB2("CirCache::erase: rewrite at "  << ((unsigned long)*it) << "\n" );
+            LOGDEB2("CirCache::erase: rewrite at " << *it << "\n");
             if (*it == m_d->m_nheadoffs) {
                 m_d->m_npadsize = nd.padsize;
             }
             if (!m_d->writeEntryHeader(*it, nd, reallyclear)) {
-                LOGERR("CirCache::erase: write header failed\n" );
+                LOGERR("CirCache::erase: write header failed\n");
                 return false;
             }
         }
@@ -988,7 +989,8 @@ public:
 
     virtual status takeone(int64_t offs, const string& udi,
                            const EntryHeaderData& d) {
-        LOGDEB2("Circache:ScanSpacer:off "  << ((UINT)offs) << " dcsz "  << (d.dicsize) << " dtsz "  << (d.datasize) << " pdsz "  << (d.padsize) << " udi["  << (udi) << "]\n" );
+        LOGDEB2("Circache:ScanSpacer:off " << offs << " dcsz " << d.dicsize << " dtsz " << d.datasize <<
+                " pdsz " << d.padsize << " udi[" << udi << "]\n");
         sizeseen += CIRCACHE_HEADER_SIZE + d.dicsize + d.datasize + d.padsize;
         squashed_udis.push_back(make_pair(udi, offs));
         if (sizeseen >= sizewanted) {
@@ -1002,7 +1004,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
                    const string& data, unsigned int iflags)
 {
     if (m_d == 0) {
-        LOGERR("CirCache::put: null data\n" );
+        LOGERR("CirCache::put: null data\n");
         return false;
     }
     if (m_d->m_fd < 0) {
@@ -1014,14 +1016,14 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     string dic;
     if (!iconf || !iconf->get("udi", dic) || dic.empty() || dic.compare(udi)) {
         m_d->m_reason << "No/bad 'udi' entry in input dic";
-        LOGERR("Circache::put: no/bad udi: DIC:["  << (dic) << "] UDI ["  << (udi) << "]\n" );
+        LOGERR("Circache::put: no/bad udi: DIC:[" << dic << "] UDI [" << udi << "]\n");
         return false;
     }
 
     // Possibly erase older entries. Need to do this first because we may be
     // able to reuse the space if the same udi was last written
     if (m_d->m_uniquentries && !erase(udi)) {
-        LOGERR("CirCache::put: can't erase older entries\n" );
+        LOGERR("CirCache::put: can't erase older entries\n");
         return false;
     }
 
@@ -1058,7 +1060,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     int64_t npadsize = 0;
     bool extending = false;
 
-    LOGDEB("CirCache::put: nsz "  << (nsize) << " oheadoffs "  << (m_d->m_oheadoffs) << "\n" );
+    LOGDEB("CirCache::put: nsz " << nsize << " oheadoffs " << m_d->m_oheadoffs << "\n");
 
     // Check if we can recover some pad space from the (physically) previous
     // entry.
@@ -1080,7 +1082,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
             // the header, we're going to write on it.
             recovpadsize += CIRCACHE_HEADER_SIZE;
         } else {
-            LOGDEB("CirCache::put: recov. prev. padsize "  << (pd.padsize) << "\n" );
+            LOGDEB("CirCache::put: recov. prev. padsize " << pd.padsize << "\n");
             pd.padsize = 0;
             if (!m_d->writeEntryHeader(m_d->m_nheadoffs, pd)) {
                 return false;
@@ -1093,7 +1095,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     if (nsize <= recovpadsize) {
         // If the new entry fits entirely in the pad area from the
         // latest one, no need to recycle stuff
-        LOGDEB("CirCache::put: new fits in old padsize "  << (recovpadsize) << "\n" );
+        LOGDEB("CirCache::put: new fits in old padsize " << recovpadsize << "\n");
         npadsize = recovpadsize - nsize;
     } else if (st.st_size < m_d->m_maxsize) {
         // Still growing the file.
@@ -1103,11 +1105,11 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
         // Scan the file until we have enough space for the new entry,
         // and determine the pad size up to the 1st preserved entry
         int64_t scansize = nsize - recovpadsize;
-        LOGDEB("CirCache::put: scanning for size "  << (scansize) << " from offs "  << ((UINT)m_d->m_oheadoffs) << "\n" );
+        LOGDEB("CirCache::put: scanning for size " << scansize << " from offs " << m_d->m_oheadoffs << "\n");
         CCScanHookSpacer spacer(scansize);
         switch (m_d->scan(m_d->m_oheadoffs, &spacer)) {
         case CCScanHook::Stop:
-            LOGDEB("CirCache::put: Scan ok, sizeseen "  << (spacer.sizeseen) << "\n" );
+            LOGDEB("CirCache::put: Scan ok, sizeseen " << spacer.sizeseen << "\n");
             npadsize = spacer.sizeseen - scansize;
             break;
         case CCScanHook::Eof:
@@ -1122,7 +1124,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
         m_d->khClear(spacer.squashed_udis);
     }
 
-    LOGDEB("CirCache::put: writing "  << (nsize) << " at "  << (nwriteoffs) << " padsize "  << (npadsize) << "\n" );
+    LOGDEB("CirCache::put: writing " << nsize << " at " << nwriteoffs << " padsize " << npadsize << "\n");
 
     if (lseek(m_d->m_fd, nwriteoffs, 0) != nwriteoffs) {
         m_d->m_reason << "CirCache::put: lseek failed: " << errno;
@@ -1166,7 +1168,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
 bool CirCache::rewind(bool& eof)
 {
     if (m_d == 0) {
-        LOGERR("CirCache::rewind: null data\n" );
+        LOGERR("CirCache::rewind: null data\n");
         return false;
     }
 
@@ -1174,7 +1176,7 @@ bool CirCache::rewind(bool& eof)
 
     int64_t fsize = lseek(m_d->m_fd, 0, SEEK_END);
     if (fsize == (int64_t) - 1) {
-        LOGERR("CirCache::rewind: seek to EOF failed\n" );
+        LOGERR("CirCache::rewind: seek to EOF failed\n");
         return false;
     }
     // Read oldest header. This is either at the position pointed to
@@ -1201,7 +1203,7 @@ bool CirCache::rewind(bool& eof)
 bool CirCache::next(bool& eof)
 {
     if (m_d == 0) {
-        LOGERR("CirCache::next: null data\n" );
+        LOGERR("CirCache::next: null data\n");
         return false;
     }
 
@@ -1238,7 +1240,7 @@ bool CirCache::next(bool& eof)
 bool CirCache::getCurrentUdi(string& udi)
 {
     if (m_d == 0) {
-        LOGERR("CirCache::getCurrentUdi: null data\n" );
+        LOGERR("CirCache::getCurrentUdi: null data\n");
         return false;
     }
 
@@ -1251,7 +1253,7 @@ bool CirCache::getCurrentUdi(string& udi)
 bool CirCache::getCurrent(string& udi, string& dic, string *data)
 {
     if (m_d == 0) {
-        LOGERR("CirCache::getCurrent: null data\n" );
+        LOGERR("CirCache::getCurrent: null data\n");
         return false;
     }
     if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd, dic, data)) {

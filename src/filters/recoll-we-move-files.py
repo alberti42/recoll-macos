@@ -145,6 +145,6 @@ for hash in cfiles.keys():
         shutil.move(os.path.join(downloadsdir, cfiles[hash]),
                     os.path.join(webqueuedir, newname))
         shutil.move(os.path.join(downloadsdir, mfiles[hash]),
-                    os.path.join(webqueuedir, "." + newname))
+                    os.path.join(webqueuedir, "_" + newname))
 
 
