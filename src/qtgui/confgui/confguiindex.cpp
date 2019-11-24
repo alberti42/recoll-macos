@@ -219,10 +219,8 @@ void ConfIndexW::initPanels()
         new ConfSubPanelW(m_w, &m_conf, m_rclconf),
         tr("Local parameters"));
 
-#ifndef _WIN32
     idx = m_w->addPanel("Web history");
     setupWebHistoryPanel(idx);
-#endif
 
     idx = m_w->addPanel(tr("Search parameters"));
     setupSearchPanel(idx);

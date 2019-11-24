@@ -1526,8 +1526,13 @@ bool RclConfig::sourceChanged() const
 string RclConfig::getWebQueueDir() const
 {
     string webqueuedir;
-    if (!getConfParam("webqueuedir", webqueuedir))
+    if (!getConfParam("webqueuedir", webqueuedir)) {
+#ifdef _WIN32
+        webqueuedir = "~/AppData/Local/RecollWebQueue";
+#else
         webqueuedir = "~/.recollweb/ToIndex/";
+#endif
+    }
     webqueuedir = path_tildexpand(webqueuedir);
     return webqueuedir;
 }

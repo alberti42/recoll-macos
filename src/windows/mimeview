@@ -25,7 +25,7 @@ xallexcepts = \
 # Could not get the cmd-based ones to work (tried quoting "start %u" too)
 #application/x-all = c:/Windows/System32/cmd /c start %u
 #application/x-all = cmd /c start %u
-application/x-all = rclstartw %f
+application/x-all = rclstartw %u
 
 ####### Special ones
 # Open the parent epub document for epub parts instead of opening them as

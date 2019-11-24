@@ -42,6 +42,8 @@ try:
 except:
     import rclconfig
 
+_mswindows = (sys.platform == "win32")
+
 verbosity = 0
 def logdeb(s):
     if verbosity >= 4:
@@ -114,7 +116,10 @@ if not os.path.isdir(mydir):
 # Get target webqueue recoll directory from recoll configuration
 webqueuedir = config.getConfParam("webqueuedir")
 if not webqueuedir:
-    webqueuedir = "~/.recollweb/ToIndex"
+    if _mswindows:
+        webqueuedir = "~/AppData/Local/RecollWebQueue"
+    else:
+        webqueuedir = "~/.recollweb/ToIndex"
 webqueuedir = os.path.expanduser(webqueuedir)
 os.makedirs(webqueuedir, exist_ok = True)
 
