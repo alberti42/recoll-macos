@@ -38,7 +38,6 @@ void RclMain::previewClosed(Preview *w)
     } else {
         LOGDEB("Old preview closed\n");
     }
-    delete w;
 }
 
 // Document up to date check. The main problem we try to solve is

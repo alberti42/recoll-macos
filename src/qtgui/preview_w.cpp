@@ -99,6 +99,8 @@ static void trimwildcards(string& elt)
 void Preview::init()
 {
     LOGDEB("Preview::init\n");
+    setAttribute(Qt::WA_DeleteOnClose);
+    
     // Create the first tab (the tab widget is created with one
     // initial tab for ease of use in designer, we remove it).
     addEditorTab();

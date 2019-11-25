@@ -104,6 +104,7 @@ void SnippetsW::init()
     connect(prevPB, SIGNAL(clicked()), this, SLOT(slotEditFindPrevious()));
 
 
+    // Get rid of the placeholder widget created from the .ui
     delete browserw;
 #if defined(USING_WEBKIT)
     browserw = new QWebView(this);
