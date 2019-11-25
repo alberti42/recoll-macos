@@ -58,120 +58,118 @@ public:
         {}
 
     // Read input line, strip it of eol and return as c++ string
-    bool readLine(string& line)
-        {
-            static const int LL = 2048;
-            char cline[LL]; 
-            cline[0] = 0;
-            m_input.getline(cline, LL-1);
-            if (!m_input.good()) {
-                if (m_input.bad()) {
-                    LOGERR("WebQueueDotFileRead: input.bad()\n");
-                }
-                return false;
+    bool readLine(ifstream& input, string& line) {
+        static const int LL = 2048;
+        char cline[LL]; 
+        cline[0] = 0;
+        input.getline(cline, LL-1);
+        if (!input.good()) {
+            if (input.bad()) {
+                LOGERR("WebQueueDotFileRead: input.bad()\n");
             }
-            int ll = strlen(cline);
-            while (ll > 0 && (cline[ll-1] == '\n' || cline[ll-1] == '\r')) {
-                cline[ll-1] = 0;
-                ll--;
-            }
-            line.assign(cline, ll);
-            LOGDEB2("WebQueueDotFile:readLine: [" << line << "]\n");
-            return true;
+            return false;
         }
+        int ll = strlen(cline);
+        while (ll > 0 && (cline[ll-1] == '\n' || cline[ll-1] == '\r')) {
+            cline[ll-1] = 0;
+            ll--;
+        }
+        line.assign(cline, ll);
+        LOGDEB2("WebQueueDotFile:readLine: [" << line << "]\n");
+        return true;
+    }
 
     // Process a Web queue dot file and set interesting stuff in the doc
-    bool toDoc(Rcl::Doc& doc)
-        {
-            string line;
+    bool toDoc(Rcl::Doc& doc) {
+        string line;
+        ifstream input;
 
-            m_input.open(m_fn.c_str(), ios::in);
-            if (!m_input.good()) {
-                LOGERR("WebQueueDotFile: open failed for [" << m_fn << "]\n");
-                return false;
+        input.open(m_fn.c_str(), ios::in);
+        if (!input.good()) {
+            LOGERR("WebQueueDotFile: open failed for [" << m_fn << "]\n");
+            return false;
+        }
+
+        // Read the 3 first lines: 
+        // - url
+        // - hit type: we only know about Bookmark and WebHistory for now
+        // - content-type.
+        if (!readLine(input, line))
+            return false;
+        doc.url = line;
+        if (!readLine(input, line))
+            return false;
+        doc.meta[Rcl::Doc::keybght] = line;
+        if (!readLine(input, line))
+            return false;
+        doc.mimetype = line;
+
+        // We set the bookmarks mtype as html (the text is empty
+        // anyway), so that the html viewer will be called on 'Open'
+        bool isbookmark = false;
+        if (!stringlowercmp("bookmark", doc.meta[Rcl::Doc::keybght])) {
+            isbookmark = true;
+            doc.mimetype = "text/html";
+        }
+
+        string confstr;
+        string ss(" ");
+        // Read the rest: fields and keywords. We do a little
+        // massaging of the input lines, then use a ConfSimple to
+        // parse, and finally insert the key/value pairs into the doc
+        // meta[] array
+        for (;;) {
+            if (!readLine(input, line)) {
+                // Eof hopefully
+                break;
             }
+            if (line.find("t:") != 0)
+                continue;
+            line = line.substr(2);
+            confstr += line + "\n";
+        }
+        ConfSimple fields(confstr, 1);
+        vector<string> names = fields.getNames(cstr_null);
+        for (vector<string>::iterator it = names.begin();
+             it != names.end(); it++) {
+            string value;
+            fields.get(*it, value, cstr_null);
+            if (!value.compare("undefined") || !value.compare("null"))
+                continue;
 
-            // Read the 3 first lines: 
-            // - url
-            // - hit type: we only know about Bookmark and WebHistory for now
-            // - content-type.
-            if (!readLine(line))
-                return false;
-            doc.url = line;
-            if (!readLine(line))
-                return false;
-            doc.meta[Rcl::Doc::keybght] = line;
-            if (!readLine(line))
-                return false;
-            doc.mimetype = line;
-
-            // We set the bookmarks mtype as html (the text is empty
-            // anyway), so that the html viewer will be called on 'Open'
-            bool isbookmark = false;
-            if (!stringlowercmp("bookmark", doc.meta[Rcl::Doc::keybght])) {
-                isbookmark = true;
-                doc.mimetype = "text/html";
+            string *valuep = &value;
+            string cvalue;
+            if (isbookmark) {
+                // It appears that bookmarks are stored in the users'
+                // locale charset (not too sure). No idea what to do
+                // for other types, would have to check the plugin.
+                string charset = m_conf->getDefCharset(true);
+                transcode(value, cvalue, charset,  "UTF-8"); 
+                valuep = &cvalue;
             }
-
-            string confstr;
-            string ss(" ");
-            // Read the rest: fields and keywords. We do a little
-            // massaging of the input lines, then use a ConfSimple to
-            // parse, and finally insert the key/value pairs into the doc
-            // meta[] array
-            for (;;) {
-                if (!readLine(line)) {
-                    // Eof hopefully
-                    break;
-                }
-                if (line.find("t:") != 0)
-                    continue;
-                line = line.substr(2);
-                confstr += line + "\n";
-            }
-            ConfSimple fields(confstr, 1);
-            vector<string> names = fields.getNames(cstr_null);
-            for (vector<string>::iterator it = names.begin();
-                 it != names.end(); it++) {
-                string value;
-                fields.get(*it, value, cstr_null);
-                if (!value.compare("undefined") || !value.compare("null"))
-                    continue;
-
-                string *valuep = &value;
-                string cvalue;
-                if (isbookmark) {
-                    // It appears that bookmarks are stored in the users'
-                    // locale charset (not too sure). No idea what to do
-                    // for other types, would have to check the plugin.
-                    string charset = m_conf->getDefCharset(true);
-                    transcode(value, cvalue, charset,  "UTF-8"); 
-                    valuep = &cvalue;
-                }
                 
-                string caname = m_conf->fieldCanon(*it);
-                doc.meta[caname].append(ss + *valuep);
-            }
+            string caname = m_conf->fieldCanon(*it);
+            doc.meta[caname].append(ss + *valuep);
+        }
 
-            // Finally build the confsimple that we will save to the
-            // cache, from the doc fields. This could also be done in
-            // parallel with the doc.meta build above, but simpler this
-            // way.  We need it because not all interesting doc fields are
-            // in the meta array (ie: mimetype, url), and we want
-            // something homogenous and easy to save.
-            for (const auto& entry : doc.meta) {
-                m_fields.set(entry.first, entry.second, cstr_null);
-            }
-            m_fields.set(cstr_url, doc.url, cstr_null);
-            m_fields.set(cstr_bgc_mimetype, doc.mimetype, cstr_null);
+        // Finally build the confsimple that we will save to the
+        // cache, from the doc fields. This could also be done in
+        // parallel with the doc.meta build above, but simpler this
+        // way.  We need it because not all interesting doc fields are
+        // in the meta array (ie: mimetype, url), and we want
+        // something homogenous and easy to save.
+        for (const auto& entry : doc.meta) {
+            m_fields.set(entry.first, entry.second, cstr_null);
+        }
+        m_fields.set(cstr_url, doc.url, cstr_null);
+        m_fields.set(cstr_bgc_mimetype, doc.mimetype, cstr_null);
 
-            return true;
-        }    
+        return true;
+    }
 
     RclConfig *m_conf;
     ConfSimple m_fields;
     string m_fn;
-    ifstream m_input;
 };
 
 // Initialize. Compute paths and create a temporary directory that will be
@@ -263,7 +261,8 @@ bool WebQueueIndexer::index()
     LOGDEB("WebQueueIndexer::processqueue: [" << m_queuedir << "]\n");
     m_config->setKeyDir(m_queuedir);
     if (!path_makepath(m_queuedir, 0700)) {
-        LOGERR("WebQueueIndexer:: can't create queuedir [" << m_queuedir << "] errno " << errno << "\n");
+        LOGERR("WebQueueIndexer:: can't create queuedir [" << m_queuedir <<
+               "] errno " << errno << "\n");
         return false;
     }
     if (!m_cache || !m_cache->cc()) {
@@ -349,7 +348,8 @@ bool WebQueueIndexer::indexFiles(list<string>& files)
             it++; continue;
         }
         if (!S_ISREG(st.st_mode)) {
-            LOGDEB("WebQueueIndexer::indexfiles: skipping [" << *it << "] (nr)\n");
+            LOGDEB("WebQueueIndexer::indexfiles: skipping [" << *it <<
+                   "] (nr)\n");
             it++; continue;
         }
 
@@ -464,7 +464,8 @@ WebQueueIndexer::processone(const string &path,
             goto out;
         }
         if (!m_cache->cc()->put(udi, &dotfile.m_fields, fdata, 0)) {
-            LOGERR("WebQueueIndexer::prc1: cache_put failed; " << m_cache->cc()->getReason() << "\n");
+            LOGERR("WebQueueIndexer::prc1: cache_put failed; " <<
+                   m_cache->cc()->getReason() << "\n");
             goto out;
         }
     }
