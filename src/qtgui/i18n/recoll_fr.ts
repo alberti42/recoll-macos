@@ -576,7 +576,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Indexing configuration</source>
-        <translation>Configuration de l&apos;indexation</translation>
+        <translation>Indexation</translation>
     </message>
     <message>
         <source>This will let you adjust the directories you want to index, and other parameters like excluded file paths or names, default character sets, etc.</source>
@@ -1838,15 +1838,15 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
-        <translation>Configuration des index e&amp;xternes</translation>
+        <translation>Index e&amp;xternes</translation>
     </message>
     <message>
         <source>&amp;Index configuration</source>
-        <translation>Configuration de l&apos;&amp;index</translation>
+        <translation>&amp;Index</translation>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
-        <translation>Confi&amp;guration de l&apos;interface</translation>
+        <translation>Interface utilisateur</translation>
     </message>
     <message>
         <source>&amp;Results</source>
