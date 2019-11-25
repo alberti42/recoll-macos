@@ -45,6 +45,8 @@
 
 using namespace std;
 
+#define DOTFILEPREFIX "_"
+
 // The browser plugin creates a file named .xxx (where xxx is the name
 // for the main file in the queue), to hold external metadata (http or
 // created by the plugin).  This class reads the .xxx, dotfile, and turns
@@ -306,7 +308,7 @@ bool WebQueueIndexer::index()
 
     // Finally index the queue
     FsTreeWalker walker(FsTreeWalker::FtwNoRecurse);
-    walker.addSkippedName(".*");
+    walker.addSkippedName(DOTFILEPREFIX "*");
     FsTreeWalker::Status status = walker.walk(m_queuedir, *this);
     LOGDEB("WebQueueIndexer::processqueue: done: status " << status << "\n");
     return true;
@@ -374,7 +376,7 @@ WebQueueIndexer::processone(const string &path,
         return FsTreeWalker::FtwOk;
 
     string dotpath = path_cat(path_getfather(path), 
-                              string("_") + path_getsimple(path));
+                              string(DOTFILEPREFIX) + path_getsimple(path));
     LOGDEB("WebQueueIndexer: prc1: [" << path << "]\n");
 
     WebQueueDotFile dotfile(m_config, dotpath);
