@@ -6,7 +6,7 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.26.1
+RCLVERS=1.26.3
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=1
@@ -52,7 +52,7 @@ debdir=debian
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
 # 19.04    disco  2020-01
-# 19.10    eoan   2010-07
+# 19.10    eoan   2020-07
 series="xenial bionic disco eoan"
 #series=
 
@@ -97,7 +97,7 @@ done
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
 # 19.04    disco  2020-01
-# 19.10    eoan   2010-07
+# 19.10    eoan   2020-07
 series="xenial bionic disco eoan"
 series=
 
@@ -145,9 +145,9 @@ done
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
 # 19.04    disco  2020-01
-# 19.10    eoan   2010-07
+# 19.10    eoan   2020-07
 series="xenial bionic disco eoan"
-series=eoan
+series=
 
 debdir=debiangssp
 if test ! -d ${debdir}/ ; then
