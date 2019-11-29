@@ -8,7 +8,7 @@ PortGroup           cxx11 1.1
 qt5.depends_component qtwebkit
 
 name                recoll
-version             1.26.2
+version             1.26.3
 categories          textproc
 platforms           darwin
 license             GPL-2+
@@ -21,9 +21,9 @@ long_description    Recoll is a desktop search tool based on Xapian
 homepage            http://www.recoll.org/
 master_sites        ${homepage}
 
-checksums           rmd160  52498664c630cda8a91315e6af94ec02ac087e76 \
-                    sha256  d3392a727d5c5b7258c94d85af48af31bf77379a05b671da74a9fc80c375ce18 \
-                    size 2978656
+checksums           rmd160  5fa96d54a8f835105afb51f24296f3bffc74ad55 \
+                    sha256  396bebfc94c3df13ca9a65ef6ed08096eb6b48c08812465a907c028f6f3fe93d \
+                    size 2978628
 
 depends_lib         port:xapian-core \
                     port:aspell \
