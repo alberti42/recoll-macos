@@ -1020,7 +1020,7 @@ Chapter 3. Searching
      o White space in the entry should match white space in the file name,
        and is not treated specially.
 
-     o The search is insensitive to character case and accents, independantly
+     o The search is insensitive to character case and accents, independently
        of the type of index.
 
      o An entry without any wild card character and not capitalized will be
@@ -2617,7 +2617,7 @@ Chapter 3. Searching
      o If you use a recent version of Ubuntu Linux, you may find the Ubuntu
        Unity Lens module useful.
 
-     o There is also an independantly developed Krunner plugin.
+     o There is also an independently developed Krunner plugin.
 
    Here follow a few other things that may help.
 
@@ -3826,7 +3826,7 @@ Chapter 5. Installation and configuration
            A space-separated list of patterns for names of files or
            directories that should be ignored inside zip archives. This is
            used directly by the zip handler, and has a function similar to
-           skippedNames, but works independantly. Can be redefined for
+           skippedNames, but works independently. Can be redefined for
            filesystem subdirectories. For versions up to 1.19, you will need
            to update the Zip handler and install a supplementary Python
            module. The details are described on the Recoll wiki.
