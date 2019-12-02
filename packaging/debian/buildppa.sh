@@ -54,7 +54,7 @@ debdir=debian
 # 19.04    disco  2020-01
 # 19.10    eoan   2020-07
 series="xenial bionic disco eoan"
-#series=
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -99,7 +99,7 @@ done
 # 19.04    disco  2020-01
 # 19.10    eoan   2020-07
 series="xenial bionic disco eoan"
-series=
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
