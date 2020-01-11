@@ -52,7 +52,9 @@ public:
 			// malloc_trim() and mallopt() doc seems to be a bit
 			// misleading, there is probably a frag size under which
 			// free() does not try to malloc_trim() at all
+#ifndef _WIN32
 			malloc_trim(0);
+#endif
         }
     }
 
