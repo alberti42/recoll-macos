@@ -727,12 +727,18 @@ string ConfParamSLW::listToString()
 {
     vector<string> ls;
     for (int i = 0; i < m_lb->count(); i++) {
-        // General parameters are encoded as utf-8. File names as
-        // local8bit There is no hope for 8bit file names anyway
-        // except for luck: the original encoding is unknown.
+        // General parameters are encoded as utf-8.
+        // Linux file names as local8bit There is no hope for 8bit
+        // file names anyway except for luck: the original encoding is
+        // unknown. In most modern configs, local8Bits will be UTF-8.
+        // Except on Windows: we store file names as UTF-8
         QString text = m_lb->item(i)->text();
         if (m_fsencoding) {
+#ifdef _WIN32
+            ls.push_back((const char *)(text.toUtf8()));
+#else
             ls.push_back((const char *)(text.toLocal8Bit()));
+#endif
         } else {
             ls.push_back((const char *)(text.toUtf8()));
         }
