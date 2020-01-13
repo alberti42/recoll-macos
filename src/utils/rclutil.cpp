@@ -175,7 +175,7 @@ bool path_empty(const string& path)
     if (path_isdir(path)) {
         string reason;
         std::set<string> entries;
-        if (!readdir(path, reason, entries) || entries.empty()) {
+        if (!listdir(path, reason, entries) || entries.empty()) {
             return true;
         }
         return false;
