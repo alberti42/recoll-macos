@@ -38,7 +38,7 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     $(DEFS)
 
 noinst_PROGRAMS = textsplit utf8iter fstreewalk rclconfig hldata unac mbox \
-    circache
+    circache wipedir
 
 textsplit_SOURCES = trtextsplit.cpp
 textsplit_LDADD = ../librecoll.la
@@ -63,3 +63,6 @@ mbox_LDADD = ../librecoll.la
 
 circache_SOURCES = trcircache.cpp
 circache_LDADD = ../librecoll.la
+
+wipedir_SOURCES = trwipedir.cpp
+wipedir_LDADD = ../librecoll.la
