@@ -343,19 +343,7 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 #echo XAPIANCXXFLAGS: $XAPIANCXXFLAGS
 
 
-XSLT_CONFIG=${XSLT_CONFIG:-no}
-if test "$XSLT_CONFIG" = "no"; then 
-    AC_PATH_PROG(XSLT_CONFIG0, [xslt-config], no)
-    XSLT_CONFIG=$XSLT_CONFIG0
-fi
-if test "$XSLT_CONFIG" = "no" ; then
-   AC_MSG_ERROR([Cannot find xslt-config command in $PATH. Is
-libxslt installed ?])
-   exit 1
-fi
-
-XSLT_CFLAGS=`xslt-config --cflags`
-XSLT_LINKADD=`xslt-config --libs`
+PKG_CHECK_MODULES([XSLT], [libxslt], [], AC_MSG_ERROR([libxslt]))
 
 AC_ARG_ENABLE(xadump, 
     AC_HELP_STRING([--enable-xadump],
@@ -564,7 +552,7 @@ AC_SUBST(LIBQZEITGEIST)
 AC_SUBST(RCLVERSION)
 AC_SUBST(RCLLIBVERSION)
 AC_SUBST(XSLT_CFLAGS)
-AC_SUBST(XSLT_LINKADD)
+AC_SUBST(XSLT_LIBS)
 
 AC_CONFIG_FILES([Makefile python/recoll/setup.py
  python/pychm/setup.py])

@@ -11,7 +11,7 @@ CXXFLAGS ?= @CXXFLAGS@
 LIBXAPIAN=@LIBXAPIAN@
 XAPIANCXXFLAGS=@XAPIANCXXFLAGS@
 XSLT_CFLAGS=@XSLT_CFLAGS@
-XSLT_LINKADD=@XSLT_LINKADD@
+XSLT_LIBS=@XSLT_LIBS@
 LIBICONV=@LIBICONV@
 INCICONV=@INCICONV@
 LIBFAM = @LIBFAM@
@@ -281,7 +281,7 @@ AM_YFLAGS = -d
 librecoll_la_LDFLAGS = -release $(VERSION) \
     -Wl,--no-undefined -Wl,--warn-unresolved-symbols
 
-librecoll_la_LIBADD = $(XSLT_LINKADD) $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
+librecoll_la_LIBADD = $(XSLT_LIBS) $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
 
 # There is probably a better way to do this. The KIO needs to be linked
 # with librecoll, but librecoll is installed into a non-standard place
