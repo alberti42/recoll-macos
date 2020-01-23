@@ -711,25 +711,6 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs)
     }
     return true;
 }
-inline static int ulltorbuf(uint64_t val, char *rbuf)
-{
-    int idx;
-    for (idx = 0; val; idx++) {
-        rbuf[idx] = '0' + val % 10;
-        val /= 10;
-    }
-    while (val);
-    rbuf[idx] = 0;
-    return idx;
-}
-
-inline static void ullcopyreverse(const char *rbuf, string& buf, int idx)
-{
-    buf.reserve(idx + 1);
-    for (int i = idx - 1; i >= 0; i--) {
-        buf.push_back(rbuf[i]);
-    }
-}
 
 void ulltodecstr(uint64_t val, string& buf)
 {
@@ -740,9 +721,14 @@ void ulltodecstr(uint64_t val, string& buf)
     }
 
     char rbuf[30];
-    int idx = ulltorbuf(val, rbuf);
+    int idx=29;
+    rbuf[idx--] = 0;
+    do {
+        rbuf[idx--] = '0' + val % 10;
+        val /= 10;
+    } while (val);
 
-    ullcopyreverse(rbuf, buf, idx);
+    buf.assign(&rbuf[idx+1]);
     return;
 }
 
@@ -760,14 +746,16 @@ void lltodecstr(int64_t val, string& buf)
     }
 
     char rbuf[30];
-    int idx = ulltorbuf(val, rbuf);
-
+    int idx=29;
+    rbuf[idx--] = 0;
+    do {
+        rbuf[idx--] = '0' + val % 10;
+        val /= 10;
+    } while (val);
     if (neg) {
-        rbuf[idx++] = '-';
+        rbuf[idx--] = '-';
     }
-    rbuf[idx] = 0;
-
-    ullcopyreverse(rbuf, buf, idx);
+    buf.assign(&rbuf[idx+1]);
     return;
 }
 
