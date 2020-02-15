@@ -47,7 +47,13 @@ import glob
 import traceback
 
 _mswindows = (sys.platform == "win32")
+    
 tmpdir = None
+
+_htmlprefix =b'''<html><head>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
+</head><body><pre>'''
+_htmlsuffix = b'''</pre></body></html>'''
 
 def finalcleanup():
     if tmpdir:
@@ -120,18 +126,6 @@ class PDFExtractor:
         except:
             pass
         
-        # See if we'll try to perform OCR. Need the commands and the
-        # either the presence of a file in the config dir (historical)
-        # or a set config variable.
-        self.ocrpossible = False
-        self.tesseract = rclexecm.which("tesseract")
-        if self.tesseract:
-            self.pdftoppm = rclexecm.which("pdftoppm")
-            if self.pdftoppm:
-                self.ocrpossible = True
-                self.maybemaketmpdir()
-        # self.em.rclog("OCRPOSSIBLE: %d" % self.ocrpossible)
-
         # Pdftk is optionally used to extract attachments. This takes
         # a hit on performance even in the absence of any attachments,
         # so it can be disabled in the configuration.
@@ -234,100 +228,6 @@ class PDFExtractor:
         else:
             eof = rclexecm.RclExecM.noteof
         return (True, docdata, ipath, eof)
-
-
-    # Try to guess tesseract language. This should depend on the input
-    # file, but we have no general way to determine it. So use the
-    # environment and hope for the best.
-    def guesstesseractlang(self):
-        tesseractlang = ""
-
-        # First look for a language def file in the file's directory 
-        pdflangfile = os.path.join(os.path.dirname(self.filename),
-                                   b".ocrpdflang")
-        if os.path.isfile(pdflangfile):
-            tesseractlang = open(pdflangfile, "r").read().strip()
-        if tesseractlang:
-            return tesseractlang
-
-        # Then look for a global option. The normal way now that we
-        # have config reading capability in the handlers is to use the
-        # config. Then, for backwards compat, environment variable and
-        # file inside the configuration directory
-        tesseractlang = self.config.getConfParam("pdfocrlang")
-        if tesseractlang:
-            return tesseractlang
-        tesseractlang = os.environ.get("RECOLL_TESSERACT_LANG", "");
-        if tesseractlang:
-            return tesseractlang
-        pdflangfile = os.path.join(self.confdir, "ocrpdf")
-        if os.path.isfile(pdflangfile):
-            tesseractlang = open(pdflangfile, "r").read().strip()
-        if tesseractlang:
-            return tesseractlang
-
-        # Half-assed trial to guess from LANG then default to english
-        localelang = os.environ.get("LANG", "").split("_")[0]
-        if localelang == "en":
-            tesseractlang = "eng"
-        elif localelang == "de":
-            tesseractlang = "deu"
-        elif localelang == "fr":
-            tesseractlang = "fra"
-        if tesseractlang:
-            return tesseractlang
-
-        if not tesseractlang:
-            tesseractlang = "eng"
-        return tesseractlang
-
-    # PDF has no text content and tesseract is available. Give OCR a try
-    def ocrpdf(self):
-
-        global tmpdir
-        if not tmpdir:
-            return b""
-
-        tesseractlang = self.guesstesseractlang()
-        # self.em.rclog("tesseractlang %s" % tesseractlang)
-
-        tesserrorfile = os.path.join(tmpdir, "tesserrorfile")
-        tmpfile = os.path.join(tmpdir, "ocrXXXXXX")
-
-        # Split pdf pages
-        try:
-            vacuumdir(tmpdir)
-            subprocess.check_call([self.pdftoppm, "-r", "300", self.filename,
-                                   tmpfile])
-        except Exception as e:
-            self.em.rclog("pdftoppm failed: %s" % e)
-            return b""
-
-        files = glob.glob(tmpfile + "*")
-        for f in files:
-            out = b''
-            try:
-                out = subprocess.check_output([self.tesseract, f, f, "-l",
-                                               tesseractlang],
-                                              stderr = subprocess.STDOUT)
-            except Exception as e:
-                self.em.rclog("tesseract failed: %s" % e)
-
-            errlines = out.split(b'\n')
-            if len(errlines) > 2:
-                self.em.rclog("Tesseract error: %s" % out)
-
-        # Concatenate the result files
-        files = glob.glob(tmpfile + "*" + ".txt")
-        data = b""
-        for f in files:
-            data += open(f, "rb").read()
-
-        return b'''<html><head>
-        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
-        </head><body><pre>''' + \
-        self.em.htmlescape(data) + \
-        b'''</pre></body></html>'''
 
 
     # pdftotext (used to?) badly escape text inside the header
@@ -510,13 +410,11 @@ class PDFExtractor:
         html, isempty = self._fixhtml(html)
         #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, html))
 
-        if isempty and self.ocrpossible:
-            self.config.setKeyDir(os.path.dirname(self.filename))
-            s = self.config.getConfParam("pdfocr")
-            cf_doocr = rclexecm.configparamtrue(s)
-            file_doocr = os.path.isfile(os.path.join(self.confdir, "ocrpdf"))
-            if cf_doocr or file_doocr:
-                html = self.ocrpdf()
+        if isempty:
+            cmd = [sys.executable, os.path.join(_execdir, "rclocr.py"),
+                   self.filename]
+            data = subprocess.check_output(cmd)
+            html = _htmlprefix + self.em.htmlescape(data) + _htmlsuffix
 
         if self.extrameta:
             try:
@@ -592,6 +490,7 @@ class PDFExtractor:
 
 
 # Main program: create protocol handler and extractor and run them
+_execdir = os.path.dirname(sys.argv[0])
 proto = rclexecm.RclExecM()
 extract = PDFExtractor(proto)
 rclexecm.main(proto, extract)
