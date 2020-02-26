@@ -664,9 +664,13 @@ void RclMain::fileExit()
         m_trayicon->setVisible(false);
     }
 
-    QSettings settings;
-    settings.setValue("/Recoll/geometry/maingeom", saveGeometry());
-
+    // Don't save geometry if we're currently maximized. At least under X11
+	// this saves the maximized size. otoh isFullscreen() does not seem needed
+    if (!isMaximized()) {
+		QSettings settings;
+		settings.setValue("/Recoll/geometry/maingeom", saveGeometry());
+	}
+	
     prefs.toolArea = toolBarArea(m_toolsTB);
     prefs.resArea = toolBarArea(m_resTB);
     restable->saveColState();
