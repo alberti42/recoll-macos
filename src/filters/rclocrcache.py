@@ -18,13 +18,17 @@
 ########################################################
 
 # Caching OCR'd data
-
-# OCR is extremely slow. The cache stores 2 kinds of objects:
-# - Path files are named from the hash of the image path and contain
-#   the image data hash and the modification time and size of the
-#   image at the time the OCR'd data was stored in the cache
+#
+# OCR is extremely slow, caching the results is necessary.
+#
+# The cache stores 2 kinds of objects:
+# - Path files are named from the hash of the image file path and
+#   contain the image data hash, the modification time and size of the
+#   image file at the time the OCR'd data was stored in the cache, and
+#   the image path itself (the last is for purging only).
 # - Data files are named with the hash of the image data and contain
-#   the OCR'd data
+#   the zlib-compressed OCR'd data.
+#
 # When retrieving data from the cache:
 #  - We first use the image file size and modification time: if an
 #    entry exists for the imagepath/mtime/size triplet, and is up to
@@ -38,10 +42,23 @@
 #  If we need to use the second step, as a side effect, a path file is
 #  created or updated so that the data will be found with the first
 #  step next time around.
+#
+# Purging the cache of obsolete data.
+#
+#  - The cache path and data files are stored under 2 different
+#    directories (objects, paths) to make purging easier.
+#  - Purging the paths tree just involves walking it, reading the
+#    files, and checking the existence of the recorded paths.
+#  - There is no easy way to purge the data tree. The only possibility
+#    is to input a list of possible source files (e.g. result of a
+#    find in the image files area), and compute all the hashes. Data
+#    files which do not match one of the hashes are deleted.
 
 import sys
 import os
 import hashlib
+import urllib.parse
+import zlib
 
 def deb(s):
     print("%s" %s, file=sys.stderr)
@@ -53,8 +70,10 @@ class OCRCache(object):
         if not self.cachedir:
             self.cachedir = os.path.join(self.config.getConfDir(), "ocrcache")
         self.objdir = os.path.join(self.cachedir, "objects")
-        if not os.path.exists(self.objdir):
-            os.makedirs(self.objdir)
+        self.pathdir = os.path.join(self.cachedir, "paths")
+        for dir in (self.objdir, self.pathdir):
+            if not os.path.exists(dir):
+                os.makedirs(dir)
 
     # Compute sha1 of path, as two parts of 2 and 38 chars
     def _hashpath(self, data):
@@ -83,11 +102,11 @@ class OCRCache(object):
     # not cached (but the data still might be, maybe the file was moved)
     def _cachedpathattrs(self, path):
         pd,pf = self._hashpath(path)
-        o = os.path.join(self.objdir, pd, pf)
+        o = os.path.join(self.pathdir, pd, pf)
         if not os.path.exists(o):
             return False, None, None, None, None
         line = open(o, "r").read()
-        dd,df,tm,sz = line.split()
+        dd,df,tm,sz,pth = line.split()
         tm = int(tm)
         sz = int(sz)
         return True, dd, df, tm, sz
@@ -132,28 +151,30 @@ class OCRCache(object):
         return os.path.exists(self._datafilename(path)[0])
 
     # Create path file with given elements.
-    def _updatepathfile(self, pd, pf, dd, df, tm, sz):
-        dir = os.path.join(self.objdir, pd)
+    def _updatepathfile(self, pd, pf, dd, df, tm, sz, path):
+        dir = os.path.join(self.pathdir, pd)
         if not os.path.exists(dir):
             os.makedirs(dir)
         pfile = os.path.join(dir, pf)
+        codedpath = urllib.parse.quote(path)
         with open(pfile, "w") as f:
-            f.write("%s %s %d %d\n" % (dd, df, tm, sz))
+            f.write("%s %s %d %d %s\n" % (dd, df, tm, sz, codedpath))
 
     # Store data for path. Only rewrite an existing data file if told
     # to do so: this is only useful if we are forcing an OCR re-run.
     def store(self, path, datatostore, force=False):
         dd,df = self._hashdata(path)
         pd, pf, tm, sz = self._newpathattrs(path)
-        self._updatepathfile(pd, pf, dd, df, tm, sz)
+        self._updatepathfile(pd, pf, dd, df, tm, sz, path)
         dir = os.path.join(self.objdir, dd)
         if not os.path.exists(dir):
             os.makedirs(dir)
         dfile = os.path.join(dir, df)
         if force or not os.path.exists(dfile):
             #deb("Storing data")
+            cpressed = zlib.compress(datatostore)
             with open(dfile, "wb") as f:
-                f.write(datatostore)
+                f.write(cpressed)
         return True
 
     # Retrieve cached OCR'd data for image path. Possibly update the
@@ -171,10 +192,14 @@ class OCRCache(object):
 
         if not pincache:
             # File has moved. create/Update path file for next time
+            deb("ocrcache::get file %s was moved, updating path data" % path)
             pd, pf, tm, sz = self._newpathattrs(path)
-            self._updatepathfile(pd, pf, dd, df, tm, sz)
+            self._updatepathfile(pd, pf, dd, df, tm, sz, path)
 
-        return True, open(dfn, "rb").read()
+        with open(dfn, "rb") as f:
+            cpressed = f.read()
+            data = zlib.decompress(cpressed)
+            return True, data
 
 
 
@@ -184,25 +209,33 @@ if __name__ == '__main__':
     conf = rclconfig.RclConfig()
     cache = OCRCache(conf)
     path = sys.argv[1]
-    deb("Using %s" % path)
+
+    def trycache(p):
+        deb("== CACHE tests for %s"%p)
+        ret = cache.pathincache(p)
+        s = "" if ret else " not"
+        deb("path for %s%s in cache" % (p, s))
+        if not ret:
+            return False
+        ret = cache.dataincache(p)
+        s = "" if ret else " not"
+        deb("data for %s%s in cache" % (p, s))
+        return ret
     
-    deb("== CACHE tests")
-    ret = cache.pathincache(path)
-    s = "" if ret else " not"
-    deb("path for %s%s in cache" % (path, s))
+    def trystore(p):
+        deb("== STORE test for %s" % p)
+        cache.store(p, b"my OCR'd text is one line\n", force=False)
 
-    #ret = cache.dataincache(path)
-    #s = "" if ret else " not"
-    #deb("data for %s%s in cache" % (path, s))
+    def tryget(p):
+        deb("== GET test for %s" % p)
+        incache, data = cache.get(p)
+        if incache:
+            deb("Data from cache [%s]" % data)
+        else:
+            deb("Data was not found in cache")
+        return incache, data
 
-    if False:
-        deb("== STORE tests")
-        cache.store(path, b"my OCR'd text is one line\n", force=False)
-
-    deb("== GET tests")
-    incache, data = cache.get(path)
-    if incache:
-        deb("Data from cache [%s]" % data)
-    else:
-        deb("Data was not found in cache")
+    incache, data = tryget(path)
+    if not incache:
+        trystore(path)
         

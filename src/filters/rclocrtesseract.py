@@ -36,8 +36,7 @@ _okexts = ('.tif', '.tiff', '.jpg', '.png', '.jpeg')
 
 def _deb(s):
     if not _mswindows:
-        #print("%s" % s, file=sys.stderr)
-        pass
+        print("rclocrtesseract: %s" % s, file=sys.stderr)
 
 def vacuumdir(dir):
     if dir:
@@ -154,8 +153,19 @@ def _pdftesseract(config, path):
         _deb("pdftoppm failed: %s" % e)
         return b""
 
-    files = glob.glob(tmpfile + "*")
-    for f in files:
+    # Note: unfortunately, pdftoppm silently fails if the temp file
+    # system is full. There is no really good way to check for
+    # this. We consider any empty file to signal an error
+    
+    ppmfiles = glob.glob(tmpfile + "*")
+    for f in ppmfiles:
+        size = os.path.getsize(f)
+        if os.path.getsize(f) == 0:
+            _deb("pdftoppm created empty files. "
+                 "Suspecting full file system, failing")
+            return False, ""
+        
+    for f in sorted(ppmfiles):
         out = b''
         try:
             out = subprocess.check_output(
@@ -165,16 +175,16 @@ def _pdftesseract(config, path):
             _deb("tesseract failed: %s" % e)
 
         errlines = out.split(b'\n')
-        if len(errlines) > 2:
-            _deb("Tesseract error: %s" % out)
+        if len(errlines) > 5:
+            _deb("Tesseract error output: %d %s" % (len(errlines),out))
 
     # Concatenate the result files
-    files = glob.glob(tmpfile + "*" + ".txt")
+    txtfiles = glob.glob(tmpfile + "*" + ".txt")
     data = b""
-    for f in files:
+    for f in sorted(txtfiles):
         data += open(f, "rb").read()
 
-    return data
+    return True,data
 
 
 def _simpletesseract(config, path):
@@ -186,8 +196,8 @@ def _simpletesseract(config, path):
             stderr=subprocess.DEVNULL)
     except Exception as e:
         _deb("tesseract failed: %s" % e)
-
-    return out
+        return False, ""
+    return True, out
 
 
 # run ocr on the input path and output the result data.

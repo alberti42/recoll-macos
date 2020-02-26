@@ -25,11 +25,11 @@ import rclconfig
 import rclocrcache
 import importlib.util
 
-def deb(s):
-    print("%s" % s, file=sys.stderr)
+def _deb(s):
+    print("rclocr: %s" % s, file=sys.stderr)
     
 def Usage():
-    deb("Usage: rclocr.py <imagefilename>")
+    _deb("Usage: rclocr.py <imagefilename>")
     sys.exit(1)
 
 if len(sys.argv) != 2:
@@ -50,9 +50,9 @@ if incache:
 # Retrieve known ocr program names and try to load the corresponding module
 ocrprogs = config.getConfParam("ocrprogs")
 if not ocrprogs:
-    deb("No ocrprogs variable")
+    _deb("No ocrprogs variable in recoll configuration")
     sys.exit(1)
-deb("ocrprogs: %s" % ocrprogs)
+#_deb("ocrprogs: %s" % ocrprogs)
 proglist = ocrprogs.split(" ")
 ok = False
 for ocrprog in proglist:
@@ -63,17 +63,21 @@ for ocrprog in proglist:
             ok = True
             break
     except Exception as err:
-        deb("While loading %s: got: %s" % (modulename, err))
+        _deb("While loading %s: got: %s" % (modulename, err))
         pass
 
 if not ok:
-    deb("No OCR module could be loaded")
+    _deb("No OCR module could be loaded")
     sys.exit(1)
 
-deb("Using ocr module %s" % modulename)
+#_deb("Using ocr module %s" % modulename)
 
-data = ocr.runocr(config, path)
+status, data = ocr.runocr(config, path)
 
+if not status:
+    _deb("runocr failed")
+    sys.exit(1)
+    
 cache.store(path, data)
 sys.stdout.buffer.write(data)
 sys.exit(0)
