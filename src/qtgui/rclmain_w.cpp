@@ -41,6 +41,7 @@
 #include <QThread>
 #include <QProgressDialog>
 #include <QToolBar>
+#include <QSettings>
 
 #include "recoll.h"
 #include "log.h"
@@ -435,6 +436,8 @@ void RclMain::init()
         onSortDataChanged(m_sortspec);
         emit sortDataChanged(m_sortspec);
     }
+    QSettings settings;
+    restoreGeometry(settings.value("/Recoll/geometry/maingeom").toByteArray());
 
     enableTrayIcon(prefs.showTrayIcon);
 
@@ -660,12 +663,10 @@ void RclMain::fileExit()
     if (m_trayicon) {
         m_trayicon->setVisible(false);
     }
-    // Don't save geometry if we're currently fullscreened
-    if (!isFullScreen() && !isMaximized()) {
-        prefs.mainwidth = width();
-        prefs.mainheight = height();
-    }
-    
+
+    QSettings settings;
+    settings.setValue("/Recoll/geometry/maingeom", saveGeometry());
+
     prefs.toolArea = toolBarArea(m_toolsTB);
     prefs.resArea = toolBarArea(m_resTB);
     restable->saveColState();

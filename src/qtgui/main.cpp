@@ -375,11 +375,6 @@ int main(int argc, char **argv)
     RclMain w;
     mainWindow = &w;
 
-    if (prefs.mainwidth > 100) {
-        QSize s(prefs.mainwidth, prefs.mainheight);
-        mainWindow->resize(s);
-    }
-
     string dbdir = theconfig->getDbDir();
     if (dbdir.empty()) {
         QMessageBox::critical(

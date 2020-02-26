@@ -64,8 +64,6 @@ class PrefsPack {
     QString qssFile;
     QString snipCssFile;
     QString queryStemLang;
-    int mainwidth;
-    int mainheight;
     enum ShowMode {SHOW_NORMAL, SHOW_MAX, SHOW_FULL};
     int showmode{SHOW_NORMAL};
     int pvwidth; // Preview window geom

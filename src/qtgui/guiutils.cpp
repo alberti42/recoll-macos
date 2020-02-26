@@ -75,9 +75,7 @@ void rwSettings(bool writing)
     LOGDEB1("rwSettings: write " << writing << "\n");
     if (writing && !havereadsettings)
         return;
-    QSettings settings("Recoll.org", "recoll");
-    SETTING_RW(prefs.mainwidth, "/Recoll/geometry/width", Int, 0);
-    SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Int, 0);
+    QSettings settings;
     SETTING_RW(prefs.showmode, "/Recoll/geometry/showmode", Int, 0);
     SETTING_RW(prefs.pvwidth, "/Recoll/geometry/pvwidth", Int, 0);
     SETTING_RW(prefs.pvheight, "/Recoll/geometry/pvheight", Int, 0);
