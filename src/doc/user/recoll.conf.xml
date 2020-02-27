@@ -247,8 +247,8 @@ will reduce the index size. This can only be set for a whole index, not
 for a subtree.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.DEHYPHENATE">
 <term><varname>dehyphenate</varname></term>
-<listitem><para>Determines if we index
-'coworker' also when the input is 'co-worker'. This is new
+<listitem><para>Determines if we index 'coworker'
+also when the input is 'co-worker'. This is new
 in version 1.22, and on by default. Setting the variable to off allows
 restoring the previous behaviour.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.BACKSLASHASLETTER">
@@ -279,7 +279,8 @@ as large.</para></listitem></varlistentry>
 <term><varname>indexstemminglanguages</varname></term>
 <listitem><para>Languages for which to create stemming expansion
 data. Stemmer names can be found by executing 'recollindex
--l', or this can also be set from a list in the GUI.</para></listitem></varlistentry>
+-l', or this can also be set from a list in the GUI. The values are full
+language names, e.g. english, french...</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.DEFAULTCHARSET">
 <term><varname>defaultcharset</varname></term>
 <listitem><para>Default character
@@ -608,9 +609,9 @@ space issues.</para></listitem></varlistentry>
 <term><varname>aspellLanguage</varname></term>
 <listitem><para>Language definitions to use when creating the aspell
 dictionary. The value must match a set of aspell language
-definition files. You can type "aspell dicts"  to see a list The default
-if this is not set is to use the NLS environment to guess the
-value.</para></listitem></varlistentry>
+definition files. You can type "aspell dicts" to see a list The default
+if this is not set is to use the NLS environment to guess the value. The
+values are the 2-letter language codes (e.g. 'en', 'fr'...)</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLADDCREATEPARAM">
 <term><varname>aspellAddCreateParam</varname></term>
 <listitem><para>Additional option and parameter to aspell dictionary creation
@@ -650,14 +651,20 @@ patterns are matched with fnmatch(pattern, path, 0) You can quote entries
 containing white space with double quotes (quote the whole entry, not the
 pattern). The default is empty.
 Example: mondelaypatterns = *.log:20 "*with spaces.*:30"</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXNICEPRIO">
+<term><varname>idxniceprio</varname></term>
+<listitem><para>"nice" process priority for the indexing processes. Default: 19
+(lowest) Appeared with 1.26.5. Prior versions were fixed at 19.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASS">
 <term><varname>monioniceclass</varname></term>
-<listitem><para>ionice class for the real time indexing process On platforms where this is supported. The default value is
-3.</para></listitem></varlistentry>
+<listitem><para>ionice class for the indexing process. Despite the misleading name, and on platforms where this is
+supported, this affects all indexing processes,
+not only the real time/monitoring ones. The default value is 3 (use
+lowest "Idle" priority).</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASSDATA">
 <term><varname>monioniceclassdata</varname></term>
-<listitem><para>ionice class parameter for the real time indexing process. On platforms where this is supported. The default is
-empty.</para></listitem></varlistentry>
+<listitem><para>ionice class level parameter if the class supports it. The default is empty, as the default "Idle" class has no
+levels.</para></listitem></varlistentry>
 </variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.QUERY">
 <title>Query-time parameters (no impact on the index) </title><variablelist>
@@ -700,14 +707,8 @@ with possibly meaning-altering missing words.</para></listitem></varlistentry>
 <title>Parameters for the PDF input script </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR">
 <term><varname>pdfocr</varname></term>
-<listitem><para>Attempt OCR of PDF files with no text content if both tesseract and
-pdftoppm are installed. This can be defined in subdirectories. The default is off because
-OCR is so very slow.</para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCRLANG">
-<term><varname>pdfocrlang</varname></term>
-<listitem><para>Language to assume for PDF OCR. This is very important for having a reasonable rate of errors
-with tesseract. This can also be set through a configuration variable
-or directory-local parameters. See the rclpdf.py script.</para></listitem></varlistentry>
+<listitem><para>Attempt OCR of PDF files with no text content. This can be defined in subdirectories. The default is off because
+OCR is so very slow. Will only do anything if ocrprogs is defined.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">
 <term><varname>pdfattach</varname></term>
 <listitem><para>Enable PDF attachment extraction by executing pdftk (if
@@ -731,6 +732,41 @@ method which will be called with the qualified tag name and value of each
 selected field, for editing or erasing. A new instance is created for
 each document, so that the object can keep state for, e.g. eliminating
 duplicate values.</para></listitem></varlistentry>
+</variablelist></sect3>
+<sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.OCR">
+<title>Parameters for OCR processing </title><variablelist>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.OCRPROGS">
+<term><varname>ocrprogs</varname></term>
+<listitem><para>OCR modules to try. The top OCR script will try to load the corresponding modules in
+order and use the first which reports being capable of performing OCR on
+the input file. Modules for tesseract and ABBYY FineReader are present in
+the standard distribution.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.OCRCACHEDIR">
+<term><varname>ocrcachedir</varname></term>
+<listitem><para>Location for caching OCR data. The default if this is empty or undefined is to store the cached
+OCR data under $RECOLL_CONFDIR/ocrcache.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.TESSERACTLANG">
+<term><varname>tesseractlang</varname></term>
+<listitem><para>Language to assume for tesseract OCR. Important for improving the OCR accuracy. This can also be set
+through the contents of a file in
+the currently processed directory. See the rclocrtesseract.py
+script. Example values: eng, fra... See the tesseract documentation.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.TESSERACTCMD">
+<term><varname>tesseractcmd</varname></term>
+<listitem><para>Path for the tesseract command. This is mostly useful on Windows, or for specifying a non-default
+tesseract command. e.g. on Windows:
+C:/Program&nbsp;Files&nbsp;(x86)/Tesseract-OCR/tesseract.exe</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ABBYYLANG">
+<term><varname>abbyylang</varname></term>
+<listitem><para>Language to assume for abbyy OCR. Important for improving the OCR accuracy. This can also be set
+through the contents of a file in
+the currently processed directory. See the rclocrabbyy.py
+script. Typical values: English, French... See the ABBYY documentation.
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ABBYYCMD">
+<term><varname>abbyycmd</varname></term>
+<listitem><para>Path for the abbyy command The ABBY directory is usually not in the path, so you should set this.
+</para></listitem></varlistentry>
 </variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.SPECLOCATIONS">
 <title>Parameters set for specific locations </title><variablelist>
