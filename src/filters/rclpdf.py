@@ -411,10 +411,13 @@ class PDFExtractor:
         #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, html))
 
         if isempty:
-            cmd = [sys.executable, os.path.join(_execdir, "rclocr.py"),
-                   self.filename]
-            data = subprocess.check_output(cmd)
-            html = _htmlprefix + self.em.htmlescape(data) + _htmlsuffix
+            try:
+                cmd = [sys.executable, os.path.join(_execdir, "rclocr.py"),
+                       self.filename]
+                data = subprocess.check_output(cmd)
+                html = _htmlprefix + self.em.htmlescape(data) + _htmlsuffix
+            except:
+                pass
 
         if self.extrameta:
             try:

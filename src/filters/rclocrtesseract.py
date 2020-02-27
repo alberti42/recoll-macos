@@ -36,6 +36,9 @@ else:
 
 _okexts = ('.tif', '.tiff', '.jpg', '.png', '.jpeg')
 
+tesseractcmd = None
+pdftoppmcmd = None
+
 def _deb(s):
     if not _mswindows:
         print("rclocrtesseract: %s" % s, file=sys.stderr)
@@ -69,10 +72,15 @@ atexit.register(finalcleanup)
 # the file type (e.g. pdftoppt for pdf) appear to be available
 def ocrpossible(config, path):
     # Check for tesseract
-    global tesseract
-    tesseract = rclexecm.which("tesseract")
-    if not tesseract:
-        return False
+    global tesseractcmd
+    if not tesseractcmd:
+        config.setKeyDir(os.path.dirname(path))
+        tesseractcmd = config.getConfParam("tesseractcmd")
+        if not tesseractcmd:
+            tesseractcmd = rclexecm.which("tesseract")
+        if not tesseractcmd:
+            _deb("tesseractcmd not found")
+            return False
 
     # Check input format
     base,ext = os.path.splitext(path)
@@ -86,9 +94,12 @@ def ocrpossible(config, path):
         # legacy code used pdftoppm for some reason, and it appears
         # that the newest builds from conda-forge do not include
         # pdftocairo. So stay with pdftoppm.
-        global pdftoppm
-        pdftoppm = rclexecm.which("pdftoppm")
-        if pdftoppm:
+        global pdftoppmcmd
+        if not pdftoppmcmd:
+            pdftoppmcmd = rclexecm.which("pdftoppm")
+            if not pdftoppmcmd:
+                pdftoppmcmd = rclexecm.which("poppler/pdftoppm")
+        if pdftoppmcmd:
             return True
 
     return False
@@ -150,9 +161,11 @@ def _pdftesseract(config, path):
     # Split pdf pages
     try:
         vacuumdir(tmpdir)
-        subprocess.check_call([pdftoppm, "-r", "300", path, tmpfile])
+        cmd = [pdftoppmcmd, "-r", "300", path, tmpfile]
+        #_deb("Executing %s" % cmd)
+        subprocess.check_call(cmd)
     except Exception as e:
-        _deb("pdftoppm failed: %s" % e)
+        _deb("%s failed: %s" % (pdftoppmcmd,e))
         return b""
 
     # Note: unfortunately, pdftoppm silently fails if the temp file
@@ -171,10 +184,10 @@ def _pdftesseract(config, path):
         out = b''
         try:
             out = subprocess.check_output(
-                [tesseract, f, f, "-l", tesseractlang],
+                [tesseractcmd, f, f, "-l", tesseractlang],
                 stderr=subprocess.STDOUT)
         except Exception as e:
-            _deb("tesseract failed: %s" % e)
+            _deb("%s failed: %s" % (tesseractcmd,e))
 
         errlines = out.split(b'\n')
         if len(errlines) > 5:
@@ -194,10 +207,10 @@ def _simpletesseract(config, path):
 
     try:
         out = subprocess.check_output(
-            [tesseract, path, 'stdout', '-l', tesseractlang],
+            [tesseractcmd, path, 'stdout', '-l', tesseractlang],
             stderr=subprocess.DEVNULL)
     except Exception as e:
-        _deb("tesseract failed: %s" % e)
+        _deb("%s failed: %s" % (tesseractcmd,e))
         return False, ""
     return True, out
 

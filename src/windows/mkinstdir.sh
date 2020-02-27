@@ -40,7 +40,7 @@ MUTAGEN=${RCLDEPS}mutagen-1.32/
 EPUB=${RCLDEPS}epub-0.5.2
 FUTURE=${RCLDEPS}python2-future
 ZLIB=${RCLDEPS}zlib-1.2.8
-POPPLER=${RCLDEPS}poppler-0.36/
+POPPLER=${RCLDEPS}poppler-0.68.0/
 LIBWPD=${RCLDEPS}libwpd/libwpd-0.10.0/
 LIBREVENGE=${RCLDEPS}libwpd/librevenge-0.0.1.jfd/
 CHM=${RCLDEPS}pychm
@@ -237,9 +237,16 @@ copypoppler()
 {
     test -d $FILTERS/poppler || mkdir $FILTERS/poppler || \
         fatal cant create poppler dir
-    for f in pdftotext.exe pdfinfo.exe libpoppler.dll freetype6.dll jpeg62.dll \
-             libpng16-16.dll zlib1.dll libtiff3.dll \
-             libgcc_s_dw2-1.dll libstdc++-6.dll; do
+    for f in pdftotext.exe pdfinfo.exe pdftoppm.exe \
+             freetype6.dll \
+             jpeg62.dll \
+             libgcc_s_dw2-1.dll \
+             libpng16-16.dll \
+             libpoppler*.dll \
+             libstdc++-6.dll \
+             libtiff3.dll \
+             zlib1.dll \
+             ; do
         chkcp $POPPLER/bin/$f $FILTERS/poppler
     done
 }
