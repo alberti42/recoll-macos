@@ -26,9 +26,10 @@
 
 import os
 import sys
+import importlib.util
+
 import rclconfig
 import rclocrcache
-import importlib.util
 
 def _deb(s):
     print("rclocr: %s" % s, file=sys.stderr)
@@ -43,6 +44,8 @@ if len(sys.argv) != 2:
 path = sys.argv[1]
 
 config = rclconfig.RclConfig()
+config.setKeyDir(os.path.dirname(path))
+
 cache = rclocrcache.OCRCache(config)
 
 incache, data = cache.get(path)
@@ -58,7 +61,9 @@ ocrprogs = config.getConfParam("ocrprogs")
 if not ocrprogs:
     _deb("No ocrprogs variable in recoll configuration")
     sys.exit(1)
+
 #_deb("ocrprogs: %s" % ocrprogs)
+
 proglist = ocrprogs.split(" ")
 ok = False
 for ocrprog in proglist:

@@ -20,17 +20,8 @@
 # pdftotext sometimes outputs unescaped text inside HTML text sections.
 # We try to correct.
 #
-# If pdftotext produces no text and tesseract is available, we try to
-# perform OCR. As this can be very slow and the result not always
-# good, we only do this if this is required by the configuration
-#
-# We guess the OCR language in order of preference:
-#  - From the content of a ".ocrpdflang" file if it exists in the same
-#    directory as the PDF
-#  - Else from the pdfocrlang in recoll.conf
-#  - Else from an RECOLL_TESSERACT_LANG environment variable
-#  - From the content of $RECOLL_CONFDIR/ocrpdf
-#  - Default to "eng"
+# If pdftotext produces no text and the configuration allows it, we may try to
+# perform OCR.
 
 from __future__ import print_function
 
@@ -411,13 +402,16 @@ class PDFExtractor:
         #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, html))
 
         if isempty:
-            try:
-                cmd = [sys.executable, os.path.join(_execdir, "rclocr.py"),
-                       self.filename]
-                data = subprocess.check_output(cmd)
-                html = _htmlprefix + self.em.htmlescape(data) + _htmlsuffix
-            except:
-                pass
+            self.config.setKeyDir(os.path.dirname(self.filename))
+            s = self.config.getConfParam("pdfocr")
+            if rclexecm.configparamtrue(s):
+                try:
+                    cmd = [sys.executable, os.path.join(_execdir, "rclocr.py"),
+                           self.filename]
+                    data = subprocess.check_output(cmd)
+                    html = _htmlprefix + self.em.htmlescape(data) + _htmlsuffix
+                except:
+                    pass
 
         if self.extrameta:
             try:
