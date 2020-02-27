@@ -59,9 +59,10 @@ import os
 import hashlib
 import urllib.parse
 import zlib
+import glob
 
-def deb(s):
-    print("%s" %s, file=sys.stderr)
+def _deb(s):
+    print("rclocrcache: %s" %s, file=sys.stderr)
     
 class OCRCache(object):
     def __init__(self, conf):
@@ -86,7 +87,7 @@ class OCRCache(object):
 
     # Compute sha1 of path data contents, as two parts of 2 and 38 chars
     def _hashdata(self, path):
-        #deb("Hashing DATA")
+        #_deb("Hashing DATA")
         m = hashlib.sha1()
         with open(path, "rb") as f:
             while True:
@@ -97,19 +98,30 @@ class OCRCache(object):
                 h = m.hexdigest()
         return h[0:2], h[2:]
 
+    
+    def _readpathfile(self, ppf):
+        '''Read path file and return values. We do not decode the image path
+        as this is only used for purging'''
+        with open(ppf, 'r') as f:
+            line = f.read()
+        dd,df,tm,sz,pth = line.split()
+        tm = int(tm)
+        sz = int(sz)
+        return dd,df,tm,sz,pth
+        
     # Try to read the stored attributes for a given path: data hash,
     # modification time and size. If this fails, the path itself is
     # not cached (but the data still might be, maybe the file was moved)
     def _cachedpathattrs(self, path):
         pd,pf = self._hashpath(path)
-        o = os.path.join(self.pathdir, pd, pf)
-        if not os.path.exists(o):
+        pathfilepath = os.path.join(self.pathdir, pd, pf)
+        if not os.path.exists(pathfilepath):
             return False, None, None, None, None
-        line = open(o, "r").read()
-        dd,df,tm,sz,pth = line.split()
-        tm = int(tm)
-        sz = int(sz)
-        return True, dd, df, tm, sz
+        try:
+            dd, df, tm, sz, pth = self._readpathfile(pathfilepath)
+            return True, dd, df, tm, sz
+        except:
+            return False, None, None, None, None
 
     # Compute the path hash, and get the mtime and size for given
     # path, for updating the cache path file
@@ -127,8 +139,8 @@ class OCRCache(object):
         if not ret:
             return False, None, None
         pd, pf, ntm, nsz = self._newpathattrs(path)
-        #deb(" tm %d  sz %d" % (ntm, nsz))
-        #deb("otm %d osz %d" % (otm, osz))
+        #_deb(" tm %d  sz %d" % (ntm, nsz))
+        #_deb("otm %d osz %d" % (otm, osz))
         if otm != ntm or osz != nsz:
             return False, None, None
         return True, od, of
@@ -171,7 +183,7 @@ class OCRCache(object):
             os.makedirs(dir)
         dfile = os.path.join(dir, df)
         if force or not os.path.exists(dfile):
-            #deb("Storing data")
+            #_deb("Storing data")
             cpressed = zlib.compress(datatostore)
             with open(dfile, "wb") as f:
                 f.write(cpressed)
@@ -192,7 +204,7 @@ class OCRCache(object):
 
         if not pincache:
             # File has moved. create/Update path file for next time
-            deb("ocrcache::get file %s was moved, updating path data" % path)
+            _deb("ocrcache::get file %s was moved, updating path data" % path)
             pd, pf, tm, sz = self._newpathattrs(path)
             self._updatepathfile(pd, pf, dd, df, tm, sz, path)
 
@@ -201,41 +213,115 @@ class OCRCache(object):
             data = zlib.decompress(cpressed)
             return True, data
 
+    def _pathstale(self, origpath, otm, osz):
+        '''Return True if the input path has been removed or modified'''
+        if not os.path.exists(origpath):
+            return True
+        ntm = int(os.path.getmtime(origpath))
+        nsz = int(os.path.getsize(origpath))
+        if ntm != otm or nsz != osz:
+            #_deb("Purgepaths otm %d ntm %d osz %d nsz %d"%(otm, ntm, osz, nsz))
+            return True
+        return False
+    
+    def purgepaths(self):
+        '''Remove all stale pathfiles: source image does not exist or has
+        been changed. Mostly useful for removed files, modified ones would be
+        processed by recollindex.'''
+        allpathfiles = glob.glob(os.path.join(self.pathdir, "*", "*"))
+        for pathfile in allpathfiles:
+            dd, df, tm, sz, orgpath = self._readpathfile(pathfile)
+            needpurge = self._pathstale(orgpath, tm, sz)
+            if needpurge:
+                _deb("purgepaths: removing %s (%s)" % (pathfile, orgpath))
+                os.remove(pathfile)
+
+    def _walk(self, topdir, cb):
+        '''Specific fs walk: we know that our tree has 2 levels. Call cb with
+        the file path as parameter for each file'''
+        dlist = glob.glob(os.path.join(topdir, "*"))
+        for dir in dlist:
+            files = glob.glob(os.path.join(dir, "*"))
+            for f in files:
+                cb(f)
+
+    def _pgdt_pathcb(self, f):
+        '''Get a pathfile name, read it, and record datafile identifier
+        (concatenate data file subdir and file name)'''
+        #_deb("_pgdt_pathcb: %s" % f)
+        dd, df, tm, sz, orgpath = self._readpathfile(f)
+        self._pgdt_alldatafns.add(dd+df)
+
+    def _pgdt_datacb(self, datafn):
+        '''Get a datafile name and check that it is referenced by a previously
+        seen pathfile'''
+        p1,fn = os.path.split(datafn)
+        p2,dn = os.path.split(p1)
+        tst = dn+fn
+        if tst in self._pgdt_alldatafns:
+            _deb("purgedata: ok         : %s" % datafn)
+            pass
+        else:
+            _deb("purgedata: removing   : %s" % datafn)
+            os.remove(datafn)
+            
+    def purgedata(self):
+        '''Remove all data files which do not match any from the input list,
+        based on data contents hash. We make a list of all data files
+        referenced by the path files, then walk the data tree,
+        removing all unreferenced files. This should only be run after
+        an indexing pass, so that the path files are up to date. It's
+        a relatively onerous operation as we have to read all the path
+        files, and walk both sets of files.'''
+
+        self._pgdt_alldatafns = set()
+        self._walk(self.pathdir, self._pgdt_pathcb)
+        self._walk(self.objdir, self._pgdt_datacb)
+        
 
 
 if __name__ == '__main__':
     import rclconfig
-
+    def _Usage():
+        _deb("Usage: rclocrcache.py --purge")
+        sys.exit(1)
+    if len(sys.argv) != 2:
+        _Usage()
+    if sys.argv[1] != "--purge":
+        _Usage()
+    
     conf = rclconfig.RclConfig()
     cache = OCRCache(conf)
-    path = sys.argv[1]
-
-    def trycache(p):
-        deb("== CACHE tests for %s"%p)
-        ret = cache.pathincache(p)
-        s = "" if ret else " not"
-        deb("path for %s%s in cache" % (p, s))
-        if not ret:
-            return False
-        ret = cache.dataincache(p)
-        s = "" if ret else " not"
-        deb("data for %s%s in cache" % (p, s))
-        return ret
+    cache.purgepaths()
+    cache.purgedata()
+    sys.exit(0)
     
-    def trystore(p):
-        deb("== STORE test for %s" % p)
-        cache.store(p, b"my OCR'd text is one line\n", force=False)
-
-    def tryget(p):
-        deb("== GET test for %s" % p)
-        incache, data = cache.get(p)
-        if incache:
-            deb("Data from cache [%s]" % data)
-        else:
-            deb("Data was not found in cache")
-        return incache, data
-
-    incache, data = tryget(path)
-    if not incache:
-        trystore(path)
+#    def trycache(p):
+#        _deb("== CACHE tests for %s"%p)
+#        ret = cache.pathincache(p)
+#        s = "" if ret else " not"
+#        _deb("path for %s%s in cache" % (p, s))
+#        if not ret:
+#            return False
+#        ret = cache.dataincache(p)
+#        s = "" if ret else " not"
+#        _deb("data for %s%s in cache" % (p, s))
+#        return ret
+#    def trystore(p):
+#        _deb("== STORE test for %s" % p)
+#        cache.store(p, b"my OCR'd text is one line\n", force=False)
+#    def tryget(p):
+#        _deb("== GET test for %s" % p)
+#        incache, data = cache.get(p)
+#        if incache:
+#            _deb("Data from cache [%s]" % data)
+#        else:
+#            _deb("Data was not found in cache")
+#        return incache, data
+#    if False:
+#        path = sys.argv[1]
+#        incache, data = tryget(path)
+#        if not incache:
+#            trystore(path)
+#
         
