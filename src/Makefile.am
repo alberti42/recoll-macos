@@ -687,6 +687,10 @@ filters/rcllatinstops.zip \
 filters/rcllyx \
 filters/rclman \
 filters/rclmidi.py \
+filters/rclocrcache.py \
+filters/rclocr.py \
+filters/rclocrabbyy.py \
+filters/rclocrtesseract.py \
 filters/rclokulnote.py \
 filters/rclopxml.py \
 filters/rclpdf.py \
