@@ -17,7 +17,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ########################################################
 
-# Running OCR programs for Recoll
+# Running OCR programs for Recoll. This is excecuted from,
+# e.g. rclpdf.py if pdftotext returns no data.
+#
+# The script tries to retrieve the data from the ocr cache, else it
+# runs the configured OCR program and updates the cache. In both cases it writes
+# the resulting text to stdout.
 
 import os
 import sys
@@ -47,7 +52,8 @@ if incache:
     
 #### Data not in cache
 
-# Retrieve known ocr program names and try to load the corresponding module
+# Retrieve configured OCR program names and try to load the
+# corresponding module
 ocrprogs = config.getConfParam("ocrprogs")
 if not ocrprogs:
     _deb("No ocrprogs variable in recoll configuration")
@@ -59,7 +65,7 @@ for ocrprog in proglist:
     try:
         modulename = "rclocr" + ocrprog
         ocr = importlib.import_module(modulename)
-        if ocr.ocrpossible(path):
+        if ocr.ocrpossible(config, path):
             ok = True
             break
     except Exception as err:
@@ -72,6 +78,8 @@ if not ok:
 
 #_deb("Using ocr module %s" % modulename)
 
+# The OCR module will retrieve its specific parameters from the
+# configuration
 status, data = ocr.runocr(config, path)
 
 if not status:

@@ -17,6 +17,8 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ########################################################
 
+# Running tesseract for Recoll OCR (see rclocr.py)
+
 import os
 import sys
 import atexit
@@ -28,7 +30,7 @@ import rclexecm
 
 _mswindows = (sys.platform == "win32")
 if _mswindows:
-    ocrlangfile = ".rclocrlang"
+    ocrlangfile = "rclocrlang.txt"
 else:
     ocrlangfile = ".rclocrlang"
 
@@ -65,7 +67,7 @@ atexit.register(finalcleanup)
 
 # Return true if tesseract and the appropriate conversion program for
 # the file type (e.g. pdftoppt for pdf) appear to be available
-def ocrpossible(path):
+def ocrpossible(config, path):
     # Check for tesseract
     global tesseract
     tesseract = rclexecm.which("tesseract")
@@ -217,11 +219,12 @@ if __name__ == '__main__':
     import rclconfig
     config = rclconfig.RclConfig()
     path =  sys.argv[1]
-    if ocrpossible(path):
-        data = runocr(config, sys.argv[1])
+    if ocrpossible(config, path):
+        ok, data = runocr(config, sys.argv[1])
     else:
         _deb("ocrpossible returned false")
         sys.exit(1)
-    sys.stdout.buffer.write(data)
-    
-
+    if ok:
+        sys.stdout.buffer.write(data)
+    else:
+        _deb("OCR program failed")
