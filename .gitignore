@@ -54,8 +54,10 @@ src/m4/ltsugar.m4
 src/m4/ltversion.m4
 src/m4/lt~obsolete.m4
 src/missing
+src/python/pychm/recollchm.egg-info
 src/python/pychm/setup.py
 src/python/recoll/Makefile
+src/python/recoll/Recoll.egg-info
 src/python/recoll/build
 src/python/recoll/recoll/__init__.pyc
 src/python/recoll/setup.py
@@ -90,8 +92,8 @@ tests/config/history
 tests/config/idxstatus.txt
 tests/config/index.pid
 tests/config/missing
-tests/config/xapiandb
 tests/config/ocrcache
+tests/config/xapiandb
 tests/indexedmimetypes/aspdict.en.rws
 tests/indexedmimetypes/idxstatus.txt
 tests/indexedmimetypes/index.pid 
@@ -108,3 +110,4 @@ website/pages/recoll-webui-install-wsgi.html
 website/pages/recoll-windows-faq.html
 website/pages/recoll-windows.html
 website/usermanual/*
+
