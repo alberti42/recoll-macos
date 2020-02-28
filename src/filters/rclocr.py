@@ -81,9 +81,13 @@ if incache:
 # Retrieve configured OCR program names and try to load the
 # corresponding module
 ocrprogs = config.getConfParam("ocrprogs")
+if ocrprogs is None:
+    # Compat: the previous version has no ocrprogs variable, but would do
+    # tesseract by default. Use "ocrprogs = " for a really empty list
+    ocrprogs = "tesseract"
 if not ocrprogs:
     _deb("No ocrprogs variable in recoll configuration")
-    sys.exit(1)
+    sys.exit(0)
 
 #_deb("ocrprogs: %s" % ocrprogs)
 
