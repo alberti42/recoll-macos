@@ -19,6 +19,7 @@
 .libs
 .vs
 \#*
+__pycache__
 build-*-Debug
 build-*-Release
 libtool
@@ -90,6 +91,7 @@ tests/config/idxstatus.txt
 tests/config/index.pid
 tests/config/missing
 tests/config/xapiandb
+tests/config/ocrcache
 tests/indexedmimetypes/aspdict.en.rws
 tests/indexedmimetypes/idxstatus.txt
 tests/indexedmimetypes/index.pid 

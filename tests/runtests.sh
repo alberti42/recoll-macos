@@ -50,6 +50,7 @@ export LC_ALL=en_US.UTF-8
 makeindex() {
   echo "Zeroing Index" 
   rm -rf $RECOLL_CONFDIR/xapiandb $RECOLL_CONFDIR/aspdict.*.rws
+  rm -rf $RECOLL_CONFDIR/ocrcache
   echo "Indexing" 
   recollindex -c $RECOLL_CONFDIR -z
 }
