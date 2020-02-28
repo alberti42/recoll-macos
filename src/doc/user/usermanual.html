@@ -9650,8 +9650,7 @@ for i in range(nres):
                 <dd>
                   <p>Attempt OCR of PDF files with no text content.
                   This can be defined in subdirectories. The
-                  default is off because OCR is so very slow. Will
-                  only do anything if ocrprogs is defined.</p>
+                  default is off because OCR is so very slow.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH" id=
@@ -9714,8 +9713,13 @@ for i in range(nres):
                   try to load the corresponding modules in order
                   and use the first which reports being capable of
                   performing OCR on the input file. Modules for
-                  tesseract and ABBYY FineReader are present in the
-                  standard distribution.</p>
+                  tesseract (tesseract) and ABBYY FineReader
+                  (abbyy) are present in the standard distribution.
+                  For compatibility with the previous version, if
+                  this is not defined at all, the default value is
+                  "tesseract". Use an explicit empty value if
+                  needed. A value of "abbyy tesseract" will try
+                  everything.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.OCRCACHEDIR" id=

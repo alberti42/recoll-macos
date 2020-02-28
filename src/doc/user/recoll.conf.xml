@@ -708,7 +708,7 @@ with possibly meaning-altering missing words.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR">
 <term><varname>pdfocr</varname></term>
 <listitem><para>Attempt OCR of PDF files with no text content. This can be defined in subdirectories. The default is off because
-OCR is so very slow. Will only do anything if ocrprogs is defined.</para></listitem></varlistentry>
+OCR is so very slow.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">
 <term><varname>pdfattach</varname></term>
 <listitem><para>Enable PDF attachment extraction by executing pdftk (if
@@ -739,8 +739,11 @@ duplicate values.</para></listitem></varlistentry>
 <term><varname>ocrprogs</varname></term>
 <listitem><para>OCR modules to try. The top OCR script will try to load the corresponding modules in
 order and use the first which reports being capable of performing OCR on
-the input file. Modules for tesseract and ABBYY FineReader are present in
-the standard distribution.</para></listitem></varlistentry>
+the input file. Modules for tesseract (tesseract) and ABBYY FineReader
+(abbyy) are present in the standard distribution. For compatibility with
+the previous version, if this is not defined at all, the default value is
+"tesseract". Use an explicit empty value if needed. A value of "abbyy
+tesseract" will try everything.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.OCRCACHEDIR">
 <term><varname>ocrcachedir</varname></term>
 <listitem><para>Location for caching OCR data. The default if this is empty or undefined is to store the cached
