@@ -31,12 +31,31 @@ import importlib.util
 import rclconfig
 import rclocrcache
 
+_mswindows = (sys.platform == "win32")
 def _deb(s):
-    print("rclocr: %s" % s, file=sys.stderr)
+    if not _mswindows:
+        print("rclocr: %s" % s, file=sys.stderr)
     
 def Usage():
     _deb("Usage: rclocr.py <imagefilename>")
     sys.exit(1)
+
+def breakwrite(f, data):
+    # On Windows, writing big chunks can fail with a "not enough space"
+    # error. Seems a combined windows/python bug, depending on versions.
+    # See https://bugs.python.org/issue11395
+    # In any case, just break it up
+    total = len(data)
+    bs = 4*1024
+    offset = 0
+    while total > 0:
+        if total < bs:
+            tow = total
+        else:
+            tow = bs
+        f.write(data[offset:offset+tow])
+        offset += tow
+        total -= tow
 
 if len(sys.argv) != 2:
     Usage()
@@ -50,7 +69,11 @@ cache = rclocrcache.OCRCache(config)
 
 incache, data = cache.get(path)
 if incache:
-    sys.stdout.buffer.write(data)
+    try:
+        breakwrite(sys.stdout.buffer, data)
+    except Exception as e:
+        _deb("RCLOCR error writing: %s" % e)
+        sys.exit(1)
     sys.exit(0)
     
 #### Data not in cache

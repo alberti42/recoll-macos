@@ -410,7 +410,8 @@ class PDFExtractor:
                            self.filename]
                     data = subprocess.check_output(cmd)
                     html = _htmlprefix + self.em.htmlescape(data) + _htmlsuffix
-                except:
+                except Exception as e:
+                    self.em.rclog("%s failed: %s" % (cmd, e))
                     pass
 
         if self.extrameta:
