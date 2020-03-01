@@ -2131,19 +2131,32 @@ metadatacmds = ; <em class=
         extensive facilities for storing metadata along with the
         document, and these facilities are actually used in the
         real world.</p>
-        <p>In consequence, the <code class=
-        "filename">rclpdf.py</code> PDF input handler has more
-        complex capabilities than most others, and it is also more
-        configurable. Specifically, <code class=
-        "filename">rclpdf.py</code> can automatically use
-        <span class="application">tesseract</span> to perform OCR
-        if the document text is empty, it can be configured to
-        extract specific metadata tags from an XMP packet, and to
-        extract PDF attachments.</p>
-        <p>The PDF handler can execute an external program to run
-        OCR if no text is found in the document. This is now
-        described in a <a class="link" href="#RCL.INDEXING.OCR"
-        title="2.9.&nbsp;Recoll and OCR">separate section</a>.</p>
+        <p>In consequence, the <span class=
+        "command"><strong>rclpdf.py</strong></span> PDF input
+        handler has more complex capabilities than most others, and
+        it is also more configurable. Specifically, <span class=
+        "command"><strong>rclpdf.py</strong></span> has the
+        following features:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>It can be configured to extract specific metadata
+              tags from an XMP packet.</p>
+            </li>
+            <li class="listitem">
+              <p>It can extract PDF attachments.</p>
+            </li>
+            <li class="listitem">
+              <p>It can automatically perform OCR if the document
+              text is empty. This is done by executing an external
+              program and is now described in a <a class="link"
+              href="#RCL.INDEXING.OCR" title=
+              "2.9.&nbsp;Recoll and OCR">separate section</a>,
+              because the OCR framework can also be used with
+              non-PDF image files.</p>
+            </li>
+          </ul>
+        </div>
         <div class="sect2">
           <div class="titlepage">
             <div>
@@ -2270,8 +2283,14 @@ metadatacmds = ; <em class=
             </li>
           </ul>
         </div>
-        <p>Configuration. See the <a class="link" href=
-        "#RCL.INSTALL.CONFIG.RECOLLCONF.OCR" title=
+        <p>To enable this feature, you need to install one of the
+        supported OCR applications (<span class=
+        "application">tesseract</span> or <span class=
+        "application">ABBYY</span>), enable OCR in the PDF handler,
+        and tell <span class="application">Recoll</span> where the
+        appropriate command resides. The last parts are done by
+        setting configuration variables. See the <a class="link"
+        href="#RCL.INSTALL.CONFIG.RECOLLCONF.OCR" title=
         "Parameters for OCR processing">relevant section</a>. All
         parameters can be localized in subdirectories through the
         usual main configuration mechanism (path sections).</p>

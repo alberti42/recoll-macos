@@ -1402,21 +1402,27 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
       <title>The PDF input handler</title>
 
       <para>The PDF format is very important for scientific and technical
-      documentation, and document archival. It has extensive
-      facilities for storing metadata along with the document, and these
-      facilities are actually used in the real world.</para>
+		documentation, and document archival. It has extensive
+		facilities for storing metadata along with the document, and these
+		facilities are actually used in the real world.</para>
 
-      <para>In consequence, the <filename>rclpdf.py</filename> PDF input
-      handler has more complex capabilities than most others, and it is
-      also more configurable. Specifically, <filename>rclpdf.py</filename>
-      can automatically use <application>tesseract</application> to perform
-      OCR if the document text is empty, it can be configured to extract
-      specific metadata tags from an XMP packet, and to extract PDF
-      attachments.</para>
-
-	  <para>The PDF handler can execute an external program to run OCR if
-	  no text is found in the document. This is now described in a 
-	  <link linkend="RCL.INDEXING.OCR">separate section</link>.</para>
+      <para>In consequence, the <command>rclpdf.py</command> PDF input
+		handler has more complex capabilities than most others, and it is
+		also more configurable. Specifically, <command>rclpdf.py</command>
+		has the following features:
+		<itemizedlist>
+		  <listitem><para>It can be configured to extract
+			  specific metadata tags from an XMP packet.</para></listitem>
+		  <listitem><para>It can extract PDF
+			  attachments.</para></listitem>
+		  <listitem><para>It can automatically perform
+			  OCR if the document text is empty. This is done by 
+			  executing an external program and is now described in a 
+			  <link linkend="RCL.INDEXING.OCR">separate
+				section</link>, because the OCR framework can also be used
+				with non-PDF image files.</para></listitem>
+		</itemizedlist>
+	  </para>
       
       <sect2 id="RCL.INDEXING.PDF.XMP">
         <title>XMP fields extraction</title>
@@ -1477,7 +1483,7 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
         <title>PDF attachment indexing</title>
 
         <para>If <application>pdftk</application> is installed, and if the
-        the
+          the
         <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</link>
         configuration variable is set, the PDF input handler will try to
         extract PDF attachements for indexing as sub-documents of the PDF
@@ -1488,6 +1494,7 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
       </sect2>
       
     </sect1>
+
 
 	<sect1 id="RCL.INDEXING.OCR">
       <title>Recoll and OCR</title>
@@ -1521,8 +1528,13 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
 	  </itemizedlist>
 	</para>
 
-	<para>Configuration. See the 
-	  <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.OCR">
+	  <para>To enable this feature, you need to install one of
+		the supported OCR applications
+		(<application>tesseract</application>
+		or <application>ABBYY</application>), enable OCR in the PDF
+		handler, and tell &RCL; where the appropriate command resides. The
+		last parts are done by setting configuration variables. See the
+		<link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.OCR">
 		relevant section</link>. All parameters can be localized in
 		subdirectories through the usual main configuration mechanism (path
 		sections).</para>
