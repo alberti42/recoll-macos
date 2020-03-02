@@ -2933,12 +2933,10 @@ fs.inotify.max_user_watches=32768
           will start an external viewer for the document. By
           default, <span class="application">Recoll</span> lets the
           desktop choose the appropriate application for most
-          document types. This currently not customisable on
-          <span class="application">Windows</span>. See <a class=
-          "link" href="#RCL.SEARCH.GUI.RESLIST.APPLICATIONS" title=
-          "Unix-like systems: customising the applications">further</a>
-          for customizing the applications on <span class=
-          "application">Unix</span>-like systems.</p>
+          document types. See <a class="link" href=
+          "#RCL.SEARCH.GUI.RESLIST.APPLICATIONS" title=
+          "Customising the applications">further</a> for
+          customizing the applications.</p>
           <p>You can click on the <code class="literal">Query
           details</code> link at the top of the results page to see
           the query actually performed, after stem expansion and
@@ -2975,8 +2973,8 @@ fs.inotify.max_user_watches=32768
                 <div>
                   <h4 class="title"><a name=
                   "RCL.SEARCH.GUI.RESLIST.APPLICATIONS" id=
-                  "RCL.SEARCH.GUI.RESLIST.APPLICATIONS"></a><span class="application">Unix</span>-like
-                  systems: customising the applications</h4>
+                  "RCL.SEARCH.GUI.RESLIST.APPLICATIONS"></a>Customising
+                  the applications</h4>
                 </div>
               </div>
             </div>
@@ -2994,7 +2992,8 @@ fs.inotify.max_user_watches=32768
             "filename">mimeview</code> configuration file.</a></p>
             <p>When <span class="guilabel">Use desktop
             preferences</span>, at the top of the dialog, is
-            checked, there is a small list of exceptions, for MIME
+            checked, the desktop default is generally used, but
+            there is a small default list of exceptions, for MIME
             types where the <span class="application">Recoll</span>
             choice should override the desktop one. These are
             applications which are well integrated with
@@ -3015,7 +3014,10 @@ fs.inotify.max_user_watches=32768
             <p>In all cases, the applications choice dialog accepts
             multiple selections of MIME types in the top section,
             and lets you define how they are processed in the
-            bottom one.</p>
+            bottom one. In most cases, you will be using
+            <code class="literal">%f</code> as a place holder to be
+            replaced by the file name in the application command
+            line.</p>
             <p>You may also change the choice of applications by
             editing the <a class="link" href=
             "#RCL.INSTALL.CONFIG.MIMEVIEW" title=

@@ -2044,21 +2044,21 @@ fs.inotify.max_user_watches=32768
         <para>Clicking the <literal>Open</literal> link will
           start an external viewer for the document. By default, &RCL; lets
           the desktop choose the appropriate application for most document
-          types. This currently not customisable on &WIN;. See 
+          types. See 
           <link linkend="RCL.SEARCH.GUI.RESLIST.APPLICATIONS">further</link>
-          for customizing the applications on &LIN;.</para>
+          for customizing the applications.</para>
 
         <para>You can click on the <literal>Query details</literal> link
-        at the top of the results page to see the query actually 
-        performed, after stem expansion and other processing.</para>
+          at the top of the results page to see the query actually 
+          performed, after stem expansion and other processing.</para>
 
         <para>Double-clicking on any word inside the result list or a
-        preview window will insert it into the simple search text.</para>
+          preview window will insert it into the simple search text.</para>
 
         <para>The result list is divided into pages (the size of which
-        you can change in the preferences). Use the arrow buttons in the
-        toolbar or the links at the bottom of the page to browse the
-        results.</para>
+          you can change in the preferences). Use the arrow buttons in the
+          toolbar or the links at the bottom of the page to browse the
+          results.</para>
 
         <para>The <literal>Preview</literal> and <literal>Open</literal>
           edit links may not be present for all entries, meaning that
@@ -2078,7 +2078,7 @@ fs.inotify.max_user_watches=32768
           edit an HTML fragment</link>.</para>
 
         <simplesect id="RCL.SEARCH.GUI.RESLIST.APPLICATIONS">
-          <title>&LIN;: customising the applications</title>
+          <title>Customising the applications</title>
 
           <para>By default &RCL; lets the desktop choose what
             application should be used to open a given document, with
@@ -2095,15 +2095,15 @@ fs.inotify.max_user_watches=32768
               <filename>mimeview</filename> configuration file.</link></para>
 
           <para>When <guilabel>Use desktop preferences</guilabel>, at the
-            top of the dialog, is checked, there is a small list of
-            exceptions, for MIME types where the &RCL; choice should
-            override the desktop one. These are applications which are well
-            integrated with &RCL;, for example, on
-            Linux, <application>evince</application> for viewing PDF and
-            Postscript files because of its support for opening the
-            document at a specific page and passing a search string as an
-            argument. You can add or remove document types to the
-            exceptions by using the dialog.</para>
+            top of the dialog, is checked, the desktop default is generally
+            used, but there is a small default list of exceptions, for MIME
+            types where the &RCL; choice should override the desktop
+            one. These are applications which are well integrated with
+            &RCL;, for example, on Linux, <application>evince</application>
+            for viewing PDF and Postscript files because of its support for
+            opening the document at a specific page and passing a search
+            string as an argument. You can add or remove document types to
+            the exceptions by using the dialog.</para>
 
           <para>If you prefer to completely customize the choice of
             applications, you can uncheck <guilabel>Use desktop
@@ -2114,7 +2114,10 @@ fs.inotify.max_user_watches=32768
 
           <para>In all cases, the applications choice dialog accepts
             multiple selections of MIME types in the top section, and lets
-            you define how they are processed in the bottom one.</para>
+            you define how they are processed in the bottom one. In most
+            cases, you will be using <literal>%f</literal> as a place
+            holder to be replaced by the file name in the application
+            command line.</para>
 
           <para>You may also change the choice of applications by editing
             the
