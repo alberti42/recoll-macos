@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="docbook-xsl.css">
   <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
   <meta name="description" content=
-  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.25.">
+  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.26.">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084"
 alink="#0000FF">
@@ -35,7 +35,7 @@ alink="#0000FF">
           </div>
         </div>
         <div>
-          <p class="copyright">Copyright © 2005-2019 Jean-Francois
+          <p class="copyright">Copyright © 2005-2020 Jean-Francois
           Dockes</p>
         </div>
         <div>
@@ -53,7 +53,7 @@ alink="#0000FF">
             and describes the installation and use of the
             <span class="application">Recoll</span> application.
             This version describes <span class=
-            "application">Recoll</span> 1.25.</p>
+            "application">Recoll</span> 1.26.</p>
           </div>
         </div>
       </div>
@@ -92,9 +92,9 @@ alink="#0000FF">
                 "#RCL.INDEXING.INTRODUCTION.CONFIG">Configurations,
                 multiple indexes</a></span></dt>
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idm233">Document types</a></span></dt>
+                "#idm235">Document types</a></span></dt>
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idm274">Indexing failures</a></span></dt>
+                "#idm276">Indexing failures</a></span></dt>
                 <dt><span class="sect2">2.1.5. <a href=
                 "#idm286">Recovery</a></span></dt>
               </dl>
@@ -190,17 +190,18 @@ alink="#0000FF">
                 "#RCL.SEARCH.GUI.SIMPLE">Simple
                 search</a></span></dt>
                 <dt><span class="sect2">3.2.2. <a href=
-                "#RCL.SEARCH.GUI.RESLIST">The default result
+                "#RCL.SEARCH.GUI.RESLIST">The result
                 list</a></span></dt>
                 <dt><span class="sect2">3.2.3. <a href=
                 "#RCL.SEARCH.GUI.RESTABLE">The result
                 table</a></span></dt>
                 <dt><span class="sect2">3.2.4. <a href=
-                "#RCL.SEARCH.GUI.RUNSCRIPT">Running arbitrary
-                commands on result files (1.20 and
-                later)</a></span></dt>
+                "#RCL.SEARCH.GUI.RUNSCRIPT"><span class=
+                "application">Unix</span>-like systems: running
+                arbitrary commands on result files</a></span></dt>
                 <dt><span class="sect2">3.2.5. <a href=
-                "#RCL.SEARCH.GUI.THUMBNAILS">Displaying
+                "#RCL.SEARCH.GUI.THUMBNAILS"><span class=
+                "application">Unix</span>-like systems: displaying
                 thumbnails</a></span></dt>
                 <dt><span class="sect2">3.2.6. <a href=
                 "#RCL.SEARCH.GUI.PREVIEW">The preview
@@ -429,7 +430,7 @@ alink="#0000FF">
       <p>This document introduces full text search notions and
       describes the installation and use of the <span class=
       "application">Recoll</span> application. It is updated for
-      <span class="application">Recoll</span> 1.25.</p>
+      <span class="application">Recoll</span> 1.26.</p>
       <p><span class="application">Recoll</span> was for a long
       time dedicated to Unix-like systems. It was only lately
       (2015) ported to <span class="application">MS-Windows</span>.
@@ -440,10 +441,13 @@ alink="#0000FF">
       updated. Until this happens, on <span class=
       "application">Windows</span>, most references to shared files
       can be translated by looking under the Recoll installation
-      directory (esp. the <code class="filename">Share</code>
-      subdirectory). The user configuration is stored by default
-      under <code class="filename">AppData/Local/Recoll</code>
-      inside the user directory, along with the index itself.</p>
+      directory (Typically <code class="filename">C:/Program Files
+      (x86)/Recoll</code>, esp. anything referenced in <code class=
+      "filename">/usr/share</code> in this document will be found
+      int the <code class="filename">Share</code> subdirectory).
+      The user configuration is stored by default under
+      <code class="filename">AppData/Local/Recoll</code> inside the
+      user directory, along with the index itself.</p>
       <div class="sect1">
         <div class="titlepage">
           <div>
@@ -652,10 +656,12 @@ alink="#0000FF">
         files in this directory may be overridden by values set
         inside your personal configuration. With the default
         configuration, <span class="application">Recoll</span> will
-        index your home directory with generic parameters. The
-        configuration can be customized either by editing the text
-        files or by using configuration menus in the <span class=
-        "command"><strong>recoll</strong></span> GUI.</p>
+        index your home directory with generic parameters. Most
+        common parameters can be set by using configuration menus
+        in the <span class="command"><strong>recoll</strong></span>
+        GUI. Some less common parameters can only be set by editing
+        the text files (the new values will be preserved by the
+        GUI).</p>
         <p>The <a class="link" href="#RCL.INDEXING.PERIODIC.EXEC"
         title="Running the indexer">indexing process</a> is started
         automatically (after asking permission), the first time you
@@ -744,11 +750,9 @@ alink="#0000FF">
         <p><span class=
         "command"><strong>recollindex</strong></span> skips files
         which caused an error during a previous pass. This is a
-        performance optimization, and a new behaviour in version
-        1.21 (failed files were always retried by previous
-        versions). The command line option <code class=
-        "option">-k</code> can be set to retry failed files, for
-        example after updating an input handler.</p>
+        performance optimization, and the command line option
+        <code class="option">-k</code> can be set to retry failed
+        files, for example after updating an input handler.</p>
         <p>The following sections give an overview of different
         aspects of the indexing processes and configuration, with
         links to detailed sections.</p>
@@ -791,9 +795,10 @@ alink="#0000FF">
                 into your <span class=
                 "command"><strong>cron</strong></span> file. On
                 <span class="application">Windows</span>, this is
-                the only mode available, and the indexer is usually
-                started from the GUI (but there is nothing to
-                prevent starting it from a command script).</p>
+                the only mode available, and the Windows Task
+                Scheduler can be used to run indexing. In both
+                cases, the GUI includes an easy interface to the
+                system batch scheduler.</p>
               </li>
               <li class="listitem">
                 <p><b><a class="link" href="#RCL.INDEXING.MONITOR"
@@ -816,8 +821,8 @@ alink="#0000FF">
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm188" id=
-                  "idm188"></a><span class=
+                  <h4 class="title"><a name="idm190" id=
+                  "idm190"></a><span class=
                   "application">Unix</span>-like systems: choosing
                   an indexing mode</h4>
                 </div>
@@ -837,7 +842,7 @@ alink="#0000FF">
             configured from the <span class=
             "command"><strong>recoll</strong></span> GUI:
             <span class="guimenu">Preferences</span> → <span class=
-            "guimenuitem">Indexing schedule</span></p>
+            "guimenuitem">Indexing schedule</span> dialog.</p>
           </div>
         </div>
         <div class="sect2">
@@ -935,8 +940,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm233" id=
-                "idm233"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idm235" id=
+                "idm235"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1033,8 +1038,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm274" id=
-                "idm274"></a>2.1.4.&nbsp;Indexing failures</h3>
+                <h3 class="title"><a name="idm276" id=
+                "idm276"></a>2.1.4.&nbsp;Indexing failures</h3>
               </div>
             </div>
           </div>
@@ -1042,20 +1047,15 @@ alink="#0000FF">
           reasons: a helper program may be missing, the document
           may be corrupt, we may fail to uncompress a file because
           no file system space is available, etc.</p>
-          <p><span class="application">Recoll</span> versions prior
-          to 1.21 always retried to index files which had
-          previously caused an error. This guaranteed that anything
-          that may have become indexable (for example because a
-          helper had been installed) would be indexed. However this
-          was bad for performance because some indexing failures
-          may be quite costly (for example failing to uncompress a
-          big file because of insufficient disk space).</p>
-          <p>The indexer in <span class="application">Recoll</span>
+          <p>The <span class="application">Recoll</span> indexer in
           versions 1.21 and later does not retry failed files by
-          default. Retrying will only occur if an explicit option
-          (<code class="option">-k</code>) is set on the
-          <span class="command"><strong>recollindex</strong></span>
-          command line, or if a script executed when <span class=
+          default, because some indexing failures can be quite
+          costly (for example failing to uncompress a big file
+          because of insufficient disk space). Retrying will only
+          occur if an explicit option (<code class=
+          "option">-k</code>) is set on the <span class=
+          "command"><strong>recollindex</strong></span> command
+          line, or if a script executed when <span class=
           "command"><strong>recollindex</strong></span> starts up
           says so. The script is defined by a configuration
           variable (<code class=
@@ -1166,8 +1166,8 @@ alink="#0000FF">
         files where only the tags would be indexed).</p>
         <p>Of course, images, sound and video do not increase the
         index size, which means that in most cases, the space used
-        by the index will be negligible against the total amount of
-        data on the computer.</p>
+        by the index will be negligible compared to the total
+        amount of data on the computer.</p>
         <p>The index data directory (<code class=
         "filename">xapiandb</code>) only contains data that can be
         completely rebuilt by an index run (as long as the original
@@ -1295,13 +1295,14 @@ alink="#0000FF">
             </div>
           </div>
         </div>
-        <p>Variables set inside the <a class="link" href=
+        <p>Variables stored inside the <a class="link" href=
         "#RCL.INSTALL.CONFIG" title=
         "5.4.&nbsp;Configuration overview"><span class=
         "application">Recoll</span> configuration files</a> control
         which areas of the file system are indexed, and how files
-        are processed. These variables can be set either by editing
-        the text files or by using the <a class="link" href=
+        are processed. The values can be set by editing the text
+        files. Most of the more commonly used ones can also be
+        adjusted by using the <a class="link" href=
         "#RCL.INDEXING.CONFIG.GUI" title=
         "2.3.4.&nbsp;The index configuration GUI">dialogs in the
         <span class="command"><strong>recoll</strong></span>
@@ -1322,7 +1323,7 @@ alink="#0000FF">
         "https://www.lesbonscomptes.com/recoll/manpages/recoll.conf.5.html"
         target="_top"><span class="citerefentry"><span class=
         "refentrytitle">recoll.conf</span>(5)</span></a> manual
-        page.Both documents are automatically generated from the
+        page. Both documents are automatically generated from the
         comments inside the configuration file.</p>
         <p>The most immediately useful variable is probably
         <a class="link" href=
@@ -1335,12 +1336,13 @@ alink="#0000FF">
         "#RCL.INSTALL.EXTERNAL" title=
         "5.2.&nbsp;Supporting packages">external packages
         section</a>.</p>
-        <p>As of Recoll 1.18 there are two incompatible types of
-        Recoll indexes, depending on the treatment of character
-        case and diacritics. A <a class="link" href=
+        <p>There are two incompatible types of Recoll indexes,
+        depending on the treatment of character case and
+        diacritics. A <a class="link" href=
         "#RCL.INDEXING.CONFIG.SENS" title=
         "2.3.2.&nbsp;Index case and diacritics sensitivity">further
-        section</a> describes the two types in more detail.</p>
+        section</a> describes the two types in more detail. The
+        default type is appropriate in most cases.</p>
         <div class="sect2">
           <div class="titlepage">
             <div>
@@ -1721,12 +1723,13 @@ recoll -c <em class=
             <li class="listitem">
               <p>By indexing the volume in the main, fixed, index,
               and ensuring that the volume data is not purged if
-              the indexing runs while the volume is mounted.
-              (<span class="application">Recoll</span> 1.25.2).</p>
+              the indexing runs while the volume is mounted. (since
+              <span class="application">Recoll</span> 1.25.2).</p>
             </li>
             <li class="listitem">
               <p>By storing a volume index on the volume itself
-              (<span class="application">Recoll</span> 1.24).</p>
+              (since <span class="application">Recoll</span>
+              1.24).</p>
             </li>
           </ul>
         </div>
@@ -2337,23 +2340,23 @@ metadatacmds = ; <em class=
           index when it starts, it will automatically start
           indexing (except if canceled).</p>
           <p>The GUI <span class="guimenu">File</span> menu has
-          entries to start or stop the current indexing
-          operation.</p>
-          <p>When no indexing is running, you have a choice of
-          updating the index or rebuilding it (the first choice
+          entries to start or stop the current indexing operation.
+          When indexing is not currently running, you have a choice
+          of updating the index or rebuilding it (the first choice
           only processes changed files, the second one zeroes the
           index before starting so that all files are
           processed).</p>
+          <p>On Linux and Windows, the GUI can be used to manage
+          the indexing operation. Stopping the indexer can be done
+          from the <span class=
+          "command"><strong>recoll</strong></span> GUI <span class=
+          "guimenu">File</span> → <span class="guimenuitem">Stop
+          Indexing</span> menu entry.</p>
           <p>On Linux, the <span class=
           "command"><strong>recollindex</strong></span> indexing
           process can be interrupted by sending an interrupt
           (<span class="keysym">Ctrl-C</span>, SIGINT) or terminate
           (SIGTERM) signal.</p>
-          <p>On Linux and Windows, the GUI can used to manage the
-          indexing operation. Stopping the indexer can be done from
-          the <span class="command"><strong>recoll</strong></span>
-          GUI <span class="guimenu">File</span> → <span class=
-          "guimenuitem">Stop Indexing</span> menu entry.</p>
           <p>When stopped, some time may elapse before <span class=
           "command"><strong>recollindex</strong></span> exits,
           because it needs to properly flush and close the
@@ -2368,6 +2371,18 @@ metadatacmds = ; <em class=
           full file tree will be traversed, but files that were
           indexed up to the interruption and for which the index is
           still up to date will not need to be reindexed).</p>
+        </div>
+        <div class="simplesect">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name=
+                "RCL.INDEXING.PERIODIC.CMDLINE" id=
+                "RCL.INDEXING.PERIODIC.CMDLINE"></a>recollindex
+                command line</h3>
+              </div>
+            </div>
+          </div>
           <p><span class=
           "command"><strong>recollindex</strong></span> has many
           options which are listed in its <a class="ulink" href=
@@ -2708,7 +2723,7 @@ fs.inotify.max_user_watches=32768
         is based on the <span class="application">Qt</span>
         library.</p>
         <p><span class="command"><strong>recoll</strong></span> has
-        two search modes:</p>
+        two search interfaces:</p>
         <div class="itemizedlist">
           <ul class="itemizedlist" style="list-style-type: disc;">
             <li class="listitem">
@@ -2804,40 +2819,6 @@ fs.inotify.max_user_watches=32768
           features are described in <a class="link" href=
           "#RCL.SEARCH.LANG" title="3.5.&nbsp;The query language">a
           separate section</a>.</p>
-          <p>The <span class="guilabel">File name</span> search
-          mode will specifically look for file names. The point of
-          having a separate file name search is that wild card
-          expansion can be performed more efficiently on a small
-          subset of the index (allowing wild cards on the left of
-          terms without excessive cost). Things to know:</p>
-          <div class="itemizedlist">
-            <ul class="itemizedlist" style=
-            "list-style-type: disc;">
-              <li class="listitem">
-                <p>White space in the entry should match white
-                space in the file name, and is not treated
-                specially.</p>
-              </li>
-              <li class="listitem">
-                <p>The search is insensitive to character case and
-                accents, independently of the type of index.</p>
-              </li>
-              <li class="listitem">
-                <p>An entry without any wild card character and not
-                capitalized will be prepended and appended with '*'
-                (ie: <em class="replaceable"><code>etc</code></em>
-                -&gt; <em class=
-                "replaceable"><code>*etc*</code></em>, but
-                <em class="replaceable"><code>Etc</code></em> -&gt;
-                <em class="replaceable"><code>etc</code></em>).</p>
-              </li>
-              <li class="listitem">
-                <p>If you have a big index (many files),
-                excessively generic fragments may result in
-                inefficient searches.</p>
-              </li>
-            </ul>
-          </div>
           <p>When using a stripped index (the default), character
           case has no influence on search, except that you can
           disable stem expansion for any term by capitalizing it.
@@ -2883,6 +2864,40 @@ fs.inotify.max_user_watches=32768
           "guimenu">Tools</span> → <span class=
           "guimenuitem">Advanced search</span></a> dialog for more
           complex searches.</p>
+          <p>The <span class="guilabel">File name</span> search
+          mode will specifically look for file names. The point of
+          having a separate file name search is that wild card
+          expansion can be performed more efficiently on a small
+          subset of the index (allowing wild cards on the left of
+          terms without excessive cost). Things to know:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist" style=
+            "list-style-type: disc;">
+              <li class="listitem">
+                <p>White space in the entry should match white
+                space in the file name, and is not treated
+                specially.</p>
+              </li>
+              <li class="listitem">
+                <p>The search is insensitive to character case and
+                accents, independently of the type of index.</p>
+              </li>
+              <li class="listitem">
+                <p>An entry without any wild card character and not
+                capitalized will be prepended and appended with '*'
+                (ie: <em class="replaceable"><code>etc</code></em>
+                -&gt; <em class=
+                "replaceable"><code>*etc*</code></em>, but
+                <em class="replaceable"><code>Etc</code></em> -&gt;
+                <em class="replaceable"><code>etc</code></em>).</p>
+              </li>
+              <li class="listitem">
+                <p>If you have a big index (many files),
+                excessively generic fragments may result in
+                inefficient searches.</p>
+              </li>
+            </ul>
+          </div>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -2890,27 +2905,27 @@ fs.inotify.max_user_watches=32768
               <div>
                 <h3 class="title"><a name="RCL.SEARCH.GUI.RESLIST"
                 id="RCL.SEARCH.GUI.RESLIST"></a>3.2.2.&nbsp;The
-                default result list</h3>
+                result list</h3>
               </div>
             </div>
           </div>
           <p>After starting a search, a list of results will
-          instantly be displayed in the main list window.</p>
+          instantly be displayed in the main window.</p>
           <p>By default, the document list is presented in order of
           relevance (how well the system estimates that the
           document matches the query). You can sort the result by
           ascending or descending date by using the vertical arrows
           in the toolbar.</p>
-          <p>Clicking on the <code class="literal">Preview</code>
-          link for an entry will open an internal preview window
-          for the document. Further <code class=
-          "literal">Preview</code> clicks for the same search will
-          open tabs in the existing preview window. You can use
-          <span class="keycap"><strong>Shift</strong></span>+Click
-          to force the creation of another preview window, which
-          may be useful to view the documents side by side. (You
-          can also browse successive results in a single preview
-          window by typing <span class=
+          <p>Clicking the <code class="literal">Preview</code> link
+          for an entry will open an internal preview window for the
+          document. Further <code class="literal">Preview</code>
+          clicks for the same search will open tabs in the existing
+          preview window. You can use <span class=
+          "keycap"><strong>Shift</strong></span>+Click to force the
+          creation of another preview window, which may be useful
+          to view the documents side by side. (You can also browse
+          successive results in a single preview window by typing
+          <span class=
           "keycap"><strong>Shift</strong></span>+<span class=
           "keycap"><strong>ArrowUp/Down</strong></span> in the
           window).</p>
@@ -2918,39 +2933,23 @@ fs.inotify.max_user_watches=32768
           will start an external viewer for the document. By
           default, <span class="application">Recoll</span> lets the
           desktop choose the appropriate application for most
-          document types (there is a short list of exceptions, see
-          further). If you prefer to completely customize the
-          choice of applications, you can uncheck the <span class=
-          "guilabel">Use desktop preferences</span> option in the
-          GUI preferences dialog, and click the <span class=
-          "guilabel">Choose editor applications</span> button to
-          adjust the predefined <span class=
-          "application">Recoll</span> choices. The tool accepts
-          multiple selections of MIME types (e.g. to set up the
-          editor for the dozens of office file types).</p>
-          <p>Even when <span class="guilabel">Use desktop
-          preferences</span> is checked, there is a small list of
-          exceptions, for MIME types where the <span class=
-          "application">Recoll</span> choice should override the
-          desktop one. These are applications which are well
-          integrated with <span class="application">Recoll</span>,
-          especially <span class="application">evince</span> for
-          viewing PDF and Postscript files because of its support
-          for opening the document at a specific page and passing a
-          search string as an argument. Of course, you can edit the
-          list (in the GUI preferences) if you would prefer to lose
-          the functionality and use the standard desktop tool.</p>
-          <p>You may also change the choice of applications by
-          editing the <a class="link" href=
-          "#RCL.INSTALL.CONFIG.MIMEVIEW" title=
-          "5.4.6.&nbsp;The mimeview file"><code class=
-          "filename">mimeview</code></a> configuration file if you
-          find this more convenient.</p>
-          <p>Each result entry also has a right-click menu with an
-          <span class="guilabel">Open With</span> entry. This lets
-          you choose an application from the list of those which
-          registered with the desktop for the document MIME
-          type.</p>
+          document types. This currently not customisable on
+          <span class="application">Windows</span>. See <a class=
+          "link" href="#RCL.SEARCH.GUI.RESLIST.APPLICATIONS" title=
+          "Unix-like systems: customising the applications">further</a>
+          for customizing the applications on <span class=
+          "application">Unix</span>-like systems.</p>
+          <p>You can click on the <code class="literal">Query
+          details</code> link at the top of the results page to see
+          the query actually performed, after stem expansion and
+          other processing.</p>
+          <p>Double-clicking on any word inside the result list or
+          a preview window will insert it into the simple search
+          text.</p>
+          <p>The result list is divided into pages (the size of
+          which you can change in the preferences). Use the arrow
+          buttons in the toolbar or the links at the bottom of the
+          page to browse the results.</p>
           <p>The <code class="literal">Preview</code> and
           <code class="literal">Open</code> edit links may not be
           present for all entries, meaning that <span class=
@@ -2970,17 +2969,66 @@ fs.inotify.max_user_watches=32768
           configurable by using the preference dialog to <a class=
           "link" href="#RCL.SEARCH.GUI.CUSTOM.RESLIST" title=
           "The result list format">edit an HTML fragment</a>.</p>
-          <p>You can click on the <code class="literal">Query
-          details</code> link at the top of the results page to see
-          the query actually performed, after stem expansion and
-          other processing.</p>
-          <p>Double-clicking on any word inside the result list or
-          a preview window will insert it into the simple search
-          text.</p>
-          <p>The result list is divided into pages (the size of
-          which you can change in the preferences). Use the arrow
-          buttons in the toolbar or the links at the bottom of the
-          page to browse the results.</p>
+          <div class="simplesect">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.SEARCH.GUI.RESLIST.APPLICATIONS" id=
+                  "RCL.SEARCH.GUI.RESLIST.APPLICATIONS"></a><span class="application">Unix</span>-like
+                  systems: customising the applications</h4>
+                </div>
+              </div>
+            </div>
+            <p>By default <span class="application">Recoll</span>
+            lets the desktop choose what application should be used
+            to open a given document, with exceptions.</p>
+            <p>The details of this behaviour can be customized with
+            the <span class="guimenu">Preferences</span> →
+            <span class="guimenuitem">GUI configuration</span> →
+            <span class="guimenuitem">User interface</span> →
+            <span class="guimenuitem">Choose editor
+            applications</span> dialog or by editing the <a class=
+            "link" href="#RCL.INSTALL.CONFIG.MIMEVIEW" title=
+            "5.4.6.&nbsp;The mimeview file"><code class=
+            "filename">mimeview</code> configuration file.</a></p>
+            <p>When <span class="guilabel">Use desktop
+            preferences</span>, at the top of the dialog, is
+            checked, there is a small list of exceptions, for MIME
+            types where the <span class="application">Recoll</span>
+            choice should override the desktop one. These are
+            applications which are well integrated with
+            <span class="application">Recoll</span>, for example,
+            on Linux, <span class="application">evince</span> for
+            viewing PDF and Postscript files because of its support
+            for opening the document at a specific page and passing
+            a search string as an argument. You can add or remove
+            document types to the exceptions by using the
+            dialog.</p>
+            <p>If you prefer to completely customize the choice of
+            applications, you can uncheck <span class=
+            "guilabel">Use desktop preferences</span>, in which
+            case the <span class="application">Recoll</span>
+            predefined applications will be used, and can be
+            changed for each document type. This is probably not
+            the most convenient approach in most cases.</p>
+            <p>In all cases, the applications choice dialog accepts
+            multiple selections of MIME types in the top section,
+            and lets you define how they are processed in the
+            bottom one.</p>
+            <p>You may also change the choice of applications by
+            editing the <a class="link" href=
+            "#RCL.INSTALL.CONFIG.MIMEVIEW" title=
+            "5.4.6.&nbsp;The mimeview file"><code class=
+            "filename">mimeview</code></a> configuration file if
+            you find this more convenient.</p>
+            <p>Under <span class="application">Unix</span>-like
+            systems, each result list entry also has a right-click
+            menu with an <span class="guilabel">Open With</span>
+            entry. This lets you choose an application from the
+            list of those which registered with the desktop for the
+            document MIME type, on a case by case basis.</p>
+          </div>
           <div class="sect3">
             <div class="titlepage">
               <div>
@@ -3063,18 +3111,20 @@ fs.inotify.max_user_watches=32768
             <p>The <span class="guilabel">Preview</span> and
             <span class="guilabel">Open</span> entries do the same
             thing as the corresponding links.</p>
-            <p><span class="guilabel">Open With</span> lets you
-            open the document with one of the applications claiming
-            to be able to handle its MIME type (the information
-            comes from the <code class="literal">.desktop</code>
-            files in <code class=
+            <p><span class="guilabel">Open With</span>
+            (<span class="application">Unix</span>-like systems)
+            lets you open the document with one of the applications
+            claiming to be able to handle its MIME type (the
+            information comes from the <code class=
+            "literal">.desktop</code> files in <code class=
             "filename">/usr/share/applications</code>).</p>
-            <p><span class="guilabel">Run Script</span> allows
-            starting an arbitrary command on the result file. It
-            will only appear for results which are top-level files.
-            See <a class="link" href="#RCL.SEARCH.GUI.RUNSCRIPT"
-            title=
-            "3.2.4.&nbsp;Running arbitrary commands on result files (1.20 and later)">
+            <p><span class="guilabel">Run Script</span>
+            (<span class="application">Unix</span>-like systems)
+            allows starting an arbitrary command on the result
+            file. It will only appear for results which are
+            top-level files. See <a class="link" href=
+            "#RCL.SEARCH.GUI.RUNSCRIPT" title=
+            "3.2.4.&nbsp;Unix-like systems: running arbitrary commands on result files">
             further</a> for a more detailed description.</p>
             <p>The <span class="guilabel">Copy File Name</span> and
             <span class="guilabel">Copy Url</span> copy the
@@ -3129,11 +3179,11 @@ fs.inotify.max_user_watches=32768
               </div>
             </div>
           </div>
-          <p>In <span class="application">Recoll</span> 1.15 and
-          newer, the results can be displayed in spreadsheet-like
-          fashion. You can switch to this presentation by clicking
-          the table-like icon in the toolbar (this is a toggle,
-          click again to restore the list).</p>
+          <p>As an alternative to the result list, the results can
+          also be displayed in spreadsheet-like fashion. You can
+          switch to this presentation by clicking the table-like
+          icon in the toolbar (this is a toggle, click again to
+          restore the list).</p>
           <p>Clicking on the column headers will allow sorting by
           the values in the column. You can click again to invert
           the order, and use the header right-click menu to reset
@@ -3164,9 +3214,9 @@ fs.inotify.max_user_watches=32768
               <div>
                 <h3 class="title"><a name=
                 "RCL.SEARCH.GUI.RUNSCRIPT" id=
-                "RCL.SEARCH.GUI.RUNSCRIPT"></a>3.2.4.&nbsp;Running
-                arbitrary commands on result files (1.20 and
-                later)</h3>
+                "RCL.SEARCH.GUI.RUNSCRIPT"></a>3.2.4.&nbsp;<span class="application">Unix</span>-like
+                systems: running arbitrary commands on result
+                files</h3>
               </div>
             </div>
           </div>
@@ -3217,8 +3267,8 @@ fs.inotify.max_user_watches=32768
               <div>
                 <h3 class="title"><a name=
                 "RCL.SEARCH.GUI.THUMBNAILS" id=
-                "RCL.SEARCH.GUI.THUMBNAILS"></a>3.2.5.&nbsp;Displaying
-                thumbnails</h3>
+                "RCL.SEARCH.GUI.THUMBNAILS"></a>3.2.5.&nbsp;<span class="application">Unix</span>-like
+                systems: displaying thumbnails</h3>
               </div>
             </div>
           </div>
@@ -3239,10 +3289,10 @@ fs.inotify.max_user_watches=32768
           settings). Restarting the search should then display the
           thumbnails.</p>
           <p>There are also <a class="ulink" href=
-          "https://www.lesbonscomptes.com/recoll/faqsandhowtos/ResultsThumbnails.wiki"
+          "https://www.lesbonscomptes.com/recoll/faqsandhowtos/ResultsThumbnails.html"
           target="_top">some pointers about thumbnail
-          generation</a> on the <span class=
-          "application">Recoll</span> wiki.</p>
+          generation</a> in the <span class=
+          "application">Recoll</span> FAQ.</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -3269,10 +3319,8 @@ fs.inotify.max_user_watches=32768
           "keycap"><strong>Ctrl-W</strong></span> (<span class=
           "keycap"><strong>Ctrl</strong></span> + <span class=
           "keycap"><strong>W</strong></span>) in the window.
-          Closing the last tab for a window will also close the
-          window.</p>
-          <p>Of course you can also close a preview window by using
-          the window manager button in the top of the frame.</p>
+          Closing the last tab, or using the window manager button
+          in the top of the frame will also close the window.</p>
           <p>You can display successive or previous documents from
           the result list inside a preview tab by typing
           <span class=
@@ -3443,9 +3491,6 @@ fs.inotify.max_user_watches=32768
           defines the label for a button, and the Query Language
           fragment which will be added (as an AND filter) before
           performing the query if the button is active.</p>
-          <p>This feature is new in <span class=
-          "application">Recoll</span> 1.20, and will probably be
-          refined depending on user feedback.</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -3879,11 +3924,11 @@ fs.inotify.max_user_watches=32768
           Duplicates hiding is controlled by an entry in the
           <span class="guilabel">GUI configuration</span> dialog,
           and is off by default.</p>
-          <p>As of release 1.19, when a result document does have
-          undisplayed duplicates, a <code class=
-          "literal">Dups</code> link will be shown with the result
-          list entry. Clicking the link will display the paths
-          (URLs + ipaths) for the duplicate entries.</p>
+          <p>When a result document does have undisplayed
+          duplicates, a <code class="literal">Dups</code> link will
+          be shown with the result list entry. Clicking the link
+          will display the paths (URLs + ipaths) for the duplicate
+          entries.</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -3994,27 +4039,23 @@ fs.inotify.max_user_watches=32768
             "literal">reality</code> or both appear, but those
             which contain <code class="literal">virtual
             reality</code> should appear sooner in the list.</p>
-            <p>Phrase searches can strongly slow down a query if
-            most of the terms in the phrase are common. This is why
-            the <code class="varname">autophrase</code> option is
-            off by default for <span class=
-            "application">Recoll</span> versions before 1.17. As of
-            version 1.17, <code class="varname">autophrase</code>
-            is on by default, but very common terms will be removed
-            from the constructed phrase. The removal threshold can
-            be adjusted from the search preferences.</p>
-            <p><b>Phrases and abbreviations.&nbsp;</b>As of
-            <span class="application">Recoll</span> version 1.17,
-            dotted abbreviations like <code class=
-            "literal">I.B.M.</code> are also automatically indexed
-            as a word without the dots: <code class=
-            "literal">IBM</code>. Searching for the word inside a
-            phrase (ie: <code class="literal">"the IBM
-            company"</code>) will only match the dotted
-            abrreviation if you increase the phrase slack (using
-            the advanced search panel control, or the <code class=
-            "literal">o</code> query language modifier). Literal
-            occurences of the word will be matched normally.</p>
+            <p>Phrase searches can slow down a query if most of the
+            terms in the phrase are common. If the <code class=
+            "varname">autophrase</code> option is on, very common
+            terms will be removed from the automatically
+            constructed phrase. The removal threshold can be
+            adjusted from the search preferences.</p>
+            <p><b>Phrases and abbreviations.&nbsp;</b>Dotted
+            abbreviations like <code class="literal">I.B.M.</code>
+            are also automatically indexed as a word without the
+            dots: <code class="literal">IBM</code>. Searching for
+            the word inside a phrase (ie: <code class=
+            "literal">"the IBM company"</code>) will only match the
+            dotted abrreviation if you increase the phrase slack
+            (using the advanced search panel control, or the
+            <code class="literal">o</code> query language
+            modifier). Literal occurences of the word will be
+            matched normally.</p>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -4476,18 +4517,24 @@ fs.inotify.max_user_watches=32768
                 </div>
               </div>
             </div>
-            <p>Newer versions of Recoll (from 1.17) normally use
-            WebKit HTML widgets for the result list and the
-            <a class="link" href=
-            "#RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">snippets
-            window</a> (this may be disabled at build time). Total
-            customisation is possible with full support for CSS and
-            Javascript. Conversely, there are limits to what you
-            can do with the older Qt QTextBrowser, but still, it is
-            possible to decide what data each result will contain,
-            and how it will be displayed.</p>
-            <p>The result list presentation can be exhaustively
-            customized by adjusting two elements:</p>
+            <p>Recoll normally uses a full function HTML processor
+            to display the result list and the <a class="link"
+            href="#RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">snippets
+            window</a>. Depending on the version, this may be based
+            on either Qt WebKit or Qt WebEngine. It is then
+            possible to completely customise the result list with
+            full support for CSS and Javascript.</p>
+            <p>It is also possible to build <span class=
+            "application">Recoll</span> to use a simpler Qt
+            QTextBrowser widget to display the HTML, which may be
+            necessary if the ones above are not ported on the
+            system, or to reduce the application size and
+            dependancies. There are limits to what you can do in
+            this case, but it is still possible to decide what data
+            each result will contain, and how it will be
+            displayed.</p>
+            <p>The result list presentation can be customized by
+            adjusting two elements:</p>
             <div class="itemizedlist">
               <ul class="itemizedlist" style=
               "list-style-type: disc;">
@@ -4617,7 +4664,7 @@ fs.inotify.max_user_watches=32768
               (if the document is embedded, the script will be
               started on the top-level parent). See the <a class=
               "link" href="#RCL.SEARCH.GUI.RUNSCRIPT" title=
-              "3.2.4.&nbsp;Running arbitrary commands on result files (1.20 and later)">
+              "3.2.4.&nbsp;Unix-like systems: running arbitrary commands on result files">
               section about defining scripts</a>.</p>
               <p>In addition to the predefined values above, all
               strings like <code class=

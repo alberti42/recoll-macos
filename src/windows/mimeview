@@ -35,7 +35,7 @@ text/html|epub = rclstartw %F;ignoreipath=1
 application/x-fsdirectory|parentopen = rclstartw %f
 inode/directory|parentopen = rclstartw %f
 
-###### The following are not used at all on windows, but the types need to
+###### THE FOLLOWING ARE NOT USED AT ALL ON WINDOWS, but the types need to
 ###### be listed for an "Open" link to appear in the result list
 application/epub+zip = ebook-viewer %f
 

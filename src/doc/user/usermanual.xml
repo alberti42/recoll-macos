@@ -5,7 +5,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html#doctypes'>http://www.recoll.org/features.html</ulink>">
-<!ENTITY RCLVERSION "1.25">
+<!ENTITY RCLVERSION "1.26">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
@@ -32,7 +32,7 @@
     </author>
 
     <copyright>
-      <year>2005-2019</year>
+      <year>2005-2020</year>
       <holder role="mailto:jfd@recoll.org">Jean-Francois Dockes</holder>
     </copyright>
 
@@ -62,16 +62,18 @@
     application. It is updated for &RCL; &RCLVERSION;.</para>
 
     <para>&RCL; was for a long time dedicated to Unix-like systems. It
-    was only lately (2015) ported to
-    <application>MS-Windows</application>. Many references in this
-    manual, especially file locations, are specific to Unix, and not
-    valid on &WIN;, where some described features are also not available.
-    The manual will be progressively updated. Until this happens, on
-    &WIN;, most references to shared files can be translated by looking
-    under the Recoll installation directory (esp. the
-    <filename>Share</filename> subdirectory). The user configuration is
-    stored by default under <filename>AppData/Local/Recoll</filename>
-    inside the user directory, along with the index itself.</para>
+      was only lately (2015) ported to
+      <application>MS-Windows</application>. Many references in this
+      manual, especially file locations, are specific to Unix, and not
+      valid on &WIN;, where some described features are also not available.
+      The manual will be progressively updated. Until this happens, on
+      &WIN;, most references to shared files can be translated by looking
+      under the Recoll installation directory (Typically <filename>C:/Program
+        Files (x86)/Recoll</filename>, esp. anything referenced
+      in <filename>/usr/share</filename> in this document will be found int
+      the <filename>Share</filename> subdirectory). The user configuration is
+      stored by default under <filename>AppData/Local/Recoll</filename>
+      inside the user directory, along with the index itself.</para>
     
     <sect1 id="RCL.INTRODUCTION.TRYIT">
       <title>Giving it a try</title>
@@ -238,16 +240,18 @@
       </para>
 
       <para>&RCL; uses many parameters to define exactly what to index,
-      and how to classify and decode the source documents. These are kept
-      in <link linkend="RCL.INDEXING.CONFIG">configuration files</link>.  A
-      default configuration is copied into a standard location (usually
-      something like <filename>/usr/share/recoll/examples</filename>)
-      during installation. The default values set by the configuration
-      files in this directory may be overridden by values set inside your
-      personal configuration. With the default configuration, &RCL; will
-      index your home directory with generic parameters. The configuration
-      can be customized either by editing the text files or by using
-      configuration menus in the <command>recoll</command> GUI.</para>
+        and how to classify and decode the source documents. These are kept
+        in <link linkend="RCL.INDEXING.CONFIG">configuration files</link>.  A
+        default configuration is copied into a standard location (usually
+        something like <filename>/usr/share/recoll/examples</filename>)
+        during installation. The default values set by the configuration
+        files in this directory may be overridden by values set inside your
+        personal configuration. With the default configuration, &RCL; will
+        index your home directory with generic parameters. Most common
+        parameters can be set by using
+        configuration menus in the <command>recoll</command> GUI. Some less
+        common parameters can only be set by editing the text files (the
+        new values will be preserved by the GUI).</para>
 
       <para>The <link linkend="RCL.INDEXING.PERIODIC.EXEC">indexing process</link>
       is started automatically (after asking permission), the
@@ -303,11 +307,9 @@
       <option>-z</option> or <option>-Z</option>).</para>
 
       <para><command>recollindex</command> skips files which caused an
-      error during a previous pass. This is a performance
-      optimization, and a new behaviour in version 1.21 (failed files
-      were always retried by previous versions). The command line
-      option <option>-k</option> can be set to retry failed files, for
-      example after updating an input handler.</para>
+      error during a previous pass. This is a performance optimization, and
+      the command line option <option>-k</option> can be set to retry
+      failed files, for example after updating an input handler.</para>
 
       <para>The following sections give an overview of different
       aspects of the indexing processes and configuration, with links
@@ -329,15 +331,15 @@
           <listitem>
             <formalpara><title>
               <link linkend="RCL.INDEXING.PERIODIC">Periodic (or batch) indexing</link>
-            </title>
-            <para><command>recollindex</command> is executed
-            at discrete times. On &LIN;, the typical usage is to have a
-            nightly run 
-            <link linkend="RCL.INDEXING.PERIODIC.AUTOMAT">programmed</link>
-            into your <command>cron</command> file. On &WIN;, this is
-            the only mode available, and the indexer is usually started
-            from the GUI (but there is nothing to prevent starting it
-            from a command script).</para>
+            </title> <para><command>recollindex</command> is executed at
+                discrete times. On &LIN;, the typical usage is to have a
+                nightly run
+                <link linkend="RCL.INDEXING.PERIODIC.AUTOMAT">
+                  programmed</link>
+                into your <command>cron</command> file. On &WIN;, this is
+                the only mode available, and the Windows Task Scheduler can
+                be used to run indexing. In both cases, the GUI includes an
+                easy interface to the system batch scheduler.</para>
             </formalpara>
           </listitem>
           <listitem>
@@ -367,7 +369,7 @@
         <menuchoice>
           <guimenu>Preferences</guimenu>
           <guimenuitem>Indexing schedule</guimenuitem>
-        </menuchoice>
+        </menuchoice> dialog.
         </para>
         </simplesect>
 
@@ -540,24 +542,19 @@
         corrupt, we may fail to uncompress a file because no file
         system space is available, etc.</para>
         
-        <para>&RCL; versions prior to 1.21 always retried to index
-        files which had previously caused an error. This guaranteed
-        that anything that may have become indexable (for example
-        because a helper had been installed) would be indexed. However
-        this was bad for performance because some indexing failures
-        may be quite costly (for example failing to uncompress a big
-        file because of insufficient disk space).</para>
-
-        <para>The indexer in &RCL; versions 1.21 and later does not
-        retry failed files by default. Retrying will only occur if an
-        explicit option (<option>-k</option>) is set on the
-        <command>recollindex</command> command line, or if a script
-        executed when <command>recollindex</command> starts up says
-        so. The script is defined by a configuration variable
-        (<literal>checkneedretryindexscript</literal>), and makes a
-        rather lame attempt at deciding if a helper command may have
-        been installed, by checking if any of the common
-        <filename>bin</filename> directories have changed.</para>
+        <para>The &RCL; indexer in versions 1.21 and later does not
+          retry failed files by default, because some indexing failures
+          can be quite costly (for example failing to uncompress a big
+          file because of insufficient disk space).
+          Retrying will only occur if an explicit option
+          (<option>-k</option>) is set on
+          the <command>recollindex</command> command line, or if a script
+          executed when <command>recollindex</command> starts up says
+          so. The script is defined by a configuration variable
+          (<literal>checkneedretryindexscript</literal>), and makes a
+          rather lame attempt at deciding if a helper command may have been
+          installed, by checking if any of the
+          common <filename>bin</filename> directories have changed.</para>
 
       </sect2>
 
@@ -638,7 +635,7 @@
 
       <para>Of course, images, sound and video do not increase the index
       size, which means that in most cases, the space used by the index
-      will be negligible against the total amount of data on the
+      will be negligible compared to the total amount of data on the
       computer.</para>
       
       <para>The index data directory (<filename>xapiandb</filename>)
@@ -727,13 +724,13 @@
     <sect1 id="RCL.INDEXING.CONFIG">
       <title>Index configuration</title>
 
-      <para>Variables set inside the 
-      <link linkend="RCL.INSTALL.CONFIG">&RCL; configuration files</link>
-      control which areas of the file system are indexed, and how
-      files are processed. These variables can be set either by
-      editing the text files or by using the 
-      <link linkend="RCL.INDEXING.CONFIG.GUI">dialogs in the <command>recoll</command> GUI</link>.
-      </para>
+      <para>Variables stored inside the 
+        <link linkend="RCL.INSTALL.CONFIG">&RCL; configuration files</link>
+        control which areas of the file system are indexed, and how files
+        are processed. The values can be set by editing the text
+        files. Most of the more commonly used ones can also be adjusted by
+        using the <link linkend="RCL.INDEXING.CONFIG.GUI">
+          dialogs in the <command>recoll</command> GUI</link>.</para>
 
       <para>The first time you start <command>recoll</command>, you will be
       asked whether or not you would like it to build the index. If you
@@ -748,7 +745,7 @@
       <link linkend="RCL.INSTALL.CONFIG">installation chapter</link> 
       of this document, or in the
       <ulink url="https://www.lesbonscomptes.com/recoll/manpages/recoll.conf.5.html"><citerefentry><refentrytitle>recoll.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></ulink>
-      manual page.Both documents are automatically generated from
+      manual page. Both documents are automatically generated from
       the comments inside the configuration file.</para>
 
       <para>The most immediately useful variable
@@ -761,11 +758,11 @@
       described in the <link linkend="RCL.INSTALL.EXTERNAL">external packages section</link>.
       </para>
 
-      <para>As of Recoll 1.18 there are two incompatible types of Recoll
-      indexes, depending on the treatment of character case and
-      diacritics. A
-      <link linkend="RCL.INDEXING.CONFIG.SENS">further section</link>
-      describes the two types in more detail.</para>
+      <para>There are two incompatible types of Recoll
+        indexes, depending on the treatment of character case and
+        diacritics. A <link linkend="RCL.INDEXING.CONFIG.SENS">further
+        section</link> describes the two types in more detail. The default
+        type is appropriate in most cases.</para>
 
       <sect2 id="RCL.INDEXING.CONFIG.MULTIPLE">
         <title>Multiple indexes</title>
@@ -1088,9 +1085,9 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
     <itemizedlist>
       <listitem><para>By indexing the volume in the main, fixed, index, and
       ensuring that the volume data is not purged if the indexing runs
-      while the volume is mounted. (&RCL; 1.25.2).</para></listitem>
+      while the volume is mounted. (since &RCL; 1.25.2).</para></listitem>
       <listitem><para>By storing a volume index on the volume
-      itself (&RCL; 1.24).</para></listitem>
+      itself (since &RCL; 1.24).</para></listitem>
     </itemizedlist>
 
     <simplesect id="RCL.INDEXING.REMOVABLE.MAIN">
@@ -1402,27 +1399,27 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
       <title>The PDF input handler</title>
 
       <para>The PDF format is very important for scientific and technical
-		documentation, and document archival. It has extensive
-		facilities for storing metadata along with the document, and these
-		facilities are actually used in the real world.</para>
+        documentation, and document archival. It has extensive
+        facilities for storing metadata along with the document, and these
+        facilities are actually used in the real world.</para>
 
       <para>In consequence, the <command>rclpdf.py</command> PDF input
-		handler has more complex capabilities than most others, and it is
-		also more configurable. Specifically, <command>rclpdf.py</command>
-		has the following features:
-		<itemizedlist>
-		  <listitem><para>It can be configured to extract
-			  specific metadata tags from an XMP packet.</para></listitem>
-		  <listitem><para>It can extract PDF
-			  attachments.</para></listitem>
-		  <listitem><para>It can automatically perform
-			  OCR if the document text is empty. This is done by 
-			  executing an external program and is now described in a 
-			  <link linkend="RCL.INDEXING.OCR">separate
-				section</link>, because the OCR framework can also be used
-				with non-PDF image files.</para></listitem>
-		</itemizedlist>
-	  </para>
+        handler has more complex capabilities than most others, and it is
+        also more configurable. Specifically, <command>rclpdf.py</command>
+        has the following features:
+        <itemizedlist>
+          <listitem><para>It can be configured to extract
+              specific metadata tags from an XMP packet.</para></listitem>
+          <listitem><para>It can extract PDF
+              attachments.</para></listitem>
+          <listitem><para>It can automatically perform
+              OCR if the document text is empty. This is done by 
+              executing an external program and is now described in a 
+              <link linkend="RCL.INDEXING.OCR">separate
+                section</link>, because the OCR framework can also be used
+                with non-PDF image files.</para></listitem>
+        </itemizedlist>
+      </para>
       
       <sect2 id="RCL.INDEXING.PDF.XMP">
         <title>XMP fields extraction</title>
@@ -1496,48 +1493,48 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
     </sect1>
 
 
-	<sect1 id="RCL.INDEXING.OCR">
+    <sect1 id="RCL.INDEXING.OCR">
       <title>Recoll and OCR</title>
 
-	  <para>This is new in &RCL; 1.26.5. Older versions had a more limited,
-	  non-caching capability to execute an external OCR program in the PDF
-	  handler. The new function has the following features:
+      <para>This is new in &RCL; 1.26.5. Older versions had a more limited,
+      non-caching capability to execute an external OCR program in the PDF
+      handler. The new function has the following features:
 
-	  <itemizedlist>
-		<listitem><para>The OCR output is cached, stored as separate
-		files. The caching is ultimately based on a hash value of the
-		original file contents, so that it is immune to file renames. A
-		first path-based layer ensures fast operation for unchanged
-		(unmoved files), and the data hash (which is still orders of
-		magnitude faster than OCR) is only re-computed if the file has
-		moved. OCR is only performed if the file was not previously
-		processed or if it changed.</para></listitem>
-		<listitem><para>The support for a specific program is implemented
-		in a simple Python module. It should be straightforward to add
-		support for any OCR engine with a capability to run from the
-		command line.</para></listitem>
-		<listitem><para>Modules initially exist for
-		<application>tesseract</application> (Linux and Windows), and
-		<application>ABBYY FineReader</application> (Linux, tested with
-		version 11). ABBYY FineReader is a commercial closed source
-		program, but it sometimes perform better than
-		tesseract.</para></listitem>
-		<listitem><para>The OCR is currently only called from the PDF
-		handler, but there should be no problem using it for other image
-		types.</para></listitem>
-	  </itemizedlist>
-	</para>
+      <itemizedlist>
+        <listitem><para>The OCR output is cached, stored as separate
+        files. The caching is ultimately based on a hash value of the
+        original file contents, so that it is immune to file renames. A
+        first path-based layer ensures fast operation for unchanged
+        (unmoved files), and the data hash (which is still orders of
+        magnitude faster than OCR) is only re-computed if the file has
+        moved. OCR is only performed if the file was not previously
+        processed or if it changed.</para></listitem>
+        <listitem><para>The support for a specific program is implemented
+        in a simple Python module. It should be straightforward to add
+        support for any OCR engine with a capability to run from the
+        command line.</para></listitem>
+        <listitem><para>Modules initially exist for
+        <application>tesseract</application> (Linux and Windows), and
+        <application>ABBYY FineReader</application> (Linux, tested with
+        version 11). ABBYY FineReader is a commercial closed source
+        program, but it sometimes perform better than
+        tesseract.</para></listitem>
+        <listitem><para>The OCR is currently only called from the PDF
+        handler, but there should be no problem using it for other image
+        types.</para></listitem>
+      </itemizedlist>
+    </para>
 
-	  <para>To enable this feature, you need to install one of
-		the supported OCR applications
-		(<application>tesseract</application>
-		or <application>ABBYY</application>), enable OCR in the PDF
-		handler, and tell &RCL; where the appropriate command resides. The
-		last parts are done by setting configuration variables. See the
-		<link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.OCR">
-		relevant section</link>. All parameters can be localized in
-		subdirectories through the usual main configuration mechanism (path
-		sections).</para>
+      <para>To enable this feature, you need to install one of
+        the supported OCR applications
+        (<application>tesseract</application>
+        or <application>ABBYY</application>), enable OCR in the PDF
+        handler, and tell &RCL; where the appropriate command resides. The
+        last parts are done by setting configuration variables. See the
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.OCR">
+        relevant section</link>. All parameters can be localized in
+        subdirectories through the usual main configuration mechanism (path
+        sections).</para>
 
     </sect1>
 
@@ -1564,20 +1561,12 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
 
         <para>The GUI <menuchoice><guimenu>File</guimenu> </menuchoice>
         menu has entries to start or stop the current indexing
-        operation.</para>
+        operation. When indexing is not currently running, you have a
+        choice of updating the index or rebuilding it (the first choice
+        only processes changed files, the second one zeroes the index
+        before starting so that all files are processed).</para>
 
-        <para>When no indexing is running, you have a choice of updating the
-        index or rebuilding it (the first choice only processes changed
-        files, the second one zeroes the index before starting so that all
-        files are processed).</para>
-
-        <para>On Linux, the <command>recollindex</command> indexing process
-        can be interrupted by sending an interrupt
-        (<keysym>Ctrl-C</keysym>, SIGINT) or terminate (SIGTERM)
-        signal. 
-        </para>
-
-        <para>On Linux and Windows, the GUI can  used to manage the indexing
+        <para>On Linux and Windows, the GUI can be used to manage the indexing
         operation. Stopping the indexer can be done
         from the <command>recoll</command> GUI
         <menuchoice>
@@ -1585,6 +1574,12 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
           <guimenuitem>Stop Indexing</guimenuitem>
         </menuchoice>
         menu entry.
+        </para>
+
+        <para>On Linux, the <command>recollindex</command> indexing process
+        can be interrupted by sending an interrupt
+        (<keysym>Ctrl-C</keysym>, SIGINT) or terminate (SIGTERM)
+        signal. 
         </para>
 
         <para>When stopped, some time may elapse before
@@ -1601,6 +1596,10 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
         file tree will be traversed, but files that were indexed up
         to the interruption and for which the index is still up to
         date will not need to be reindexed).</para>
+      </simplesect>
+
+      <simplesect id="RCL.INDEXING.PERIODIC.CMDLINE">
+          <title>recollindex command line</title>
 
         <para><command>recollindex</command> has many options
         which are listed in its
@@ -1879,19 +1878,19 @@ fs.inotify.max_user_watches=32768
       <title>Searching with the Qt graphical user interface</title>
 
       <para>The <command>recoll</command> program provides the main user
-      interface for searching. It is based on the
-      <application>Qt</application> library.</para>
+        interface for searching. It is based on the
+        <application>Qt</application> library.</para>
 
-      <para><command>recoll</command> has two search modes:</para>
+      <para><command>recoll</command> has two search interfaces:</para>
       <itemizedlist>
         <listitem><para>Simple search (the default, on the main screen) has
-        a single entry field where you can enter multiple words.</para>
+            a single entry field where you can enter multiple words.</para>
         </listitem>
         <listitem><para>Advanced search (a panel accessed through the
-        <guilabel>Tools</guilabel> menu or the toolbox bar icon) has
-        multiple entry fields, which you may use to build a logical
-        condition, with additional filtering on file type, location
-        in the file system, modification date, and size.</para>
+            <guilabel>Tools</guilabel> menu or the toolbox bar icon) has
+            multiple entry fields, which you may use to build a logical
+            condition, with additional filtering on file type, location
+            in the file system, modification date, and size.</para>
         </listitem>
       </itemizedlist>
 
@@ -1956,32 +1955,6 @@ fs.inotify.max_user_watches=32768
         <link linkend="RCL.SEARCH.LANG">a separate section</link>.
         </para>  
 
-        <para>The <guilabel>File name</guilabel> search mode will
-        specifically look for file names. The point of having a separate
-        file name search is that wild card expansion can be performed more
-        efficiently on a small subset of the index (allowing wild cards on
-        the left of terms without excessive cost). Things to know:
-        <itemizedlist>
-          <listitem><para>White space in the entry should match white
-          space in the file name, and is not treated specially.</para>
-          </listitem>
-          <listitem><para>The search is insensitive to character case and
-          accents, independently of the type of index.</para>
-          </listitem>
-          <listitem><para>An entry without any wild card
-          character and not capitalized will be prepended and appended
-          with '*' (ie: <replaceable>etc</replaceable> ->
-          <replaceable>*etc*</replaceable>, but
-          <replaceable>Etc</replaceable> ->
-          <replaceable>etc</replaceable>).</para> 
-          </listitem>
-          <listitem><para>If you have a big index (many files),
-          excessively generic fragments may result in inefficient
-          searches.</para>
-          </listitem>
-        </itemizedlist>
-        </para>
-
         <para>When using a stripped index (the default), character case has
         no influence on search, except that you can disable stem expansion
         for any term by capitalizing it. Ie: a search for
@@ -2018,75 +1991,62 @@ fs.inotify.max_user_watches=32768
         <para>You can use the <link linkend="RCL.SEARCH.GUI.COMPLEX"><menuchoice><guimenu>Tools</guimenu><guimenuitem>Advanced search</guimenuitem></menuchoice></link>
         dialog for more complex searches.</para>
 
+        <para>The <guilabel>File name</guilabel> search mode will
+        specifically look for file names. The point of having a separate
+        file name search is that wild card expansion can be performed more
+        efficiently on a small subset of the index (allowing wild cards on
+        the left of terms without excessive cost). Things to know:
+        <itemizedlist>
+          <listitem><para>White space in the entry should match white
+          space in the file name, and is not treated specially.</para>
+          </listitem>
+          <listitem><para>The search is insensitive to character case and
+          accents, independently of the type of index.</para>
+          </listitem>
+          <listitem><para>An entry without any wild card
+          character and not capitalized will be prepended and appended
+          with '*' (ie: <replaceable>etc</replaceable> ->
+          <replaceable>*etc*</replaceable>, but
+          <replaceable>Etc</replaceable> ->
+          <replaceable>etc</replaceable>).</para> 
+          </listitem>
+          <listitem><para>If you have a big index (many files),
+          excessively generic fragments may result in inefficient
+          searches.</para>
+          </listitem>
+        </itemizedlist>
+        </para>
+
       </sect2>
 
       <sect2 id="RCL.SEARCH.GUI.RESLIST">
-        <title>The default result list</title>
+        <title>The result list</title>
 
         <para>After starting a search, a list of results will instantly
-        be displayed in the main list window.</para> 
+          be displayed in the main window.</para> 
 
         <para>By default, the document list is presented in order of
         relevance (how well the system estimates that the document
         matches the query). You can sort the result by ascending or
         descending date by using the vertical arrows in the toolbar.</para>
 
-        <para>Clicking on the
-        <literal>Preview</literal> link for an entry will open an
-        internal preview window for the document. Further
-        <literal>Preview</literal> clicks for the same search will open
-        tabs in the existing preview window. You can use
-        <keycap>Shift</keycap>+Click to force the creation of another
-        preview window, which may be useful to view the documents side
-        by side. (You can also browse successive results in a single
-        preview window by typing
-        <keycap>Shift</keycap>+<keycap>ArrowUp/Down</keycap> in the
-        window).</para> 
+        <para>Clicking the <literal>Preview</literal> link for an entry
+          will open an internal preview window for the document. Further
+          <literal>Preview</literal> clicks for the same search will open
+          tabs in the existing preview window. You can use
+          <keycap>Shift</keycap>+Click to force the creation of another
+          preview window, which may be useful to view the documents side
+          by side. (You can also browse successive results in a single
+          preview window by typing
+          <keycap>Shift</keycap>+<keycap>ArrowUp/Down</keycap> in the
+          window).</para> 
 
         <para>Clicking the <literal>Open</literal> link will
-        start an external viewer for the document. By default, &RCL; lets
-        the desktop choose the appropriate application for most document
-        types (there is a short list of exceptions, see further). If you
-        prefer to completely customize the choice of applications, you can
-        uncheck the <guilabel>Use desktop preferences</guilabel> option in
-        the GUI preferences dialog, and click the <guilabel>Choose editor
-        applications</guilabel> button to adjust the predefined &RCL;
-        choices. The tool accepts multiple selections of MIME types (e.g. to
-        set up the editor for the dozens of office file types).</para>
-
-        <para>Even when <guilabel>Use desktop preferences</guilabel> is
-        checked, there is a small list of exceptions, for MIME types where
-        the &RCL; choice should override the desktop one. These are
-        applications which are well integrated with &RCL;, especially
-        <application>evince</application> for viewing PDF and Postscript
-        files because of its support for opening the document at a specific
-        page and passing a search string as an argument. Of course, you can
-        edit the list (in the GUI preferences) if you would prefer to lose
-        the functionality and use the standard desktop tool.</para>
-
-        <para>You may also change the choice of applications by editing the
-        <link linkend="RCL.INSTALL.CONFIG.MIMEVIEW"><filename>mimeview</filename></link> 
-        configuration file if you find this more convenient.</para>
-
-        <para>Each result entry also has a right-click menu with an
-        <guilabel>Open With</guilabel> entry. This lets you choose an
-        application from the list of those which registered with the desktop
-        for the document MIME type.</para>
-
-        <para>The <literal>Preview</literal> and <literal>Open</literal>
-        edit links may not be present for all entries, meaning that
-        &RCL; has no configured way to preview a given file type (which
-        was indexed by name only), or no configured external editor for
-        the file type. This can sometimes be adjusted simply by tweaking
-        the <link linkend="RCL.INSTALL.CONFIG.MIMEMAP"><filename>mimemap</filename></link>
-        and  <link linkend="RCL.INSTALL.CONFIG.MIMEVIEW"><filename>mimeview</filename></link>
-        configuration files (the latter can be modified with the user
-        preferences dialog).</para>
-
-        <para>The format of the result list entries is entirely
-        configurable by using the preference dialog to 
-        <link linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST">edit an HTML fragment</link>.
-        </para>
+          start an external viewer for the document. By default, &RCL; lets
+          the desktop choose the appropriate application for most document
+          types. This currently not customisable on &WIN;. See 
+          <link linkend="RCL.SEARCH.GUI.RESLIST.APPLICATIONS">further</link>
+          for customizing the applications on &LIN;.</para>
 
         <para>You can click on the <literal>Query details</literal> link
         at the top of the results page to see the query actually 
@@ -2099,6 +2059,76 @@ fs.inotify.max_user_watches=32768
         you can change in the preferences). Use the arrow buttons in the
         toolbar or the links at the bottom of the page to browse the
         results.</para>
+
+        <para>The <literal>Preview</literal> and <literal>Open</literal>
+          edit links may not be present for all entries, meaning that
+          &RCL; has no configured way to preview a given file type (which
+          was indexed by name only), or no configured external editor for
+          the file type. This can sometimes be adjusted simply by tweaking
+          the <link linkend="RCL.INSTALL.CONFIG.MIMEMAP">
+            <filename>mimemap</filename></link>
+          and  <link linkend="RCL.INSTALL.CONFIG.MIMEVIEW">
+            <filename>mimeview</filename></link>
+          configuration files (the latter can be modified with the user
+          preferences dialog).</para>
+
+        <para>The format of the result list entries is entirely
+          configurable by using the preference dialog to 
+        <link linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST">
+          edit an HTML fragment</link>.</para>
+
+        <simplesect id="RCL.SEARCH.GUI.RESLIST.APPLICATIONS">
+          <title>&LIN;: customising the applications</title>
+
+          <para>By default &RCL; lets the desktop choose what
+            application should be used to open a given document, with
+            exceptions.</para> 
+
+          <para>The details of this behaviour can be customized with the
+            <menuchoice>
+              <guimenu>Preferences</guimenu>
+              <guimenuitem>GUI configuration</guimenuitem>
+              <guimenuitem>User interface</guimenuitem>
+              <guimenuitem>Choose editor applications</guimenuitem>
+            </menuchoice> dialog or by editing
+            the <link linkend="RCL.INSTALL.CONFIG.MIMEVIEW">
+              <filename>mimeview</filename> configuration file.</link></para>
+
+          <para>When <guilabel>Use desktop preferences</guilabel>, at the
+            top of the dialog, is checked, there is a small list of
+            exceptions, for MIME types where the &RCL; choice should
+            override the desktop one. These are applications which are well
+            integrated with &RCL;, for example, on
+            Linux, <application>evince</application> for viewing PDF and
+            Postscript files because of its support for opening the
+            document at a specific page and passing a search string as an
+            argument. You can add or remove document types to the
+            exceptions by using the dialog.</para>
+
+          <para>If you prefer to completely customize the choice of
+            applications, you can uncheck <guilabel>Use desktop
+            preferences</guilabel>, in which case the &RCL; predefined
+            applications will be used, and can be changed for each document
+            type. This is probably not the most convenient approach in most
+            cases.</para> 
+
+          <para>In all cases, the applications choice dialog accepts
+            multiple selections of MIME types in the top section, and lets
+            you define how they are processed in the bottom one.</para>
+
+          <para>You may also change the choice of applications by editing
+            the
+            <link linkend="RCL.INSTALL.CONFIG.MIMEVIEW">
+              <filename>mimeview</filename></link> 
+            configuration file if you find this more convenient.</para>
+
+          <para>Under &LIN;, each result list entry also has a right-click
+            menu with an
+            <guilabel>Open With</guilabel> entry. This lets you choose an
+            application from the list of those which registered with the desktop
+            for the document MIME type, on a case by case basis.</para>
+        </simplesect>
+
 
         <sect3 id="RCL.SEARCH.GUI.RESLIST.SUGGS">
           <title>No results: the spelling suggestions</title>
@@ -2143,17 +2173,17 @@ fs.inotify.max_user_watches=32768
           <guilabel>Open</guilabel> entries do the same thing as the 
           corresponding links.</para>
 
-          <para><guilabel>Open With</guilabel> lets you open the document
-          with one of the applications claiming to be able to handle its MIME
-          type (the information comes from the <literal>.desktop</literal>
-          files in 
-          <filename>/usr/share/applications</filename>).</para>
+          <para><guilabel>Open With</guilabel> (&LIN;) lets you open the
+          document with one of the applications claiming to be able to
+          handle its MIME type (the information comes from
+          the <literal>.desktop</literal> files
+          in <filename>/usr/share/applications</filename>).</para>
 
-          <para><guilabel>Run Script</guilabel> allows starting an arbitrary
-          command on the result file. It will only appear for results which
-          are top-level files. See
-          <link linkend="RCL.SEARCH.GUI.RUNSCRIPT">further</link> for a more
-          detailed description.</para>
+          <para><guilabel>Run Script</guilabel> (&LIN;) allows starting an
+          arbitrary command on the result file. It will only appear for
+          results which are top-level
+          files. See <link linkend="RCL.SEARCH.GUI.RUNSCRIPT">further</link>
+          for a more detailed description.</para>
 
           <para>The <guilabel>Copy File Name</guilabel> and
           <guilabel>Copy Url</guilabel> copy the relevant data to the
@@ -2203,10 +2233,10 @@ fs.inotify.max_user_watches=32768
       <sect2 id="RCL.SEARCH.GUI.RESTABLE">
         <title>The result table</title>
 
-        <para>In &RCL; 1.15 and newer, the results can be displayed in 
-        spreadsheet-like fashion. You can switch to this presentation by
-        clicking the table-like icon in the toolbar (this is a toggle,
-        click again to restore the list).</para>
+        <para>As an alternative to the result list, the results can also be
+          displayed in spreadsheet-like fashion. You can switch to this
+          presentation by clicking the table-like icon in the toolbar (this
+          is a toggle, click again to restore the list).</para>
 
         <para>Clicking on the column headers will allow sorting by the
         values in the column. You can click again to invert the order, and
@@ -2235,7 +2265,7 @@ fs.inotify.max_user_watches=32768
       </sect2>
 
       <sect2 id="RCL.SEARCH.GUI.RUNSCRIPT">
-        <title>Running arbitrary commands on result files (1.20 and later)</title>
+        <title>&LIN;: running arbitrary commands on result files</title> 
 
         <para>Apart from the <guilabel>Open</guilabel> and <guilabel>Open
         With</guilabel> operations, which allow starting an application on a
@@ -2280,7 +2310,7 @@ fs.inotify.max_user_watches=32768
       </sect2>
 
       <sect2 id="RCL.SEARCH.GUI.THUMBNAILS">
-        <title>Displaying thumbnails</title>
+        <title>&LIN;: displaying thumbnails</title>
 
         <para>The default format for the result list entries and the
         detail area of the result table display an icon for each result
@@ -2298,9 +2328,9 @@ fs.inotify.max_user_watches=32768
         your settings). Restarting the search should then display the
         thumbnails.</para>
         
-        <para>There are also <ulink url="&FAQS;ResultsThumbnails.wiki">some
-        pointers about  thumbnail generation</ulink> on the &RCL; wiki.
-        </para>
+        <para>There are also <ulink url="&FAQS;ResultsThumbnails.html">some
+            pointers about thumbnail generation</ulink> in the &RCL;
+            FAQ.</para> 
 
       </sect2>
 
@@ -2319,13 +2349,10 @@ fs.inotify.max_user_watches=32768
         create a new preview window. The old one stays open until you
         close it.</para>
 
-        <para>You can close a preview tab by typing <keycap>Ctrl-W</keycap> 
-        (<keycap>Ctrl</keycap> + <keycap>W</keycap>) in the
-        window. Closing the last tab for a window will also close the
-        window.</para> 
-
-        <para>Of course you can also close a preview window by using the
-        window manager button in the top of the frame.</para>
+        <para>You can close a preview tab by typing <keycap>Ctrl-W</keycap>
+        (<keycap>Ctrl</keycap> + <keycap>W</keycap>) in the window. Closing
+        the last tab, or using the window manager button in the top of the
+        frame will also close the window.</para>
 
         <para>You can display successive or previous documents from the
         result list inside a preview tab by typing
@@ -2476,9 +2503,6 @@ fs.inotify.max_user_watches=32768
         for a button, and the Query Language fragment which will be
         added (as an AND filter) before performing the query if the
         button is active.</para>
-
-        <para>This feature is new in &RCL; 1.20, and will probably be
-        refined depending on user feedback.</para>
 
       </sect2>
 
@@ -2839,11 +2863,10 @@ fs.inotify.max_user_watches=32768
         by an entry in the <guilabel>GUI configuration</guilabel>
         dialog, and is off by default.</para>
 
-        <para>As of release 1.19, when a result document does have
-        undisplayed duplicates, a <literal>Dups</literal>
-        link will be shown with the result list entry. Clicking the
-        link will display the paths (URLs + ipaths) for the duplicate
-        entries.</para>
+        <para>When a result document does have undisplayed duplicates,
+          a <literal>Dups</literal> link will be shown with the result list
+          entry. Clicking the link will display the paths (URLs + ipaths)
+          for the duplicate entries.</para>
 
       </sect2>
 
@@ -2942,24 +2965,24 @@ fs.inotify.max_user_watches=32768
           list.</para> 
           </formalpara>
 
-          <para>Phrase searches can strongly slow down a query if most of the
-          terms in the phrase are common. This is why the
-          <varname>autophrase</varname> option is off by default for &RCL;
-          versions before 1.17. As of version 1.17,
-          <varname>autophrase</varname> is on by default, but very common
-          terms will be removed from the constructed phrase. The removal
-          threshold can be adjusted from the search preferences.</para>
+          <para>Phrase searches can slow down a query if most of the
+            terms in the phrase are common. If
+            the <varname>autophrase</varname> option is on, very common
+            terms will be removed from the automatically constructed
+            phrase. The removal threshold can be adjusted from the search
+            preferences.</para>
 
-          <formalpara><title>Phrases and abbreviations</title> <para>As of
-          &RCL; version 1.17, dotted abbreviations like
-          <literal>I.B.M.</literal> are also automatically indexed as a word
-          without the dots: <literal>IBM</literal>. Searching for the word
-          inside a phrase (ie: <literal>"the IBM company"</literal>) will only
-          match the dotted abrreviation if you increase the phrase slack (using the
-          advanced search panel control, or the <literal>o</literal> query
-          language modifier). Literal occurences of the word will be matched
-          normally.</para></formalpara>
-
+          <formalpara><title>Phrases and abbreviations</title> 
+            <para>Dotted abbreviations like
+              <literal>I.B.M.</literal> are also automatically indexed as a
+              word without the dots: <literal>IBM</literal>. Searching for
+              the word inside a phrase (ie: <literal>"the IBM
+              company"</literal>) will only match the dotted abrreviation
+              if you increase the phrase slack (using the advanced search
+              panel control, or the <literal>o</literal> query language
+              modifier). Literal occurences of the word will be matched
+              normally.</para>
+          </formalpara>
 
         </sect3>
 
@@ -3377,18 +3400,24 @@ fs.inotify.max_user_watches=32768
         <sect3 id="RCL.SEARCH.GUI.CUSTOM.RESLIST">
           <title>The result list format</title>
 
-          <para>Newer versions of Recoll (from 1.17) normally use WebKit HTML
-          widgets for the result list and the 
-          <link linkend="RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">snippets window</link>
-          (this may be disabled at build time). 
-          Total customisation is possible with full support for CSS and
-          Javascript. Conversely, there are limits to what you can do with
-          the older Qt QTextBrowser, but still, it is possible to decide
-          what data each result will contain, and how it will be
-          displayed.</para>
+          <para>Recoll normally uses a full function HTML processor to
+            display the result list and the 
+          <link linkend="RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">
+            snippets window</link>. Depending on the version, this may be
+          based on either Qt WebKit or Qt WebEngine.
+          It is then possible to completely customise the result list with full
+          support for CSS and Javascript.</para>
 
-          <para>The result list presentation can be exhaustively customized
-          by adjusting two elements:
+          <para>It is also possible to build &RCL; to use a simpler Qt
+            QTextBrowser widget to display the HTML, which may be necessary
+            if the ones above are not ported on the system, or to reduce
+            the application size and dependancies. There are limits to what
+            you can do in this case, but it is still possible to decide
+            what data each result will contain, and how it will be
+            displayed.</para>
+
+          <para>The result list presentation can be customized
+            by adjusting two elements:
 
           <itemizedlist>
             <listitem><para>The paragraph format</para></listitem>
