@@ -2454,46 +2454,52 @@ fs.inotify.max_user_watches=32768
         contains an example which filters the results from the WEB
         history.</para>
 
+
         <para>Here follows an example:
-        <programlisting>
-          &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<fragbuts version="1.0">
 
-          &lt;fragbuts version=&quot;1.0&quot;&gt;
+  <radiobuttons>
+    <!-- Actually useful: toggle WEB queue results inclusion -->
+    <fragbut>
+      <label>Include Web Results</label>
+      <frag></frag>
+    </fragbut>
 
-          &lt;radiobuttons&gt;
+    <fragbut>
+      <label>Exclude Web Results</label>
+      <frag>-rclbes:BGL</frag>
+    </fragbut>
 
-          &lt;fragbut&gt;
-          &lt;label&gt;Include Web Results&lt;/label&gt;
-          &lt;frag&gt;&lt;/frag&gt;
-          &lt;/fragbut&gt;
+    <fragbut>
+      <label>Only Web Results</label>
+      <frag>rclbes:BGL</frag>
+    </fragbut>
 
-          &lt;fragbut&gt;
-          &lt;label&gt;Exclude Web Results&lt;/label&gt;
-          &lt;frag&gt;-rclbes:BGL&lt;/frag&gt;
-          &lt;/fragbut&gt;
+  </radiobuttons>
 
-          &lt;fragbut&gt;
-          &lt;label&gt;Only Web Results&lt;/label&gt;
-          &lt;frag&gt;rclbes:BGL&lt;/frag&gt;
-          &lt;/fragbut&gt;
+  <buttons>
 
-          &lt;/radiobuttons&gt;
+    <fragbut>
+      <label>Example: Year 2010</label>
+      <frag>date:2010-01-01/2010-12-31</frag>
+    </fragbut>
 
-          &lt;buttons&gt;
+    <fragbut>
+      <label>Example: c++ files</label>
+      <frag>ext:cpp OR ext:cxx</frag>
+    </fragbut>
 
-          &lt;fragbut&gt;
-          &lt;label&gt;Year 2010&lt;/label&gt;
-          &lt;frag&gt;date:2010-01-01/2010-12-31&lt;/frag&gt;
-          &lt;/fragbut&gt;
+    <fragbut>
+      <label>Example: My Great Directory</label>
+      <frag>dir:/my/great/directory</frag>
+    </fragbut>
 
-          &lt;fragbut&gt;
-          &lt;label&gt;My Great Directory Only&lt;/label&gt;
-          &lt;frag&gt;dir:/my/great/directory&lt;/frag&gt;
-          &lt;/fragbut&gt;
+  </buttons>
 
-          &lt;/buttons&gt;
-          &lt;/fragbuts&gt;
-        </programlisting>
+</fragbuts>
+        ]]></programlisting>
         </para>
         
         <para>Each <literal>radiobuttons</literal> or
@@ -2745,6 +2751,16 @@ fs.inotify.max_user_watches=32768
             environment. Weird things will probably happen if
             languages are mixed up.</para></listitem>
           </varlistentry>
+          <varlistentry>
+            <term>Show index statistics</term> <listitem><para>This will
+                print a long list of boring numbers about the index</para>
+          </listitem></varlistentry>
+          <varlistentry>
+            <term>List files which could not be indexed</term>
+            <listitem><para>This will show the files which caused errors,
+                usually because <command>recollindex</command> could not
+                translate their format into text.</para>
+          </listitem></varlistentry>
         </variablelist>
 
         <para>Note that in cases where &RCL; does not know the beginning
@@ -2804,22 +2820,16 @@ fs.inotify.max_user_watches=32768
         </para>
         <screen>export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</screen> 
 
-        <para>Another environment variable, 
-        <envar>RECOLL_ACTIVE_EXTRA_DBS</envar> allows adding to the active
-        list of indexes. This variable was suggested and implemented by a
-        &RCL; user. It is mostly useful if you use scripts to mount
-        external volumes with &RCL; indexes. By using
-        <envar>RECOLL_EXTRA_DBS</envar> and
-        <envar>RECOLL_ACTIVE_EXTRA_DBS</envar>, you can add and activate
-        the index for the mounted volume when starting
-        <command>recoll</command>.
-        </para>
-        
-        <para><envar>RECOLL_ACTIVE_EXTRA_DBS</envar> is available for
-        &RCL; versions 1.17.2 and later. A change was made in the same
-        update so that <command>recoll</command> will
-        automatically deactivate unreachable indexes when starting
-        up.</para>
+        <para>Another environment
+        variable, <envar>RECOLL_ACTIVE_EXTRA_DBS</envar> allows adding to
+        the active list of indexes. This variable was suggested and
+        implemented by a &RCL; user. It is mostly useful if you use scripts
+        to mount external volumes with &RCL; indexes. By
+        using <envar>RECOLL_EXTRA_DBS</envar>
+        and <envar>RECOLL_ACTIVE_EXTRA_DBS</envar>, you can add and
+        activate the index for the mounted volume when
+        starting <command>recoll</command>. Unreachable indexes will 
+        automatically be deactivated  when starting up.</para>
 
       </sect2>
 
@@ -4261,8 +4271,9 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
     <sect1 id="RCL.SEARCH.SYNONYMS">
       <title>Using Synonyms (1.22)</title>
 
-      <formalpara><title>Term synonyms:</title>
-      <para>there are a number of ways to use term synonyms for searching text:
+      <formalpara><title>Term synonyms and text search:</title> <para>in
+      general, there are two main ways to use term synonyms for
+      searching text:
       <itemizedlist>
         <listitem><para>At index creation time, they can be used to alter the 
         indexed terms, either increasing or decreasing their number, by
@@ -4478,11 +4489,20 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       available:
       <itemizedlist>
         <listitem>
-          <para>The <application>KDE</application> KIO Slave was
-          described in a <link linkend="RCL.SEARCH.KIO">previous section</link>.</para>
+          <para>Users of recent Ubuntu-derived distributions, or
+            any other Gnome desktop systems (e.g. Fedora) can install the
+            <ulink 
+              url="https://www.lesbonscomptes.com/recoll/download.html#gssp">
+              Recoll GSSP</ulink> (Gnome Shell Search Provider).</para>
         </listitem>
         <listitem>
-          <para>If you use a recent version of Ubuntu Linux, you may
+          <para>The <application>KDE</application> KIO Slave was described
+            in a <link linkend="RCL.SEARCH.KIO">previous
+              section</link>. It can provide search results
+              inside <command>Dolphin</command>. </para>
+        </listitem>
+        <listitem>
+          <para>If you use an oldish version of Ubuntu Linux, you may
           find the <ulink url="&FAQS;UnityLens">Ubuntu Unity
           Lens</ulink> module useful.</para>
         </listitem>
@@ -4583,8 +4603,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       in C++ and live inside <command>recollindex</command>. This latter
       kind will not be described here.</para>
 
-      <para>There are currently (since version 1.13) two kinds of
-      external executable input handlers:
+      <para>There are two kinds of external executable input handlers:
       <itemizedlist>
         <listitem><para>Simple <literal>exec</literal> handlers
         run once and exit. They can be bare programs like
@@ -4711,34 +4730,32 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <itemizedlist>
           <listitem><para><literal>rclimg</literal> is written in Perl and
           handles the execm protocol all by itself (showing how trivial it
-          is).</para></listitem>
-          <listitem><para>All the Python handlers share at least the
-          <filename>rclexecm.py</filename> module, which handles the
-          communication. Have a look at, for example,
-          <filename>rclzip</filename> for a handler which uses
-          <filename>rclexecm.py</filename> directly.</para></listitem>
-          <listitem><para>Most Python handlers which process
-          single-document files by executing another command are further
-          abstracted by using the <filename>rclexec1.py</filename>
-          module. See for example <filename>rclrtf.py</filename> for a
-          simple one, or <filename>rcldoc.py</filename> for a slightly more
-          complicated one (possibly executing several
-          commands).</para></listitem> 
-          <listitem><para>Handlers which extract text from an XML document
-          by using an XSLT style sheet are now executed inside
-          <command>recollindex</command>, with only the style sheet stored
-          in the <filename>filters/</filename> directory. These can
-          use a single style sheet (e.g. <filename>abiword.xsl</filename>),
-          or two sheets for the data and metadata
-          (e.g. <filename>opendoc-body.xsl</filename> and
-          <filename>opendoc-meta.xsl</filename>). The
-          <filename>mimeconf</filename> configuration file defines how the
-          sheets are used, have a look. Before the C++ import, the
-          xsl-based handlers used a common module
-          <filename>rclgenxslt.py</filename>, it is still around but
-          unused. The handler for OpenXML presentations is still the Python
-          version because the format did not fit with what the C++ code
-          does. It would be a good base for another similar
+          is).</para></listitem> <listitem><para>All the Python handlers
+          share at least the <filename>rclexecm.py</filename> module, which
+          handles the communication. Have a look at, for
+          example, <filename>rclzip</filename> for a handler which
+          uses <filename>rclexecm.py</filename>
+          directly.</para></listitem> <listitem><para>Most Python handlers
+          which process single-document files by executing another command
+          are further abstracted by using
+          the <filename>rclexec1.py</filename> module. See for
+          example <filename>rclrtf.py</filename> for a simple one,
+          or <filename>rcldoc.py</filename> for a slightly more complicated
+          one (possibly executing several
+          commands).</para></listitem> <listitem><para>Handlers which
+          extract text from an XML document by using an XSLT style sheet
+          are now executed inside <command>recollindex</command>, with only
+          the style sheet stored in the <filename>filters/</filename>
+          directory. These can use a single style sheet
+          (e.g. <filename>abiword.xsl</filename>), or two sheets for the
+          data and metadata (e.g. <filename>opendoc-body.xsl</filename>
+          and <filename>opendoc-meta.xsl</filename>). The <filename>mimeconf</filename>
+          configuration file defines how the sheets are used, have a
+          look. Before the C++ import, the xsl-based handlers used a common
+          module <filename>rclgenxslt.py</filename>, it is still around but
+          unused at the moment. The handler for OpenXML presentations is
+          still the Python version because the format did not fit with what
+          the C++ code does. It would be a good base for another similar
           issue.</para></listitem>
         </itemizedlist>
         </para>
@@ -4878,16 +4895,16 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         
         <para>For filters producing HTML, the output could be very minimal
         like the following example:
-        <programlisting>
-          &lt;html>
-          &lt;head>
-          &lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-          &lt;/head>
-          &lt;body>
-          Some text content
-          &lt;/body>
-          &lt;/html>
-        </programlisting>
+          <programlisting><![CDATA[
+          <html>
+            <head>
+              <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+            </head>
+            <body>
+              Some text content
+            </body>
+          </html>
+          ]]></programlisting>
         </para>
 
         <para>You should take care to escape some
@@ -5087,9 +5104,16 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         Python2 and Python3.</para>
 
         <para>The search interface is used in a number of active projects:
-        the &RCL; <application>Gnome Shell Search Provider</application>,
-        the &RCL; Web UI, and the upmpdcli UPnP Media Server, in addition
-        to many small scripts.</para>
+        the <ulink 
+              url="https://www.lesbonscomptes.com/recoll/download.html#gssp">
+            &RCL; <application>Gnome Shell Search Provider</application>
+          </ulink>,
+        the <ulink url="https://opensourceprojects.eu/p/recollwebui/code/">
+            &RCL; Web UI</ulink>, and the 
+          <ulink 
+       url="https://www.lesbonscomptes.com/upmpdcli/upmpdcli-manual.html#UPRCL">
+            upmpdcli UPnP Media Server</ulink>, in addition 
+          to many small scripts.</para>
 
         <para>The index update section of the API may be used to create and
         update &RCL; indexes on specific configurations (separate from the

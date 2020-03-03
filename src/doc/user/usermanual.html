@@ -3446,43 +3446,48 @@ fs.inotify.max_user_watches=32768
           WEB history.</p>
           <p>Here follows an example:</p>
           <pre class="programlisting">
-          &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;fragbuts version="1.0"&gt;
 
-          &lt;fragbuts version="1.0"&gt;
+  &lt;radiobuttons&gt;
+    &lt;!-- Actually useful: toggle WEB queue results inclusion --&gt;
+    &lt;fragbut&gt;
+      &lt;label&gt;Include Web Results&lt;/label&gt;
+      &lt;frag&gt;&lt;/frag&gt;
+    &lt;/fragbut&gt;
 
-          &lt;radiobuttons&gt;
+    &lt;fragbut&gt;
+      &lt;label&gt;Exclude Web Results&lt;/label&gt;
+      &lt;frag&gt;-rclbes:BGL&lt;/frag&gt;
+    &lt;/fragbut&gt;
 
-          &lt;fragbut&gt;
-          &lt;label&gt;Include Web Results&lt;/label&gt;
-          &lt;frag&gt;&lt;/frag&gt;
-          &lt;/fragbut&gt;
+    &lt;fragbut&gt;
+      &lt;label&gt;Only Web Results&lt;/label&gt;
+      &lt;frag&gt;rclbes:BGL&lt;/frag&gt;
+    &lt;/fragbut&gt;
 
-          &lt;fragbut&gt;
-          &lt;label&gt;Exclude Web Results&lt;/label&gt;
-          &lt;frag&gt;-rclbes:BGL&lt;/frag&gt;
-          &lt;/fragbut&gt;
+  &lt;/radiobuttons&gt;
 
-          &lt;fragbut&gt;
-          &lt;label&gt;Only Web Results&lt;/label&gt;
-          &lt;frag&gt;rclbes:BGL&lt;/frag&gt;
-          &lt;/fragbut&gt;
+  &lt;buttons&gt;
 
-          &lt;/radiobuttons&gt;
+    &lt;fragbut&gt;
+      &lt;label&gt;Example: Year 2010&lt;/label&gt;
+      &lt;frag&gt;date:2010-01-01/2010-12-31&lt;/frag&gt;
+    &lt;/fragbut&gt;
 
-          &lt;buttons&gt;
+    &lt;fragbut&gt;
+      &lt;label&gt;Example: c++ files&lt;/label&gt;
+      &lt;frag&gt;ext:cpp OR ext:cxx&lt;/frag&gt;
+    &lt;/fragbut&gt;
 
-          &lt;fragbut&gt;
-          &lt;label&gt;Year 2010&lt;/label&gt;
-          &lt;frag&gt;date:2010-01-01/2010-12-31&lt;/frag&gt;
-          &lt;/fragbut&gt;
+    &lt;fragbut&gt;
+      &lt;label&gt;Example: My Great Directory&lt;/label&gt;
+      &lt;frag&gt;dir:/my/great/directory&lt;/frag&gt;
+    &lt;/fragbut&gt;
 
-          &lt;fragbut&gt;
-          &lt;label&gt;My Great Directory Only&lt;/label&gt;
-          &lt;frag&gt;dir:/my/great/directory&lt;/frag&gt;
-          &lt;/fragbut&gt;
+  &lt;/buttons&gt;
 
-          &lt;/buttons&gt;
-          &lt;/fragbuts&gt;
+&lt;/fragbuts&gt;
         </pre>
           <p>Each <code class="literal">radiobuttons</code> or
           <code class="literal">buttons</code> section defines a
@@ -3781,6 +3786,20 @@ fs.inotify.max_user_watches=32768
                 your NLS environment. Weird things will probably
                 happen if languages are mixed up.</p>
               </dd>
+              <dt><span class="term">Show index
+              statistics</span></dt>
+              <dd>
+                <p>This will print a long list of boring numbers
+                about the index</p>
+              </dd>
+              <dt><span class="term">List files which could not be
+              indexed</span></dt>
+              <dd>
+                <p>This will show the files which caused errors,
+                usually because <span class=
+                "command"><strong>recollindex</strong></span> could
+                not translate their format into text.</p>
+              </dd>
             </dl>
           </div>
           <p>Note that in cases where <span class=
@@ -3862,14 +3881,9 @@ fs.inotify.max_user_watches=32768
           <code class="envar">RECOLL_ACTIVE_EXTRA_DBS</code>, you
           can add and activate the index for the mounted volume
           when starting <span class=
-          "command"><strong>recoll</strong></span>.</p>
-          <p><code class="envar">RECOLL_ACTIVE_EXTRA_DBS</code> is
-          available for <span class="application">Recoll</span>
-          versions 1.17.2 and later. A change was made in the same
-          update so that <span class=
-          "command"><strong>recoll</strong></span> will
-          automatically deactivate unreachable indexes when
-          starting up.</p>
+          "command"><strong>recoll</strong></span>. Unreachable
+          indexes will automatically be deactivated when starting
+          up.</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -5579,8 +5593,9 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             </div>
           </div>
         </div>
-        <p><b>Term synonyms:&nbsp;</b>there are a number of ways to
-        use term synonyms for searching text:</p>
+        <p><b>Term synonyms and text search:&nbsp;</b>in general,
+        there are two main ways to use term synonyms for searching
+        text:</p>
         <div class="itemizedlist">
           <ul class="itemizedlist" style="list-style-type: disc;">
             <li class="listitem">
@@ -5830,14 +5845,24 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <div class="itemizedlist">
           <ul class="itemizedlist" style="list-style-type: disc;">
             <li class="listitem">
+              <p>Users of recent Ubuntu-derived distributions, or
+              any other Gnome desktop systems (e.g. Fedora) can
+              install the <a class="ulink" href=
+              "https://www.lesbonscomptes.com/recoll/download.html#gssp"
+              target="_top">Recoll GSSP</a> (Gnome Shell Search
+              Provider).</p>
+            </li>
+            <li class="listitem">
               <p>The <span class="application">KDE</span> KIO Slave
               was described in a <a class="link" href=
               "#RCL.SEARCH.KIO" title=
               "3.3.&nbsp;Searching with the KDE KIO slave">previous
-              section</a>.</p>
+              section</a>. It can provide search results inside
+              <span class=
+              "command"><strong>Dolphin</strong></span>.</p>
             </li>
             <li class="listitem">
-              <p>If you use a recent version of Ubuntu Linux, you
+              <p>If you use an oldish version of Ubuntu Linux, you
               may find the <a class="ulink" href=
               "https://www.lesbonscomptes.com/recoll/faqsandhowtos/UnityLens"
               target="_top">Ubuntu Unity Lens</a> module
@@ -5975,8 +6000,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         C++ and live inside <span class=
         "command"><strong>recollindex</strong></span>. This latter
         kind will not be described here.</p>
-        <p>There are currently (since version 1.13) two kinds of
-        external executable input handlers:</p>
+        <p>There are two kinds of external executable input
+        handlers:</p>
         <div class="itemizedlist">
           <ul class="itemizedlist" style="list-style-type: disc;">
             <li class="listitem">
@@ -6180,10 +6205,11 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
                 have a look. Before the C++ import, the xsl-based
                 handlers used a common module <code class=
                 "filename">rclgenxslt.py</code>, it is still around
-                but unused. The handler for OpenXML presentations
-                is still the Python version because the format did
-                not fit with what the C++ code does. It would be a
-                good base for another similar issue.</p>
+                but unused at the moment. The handler for OpenXML
+                presentations is still the Python version because
+                the format did not fit with what the C++ code does.
+                It would be a good base for another similar
+                issue.</p>
               </li>
             </ul>
           </div>
@@ -6366,14 +6392,14 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           minimal like the following example:</p>
           <pre class="programlisting">
           &lt;html&gt;
-          &lt;head&gt;
-          &lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8"&gt;
-          &lt;/head&gt;
-          &lt;body&gt;
-          Some text content
-          &lt;/body&gt;
+            &lt;head&gt;
+              &lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/&gt;
+            &lt;/head&gt;
+            &lt;body&gt;
+              Some text content
+            &lt;/body&gt;
           &lt;/html&gt;
-        </pre>
+          </pre>
           <p>You should take care to escape some characters inside
           the text by transforming them into appropriate entities.
           At the very minimum, "<code class="literal">&amp;</code>"
@@ -6613,11 +6639,17 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           for creating/updating an index. Bindings exist for
           Python2 and Python3.</p>
           <p>The search interface is used in a number of active
-          projects: the <span class="application">Recoll</span>
+          projects: the <a class="ulink" href=
+          "https://www.lesbonscomptes.com/recoll/download.html#gssp"
+          target="_top"><span class="application">Recoll</span>
           <span class="application">Gnome Shell Search
-          Provider</span>, the <span class=
-          "application">Recoll</span> Web UI, and the upmpdcli UPnP
-          Media Server, in addition to many small scripts.</p>
+          Provider</span></a> , the <a class="ulink" href=
+          "https://opensourceprojects.eu/p/recollwebui/code/"
+          target="_top"><span class="application">Recoll</span> Web
+          UI</a>, and the <a class="ulink" href=
+          "https://www.lesbonscomptes.com/upmpdcli/upmpdcli-manual.html#UPRCL"
+          target="_top">upmpdcli UPnP Media Server</a>, in addition
+          to many small scripts.</p>
           <p>The index update section of the API may be used to
           create and update <span class="application">Recoll</span>
           indexes on specific configurations (separate from the
