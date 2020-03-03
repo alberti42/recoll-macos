@@ -168,6 +168,7 @@ signals:
     void sortDataChanged(DocSeqSortSpec);
     void resultsReady();
     void searchReset();
+    void uiPrefsChanged();
 
 protected:
     virtual void closeEvent(QCloseEvent *);

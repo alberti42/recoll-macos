@@ -94,7 +94,8 @@ class ResTableDetailArea : public QTextBrowser {
     
  public slots:
     virtual void createPopupMenu(const QPoint& pos);
-
+    virtual void setFont();
+    
 private:
     ResTable *m_table;
 };
@@ -156,7 +157,8 @@ public slots:
     virtual void linkWasClicked(const QUrl&);
     virtual void makeRowVisible(int row);
     virtual void takeFocus();
-
+    virtual void onUiPrefsChanged();
+    
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);
     void docSaveToFileClicked(Rcl::Doc);

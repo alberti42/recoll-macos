@@ -63,6 +63,10 @@ static const QKeySequence closeKeySeq("Ctrl+w");
 static const int ROWHEIGHTPAD = 2;
 static const int TEXTINCELLVTRANS = -4;
 
+// Adjust font size from prefs, display is slightly different here
+static const int fsadjustdetail = 1;
+static const int fsadjusttable = 1;
+
 static PlainToRichQtReslist g_hiliter;
 
 //////////////////////////////////////////////////////////////////////////
@@ -141,6 +145,21 @@ void ResTableDetailArea::createPopupMenu(const QPoint& pos)
                                            m_table->m_model->getDocSource(),
                                            m_table->m_detaildoc);
         popup->popup(mapToGlobal(pos));
+    }
+}
+
+void ResTableDetailArea::setFont()
+{
+    if (prefs.reslistfontsize) {
+        // fs shows slightly bigger in qtextbrowser? adjust.
+        int fs = prefs.reslistfontsize;
+        if (prefs.reslistfontsize > fsadjustdetail) {
+            fs -= fsadjustdetail;
+        }
+        QFont nfont(prefs.reslistfontfamily, fs);
+        QTextBrowser::setFont(nfont);
+    } else {
+        QTextBrowser::setFont(QFont());
     }
 }
 
@@ -356,6 +375,18 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
 {
     LOGDEB2("RecollModel::data: row " << index.row() << " col " <<
             index.column() << " role " << role << "\n");
+
+    // The font is actually set in the custom delegate, but we need
+    // this to adjust the row height (there is probably a better way
+    // to do it in the delegate?)
+    if (role == Qt::FontRole && prefs.reslistfontsize > 0) {
+        QFont font = m_table->font();
+        int fs = prefs.reslistfontsize <= fsadjusttable ? prefs.reslistfontsize:
+            prefs.reslistfontsize - fsadjusttable;
+        font.setPointSize(fs);
+        return font;
+    }    
+
     if (!m_source || role != Qt::DisplayRole || !index.isValid() ||
         index.column() >= int(m_fields.size())) {
         return QVariant();
@@ -460,44 +491,56 @@ public:
     // and a way to pass an indicator from data(), a bit more
     // difficult. Anyway, the display seems fast enough as is.
     void paint(QPainter *painter, const QStyleOptionViewItem &option, 
-               const QModelIndex &index) const
-        {
-            QStyleOptionViewItem opt = option;
-            initStyleOption(&opt, index);
-            QVariant value = index.data(Qt::DisplayRole);
-            if (value.isValid() && !value.isNull()) {
-                QString text = value.toString();
-                if (!text.isEmpty()) {
-                    QTextDocument document;
-                    painter->save();
-                    if (opt.state & QStyle::State_Selected) {
-                        painter->fillRect(opt.rect, opt.palette.highlight());
-                        // Set the foreground color. The pen approach does
-                        // not seem to work, probably it's reset by the
-                        // textdocument. Couldn't use
-                        // setdefaultstylesheet() either. the div thing is
-                        // an ugly hack. Works for now
-#if 0
-                        QPen pen = painter->pen();
-                        pen.setBrush(opt.palette.brush(QPalette::HighlightedText));
-                        painter->setPen(pen);
-#else
-                        text = QString::fromUtf8("<div style='color: white'> ") + 
-                            text + QString::fromUtf8("</div>");
-#endif
-                    } 
-                    painter->setClipRect(option.rect);
-                    QPoint where = option.rect.topLeft();
-                    where.ry() += TEXTINCELLVTRANS;
-                    painter->translate(where);
-                    document.setHtml(text);
-                    document.drawContents(painter);
-                    painter->restore();
-                    return;
-                } 
-            }
-            QStyledItemDelegate::paint(painter, option, index);
+               const QModelIndex &index) const {
+        QStyleOptionViewItem opt = option;
+        initStyleOption(&opt, index);
+        QVariant value = index.data(Qt::DisplayRole);
+        if (value.isValid() && !value.isNull()) {
+            QString text = value.toString();
+            if (!text.isEmpty()) {
+                QTextDocument document;
+                painter->save();
+                QString fstyle;
+                if (prefs.reslistfontsize > 0) {
+                    int fs = prefs.reslistfontsize <= fsadjusttable ?
+                        prefs.reslistfontsize :
+                        prefs.reslistfontsize - fsadjusttable;
+                    fstyle = QString("font-size: %1pt").arg(fs);
+                }
+                if (opt.state & QStyle::State_Selected) {
+                    painter->fillRect(opt.rect, opt.palette.highlight());
+                    // Set the foreground color. Tried with pen
+                    // approach did not seem to work, probably it's
+                    // reset by the textdocument. Couldn't use
+                    // setdefaultstylesheet() either. the div thing is
+                    // an ugly hack. Works for now
+                    QString ntxt("<div style='color: white");
+                    if (!fstyle.isEmpty()) {
+                        ntxt += QString(";") + fstyle;
+                    }
+                    ntxt += "'>";
+                    ntxt += text + QString::fromUtf8("</div>");
+                    text.swap(ntxt);
+                } else {
+                    if (!fstyle.isEmpty()) {
+                        QString ntxt("<div style='");
+                        ntxt += fstyle;
+                        ntxt += QString("'>") + text + QString("</div>");
+                        text.swap(ntxt);
+                    }
+                }
+                painter->setClipRect(option.rect);
+                QPoint where = option.rect.topLeft();
+                where.ry() += TEXTINCELLVTRANS;
+                painter->translate(where);
+                document.setHtml(text);
+                document.drawContents(painter);
+                painter->restore();
+                return;
+            } 
         }
+        QStyledItemDelegate::paint(painter, option, index);
+    }
 };
 
 void ResTable::init()
@@ -543,6 +586,7 @@ void ResTable::init()
     if (header) {
         header->setDefaultSectionSize(QApplication::fontMetrics().height() + 
                                       ROWHEIGHTPAD);
+        header->setSectionResizeMode(QHeaderView::ResizeToContents);        
     }
 
     QShortcut *sc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
@@ -571,6 +615,7 @@ void ResTable::init()
     m_detail->setReadOnly(true);
     m_detail->setUndoRedoEnabled(false);
     m_detail->setOpenLinks(false);
+    m_detail->setFont();
     // signals and slots connections
     connect(m_detail, SIGNAL(anchorClicked(const QUrl &)), 
             this, SLOT(linkWasClicked(const QUrl &)));
@@ -624,6 +669,12 @@ void ResTable::setRclMain(RclMain *m, bool ismain)
             m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
     connect(this, SIGNAL(showSnippets(Rcl::Doc)), 
             m_rclmain, SLOT(showSnippets(Rcl::Doc)));
+}
+
+void ResTable::onUiPrefsChanged()
+{
+    if (m_detail)
+        m_detail->setFont();
 }
 
 int ResTable::getDetailDocNumOrTopRow()
@@ -835,8 +886,8 @@ void ResTable::linkWasClicked(const QUrl &url)
     // Open parent folder
     case 'F':
     {
-        emit editRequested(ResultPopup::getParent(std::shared_ptr<DocSequence>(),
-                                                  m_detaildoc));
+        emit editRequested(ResultPopup::getParent(
+                               std::shared_ptr<DocSequence>(), m_detaildoc));
     }
     break;
 
@@ -1084,4 +1135,3 @@ void ResTable::addColumn()
            qs2utf8s(action->data().toString()) << "\n");
     m_model->addColumn(m_popcolumn, qs2utf8s(action->data().toString()));
 }
-

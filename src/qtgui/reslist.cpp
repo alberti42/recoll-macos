@@ -453,6 +453,11 @@ void ResList::runJS(const QString& js)
 #endif
 }
 
+void ResList::onUiPrefsChanged()
+{
+    setFont();
+}
+
 void ResList::setFont()
 {
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)

@@ -93,7 +93,8 @@ public slots:
     virtual void highlighted(const QString& link);
     virtual void createPopupMenu(const QPoint& pos);
     virtual void showQueryDetails();
-        
+    virtual void onUiPrefsChanged();
+    
 signals:
     void nextPageAvailable(bool);
     void prevPageAvailable(bool);

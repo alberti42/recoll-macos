@@ -297,6 +297,7 @@ void RclMain::init()
             this, SLOT(onSetDescription(QString)));
     connect(sSearch, SIGNAL(clearSearch()), 
             this, SLOT(resetSearch()));
+    connect(this, SIGNAL(uiPrefsChanged()), sSearch, SLOT(setPrefs()));
     connect(preferencesMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(setStemLang(QAction*)));
     connect(preferencesMenu, SIGNAL(aboutToShow()),
@@ -373,6 +374,7 @@ void RclMain::init()
             restable, SLOT(readDocSource()));
     connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
             restable, SLOT(onSortDataChanged(DocSeqSortSpec)));
+    connect(this, SIGNAL(uiPrefsChanged()), restable, SLOT(onUiPrefsChanged()));
 
     connect(restable->getModel(), SIGNAL(sortDataChanged(DocSeqSortSpec)),
             this, SLOT(onSortDataChanged(DocSeqSortSpec)));
@@ -399,7 +401,8 @@ void RclMain::init()
             reslist, SLOT(resetList()));
     connect(this, SIGNAL(resultsReady()), 
             reslist, SLOT(readDocSource()));
-
+    connect(this, SIGNAL(uiPrefsChanged()), reslist, SLOT(onUiPrefsChanged()));
+    
     connect(reslist, SIGNAL(hasResults(int)), 
             this, SLOT(resultCount(int)));
     connect(reslist, SIGNAL(wordSelect(QString)),
@@ -1091,8 +1094,7 @@ void RclMain::setUIPrefs()
     if (!uiprefs)
         return;
     LOGDEB("Recollmain::setUIPrefs\n");
-    reslist->setFont();
-    sSearch->setPrefs();
+    emit uiPrefsChanged();
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
     enbSynAction->setChecked(prefs.synFileEnable);
 }
