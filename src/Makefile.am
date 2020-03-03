@@ -657,7 +657,6 @@ filters/openxml-word-body.xsl \
 filters/openxml-meta.xsl \
 filters/ppt-dump.py \
 filters/rcl7z \
-filters/rclabw.py \
 filters/rclaptosidman \
 filters/rclaudio \
 filters/rclbasehandler.py \
@@ -675,7 +674,6 @@ filters/rclexecm.py \
 filters/rclfb2.py \
 filters/rclgaim \
 filters/rclgenxslt.py \
-filters/rclgnm.py \
 filters/rclics \
 filters/rclimg \
 filters/rclimg.py \
@@ -691,7 +689,6 @@ filters/rclocrcache.py \
 filters/rclocr.py \
 filters/rclocrabbyy.py \
 filters/rclocrtesseract.py \
-filters/rclokulnote.py \
 filters/rclopxml.py \
 filters/rclpdf.py \
 filters/rclppt.py \
@@ -703,9 +700,6 @@ filters/rclrar \
 filters/rclrtf.py \
 filters/rclscribus \
 filters/rclshowinfo \
-filters/rclsoff-flat.py \
-filters/rclsoff.py \
-filters/rclsvg.py \
 filters/rcltar \
 filters/rcltex \
 filters/rcltext.py \
