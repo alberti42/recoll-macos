@@ -70,7 +70,9 @@ PrefsPack prefs;
  * the qt/recoll settings to defaults) */
 static bool havereadsettings;
 
+#ifdef _WIN32
 static void maybeCopyFromRegistry();
+#endif /*_WIN32*/
 
 void rwSettings(bool writing)
 {
