@@ -257,6 +257,9 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     browser->setHtml(QString::fromUtf8(oss.str().c_str()));
 #else
+    browser->clear();
+    browser->append(".");
+    browser->clear();
     browser->insertHtml(QString::fromUtf8(oss.str().c_str()));
     browser->moveCursor (QTextCursor::Start);
     browser->ensureCursorVisible();
