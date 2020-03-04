@@ -70,6 +70,8 @@ PrefsPack prefs;
  * the qt/recoll settings to defaults) */
 static bool havereadsettings;
 
+static void maybeCopyFromRegistry();
+
 void rwSettings(bool writing)
 {
 #ifdef _WIN32
@@ -78,10 +80,12 @@ void rwSettings(bool writing)
         // Once conversion registry -> file. Only happens once ever, and
         // also we only call the function at program startup (the once
         // above).
-        maybeCopyFromRegistry();
-        once = 0;
+        if (once) {
+            maybeCopyFromRegistry();
+            once = 0;
+        }
     }
-#endif _WIN32
+#endif /*_WIN32*/
     // Keep this AFTER maybecopy...()
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
