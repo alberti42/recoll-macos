@@ -78,7 +78,6 @@ public:
     virtual void init();
     virtual void setAnyTermMode();
     virtual bool hasSearchString();
-    virtual void setPrefs();
     // Return last performed search as XML text.
     virtual std::string asXML();
     // Restore ssearch UI from saved search
@@ -95,6 +94,7 @@ public slots:
     virtual void takeFocus();
     // Forget current entry and any state (history)
     virtual void clearAll();
+    virtual void setPrefs();
 
 private slots:
     virtual void searchTextChanged(const QString&);
