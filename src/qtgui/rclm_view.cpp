@@ -377,7 +377,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
         confirm.exec();
         // Pita: need to keep the prefs struct in sync, else the value
         // will be clobbered on program exit.
-        QSettings settings("Recoll.org", "recoll");
+        QSettings settings;
         prefs.showTempFileWarning =
             settings.value("Recoll/prefs/showTempFileWarning").toInt();
     }

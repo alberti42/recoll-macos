@@ -18,6 +18,7 @@
 
 #include <cstdlib>
 #include <list>
+#include <iostream>
 
 #include <qapplication.h>
 #include <qtranslator.h>
@@ -31,6 +32,7 @@
 #include <QLibraryInfo>
 #include <QFileDialog>
 #include <QUrl>
+#include <QSettings>
 
 #include "rcldb.h"
 #include "rclconfig.h"

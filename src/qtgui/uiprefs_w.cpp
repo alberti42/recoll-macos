@@ -106,7 +106,7 @@ void UIPrefsDialog::setFromPrefs()
 {
     // Most values are stored in the prefs struct. Some rarely used
     // ones go directly through the settings
-    QSettings settings("Recoll.org", "recoll");
+    QSettings settings;
 
     // Entries per result page spinbox
     pageLenSB->setValue(prefs.respagesize);
@@ -277,7 +277,7 @@ void UIPrefsDialog::accept()
 {
     // Most values are stored in the prefs struct. Some rarely used
     // ones go directly through the settings
-    QSettings settings("Recoll.org", "recoll");
+    QSettings settings;
     prefs.noBeeps = noBeepsCB->isChecked();
     prefs.ssearchNoComplete = ssNoCompleteCB->isChecked();
     prefs.ssearchStartOnComplete = ssSearchOnCompleteCB->isChecked();
