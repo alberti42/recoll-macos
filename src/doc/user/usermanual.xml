@@ -4765,7 +4765,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         used by &RCL;. It would index a text file as one document per
         line. Look for <filename>rcltxtlines.py</filename> in the
         <filename>src/filters</filename> directory in the online &RCL;
-        <ulink url="https://opensourceprojects.eu/p/recoll1/">Git
+        <ulink url="https://framagit.org/medoc92/recoll">Git
         repository</ulink> (the sample not in the distributed release at
         the moment).</para>
 
@@ -5108,7 +5108,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               url="https://www.lesbonscomptes.com/recoll/download.html#gssp">
             &RCL; <application>Gnome Shell Search Provider</application>
           </ulink>,
-        the <ulink url="https://opensourceprojects.eu/p/recollwebui/code/">
+        the <ulink url="https://framagit.org/medoc92/recollwebui">
             &RCL; Web UI</ulink>, and the 
           <ulink 
        url="https://www.lesbonscomptes.com/upmpdcli/upmpdcli-manual.html#UPRCL">
@@ -5163,13 +5163,14 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         ]]></programlisting>
 
         <para>You can also take a look at the source for the
-        <ulink  url="https://opensourceprojects.eu/p/recollwebui/code/ci/78ddb20787b2a894b5e4661a8d5502c4511cf71e/tree/">Recoll
-        WebUI</ulink>, the
-        <ulink url="https://opensourceprojects.eu/p/upmpdcli/code/ci/c8c8e75bd181ad9db2df14da05934e53ca867a06/tree/src/mediaserver/cdplugins/uprcl/uprclfolders.py">upmpdcli 
-        local media server</ulink>, or the
-        <ulink
-            url="https://opensourceprojects.eu/p/recollgssp/code/ci/3f120108e099f9d687306c0be61593994326d52d/tree/gssp-recoll.py">Gnome
-        Shell Search Provider</ulink>.</para>
+        <ulink 
+		  url="https://framagit.org/medoc92/recollwebui/-/blob/master/webui.py">
+		  Recoll WebUI</ulink>, the
+        <ulink url="https://opensourceprojects.eu/p/upmpdcli/code/ci/c8c8e75bd181ad9db2df14da05934e53ca867a06/tree/src/mediaserver/cdplugins/uprcl/uprclfolders.py">
+		  upmpdcli local media server</ulink>, or the
+        <ulink 
+  url="https://framagit.org/medoc92/recoll-gssp/-/blob/master/gssp-recoll.py">
+		  Gnome Shell Search Provider</ulink>.</para>
         
       </sect2>
       
