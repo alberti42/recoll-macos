@@ -5166,7 +5166,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <ulink 
 		  url="https://framagit.org/medoc92/recollwebui/-/blob/master/webui.py">
 		  Recoll WebUI</ulink>, the
-        <ulink url="https://opensourceprojects.eu/p/upmpdcli/code/ci/c8c8e75bd181ad9db2df14da05934e53ca867a06/tree/src/mediaserver/cdplugins/uprcl/uprclfolders.py">
+        <ulink url="https://framagit.org/medoc92/upmpdcli/-/blob/master/src/mediaserver/cdplugins/uprcl/uprclfolders.py">
 		  upmpdcli local media server</ulink>, or the
         <ulink 
   url="https://framagit.org/medoc92/recoll-gssp/-/blob/master/gssp-recoll.py">
