@@ -332,4 +332,7 @@ copywpd
 # Chm is now copied into the python tree, which is installed by copypython
 #copychm
 copypff
+
+# Note that pychm and pyhwp are pre-copied into the py-python3 python
+# distribution directory. The latter also needs olefile and six (also copied)
 copypython
