@@ -59,7 +59,9 @@ application/x-scribus = scribus %f
 #application/msword = libreoffice %f
 application/msword = \
  "C:/Program Files (x86)/LibreOffice 5/program/soffice.exe" %f
- 
+
+application/x-hwp =  hanword %f
+
 application/vnd.ms-excel = libreoffice %f
 application/vnd.ms-powerpoint = libreoffice %f
 
