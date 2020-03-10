@@ -68,6 +68,8 @@ application/msword = execm rcldoc.py
 # You can also use wvware directly but it's much slower.
 # application/msword = exec wvWare --charset=utf-8 --nographics
 
+application/x-hwp = execm rclhwp.py
+
 # Also Handle the mime type returned by "file -i" for a suffix-less word
 # file. This could probably just as well be an excel file, but we have to
 # chose one.

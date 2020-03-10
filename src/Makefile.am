@@ -674,6 +674,7 @@ filters/rclexecm.py \
 filters/rclfb2.py \
 filters/rclgaim \
 filters/rclgenxslt.py \
+filters/rclhwp.py \
 filters/rclics \
 filters/rclimg \
 filters/rclimg.py \

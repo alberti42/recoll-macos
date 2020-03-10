@@ -98,6 +98,8 @@
 .tbz = application/x-tar
 .tar.bz2 = application/x-tar
 
+.hwp = application/x-hwp
+
 .doc = application/msword
 .dot = application/msword
 .ppt = application/vnd.ms-powerpoint

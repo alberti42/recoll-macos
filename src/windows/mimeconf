@@ -52,6 +52,8 @@ application/vnd.ms-powerpoint = execm python rclppt.py
 
 application/pdf = execm python rclpdf.py
 
+application/x-hwp = execm python rclhwp.py
+
 application/vnd.oasis.opendocument.text = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
 application/vnd.oasis.opendocument.text-template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
 application/vnd.oasis.opendocument.presentation = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl 
