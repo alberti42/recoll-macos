@@ -53,8 +53,9 @@ public:
 };
 static PlainToRichHtReslist g_hiliter;
 
-ResListPager::ResListPager(int pagesize) 
+ResListPager::ResListPager(int pagesize, bool alwaysSnippets) 
     : m_pagesize(pagesize),
+      m_alwaysSnippets(alwaysSnippets),
       m_newpagesize(pagesize),
       m_resultsInCurrentPage(0),
       m_winfirst(-1),
@@ -257,7 +258,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
                  << trans("Open") << "</a>";
     }
     ostringstream snipsbuf;
-    if (doc.haspages) {
+    if (m_alwaysSnippets || doc.haspages) {
         snipsbuf << "<a href=\"" <<linkPrefix()<<"A" << docnumforlinks << "\">" 
                  << trans("Snippets") << "</a>&nbsp;&nbsp;";
         linksbuf << "&nbsp;&nbsp;" << snipsbuf.str();

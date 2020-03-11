@@ -33,7 +33,7 @@ class PlainToRich;
  */
 class ResListPager {
 public:
-    ResListPager(int pagesize=10);
+    ResListPager(int pagesize=10, bool alwaysSnippets = false);
     virtual ~ResListPager() {}
 
     void setHighLighter(PlainToRich *ptr) {
@@ -118,6 +118,7 @@ public:
     virtual string linkPrefix() {return "";}
 private:
     int                  m_pagesize;
+    bool                 m_alwaysSnippets;
     int                  m_newpagesize;
     int                  m_resultsInCurrentPage;
     // First docnum (from docseq) in current page

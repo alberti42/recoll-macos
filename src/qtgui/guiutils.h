@@ -92,6 +92,8 @@ class PrefsPack {
     int snipwMaxLength;
     // Snippets window sort by page (dflt: by weight)
     bool snipwSortByPage;
+    // Display Snippets links even for un-paged documents
+    bool alwaysSnippets;
     bool startWithAdvSearchOpen{false};
     // Try to display html if it exists in the internfile stack.
     bool previewHtml;

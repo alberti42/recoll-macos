@@ -624,6 +624,16 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="alwaysSnippetsCB">
+            <property name="text">
+             <string>Display a Snippets link even if the document has no pages (needs restart).</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>

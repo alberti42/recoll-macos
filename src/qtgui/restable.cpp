@@ -76,7 +76,7 @@ static PlainToRichQtReslist g_hiliter;
 class ResTablePager : public ResListPager {
 public:
     ResTablePager(ResTable *p)
-        : ResListPager(1), m_parent(p) 
+        : ResListPager(1, prefs.alwaysSnippets), m_parent(p) 
         {}
     virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
     virtual string trans(const string& in);

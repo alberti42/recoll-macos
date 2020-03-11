@@ -243,6 +243,8 @@ void rwSettings(bool writing)
         prefs.abssep = "&hellip;";
     SETTING_RW(prefs.snipwMaxLength, "/Recoll/prefs/snipwin/maxlen", Int, 1000);
     SETTING_RW(prefs.snipwSortByPage,"/Recoll/prefs/snipwin/bypage", Bool,false);
+    SETTING_RW(prefs.alwaysSnippets, "/Recoll/prefs/reslist/alwaysSnippets",
+               Bool,false);
 
     SETTING_RW(prefs.autoSuffs, "/Recoll/prefs/query/autoSuffs", String, "");
     SETTING_RW(prefs.autoSuffsEnable, 

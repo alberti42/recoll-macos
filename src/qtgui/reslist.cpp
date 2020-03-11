@@ -128,8 +128,8 @@ bool RclWebPage::acceptNavigationRequest(const QUrl& url,
 
 class QtGuiResListPager : public ResListPager {
 public:
-    QtGuiResListPager(ResList *p, int ps) 
-        : ResListPager(ps), m_reslist(p) 
+    QtGuiResListPager(ResList *p, int ps, bool alwayssnip) 
+        : ResListPager(ps, alwayssnip), m_reslist(p) 
         {}
     virtual bool append(const string& data);
     virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
@@ -391,7 +391,7 @@ ResList::ResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
 
-    m_pager = new QtGuiResListPager(this, prefs.respagesize);
+    m_pager = new QtGuiResListPager(this, prefs.respagesize, prefs.alwaysSnippets);
     m_pager->setHighLighter(&g_hiliter);
 }
 
