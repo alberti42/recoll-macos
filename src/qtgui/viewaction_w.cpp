@@ -207,8 +207,19 @@ void ViewAction::editActions()
             }
         }
         // An empty action will restore the default (erase from
-        // topmost conftree)
+        // topmost conftree). IF there is no default in the system
+        // files, and the entry only came from the user file, it will
+        // be erased and the mime will go away from the list, which is
+        // not what we want ! This not trivial to test because
+        // rclconfig has no way to tell us if the value comes from the
+        // system config or the user file. So just check if the value
+        // disappears after setting it, and restore it if it does.
+        string oldvalue = theconfig->getMimeViewerDef(entry, "", 0);
         theconfig->setMimeViewerDef(entry, sact);
+        string newvalue = theconfig->getMimeViewerDef(entry, "", 0);
+        if (!oldvalue.empty() && newvalue.empty()) {
+            theconfig->setMimeViewerDef(entry, oldvalue);
+        }
     }
 
     theconfig->setMimeViewerAllEx(viewerXs);
