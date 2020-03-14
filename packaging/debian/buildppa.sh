@@ -6,10 +6,10 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.26.4
+RCLVERS=1.26.5
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
-PPAVERS=1
+PPAVERS=2
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -55,7 +55,7 @@ debdir=debian
 # 19.10    eoan   2020-07
 # 20.04LTS focal  2025-04
 series="xenial bionic disco eoan focal"
-series=
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -101,7 +101,7 @@ done
 # 19.10    eoan   2020-07
 # 20.04LTS focal  2025-04
 series="xenial bionic disco eoan focal"
-#series=
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}

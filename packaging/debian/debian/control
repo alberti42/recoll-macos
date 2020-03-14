@@ -54,7 +54,7 @@ Package: recollcmd
 Architecture: any
 Breaks: recoll (<< 1.23.7-2)
 Replaces: recoll (<< 1.23.7-2)
-Depends: python, python3, ${misc:Depends}, ${shlibs:Depends}
+Depends: python3, ${misc:Depends}, ${shlibs:Depends}
 Recommends: antiword,
             aspell,
             groff,
@@ -87,7 +87,7 @@ Description: GUI program and elements for recoll
 Package: python-recoll
 Architecture: any
 Section: python
-Depends: python,
+Depends: python2,
          recollcmd (= ${binary:Version}),
          ${misc:Depends},
          ${python:Depends},
