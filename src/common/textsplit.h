@@ -48,7 +48,7 @@ public:
     };
     
     TextSplit(Flags flags = Flags(TXTS_NONE))
-	: m_flags(flags) {}
+        : m_flags(flags) {}
     virtual ~TextSplit() {}
 
     /** Call at program initialization to read non default values from the 
@@ -60,10 +60,10 @@ public:
 
     /** Process one output word: to be implemented by the actual user class */
     virtual bool takeword(const std::string& term, 
-			  int pos,  // term pos
-			  int bts,  // byte offset of first char in term
-			  int bte   // byte offset of first char after term
-			  ) = 0; 
+                          int pos,  // term pos
+                          int bts,  // byte offset of first char in term
+                          int bte   // byte offset of first char after term
+        ) = 0; 
 
     /** Called when we encounter formfeed \f 0x0c. Override to use the event.
      * Mostly or exclusively used with pdftoxx output. Other filters mostly 
@@ -108,49 +108,43 @@ public:
 #ifdef TEXTSPLIT_STATS
     class Stats {
     public:
-	Stats()
-	{
-	    reset();
-	}
-	void reset()
-	{
-	    count = 0;
-	    totlen = 0;
-	    sigma_acc = 0;
-	}
-	void newsamp(unsigned int len)
-	{
-	    ++count;
-	    totlen += len;
-	    double avglen = double(totlen) / double(count);
-	    sigma_acc += (avglen - len) * (avglen - len);
-	}
-	struct Values {
-	    int count;
-	    double avglen;
-	    double sigma;
-	};
-	Values get()
-	{
-	    Values v;
-	    v.count = count;
-	    v.avglen = double(totlen) / double(count);
-	    v.sigma = sqrt(sigma_acc / count);
-	    return v;
-	}
+        Stats() {
+            reset();
+        }
+        void reset() {
+            count = 0;
+            totlen = 0;
+            sigma_acc = 0;
+        }
+        void newsamp(unsigned int len) {
+            ++count;
+            totlen += len;
+            double avglen = double(totlen) / double(count);
+            sigma_acc += (avglen - len) * (avglen - len);
+        }
+        struct Values {
+            int count;
+            double avglen;
+            double sigma;
+        };
+        Values get() {
+            Values v;
+            v.count = count;
+            v.avglen = double(totlen) / double(count);
+            v.sigma = sqrt(sigma_acc / count);
+            return v;
+        }
     private:
-	int count;
-	int totlen;
-	double sigma_acc;
+        int count;
+        int totlen;
+        double sigma_acc;
     };
 
-    Stats::Values getStats()
-    {
-	return m_stats.get();
+    Stats::Values getStats() {
+        return m_stats.get();
     }
-    void resetStats()
-    {
-	m_stats.reset();
+    void resetStats() {
+        m_stats.reset();
     }
 #endif // TEXTSPLIT_STATS
 
