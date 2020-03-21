@@ -25,6 +25,7 @@
 
 import sys
 from io import BytesIO
+import subprocess
 
 import rclexecm
 from rclbasehandler import RclBaseHandler
@@ -68,16 +69,12 @@ class HWP5Dump(RclBaseHandler):
         # hwp wants str filenames. This is unfortunate
         fn = fn.decode('utf-8')
 
-        html = b'<html><head>\n' + \
-          b'<meta http-equiv="content-type" \
-          content="text/html; charset=utf-8">\n'
-
         hwpfile = fs_Hwp5File(fn)
         try:
             tt = hwpfile.summaryinfo.title.strip()
             if tt:
                 tt = self.em.htmlescape(tt.encode('utf-8'))
-                html += b'<title>' + tt + b'</title>\n'
+                self.em.setfield('caption', tt)
 
             for k,v in metafields(hwpfile.summaryinfo):
                 v = "{0}".format(v)
@@ -85,28 +82,17 @@ class HWP5Dump(RclBaseHandler):
                 if v:
                     v = self.em.htmlescape(v.encode('utf-8'))
                     k = k.encode('utf-8')
-                    html += b'<meta name="' + k + b'" content="' + \
-                        v + b'">\n'
+                    self.em.setfield(k, v)
         except Exception as e:
             self.em.rclog("Exception: %s" % e)
         finally:
             hwpfile.close()
 
-        html += b'</head><body><pre>\n'
-
-        hwpfile = xml_Hwp5File(fn)
-        text_transform = TextTransform()
-        transform = text_transform.transform_hwp5_to_text
-        dest = BytesIO()
-        try:
-            transform(hwpfile, dest)
-        except Exception as e:
-            self.em.rclog("Exception: %s" % e)
-        finally:
-            hwpfile.close()
-        dest.seek(0)
-        html += self.em.htmlescape(dest.read())
-        html += b'</pre></body></html>'
+        # The first version of this file used conversion to text using
+        # the hwp5 module (no subproc). But this apparently mishandled
+        # tables. Switched to executing hwp5html instead. See 1st git
+        # version for the old approach.
+        html = subprocess.check_output(["hwp5html", "--html", fn])
         return html
 
 if __name__ == '__main__':
