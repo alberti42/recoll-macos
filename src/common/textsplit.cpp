@@ -191,7 +191,12 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
   }
 #endif
 
-// CJK Unicode character detection:
+// CJK Unicode character detection. CJK text is indexed using an n-gram
+// method, we do not try to extract words. There have been tentative
+// exceptions for katakana and hangul, not successful because, even if
+// these are closer to european text, they are still too different for
+// the normal word splitter to work well on them. katakana and hangul
+// are processed by the n-gram splitter at the moment.
 //
 // 1100..11FF; Hangul Jamo (optional: see UNICODE_IS_HANGUL)
 // 2E80..2EFF; CJK Radicals Supplement
@@ -628,7 +633,7 @@ bool TextSplit::text_to_words(const string &in)
         }
 
         if (o_processCJK && csc == CSC_CJK) {
-            // CJK excluding Katakana character hit. 
+            // CJK character hit. 
             // Do like at EOF with the current non-cjk data.
             if (m_wordLen || m_span.length()) {
                 if (!doemit(true, it.getBpos()))
