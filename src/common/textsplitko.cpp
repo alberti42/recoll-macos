@@ -68,6 +68,8 @@ static bool initCmd()
     return true;
 }
 
+static const string sepchars("\t");
+
 bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
 {
     std::unique_lock<std::mutex> mylock(o_mutex);
@@ -82,6 +84,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     unordered_map<string, string> args;
     args.insert(pair<string,string>{"data", string()});
     string& inputdata{args.begin()->second};
+    string::size_type orgbytepos = it.getBpos();
     
     // Gather all Korean characters and send the text to the analyser
     for (; !it.eof(); it++) {
@@ -94,6 +97,10 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
             it.appendchartostring(inputdata);
         }
     }
+    // Need to convert white text spans to single space otherwise the
+    // byte offsets will be wrong
+    
+    string::size_type textsize = inputdata.size();
     LOGDEB1("TextSplit::k_to_words: sending out " << inputdata.size() <<
             " bytes " << inputdata << endl);
     unordered_map<string,string> result;
@@ -101,34 +108,69 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         LOGERR("Python splitter for Korean failed\n");
         return false;
     }
-    auto resit = result.find("data");
+
+    auto resit = result.find("text");
     if (resit == result.end()) {
-        LOGERR("No data in Python splitter for Korean\n");
+        LOGERR("No text in Python splitter for Korean\n");
         return false;
     }        
-    string& outdata = resit->second;
-    char sepchar = '^';
-    //std::cerr << "GOT FROM SPLITTER: " << outdata << endl;
-    string::size_type wordstart = 0;
-    string::size_type wordend = outdata.find(sepchar);
-    for (;;) {
-        //cerr << "start " << wordstart << " end " << wordend << endl;        
-        if (wordend != wordstart) {
-            string::size_type len = (wordend == string::npos) ?
-                wordend : wordend-wordstart;
-            string word = outdata.substr(wordstart, len);
-            //cerr << " WORD[" <<  word << "]\n";
-            if (!takeword(word, m_wordpos++, 0, 0)) {
+    string& outtext = resit->second;
+    vector<string> words;
+    stringToTokens(outtext, words, sepchars);
+
+    resit = result.find("tags");
+    if (resit == result.end()) {
+        LOGERR("No tags in Python splitter for Korean\n");
+        return false;
+    }        
+    string& outtags = resit->second;
+    vector<string> tags;
+    stringToTokens(outtags, tags, sepchars);
+
+    // This is the position in the whole text, not the local fragment,
+    // which is bytepos-orgbytepos
+    string::size_type bytepos(orgbytepos);
+    for (unsigned int i = 0; i < words.size(); i++) {
+        // The POS tagger strips characters from the input (e.g. multiple
+        // spaces, sometimes new lines, possibly other stuff). This
+        // means that we can't easily reconstruct the byte position
+        // from the concatenated terms. The output seems to be always
+        // shorter than the input, so we try to look ahead for the
+        // term. Can't be too sure that this works though, depending
+        // on exactly what transformation may have been applied from
+        // the original input to the term.
+        string word = words[i];
+        trimstring(word);
+        string::size_type newpos = bytepos - orgbytepos;
+        newpos = inputdata.find(word, newpos);
+        if (newpos != string::npos) {
+            bytepos = orgbytepos + newpos;
+        }
+        LOGDEB1("WORD OPOS " << bytepos-orgbytepos <<
+                " FOUND POS " << newpos << endl);
+        if (tags[i] == "Noun" || tags[i] == "Verb" ||
+            tags[i] == "Adjective" || tags[i] == "Adverb") {
+            if (!takeword(
+                    word, m_wordpos++, bytepos, bytepos + words[i].size())) {
                 return false;
             }
         }
-        if (wordend == string::npos)
-            break;
-        wordstart = wordend + 1;
-        wordend = outdata.find(sepchar, wordstart);
+        LOGDEB1("WORD [" << words[i] << "] size " << words[i].size() <<
+               " TAG " << tags[i] << endl);
+        bytepos += words[i].size();
     }
-    
 
+#if DO_CHECK_THINGS
+    int sizediff = textsize - (bytepos - orgbytepos);
+    if (sizediff < 0)
+        sizediff = -sizediff;
+    if (sizediff > 1) {
+        LOGERR("ORIGINAL TEXT SIZE: " << textsize <<
+               " FINAL BYTE POS " << bytepos - orgbytepos <<
+               " TEXT [" << inputdata << "]\n");
+    }
+#endif
+    
     // Reset state, saving term position, and return the found non-cjk
     // Unicode character value. The current input byte offset is kept
     // in the utf8Iter

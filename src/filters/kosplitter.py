@@ -28,25 +28,29 @@
 import sys
 import cmdtalk
 
-from konlpy.tag import Okt
+from konlpy.tag import Okt,Kkma
 
 class Processor(object):
     def __init__(self, proto):
         self.proto = proto
-        self.okt = Okt()
+        self.tagger = Okt()
+        #self.tagger = Kkma()
 
     def process(self, params):
         if 'data' not in params:
             return {'error':'No data field in parameters'}
-        pos = self.okt.pos(params['data'])
+        pos = self.tagger.pos(params['data'])
         #proto.log("%s" % pos)
-        output = ""
+        text = ""
+        tags = ""
         for e in pos:
-            if e[1] == 'Noun' or e[1] == 'Verb' or e[1] == 'Adjective' or \
-               e[1] == 'Adverb':
-                output += e[0] + '^'
-        return {'data': output}
+            word = e[0]
+            word = word.replace('\t', ' ')
+            text += word + "\t"
+            tags += e[1] + "\t"
+        return {'text': text, 'tags': tags}
 
 proto = cmdtalk.CmdTalk()
 processor = Processor(proto)
-proto.mainloop(processor)
+cmdtalk.main(proto, processor)
+
