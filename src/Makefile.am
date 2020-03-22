@@ -82,6 +82,7 @@ common/rclinit.h \
 common/syngroups.cpp \
 common/syngroups.h \
 common/textsplit.cpp \
+common/textsplitko.cpp \
 common/textsplit.h \
 common/unacpp.cpp \
 common/unacpp.h \
@@ -210,6 +211,8 @@ utils/circache.cpp \
 utils/circache.h \
 utils/closefrom.cpp \
 utils/closefrom.h \
+utils/cmdtalk.cpp \
+utils/cmdtalk.h \
 utils/conftree.cpp \
 utils/conftree.h \
 utils/copyfile.cpp \
@@ -645,8 +648,10 @@ filterdir = $(pkgdatadir)/filters
 dist_filter_DATA = \
 desktop/hotrecoll.py \
 filters/abiword.xsl \
+filters/cmdtalk.py \
 filters/fb2.xsl \
 filters/gnumeric.xsl \
+filters/kosplitter.py \
 filters/msodump.zip \
 filters/okular-note.xsl \
 filters/opendoc-body.xsl \
@@ -724,7 +729,7 @@ python/recoll/recoll/rclconfig.py
 install-data-hook: 
 	(cd $(DESTDIR)/$(filterdir); \
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
-	chmod a+x recoll-we-move-files.py ../examples/rclmon.sh; \
+	chmod a+x recoll-we-move-files.py ../examples/rclmon.sh kosplitter.py; \
 	chmod 0644 msodump.zip recollepub.zip rclexecm.py rcllatinstops.zip \
         rclconfig.py conftree.py rclmidi.py rclexec1.py rcluncomp.py rclxslt.py)
 

@@ -246,6 +246,7 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 #define UNICODE_IS_KATAKANA(p) false
 #endif
 
+#define HANGUL_AS_WORDS
 #ifdef HANGUL_AS_WORDS
 #define UNICODE_IS_HANGUL(p) (                 \
         ((p) >= 0x1100 && (p) <= 0x11FF) ||    \
@@ -323,7 +324,8 @@ void TextSplit::staticConfInit(RclConfig *config)
             charclasses[int('\\')] = SPACE;
         }
     }
-}    
+    koStaticConfInit(config);
+}
 
 // Final term checkpoint: do some checking (the kind which is simpler
 // to do here than in the main loop), then send term to our client.
@@ -632,20 +634,28 @@ bool TextSplit::text_to_words(const string &in)
             csc = CSC_OTHER;
         }
 
-        if (o_processCJK && csc == CSC_CJK) {
-            // CJK character hit. 
+        if (o_processCJK && (csc == CSC_CJK || csc == CSC_HANGUL)) {
+            // CJK character hit. Hangul processing may be special or
+            // not depending on how we were built.
+
             // Do like at EOF with the current non-cjk data.
             if (m_wordLen || m_span.length()) {
                 if (!doemit(true, it.getBpos()))
                     return false;
             }
 
-            // Hand off situation to the cjk routine.
-            if (!cjk_to_words(&it, &c)) {
-                LOGERR("Textsplit: scan error in cjk handler\n");
-                return false;
+            // Hand off situation to the appropriate routine.
+            if (csc == CSC_HANGUL) {
+                if (!ko_to_words(&it, &c)) {
+                    LOGERR("Textsplit: scan error in korean handler\n");
+                    return false;
+                }
+            } else {
+                if (!cjk_to_words(&it, &c)) {
+                    LOGERR("Textsplit: scan error in cjk handler\n");
+                    return false;
+                }
             }
-
             // Check for eof, else c contains the first non-cjk
             // character after the cjk sequence, just go on.
             if (it.eof())
