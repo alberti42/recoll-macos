@@ -21,7 +21,7 @@ endif
 
 # main packaging script based on dh7 syntax
 %:
-	dh $@ --parallel --with python2 --with python3 --with autotools-dev 
+	dh $@ --parallel --with python2 --with python3
 
 override_dh_auto_configure:
 	dh_auto_configure -- --enable-recollq --enable-xadump
