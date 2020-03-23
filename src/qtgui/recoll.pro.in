@@ -151,20 +151,24 @@ macx {
 }
 
 TRANSLATIONS = \
-	     i18n/recoll_cs.ts \
-	     i18n/recoll_da.ts \
-	     i18n/recoll_de.ts \
-	     i18n/recoll_el.ts \
-	     i18n/recoll_es.ts \
-             i18n/recoll_fr.ts \
-             i18n/recoll_it.ts \
-             i18n/recoll_lt.ts \
-             i18n/recoll_ru.ts \
-             i18n/recoll_tr.ts \
-             i18n/recoll_uk.ts \
-             i18n/recoll_xx.ts \
-             i18n/recoll_zh_CN.ts \
-             i18n/recoll_zh.ts \
+i18n/recoll_it.ts \
+i18n/recoll_es.ts \
+i18n/recoll_lt.ts \
+i18n/recoll_da.ts \
+i18n/recoll_de.ts \
+i18n/recoll_ru.ts \
+i18n/recoll_pl.ts \
+i18n/recoll_zh.ts \
+i18n/recoll_hu.ts \
+i18n/recoll_uk.ts \
+i18n/recoll_nl.ts \
+i18n/recoll_zh_CN.ts \
+i18n/recoll_fr.ts \
+i18n/recoll_xx.ts \
+i18n/recoll_cs.ts \
+i18n/recoll_kr.ts \
+i18n/recoll_el.ts \
+i18n/recoll_tr.ts
 
 unix {
   isEmpty(PREFIX) {
