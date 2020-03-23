@@ -54,7 +54,7 @@ public:
     /** Call at program initialization to read non default values from the 
         configuration */
     static void staticConfInit(RclConfig *config);
-    static void koStaticConfInit(RclConfig *config);
+    static void koStaticConfInit(RclConfig *config, const std::string& tagger);
     
     /** Split text, emit words and positions. */
     virtual bool text_to_words(const std::string &in);

@@ -44,8 +44,10 @@
 // ngrams
 #undef KATAKANA_AS_WORDS
 
-// Same for Korean syllabic, and same problem, not used.
-#undef HANGUL_AS_WORDS
+// Same for Korean syllabic, and same problem. However we have a
+// runtime option to use an external text analyser for hangul, so this
+// is defined at compile time.
+#define HANGUL_AS_WORDS
 
 using namespace std;
 
@@ -246,7 +248,6 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 #define UNICODE_IS_KATAKANA(p) false
 #endif
 
-#define HANGUL_AS_WORDS
 #ifdef HANGUL_AS_WORDS
 #define UNICODE_IS_HANGUL(p) (                 \
         ((p) >= 0x1100 && (p) <= 0x11FF) ||    \
@@ -290,6 +291,7 @@ bool          TextSplit::o_noNumbers{false};
 bool          TextSplit::o_deHyphenate{false};
 int           TextSplit::o_maxWordLength{40};
 static const int o_CJKMaxNgramLen{5};
+bool o_exthangultagger{false};
 
 void TextSplit::staticConfInit(RclConfig *config)
 {
@@ -324,7 +326,13 @@ void TextSplit::staticConfInit(RclConfig *config)
             charclasses[int('\\')] = SPACE;
         }
     }
-    koStaticConfInit(config);
+
+    string kotagger;
+    config->getConfParam("hangultagger", kotagger);
+    if (!kotagger.empty()) {
+        o_exthangultagger = true;
+        koStaticConfInit(config, kotagger);
+    }
 }
 
 // Final term checkpoint: do some checking (the kind which is simpler
@@ -627,7 +635,11 @@ bool TextSplit::text_to_words(const string &in)
         if (UNICODE_IS_KATAKANA(c)) {
             csc = CSC_KATAKANA;
         } else if (UNICODE_IS_HANGUL(c)) {
-            csc = CSC_HANGUL;
+            if (o_exthangultagger) {
+                csc = CSC_HANGUL;
+            } else {
+                csc = CSC_CJK;
+            }
         } else if (UNICODE_IS_CJK(c)) {
             csc = CSC_CJK;
         } else {
@@ -635,15 +647,13 @@ bool TextSplit::text_to_words(const string &in)
         }
 
         if (o_processCJK && (csc == CSC_CJK || csc == CSC_HANGUL)) {
-            // CJK character hit. Hangul processing may be special or
-            // not depending on how we were built.
+            // CJK character hit. Hangul processing may be special.
 
             // Do like at EOF with the current non-cjk data.
             if (m_wordLen || m_span.length()) {
                 if (!doemit(true, it.getBpos()))
                     return false;
             }
-
             // Hand off situation to the appropriate routine.
             if (csc == CSC_HANGUL) {
                 if (!ko_to_words(&it, &c)) {

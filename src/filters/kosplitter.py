@@ -28,17 +28,32 @@
 import sys
 import cmdtalk
 
-from konlpy.tag import Okt,Kkma
+from konlpy.tag import Okt,Mecab
 
 class Processor(object):
     def __init__(self, proto):
         self.proto = proto
-        self.tagger = Okt()
-        #self.tagger = Kkma()
+        self.tagsOkt = False
+        self.tagsMecab = False
 
+    def _init_tagger(self, taggername):
+        if taggername == "Okt":
+            self.tagger = Okt()
+            self.tagsOkt = True
+        elif taggername == "Mecab":
+            self.tagger = Mecab()
+            self.tagsMecab = True
+        else:
+            raise Exception("Bad tagger name " + taggername)
+        
     def process(self, params):
         if 'data' not in params:
             return {'error':'No data field in parameters'}
+        if not (self.tagsOkt or self.tagsMecab):
+            if 'tagger' not in params:
+                return {'error':'No "tagger" field in parameters'}
+            self._init_tagger(params['tagger']);
+                              
         pos = self.tagger.pos(params['data'])
         #proto.log("%s" % pos)
         text = ""
@@ -47,10 +62,25 @@ class Processor(object):
             word = e[0]
             word = word.replace('\t', ' ')
             text += word + "\t"
-            tags += e[1] + "\t"
+            tag = e[1]
+            if self.tagsOkt:
+                pass
+            elif self.tagsMecab:
+                tb = tag[0:2]
+                if tb[0] == "N":
+                    tag = "Noun"
+                elif tb == "VV":
+                    tag = "Verb"
+                elif tb == "VA":
+                    tag = "Adjective"
+                elif tag == "MAG":
+                    tag = "Adverb"
+            else:
+                pass
+            tags += tag + "\t"
         return {'text': text, 'tags': tags}
+
 
 proto = cmdtalk.CmdTalk()
 processor = Processor(proto)
 cmdtalk.main(proto, processor)
-
