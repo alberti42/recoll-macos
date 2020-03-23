@@ -235,7 +235,7 @@
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation type="unfinished">将会针对这些语言&lt;br&gt;构造词根扩展词典。</translation>
+        <translation type="obsolete">将会针对这些语言&lt;br&gt;构造词根扩展词典。</translation>
     </message>
     <message>
         <source>Log file name</source>
@@ -280,10 +280,6 @@
     <message>
         <source>Aspell language</source>
         <translation type="unfinished">Aspell语言</translation>
-    </message>
-    <message>
-        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -355,6 +351,14 @@
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3608,6 +3612,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -39,6 +39,14 @@
         <source>message</source>
         <translation>bericht</translation>
     </message>
+    <message>
+        <source>texts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>spreadsheets</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AdvSearchBase</name>
@@ -177,6 +185,227 @@
     <message>
         <source>Filter sizes</source>
         <translation>Filter grootte</translation>
+    </message>
+</context>
+<context>
+    <name>ConfIndexW</name>
+    <message>
+        <source>Can&apos;t write configuration file</source>
+        <translation type="unfinished">Kan configuratie bestand niet lezen</translation>
+    </message>
+    <message>
+        <source>Global parameters</source>
+        <translation type="unfinished">Globale parameters</translation>
+    </message>
+    <message>
+        <source>Local parameters</source>
+        <translation type="unfinished">Lokale parameters</translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished">Zoek parameters</translation>
+    </message>
+    <message>
+        <source>Top directories</source>
+        <translation type="unfinished">Top mappen</translation>
+    </message>
+    <message>
+        <source>The list of directories where recursive indexing starts. Default: your home.</source>
+        <translation type="unfinished">Een lijst van mappen waar de recursive indexering gaat starten. Standaard is de thuismap.</translation>
+    </message>
+    <message>
+        <source>Skipped paths</source>
+        <translation type="unfinished">Paden overgeslagen</translation>
+    </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stemming languages</source>
+        <translation type="unfinished">Stam talen</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log file name</source>
+        <translation type="unfinished">Log bestandsnaam</translation>
+    </message>
+    <message>
+        <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
+        <translation type="unfinished">Het bestand waar de boodschappen geschreven zullen worden.&lt;br&gt;Gebruik &apos;stderr&apos; voor terminal weergave</translation>
+    </message>
+    <message>
+        <source>Log verbosity level</source>
+        <translation type="unfinished">Log uitgebreidheids nivo</translation>
+    </message>
+    <message>
+        <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
+        <translation type="unfinished">Deze waarde bepaald het aantal boodschappen,&lt;br&gt;van alleen foutmeldingen tot een hoop debugging data.</translation>
+    </message>
+    <message>
+        <source>Index flush megabytes interval</source>
+        <translation type="unfinished">Index verversings megabyte interval</translation>
+    </message>
+    <message>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished">Deze waarde past de hoeveelheid data die zal worden geindexeerd tussen de flushes naar de schijf.&lt;br&gt; Dit helpt bij het controleren van het gebruik van geheugen. Standaad 10MB </translation>
+    </message>
+    <message>
+        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No aspell usage</source>
+        <translation type="unfinished">Gebruik aspell niet</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished">Schakelt het gebruik van aspell uit om spellings gissingen in het term onderzoeker gereedschap te genereren. &lt;br&gt; Handig als aspell afwezig is of niet werkt.</translation>
+    </message>
+    <message>
+        <source>Aspell language</source>
+        <translation type="unfinished">Aspell taal</translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory name</source>
+        <translation type="unfinished">Database map naam</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished">De naam voor een map om de index in op te slaan&lt;br&gt; Een niet absoluut pad ten opzichte van het configuratie bestand is gekozen. Standaard is het &apos;xapian db&apos;.</translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation type="unfinished">Unac uitzonderingen</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation type="unfinished"> Dit zijn uitzonderingen op het unac mechanisme dat, standaard, alle diakritische tekens verwijderd, en voert canonische ontbinding door. U kunt unaccenting voor sommige karakters veranderen, afhankelijk van uw taal, en extra decomposities specificeren, bijv. voor ligaturen. In iedere ruimte gescheiden ingave , waar het eerste teken is de bron is, en de rest de vertaling.</translation>
+    </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished">Verwerk de WEB geschiedenis wachtrij</translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished">Zet het indexeren van firefox bezochte paginas aan. &lt;br&gt; (hiervoor zal ook de Firefox Recoll plugin moeten worden geinstalleerd door uzelf)</translation>
+    </message>
+    <message>
+        <source>Web page store directory name</source>
+        <translation type="unfinished">Web pagina map naam om op te slaan</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished">De naam voor een map waarin de kopieen van de bezochte webpaginas opgeslagen zullen worden.&lt;br&gt;Een niet absoluut pad zal worden gekozen ten opzichte van de configuratie map</translation>
+    </message>
+    <message>
+        <source>Max. size for the web store (MB)</source>
+        <translation type="unfinished">Max. grootte voor het web opslaan (MB)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished">Invoeringen zullen worden gerecycled zodra de groote is bereikt. &lt;br&gt; Het verhogen van de groote heeft zin omdat het beperken van de waarde de bestaande waardes niet zal afkappen ( er is alleen afval ruimte aan het einde).</translation>
+    </message>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation type="unfinished">Automatische diakritische tekens gevoeligheid</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation type="unfinished">&lt;P&gt; Automatisch activeren diakritische tekens gevoeligheid als de zoekterm tekens zijn geaccentueerd (niet in unac_except_trans). Wat je nodig hebt om de zoek taal te gebruiken en de &lt;i&gt; D&lt;/i&gt; modifier om diakritische tekens gevoeligheid te specificeren.</translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation type="unfinished">Automatische karakter hoofdletter gevoeligheid</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation type="unfinished">&lt;P&gt; Automatisch activeren hoofdletters gevoeligheid als de vermelding hoofdletters heeft in elke, behalve de eerste positie. Anders moet u zoek taal gebruiken en de &lt;i&gt;C&lt;/i&gt; modifier karakter-hoofdlettergevoeligheid opgeven.</translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation type="unfinished">Maximale term uitbreidings telling</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation type="unfinished">&lt;p&gt; Maximale uitbreidingstelling voor een enkele term (bijv.: bij het gebruik van wildcards) Een standaard van 10.000 is redelijk en zal zoekpodrachten die lijken te bevriezen terwijl de zoekmachine loopt door de termlijst vermijden.</translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation type="unfinished">Maximaal Xapian clausules telling</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished">&lt;p&gt; Maximale aantal elementaire clausules die we kunnen toevoegen aan een enkele Xapian zoeken. In sommige gevallen kan het resultaatvan de term uitbreiding multiplicatief zijn, en we willen voorkomen dat er overmatig gebruik word gemaakt van het werkgeheugen. De standaard van 100.000  zou hoog genoeg moeten zijn in beidde gevallen en compatible zijn met moderne hardware configuraties.</translation>
+    </message>
+</context>
+<context>
+    <name>ConfSubPanelW</name>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished">Alleen mime types</translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished">Een exclusieve lijst van geïndexeerde typen mime. &lt;br&gt; Niets anders zal worden geïndexeerd. Normaal gesproken leeg en inactief</translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished">Sluit mime types uit</translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished">Mime types die niet geindexeerd zullen worden</translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished">Maximaal gecomprimeerd bestands formaat (KB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished">Deze waarde stelt een drempel waarboven gecomprimeerde bestanden niet zal worden verwerkt. Ingesteld op -1 voor geen limiet, op 0 voor geen decompressie ooit.</translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation type="unfinished">Max. tekstbestand groote (MB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation type="unfinished">Deze waarde stelt een drempel waarboven tekstbestanden niet zal worden verwerkt. Ingesteld op -1 voor geen limiet. Dit is voor het uitsluiten van monster logbestanden uit de index.</translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation type="unfinished">Tekst bestand pagina grootte (KB)</translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation type="unfinished">Als deze waarde is ingesteld (niet gelijk aan -1), zal tekstbestanden worden opgedeeld in blokken van deze grootte voor indexering. Dit zal helpen bij het zoeken naar zeer grote tekstbestanden (bijv: log-bestanden).</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
+</source>
+        <translation type="unfinished">Externe filters die langer dan dit werken worden afgebroken. Dit is voor het zeldzame geval (bijv: postscript) wanneer een document een filterlus zou kunnen veroorzaken. Stel in op -1 voor geen limiet.</translation>
+    </message>
+    <message>
+        <source>Global</source>
+        <translation type="unfinished">Globaal</translation>
     </message>
 </context>
 <context>
@@ -428,14 +657,18 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation>Het &quot;Geschiedenis&quot; bestand is beschadigd of on(lees)schrijfbaar geworden, graag controleren of verwijderen:</translation>
+        <translation type="vanished">Het &quot;Geschiedenis&quot; bestand is beschadigd of on(lees)schrijfbaar geworden, graag controleren of verwijderen:</translation>
+    </message>
+    <message>
+        <source>&quot;history&quot; file is damaged, please check or remove it: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Preview</name>
     <message>
         <source>Close Tab</source>
-        <translation>Sluit tab</translation>
+        <translation type="vanished">Sluit tab</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -479,7 +712,59 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Error while loading file</source>
-        <translation>Fout bij het laden van bestand</translation>
+        <translation type="vanished">Fout bij het laden van bestand</translation>
+    </message>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">Openen</translation>
+    </message>
+    <message>
+        <source>Canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: file missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: no permission.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading: backend not configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error&lt;br&gt;Maybe the application is locking the file ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;br&gt;Attempting to display from stored text.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not fetch stored text</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -524,16 +809,20 @@ p, li { white-space: pre-wrap; }
         <source>Preserve indentation</source>
         <translation>Behoud inspringing</translation>
     </message>
+    <message>
+        <source>Open document</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation>Globale parameters</translation>
+        <translation type="vanished">Globale parameters</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation>Lokale parameters</translation>
+        <translation type="vanished">Lokale parameters</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
@@ -545,7 +834,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;De parameters die volgen zijn ingesteld, hetzij op het hoogste niveau, als er niets &lt;br&gt;of een lege regel is geselecteerd in de keuzelijst boven, of voor de geselecteerde submap.&lt;br&gt; U kunt mappen toevoegen of verwijderen door op de +/- knoppen te klikken.</translation>
+        <translation type="vanished">&lt;i&gt;De parameters die volgen zijn ingesteld, hetzij op het hoogste niveau, als er niets &lt;br&gt;of een lege regel is geselecteerd in de keuzelijst boven, of voor de geselecteerde submap.&lt;br&gt; U kunt mappen toevoegen of verwijderen door op de +/- knoppen te klikken.</translation>
     </message>
     <message>
         <source>Skipped names</source>
@@ -573,11 +862,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>Zoek parameters</translation>
+        <translation type="vanished">Zoek parameters</translation>
     </message>
     <message>
         <source>Web history</source>
-        <translation>Web geschiedenis</translation>
+        <translation type="vanished">Web geschiedenis</translation>
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
@@ -595,6 +884,10 @@ p, li { white-space: pre-wrap; }
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation>Dit zijn bestandsnaam eindes voor bestanden die zullen worden geïndexeerd door alleen de naam (geen MIME-type identificatie poging, geen decompressie, geen inhoud indexering).</translation>
+    </message>
+    <message>
+        <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -945,7 +1238,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Index not open</source>
-        <translation>Index is niet open</translation>
+        <translation type="vanished">Index is niet open</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -953,7 +1246,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation>De inhoud is bijgewerkt voor deze mime types</translation>
+        <translation type="vanished">De inhoud is bijgewerkt voor deze mime types</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -978,7 +1271,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation>Indexering is nog niet bezig</translation>
+        <translation type="vanished">Indexering is nog niet bezig</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
@@ -994,11 +1287,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
-        <translation>Index voor dit bestand is niet op tu date. geweigerd om verkeerde inforamtie te tonen te riskeren</translation>
+        <translation type="vanished">Index voor dit bestand is niet op tu date. geweigerd om verkeerde inforamtie te tonen te riskeren</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation>Klik Ok om de index voor dit bestand bij te werken, daarna moet u de opdracht opnieuw uitvoeren na het indexeren</translation>
+        <translation type="vanished">Klik Ok om de index voor dit bestand bij te werken, daarna moet u de opdracht opnieuw uitvoeren na het indexeren</translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
@@ -1023,7 +1316,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation>Het huidige indexerings proces werdt niet gestart vanaf deze interface, kan het niet stoppen</translation>
+        <translation type="vanished">Het huidige indexerings proces werdt niet gestart vanaf deze interface, kan het niet stoppen</translation>
     </message>
     <message>
         <source>Bad paths</source>
@@ -1032,7 +1325,7 @@ Please check the desktop file</source>
     <message>
         <source>Bad paths in configuration file:
 </source>
-        <translation>Verkeerd pad in configuratie bestand</translation>
+        <translation type="vanished">Verkeerd pad in configuratie bestand</translation>
     </message>
     <message>
         <source>Selection patterns need topdir</source>
@@ -1084,11 +1377,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Index scheduling</source>
-        <translation>Index schema</translation>
+        <translation type="vanished">Index schema</translation>
     </message>
     <message>
         <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
-        <translation>Het spijt ons, dit is nog niet beschikbaar voor het windows platform, gebruik het bestands ingave menu om de index te updaten</translation>
+        <translation type="vanished">Het spijt ons, dit is nog niet beschikbaar voor het windows platform, gebruik het bestands ingave menu om de index te updaten</translation>
     </message>
     <message>
         <source>Disabled because the real time indexer was not compiled in.</source>
@@ -1108,7 +1401,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
-        <translation>Klik op annuleren om terug te keren naar de lijst. &lt;br&gt;Klik negeren om het voorbeeld toch te tonen( en te onthouden voor deze sessie)</translation>
+        <translation type="vanished">Klik op annuleren om terug te keren naar de lijst. &lt;br&gt;Klik negeren om het voorbeeld toch te tonen( en te onthouden voor deze sessie)</translation>
     </message>
     <message>
         <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
@@ -1129,6 +1422,115 @@ Please check the desktop file</source>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
         <translation>De indexeerder is bezig. Geen toegang tot webcache</translation>
+    </message>
+    <message>
+        <source>documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>errors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t update index: internal error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;em&gt;Also, it seems that the last index update for the file failed.&lt;/em&gt;&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to try to update the index for this file. You will need to run the query again when indexing is done.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Batch scheduling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No information: initial indexing not yet performed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Content has been indexed for these MIME types:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tools</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open/create file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1389,6 +1791,14 @@ Please check the desktop file</source>
         <source>Webcache Editor</source>
         <translation>Webcache Editor</translation>
     </message>
+    <message>
+        <source>Trigger incremental pass</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>E&amp;xport simple search history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1470,6 +1880,10 @@ Please check the desktop file</source>
     <message>
         <source>MIME type</source>
         <translation>MIME type</translation>
+    </message>
+    <message>
+        <source>Can&apos;t sort by inverse relevance</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1602,7 +2016,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Voer zoekterm hier in. Type ESC SPC als aanvulling voor huidige term</translation>
+        <translation type="vanished">Voer zoekterm hier in. Type ESC SPC als aanvulling voor huidige term</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -1618,7 +2032,7 @@ Please check the desktop file</source>
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation>Zoekterm&apos;taal expressie. Cheat sheet: &lt;br&gt;
+        <translation type="vanished">Zoekterm&apos;taal expressie. Cheat sheet: &lt;br&gt;
 &lt;i&gt; term1 term2 &lt;/i&gt;. &apos;Term1&apos; en &apos;term2&apos; op elk gebied &lt;br&gt;
 &lt;i&gt; veld: term1 &lt;/i&gt;. &apos;Term1&apos; in &apos;het veld&apos; veld &lt;br&gt;
   Standaard veldnamen / synoniemen: &lt;br&gt;
@@ -1656,6 +2070,138 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
         <source>Autophrase is unset but it was set for stored query</source>
         <translation>Automatisch aanvullen is uitgeschakeld maar was ingesteld voor opegeslagen zoekopdracht</translation>
     </message>
+    <message>
+        <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>table, th, td {</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>border: 1px solid black;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>border-collapse: collapse;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>th,td {</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text-align: center;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You should really look at the manual (F1)&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -1685,11 +2231,15 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Voer de zoekopdracht term hier in. Type ESC SPC om huidige termen aan te vullen</translation>
+        <translation type="vanished">Voer de zoekopdracht term hier in. Type ESC SPC om huidige termen aan te vullen</translation>
     </message>
     <message>
         <source>Choose search type.</source>
         <translation>Kies zoektype.</translation>
+    </message>
+    <message>
+        <source>Show query history</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1760,6 +2310,14 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;P&gt; Sorry, niet iets precies kunnen vinden. Waarschijnlijk is het document zeer groot en is de knipsels generator verdwaald in een doolhof ... &lt;/ p&gt;</translation>
     </message>
+    <message>
+        <source>Sort By Relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort By Page</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpecIdxW</name>
@@ -1769,7 +2327,7 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>Do not retry previously failed files.</source>
-        <translation>Probeerniet nog eens de vorig niet gelukte bestanden</translation>
+        <translation type="vanished">Probeerniet nog eens de vorig niet gelukte bestanden</translation>
     </message>
     <message>
         <source>Else only modified or failed files will be processed.</source>
@@ -1789,7 +2347,7 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>Start directory (else use regular topdirs):</source>
-        <translation>Begin Map (anders de normale hoofdmappen gebruiken)</translation>
+        <translation type="vanished">Begin Map (anders de normale hoofdmappen gebruiken)</translation>
     </message>
     <message>
         <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
@@ -1802,6 +2360,14 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     <message>
         <source>Top indexed entity</source>
         <translation>Hoofd index identiteit</translation>
+    </message>
+    <message>
+        <source>Retry previously failed files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1867,11 +2433,11 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Aspell init faalt. Is Aspell niet geinstalleerd?</translation>
+        <translation type="vanished">Aspell init faalt. Is Aspell niet geinstalleerd?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Aspell expansie fout. </translation>
+        <translation type="vanished">Aspell expansie fout. </translation>
     </message>
     <message>
         <source>No expansion found</source>
@@ -1952,6 +2518,14 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     <message>
         <source>  Unindexed files</source>
         <translation>Ongeindexeerde bestanden</translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2144,34 +2718,34 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Web page store directory name</source>
-        <translation>Web pagina map naam om op te slaan</translation>
+        <translation type="vanished">Web pagina map naam om op te slaan</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation>De naam voor een map waarin de kopieen van de bezochte webpaginas opgeslagen zullen worden.&lt;br&gt;Een niet absoluut pad zal worden gekozen ten opzichte van de configuratie map</translation>
+        <translation type="vanished">De naam voor een map waarin de kopieen van de bezochte webpaginas opgeslagen zullen worden.&lt;br&gt;Een niet absoluut pad zal worden gekozen ten opzichte van de configuratie map</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation>Max. grootte voor het web opslaan (MB)</translation>
+        <translation type="vanished">Max. grootte voor het web opslaan (MB)</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation>Verwerk de WEB geschiedenis wachtrij</translation>
+        <translation type="vanished">Verwerk de WEB geschiedenis wachtrij</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation>Zet het indexeren van firefox bezochte paginas aan. &lt;br&gt; (hiervoor zal ook de Firefox Recoll plugin moeten worden geinstalleerd door uzelf)</translation>
+        <translation type="vanished">Zet het indexeren van firefox bezochte paginas aan. &lt;br&gt; (hiervoor zal ook de Firefox Recoll plugin moeten worden geinstalleerd door uzelf)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation>Invoeringen zullen worden gerecycled zodra de groote is bereikt. &lt;br&gt; Het verhogen van de groote heeft zin omdat het beperken van de waarde de bestaande waardes niet zal afkappen ( er is alleen afval ruimte aan het einde).</translation>
+        <translation type="vanished">Invoeringen zullen worden gerecycled zodra de groote is bereikt. &lt;br&gt; Het verhogen van de groote heeft zin omdat het beperken van de waarde de bestaande waardes niet zal afkappen ( er is alleen afval ruimte aan het einde).</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation>Kan configuratie bestand niet lezen</translation>
+        <translation type="vanished">Kan configuratie bestand niet lezen</translation>
     </message>
 </context>
 <context>
@@ -2191,196 +2765,212 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
         <source>-</source>
         <translation>-</translation>
     </message>
+    <message>
+        <source>Add entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>~</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfSearchPanelW</name>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation>Automatische diakritische tekens gevoeligheid</translation>
+        <translation type="vanished">Automatische diakritische tekens gevoeligheid</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation>&lt;P&gt; Automatisch activeren diakritische tekens gevoeligheid als de zoekterm tekens zijn geaccentueerd (niet in unac_except_trans). Wat je nodig hebt om de zoek taal te gebruiken en de &lt;i&gt; D&lt;/i&gt; modifier om diakritische tekens gevoeligheid te specificeren.</translation>
+        <translation type="vanished">&lt;P&gt; Automatisch activeren diakritische tekens gevoeligheid als de zoekterm tekens zijn geaccentueerd (niet in unac_except_trans). Wat je nodig hebt om de zoek taal te gebruiken en de &lt;i&gt; D&lt;/i&gt; modifier om diakritische tekens gevoeligheid te specificeren.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation>Automatische karakter hoofdletter gevoeligheid</translation>
+        <translation type="vanished">Automatische karakter hoofdletter gevoeligheid</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation>&lt;P&gt; Automatisch activeren hoofdletters gevoeligheid als de vermelding hoofdletters heeft in elke, behalve de eerste positie. Anders moet u zoek taal gebruiken en de &lt;i&gt;C&lt;/i&gt; modifier karakter-hoofdlettergevoeligheid opgeven.</translation>
+        <translation type="vanished">&lt;P&gt; Automatisch activeren hoofdletters gevoeligheid als de vermelding hoofdletters heeft in elke, behalve de eerste positie. Anders moet u zoek taal gebruiken en de &lt;i&gt;C&lt;/i&gt; modifier karakter-hoofdlettergevoeligheid opgeven.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation>Maximale term uitbreidings telling</translation>
+        <translation type="vanished">Maximale term uitbreidings telling</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation>&lt;p&gt; Maximale uitbreidingstelling voor een enkele term (bijv.: bij het gebruik van wildcards) Een standaard van 10.000 is redelijk en zal zoekpodrachten die lijken te bevriezen terwijl de zoekmachine loopt door de termlijst vermijden.</translation>
+        <translation type="vanished">&lt;p&gt; Maximale uitbreidingstelling voor een enkele term (bijv.: bij het gebruik van wildcards) Een standaard van 10.000 is redelijk en zal zoekpodrachten die lijken te bevriezen terwijl de zoekmachine loopt door de termlijst vermijden.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation>Maximaal Xapian clausules telling</translation>
+        <translation type="vanished">Maximaal Xapian clausules telling</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation>&lt;p&gt; Maximale aantal elementaire clausules die we kunnen toevoegen aan een enkele Xapian zoeken. In sommige gevallen kan het resultaatvan de term uitbreiding multiplicatief zijn, en we willen voorkomen dat er overmatig gebruik word gemaakt van het werkgeheugen. De standaard van 100.000  zou hoog genoeg moeten zijn in beidde gevallen en compatible zijn met moderne hardware configuraties.</translation>
+        <translation type="vanished">&lt;p&gt; Maximale aantal elementaire clausules die we kunnen toevoegen aan een enkele Xapian zoeken. In sommige gevallen kan het resultaatvan de term uitbreiding multiplicatief zijn, en we willen voorkomen dat er overmatig gebruik word gemaakt van het werkgeheugen. De standaard van 100.000  zou hoog genoeg moeten zijn in beidde gevallen en compatible zijn met moderne hardware configuraties.</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
-        <translation>Globaal</translation>
+        <translation type="vanished">Globaal</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>Maximaal gecomprimeerd bestands formaat (KB)</translation>
+        <translation type="vanished">Maximaal gecomprimeerd bestands formaat (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation>Deze waarde stelt een drempel waarboven gecomprimeerde bestanden niet zal worden verwerkt. Ingesteld op -1 voor geen limiet, op 0 voor geen decompressie ooit.</translation>
+        <translation type="vanished">Deze waarde stelt een drempel waarboven gecomprimeerde bestanden niet zal worden verwerkt. Ingesteld op -1 voor geen limiet, op 0 voor geen decompressie ooit.</translation>
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>Max. tekstbestand groote (MB)</translation>
+        <translation type="vanished">Max. tekstbestand groote (MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation>Deze waarde stelt een drempel waarboven tekstbestanden niet zal worden verwerkt. Ingesteld op -1 voor geen limiet. Dit is voor het uitsluiten van monster logbestanden uit de index.</translation>
+        <translation type="vanished">Deze waarde stelt een drempel waarboven tekstbestanden niet zal worden verwerkt. Ingesteld op -1 voor geen limiet. Dit is voor het uitsluiten van monster logbestanden uit de index.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>Tekst bestand pagina grootte (KB)</translation>
+        <translation type="vanished">Tekst bestand pagina grootte (KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>Als deze waarde is ingesteld (niet gelijk aan -1), zal tekstbestanden worden opgedeeld in blokken van deze grootte voor indexering. Dit zal helpen bij het zoeken naar zeer grote tekstbestanden (bijv: log-bestanden).</translation>
+        <translation type="vanished">Als deze waarde is ingesteld (niet gelijk aan -1), zal tekstbestanden worden opgedeeld in blokken van deze grootte voor indexering. Dit zal helpen bij het zoeken naar zeer grote tekstbestanden (bijv: log-bestanden).</translation>
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation>Max. filter executie tijd (S)</translation>
+        <translation type="vanished">Max. filter executie tijd (S)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation>Externe filters die langer dan dit werken worden afgebroken. Dit is voor het zeldzame geval (bijv: postscript) wanneer een document een filterlus zou kunnen veroorzaken. Stel in op -1 voor geen limiet.</translation>
+        <translation type="vanished">Externe filters die langer dan dit werken worden afgebroken. Dit is voor het zeldzame geval (bijv: postscript) wanneer een document een filterlus zou kunnen veroorzaken. Stel in op -1 voor geen limiet.</translation>
     </message>
     <message>
         <source>Only mime types</source>
-        <translation>Alleen mime types</translation>
+        <translation type="vanished">Alleen mime types</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation>Een exclusieve lijst van geïndexeerde typen mime. &lt;br&gt; Niets anders zal worden geïndexeerd. Normaal gesproken leeg en inactief</translation>
+        <translation type="vanished">Een exclusieve lijst van geïndexeerde typen mime. &lt;br&gt; Niets anders zal worden geïndexeerd. Normaal gesproken leeg en inactief</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation>Sluit mime types uit</translation>
+        <translation type="vanished">Sluit mime types uit</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
-        <translation>Mime types die niet geindexeerd zullen worden</translation>
+        <translation type="vanished">Mime types die niet geindexeerd zullen worden</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation>Top mappen</translation>
+        <translation type="vanished">Top mappen</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>Een lijst van mappen waar de recursive indexering gaat starten. Standaard is de thuismap.</translation>
+        <translation type="vanished">Een lijst van mappen waar de recursive indexering gaat starten. Standaard is de thuismap.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation>Paden overgeslagen</translation>
+        <translation type="vanished">Paden overgeslagen</translation>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Dit zijn de namen van de mappen die indexering niet zal doorzoeken. &lt;br&gt; Kan wildcards bevatten. Moet overeenkomen met de paden gezien door de indexer (bijv: als topmappen zoals &apos;/ home/me en &apos;/ home&apos; is eigenlijk een link naar &apos;/usr/home&apos;, een correcte overgeslagen pad vermelding zou zijn &apos;/home/me/tmp * &apos;, niet&apos; /usr/home/me/tmp * &apos;)</translation>
+        <translation type="vanished">Dit zijn de namen van de mappen die indexering niet zal doorzoeken. &lt;br&gt; Kan wildcards bevatten. Moet overeenkomen met de paden gezien door de indexer (bijv: als topmappen zoals &apos;/ home/me en &apos;/ home&apos; is eigenlijk een link naar &apos;/usr/home&apos;, een correcte overgeslagen pad vermelding zou zijn &apos;/home/me/tmp * &apos;, niet&apos; /usr/home/me/tmp * &apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation>Stam talen</translation>
+        <translation type="vanished">Stam talen</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>De talen waarvoor de stam uitbreidings&lt;br&gt;wooordenboeken voor zullen worden gebouwd.</translation>
+        <translation type="vanished">De talen waarvoor de stam uitbreidings&lt;br&gt;wooordenboeken voor zullen worden gebouwd.</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation>Log bestandsnaam</translation>
+        <translation type="vanished">Log bestandsnaam</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation>Het bestand waar de boodschappen geschreven zullen worden.&lt;br&gt;Gebruik &apos;stderr&apos; voor terminal weergave</translation>
+        <translation type="vanished">Het bestand waar de boodschappen geschreven zullen worden.&lt;br&gt;Gebruik &apos;stderr&apos; voor terminal weergave</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation>Log uitgebreidheids nivo</translation>
+        <translation type="vanished">Log uitgebreidheids nivo</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation>Deze waarde bepaald het aantal boodschappen,&lt;br&gt;van alleen foutmeldingen tot een hoop debugging data.</translation>
+        <translation type="vanished">Deze waarde bepaald het aantal boodschappen,&lt;br&gt;van alleen foutmeldingen tot een hoop debugging data.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation>Index verversings megabyte interval</translation>
+        <translation type="vanished">Index verversings megabyte interval</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation>Deze waarde past de hoeveelheid data die zal worden geindexeerd tussen de flushes naar de schijf.&lt;br&gt; Dit helpt bij het controleren van het gebruik van geheugen. Standaad 10MB </translation>
+        <translation type="vanished">Deze waarde past de hoeveelheid data die zal worden geindexeerd tussen de flushes naar de schijf.&lt;br&gt; Dit helpt bij het controleren van het gebruik van geheugen. Standaad 10MB </translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>maximale schijf gebruik</translation>
+        <translation type="vanished">maximale schijf gebruik</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Dit is het precentage van schijfgebruike waar indexering zal falen en stoppen (om te vermijden dat uw schijf volraakt.&lt;br&gt;0 betekend geen limit (dit is standaard).</translation>
+        <translation type="vanished">Dit is het precentage van schijfgebruike waar indexering zal falen en stoppen (om te vermijden dat uw schijf volraakt.&lt;br&gt;0 betekend geen limit (dit is standaard).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation>Gebruik aspell niet</translation>
+        <translation type="vanished">Gebruik aspell niet</translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation>Aspell taal</translation>
+        <translation type="vanished">Aspell taal</translation>
     </message>
     <message>
         <source>Database directory name</source>
-        <translation>Database map naam</translation>
+        <translation type="vanished">Database map naam</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation>Schakelt het gebruik van aspell uit om spellings gissingen in het term onderzoeker gereedschap te genereren. &lt;br&gt; Handig als aspell afwezig is of niet werkt.</translation>
+        <translation type="vanished">Schakelt het gebruik van aspell uit om spellings gissingen in het term onderzoeker gereedschap te genereren. &lt;br&gt; Handig als aspell afwezig is of niet werkt.</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Taal instelling voor het aspell woordenboek. Dit zou er uit moeten zien als &apos;en&apos;of &apos;nl&apos;...&lt;br&gt; als deze waarde niet is ingesteld, zal de NLS omgeving gebruikt worden om het te berekenen, wat meestal werkt. Om een idee te krijgen wat er op uw systeem staat, type &apos;aspell config&apos; en zoek naar .dat bestanden binnen de &apos;data-dir&apos;map.</translation>
+        <translation type="vanished">Taal instelling voor het aspell woordenboek. Dit zou er uit moeten zien als &apos;en&apos;of &apos;nl&apos;...&lt;br&gt; als deze waarde niet is ingesteld, zal de NLS omgeving gebruikt worden om het te berekenen, wat meestal werkt. Om een idee te krijgen wat er op uw systeem staat, type &apos;aspell config&apos; en zoek naar .dat bestanden binnen de &apos;data-dir&apos;map.</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>De naam voor een map om de index in op te slaan&lt;br&gt; Een niet absoluut pad ten opzichte van het configuratie bestand is gekozen. Standaard is het &apos;xapian db&apos;.</translation>
+        <translation type="vanished">De naam voor een map om de index in op te slaan&lt;br&gt; Een niet absoluut pad ten opzichte van het configuratie bestand is gekozen. Standaard is het &apos;xapian db&apos;.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation>Unac uitzonderingen</translation>
+        <translation type="vanished">Unac uitzonderingen</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation> Dit zijn uitzonderingen op het unac mechanisme dat, standaard, alle diakritische tekens verwijderd, en voert canonische ontbinding door. U kunt unaccenting voor sommige karakters veranderen, afhankelijk van uw taal, en extra decomposities specificeren, bijv. voor ligaturen. In iedere ruimte gescheiden ingave , waar het eerste teken is de bron is, en de rest de vertaling.</translation>
+        <translation type="vanished"> Dit zijn uitzonderingen op het unac mechanisme dat, standaard, alle diakritische tekens verwijderd, en voert canonische ontbinding door. U kunt unaccenting voor sommige karakters veranderen, afhankelijk van uw taal, en extra decomposities specificeren, bijv. voor ligaturen. In iedere ruimte gescheiden ingave , waar het eerste teken is de bron is, en de rest de vertaling.</translation>
     </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
     <message>
         <source>User preferences</source>
-        <translation>Gebruikers voorkeuren</translation>
+        <translation type="vanished">Gebruikers voorkeuren</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -2400,7 +2990,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Highlight kleur voor zoektermen</translation>
+        <translation type="vanished">Highlight kleur voor zoektermen</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -2436,7 +3026,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Autostart eenvoudige zoekopdracht bij ingave in de witruimte.</translation>
+        <translation type="vanished">Autostart eenvoudige zoekopdracht bij ingave in de witruimte.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
@@ -2554,7 +3144,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Style sheet</source>
-        <translation>Style sheet</translation>
+        <translation type="vanished">Style sheet</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
@@ -2621,7 +3211,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation>Zoek terwijl u typed.</translation>
+        <translation type="vanished">Zoek terwijl u typed.</translation>
     </message>
     <message>
         <source>Paths translations</source>
@@ -2686,6 +3276,74 @@ The default value is 2 (percent). </source>
     <message>
         <source>Show warning when opening temporary file.</source>
         <translation>Toon waarschuwing bij het openen van een temp bestand.</translation>
+    </message>
+    <message>
+        <source>Recoll - User Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Application Qt style sheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate links in preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum size of search history (0: disable, -1: unlimited):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start search on completer popup activation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generate desktop notifications.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suppress all beeps.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of snippets displayed in the snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort snippets by page number (default: by weight).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set path translations for the selected index or for the main one if no selection exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Misc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

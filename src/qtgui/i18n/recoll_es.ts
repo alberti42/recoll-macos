@@ -235,7 +235,7 @@
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation type="unfinished">Los lenguajes para los cuales los diccionarios de expansión de raíces serán creados.</translation>
+        <translation type="obsolete">Los lenguajes para los cuales los diccionarios de expansión de raíces serán creados.</translation>
     </message>
     <message>
         <source>Log file name</source>
@@ -283,7 +283,7 @@
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished">El lenguaje para el diccionario aspell. Esto debería ser algo como &apos;en&apos; o &apos;fr&apos; ...&lt;br&gt;Si no se establece este valor, el ambiente NLS será utilizado para calcularlo, lo cual usualmente funciona. Para tener una idea de lo que está instalado en sus sistema, escriba &apos;aspell-config&apos; y busque archivos .dat dentro del directorio &apos;data-dir&apos;.</translation>
+        <translation type="obsolete">El lenguaje para el diccionario aspell. Esto debería ser algo como &apos;en&apos; o &apos;fr&apos; ...&lt;br&gt;Si no se establece este valor, el ambiente NLS será utilizado para calcularlo, lo cual usualmente funciona. Para tener una idea de lo que está instalado en sus sistema, escriba &apos;aspell-config&apos; y busque archivos .dat dentro del directorio &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -356,6 +356,14 @@
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
         <translation type="unfinished">&lt;p&gt;Número máximo de cláusulas elementales agregadas a una consulta de Xapian. En algunos casos, el resultado de la expansión de términos puede ser multiplicativo, y deseamos evitar el uso excesivo de memoria. El valor por defecto de 100000 debería ser lo suficientemente alto en la mayoría de los casos, y compatible con las configuraciones de hardware típicas en la actualidad.</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3741,6 +3749,10 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

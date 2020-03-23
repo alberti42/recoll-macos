@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="hu_HU">
+<TS version="2.1" language="hu_HU">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -38,6 +38,14 @@
     <message>
         <source>message</source>
         <translation>Üzenet</translation>
+    </message>
+    <message>
+        <source>texts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>spreadsheets</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -177,6 +185,235 @@
     <message>
         <source>Filter sizes</source>
         <translation>Méret</translation>
+    </message>
+</context>
+<context>
+    <name>ConfIndexW</name>
+    <message>
+        <source>Can&apos;t write configuration file</source>
+        <translation type="unfinished">A beállítófájl írása sikertelen</translation>
+    </message>
+    <message>
+        <source>Global parameters</source>
+        <translation type="unfinished">Általános beállítások</translation>
+    </message>
+    <message>
+        <source>Local parameters</source>
+        <translation type="unfinished">Helyi beállítások</translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished">Keresési beállítások</translation>
+    </message>
+    <message>
+        <source>Top directories</source>
+        <translation type="unfinished">Kezdő könyvtárak</translation>
+    </message>
+    <message>
+        <source>The list of directories where recursive indexing starts. Default: your home.</source>
+        <translation type="unfinished">A megadott könyvtárak rekurzív indexelése. Alapértelmezett értéke a saját könyvtár.</translation>
+    </message>
+    <message>
+        <source>Skipped paths</source>
+        <translation type="unfinished">Kizárt elérési utak</translation>
+    </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stemming languages</source>
+        <translation type="unfinished">A szótőképzés nyelve</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log file name</source>
+        <translation type="unfinished">A naplófájl neve</translation>
+    </message>
+    <message>
+        <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
+        <translation type="unfinished">Az üzenetek kiírásának a helye.&lt;br&gt;A „stderr” a terminálra küldi az üzeneteket.</translation>
+    </message>
+    <message>
+        <source>Log verbosity level</source>
+        <translation type="unfinished">A naplózás szintje</translation>
+    </message>
+    <message>
+        <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
+        <translation type="unfinished">Az üzenetek mennyiségének szabályozása,&lt;br&gt;a hibaüzenetekre szorítkozótól a részletes hibakeresésig.</translation>
+    </message>
+    <message>
+        <source>Index flush megabytes interval</source>
+        <translation type="unfinished">Indexírási intervallum (MB)</translation>
+    </message>
+    <message>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished">Az az adatmennyiség, melyet két lemezre írás között az indexelő feldolgoz.&lt;br&gt;Segíthet kézben tartani a memóriafoglalást. Alapértelmezett: 10MB</translation>
+    </message>
+    <message>
+        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No aspell usage</source>
+        <translation type="unfinished">Az aspell mellőzése</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished">A szóvizsgálóban az aspell használatának mellőzése a hasonló szavak keresésekor.&lt;br&gt;Hasznos, ha az aspell nincs telepítve vagy nem működik.</translation>
+    </message>
+    <message>
+        <source>Aspell language</source>
+        <translation type="unfinished">Az aspell nyelve</translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory name</source>
+        <translation type="unfinished">Az adatbázis könyvtárneve</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished">Az indexet tartalmazó könyvtár neve.&lt;br&gt;Relatív elérési út a beállítási könyvtárhoz képest értendő. Alapértelmezett: „xapiandb”.</translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation type="unfinished">Unac kivételek</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation type="unfinished">&lt;p&gt;Az unac alapértelmezetten eltávolít minden ékezetet és szétbontja a ligatúrákat. Az itt megadott kivételekkel lehetőség van adott karakterek esetén tiltani a műveletet, ha a használt nyelv ezt szükségessé teszi. Ezen kívül előírhatók további felbontandó karakterek is. Az egyes elemeket egymástól szóközzel kell elválasztani. Egy elem első karaktere az eredetit, a további karakterek a várt eredményt határozzák meg.</translation>
+    </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished">A webes előzmények feldolgozása</translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished">A Firefoxszal látogatott oldalak indexelése&lt;br&gt;(a Firefox Recoll kiegészítőjét is telepíteni kell)</translation>
+    </message>
+    <message>
+        <source>Web page store directory name</source>
+        <translation type="unfinished">A weblapokat tároló könyvtár neve</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished">A látogatott weblapok másolatát tároló könyvtár neve.&lt;br&gt;Relatív elérési út a beállításokat tároló könyvtárhoz képest értendő.</translation>
+    </message>
+    <message>
+        <source>Max. size for the web store (MB)</source>
+        <translation type="unfinished">A webes tároló max. mérete (MB)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished">A méret elérésekor a legkorábbi bejegyzések törlődnek.&lt;br&gt;Csak a növelésnek van haszna, mivel csökkentéskor a már létező fájl nem lesz kisebb (csak egy része állandóan kihasználatlan marad).</translation>
+    </message>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation type="unfinished">Automatikus ékezetérzékenység</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation type="unfinished">&lt;p&gt;Automatikusan különbözőnek tekinti az ékezetes betűket az ékezet nélküli párjuktól, ha tartalmaz ékezetes betűt a kifejezés (az unac_except_trans kivételével). Egyébként a keresőnyelv &lt;i&gt;D&lt;/i&gt; módosítójával érhető el ugyanez.</translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation type="unfinished">Kis-és nagybetűk automatikus megkülönböztetése</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation type="unfinished">&lt;p&gt;Automatikusan különbözőnek tekinti a kis-és nagybetűket, ha az első karakter kivételével bárhol tartalmaz nagybetűt a kifejezés. Egyébként a keresőnyelv &lt;i&gt;C&lt;/i&gt; módosítójával érhető el ugyanez.</translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation type="unfinished">A toldalékok maximális száma</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation type="unfinished">&lt;p&gt;Egy szó toldalékainak maximális száma (pl. helyettesítő karakterek használatakor). Az alapértelmezett 10 000 elfogadható érték, és elkerülhető vele a felhasználói felület időleges válaszképtelensége is.</translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation type="unfinished">A Xapian feltételek maximális száma</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished">Egy Xapian kereséshez felhasználható elemi feltételek maximális száma. Néha a szavak toldalékolása szorzó hatású, ami túlzott memóriahasználathoz vezethet. Az alapértelmezett 100 000 a legtöbb esetben elegendő, de nem is támaszt különleges igényeket a hardverrel szemben.</translation>
+    </message>
+</context>
+<context>
+    <name>ConfSubPanelW</name>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished">MIME típusok</translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished">Az indexelendő MIME típusok listája.&lt;br&gt;Csak ezek a típusok kerülnek az indexbe. Rendesen üres és inaktív.</translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished">Kizárt MIME típusok</translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished">Ezek a MIME típusok kimaradnak az indexelésből</translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished">A tömörített fájlok max. mérete (KB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished">A tömörített fájlok indexbe kerülésének határértéke.
+-1 esetén nincs korlát.
+0 esetén soha nem történik kicsomagolás.</translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation type="unfinished">Szövegfájl max. mérete (MB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation type="unfinished">A szövegfájlok indexbe kerülésének határértéke.
+-1 esetén nincs korlát.
+Az óriásira nőtt naplófájlok feldolgozása kerülhető el így.</translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation type="unfinished">Szövegfájl lapmérete (KB)</translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation type="unfinished">Ha be van állítva (nem egyenlő -1), akkor a szövegfájlok indexelése ilyen méretű darabokban történik.
+Ez segítséget nyújt a nagyon nagy méretű szövegfájlokban (pl. naplófájlok) való kereséshez.</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
+</source>
+        <translation type="unfinished">A túl hosszú ideig futó külső szűrők leállítása
+Néha előfordul (pl. postscript esetén), hogy a szűrő végtelen ciklusba kerül.
+-1 esetén nincs korlát.
+</translation>
+    </message>
+    <message>
+        <source>Global</source>
+        <translation type="unfinished">Minden könyvtárra vonatkozik</translation>
     </message>
 </context>
 <context>
@@ -429,14 +666,18 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation>Az előzmények fájlja sérült vagy nem lehet írni/olvasni, ellenőrizni vagy törölni kell: </translation>
+        <translation type="vanished">Az előzmények fájlja sérült vagy nem lehet írni/olvasni, ellenőrizni vagy törölni kell: </translation>
+    </message>
+    <message>
+        <source>&quot;history&quot; file is damaged, please check or remove it: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Preview</name>
     <message>
         <source>Close Tab</source>
-        <translation>Lap bezárása</translation>
+        <translation type="vanished">Lap bezárása</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -480,7 +721,59 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Error while loading file</source>
-        <translation>Hiba a fájl betöltése közben!</translation>
+        <translation type="vanished">Hiba a fájl betöltése közben!</translation>
+    </message>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">Megnyitás</translation>
+    </message>
+    <message>
+        <source>Canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: file missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: no permission.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading: backend not configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error&lt;br&gt;Maybe the application is locking the file ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error loading the document: other handler error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;br&gt;Attempting to display from stored text.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not fetch stored text</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -525,16 +818,20 @@ p, li { white-space: pre-wrap; }
         <source>Preserve indentation</source>
         <translation>Eredeti tördelés</translation>
     </message>
+    <message>
+        <source>Open document</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation>Általános beállítások</translation>
+        <translation type="vanished">Általános beállítások</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation>Helyi beállítások</translation>
+        <translation type="vanished">Helyi beállítások</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
@@ -546,7 +843,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;Ha a fenti listából semmi vagy egy üres sor van kijelölve, úgy a következő jellemzők&lt;br&gt;az indexelendő legfelső szintű, egyébként a kijelölt mappára vonatkoznak.&lt;br&gt;A +/- gombokkal lehet a listához könyvtárakat adni vagy onnan törölni.</translation>
+        <translation type="vanished">&lt;i&gt;Ha a fenti listából semmi vagy egy üres sor van kijelölve, úgy a következő jellemzők&lt;br&gt;az indexelendő legfelső szintű, egyébként a kijelölt mappára vonatkoznak.&lt;br&gt;A +/- gombokkal lehet a listához könyvtárakat adni vagy onnan törölni.</translation>
     </message>
     <message>
         <source>Skipped names</source>
@@ -574,11 +871,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>Keresési beállítások</translation>
+        <translation type="vanished">Keresési beállítások</translation>
     </message>
     <message>
         <source>Web history</source>
-        <translation>Webes előzmények</translation>
+        <translation type="vanished">Webes előzmények</translation>
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
@@ -597,6 +894,10 @@ p, li { white-space: pre-wrap; }
 (no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation>Az ilyen fájlnévvégződésű fájlok csak a nevük alapján indexelendők
 (nem történik MIME típusfelismerés, kicsomagolás és tartalomindexelés sem).</translation>
+    </message>
+    <message>
+        <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -948,7 +1249,7 @@ Megnyissuk a beállítások ablakát?</translation>
     </message>
     <message>
         <source>Index not open</source>
-        <translation>Nincs megnyitott index</translation>
+        <translation type="vanished">Nincs megnyitott index</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -956,7 +1257,7 @@ Megnyissuk a beállítások ablakát?</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation>Az alábbi MIME típusok szerepelnek az indexben:</translation>
+        <translation type="vanished">Az alábbi MIME típusok szerepelnek az indexben:</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -982,7 +1283,7 @@ Ellenőrizni kell a mimeview fájlt!</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation>Az indexelő jelenleg nem fut.</translation>
+        <translation type="vanished">Az indexelő jelenleg nem fut.</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
@@ -998,11 +1299,11 @@ Ellenőrizni kell a mimeview fájlt!</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
-        <translation>A fájl bejegyzése az indexben elavult. Esetlegesen téves adatok megjelenítése helyett kihagyva. </translation>
+        <translation type="vanished">A fájl bejegyzése az indexben elavult. Esetlegesen téves adatok megjelenítése helyett kihagyva. </translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation>Az OK-ra kattintva frissíthető a fájl indexbejegyzése, ennek végeztével újra kell futtatni a keresést.</translation>
+        <translation type="vanished">Az OK-ra kattintva frissíthető a fájl indexbejegyzése, ennek végeztével újra kell futtatni a keresést.</translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
@@ -1028,7 +1329,7 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation>A jelenleg futó indexelő nem erről a felületről lett indítva, nem állítható le.</translation>
+        <translation type="vanished">A jelenleg futó indexelő nem erről a felületről lett indítva, nem állítható le.</translation>
     </message>
     <message>
         <source>Bad paths</source>
@@ -1037,7 +1338,7 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     <message>
         <source>Bad paths in configuration file:
 </source>
-        <translation>Hibás elérési utak a beállítófájlban: </translation>
+        <translation type="vanished">Hibás elérési utak a beállítófájlban: </translation>
     </message>
     <message>
         <source>Selection patterns need topdir</source>
@@ -1089,11 +1390,11 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     </message>
     <message>
         <source>Index scheduling</source>
-        <translation>Az időzítés beállításai</translation>
+        <translation type="vanished">Az időzítés beállításai</translation>
     </message>
     <message>
         <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
-        <translation>Sajnos Windows rendszeren még nem vehető igénybe, a Fájl menüből lehet frissíteni az indexet.</translation>
+        <translation type="vanished">Sajnos Windows rendszeren még nem vehető igénybe, a Fájl menüből lehet frissíteni az indexet.</translation>
     </message>
     <message>
         <source>Disabled because the real time indexer was not compiled in.</source>
@@ -1113,7 +1414,7 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
-        <translation>Visszatérés a listához: Mégsem.&lt;b&gt;Az előnézet megnyitása mindenképp (és megjegyzés erre a munkamenetre): Mellőzés.</translation>
+        <translation type="vanished">Visszatérés a listához: Mégsem.&lt;b&gt;Az előnézet megnyitása mindenképp (és megjegyzés erre a munkamenetre): Mellőzés.</translation>
     </message>
     <message>
         <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
@@ -1134,6 +1435,115 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
         <translation>Az indexelő fut. A webes gyorstár nem hozzáférhető.</translation>
+    </message>
+    <message>
+        <source>documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>errors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t update index: internal error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;em&gt;Also, it seems that the last index update for the file failed.&lt;/em&gt;&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to try to update the index for this file. You will need to run the query again when indexing is done.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Batch scheduling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No information: initial indexing not yet performed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Content has been indexed for these MIME types:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tools</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open/create file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1394,6 +1804,14 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
         <source>Webcache Editor</source>
         <translation>Webes gyorstár szerkesztése</translation>
     </message>
+    <message>
+        <source>Trigger incremental pass</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>E&amp;xport simple search history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1475,6 +1893,10 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     <message>
         <source>MIME type</source>
         <translation>MIME típus</translation>
+    </message>
+    <message>
+        <source>Can&apos;t sort by inverse relevance</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1607,7 +2029,7 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Ide kell írni a keresőszavakat.
+        <translation type="vanished">Ide kell írni a keresőszavakat.
 ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fel.</translation>
     </message>
     <message>
@@ -1624,7 +2046,7 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation>Keresőnyelvi kifejezés megadása. Segítség:&lt;br&gt;
+        <translation type="vanished">Keresőnyelvi kifejezés megadása. Segítség:&lt;br&gt;
 &lt;i&gt;szo1 szo2&lt;/i&gt; : &apos;szo1&apos; és &apos;szo2&apos; bármely mezőben.&lt;br&gt;
 &lt;i&gt;mezo:szo1&lt;/i&gt; : &apos;szo1&apos; a &apos;mezo&apos; nevű mezőben.&lt;br&gt;
  Szabványos mezőnevek/szinonímák:&lt;br&gt;
@@ -1662,6 +2084,138 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Autophrase is unset but it was set for stored query</source>
         <translation>Az „automatikus részmondat” ki van kapcsolva, de a keresés mentésekor engedélyezve volt.</translation>
     </message>
+    <message>
+        <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>table, th, td {</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>border: 1px solid black;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>border-collapse: collapse;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>th,td {</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text-align: center;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You should really look at the manual (F1)&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -1691,12 +2245,16 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Ide kell írni a keresőszavakat.
+        <translation type="vanished">Ide kell írni a keresőszavakat.
 ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fel.</translation>
     </message>
     <message>
         <source>Choose search type.</source>
         <translation>A keresés módjának kiválasztása</translation>
+    </message>
+    <message>
+        <source>Show query history</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1767,6 +2325,14 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;Sajnos a megadott határok között nincs pontos egyezés. Talán túl nagy a dokumentum, és a feldolgozó elakadt...&lt;/p&gt;</translation>
     </message>
+    <message>
+        <source>Sort By Relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort By Page</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpecIdxW</name>
@@ -1776,7 +2342,7 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
     </message>
     <message>
         <source>Do not retry previously failed files.</source>
-        <translation>A korábban sikertelenül indexelt fájlok kihagyása</translation>
+        <translation type="vanished">A korábban sikertelenül indexelt fájlok kihagyása</translation>
     </message>
     <message>
         <source>Else only modified or failed files will be processed.</source>
@@ -1796,7 +2362,7 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
     </message>
     <message>
         <source>Start directory (else use regular topdirs):</source>
-        <translation>Kezdő könyvtár (üresen a rendes kezdő könyvtár):</translation>
+        <translation type="vanished">Kezdő könyvtár (üresen a rendes kezdő könyvtár):</translation>
     </message>
     <message>
         <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
@@ -1809,6 +2375,14 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
     <message>
         <source>Top indexed entity</source>
         <translation>Az indexelendő kezdő könyvtár</translation>
+    </message>
+    <message>
+        <source>Retry previously failed files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1874,11 +2448,11 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Az aspell indítása nem sikerült. Telepítve van?</translation>
+        <translation type="vanished">Az aspell indítása nem sikerült. Telepítve van?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Aspell toldalékolási hiba.</translation>
+        <translation type="vanished">Aspell toldalékolási hiba.</translation>
     </message>
     <message>
         <source>No expansion found</source>
@@ -1959,6 +2533,14 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
     <message>
         <source>  Unindexed files</source>
         <translation>  nem indexelt fájl</translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2151,34 +2733,34 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Web page store directory name</source>
-        <translation>A weblapokat tároló könyvtár neve</translation>
+        <translation type="vanished">A weblapokat tároló könyvtár neve</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation>A látogatott weblapok másolatát tároló könyvtár neve.&lt;br&gt;Relatív elérési út a beállításokat tároló könyvtárhoz képest értendő.</translation>
+        <translation type="vanished">A látogatott weblapok másolatát tároló könyvtár neve.&lt;br&gt;Relatív elérési út a beállításokat tároló könyvtárhoz képest értendő.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation>A webes tároló max. mérete (MB)</translation>
+        <translation type="vanished">A webes tároló max. mérete (MB)</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation>A webes előzmények feldolgozása</translation>
+        <translation type="vanished">A webes előzmények feldolgozása</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation>A Firefoxszal látogatott oldalak indexelése&lt;br&gt;(a Firefox Recoll kiegészítőjét is telepíteni kell)</translation>
+        <translation type="vanished">A Firefoxszal látogatott oldalak indexelése&lt;br&gt;(a Firefox Recoll kiegészítőjét is telepíteni kell)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation>A méret elérésekor a legkorábbi bejegyzések törlődnek.&lt;br&gt;Csak a növelésnek van haszna, mivel csökkentéskor a már létező fájl nem lesz kisebb (csak egy része állandóan kihasználatlan marad).</translation>
+        <translation type="vanished">A méret elérésekor a legkorábbi bejegyzések törlődnek.&lt;br&gt;Csak a növelésnek van haszna, mivel csökkentéskor a már létező fájl nem lesz kisebb (csak egy része állandóan kihasználatlan marad).</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation>A beállítófájl írása sikertelen</translation>
+        <translation type="vanished">A beállítófájl írása sikertelen</translation>
     </message>
 </context>
 <context>
@@ -2198,204 +2780,220 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
         <source>-</source>
         <translation>-</translation>
     </message>
+    <message>
+        <source>Add entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>~</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfSearchPanelW</name>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation>Automatikus ékezetérzékenység</translation>
+        <translation type="vanished">Automatikus ékezetérzékenység</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation>&lt;p&gt;Automatikusan különbözőnek tekinti az ékezetes betűket az ékezet nélküli párjuktól, ha tartalmaz ékezetes betűt a kifejezés (az unac_except_trans kivételével). Egyébként a keresőnyelv &lt;i&gt;D&lt;/i&gt; módosítójával érhető el ugyanez.</translation>
+        <translation type="vanished">&lt;p&gt;Automatikusan különbözőnek tekinti az ékezetes betűket az ékezet nélküli párjuktól, ha tartalmaz ékezetes betűt a kifejezés (az unac_except_trans kivételével). Egyébként a keresőnyelv &lt;i&gt;D&lt;/i&gt; módosítójával érhető el ugyanez.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation>Kis-és nagybetűk automatikus megkülönböztetése</translation>
+        <translation type="vanished">Kis-és nagybetűk automatikus megkülönböztetése</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation>&lt;p&gt;Automatikusan különbözőnek tekinti a kis-és nagybetűket, ha az első karakter kivételével bárhol tartalmaz nagybetűt a kifejezés. Egyébként a keresőnyelv &lt;i&gt;C&lt;/i&gt; módosítójával érhető el ugyanez.</translation>
+        <translation type="vanished">&lt;p&gt;Automatikusan különbözőnek tekinti a kis-és nagybetűket, ha az első karakter kivételével bárhol tartalmaz nagybetűt a kifejezés. Egyébként a keresőnyelv &lt;i&gt;C&lt;/i&gt; módosítójával érhető el ugyanez.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation>A toldalékok maximális száma</translation>
+        <translation type="vanished">A toldalékok maximális száma</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation>&lt;p&gt;Egy szó toldalékainak maximális száma (pl. helyettesítő karakterek használatakor). Az alapértelmezett 10 000 elfogadható érték, és elkerülhető vele a felhasználói felület időleges válaszképtelensége is.</translation>
+        <translation type="vanished">&lt;p&gt;Egy szó toldalékainak maximális száma (pl. helyettesítő karakterek használatakor). Az alapértelmezett 10 000 elfogadható érték, és elkerülhető vele a felhasználói felület időleges válaszképtelensége is.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation>A Xapian feltételek maximális száma</translation>
+        <translation type="vanished">A Xapian feltételek maximális száma</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation>Egy Xapian kereséshez felhasználható elemi feltételek maximális száma. Néha a szavak toldalékolása szorzó hatású, ami túlzott memóriahasználathoz vezethet. Az alapértelmezett 100 000 a legtöbb esetben elegendő, de nem is támaszt különleges igényeket a hardverrel szemben.</translation>
+        <translation type="vanished">Egy Xapian kereséshez felhasználható elemi feltételek maximális száma. Néha a szavak toldalékolása szorzó hatású, ami túlzott memóriahasználathoz vezethet. Az alapértelmezett 100 000 a legtöbb esetben elegendő, de nem is támaszt különleges igényeket a hardverrel szemben.</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
-        <translation>Minden könyvtárra vonatkozik</translation>
+        <translation type="vanished">Minden könyvtárra vonatkozik</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>A tömörített fájlok max. mérete (KB)</translation>
+        <translation type="vanished">A tömörített fájlok max. mérete (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation>A tömörített fájlok indexbe kerülésének határértéke.
+        <translation type="vanished">A tömörített fájlok indexbe kerülésének határértéke.
 -1 esetén nincs korlát.
 0 esetén soha nem történik kicsomagolás.</translation>
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>Szövegfájl max. mérete (MB)</translation>
+        <translation type="vanished">Szövegfájl max. mérete (MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation>A szövegfájlok indexbe kerülésének határértéke.
+        <translation type="vanished">A szövegfájlok indexbe kerülésének határértéke.
 -1 esetén nincs korlát.
 Az óriásira nőtt naplófájlok feldolgozása kerülhető el így.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>Szövegfájl lapmérete (KB)</translation>
+        <translation type="vanished">Szövegfájl lapmérete (KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>Ha be van állítva (nem egyenlő -1), akkor a szövegfájlok indexelése ilyen méretű darabokban történik.
+        <translation type="vanished">Ha be van állítva (nem egyenlő -1), akkor a szövegfájlok indexelése ilyen méretű darabokban történik.
 Ez segítséget nyújt a nagyon nagy méretű szövegfájlokban (pl. naplófájlok) való kereséshez.</translation>
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation>A szűrő max. futási ideje (s)</translation>
+        <translation type="vanished">A szűrő max. futási ideje (s)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation>A túl hosszú ideig futó külső szűrők leállítása
+        <translation type="vanished">A túl hosszú ideig futó külső szűrők leállítása
 Néha előfordul (pl. postscript esetén), hogy a szűrő végtelen ciklusba kerül.
 -1 esetén nincs korlát.
 </translation>
     </message>
     <message>
         <source>Only mime types</source>
-        <translation>MIME típusok</translation>
+        <translation type="vanished">MIME típusok</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation>Az indexelendő MIME típusok listája.&lt;br&gt;Csak ezek a típusok kerülnek az indexbe. Rendesen üres és inaktív.</translation>
+        <translation type="vanished">Az indexelendő MIME típusok listája.&lt;br&gt;Csak ezek a típusok kerülnek az indexbe. Rendesen üres és inaktív.</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation>Kizárt MIME típusok</translation>
+        <translation type="vanished">Kizárt MIME típusok</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
-        <translation>Ezek a MIME típusok kimaradnak az indexelésből</translation>
+        <translation type="vanished">Ezek a MIME típusok kimaradnak az indexelésből</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation>Kezdő könyvtárak</translation>
+        <translation type="vanished">Kezdő könyvtárak</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>A megadott könyvtárak rekurzív indexelése. Alapértelmezett értéke a saját könyvtár.</translation>
+        <translation type="vanished">A megadott könyvtárak rekurzív indexelése. Alapértelmezett értéke a saját könyvtár.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation>Kizárt elérési utak</translation>
+        <translation type="vanished">Kizárt elérési utak</translation>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Az indexelő által mellőzendő könyvtárak nevei.&lt;br&gt;Használhatók a helyettesítő karakterek. Csak az indexelő hatókörébe eső elérési utakat lehet megadni (pl.: ha a kezdő könyvtár a „/home/felhasznalo” és a „/home” egy link a „/usr/home”-ra, akkor helyes elérési út a „/home/felhasznalo/tmp*”, de nem az a „/usr/home/felhasznalo/tmp*”).</translation>
+        <translation type="vanished">Az indexelő által mellőzendő könyvtárak nevei.&lt;br&gt;Használhatók a helyettesítő karakterek. Csak az indexelő hatókörébe eső elérési utakat lehet megadni (pl.: ha a kezdő könyvtár a „/home/felhasznalo” és a „/home” egy link a „/usr/home”-ra, akkor helyes elérési út a „/home/felhasznalo/tmp*”, de nem az a „/usr/home/felhasznalo/tmp*”).</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation>A szótőképzés nyelve</translation>
+        <translation type="vanished">A szótőképzés nyelve</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>Ezen nyelvekhez készüljön szótövező és -toldalékoló szótár</translation>
+        <translation type="vanished">Ezen nyelvekhez készüljön szótövező és -toldalékoló szótár</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation>A naplófájl neve</translation>
+        <translation type="vanished">A naplófájl neve</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation>Az üzenetek kiírásának a helye.&lt;br&gt;A „stderr” a terminálra küldi az üzeneteket.</translation>
+        <translation type="vanished">Az üzenetek kiírásának a helye.&lt;br&gt;A „stderr” a terminálra küldi az üzeneteket.</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation>A naplózás szintje</translation>
+        <translation type="vanished">A naplózás szintje</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation>Az üzenetek mennyiségének szabályozása,&lt;br&gt;a hibaüzenetekre szorítkozótól a részletes hibakeresésig.</translation>
+        <translation type="vanished">Az üzenetek mennyiségének szabályozása,&lt;br&gt;a hibaüzenetekre szorítkozótól a részletes hibakeresésig.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation>Indexírási intervallum (MB)</translation>
+        <translation type="vanished">Indexírási intervallum (MB)</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation>Az az adatmennyiség, melyet két lemezre írás között az indexelő feldolgoz.&lt;br&gt;Segíthet kézben tartani a memóriafoglalást. Alapértelmezett: 10MB</translation>
+        <translation type="vanished">Az az adatmennyiség, melyet két lemezre írás között az indexelő feldolgoz.&lt;br&gt;Segíthet kézben tartani a memóriafoglalást. Alapértelmezett: 10MB</translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Max. lemezhasználat (%)</translation>
+        <translation type="vanished">Max. lemezhasználat (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Százalékos lemezfoglalás, melyen túllépve az indexelő nem működik tovább (megelőzendő az összes szabad hely elfoglalását).&lt;br&gt;0 esetén nincs korlát (alapértelmezett).</translation>
+        <translation type="vanished">Százalékos lemezfoglalás, melyen túllépve az indexelő nem működik tovább (megelőzendő az összes szabad hely elfoglalását).&lt;br&gt;0 esetén nincs korlát (alapértelmezett).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation>Az aspell mellőzése</translation>
+        <translation type="vanished">Az aspell mellőzése</translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation>Az aspell nyelve</translation>
+        <translation type="vanished">Az aspell nyelve</translation>
     </message>
     <message>
         <source>Database directory name</source>
-        <translation>Az adatbázis könyvtárneve</translation>
+        <translation type="vanished">Az adatbázis könyvtárneve</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation>A szóvizsgálóban az aspell használatának mellőzése a hasonló szavak keresésekor.&lt;br&gt;Hasznos, ha az aspell nincs telepítve vagy nem működik.</translation>
+        <translation type="vanished">A szóvizsgálóban az aspell használatának mellőzése a hasonló szavak keresésekor.&lt;br&gt;Hasznos, ha az aspell nincs telepítve vagy nem működik.</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Az aspell szótár nyelve. pl. „en” vagy „hu”...&lt;br&gt;Ha nincs megadva, akkor az NLS környezet alapján lesz beállítva, ez általában megfelelő. A rendszerre telepített nyelveket az „aspell config” parancs kiadása után a „data-dir” könyvtárban található .dat fájlokból lehet megtudni.</translation>
+        <translation type="vanished">Az aspell szótár nyelve. pl. „en” vagy „hu”...&lt;br&gt;Ha nincs megadva, akkor az NLS környezet alapján lesz beállítva, ez általában megfelelő. A rendszerre telepített nyelveket az „aspell config” parancs kiadása után a „data-dir” könyvtárban található .dat fájlokból lehet megtudni.</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>Az indexet tartalmazó könyvtár neve.&lt;br&gt;Relatív elérési út a beállítási könyvtárhoz képest értendő. Alapértelmezett: „xapiandb”.</translation>
+        <translation type="vanished">Az indexet tartalmazó könyvtár neve.&lt;br&gt;Relatív elérési út a beállítási könyvtárhoz képest értendő. Alapértelmezett: „xapiandb”.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation>Unac kivételek</translation>
+        <translation type="vanished">Unac kivételek</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation>&lt;p&gt;Az unac alapértelmezetten eltávolít minden ékezetet és szétbontja a ligatúrákat. Az itt megadott kivételekkel lehetőség van adott karakterek esetén tiltani a műveletet, ha a használt nyelv ezt szükségessé teszi. Ezen kívül előírhatók további felbontandó karakterek is. Az egyes elemeket egymástól szóközzel kell elválasztani. Egy elem első karaktere az eredetit, a további karakterek a várt eredményt határozzák meg.</translation>
+        <translation type="vanished">&lt;p&gt;Az unac alapértelmezetten eltávolít minden ékezetet és szétbontja a ligatúrákat. Az itt megadott kivételekkel lehetőség van adott karakterek esetén tiltani a műveletet, ha a használt nyelv ezt szükségessé teszi. Ezen kívül előírhatók további felbontandó karakterek is. Az egyes elemeket egymástól szóközzel kell elválasztani. Egy elem első karaktere az eredetit, a további karakterek a várt eredményt határozzák meg.</translation>
     </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
     <message>
         <source>User preferences</source>
-        <translation>Beállítások</translation>
+        <translation type="vanished">Beállítások</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -2415,7 +3013,7 @@ Néha előfordul (pl. postscript esetén), hogy a szűrő végtelen ciklusba ker
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>A keresőszavak kiemelésének színe</translation>
+        <translation type="vanished">A keresőszavak kiemelésének színe</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -2451,7 +3049,7 @@ Néha előfordul (pl. postscript esetén), hogy a szűrő végtelen ciklusba ker
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Automatikus keresés szóköz hatására</translation>
+        <translation type="vanished">Automatikus keresés szóköz hatására</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
@@ -2574,7 +3172,7 @@ automatikusan ext:xxx keresőnyelvi kifejezéssé alakíttatnak</translation>
     </message>
     <message>
         <source>Style sheet</source>
-        <translation>Stíluslap</translation>
+        <translation type="vanished">Stíluslap</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
@@ -2646,7 +3244,7 @@ A PRE+wrap valószínűleg a legjobb választás.</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation>Keresés minden leütéskor</translation>
+        <translation type="vanished">Keresés minden leütéskor</translation>
     </message>
     <message>
         <source>Paths translations</source>
@@ -2711,6 +3309,74 @@ A PRE+wrap valószínűleg a legjobb választás.</translation>
     <message>
         <source>Show warning when opening temporary file.</source>
         <translation>Ideiglenes fájlok megnyitásakor figyelmeztetés</translation>
+    </message>
+    <message>
+        <source>Recoll - User Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Application Qt style sheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate links in preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum size of search history (0: disable, -1: unlimited):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start search on completer popup activation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generate desktop notifications.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suppress all beeps.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of snippets displayed in the snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort snippets by page number (default: by weight).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set path translations for the selected index or for the main one if no selection exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Misc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
