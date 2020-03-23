@@ -235,7 +235,7 @@
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>将会针对这些语言&lt;br&gt;构造词根扩展词典。</translation>
+        <translation type="vanished">将会针对这些语言&lt;br&gt;构造词根扩展词典。</translation>
     </message>
     <message>
         <source>Log file name</source>
@@ -283,7 +283,7 @@
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>aspell词典的语言。表示方式是&apos;en&apos;或&apos;fr&apos;……&lt;br&gt;如果不设置这个值，则会使用系统环境中的自然语言设置信息，而那个通常是正确的。要想查看你的系统中安装咯哪些语言的话，就执行&apos;aspell config&apos;，再在&apos;data-dir&apos;目录中找.dat文件。</translation>
+        <translation type="vanished">aspell词典的语言。表示方式是&apos;en&apos;或&apos;fr&apos;……&lt;br&gt;如果不设置这个值，则会使用系统环境中的自然语言设置信息，而那个通常是正确的。要想查看你的系统中安装咯哪些语言的话，就执行&apos;aspell config&apos;，再在&apos;data-dir&apos;目录中找.dat文件。</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -356,6 +356,14 @@
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
         <translation>&lt;p&gt;我们向单个Xapian查询语句中加入的最大的子句数目。某些情况下，词根扩展的结果会是倍增的，而我们想要避免使用过多内存。默认的100000应当既能满足日常的大部分要求，又能与当前的典型硬件配置相兼容。</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3773,6 +3781,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

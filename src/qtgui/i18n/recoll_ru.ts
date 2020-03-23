@@ -293,12 +293,11 @@
         <translation type="unfinished">Языки со словоформами</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation type="unfinished">Языки, для которых будут построены&lt;br&gt;словари однокоренных слов.</translation>
+        <translation type="obsolete">Языки, для которых будут построены&lt;br&gt;словари однокоренных слов.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+7"/>
         <source>Log file name</source>
         <translation type="unfinished">Файл журнала</translation>
     </message>
@@ -353,12 +352,21 @@
         <translation type="unfinished">Язык aspell</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished">Язык словаря aspell. Выгладит как «en» или «ru»...&lt;br&gt;Если значение не установлено, для его расчёта будeт использованs параметры системы (локаль). Чтобы узнать, какие параметры доступны в системе, наберите «aspell config» и проверьте, какие .dat-файлы содержатся в каталоге &apos;data-dir&apos;. </translation>
+        <translation type="obsolete">Язык словаря aspell. Выгладит как «en» или «ru»...&lt;br&gt;Если значение не установлено, для его расчёта будeт использованs параметры системы (локаль). Чтобы узнать, какие параметры доступны в системе, наберите «aspell config» и проверьте, какие .dat-файлы содержатся в каталоге &apos;data-dir&apos;. </translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="-37"/>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Database directory name</source>
         <translation type="unfinished">Каталог базы данных</translation>
     </message>
@@ -809,7 +817,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="+387"/>
+        <location filename="../main.cpp" line="+384"/>
         <source>No db directory in configuration</source>
         <translation>Каталог БД в конфигурации не указан</translation>
     </message>
@@ -832,7 +840,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="vanished">Файл истории (&quot;history&quot;) повреждён или не читается/не записывается, проверьте или удалите его:</translation>
     </message>
     <message>
-        <location line="-32"/>
+        <location line="-27"/>
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>Файл истории повреждён, проверьте или удалите его: </translation>
     </message>
@@ -1317,7 +1325,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>RclMain</name>
     <message>
-        <location filename="../rclmain_w.cpp" line="+730"/>
+        <location filename="../rclmain_w.cpp" line="+738"/>
         <source>Query results</source>
         <translation>Результаты запроса</translation>
     </message>
@@ -1430,7 +1438,7 @@ Please check the mimeconf file</source>
         <translation>Невозможно извлечь документ или создать временный файл</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="-774"/>
+        <location filename="../rclmain_w.cpp" line="-781"/>
         <source>(no stemming)</source>
         <translation>(без однокоренных слов)</translation>
     </message>
@@ -1550,7 +1558,7 @@ Please check the mimeconf file</source>
         <translation>фильтрованные</translation>
     </message>
     <message>
-        <location line="+912"/>
+        <location line="+919"/>
         <source>Confirm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1632,12 +1640,12 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="obsolete">Подробности запроса</translation>
     </message>
     <message>
-        <location line="-256"/>
+        <location line="-258"/>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
         <translation>Не удалось открыть внешний индекс. БД не открыта. Проверьте список внешних индексов.</translation>
     </message>
     <message>
-        <location line="+259"/>
+        <location line="+261"/>
         <source>No results found</source>
         <translation>Поиск не дал результатов</translation>
     </message>
@@ -1784,7 +1792,7 @@ Please check the mimeview file</source>
         <translation>Вложенные документы</translation>
     </message>
     <message>
-        <location line="-747"/>
+        <location line="-754"/>
         <source>Document filter</source>
         <translation>Фильтр документов</translation>
     </message>
@@ -1933,7 +1941,7 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+506"/>
+        <location filename="../rclmain_w.cpp" line="+513"/>
         <source>Can&apos;t set synonyms file (parse error?)</source>
         <translation>Невозможно установить файл синономов (ошибка анализа?)</translation>
     </message>
@@ -1992,7 +2000,7 @@ Please check the desktop file</source>
         <translation>В командной строке программы просмотра %1 указан родительский файл, а в URL — сетевой протокол http[s]: команда не поддерживается</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="-523"/>
+        <location filename="../rclmain_w.cpp" line="-530"/>
         <source>Tools</source>
         <translation>Инструменты</translation>
     </message>
@@ -2399,7 +2407,7 @@ Please check the desktop file</source>
 <context>
     <name>RecollModel</name>
     <message>
-        <location filename="../restable.cpp" line="+234"/>
+        <location filename="../restable.cpp" line="+253"/>
         <source>File name</source>
         <translation>Имя файла</translation>
     </message>
@@ -2478,12 +2486,12 @@ Please check the desktop file</source>
         <translation>Дата и время</translation>
     </message>
     <message>
-        <location line="+191"/>
+        <location line="+203"/>
         <source>Can&apos;t sort by inverse relevance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-200"/>
+        <location line="-212"/>
         <source>Ipath</source>
         <translation>Ipath</translation>
     </message>
@@ -2496,12 +2504,12 @@ Please check the desktop file</source>
 <context>
     <name>ResList</name>
     <message>
-        <location filename="../reslist.cpp" line="+552"/>
+        <location filename="../reslist.cpp" line="+557"/>
         <source>Result list</source>
         <translation>Список результатов</translation>
     </message>
     <message>
-        <location line="-141"/>
+        <location line="-146"/>
         <source>Unavailable document</source>
         <translation>Документ недоступен</translation>
     </message>
@@ -2529,13 +2537,13 @@ Please check the desktop file</source>
         <translation type="obsolete">Найти &amp;подобные документы</translation>
     </message>
     <message>
-        <location line="+568"/>
+        <location line="+573"/>
         <location line="+1"/>
         <source>Query details</source>
         <translation>Сведения о запросе</translation>
     </message>
     <message>
-        <location line="-559"/>
+        <location line="-564"/>
         <source>(show query)</source>
         <translation>(показать запрос)</translation>
     </message>
@@ -2556,12 +2564,12 @@ Please check the desktop file</source>
         <translation type="obsolete">сортированное</translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+134"/>
         <source>Document history</source>
         <translation>Просмотренные документы</translation>
     </message>
     <message>
-        <location line="-132"/>
+        <location line="-137"/>
         <source>Preview</source>
         <translation>Просмотр</translation>
     </message>
@@ -2620,12 +2628,12 @@ Please check the desktop file</source>
         <translation type="obsolete">Данные URL ( | индексные пути) имеют одно и то же содержимое:</translation>
     </message>
     <message>
-        <location line="+554"/>
+        <location line="+559"/>
         <source>Result count (est.)</source>
         <translation>Кол-во результатов (расчётное)</translation>
     </message>
     <message>
-        <location line="-557"/>
+        <location line="-562"/>
         <source>Snippets</source>
         <translation>Фрагменты</translation>
     </message>
@@ -2633,7 +2641,7 @@ Please check the desktop file</source>
 <context>
     <name>ResTable</name>
     <message>
-        <location filename="../restable.cpp" line="+812"/>
+        <location filename="../restable.cpp" line="+844"/>
         <source>&amp;Reset sort</source>
         <translation>&amp;Сбросить сортировку</translation>
     </message>
@@ -3574,7 +3582,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 <context>
     <name>UIPrefsDialog</name>
     <message>
-        <location filename="../uiprefs_w.cpp" line="+648"/>
+        <location filename="../uiprefs_w.cpp" line="+650"/>
         <source>The selected directory does not appear to be a Xapian index</source>
         <translation>Выбранный каталог не является каталогом индексов Xapian</translation>
     </message>
@@ -3593,15 +3601,15 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="obsolete">Выберите каталог индекса Xapian (например, /home/приятель/.recoll/xapiandb)</translation>
     </message>
     <message>
-        <location line="-455"/>
+        <location line="-456"/>
         <source>error retrieving stemming languages</source>
         <translation>ошибка получения списка языков</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-26"/>
         <location line="+8"/>
-        <location line="+44"/>
-        <location line="+228"/>
+        <location line="+45"/>
+        <location line="+229"/>
         <location line="+7"/>
         <location line="+11"/>
         <source>Choose</source>
@@ -3638,12 +3646,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Невозможно добавить индекс с другими настройками учёта регистра и диакритических знаков</translation>
     </message>
     <message>
-        <location line="-384"/>
+        <location line="-385"/>
         <source>Default QtWebkit font</source>
         <translation>Шрифт QtWebkit по умолчанию</translation>
     </message>
     <message>
-        <location line="-206"/>
+        <location line="-207"/>
         <source>Any term</source>
         <translation>Любое слово</translation>
     </message>
@@ -4096,7 +4104,7 @@ This should give higher precedence to the results where the search terms appear 
         <translation type="obsolete">Просмотр</translation>
     </message>
     <message>
-        <location filename="../confgui/confgui.cpp" line="+600"/>
+        <location filename="../confgui/confgui.cpp" line="+612"/>
         <source>Choose</source>
         <translation>Выбрать</translation>
     </message>
@@ -4104,7 +4112,7 @@ This should give higher precedence to the results where the search terms appear 
 <context>
     <name>confgui::ConfParamSLW</name>
     <message>
-        <location line="+72"/>
+        <location line="+76"/>
         <source>+</source>
         <translation>+</translation>
     </message>
@@ -4376,7 +4384,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Количество записей на странице результатов</translation>
     </message>
     <message>
-        <location line="+230"/>
+        <location line="+240"/>
         <source>If checked, results with the same content under different names will only be shown once.</source>
         <translation>Показывать результаты с одинаковым содержанием под разными именами не более одного раза.</translation>
     </message>
@@ -4390,7 +4398,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="vanished">Цвет выделения ключевых слов</translation>
     </message>
     <message>
-        <location line="-206"/>
+        <location line="-216"/>
         <source>Result list font</source>
         <translation>Шрифт списка результатов</translation>
     </message>
@@ -4491,7 +4499,12 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+38"/>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>Search parameters</source>
         <translation>Параметры поиска</translation>
     </message>
@@ -4630,7 +4643,7 @@ May be slow for big documents.</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location line="-621"/>
+        <location line="-631"/>
         <source>Abstract snippet separator</source>
         <translation>Разделитель фрагментов в результатах</translation>
     </message>
@@ -4654,12 +4667,12 @@ May be slow for big documents.</source>
     <message>
         <location line="+3"/>
         <location line="+488"/>
-        <location line="+373"/>
+        <location line="+383"/>
         <source>Choose</source>
         <translation>Выбрать</translation>
     </message>
     <message>
-        <location line="-854"/>
+        <location line="-864"/>
         <source>Resets the style sheet to default</source>
         <translation>Сброс таблицы стилей к значению по умолчанию</translation>
     </message>
@@ -4697,7 +4710,7 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+93"/>
+        <location line="+103"/>
         <source>Frequency percentage threshold over which we do not use terms inside autophrase. 
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
@@ -4713,7 +4726,7 @@ The default value is 2 (percent). </source>
         <translation>Порог частоты появления слов в автофразе в процентах</translation>
     </message>
     <message>
-        <location line="-562"/>
+        <location line="-572"/>
         <source>Plain text to HTML line style</source>
         <translation>Стиль отображения простого текста в HTML</translation>
     </message>
@@ -4747,7 +4760,7 @@ The default value is 2 (percent). </source>
         <translation type="vanished">Искать по мере ввода.</translation>
     </message>
     <message>
-        <location line="+710"/>
+        <location line="+720"/>
         <source>Paths translations</source>
         <translation>Корректировка путей</translation>
     </message>
@@ -4757,7 +4770,7 @@ The default value is 2 (percent). </source>
         <translation>Щёлкните, чтобы добавить другой каталог индекса в список. Можно выбрать каталог конфигурации Recoll или индекс Xapian.</translation>
     </message>
     <message>
-        <location line="-505"/>
+        <location line="-515"/>
         <source>Snippets window CSS file</source>
         <translation>CSS-файл для окна «Фрагменты»</translation>
     </message>
@@ -4832,12 +4845,12 @@ The default value is 2 (percent). </source>
         <translation>Применить пользовательский стиль окна фрагментов.&lt;br&gt; Примечание: вставка заголовка страницы результатов также включена в заголовок окна фрагментов.</translation>
     </message>
     <message>
-        <location line="+366"/>
+        <location line="+376"/>
         <source>Synonyms file</source>
         <translation>Файл синонимов</translation>
     </message>
     <message>
-        <location line="-548"/>
+        <location line="-558"/>
         <source>Show warning when opening temporary file.</source>
         <translation>Показывать предупреждение при открытии временного файла.</translation>
     </message>
@@ -4852,12 +4865,12 @@ The default value is 2 (percent). </source>
         <translation>Recoll — Пользовательская настройка</translation>
     </message>
     <message>
-        <location line="+990"/>
+        <location line="+1000"/>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation>Задать корректировку путей для выбранного или главного индекса, если ничего не выбрано.</translation>
     </message>
     <message>
-        <location line="-862"/>
+        <location line="-872"/>
         <source>Activate links in preview.</source>
         <translation>Активировать ссылки в просмотре.</translation>
     </message>

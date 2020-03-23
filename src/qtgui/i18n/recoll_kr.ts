@@ -188,6 +188,229 @@
     </message>
 </context>
 <context>
+    <name>ConfIndexW</name>
+    <message>
+        <source>Can&apos;t write configuration file</source>
+        <translation type="unfinished">환경설정 파일을 쓸 수 없습니다</translation>
+    </message>
+    <message>
+        <source>Global parameters</source>
+        <translation type="unfinished">광역 환경설정</translation>
+    </message>
+    <message>
+        <source>Local parameters</source>
+        <translation type="unfinished">지역 환경설정</translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Top directories</source>
+        <translation type="unfinished">최상위 폴더들</translation>
+    </message>
+    <message>
+        <source>The list of directories where recursive indexing starts. Default: your home.</source>
+        <translation type="unfinished">재귀 색인 작성이 시작되는 폴더 목록. 기본값 : home.</translation>
+    </message>
+    <message>
+        <source>Skipped paths</source>
+        <translation type="unfinished">건너뛴 경로들</translation>
+    </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished">색인 작업이 실행되지 않게 될 폴더 경로들입니다.&lt;br&gt;경로에는 와일드 카드가 포함될 수 있습니다. 항목들은 색인자가 보는 경로와 일치해야합니다 (예 : 최상위 폴더에 &apos;/home /me&apos;가 포함되어 있고 &apos;/home&apos;이 실제로 &apos;/usr/home&apos;에 대한 링크인 경우 올바른 &apos;건너뛴 경로들&apos; 항목은 &apos;/home/me&apos;입니다. &apos;/usr/home/me/tmp*&apos;가 아닌 /tmp*&apos;)</translation>
+    </message>
+    <message>
+        <source>Stemming languages</source>
+        <translation type="unfinished">형태소 언어</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log file name</source>
+        <translation type="unfinished">로그 파일 이름</translation>
+    </message>
+    <message>
+        <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
+        <translation type="unfinished">메시지가 기록 될 파일입니다.&lt;br&gt;터미널 출력에 &apos;stderr&apos;을 사용하십시오.</translation>
+    </message>
+    <message>
+        <source>Log verbosity level</source>
+        <translation type="unfinished">로그 상세 수준</translation>
+    </message>
+    <message>
+        <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
+        <translation type="unfinished">이 값은 메시지의 분량을&lt;br&gt;오류에서 많은 디버깅 데이터에 이르기까지 조정합니다.</translation>
+    </message>
+    <message>
+        <source>Index flush megabytes interval</source>
+        <translation type="unfinished">&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
+    </message>
+    <message>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished">이 값은 색인되는 데이터의 양을 적절한 값으로 조정합니다.&lt;br&gt;색인 작업자가 메모리 사용을 제어하는 데 도움이 됩니다. 기본 10MB</translation>
+    </message>
+    <message>
+        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished">색인을 실패시키고 중지할 디스크 크기(색인 크기가 아닌 전체 디스크 사용량)의 백분율입니다.&lt;br&gt;기본값 0은 제한을 두지 않습니다.</translation>
+    </message>
+    <message>
+        <source>No aspell usage</source>
+        <translation type="unfinished">철자 사용법 없음</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished">용어 탐색기 도구에서 유사한 철자를 발생시키는 철자 사용을 비활성화 합니다. &lt;br&gt; 철자가 없거나 작동하지 않는 경우에 유용합니다.</translation>
+    </message>
+    <message>
+        <source>Aspell language</source>
+        <translation type="unfinished">철자 언어</translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory name</source>
+        <translation type="unfinished">데이터베이스 폴더 이름</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished">색인을 저장할 폴더 이름&lt;br&gt;상대 경로는 환경설정 폴더를 기본으로 합니다. 기본값은 &apos;xapiandb&apos;입니다.</translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation type="unfinished">Unac 예외</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation type="unfinished">&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
+    </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished">웹 히스토리 큐 처리</translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished">Firefox 방문 페이지 색인 작성을 활성화합니다.&lt;br&gt;(Firefox Recoll 플러그인도 설치필요)</translation>
+    </message>
+    <message>
+        <source>Web page store directory name</source>
+        <translation type="unfinished">웹 페이지 저장소 디렉토리 이름</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished">방문한 웹 페이지의 사본을 저장할 디렉토리의 이름.&lt;br&gt;상대적인 경로인 경우 환경설정 폴더를 기준으로합니다.</translation>
+    </message>
+    <message>
+        <source>Max. size for the web store (MB)</source>
+        <translation type="unfinished">웹 저장소의 최대 용량(MB)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished">용량이 한계에 도달하면 항목들이 재활용됩니다.&lt;br&gt;값을 줄이면 기존 파일이 잘리지 않기 때문에 크기를 늘리는 것만으로도 의미가 있습니다(끝 공간만 낭비됩니다).</translation>
+    </message>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation type="unfinished">발음구별 부호 자동 감도</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation type="unfinished">검색어에 악센트 부호가 있는 문자(unac_except_trans에 없는)가 있으면 분음 부호 민감도를 자동으로 조정합니다. 그렇지 않고 분음 부호 민감도를 직접 지정하려면 검색어 언어와 &lt;i&gt;D&lt;/i&gt; 수정자를 사용해야합니다.</translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation type="unfinished">대소문자 자동 구분</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation type="unfinished">&lt;p&gt; 항목 중 첫 글자 이외에 대문자가 있으면 대소문자 구분을 자동으로 처리합니다. 그렇지 않으면 검색어 언어와 &lt;i&gt;C&lt;/i&gt; 수정자를 사용하여 대소문자 구분을 지정해야합니다.</translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation type="unfinished">용어 확장 최대값</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation type="unfinished">&lt;p&gt; 단일 용어의 최대 확장 횟수(예 : 와일드 카드 사용시). 기본값인 10,000은 합리적이며, 엔진이 그 확장된 용어 목록을 처리하는 동안 처리할 수 없는 용어는 피합니다.</translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation type="unfinished">Xapian의 절 계수의 최대값</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished">단일 Xapian 검색 요청에 넣을 수 있는 절 숫자의 최대값입니다. 경우에 따라 확장된 용어의 결과가 곱해질 수 있기에 과도한 메모리 사용을 피하려고합니다. 기본값 100 000은 대부분의 경우에 충분하며, 하드웨어 구성과 호환되어야합니다.</translation>
+    </message>
+</context>
+<context>
+    <name>ConfSubPanelW</name>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished">오직 MIME 유형만</translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished">색인 처리된 MIME 유형들의 독점 목록입니다.&lt;br&gt;다른 것들은 색인되지 않을 것입니다. 보통 비어있음, 비활성화.</translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished">제외된 MIME 유형들</translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished">색인처리되지 않는 MIME 유형</translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished">압축된 파일 용량의 최대값(KB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished">이 값은 압축 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로, 압축 해제가 없으면 0으로 설정하십시오.</translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation type="unfinished">텍스트 파일 용량의 최대값(MB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation type="unfinished">이 값은 텍스트 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로 설정하십시오.
+이것은 색인에서 너무 큰 로그 파일을 제외하기위한 것입니다.</translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation type="unfinished">텍스트 파일 페이지 용량(KB)</translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation type="unfinished">이 값을 설정하면(-1이 아닌) 텍스트 파일이 색인을 위해 설정한 크기 단위로 분할됩니다.
+이는 매우 큰 텍스트 파일(예 : 로그 파일)을 검색하는 데 도움이 됩니다.</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (s)</source>
+        <translation type="unfinished">필터 최대 실행시간</translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
+</source>
+        <translation type="unfinished">이 값보다 오래 작동하는 외부 필터는 중단됩니다. 문서가 필터를 무한 반복하게 만들 수 있는 드문 경우에 사용됩니다(예 : 포스트 스크립트). 제한이 없으면 -1로 설정하십시오.</translation>
+    </message>
+    <message>
+        <source>Global</source>
+        <translation type="unfinished">광역</translation>
+    </message>
+</context>
+<context>
     <name>CronToolW</name>
     <message>
         <source>Cron Dialog</source>
@@ -525,6 +748,14 @@ p, li { white-space: pre-wrap; }
         <source>Could not fetch stored text</source>
         <translation>저장된 텍스트를 가져올 수 없습니다.</translation>
     </message>
+    <message>
+        <source>Previous result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next result document</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PreviewTextEdit</name>
@@ -577,11 +808,11 @@ p, li { white-space: pre-wrap; }
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation>광역 환경설정</translation>
+        <translation type="vanished">광역 환경설정</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation>지역 환경설정</translation>
+        <translation type="vanished">지역 환경설정</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
@@ -617,11 +848,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>매개변수들을 검색</translation>
+        <translation type="vanished">매개변수들을 검색</translation>
     </message>
     <message>
         <source>Web history</source>
-        <translation>웹 기록</translation>
+        <translation type="vanished">웹 기록</translation>
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
@@ -1108,11 +1339,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Index scheduling</source>
-        <translation>색인 예약</translation>
+        <translation type="vanished">색인 예약</translation>
     </message>
     <message>
         <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
-        <translation>죄송합니다, 지금 윈도우에서는 지원되지 않습니다. 색인을 업데이트 하려면 &apos;파일&apos; 메뉴를 사용하십시오.</translation>
+        <translation type="vanished">죄송합니다, 지금 윈도우에서는 지원되지 않습니다. 색인을 업데이트 하려면 &apos;파일&apos; 메뉴를 사용하십시오.</translation>
     </message>
     <message>
         <source>Disabled because the real time indexer was not compiled in.</source>
@@ -1238,6 +1469,26 @@ Please check the desktop file</source>
     <message>
         <source>No information: initial indexing not yet performed.</source>
         <translation>정보가 없습니다: 색인 작성이  한 번도 진행되지 않았습니다.</translation>
+    </message>
+    <message>
+        <source>Batch scheduling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open/create file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1502,6 +1753,10 @@ Please check the desktop file</source>
         <source>Trigger incremental pass</source>
         <translation>증가분 패스 시도</translation>
     </message>
+    <message>
+        <source>E&amp;xport simple search history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1731,7 +1986,7 @@ Please check the desktop file</source>
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation>검색어 요청 언어 표현식을 입력하십시오:&lt;br&gt;
+        <translation type="vanished">검색어 요청 언어 표현식을 입력하십시오:&lt;br&gt;
 &lt;i&gt;용어1 용어2&lt;/i&gt; : 어느 곳에 있든 &apos;용어1&apos;과 &apos;용어2&apos;.&lt;br&gt;
 &lt;i&gt;필드:용어1&lt;/i&gt; : &apos;용어1&apos;은 &apos;필드&apos;필드에 있음.&lt;br&gt;
  일반적인 필드 이름/동음어들:&lt;br&gt;
@@ -1771,6 +2026,134 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Enter search terms here.</source>
         <translation>여기에 검색 용어를 입력하세요.</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>table, th, td {</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>border: 1px solid black;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>border-collapse: collapse;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>th,td {</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text-align: center;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You should really look at the manual (F1)&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1875,6 +2258,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;죄송합니다. 한도 내에서 정확히 일치하는 것을 발견하지 못했습니다. 아마도 문서가 매우 크거나, 스니펫 생성기가 미로에서 길을 잃었을 것입니다...&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>Sort By Relevance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort By Page</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2261,38 +2652,38 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Web page store directory name</source>
-        <translation>웹 페이지 저장소 디렉토리 이름</translation>
+        <translation type="vanished">웹 페이지 저장소 디렉토리 이름</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation>방문한 웹 페이지의 사본을 저장할 디렉토리의 이름.&lt;br&gt;상대적인 경로인 경우 환경설정 폴더를 기준으로합니다.</translation>
+        <translation type="vanished">방문한 웹 페이지의 사본을 저장할 디렉토리의 이름.&lt;br&gt;상대적인 경로인 경우 환경설정 폴더를 기준으로합니다.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation>웹 저장소의 최대 용량(MB)</translation>
+        <translation type="vanished">웹 저장소의 최대 용량(MB)</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation>웹 히스토리 큐 처리</translation>
+        <translation type="vanished">웹 히스토리 큐 처리</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation>Firefox 방문 페이지 색인 작성을 활성화합니다.&lt;br&gt;(Firefox Recoll 플러그인도 설치필요)</translation>
+        <translation type="vanished">Firefox 방문 페이지 색인 작성을 활성화합니다.&lt;br&gt;(Firefox Recoll 플러그인도 설치필요)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation>용량이 한계에 도달하면 항목들이 재활용됩니다.&lt;br&gt;값을 줄이면 기존 파일이 잘리지 않기 때문에 크기를 늘리는 것만으로도 의미가 있습니다(끝 공간만 낭비됩니다).</translation>
+        <translation type="vanished">용량이 한계에 도달하면 항목들이 재활용됩니다.&lt;br&gt;값을 줄이면 기존 파일이 잘리지 않기 때문에 크기를 늘리는 것만으로도 의미가 있습니다(끝 공간만 낭비됩니다).</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation>환경설정 파일을 쓸 수 없습니다</translation>
+        <translation type="vanished">환경설정 파일을 쓸 수 없습니다</translation>
     </message>
     <message>
         <source>Recoll - Index Settings: </source>
-        <translation>Recoll - 색인 설정: </translation>
+        <translation type="vanished">Recoll - 색인 설정: </translation>
     </message>
 </context>
 <context>
@@ -2312,193 +2703,209 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>-</source>
         <translation>-</translation>
     </message>
+    <message>
+        <source>Add entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>~</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit selected entries</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfSearchPanelW</name>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation>발음구별 부호 자동 감도</translation>
+        <translation type="vanished">발음구별 부호 자동 감도</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation>검색어에 악센트 부호가 있는 문자(unac_except_trans에 없는)가 있으면 분음 부호 민감도를 자동으로 조정합니다. 그렇지 않고 분음 부호 민감도를 직접 지정하려면 검색어 언어와 &lt;i&gt;D&lt;/i&gt; 수정자를 사용해야합니다.</translation>
+        <translation type="vanished">검색어에 악센트 부호가 있는 문자(unac_except_trans에 없는)가 있으면 분음 부호 민감도를 자동으로 조정합니다. 그렇지 않고 분음 부호 민감도를 직접 지정하려면 검색어 언어와 &lt;i&gt;D&lt;/i&gt; 수정자를 사용해야합니다.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation>대소문자 자동 구분</translation>
+        <translation type="vanished">대소문자 자동 구분</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation>&lt;p&gt; 항목 중 첫 글자 이외에 대문자가 있으면 대소문자 구분을 자동으로 처리합니다. 그렇지 않으면 검색어 언어와 &lt;i&gt;C&lt;/i&gt; 수정자를 사용하여 대소문자 구분을 지정해야합니다.</translation>
+        <translation type="vanished">&lt;p&gt; 항목 중 첫 글자 이외에 대문자가 있으면 대소문자 구분을 자동으로 처리합니다. 그렇지 않으면 검색어 언어와 &lt;i&gt;C&lt;/i&gt; 수정자를 사용하여 대소문자 구분을 지정해야합니다.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation>용어 확장 최대값</translation>
+        <translation type="vanished">용어 확장 최대값</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation>&lt;p&gt; 단일 용어의 최대 확장 횟수(예 : 와일드 카드 사용시). 기본값인 10,000은 합리적이며, 엔진이 그 확장된 용어 목록을 처리하는 동안 처리할 수 없는 용어는 피합니다.</translation>
+        <translation type="vanished">&lt;p&gt; 단일 용어의 최대 확장 횟수(예 : 와일드 카드 사용시). 기본값인 10,000은 합리적이며, 엔진이 그 확장된 용어 목록을 처리하는 동안 처리할 수 없는 용어는 피합니다.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation>Xapian의 절 계수의 최대값</translation>
+        <translation type="vanished">Xapian의 절 계수의 최대값</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation>단일 Xapian 검색 요청에 넣을 수 있는 절 숫자의 최대값입니다. 경우에 따라 확장된 용어의 결과가 곱해질 수 있기에 과도한 메모리 사용을 피하려고합니다. 기본값 100 000은 대부분의 경우에 충분하며, 하드웨어 구성과 호환되어야합니다.</translation>
+        <translation type="vanished">단일 Xapian 검색 요청에 넣을 수 있는 절 숫자의 최대값입니다. 경우에 따라 확장된 용어의 결과가 곱해질 수 있기에 과도한 메모리 사용을 피하려고합니다. 기본값 100 000은 대부분의 경우에 충분하며, 하드웨어 구성과 호환되어야합니다.</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
-        <translation>광역</translation>
+        <translation type="vanished">광역</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>압축된 파일 용량의 최대값(KB)</translation>
+        <translation type="vanished">압축된 파일 용량의 최대값(KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation>이 값은 압축 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로, 압축 해제가 없으면 0으로 설정하십시오.</translation>
+        <translation type="vanished">이 값은 압축 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로, 압축 해제가 없으면 0으로 설정하십시오.</translation>
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>텍스트 파일 용량의 최대값(MB)</translation>
+        <translation type="vanished">텍스트 파일 용량의 최대값(MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation>이 값은 텍스트 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로 설정하십시오.
+        <translation type="vanished">이 값은 텍스트 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로 설정하십시오.
 이것은 색인에서 너무 큰 로그 파일을 제외하기위한 것입니다.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>텍스트 파일 페이지 용량(KB)</translation>
+        <translation type="vanished">텍스트 파일 페이지 용량(KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>이 값을 설정하면(-1이 아닌) 텍스트 파일이 색인을 위해 설정한 크기 단위로 분할됩니다.
+        <translation type="vanished">이 값을 설정하면(-1이 아닌) 텍스트 파일이 색인을 위해 설정한 크기 단위로 분할됩니다.
 이는 매우 큰 텍스트 파일(예 : 로그 파일)을 검색하는 데 도움이 됩니다.</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation>이 값보다 오래 작동하는 외부 필터는 중단됩니다. 문서가 필터를 무한 반복하게 만들 수 있는 드문 경우에 사용됩니다(예 : 포스트 스크립트). 제한이 없으면 -1로 설정하십시오.</translation>
+        <translation type="vanished">이 값보다 오래 작동하는 외부 필터는 중단됩니다. 문서가 필터를 무한 반복하게 만들 수 있는 드문 경우에 사용됩니다(예 : 포스트 스크립트). 제한이 없으면 -1로 설정하십시오.</translation>
     </message>
     <message>
         <source>Only mime types</source>
-        <translation>오직 MIME 유형만</translation>
+        <translation type="vanished">오직 MIME 유형만</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation>색인 처리된 MIME 유형들의 독점 목록입니다.&lt;br&gt;다른 것들은 색인되지 않을 것입니다. 보통 비어있음, 비활성화.</translation>
+        <translation type="vanished">색인 처리된 MIME 유형들의 독점 목록입니다.&lt;br&gt;다른 것들은 색인되지 않을 것입니다. 보통 비어있음, 비활성화.</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation>제외된 MIME 유형들</translation>
+        <translation type="vanished">제외된 MIME 유형들</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
-        <translation>색인처리되지 않는 MIME 유형</translation>
+        <translation type="vanished">색인처리되지 않는 MIME 유형</translation>
     </message>
     <message>
         <source>Max. filter exec. time (s)</source>
-        <translation>필터 최대 실행시간</translation>
+        <translation type="vanished">필터 최대 실행시간</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation>최상위 폴더들</translation>
+        <translation type="vanished">최상위 폴더들</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>재귀 색인 작성이 시작되는 폴더 목록. 기본값 : home.</translation>
+        <translation type="vanished">재귀 색인 작성이 시작되는 폴더 목록. 기본값 : home.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation>건너뛴 경로들</translation>
+        <translation type="vanished">건너뛴 경로들</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation>형태소 언어</translation>
+        <translation type="vanished">형태소 언어</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>형태소 확장 사전을 만들 언어가&lt;br&gt;작성됩니다.</translation>
+        <translation type="vanished">형태소 확장 사전을 만들 언어가&lt;br&gt;작성됩니다.</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation>로그 파일 이름</translation>
+        <translation type="vanished">로그 파일 이름</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation>메시지가 기록 될 파일입니다.&lt;br&gt;터미널 출력에 &apos;stderr&apos;을 사용하십시오.</translation>
+        <translation type="vanished">메시지가 기록 될 파일입니다.&lt;br&gt;터미널 출력에 &apos;stderr&apos;을 사용하십시오.</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation>로그 상세 수준</translation>
+        <translation type="vanished">로그 상세 수준</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation>이 값은 메시지의 분량을&lt;br&gt;오류에서 많은 디버깅 데이터에 이르기까지 조정합니다.</translation>
+        <translation type="vanished">이 값은 메시지의 분량을&lt;br&gt;오류에서 많은 디버깅 데이터에 이르기까지 조정합니다.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
         <translatorcomment>격증:flush</translatorcomment>
-        <translation>&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
+        <translation type="vanished">&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
         <translatorcomment>격증:flush - </translatorcomment>
-        <translation>이 값은 색인되는 데이터의 양을 적절한 값으로 조정합니다.&lt;br&gt;색인 작업자가 메모리 사용을 제어하는 데 도움이 됩니다. 기본 10MB</translation>
+        <translation type="vanished">이 값은 색인되는 데이터의 양을 적절한 값으로 조정합니다.&lt;br&gt;색인 작업자가 메모리 사용을 제어하는 데 도움이 됩니다. 기본 10MB</translation>
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation>철자 사용법 없음</translation>
+        <translation type="vanished">철자 사용법 없음</translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation>철자 언어</translation>
+        <translation type="vanished">철자 언어</translation>
     </message>
     <message>
         <source>Database directory name</source>
-        <translation>데이터베이스 폴더 이름</translation>
+        <translation type="vanished">데이터베이스 폴더 이름</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation>용어 탐색기 도구에서 유사한 철자를 발생시키는 철자 사용을 비활성화 합니다. &lt;br&gt; 철자가 없거나 작동하지 않는 경우에 유용합니다.</translation>
+        <translation type="vanished">용어 탐색기 도구에서 유사한 철자를 발생시키는 철자 사용을 비활성화 합니다. &lt;br&gt; 철자가 없거나 작동하지 않는 경우에 유용합니다.</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>철자 사전의 언어입니다. 이것은 &apos;en&apos;이나 &apos;fr&apos; 등으로 나타나야 합니다.&lt;br&gt;만약 이 값이 지정되어있지 않다면, NLS 환경설정이 일반적으로 사용되는 값을 찾을 것입니다. 시스템에 무엇이 설치되어 있는지 이해하려면 &apos;aspell config&apos;를 입력하고 &apos;data-dir&apos;디렉토리에서 .dat 파일을 찾으십시오.</translation>
+        <translation type="vanished">철자 사전의 언어입니다. 이것은 &apos;en&apos;이나 &apos;fr&apos; 등으로 나타나야 합니다.&lt;br&gt;만약 이 값이 지정되어있지 않다면, NLS 환경설정이 일반적으로 사용되는 값을 찾을 것입니다. 시스템에 무엇이 설치되어 있는지 이해하려면 &apos;aspell config&apos;를 입력하고 &apos;data-dir&apos;디렉토리에서 .dat 파일을 찾으십시오.</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>색인을 저장할 폴더 이름&lt;br&gt;상대 경로는 환경설정 폴더를 기본으로 합니다. 기본값은 &apos;xapiandb&apos;입니다.</translation>
+        <translation type="vanished">색인을 저장할 폴더 이름&lt;br&gt;상대 경로는 환경설정 폴더를 기본으로 합니다. 기본값은 &apos;xapiandb&apos;입니다.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation>Unac 예외</translation>
+        <translation type="vanished">Unac 예외</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation>&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
+        <translation type="vanished">&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
     </message>
     <message>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>색인 작업이 실행되지 않게 될 폴더 경로들입니다.&lt;br&gt;경로에는 와일드 카드가 포함될 수 있습니다. 항목들은 색인자가 보는 경로와 일치해야합니다 (예 : 최상위 폴더에 &apos;/home /me&apos;가 포함되어 있고 &apos;/home&apos;이 실제로 &apos;/usr/home&apos;에 대한 링크인 경우 올바른 &apos;건너뛴 경로들&apos; 항목은 &apos;/home/me&apos;입니다. &apos;/usr/home/me/tmp*&apos;가 아닌 /tmp*&apos;)</translation>
+        <translation type="vanished">색인 작업이 실행되지 않게 될 폴더 경로들입니다.&lt;br&gt;경로에는 와일드 카드가 포함될 수 있습니다. 항목들은 색인자가 보는 경로와 일치해야합니다 (예 : 최상위 폴더에 &apos;/home /me&apos;가 포함되어 있고 &apos;/home&apos;이 실제로 &apos;/usr/home&apos;에 대한 링크인 경우 올바른 &apos;건너뛴 경로들&apos; 항목은 &apos;/home/me&apos;입니다. &apos;/usr/home/me/tmp*&apos;가 아닌 /tmp*&apos;)</translation>
     </message>
     <message>
         <source>Max disk occupation (%, 0 means no limit)</source>
-        <translation>최대 디스크 점유율(%, 0은 제한없음)</translation>
+        <translation type="vanished">최대 디스크 점유율(%, 0은 제한없음)</translation>
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation>색인을 실패시키고 중지할 디스크 크기(색인 크기가 아닌 전체 디스크 사용량)의 백분율입니다.&lt;br&gt;기본값 0은 제한을 두지 않습니다.</translation>
+        <translation type="vanished">색인을 실패시키고 중지할 디스크 크기(색인 크기가 아닌 전체 디스크 사용량)의 백분율입니다.&lt;br&gt;기본값 0은 제한을 두지 않습니다.</translation>
     </message>
 </context>
 <context>
@@ -2671,7 +3078,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Style sheet</source>
-        <translation>스타일 시트</translation>
+        <translation type="vanished">스타일 시트</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
@@ -2832,6 +3239,46 @@ The default value is 2 (percent). </source>
         <source>Start search on completer popup activation.</source>
         <translatorcomment>What`s completer?</translatorcomment>
         <translation>완전하게 해주는 팝업 활성화시 검색을 시작하십시오.</translation>
+    </message>
+    <message>
+        <source>Application Qt style sheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum size of search history (0: disable, -1: unlimited):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generate desktop notifications.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Suppress all beeps.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of snippets displayed in the snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort snippets by page number (default: by weight).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Misc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

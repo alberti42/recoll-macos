@@ -235,7 +235,7 @@
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation type="unfinished">Die Sprachen, für die Worstammerweiterungsverzeichnisse erstellt werden.</translation>
+        <translation type="obsolete">Die Sprachen, für die Worstammerweiterungsverzeichnisse erstellt werden.</translation>
     </message>
     <message>
         <source>Log file name</source>
@@ -283,7 +283,7 @@
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished">Die Sprache des Aspell-Wörterbuchs (z.B. &apos;en&apos; oder &apos;de&apos; ...)&lt;br&gt;Wenn dieser Wert nicht gesetzt ist, wird die NLS-Umgebung verwendet, um die Sprache festzustellen, was im Allgemeinen funktioniert. Um eine Vorstellung zu bekommen, was auf Ihrem System installiert ist, geben Sie &apos;aspell config&apos; ein und schauen Sie nach .dat Dateien im Verzeichnis &apos;data-dir&apos;.</translation>
+        <translation type="obsolete">Die Sprache des Aspell-Wörterbuchs (z.B. &apos;en&apos; oder &apos;de&apos; ...)&lt;br&gt;Wenn dieser Wert nicht gesetzt ist, wird die NLS-Umgebung verwendet, um die Sprache festzustellen, was im Allgemeinen funktioniert. Um eine Vorstellung zu bekommen, was auf Ihrem System installiert ist, geben Sie &apos;aspell config&apos; ein und schauen Sie nach .dat Dateien im Verzeichnis &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -356,6 +356,14 @@
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
         <translation type="unfinished">&lt;p&gt;Maximale Anzahl von elementaren Ausdrücken, die wir zu einer einzelnen Xapian Abfrage hinzufügen. In manchen Fällen können die Ergebnisse von Ausdruck-Erweiterungen sich ausmultiplizieren, und wir wollen übermäßigen Speicherverbrauch vermeiden. Der Standardwert 100 000 sollte in den meisten Fällen hoch genug sein und zugleich zu typischen derzeitigen Hardware-Ausstattungen passen.</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3968,6 +3976,10 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

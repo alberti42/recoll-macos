@@ -239,7 +239,7 @@
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>Les langages pour lesquels les dictionnaires d&apos;expansion&lt;br&gt;des termes seront construits.</translation>
+        <translation type="vanished">Les langages pour lesquels les dictionnaires d&apos;expansion&lt;br&gt;des termes seront construits.</translation>
     </message>
     <message>
         <source>Log file name</source>
@@ -287,7 +287,7 @@
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Langue pour le dictionnaire aspell. La valeur devrait ressembler à &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnée, l&apos;environnement national sera utilisé pour la calculer, ce qui marche bien habituellement. Pour avoir une liste des valeurs possibles sur votre système, entrer &apos;aspell config&apos; sur une ligne de commande et regarder les fichiers &apos;.dat&apos; dans le répertoire &apos;data-dir&apos;. </translation>
+        <translation type="vanished">Langue pour le dictionnaire aspell. La valeur devrait ressembler à &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnée, l&apos;environnement national sera utilisé pour la calculer, ce qui marche bien habituellement. Pour avoir une liste des valeurs possibles sur votre système, entrer &apos;aspell config&apos; sur une ligne de commande et regarder les fichiers &apos;.dat&apos; dans le répertoire &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -360,6 +360,14 @@
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
         <translation>&lt;p&gt;Nombre maximum de clauses Xapian élémentaires générées pour une requête. Dans certains cas, le résultat de l&apos;expansion des termes peut ere multiplicatif, et utiliserait trop de mémoire. La valeur par défaut de 100000 devrait être à la fois suffisante et compatible avec les configurations matérielles typiques.</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4219,6 +4227,10 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

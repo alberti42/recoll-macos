@@ -235,7 +235,7 @@
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation type="unfinished">Οι γλώσσες για τις οποίες θα δημιουργηθούν τα λεξικά επεκτάσεων&lt;br&gt;των όρων.</translation>
+        <translation type="obsolete">Οι γλώσσες για τις οποίες θα δημιουργηθούν τα λεξικά επεκτάσεων&lt;br&gt;των όρων.</translation>
     </message>
     <message>
         <source>Log file name</source>
@@ -283,7 +283,7 @@
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished">Η γλώσσα για το λεξικό aspell. Αυτό θα πρέπει να είναι του τύπου «en» ή «el» ...&lt;br&gt; Αν αυτή η τιμή δεν οριστεί, χρησιμοποιείται το εθνικό περιβάλλον NLS για να την υπολογίσει, που συνήθως δουλεύει. Για να πάρετε μια ιδέα του τι είναι εγκατεστημένο στο σύστημά σας, πληκτρολογήστε «aspell config» και παρατηρήστε τα αρχεία .dat στον κατάλογο «data-dir». </translation>
+        <translation type="obsolete">Η γλώσσα για το λεξικό aspell. Αυτό θα πρέπει να είναι του τύπου «en» ή «el» ...&lt;br&gt; Αν αυτή η τιμή δεν οριστεί, χρησιμοποιείται το εθνικό περιβάλλον NLS για να την υπολογίσει, που συνήθως δουλεύει. Για να πάρετε μια ιδέα του τι είναι εγκατεστημένο στο σύστημά σας, πληκτρολογήστε «aspell config» και παρατηρήστε τα αρχεία .dat στον κατάλογο «data-dir». </translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -356,6 +356,14 @@
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
         <translation type="unfinished">&lt;p&gt;Μέγιστος αριθμός στοιχειωδών ρητρών που προσθέτουμε σε ένα απλό ερώτημα Xapian. Σε μερικές περιπτώσεις, το αποτέλεσμα της επέκτασης των όρων μπορεί να είναι πολλαπλασιαστικό, και θα χρησιμοποιούσε υπερβολική μνήμη. Η προκαθορισμένη τιμή 100000 θα πρέπει να είναι επαρκής και συμβατή με μια τυπική διαμόρφωση υλικού.</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3712,6 +3720,10 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
