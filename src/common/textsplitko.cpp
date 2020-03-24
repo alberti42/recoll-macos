@@ -49,6 +49,10 @@ static string o_cmdpath;
 std::mutex o_mutex;
 static string o_taggername{"Okt"};
 
+// The Python/Java splitter is leaking memory. We restart it from time to time
+static uint64_t restartcount;
+static uint64_t restartthreshold = 5 * 1000 * 1000;
+
 void TextSplit::koStaticConfInit(RclConfig *config, const string& tagger)
 {
     o_cmdpath = config->findFilter("kosplitter.py");
@@ -68,7 +72,13 @@ static bool initCmd()
         return false;
     }
     if (o_talker) {
-        return true;
+        if (restartcount > restartthreshold) {
+            delete o_talker;
+            o_talker = nullptr;
+            restartcount = 0;
+        } else {
+            return true;
+        }
     }
     if (o_cmdpath.empty()) {
         return false;
@@ -89,10 +99,9 @@ static bool initCmd()
 bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
 {
     std::unique_lock<std::mutex> mylock(o_mutex);
+    initCmd();
     if (nullptr == o_talker) {
-        if (!initCmd()) {
-            return false;
-        }
+        return false;
     }
 
     LOGDEB1("k_to_words: m_wordpos " << m_wordpos << "\n");
@@ -125,6 +134,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     }
     LOGDEB1("TextSplit::k_to_words: sending out " << inputdata.size() <<
             " bytes " << inputdata << endl);
+    restartcount += inputdata.size();
     unordered_map<string,string> result;
     if (!o_talker->talk(args, result)) {
         LOGERR("Python splitter for Korean failed\n");
