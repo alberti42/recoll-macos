@@ -52,7 +52,7 @@ static string o_taggername{"Okt"};
 void TextSplit::koStaticConfInit(RclConfig *config, const string& tagger)
 {
     o_cmdpath = config->findFilter("kosplitter.py");
-    if (tagger == "Okt" && tagger == "Mecab") {
+    if (tagger == "Okt" || tagger == "Mecab") {
         o_taggername = tagger;
     } else {
         LOGERR("TextSplit::koStaticConfInit: unknown tagger [" << tagger <<
