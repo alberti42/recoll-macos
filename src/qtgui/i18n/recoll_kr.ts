@@ -191,223 +191,224 @@
     <name>ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation type="unfinished">환경설정 파일을 쓸 수 없습니다</translation>
+        <translation>환경설정 파일을 쓸 수 없습니다</translation>
     </message>
     <message>
         <source>Global parameters</source>
-        <translation type="unfinished">광역 환경설정</translation>
+        <translation>광역 매개변수들</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation type="unfinished">지역 환경설정</translation>
+        <translation>지역 환경설정</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>검색 매개변수들</translation>
     </message>
     <message>
         <source>Top directories</source>
-        <translation type="unfinished">최상위 폴더들</translation>
+        <translation>최상위 폴더들</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation type="unfinished">재귀 색인 작성이 시작되는 폴더 목록. 기본값 : home.</translation>
+        <translation>재귀 색인 작성이 시작되는 폴더 목록. 기본값 : home.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation type="unfinished">건너뛴 경로들</translation>
+        <translation>건너뛴 경로들</translation>
     </message>
     <message>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished">색인 작업이 실행되지 않게 될 폴더 경로들입니다.&lt;br&gt;경로에는 와일드 카드가 포함될 수 있습니다. 항목들은 색인자가 보는 경로와 일치해야합니다 (예 : 최상위 폴더에 &apos;/home /me&apos;가 포함되어 있고 &apos;/home&apos;이 실제로 &apos;/usr/home&apos;에 대한 링크인 경우 올바른 &apos;건너뛴 경로들&apos; 항목은 &apos;/home/me&apos;입니다. &apos;/usr/home/me/tmp*&apos;가 아닌 /tmp*&apos;)</translation>
+        <translation>색인 작업이 실행되지 않게 될 폴더 경로들입니다.&lt;br&gt;경로에는 와일드 카드가 포함될 수 있습니다. 항목들은 색인자가 보는 경로와 일치해야합니다 (예 : 최상위 폴더에 &apos;/home /me&apos;가 포함되어 있고 &apos;/home&apos;이 실제로 &apos;/usr/home&apos;에 대한 링크인 경우 올바른 &apos;건너뛴 경로들&apos; 항목은 &apos;/home/me&apos;입니다. &apos;/usr/home/me/tmp*&apos;가 아닌 /tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation type="unfinished">형태소 언어</translation>
+        <translation>형태소 언어</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
-        <translation type="unfinished"></translation>
+        <translation>형태소 확장 사전을 빌드할 언어.&lt;br&gt;가능한 값은 Xapian 형태소 분석기 문서를 참조하십시오. 예: 영어, 프랑스어, 독일어...</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation type="unfinished">로그 파일 이름</translation>
+        <translation>로그 파일 이름</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation type="unfinished">메시지가 기록 될 파일입니다.&lt;br&gt;터미널 출력에 &apos;stderr&apos;을 사용하십시오.</translation>
+        <translation>메시지가 기록 될 파일입니다.&lt;br&gt;터미널 출력에 &apos;stderr&apos;을 사용하십시오.</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation type="unfinished">로그 상세 수준</translation>
+        <translation>로그 상세 수준</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation type="unfinished">이 값은 메시지의 분량을&lt;br&gt;오류에서 많은 디버깅 데이터에 이르기까지 조정합니다.</translation>
+        <translation>이 값은 메시지의 범위를&lt;br&gt;오류부터 많은 디버깅 데이터에까지 조정합니다.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation type="unfinished">&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
+        <translation>&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation type="unfinished">이 값은 색인되는 데이터의 양을 적절한 값으로 조정합니다.&lt;br&gt;색인 작업자가 메모리 사용을 제어하는 데 도움이 됩니다. 기본 10MB</translation>
+        <translation>이 값은 색인되는 데이터의 양을 적절한 값으로 조정합니다.&lt;br&gt;색인 작업자가 메모리 사용을 제어하는 데 도움이 됩니다. 기본 10MB</translation>
     </message>
     <message>
         <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
+        <translation>색인 작성을 멈추기 위한 디스크 용량 임계값&lt;br&gt;(예:90%, 0은 제한 없음)</translation>
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="unfinished">색인을 실패시키고 중지할 디스크 크기(색인 크기가 아닌 전체 디스크 사용량)의 백분율입니다.&lt;br&gt;기본값 0은 제한을 두지 않습니다.</translation>
+        <translation>색인을 실패시키고 중지시킬 디스크 크기(색인 크기가 아닌 전체 디스크 사용량)의 백분율입니다.&lt;br&gt;기본값 0은 제한을 두지 않습니다.</translation>
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation type="unfinished">철자 사용법 없음</translation>
+        <translatorcomment>철자검색기에 한국어는 포함되지 않습니다.</translatorcomment>
+        <translation>철자검색기 사용안함</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation type="unfinished">용어 탐색기 도구에서 유사한 철자를 발생시키는 철자 사용을 비활성화 합니다. &lt;br&gt; 철자가 없거나 작동하지 않는 경우에 유용합니다.</translation>
+        <translation>용어 탐색기 도구에서 유사한 철자를 발생시키는 철자 사용을 비활성화 합니다. &lt;br&gt; 철자가 없거나 작동하지 않는 경우에 유용합니다.</translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation type="unfinished">철자 언어</translation>
+        <translation>철자검색기 언어</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
-        <translation type="unfinished"></translation>
+        <translation>철자 검색기 사전의 언어입니다. 값은 2 글자 언어 코드입니다 (예 : &apos;en&apos;, &apos;fr&apos;... &lt;br&gt;이 값을 설정하지 않으면 NLS 환경이 언어 코드를 계산하는 데 사용되며 일반적으로 작동합니다. 시스템에 무엇이 설치되어 있는지 이해하려면 &apos;aspell config&apos;를 입력하고 &apos;data-dir&apos;디렉토리에서 .dat 파일을 찾으십시오.</translation>
     </message>
     <message>
         <source>Database directory name</source>
-        <translation type="unfinished">데이터베이스 폴더 이름</translation>
+        <translation>데이터베이스 폴더 이름</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished">색인을 저장할 폴더 이름&lt;br&gt;상대 경로는 환경설정 폴더를 기본으로 합니다. 기본값은 &apos;xapiandb&apos;입니다.</translation>
+        <translation>색인을 저장할 폴더 이름&lt;br&gt;상대 경로일 경우, 환경설정 폴더를 기본으로 합니다. 기본값은 &apos;xapiandb&apos;입니다.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation type="unfinished">Unac 예외</translation>
+        <translation>Unac 예외</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished">&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
+        <translation>&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation type="unfinished">웹 히스토리 큐 처리</translation>
+        <translation>웹 히스토리 큐 처리</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation type="unfinished">Firefox 방문 페이지 색인 작성을 활성화합니다.&lt;br&gt;(Firefox Recoll 플러그인도 설치필요)</translation>
+        <translation>Firefox 방문 페이지 색인 작성을 활성화합니다.&lt;br&gt;(Firefox Recoll 플러그인도 설치필요)</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
-        <translation type="unfinished">웹 페이지 저장소 디렉토리 이름</translation>
+        <translation>웹 페이지 저장소 디렉토리 이름</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="unfinished">방문한 웹 페이지의 사본을 저장할 디렉토리의 이름.&lt;br&gt;상대적인 경로인 경우 환경설정 폴더를 기준으로합니다.</translation>
+        <translation>방문한 웹 페이지의 사본을 저장할 디렉토리의 이름.&lt;br&gt;상대적인 경로인 경우 환경설정 폴더를 기준으로합니다.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation type="unfinished">웹 저장소의 최대 용량(MB)</translation>
+        <translation>웹 저장소의 최대 용량(MB)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="unfinished">용량이 한계에 도달하면 항목들이 재활용됩니다.&lt;br&gt;값을 줄이면 기존 파일이 잘리지 않기 때문에 크기를 늘리는 것만으로도 의미가 있습니다(끝 공간만 낭비됩니다).</translation>
+        <translation>용량이 한계에 도달하면 항목들이 재활용됩니다.&lt;br&gt;값을 줄이면 기존 파일이 잘리지 않기 때문에 크기를 늘리는 것만으로도 의미가 있습니다(끝 공간만 낭비됩니다).</translation>
     </message>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation type="unfinished">발음구별 부호 자동 감도</translation>
+        <translation>발음구별 부호 자동 감도</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation type="unfinished">검색어에 악센트 부호가 있는 문자(unac_except_trans에 없는)가 있으면 분음 부호 민감도를 자동으로 조정합니다. 그렇지 않고 분음 부호 민감도를 직접 지정하려면 검색어 언어와 &lt;i&gt;D&lt;/i&gt; 수정자를 사용해야합니다.</translation>
+        <translation>검색어에 악센트 부호가 있는 문자(unac_except_trans에 없는)가 있으면 분음 부호 민감도를 자동으로 조정합니다. 그렇지 않고 분음 부호 민감도를 직접 지정하려면 검색어 언어와 &lt;i&gt;D&lt;/i&gt; 수정자를 사용해야합니다.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation type="unfinished">대소문자 자동 구분</translation>
+        <translation>대소문자 자동 구분</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation type="unfinished">&lt;p&gt; 항목 중 첫 글자 이외에 대문자가 있으면 대소문자 구분을 자동으로 처리합니다. 그렇지 않으면 검색어 언어와 &lt;i&gt;C&lt;/i&gt; 수정자를 사용하여 대소문자 구분을 지정해야합니다.</translation>
+        <translation>&lt;p&gt; 항목 중 첫 글자 이외에 대문자가 있으면 대소문자 구분을 자동으로 처리합니다. 그렇지 않으면 검색어 언어와 &lt;i&gt;C&lt;/i&gt; 수정자를 사용하여 대소문자 구분을 지정해야합니다.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation type="unfinished">용어 확장 최대값</translation>
+        <translation>용어 확장 최대값</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation type="unfinished">&lt;p&gt; 단일 용어의 최대 확장 횟수(예 : 와일드 카드 사용시). 기본값인 10,000은 합리적이며, 엔진이 그 확장된 용어 목록을 처리하는 동안 처리할 수 없는 용어는 피합니다.</translation>
+        <translation>&lt;p&gt; 단일 용어의 최대 확장 횟수(예 : 와일드 카드 사용시). 기본값인 10,000은 합리적이며, 엔진이 그 확장된 용어 목록을 처리하는 동안 처리할 수 없는 용어는 피합니다.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation type="unfinished">Xapian의 절 계수의 최대값</translation>
+        <translation>Xapian의 절 계수의 최대값</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation type="unfinished">단일 Xapian 검색 요청에 넣을 수 있는 절 숫자의 최대값입니다. 경우에 따라 확장된 용어의 결과가 곱해질 수 있기에 과도한 메모리 사용을 피하려고합니다. 기본값 100 000은 대부분의 경우에 충분하며, 하드웨어 구성과 호환되어야합니다.</translation>
+        <translation>단일 Xapian 검색 요청에 넣을 수 있는 절 숫자의 최대값입니다. 경우에 따라 확장된 용어의 결과가 곱해질 수 있기에 과도한 메모리 사용을 피하려고합니다. 기본값 100 000은 대부분의 경우에 충분하며, 하드웨어 구성과 호환되어야합니다.</translation>
     </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
     <message>
         <source>Only mime types</source>
-        <translation type="unfinished">오직 MIME 유형만</translation>
+        <translation>오직 MIME 유형만</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation type="unfinished">색인 처리된 MIME 유형들의 독점 목록입니다.&lt;br&gt;다른 것들은 색인되지 않을 것입니다. 보통 비어있음, 비활성화.</translation>
+        <translation>색인 처리된 MIME 유형들의 독점 목록입니다.&lt;br&gt;다른 것들은 색인되지 않을 것입니다. 보통 비어있음, 비활성화.</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation type="unfinished">제외된 MIME 유형들</translation>
+        <translation>제외된 MIME 유형들</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
-        <translation type="unfinished">색인처리되지 않는 MIME 유형</translation>
+        <translation>색인처리되지 않는 MIME 유형</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation type="unfinished">압축된 파일 용량의 최대값(KB)</translation>
+        <translation>압축된 파일 용량의 최대값(KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation type="unfinished">이 값은 압축 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로, 압축 해제가 없으면 0으로 설정하십시오.</translation>
+        <translation>이 값은 압축 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로, 압축 해제가 없으면 0으로 설정하십시오.</translation>
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation type="unfinished">텍스트 파일 용량의 최대값(MB)</translation>
+        <translation>텍스트 파일 용량의 최대값(MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation type="unfinished">이 값은 텍스트 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로 설정하십시오.
+        <translation>이 값은 텍스트 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로 설정하십시오.
 이것은 색인에서 너무 큰 로그 파일을 제외하기위한 것입니다.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation type="unfinished">텍스트 파일 페이지 용량(KB)</translation>
+        <translation>텍스트 파일 페이지 용량(KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation type="unfinished">이 값을 설정하면(-1이 아닌) 텍스트 파일이 색인을 위해 설정한 크기 단위로 분할됩니다.
+        <translation>이 값을 설정하면(-1이 아닌) 텍스트 파일이 색인을 위해 설정한 크기 단위로 분할됩니다.
 이는 매우 큰 텍스트 파일(예 : 로그 파일)을 검색하는 데 도움이 됩니다.</translation>
     </message>
     <message>
         <source>Max. filter exec. time (s)</source>
-        <translation type="unfinished">필터 최대 실행시간</translation>
+        <translation>필터 최대 실행시간</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation type="unfinished">이 값보다 오래 작동하는 외부 필터는 중단됩니다. 문서가 필터를 무한 반복하게 만들 수 있는 드문 경우에 사용됩니다(예 : 포스트 스크립트). 제한이 없으면 -1로 설정하십시오.</translation>
+        <translation>이 값보다 오래 작동하는 외부 필터는 중단됩니다. 문서가 필터를 무한 반복하게 만들 수 있는 드문 경우에 사용됩니다(예 : 포스트 스크립트). 제한이 없으면 -1로 설정하십시오.</translation>
     </message>
     <message>
         <source>Global</source>
-        <translation type="unfinished">광역</translation>
+        <translation>광역</translation>
     </message>
 </context>
 <context>
@@ -637,7 +638,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Decide if real time indexing will be started when you log in (only for the default index).</source>
-        <translation>로그인 할 때 실시간 색인 작성을 시작할 것인지 결정하십시오 (기본 색인에만 해당).</translation>
+        <translation>로그인 할 때 실시간 색인 작성을 시작할 것인지 결정합니다(기본 색인에만 해당).</translation>
     </message>
 </context>
 <context>
@@ -750,11 +751,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Previous result document</source>
-        <translation type="unfinished"></translation>
+        <translation>이전 결과 문서</translation>
     </message>
     <message>
         <source>Next result document</source>
-        <translation type="unfinished"></translation>
+        <translation>다음 결과 문서</translation>
     </message>
 </context>
 <context>
@@ -844,7 +845,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation>내용들을 파악할 수 없거나 처리할 수 없는 파일들(없거나 지원하지 않는 MIME 형식)의 이름들도 색인하십시오. 기본값: true</translation>
+        <translation>내용들을 파악할 수 없거나 처리할 수 없는 파일들(없거나 지원하지 않는 MIME 형식)의 이름들도 색인합니다. 기본값: true</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -1265,7 +1266,7 @@ mimeview 파일을 확인하십시오.</translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
-        <translation>인덱서가 실행 중이므로, 작업이 완료되면 결과가 개선될 것입니다.</translation>
+        <translation>색인 작성자가 실행 중이므로, 작업이 완료되면 결과가 개선될 것입니다.</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
@@ -1472,23 +1473,23 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Batch scheduling</source>
-        <translation type="unfinished"></translation>
+        <translation>일괄 작업 예약</translation>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
-        <translation type="unfinished"></translation>
+        <translation>이 도구를 사용하면 색인 작성 시간을 결정할 수 있습니다. Windows 작업 스케줄러를 사용합니다.</translation>
     </message>
     <message>
         <source>Confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>승인</translation>
     </message>
     <message>
         <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>단순, 혹은 고급 검색 기록들을 지우려면, 확인을 클릭하여 승인하십시오.</translation>
     </message>
     <message>
         <source>Could not open/create file</source>
-        <translation type="unfinished"></translation>
+        <translation>파일 열기/만들기 불가</translation>
     </message>
 </context>
 <context>
@@ -1755,7 +1756,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>E&amp;xport simple search history</source>
-        <translation type="unfinished"></translation>
+        <translation>단순 검색 기록 내보내기(&amp;x)</translation>
     </message>
 </context>
 <context>
@@ -2029,131 +2030,139 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head&gt;&lt;style&gt;</translation>
     </message>
     <message>
         <source>table, th, td {</source>
-        <translation type="unfinished"></translation>
+        <translation>table, th, td {</translation>
     </message>
     <message>
         <source>border: 1px solid black;</source>
-        <translation type="unfinished"></translation>
+        <translation>border: 1px solid black;</translation>
     </message>
     <message>
         <source>border-collapse: collapse;</source>
-        <translation type="unfinished"></translation>
+        <translation>border-collapse: collapse;</translation>
     </message>
     <message>
         <source>}</source>
-        <translation type="unfinished"></translation>
+        <translation>}</translation>
     </message>
     <message>
         <source>th,td {</source>
-        <translation type="unfinished"></translation>
+        <translation>th,td {</translation>
     </message>
     <message>
         <source>text-align: center;</source>
-        <translation type="unfinished"></translation>
+        <translation>text-align: center;</translation>
     </message>
     <message>
         <source>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>꼭 메뉴얼을 보셔야 합니다.(F1)&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;th&gt;어떤&lt;/th&gt;&lt;th&gt;예제들&lt;/th&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;하나 둘&amp;nbsp;&amp;nbsp;&amp;nbsp;하나 AND 둘&amp;nbsp;&amp;nbsp;&amp;nbsp;하나 &amp;&amp; 둘&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;하나 OR 둘&amp;nbsp;&amp;nbsp;&amp;nbsp;하나 || 둘&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;복잡한 불리언(boolean). &apos;OR&apos;이 우선권을 가지니, 괄호를 사용하세요.&amp;nbsp;</translation>
     </message>
     <message>
         <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>필요한 곳에&lt;/td&gt;&lt;td&gt;(하나 AND 둘) OR 셋&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-용어&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;문구&lt;/td&gt;&lt;td&gt;&quot;자존심 and 편견&quot;&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;정렬된 근접성(slack:느슨함=1)&lt;/td&gt;&lt;td&gt;&quot;자존심 편견&quot;o1&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;정렬되지 않은 근접성 (slack:느슨함=1)&lt;/td&gt;&lt;td&gt;&quot;편견 자존심&quot;po1&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;정렬되지 않은 근접성. (기본 slack:느슨함 값=10)&lt;/td&gt;&lt;td&gt;&quot;편견&amp;nbsp;자존심&quot;p&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;형태소 확장 없음: 대문자화가 &lt;/td&gt;&lt;td&gt;너무 많습니다.&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>저자:author</translatorcomment>
+        <translation>&lt;tr&gt;&lt;td&gt;특정 필드&lt;/td&gt;&lt;td&gt;저자:오스틴&amp;nbsp;&amp;nbsp;제목:편견&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>저자:author</translatorcomment>
+        <translation>&lt;tr&gt;&lt;td&gt;AND 내부 필드 (정렬 없음 )&lt;/td&gt;&lt;td&gt;저자:제인,오스틴&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>저자:author</translatorcomment>
+        <translation>&lt;tr&gt;&lt;td&gt;OR 내부 필드&lt;/td&gt;&lt;td&gt;저자:오스틴/브론테&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>title/subject/caption  author/from  recipient/to  filename  ext</translatorcomment>
+        <translation>&lt;tr&gt;&lt;td&gt;필드 이름들&lt;/td&gt;&lt;td&gt;제목/주제/표제&amp;nbsp;&amp;nbsp;저자/출처&lt;br&gt;수취인/수신자&amp;nbsp;&amp;nbsp;파일이름&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>폴더:dir</translatorcomment>
+        <translation>&lt;tr&gt;&lt;td&gt;폴더 경로 필터&lt;/td&gt;&lt;td&gt;폴더:/home/me&amp;nbsp;&amp;nbsp;폴더:doc&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;MIME 유형 필터&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>날짜:date</translatorcomment>
+        <translation>&lt;tr&gt;&lt;td&gt;날짜 간격&lt;/td&gt;&lt;td&gt;날짜:2018-01-01/2018-31-12&lt;br&gt;</translation>
     </message>
     <message>
         <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>날짜:date</translatorcomment>
+        <translation>날짜:2018&amp;nbsp;&amp;nbsp;날짜:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>용량:size</translatorcomment>
+        <translation>&lt;tr&gt;&lt;td&gt;용량&lt;/td&gt;&lt;td&gt;용량&amp;gt;100k 용량&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -2261,11 +2270,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Sort By Relevance</source>
-        <translation type="unfinished"></translation>
+        <translation>관련성 별로 정리</translation>
     </message>
     <message>
         <source>Sort By Page</source>
-        <translation type="unfinished"></translation>
+        <translation>페이지 별로 정리</translation>
     </message>
 </context>
 <context>
@@ -2568,7 +2577,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Use Desktop preferences by default</source>
-        <translation>데스크톱 설정들을 기본값으로 사용하십시오.</translation>
+        <translation>데스크톱 설정들을 기본값으로 사용합니다.</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
@@ -2584,7 +2593,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Apply to current selection</source>
-        <translation>현재 선택을 적용하십시오.</translation>
+        <translation>현재 선택을 적용합니다.</translation>
     </message>
     <message>
         <source>Recoll action:</source>
@@ -2596,7 +2605,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select same</source>
-        <translation>같은 것을 선택하십시오.</translation>
+        <translation>같은 것 선택</translation>
     </message>
     <message>
         <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
@@ -2705,19 +2714,19 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Add entry</source>
-        <translation type="unfinished"></translation>
+        <translation>항목 추가</translation>
     </message>
     <message>
         <source>Delete selected entries</source>
-        <translation type="unfinished"></translation>
+        <translation>선택된 항목 삭제</translation>
     </message>
     <message>
         <source>~</source>
-        <translation type="unfinished"></translation>
+        <translation>~</translation>
     </message>
     <message>
         <source>Edit selected entries</source>
-        <translation type="unfinished"></translation>
+        <translation>선택된 항목 편집</translation>
     </message>
 </context>
 <context>
@@ -3242,43 +3251,44 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Application Qt style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>응용 프로그램 Qt 스타일 시트</translation>
     </message>
     <message>
         <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
-        <translation type="unfinished"></translation>
+        <translation>검색 기록의 크기를 제한하십시오. 0:비활성화, -1:무제한.</translation>
     </message>
     <message>
         <source>Maximum size of search history (0: disable, -1: unlimited):</source>
-        <translation type="unfinished"></translation>
+        <translation>검색 기록의 최대 크기 (0:사용 안함, -1:무제한):</translation>
     </message>
     <message>
         <source>Generate desktop notifications.</source>
-        <translation type="unfinished"></translation>
+        <translation>데스크탑 알림을 생성합니다.</translation>
     </message>
     <message>
         <source>Suppress all beeps.</source>
-        <translation type="unfinished"></translation>
+        <translation>모든 경고음을 억제합니다.</translation>
     </message>
     <message>
         <source>Maximum number of snippets displayed in the snippets window</source>
-        <translation type="unfinished"></translation>
+        <translation>문서별 검색창에 표시되는 최대 문서별 검색기 숫자</translation>
     </message>
     <message>
         <source>Sort snippets by page number (default: by weight).</source>
-        <translation type="unfinished"></translation>
+        <translation>문서별 검색 결과를 페이지 숫자별로 정리합니다(기본값: 무게-관련도).</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
-        <translation type="unfinished"></translation>
+        <translation>문서에 페이지가 없더라도 문서별 검색기 링크를 표시합니다(다시 시작해야 함).</translation>
     </message>
     <message>
         <source>Misc</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Misc</translatorcomment>
+        <translation>잡동사니</translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="unfinished"></translation>
+        <translation>앵커 텍스트 앞에 공백을 삽입하여 QTBUG-78923을 해결합니다.</translation>
     </message>
 </context>
 </TS>
