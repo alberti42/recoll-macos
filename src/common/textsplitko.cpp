@@ -124,9 +124,9 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     string::size_type orgbytepos = it.getBpos();
     for (; !it.eof(); it++) {
         c = *it;
-        if (!isHANGUL(c) && !(isspace(c) || ispunct(c))) {
+        if (!isHANGUL(c) && isalpha(c)) {
             // Done with Korean stretch, process and go back to main routine
-            //std::cerr << "Broke on char " << int(c) << endl;
+            std::cerr << "Broke on char " << (std::string)it << endl;
             break;
         } else {
             it.appendchartostring(inputdata);
