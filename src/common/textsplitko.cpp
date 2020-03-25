@@ -126,7 +126,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         c = *it;
         if (!isHANGUL(c) && isalpha(c)) {
             // Done with Korean stretch, process and go back to main routine
-            std::cerr << "Broke on char " << (std::string)it << endl;
+            //std::cerr << "Broke on char " << (std::string)it << endl;
             break;
         } else {
             it.appendchartostring(inputdata);

@@ -20,6 +20,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <set>
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -154,6 +155,11 @@ class PrefsPack {
 
     std::string stemlang();
 
+    // MIME types for which we prefer to use stored text from preview
+    // rather than extracting the possibly nicer HTML because the
+    // extractor is very slow. This is compiled in and there is no UI
+    // for now.
+    std::set<std::string> preferStoredTextMimes{"application/x-hwp"};
 };
 
 /** Global preferences record */
