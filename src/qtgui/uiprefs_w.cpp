@@ -112,7 +112,7 @@ void UIPrefsDialog::setFromPrefs()
     pageLenSB->setValue(prefs.respagesize);
     maxHistSizeSB->setValue(prefs.historysize);
     collapseDupsCB->setChecked(prefs.collapseDuplicates);
-    maxHLTSB->setValue(prefs.maxhltextmbs);
+    maxHLTSB->setValue(prefs.maxhltextkbs);
 
     if (prefs.ssearchTypSav) {
         ssearchTypCMB->setCurrentIndex(4);
@@ -304,7 +304,7 @@ void UIPrefsDialog::accept()
     prefs.respagesize = pageLenSB->value();
     prefs.historysize = maxHistSizeSB->value();
     prefs.collapseDuplicates = collapseDupsCB->isChecked();
-    prefs.maxhltextmbs = maxHLTSB->value();
+    prefs.maxhltextkbs = maxHLTSB->value();
 
     prefs.qtermstyle = qtermStyleLE->text();
     prefs.abssep = abssepLE->text();

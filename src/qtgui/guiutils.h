@@ -46,7 +46,7 @@ class PrefsPack {
     int filterCtlStyle;
     int respagesize{8};
     int historysize{0};
-    int maxhltextmbs;
+    int maxhltextkbs;
     QString reslistfontfamily;
     // Not saved in prefs for now. Computed from qt defaults and used to
     // set main character color for webkit/textbrowser reslist and
