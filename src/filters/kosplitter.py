@@ -28,13 +28,14 @@
 import sys
 import cmdtalk
 
-from konlpy.tag import Okt,Mecab
+from konlpy.tag import Okt,Mecab,Komoran
 
 class Processor(object):
     def __init__(self, proto):
         self.proto = proto
         self.tagsOkt = False
         self.tagsMecab = False
+        self.tagsKomoran = False
 
     def _init_tagger(self, taggername):
         if taggername == "Okt":
@@ -43,13 +44,16 @@ class Processor(object):
         elif taggername == "Mecab":
             self.tagger = Mecab()
             self.tagsMecab = True
+        elif taggername == "Komoran":
+            self.tagger = Komoran()
+            self.tagsKomoran = True
         else:
             raise Exception("Bad tagger name " + taggername)
         
     def process(self, params):
         if 'data' not in params:
             return {'error':'No data field in parameters'}
-        if not (self.tagsOkt or self.tagsMecab):
+        if not (self.tagsOkt or self.tagsMecab or self.tagsKomoran):
             if 'tagger' not in params:
                 return {'error':'No "tagger" field in parameters'}
             self._init_tagger(params['tagger']);
@@ -65,7 +69,7 @@ class Processor(object):
             tag = e[1]
             if self.tagsOkt:
                 pass
-            elif self.tagsMecab:
+            elif self.tagsMecab or self.tagsKomoran:
                 tb = tag[0:2]
                 if tb[0] == "N":
                     tag = "Noun"

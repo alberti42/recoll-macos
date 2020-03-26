@@ -622,7 +622,7 @@ bool TextSplit::text_to_words(const string &in)
 #if defined(KATAKANA_AS_WORDS) || defined(HANGUL_AS_WORDS)
     int prev_csc = -1;
 #endif
-    for (; !it.eof(); it++) {
+    for (; !it.eof() && !it.error(); it++) {
         unsigned int c = *it;
         nonalnumcnt++;
 
@@ -668,7 +668,7 @@ bool TextSplit::text_to_words(const string &in)
             }
             // Check for eof, else c contains the first non-cjk
             // character after the cjk sequence, just go on.
-            if (it.eof())
+            if (it.eof() || it.error())
                 break;
         }
 
@@ -996,7 +996,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     // Current number of valid offsets;
     unsigned int nchars = 0;
     unsigned int c = 0;
-    for (; !it.eof(); it++) {
+    for (; !it.eof() && !it.error(); it++) {
         c = *it;
         if (c == ' ' || c == '\t' || c == '\n') {
             continue;
@@ -1097,7 +1097,7 @@ int TextSplit::countWords(const string& s, TextSplit::Flags flgs)
 bool TextSplit::hasVisibleWhite(const string &in)
 {
     Utf8Iter it(in);
-    for (; !it.eof(); it++) {
+    for (; !it.eof() && !it.error(); it++) {
         unsigned int c = (unsigned char)*it;
         if (c == (unsigned int)-1) {
             LOGERR("hasVisibleWhite: error while scanning UTF-8 string\n");
@@ -1117,7 +1117,7 @@ template <class T> bool u8stringToStrings(const string &s, T &tokens)
     tokens.clear();
     enum states {SPACE, TOKEN, INQUOTE, ESCAPE};
     states state = SPACE;
-    for (; !it.eof(); it++) {
+    for (; !it.eof() && !it.error(); it++) {
         unsigned int c = *it;
         if (visiblewhite.find(c) != visiblewhite.end()) 
             c = ' ';

@@ -56,7 +56,7 @@ static uint64_t restartthreshold = 5 * 1000 * 1000;
 void TextSplit::koStaticConfInit(RclConfig *config, const string& tagger)
 {
     o_cmdpath = config->findFilter("kosplitter.py");
-    if (tagger == "Okt" || tagger == "Mecab") {
+    if (tagger == "Okt" || tagger == "Mecab" || tagger == "Komoran") {
         o_taggername = tagger;
     } else {
         LOGERR("TextSplit::koStaticConfInit: unknown tagger [" << tagger <<
@@ -122,7 +122,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     // Walk the Korean characters section and send the text to the
     // analyser
     string::size_type orgbytepos = it.getBpos();
-    for (; !it.eof(); it++) {
+    for (; !it.eof() && !it.error(); it++) {
         c = *it;
         if (!isHANGUL(c) && isalpha(c)) {
             // Done with Korean stretch, process and go back to main routine
@@ -137,7 +137,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     restartcount += inputdata.size();
     unordered_map<string,string> result;
     if (!o_talker->talk(args, result)) {
-        LOGERR("Python splitter for Korean failed\n");
+        LOGERR("Python splitter for Korean failed for [" << inputdata << "]\n");
         return false;
     }
 
