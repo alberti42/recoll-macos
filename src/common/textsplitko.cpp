@@ -48,16 +48,21 @@ static bool o_starterror{false};
 static string o_cmdpath;
 std::mutex o_mutex;
 static string o_taggername{"Okt"};
+static bool isKomoran{false};
 
 // The Python/Java splitter is leaking memory. We restart it from time to time
 static uint64_t restartcount;
 static uint64_t restartthreshold = 5 * 1000 * 1000;
+
+static const string magicpage{"NEWPPPAGE"};
 
 void TextSplit::koStaticConfInit(RclConfig *config, const string& tagger)
 {
     o_cmdpath = config->findFilter("kosplitter.py");
     if (tagger == "Okt" || tagger == "Mecab" || tagger == "Komoran") {
         o_taggername = tagger;
+        if (tagger == "Komoran")
+            isKomoran = true;
     } else {
         LOGERR("TextSplit::koStaticConfInit: unknown tagger [" << tagger <<
                "], using Okt\n");
@@ -129,7 +134,18 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
             //std::cerr << "Broke on char " << (std::string)it << endl;
             break;
         } else {
-            it.appendchartostring(inputdata);
+            if (c == '\f') {
+                inputdata += magicpage;
+            } else {
+                if (isKomoran && (c == '\n' || c == '\r')) {
+                    // Komoran does not like some control chars (initially
+                    // thought only formfeed, but not), which is a prob
+                    // for pdf pages counts. will need to fix this
+                    inputdata += ' ';
+                } else {
+                    it.appendchartostring(inputdata);
+                }
+            }
         }
     }
     LOGDEB1("TextSplit::k_to_words: sending out " << inputdata.size() <<
@@ -173,6 +189,9 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         // the original input to the term.
         string word = words[i];
         trimstring(word);
+        if (word == magicpage) {
+            newpage(m_wordpos);
+        }
         string::size_type newpos = bytepos - orgbytepos;
         newpos = inputdata.find(word, newpos);
         if (newpos != string::npos) {
