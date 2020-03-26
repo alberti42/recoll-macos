@@ -36,20 +36,6 @@ from hwp5.xmlmodel import Hwp5File as xml_Hwp5File
 from hwp5.utils import cached_property
 
 
-# This was duplicated from hwp5 hwp5text.py and I don't really
-# understand what it does...
-RESOURCE_PATH_XSL_TEXT = 'xsl/plaintext.xsl'
-class TextTransform(BaseTransform):
-    @property
-    def transform_hwp5_to_text(self):
-        transform_xhwp5 = self.transform_xhwp5_to_text
-        return self.make_transform_hwp5(transform_xhwp5)
-    @cached_property
-    def transform_xhwp5_to_text(self):
-        resource_path = RESOURCE_PATH_XSL_TEXT
-        return self.make_xsl_transform(resource_path)
-
-
 # Associate HTML meta names and hwp summaryinfo values
 def metafields(summaryinfo):
     yield(('Description', summaryinfo.subject + " " +

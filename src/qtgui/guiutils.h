@@ -20,6 +20,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <set>
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -46,7 +47,7 @@ class PrefsPack {
     int filterCtlStyle;
     int respagesize{8};
     int historysize{0};
-    int maxhltextmbs;
+    int maxhltextkbs;
     QString reslistfontfamily;
     // Not saved in prefs for now. Computed from qt defaults and used to
     // set main character color for webkit/textbrowser reslist and
@@ -154,6 +155,11 @@ class PrefsPack {
 
     std::string stemlang();
 
+    // MIME types for which we prefer to use stored text from preview
+    // rather than extracting the possibly nicer HTML because the
+    // extractor is very slow. This is compiled in and there is no UI
+    // for now.
+    std::set<std::string> preferStoredTextMimes{"application/x-hwp"};
 };
 
 /** Global preferences record */

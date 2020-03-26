@@ -44,8 +44,10 @@
 #include "rcldb.h"
 #include "plaintorich.h"
 #include "rclmain_w.h"
+#include "internfile.h"
 
 #include "ui_preview.h"
+
 
 class QTabWidget;
 class QLabel;
@@ -55,6 +57,10 @@ class Preview;
 class PlainToRichQtPreview;
 class QUrl;
 class RclMain;
+class LoadThread;
+class QTimer;
+class QEventLoop;
+class QProgressDialog;
 
 class PreviewTextEdit : public PREVIEW_PARENTCLASS {
     Q_OBJECT;
@@ -185,6 +191,10 @@ private:
     virtual PreviewTextEdit *currentEditor();
     virtual PreviewTextEdit *addEditorTab();
     virtual bool loadDocInCurrentTab(const Rcl::Doc& idoc, int dnm);
+    void displayLoadError(
+        FileInterner::ErrorPossibleCause explain, bool canGetRawText);
+    bool runLoadThread(LoadThread& lthr, QTimer& tT, QEventLoop& loop,
+                       QProgressDialog& progress, bool canGetRawText);
 };
 
 #endif /* _PREVIEW_W_H_INCLUDED_ */

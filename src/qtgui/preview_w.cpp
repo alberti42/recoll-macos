@@ -574,6 +574,90 @@ void Preview::emitWordSelect(QString word)
     emit(wordSelect(word));
 }
 
+// Display message dialog after load failed
+void Preview::displayLoadError(
+    FileInterner::ErrorPossibleCause explain, bool canGetRawText)
+{
+    // Note that we can't easily check for a readable file
+    // because it's possible that only a region is locked
+    // (e.g. on Windows for an ost file the first block is
+    // readable even if Outlook is running).
+    QString msg;
+    switch (explain) {
+    case FileInterner::FetchMissing:
+        msg = tr("Error loading the document: file missing.");
+        break;
+    case FileInterner::FetchPerm:
+        msg = tr("Error loading the document: no permission.");
+        break;
+    case FileInterner::FetchNoBackend:
+        msg =
+            tr("Error loading: backend not configured.");
+        break;
+    case FileInterner::InternfileOther:
+#ifdef _WIN32
+        msg = tr("Error loading the document: "
+                 "other handler error<br>"
+                 "Maybe the application is locking the file ?");
+#else
+        msg = tr("Error loading the document: other handler error.");
+#endif
+        break;
+    }
+    if (canGetRawText) {
+        msg += tr("<br>Attempting to display from stored text.");
+    }
+    QMessageBox::warning(0, "Recoll", msg);
+}
+
+bool Preview::runLoadThread(LoadThread& lthr, QTimer& tT, QEventLoop& loop,
+                            QProgressDialog& progress, bool canGetRawText)
+{
+    lthr.start();
+    for (int i = 0;;i++) {
+        tT.start(1000); 
+        loop.exec();
+        if (lthr.isFinished())
+            break;
+        if (progress.wasCanceled()) {
+            CancelCheck::instance().setCancel();
+        }
+        if (i == 1)
+            progress.show();
+    }
+
+    LOGDEB("loadDocInCurrentTab: after file load: cancel " <<
+           CancelCheck::instance().cancelState() << " status " << lthr.status <<
+           " text length " << lthr.fdoc.text.length() << "\n");
+
+    if (lthr.status == 0) {
+        return true;
+    }
+
+    if (CancelCheck::instance().cancelState())
+        return false;
+
+    QString explain;
+    if (!lthr.missing.empty()) {
+        explain = QString::fromUtf8("<br>") +
+            tr("Missing helper program: ") +
+            QString::fromLocal8Bit(lthr.missing.c_str());
+        QMessageBox::warning(0, "Recoll",
+                             tr("Can't turn doc into internal "
+                                "representation for ") +
+                             lthr.fdoc.mimetype.c_str() + explain);
+    } else {
+        if (progress.wasCanceled()) {
+            QMessageBox::warning(0, "Recoll", tr("Canceled"));
+        } else {
+            progress.reset();
+            displayLoadError(lthr.explain, canGetRawText);
+        }
+    }
+
+    return false;
+}
+
 /*
   Code for loading a file into an editor window. The operations that
   we call have no provision to indicate progression, and it would be
@@ -627,93 +711,42 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     connect(&tT, SIGNAL(timeout()), &loop, SLOT(quit()));
 
     ////////////////////////////////////////////////////////////////////////
-    // Load and convert document
-    // idoc came out of the index data (main text and some fields missing). 
-    // fdoc is the complete one what we are going to extract from storage.
+    // Load and convert document 
+    //  - idoc came out of the index data (main text and some fields missing).
+    //  - fdoc is the complete one what we are going to extract from storage.
+    // 
+    // If the preference to use the stored text is set, we still
+    // create the LoadThread object for convenience (using its fdoc
+    // field, but don't start it.
+
     LoadThread lthr(theconfig, idoc, prefs.previewHtml, this);
     connect(&lthr, SIGNAL(finished()), &loop, SLOT(quit()));
 
-    lthr.start();
-    for (int i = 0;;i++) {
-        tT.start(1000); 
-        loop.exec();
-        if (lthr.isFinished())
-            break;
-        if (progress.wasCanceled()) {
-            CancelCheck::instance().setCancel();
+    bool canGetRawText = rcldb && rcldb->storesDocText();
+    auto it = prefs.preferStoredTextMimes.find(idoc.mimetype);
+    bool preferStoredText = (it != prefs.preferStoredTextMimes.end());
+    bool loadok{false};
+
+    if (!preferStoredText || !canGetRawText) {
+        // Try load from actual document
+        loadok = runLoadThread(lthr, tT, loop, progress, canGetRawText);
+    }
+    
+    if (!loadok && canGetRawText) {
+        // Preferring/able to use stored text or extern load failed
+        lthr.fdoc = idoc;
+        loadok = rcldb->getDocRawText(lthr.fdoc);
+        if (!loadok) {
+            QMessageBox::warning(0,"Recoll",tr("Could not fetch stored text"));
         }
-        if (i == 1)
-            progress.show();
     }
 
-    LOGDEB("loadDocInCurrentTab: after file load: cancel " <<
-           CancelCheck::instance().cancelState() << " status " << lthr.status <<
-           " text length " << lthr.fdoc.text.length() << "\n");
-
-    if (CancelCheck::instance().cancelState())
+    if (!loadok) {
+        // Everything failed.
+        progress.close();
         return false;
-    if (lthr.status != 0) {
-        bool canGetRawText = rcldb && rcldb->storesDocText();
-        QString explain;
-        if (!lthr.missing.empty()) {
-            explain = QString::fromUtf8("<br>") +
-                tr("Missing helper program: ") +
-                QString::fromLocal8Bit(lthr.missing.c_str());
-            QMessageBox::warning(0, "Recoll",
-                                 tr("Can't turn doc into internal "
-                                    "representation for ") +
-                                 lthr.fdoc.mimetype.c_str() + explain);
-        } else {
-            if (progress.wasCanceled()) {
-                QMessageBox::warning(0, "Recoll", tr("Canceled"));
-            } else {
-                progress.reset();
-                // Note that we can't easily check for a readable file
-                // because it's possible that only a region is locked
-                // (e.g. on Windows for an ost file the first block is
-                // readable even if Outlook is running).
-                QString msg;
-                switch (lthr.explain) {
-                case FileInterner::FetchMissing:
-                    msg = tr("Error loading the document: file missing.");
-                    break;
-                case FileInterner::FetchPerm:
-                    msg = tr("Error loading the document: no permission.");
-                    break;
-                case FileInterner::FetchNoBackend:
-                    msg =
-                        tr("Error loading: backend not configured.");
-                    break;
-                case FileInterner::InternfileOther:
-#ifdef _WIN32
-                    msg = tr("Error loading the document: "
-                             "other handler error<br>"
-                             "Maybe the application is locking the file ?");
-#else
-                    msg = tr("Error loading the document: other handler error.");
-#endif
-                    break;
-                }
-                if (canGetRawText) {
-                    msg += tr("<br>Attempting to display from stored text.");
-                }
-                QMessageBox::warning(0, "Recoll", msg);
-            }
-        }
-
-
-        if (canGetRawText) {
-            lthr.fdoc = idoc;
-            if (!rcldb->getDocRawText(lthr.fdoc)) {
-                QMessageBox::warning(0, "Recoll",
-                                     tr("Could not fetch stored text"));
-                progress.close();
-                return false;
-            }
-        } else {
-            progress.close();
-        }
     }
+    
     // Reset config just in case.
     theconfig->setKeyDir("");
 
@@ -722,8 +755,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // We don't do the highlighting for very big texts: too long. We
     // should at least do special char escaping, in case a '&' or '<'
     // somehow slipped through previous processing.
-    bool highlightTerms = lthr.fdoc.text.length() < 
-        (unsigned long)prefs.maxhltextmbs * 1024 * 1024;
+    bool highlightTerms = int(lthr.fdoc.text.length()) < 
+        prefs.maxhltextkbs * 1024;
 
     // Final text is produced in chunks so that we can display the top
     // while still inserting at bottom
@@ -752,7 +785,6 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     QStringList qrichlst;
     editor->m_plaintorich->set_activatelinks(prefs.previewActiveLinks);
     
-#if 1
     if (highlightTerms) {
         progress.setLabelText(tr("Creating preview text"));
         qApp->processEvents();
@@ -815,17 +847,6 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             }
         }
     }
-#else // For testing qtextedit bugs...
-    highlightTerms = true;
-    const char *textlist[] =
-        {
-            "Du plain text avec un\n <termtag>termtag</termtag> fin de ligne:",
-            "texte apres le tag\n",
-        };
-    const int listl = sizeof(textlist) / sizeof(char*);
-    for (int i = 0 ; i < listl ; i++)
-        qrichlst.push_back(QString::fromUtf8(textlist[i]));
-#endif
 
 
     ///////////////////////////////////////////////////////////

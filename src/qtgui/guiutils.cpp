@@ -158,7 +158,15 @@ void rwSettings(bool writing)
                "/Recoll/prefs/reslist/collapseDuplicates", Bool, false);
     SETTING_RW(prefs.showResultsAsTable, 
                "/Recoll/prefs/showResultsAsTable", Bool, false);
-    SETTING_RW(prefs.maxhltextmbs, "/Recoll/prefs/preview/maxhltextmbs", Int, 3);
+
+    SETTING_RW(prefs.maxhltextkbs, "/Recoll/prefs/preview/maxhltextkbs", Int,
+               3000);
+    // Compat: if maxhltextkbs is not set but old maxhltextmbs is set use it
+    if (!writing && !settings.contains("/Recoll/prefs/preview/maxhltextkbs") &&
+        settings.contains("/Recoll/prefs/preview/maxhltextmbs")) {
+        prefs.maxhltextkbs = settings.value(
+            "/Recoll/prefs/preview/maxhltextmbs").toInt() * 1024;
+    }
 
     SETTING_RW(prefs.previewPlainPre, 
                "/Recoll/prefs/preview/plainPre", Int, PrefsPack::PP_PREWRAP);

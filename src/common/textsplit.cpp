@@ -44,8 +44,10 @@
 // ngrams
 #undef KATAKANA_AS_WORDS
 
-// Same for Korean syllabic, and same problem, not used.
-#undef HANGUL_AS_WORDS
+// Same for Korean syllabic, and same problem. However we have a
+// runtime option to use an external text analyser for hangul, so this
+// is defined at compile time.
+#define HANGUL_AS_WORDS
 
 using namespace std;
 
@@ -289,6 +291,7 @@ bool          TextSplit::o_noNumbers{false};
 bool          TextSplit::o_deHyphenate{false};
 int           TextSplit::o_maxWordLength{40};
 static const int o_CJKMaxNgramLen{5};
+bool o_exthangultagger{false};
 
 void TextSplit::staticConfInit(RclConfig *config)
 {
@@ -323,7 +326,14 @@ void TextSplit::staticConfInit(RclConfig *config)
             charclasses[int('\\')] = SPACE;
         }
     }
-}    
+
+    string kotagger;
+    config->getConfParam("hangultagger", kotagger);
+    if (!kotagger.empty()) {
+        o_exthangultagger = true;
+        koStaticConfInit(config, kotagger);
+    }
+}
 
 // Final term checkpoint: do some checking (the kind which is simpler
 // to do here than in the main loop), then send term to our client.
@@ -612,7 +622,7 @@ bool TextSplit::text_to_words(const string &in)
 #if defined(KATAKANA_AS_WORDS) || defined(HANGUL_AS_WORDS)
     int prev_csc = -1;
 #endif
-    for (; !it.eof(); it++) {
+    for (; !it.eof() && !it.error(); it++) {
         unsigned int c = *it;
         nonalnumcnt++;
 
@@ -625,30 +635,40 @@ bool TextSplit::text_to_words(const string &in)
         if (UNICODE_IS_KATAKANA(c)) {
             csc = CSC_KATAKANA;
         } else if (UNICODE_IS_HANGUL(c)) {
-            csc = CSC_HANGUL;
+            if (o_exthangultagger) {
+                csc = CSC_HANGUL;
+            } else {
+                csc = CSC_CJK;
+            }
         } else if (UNICODE_IS_CJK(c)) {
             csc = CSC_CJK;
         } else {
             csc = CSC_OTHER;
         }
 
-        if (o_processCJK && csc == CSC_CJK) {
-            // CJK character hit. 
+        if (o_processCJK && (csc == CSC_CJK || csc == CSC_HANGUL)) {
+            // CJK character hit. Hangul processing may be special.
+
             // Do like at EOF with the current non-cjk data.
             if (m_wordLen || m_span.length()) {
                 if (!doemit(true, it.getBpos()))
                     return false;
             }
-
-            // Hand off situation to the cjk routine.
-            if (!cjk_to_words(&it, &c)) {
-                LOGERR("Textsplit: scan error in cjk handler\n");
-                return false;
+            // Hand off situation to the appropriate routine.
+            if (csc == CSC_HANGUL) {
+                if (!ko_to_words(&it, &c)) {
+                    LOGERR("Textsplit: scan error in korean handler\n");
+                    return false;
+                }
+            } else {
+                if (!cjk_to_words(&it, &c)) {
+                    LOGERR("Textsplit: scan error in cjk handler\n");
+                    return false;
+                }
             }
-
             // Check for eof, else c contains the first non-cjk
             // character after the cjk sequence, just go on.
-            if (it.eof())
+            if (it.eof() || it.error())
                 break;
         }
 
@@ -976,7 +996,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     // Current number of valid offsets;
     unsigned int nchars = 0;
     unsigned int c = 0;
-    for (; !it.eof(); it++) {
+    for (; !it.eof() && !it.error(); it++) {
         c = *it;
         if (c == ' ' || c == '\t' || c == '\n') {
             continue;
@@ -1077,7 +1097,7 @@ int TextSplit::countWords(const string& s, TextSplit::Flags flgs)
 bool TextSplit::hasVisibleWhite(const string &in)
 {
     Utf8Iter it(in);
-    for (; !it.eof(); it++) {
+    for (; !it.eof() && !it.error(); it++) {
         unsigned int c = (unsigned char)*it;
         if (c == (unsigned int)-1) {
             LOGERR("hasVisibleWhite: error while scanning UTF-8 string\n");
@@ -1097,7 +1117,7 @@ template <class T> bool u8stringToStrings(const string &s, T &tokens)
     tokens.clear();
     enum states {SPACE, TOKEN, INQUOTE, ESCAPE};
     states state = SPACE;
-    for (; !it.eof(); it++) {
+    for (; !it.eof() && !it.error(); it++) {
         unsigned int c = *it;
         if (visiblewhite.find(c) != visiblewhite.end()) 
             c = ' ';

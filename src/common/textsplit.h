@@ -54,6 +54,7 @@ public:
     /** Call at program initialization to read non default values from the 
         configuration */
     static void staticConfInit(RclConfig *config);
+    static void koStaticConfInit(RclConfig *config, const std::string& tagger);
     
     /** Split text, emit words and positions. */
     virtual bool text_to_words(const std::string &in);
@@ -199,6 +200,9 @@ private:
     // This processes cjk text:
     bool cjk_to_words(Utf8Iter *it, unsigned int *cp);
 
+    // Experimental Korean splitter. This uses an external Python tokenizer
+    bool ko_to_words(Utf8Iter *it, unsigned int *cp);
+    
     bool emitterm(bool isspan, std::string &term, int pos, size_t bs,size_t be);
     bool doemit(bool spanerase, size_t bp);
     void discardspan();
