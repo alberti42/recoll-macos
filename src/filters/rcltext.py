@@ -32,7 +32,7 @@ class TxtDump(RclBaseHandler):
         # No charset, so recoll will have to use its config to guess it
         html = b'<html><head><title></title></head><body><pre>'
         with open(fn, "rb") as f:
-            html += self.em.htmlescape(f.read())
+            html += rclexecm.htmlescape(f.read())
         html += b'</pre></body></html>'
         return html
 

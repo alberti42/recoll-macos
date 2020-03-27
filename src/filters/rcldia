@@ -80,7 +80,7 @@ class DiaExtractor(RclBaseHandler):
         diap.feed(dia)
 
         html = '<html><head><title></title></head><body><pre>'
-        html += self.em.htmlescape('\n'.join(diap.string))
+        html += rclexecm.htmlescape('\n'.join(diap.string))
         html += '</pre></body></html>'
 
         return html

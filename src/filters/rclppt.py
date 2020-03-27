@@ -23,7 +23,7 @@ class PPTProcessData:
                             b'content="text/html;charset=UTF-8">' + \
                             b'</head><body><pre>')
             self.gotdata = True
-        self.out.append(self.em.htmlescape(line))
+        self.out.append(rclexecm.htmlescape(line))
 
     def wrapData(self):
         return b'\n'.join(self.out) + b'''</pre></body></html>'''

@@ -30,8 +30,8 @@ class InfoExtractor:
             return(False, "", "", True)
 
         nodename, docdata = self.contents[index]
-        nodename = self.em.htmlescape(nodename)
-        docdata = self.em.htmlescape(docdata)
+        nodename = rclexecm.htmlescape(nodename)
+        docdata = rclexecm.htmlescape(docdata)
         # strange whitespace to avoid changing the module tests (same as old)
         docdata = b'\n<html>\n  <head>\n      <title>' + \
                   nodename + \

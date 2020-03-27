@@ -59,14 +59,14 @@ class HWP5Dump(RclBaseHandler):
         try:
             tt = hwpfile.summaryinfo.title.strip()
             if tt:
-                tt = self.em.htmlescape(tt.encode('utf-8'))
+                tt = rclexecm.htmlescape(tt.encode('utf-8'))
                 self.em.setfield('caption', tt)
 
             for k,v in metafields(hwpfile.summaryinfo):
                 v = "{0}".format(v)
                 v = v.strip()
                 if v:
-                    v = self.em.htmlescape(v.encode('utf-8'))
+                    v = rclexecm.htmlescape(v.encode('utf-8'))
                     k = k.encode('utf-8')
                     self.em.setfield(k, v)
         except Exception as e:

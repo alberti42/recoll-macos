@@ -126,7 +126,8 @@ class KarTextExtractor(RclBaseHandler):
                 self.em.rclog("Encode failed: " + str(err))
                 return ""
             
-            data = self.em.htmlescape(data).decode('utf-8').replace('\n', '<br>\n')
+            data = rclexecm.htmlescape(data).decode('utf-8').replace('\n',
+                                                                     '<br>\n')
         return data
 
 

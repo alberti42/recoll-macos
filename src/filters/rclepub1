@@ -33,13 +33,13 @@ class EPUBConcatExtractor(RclBaseHandler):
             author += name + " "
         data = "<html>\n<head>\n"
         if title:
-            data += "<title>" + self.em.htmlescape(title) + "</title>\n"
+            data += "<title>" + rclexecm.htmlescape(title) + "</title>\n"
         if author:
             data += '<meta name="author" content="' + \
-                self.em.htmlescape(author).strip() + '">\n'
+                rclexecm.htmlescape(author).strip() + '">\n'
         if meta.description:
             data += '<meta name="description" content="' + \
-                self.em.htmlescape(meta.description) + '">\n'
+                rclexecm.htmlescape(meta.description) + '">\n'
         data += "</head><body>"
         data = data.encode('UTF-8')
 

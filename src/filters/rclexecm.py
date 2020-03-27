@@ -33,22 +33,26 @@ import cmdtalk
 PY3 = (sys.version > '3')
 _mswindows = (sys.platform == "win32")
 
+# Convert to bytes if not already such.
 def makebytes(data):
     if type(data) == type(u''):
         return data.encode("UTF-8")
     return data
 
+# Possibly decode binary file name for use as subprocess argument,
+# depending on platform.
 def subprocfile(fn):
     # On Windows PY3 the list2cmdline() method in subprocess assumes that
     # all args are str, and we receive file names as UTF-8. So we need
     # to convert.
     # On Unix all list elements get converted to bytes in the C
-    # _posixsubprocess module, nothing to do
+    # _posixsubprocess module, nothing to do.
     if PY3 and _mswindows:
         return fn.decode('UTF-8')
     else:
         return fn
 
+# Check for truthness of rclconfig value.
 def configparamtrue(value):
     if not value:
         return False
@@ -64,13 +68,27 @@ def configparamtrue(value):
         return True
     return False
 
+# Escape special characters in plain text for inclusion in HTML doc.
+# Note: tried replacing this with a multiple replacer according to
+# http://stackoverflow.com/a/15221068, which was **10 times** slower
+def htmlescape(txt):
+    # &amp must stay first (it somehow had managed to skip
+    # after the next replace, with rather interesting results)
+    try:
+        txt = txt.replace(b'&', b'&amp;').replace(b'<', b'&lt;').\
+              replace(b'>', b'&gt;').replace(b'"', b'&quot;')
+    except:
+        txt = txt.replace("&", "&amp;").replace("<", "&lt;").\
+              replace(">", "&gt;").replace("\"", "&quot;")
+    return txt
+
+
 my_config = rclconfig.RclConfig()
 
 ############################################
 # RclExecM implements the communication protocol with the recollindex
 # process. It calls the object specific of the document type to
 # actually get the data.
-
 class RclExecM(cmdtalk.CmdTalk):
     noteof = 0
     eofnext = 1
@@ -102,19 +120,6 @@ class RclExecM(cmdtalk.CmdTalk):
         # output not a file until this mystery is solved
         if self.debugfile or sys.platform != "win32":
             super().log(s, doexit, exitvalue)
-
-    # Note: tried replacing this with a multiple replacer according to
-    # http://stackoverflow.com/a/15221068, which was **10 times** slower
-    def htmlescape(self, txt):
-        # &amp must stay first (it somehow had managed to skip
-        # after the next replace, with rather interesting results)
-        try:
-            txt = txt.replace(b'&', b'&amp;').replace(b'<', b'&lt;').\
-                  replace(b'>', b'&gt;').replace(b'"', b'&quot;')
-        except:
-            txt = txt.replace("&", "&amp;").replace("<", "&lt;").\
-                  replace(">", "&gt;").replace("\"", "&quot;")
-        return txt
 
     # Our worker sometimes knows the mime types of the data it sends
     def setmimetype(self, mt):

@@ -247,7 +247,7 @@ class PDFExtractor:
                     if not m:
                         m = re.search(b'''(.*content=")(.*)(".*/>.*)''', line)
                     if m:
-                        line = m.group(1) + self.em.htmlescape(m.group(2)) + \
+                        line = m.group(1) + rclexecm.htmlescape(m.group(2)) + \
                                m.group(3)
 
                 # Recoll treats "Subject" as a "title" element
@@ -262,7 +262,7 @@ class PDFExtractor:
                 # We used to remove end-of-line hyphenation (and join
                 # lines), but but it's not clear that we should do
                 # this as pdftotext without the -layout option does it ?
-                line = self.em.htmlescape(line)
+                line = rclexecm.htmlescape(line)
 
             if re.search(b'<head>', line):
                 inheader = True
@@ -275,7 +275,7 @@ class PDFExtractor:
 
     def _metatag(self, nm, val):
         return b"<meta name=\"" + rclexecm.makebytes(nm) + b"\" content=\"" + \
-               self.em.htmlescape(rclexecm.makebytes(val)) + b"\">"
+               rclexecm.htmlescape(rclexecm.makebytes(val)) + b"\">"
 
     # metaheaders is a list of (nm, value) pairs
     def _injectmeta(self, html, metaheaders):
@@ -409,7 +409,7 @@ class PDFExtractor:
                     cmd = [sys.executable, os.path.join(_execdir, "rclocr.py"),
                            self.filename]
                     data = subprocess.check_output(cmd)
-                    html = _htmlprefix + self.em.htmlescape(data) + _htmlsuffix
+                    html = _htmlprefix + rclexecm.htmlescape(data) + _htmlsuffix
                 except Exception as e:
                     self.em.rclog("%s failed: %s" % (cmd, e))
                     pass
