@@ -1,3 +1,9 @@
+recoll (1.26.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Minor fixes. Checkpoint before korean splitter merge.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 26 Mar 2020 11:08:00 +0100
+
 recoll (1.26.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Version bump for the new OCR scripts
