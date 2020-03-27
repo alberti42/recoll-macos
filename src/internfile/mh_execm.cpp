@@ -94,7 +94,7 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
 
     // Empty line (end of message) ?
     if (!ibuf.compare("\n")) {
-        LOGDEB("MHExecMultiple: Got empty line\n");
+        LOGDEB1("MHExecMultiple: Got empty line\n");
         name.clear();
         return true;
     }
