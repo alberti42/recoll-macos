@@ -2030,12 +2030,15 @@ void Db::i_setExistingFlags(const string& udi, unsigned int docid)
     // Set the up to date flag for the document and its
     // subdocs. needUpdate() can also be called at query time (for
     // preview up to date check), so no error if the updated bitmap is
-    // of size 0
+    // of size 0, and also this now happens when fsIndexer() calls
+    // udiTreeMarkExisting() after an error, so the message level is
+    // now debug
     if (docid >= updated.size()) {
-        if (updated.size())
-            LOGERR("needUpdate: existing docid beyond updated.size(). Udi [" <<
-                   udi << "], docid " << docid << ", updated.size() " <<
-                   updated.size() << "\n");
+        if (updated.size()) {
+            LOGDEB("needUpdate: existing docid beyond updated.size() "
+                   "(probably ok). Udi [" << udi << "], docid " << docid <<
+                   ", updated.size() " << updated.size() << "\n");
+        }
         return;
     } else {
         updated[docid] = true;
