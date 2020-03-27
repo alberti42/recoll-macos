@@ -31,14 +31,14 @@ class WarExtractor:
     def openfile(self, params):
         self.currentindex = -1
         try:
-            self.tar = tarfile.open(params["filename:"])
+            self.tar = tarfile.open(params["filename"])
             return True
         except Exception as err:
             self.em.rclog(str(err))
             return False
 
     def getipath(self, params):
-        ipath = params["ipath:"]
+        ipath = params["ipath"]
         try:
             tarinfo = self.tar.getmember(ipath)
         except Exception as err:

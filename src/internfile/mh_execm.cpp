@@ -187,22 +187,22 @@ bool MimeHandlerExecMultiple::next_document()
                        "]: " << reason << "\n");
             }
         }
-        obuf << "FileName: " << m_fn.length() << "\n" << m_fn;
+        obuf << "filename: " << m_fn.length() << "\n" << m_fn;
         // m_filefirst is set to true by set_document_file()
         m_filefirst = false;
     } else {
-        obuf << "Filename: " << 0 << "\n";
+        obuf << "filename: " << 0 << "\n";
     }
     if (!m_ipath.empty()) {
         LOGDEB("next_doc: sending ipath " << m_ipath.length() << " val [" <<
                m_ipath << "]\n");
-        obuf << "Ipath: " << m_ipath.length() << "\n" << m_ipath;
+        obuf << "ipath: " << m_ipath.length() << "\n" << m_ipath;
     }
     if (!m_dfltInputCharset.empty()) {
-        obuf << "DflInCS: " << m_dfltInputCharset.length() << "\n" 
+        obuf << "dflincs: " << m_dfltInputCharset.length() << "\n" 
              << m_dfltInputCharset;
     }
-    obuf << "Mimetype: " << m_mimeType.length() << "\n" << m_mimeType;
+    obuf << "mimetype: " << m_mimeType.length() << "\n" << m_mimeType;
     obuf << "\n";
     if (m_cmd.send(obuf.str()) < 0) {
         m_cmd.zapChild();

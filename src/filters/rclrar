@@ -109,14 +109,14 @@ class RarExtractor:
                 # wrong on Unix, but I'd have to dig further in the
                 # lib than I wish to. This is used on Windows anyway,
                 # where all Recoll paths are utf-8
-                fn = params["filename:"].decode("UTF-8")
+                fn = params["filename"].decode("UTF-8")
                 self.rar = rarfile.RarFile(fn, 'rb')
             else:
                 # The previous versions passed the file name to
                 # RarFile. But the py3 version of this wants an str as
                 # input, which is wrong of course, as filenames are
                 # binary. Circumvented by passing the open file
-                f = open(params["filename:"], 'rb')
+                f = open(params["filename"], 'rb')
                 self.rar = RarFile(f)
             return True
         except Exception as err:
@@ -124,7 +124,7 @@ class RarExtractor:
             return False
 
     def getipath(self, params):
-        ipath = params["ipath:"]
+        ipath = params["ipath"]
         ok, data, ipath, eof = self.extractone(ipath)
         if ok:
             return (ok, data, ipath, eof)

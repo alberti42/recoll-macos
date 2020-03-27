@@ -48,7 +48,7 @@ class TarExtractor:
     def openfile(self, params):
         self.currentindex = -1
         try:
-            self.tar = tarfile.open(name=params["filename:"], mode='r')
+            self.tar = tarfile.open(name=params["filename"], mode='r')
             #self.namen = [ y.name for y in filter(lambda z:z.isfile(),self.tar.getmembers())]
             self.namen = [ y.name for y in [z for z in self.tar.getmembers() if z.isfile()]]
 
@@ -57,7 +57,7 @@ class TarExtractor:
             return False
 
     def getipath(self, params):
-        ipath = params["ipath:"]
+        ipath = params["ipath"]
         ok, data, ipath, eof = self.extractone(ipath)
         if ok:
             return (ok, data, ipath, eof)

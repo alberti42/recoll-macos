@@ -53,7 +53,7 @@ class IcalExtractor:
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
-        self.file = params["filename:"]
+        self.file = params["filename"]
 
         try:
             calstr = open(self.file, "rb")
@@ -91,10 +91,10 @@ class IcalExtractor:
 
     def getipath(self, params):
         try:
-            if params["ipath:"] == b'':
+            if params["ipath"] == b'':
                 index = 0
             else:
-                index = int(params["ipath:"])
+                index = int(params["ipath"])
         except:
             return (False, "", "", True)
         return self.extractone(index)

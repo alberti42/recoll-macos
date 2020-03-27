@@ -295,7 +295,7 @@ class rclCHM:
         self.currentindex = -1
         self.contents = []
         
-        filename = params["filename:"]
+        filename = params["filename"]
         if not self.chm.LoadCHM(filename):
             self.em.rclog("LoadCHM failed")
             return False
@@ -336,7 +336,7 @@ class rclCHM:
         return True
     
     def getipath(self, params):
-        return self.extractone(params["ipath:"])
+        return self.extractone(params["ipath"])
         
     def getnext(self, params):
         if self.catenate:

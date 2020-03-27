@@ -106,7 +106,7 @@ class rclEPUB:
         self.currentindex = -1
         self.contents = []
         try:
-            self.book = epub.open_epub(params["filename:"].decode('UTF-8'))
+            self.book = epub.open_epub(params["filename"].decode('UTF-8'))
         except Exception as err:
             self.em.rclog("openfile: epub.open failed: [%s]" % err)
             return False
@@ -117,7 +117,7 @@ class rclEPUB:
         
 
     def getipath(self, params):
-        return self.extractone(params["ipath:"].decode('UTF-8'))
+        return self.extractone(params["ipath"].decode('UTF-8'))
 
     def getnext(self, params):
         if self.catenate:

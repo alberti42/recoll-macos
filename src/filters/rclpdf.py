@@ -439,7 +439,7 @@ class PDFExtractor:
             print("RECFILTERROR HELPERNOTFOUND pdftotext")
             sys.exit(1);
 
-        self.filename = rclexecm.subprocfile(params["filename:"])
+        self.filename = rclexecm.subprocfile(params["filename"])
 
         #self.em.rclog("openfile: [%s]" % self.filename)
         self.currentindex = -1
@@ -458,7 +458,7 @@ class PDFExtractor:
         return True
 
     def getipath(self, params):
-        ipath = params["ipath:"]
+        ipath = params["ipath"]
         ok, data, ipath, eof = self.extractone(ipath)
         return (ok, data, ipath, eof)
         

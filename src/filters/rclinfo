@@ -50,7 +50,7 @@ class InfoExtractor:
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
-        self.file = params["filename:"]
+        self.file = params["filename"]
 
         if not os.path.isfile(self.file):
             self.em.rclog("Openfile: %s is not a file" % self.file)
@@ -78,7 +78,7 @@ class InfoExtractor:
     # Extract specific node
     def getipath(self, params):
         try:
-            index = int(params["ipath:"])
+            index = int(params["ipath"])
         except:
             return (False, "", "", True)
         return self.extractone(index)

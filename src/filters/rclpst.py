@@ -330,13 +330,13 @@ class PstExtractor(object):
         if not self.pffexport:
             print("RECFILTERROR HELPERNOTFOUND pffexport")
             sys.exit(1);
-        self.filename = params["filename:"]
+        self.filename = params["filename"]
         self.generator = None
         return True
 
     def getipath(self, params):
         ipath = met_join(self.target + ".export",
-                         params["ipath:"].decode("UTF-8"))
+                         params["ipath"].decode("UTF-8"))
         self.em.rclog("getipath: [%s]" % ipath)
         if not self.startCmd(self.filename, ipath=ipath):
             return (False, "", "", rclexecm.RclExecM.eofnow) 

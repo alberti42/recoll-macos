@@ -92,15 +92,15 @@ class Executor(RclBaseHandler):
                 return True, data
 
     def extractone(self, params):
-        #self.em.rclog("extractone %s %s" % (params["filename:"], \
-        # params["mimetype:"]))
+        #self.em.rclog("extractone %s %s" % (params["filename"], \
+        # params["mimetype"]))
         self.flt.reset()
         ok = False
-        if not "filename:" in params:
+        if not "filename" in params:
             self.em.rclog("extractone: no file name")
             return (ok, "", "", rclexecm.RclExecM.eofnow)
 
-        fn = params["filename:"]
+        fn = params["filename"]
         while True:
             cmdseq = self.flt.getCmd(fn)
             cmd = cmdseq[0]

@@ -58,7 +58,7 @@ class SevenZipExtractor:
             
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
-        filename = params["filename:"]
+        filename = params["filename"]
         self.currentindex = -1
         self.skiplist = []
 
@@ -78,7 +78,7 @@ class SevenZipExtractor:
             return False
 
     def getipath(self, params):
-        ipath = params["ipath:"]
+        ipath = params["ipath"]
         ok, data, ipath, eof = self.extractone(ipath)
         if ok:
             return (ok, data, ipath, eof)
