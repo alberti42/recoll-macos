@@ -945,7 +945,7 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
         </orderedlist>
         </para>
         <para>You can also read a 
-        <ulink url="http://www.recoll.org/idxthreads/threadingRecoll.html">
+        <ulink url="http://www.recoll.org/pages/idxthreads/threadingRecoll.html">
           longer document</ulink> about the transformation of
         &RCL; indexing to multithreading.</para>
 
