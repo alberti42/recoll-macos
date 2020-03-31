@@ -106,13 +106,14 @@ struct MatchFragment {
 class TextSplitABS : public TextSplit {
 public:
 
-    TextSplitABS(const vector<string>& matchTerms,
+    TextSplitABS(const string& rawtext, const vector<string>& matchTerms,
                  const HighlightData& hdata,
                  unordered_map<string, double>& wordcoefs,
                  unsigned int ctxwords,
                  Flags flags,
                  unsigned int maxterms)
-        :  TextSplit(flags), m_terms(matchTerms.begin(), matchTerms.end()),
+        :  TextSplit(flags), m_rawtext(rawtext),
+           m_terms(matchTerms.begin(), matchTerms.end()),
            m_hdata(hdata), m_wordcoefs(wordcoefs), m_ctxwords(ctxwords),
            maxtermcount(maxterms) {
 
@@ -132,7 +133,7 @@ public:
     // Accept a word and its position. If the word is a matched term,
     // add/update fragment definition.
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
-        LOGDEB2("takeword: " << term << endl);
+        LOGDEB1("takeword: [" << term << "] bytepos: "<<bts<<":"<<bte<<endl);
         // Limit time taken with monster documents. The resulting
         // abstract will be incorrect or inexistant, but this is
         // better than taking forever (the default cutoff value comes
@@ -169,9 +170,9 @@ public:
 
         if (m_terms.find(dumb) != m_terms.end()) {
             // This word is a search term. Extend or create fragment
-            LOGDEB2("match: [" << dumb << "] current: " << m_curfrag.first <<
-                    ", " << m_curfrag.second << " remain " <<
-                    m_remainingWords << endl);
+            LOGDEB1("match: [" << dumb << "] pos " << pos << " bpos " << bts <<
+                   ":" << bte << " remainingWords " << m_remainingWords << endl);
+            LOGDEB1("Match text " << m_rawtext.substr(bts, bte - bts) << endl);
             double coef = m_wordcoefs[dumb];
             if (!m_remainingWords) {
                 // No current fragment. Start one
@@ -219,7 +220,7 @@ public:
                 // Term group (phrase/near) handling
                 m_plists[dumb].push_back(pos);
                 m_gpostobytes[pos] = pair<int,int>(bts, bte);
-                LOGDEB2("Recorded bpos for " << pos << ": " << bts << " " <<
+                LOGDEB1("Recorded bpos for pos " << pos << ": " << bts << " " <<
                         bte << "\n");
             }
         }
@@ -236,6 +237,11 @@ public:
             m_remainingWords--;
             m_curfrag.second = bte;
             if (m_remainingWords == 0) {
+                LOGDEB1("FRAGMENT: from byte " << m_curfrag.first <<
+                        " to  byte " << m_curfrag.second << endl);
+                LOGDEB1("FRAGMENT TEXT [" << m_rawtext.substr(
+                            m_curfrag.first, m_curfrag.second-m_curfrag.first)
+                        << "]\n");
                 // We used to not push weak fragments if we had a lot
                 // already. This can cause problems if the fragments
                 // we drop are actually group fragments (which have
@@ -337,6 +343,7 @@ public:
     }
     
 private:
+    const string& m_rawtext;
     // Past terms because we need to go back for context before a hit
     deque<pair<int,int>>  m_prevterms;
     // Data about the fragment we are building
@@ -424,7 +431,7 @@ int Query::Native::abstractFromText(
     }
     LOGABS("abstractFromText: getterms: " << chron.millis() << "mS\n");
 
-    TextSplitABS splitter(matchTerms, hld, wordcoefs, ctxwords,
+    TextSplitABS splitter(rawtext, matchTerms, hld, wordcoefs, ctxwords,
                           TextSplit::TXTS_ONLYSPANS,
                           m_q->m_snipMaxPosWalk);
     splitter.text_to_words(rawtext);
