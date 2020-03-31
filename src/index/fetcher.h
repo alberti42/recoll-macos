@@ -17,11 +17,11 @@
 #ifndef _FETCHER_H_INCLUDED_
 #define _FETCHER_H_INCLUDED_
 
-#include "safesysstat.h"
 #include <string>
 #include <memory>
 
 #include "rcldoc.h"
+#include "pathut.h"
 
 class RclConfig;
 
@@ -51,7 +51,7 @@ public:
         enum RawDocKind {RDK_FILENAME, RDK_DATA, RDK_DATADIRECT};
         RawDocKind kind;
         std::string data; // Doc data or file name
-        struct stat st; // Only used if RDK_FILENAME
+        struct PathStat st; // Only used if RDK_FILENAME
     };
 
     /** 

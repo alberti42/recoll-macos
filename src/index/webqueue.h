@@ -50,7 +50,7 @@ public:
 
     /** Called when we fstreewalk the queue dir */
     FsTreeWalker::Status 
-    processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
+    processone(const std::string &, const struct PathStat *, FsTreeWalker::CbFlag);
 
     /** Index a list of files. No db cleaning or stemdb updating. 
      *  Used by the real time monitor */
@@ -62,18 +62,18 @@ public:
 
     /** Called when indexing data from the cache, and from internfile for
      * search result preview */
-    bool getFromCache(const string& udi, Rcl::Doc &doc, string& data,
-                      string *hittype = 0);
+    bool getFromCache(const std::string& udi, Rcl::Doc &doc, std::string& data,
+                      std::string *hittype = 0);
 private:
     RclConfig *m_config;
     Rcl::Db   *m_db;
     WebStore  *m_cache;
-    string     m_queuedir;
+    std::string     m_queuedir;
     DbIxStatusUpdater *m_updater;
     bool       m_nocacheindex;
 
-    bool indexFromCache(const string& udi);
-    void updstatus(const string& udi);
+    bool indexFromCache(const std::string& udi);
+    void updstatus(const std::string& udi);
 };
 
 #endif /* _webqueue_h_included_ */

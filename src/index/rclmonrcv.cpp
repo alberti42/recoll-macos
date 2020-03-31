@@ -21,7 +21,6 @@
 #include <errno.h>
 #include <cstdio>
 #include <cstring>
-#include "safesysstat.h"
 #include "safeunistd.h"
 
 #include "log.h"
@@ -74,7 +73,7 @@ public:
     virtual ~WalkCB() {}
 
     virtual FsTreeWalker::Status 
-    processone(const string &fn, const struct stat *st, 
+    processone(const string &fn, const struct PathStat *st, 
                FsTreeWalker::CbFlag flg) {
         MONDEB("rclMonRcvRun: processone " << fn <<  " m_mon " << m_mon <<
                " m_mon->ok " << (m_mon ? m_mon->ok() : false) << std::endl);
@@ -182,12 +181,7 @@ void *rclMonRcvRun(void *q)
         }
         // We have to special-case regular files which are part of the topdirs
         // list because we the tree walker only adds watches for directories
-        struct stat st;
-        if (path_fileprops(*it, &st, follow) != 0) {
-            LOGERR("rclMonRcvRun: stat failed for "  << *it << "\n");
-            continue;
-        }
-        if (S_ISDIR(st.st_mode)) {
+        if (path_isdir(*it, follow)) {
             LOGDEB("rclMonRcvRun: walking "  << *it << "\n");
             if (walker.walk(*it, walkcb) != FsTreeWalker::FtwOk) {
                 LOGERR("rclMonRcvRun: tree walk failed\n");

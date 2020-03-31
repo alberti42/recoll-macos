@@ -37,7 +37,7 @@ class Doc;
 }
 
 class Uncomp;
-struct stat;
+struct PathStat;
 
 /** Storage for missing helper program info. We want to keep this out of the 
  * FileInterner class, because the data will typically be accumulated by several
@@ -114,7 +114,7 @@ public:
      * @param mtype mime type if known. For a compressed file this is the 
      *   mime type for the uncompressed version.
      */
-    FileInterner(const string &fn, const struct stat *stp, 
+    FileInterner(const string &fn, const struct PathStat *stp, 
                  RclConfig *cnf, int flags, const string *mtype = 0);
     
     /** 
@@ -290,7 +290,7 @@ private:
     bool                   m_direct; // External app did the extraction
     
     // Pseudo-constructors
-    void init(const string &fn, const struct stat *stp, 
+    void init(const string &fn, const struct PathStat *stp, 
               RclConfig *cnf, int flags, const string *mtype = 0);
     void init(const string &data, RclConfig *cnf, int flags, 
               const string& mtype);

@@ -247,7 +247,7 @@
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation>&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
+        <translation>색인 정비 간격(MB)</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
@@ -1219,7 +1219,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Query in progress.&lt;br&gt;Due to limitations of the indexing library,&lt;br&gt;cancelling will exit the program</source>
-        <translation>검색어 요청이 진행중입니다.&lt;br&gt; 색인 작업 보관용량의 제한으로 인해&lt;br&gt; 프로그램은 취소되고 종료될 것입니다.</translation>
+        <translation>검색어 요청이 진행중입니다.&lt;br&gt;취소되면 색인 작업 보관용량의 제한 때문에&lt;br&gt;프로그램이 종료될 것입니다.</translation>
     </message>
     <message>
         <source>Error</source>
@@ -2407,7 +2407,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>terms may be missing. Try using a longer root.</source>
-        <translation>용어가 아마 누락된 것 같습니다. 더 긴 root를 사용하여 시도하십시오.</translation>
+        <translation>용어가 아마 누락된 것 같습니다. 더 긴 어근을 사용하여 시도하십시오.</translation>
     </message>
     <message>
         <source>Show index statistics</source>
@@ -2864,8 +2864,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translatorcomment>격증:flush</translatorcomment>
-        <translation type="vanished">&lt;p&gt; 이것은 기본적으로 모든 분음 부호를 제거하고 정식 분해를 수행하는 unac 메커니즘에 대한 예외를 설정합니다. 언어에 따라 일부 문자의 강조를 무시, 추가, 분해를 지정할 수 있습니다(예 : 합자의 경우. 공백으로 구분된 각 항목에서 첫 번째 문자는 원본이고 나머지는 번역입니다).</translation>
+        <translation type="vanished">색인 정비 간격(MB)</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>

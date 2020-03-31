@@ -20,7 +20,6 @@
 
 #include <string.h>
 #include <errno.h>
-#include "safesysstat.h"
 #include "safeunistd.h"
 
 #include "cstr.h"
@@ -322,13 +321,13 @@ bool WebQueueIndexer::indexFiles(list<string>& files)
         LOGERR("WebQueueIndexer::indexfiles no db??\n");
         return false;
     }
-    for (list<string>::iterator it = files.begin(); it != files.end();) {
+    for (auto it = files.begin(); it != files.end();) {
         if (it->empty()) {//??
             it++; continue;
         }
         string father = path_getfather(*it);
         if (father.compare(m_queuedir)) {
-            LOGDEB("WebQueueIndexer::indexfiles: skipping [" << *it << "] (nq)\n");
+            LOGDEB("WebQueueIndexer::indexfiles: skipping ["<<*it << "] (nq)\n");
             it++; continue;
         }
         // Pb: we are often called with the dot file, before the
@@ -342,12 +341,12 @@ bool WebQueueIndexer::indexFiles(list<string>& files)
         if (fn.empty() || fn.at(0) == '.') {
             it++; continue;
         }
-        struct stat st;
+        struct PathStat st;
         if (path_fileprops(*it, &st) != 0) {
             LOGERR("WebQueueIndexer::indexfiles: cant stat [" << *it << "]\n");
             it++; continue;
         }
-        if (!S_ISREG(st.st_mode)) {
+        if (st.pst_type != PathStat::PST_REGULAR) {
             LOGDEB("WebQueueIndexer::indexfiles: skipping [" << *it <<
                    "] (nr)\n");
             it++; continue;
@@ -364,14 +363,15 @@ bool WebQueueIndexer::indexFiles(list<string>& files)
 
 FsTreeWalker::Status 
 WebQueueIndexer::processone(const string &path,
-                            const struct stat *stp,
+                            const struct PathStat *stp,
                             FsTreeWalker::CbFlag flg)
 {
     if (!m_db) //??
         return FsTreeWalker::FtwError;
 
     bool dounlink = false;
-
+    string ascdate;
+    
     if (flg != FsTreeWalker::FtwRegular) 
         return FsTreeWalker::FtwOk;
 
@@ -392,8 +392,7 @@ WebQueueIndexer::processone(const string &path,
     make_udi(udipath, cstr_null, udi);
 
     LOGDEB("WebQueueIndexer: prc1: udi [" << udi << "]\n");
-    char ascdate[30];
-    sprintf(ascdate, "%ld", long(stp->st_mtime));
+    ascdate = lltodecstr(stp->pst_mtime);
 
     if (!stringlowercmp("bookmark", dotdoc.meta[Rcl::Doc::keybght])) {
         // For bookmarks, we just index the doc that was built from the
@@ -401,7 +400,7 @@ WebQueueIndexer::processone(const string &path,
         if (dotdoc.fmtime.empty())
             dotdoc.fmtime = ascdate;
 
-        dotdoc.pcbytes = lltodecstr(stp->st_size);
+        dotdoc.pcbytes = lltodecstr(stp->pst_size);
 
         // Document signature for up to date checks: none. 
         dotdoc.sig.clear();
@@ -439,7 +438,7 @@ WebQueueIndexer::processone(const string &path,
             doc.fmtime = ascdate;
         dotdoc.fmtime = doc.fmtime;
 
-        doc.pcbytes = lltodecstr(stp->st_size);
+        doc.pcbytes = lltodecstr(stp->pst_size);
         // Document signature for up to date checks: none. 
         doc.sig.clear();
         doc.url = dotdoc.url;

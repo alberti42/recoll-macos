@@ -19,13 +19,10 @@
 
 #include <string>
 #include <vector>
-#ifndef NO_NAMESPACES
-using std::string;
-using std::vector;
-#endif
+
+struct PathStat;
 
 class FsTreeWalkerCB;
-struct stat;
 
 /**
  * Class implementing a unix directory recursive walk.
@@ -44,8 +41,7 @@ class FsTreeWalker {
     // to not use the flag, which can be set from rclconfig by adding
     // a value to the config file (skippedPathsNoFnmPathname)
     static bool o_useFnmPathname;
-    static void setNoFnmPathname()
-    {
+    static void setNoFnmPathname() {
 	o_useFnmPathname = false;
     }
 
@@ -53,8 +49,7 @@ class FsTreeWalker {
     // directories as if they were in skippedPaths) if the file exists
     // inside the directory.
     static std::string o_nowalkfn;
-    static void setNoWalkFn(const std::string& nowalkfn)
-    {
+    static void setNoWalkFn(const std::string& nowalkfn) {
         o_nowalkfn = nowalkfn;
     }
 
@@ -97,34 +92,35 @@ class FsTreeWalker {
      * @param cb the function object that will be called back for every 
      *    file-system object (called both at entry and exit for directories).
      */
-    Status walk(const string &dir, FsTreeWalkerCB& cb);
+    Status walk(const std::string &dir, FsTreeWalkerCB& cb);
     /** Get explanation for error */
-    string getReason();
+    std::string getReason();
     int getErrCnt();
 
     /**
      * Add a pattern (file or dir) to be ignored (ie: #* , *~)
      */
-    bool addSkippedName(const string &pattern); 
+    bool addSkippedName(const std::string &pattern); 
     /** Set the ignored patterns set */
-    bool setSkippedNames(const vector<string> &patterns);
+    bool setSkippedNames(const std::vector<std::string> &patterns);
     /** Set the exclusive patterns set */
-    bool setOnlyNames(const vector<string> &patterns);
+    bool setOnlyNames(const std::vector<std::string> &patterns);
 
     /** Same for skipped paths: this are paths, not names, under which we
 	do not descend (ie: /home/me/.recoll) */
-    bool addSkippedPath(const string &path); 
+    bool addSkippedPath(const std::string &path); 
     /** Set the ignored paths list */
-    bool setSkippedPaths(const vector<string> &patterns);
+    bool setSkippedPaths(const std::vector<std::string> &patterns);
 
     /** Test if path/name should be skipped. This can be used independently of
       * an actual tree walk */
-    bool inSkippedPaths(const string& path, bool ckparents = false);
-    bool inSkippedNames(const string& name);
-    bool inOnlyNames(const string& name);
+    bool inSkippedPaths(const std::string& path, bool ckparents = false);
+    bool inSkippedNames(const std::string& name);
+    bool inOnlyNames(const std::string& name);
 
  private:
-    Status iwalk(const string &dir, struct stat *stp, FsTreeWalkerCB& cb);
+    Status iwalk(const std::string &dir, struct PathStat *stp,
+                 FsTreeWalkerCB& cb);
     class Internal; 
    Internal *data;
 };
@@ -134,11 +130,11 @@ class FsTreeWalkerCB {
     virtual ~FsTreeWalkerCB() {}
     // Only st_mtime, st_ctime, st_size, st_mode (filetype bits: dir/reg/lnk),
     virtual FsTreeWalker::Status 
-	processone(const string &, const struct stat *, FsTreeWalker::CbFlag) 
-	= 0;
+    processone(const std::string&, const struct PathStat *,
+               FsTreeWalker::CbFlag) = 0;
 };
 
 // Utility function. Somewhat like du.
-int64_t fsTreeBytes(const string& topdir);
+int64_t fsTreeBytes(const std::string& topdir);
 
 #endif /* _FSTREEWALK_H_INCLUDED_ */

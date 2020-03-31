@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <cstring>
-#include "safesysstat.h"
 
 #include <iostream>
 #include <list>
@@ -69,14 +68,14 @@ extern void *FsIndexerDbUpdWorker(void*);
 class InternfileTask {
 public:
     // Take some care to avoid sharing string data (if string impl is cow)
-    InternfileTask(const std::string &f, const struct stat *i_stp,
+    InternfileTask(const std::string &f, const struct PathStat *i_stp,
                    map<string,string> lfields)
         : fn(f.begin(), f.end()), statbuf(*i_stp)
         {
             map_ss_cp_noshr(lfields, &localfields);
         }
     string fn;
-    struct stat statbuf;
+    struct PathStat statbuf;
     map<string,string> localfields;
 };
 extern void *FsIndexerInternfileWorker(void*);
@@ -369,7 +368,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
             continue;
         }
 
-        struct stat stb;
+        struct PathStat stb;
         int ststat = path_fileprops(*it, &stb, follow);
         if (ststat != 0) {
             LOGERR("FsIndexer::indexFiles: (l)stat " << *it << ": " <<
@@ -378,7 +377,8 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
             continue;
         }
         if (!(flags & ConfIndexer::IxFIgnoreSkip) &&
-            (S_ISREG(stb.st_mode) || S_ISLNK(stb.st_mode))) {
+            (stb.pst_type == PathStat::PST_REGULAR ||
+             stb.pst_type == PathStat::PST_SYMLINK)) {
             if (!walker.inOnlyNames(path_getsimple(*it))) {
                 it++;
                 continue;
@@ -499,10 +499,10 @@ void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
     }
 }
 
-void FsIndexer::makesig(const struct stat *stp, string& out)
+void FsIndexer::makesig(const struct PathStat *stp, string& out)
 {
-    out = lltodecstr(stp->st_size) + 
-        lltodecstr(o_uptodate_test_use_mtime ? stp->st_mtime : stp->st_ctime);
+    out = lltodecstr(stp->pst_size) + 
+        lltodecstr(o_uptodate_test_use_mtime ? stp->pst_mtime : stp->pst_ctime);
 }
 
 #ifdef IDX_THREADS
@@ -572,7 +572,7 @@ void *FsIndexerInternfileWorker(void * fsp)
 /// the actual indexing work. The Rcl::Doc created by internfile()
 /// mostly contains pretty raw utf8 data.
 FsTreeWalker::Status 
-FsIndexer::processone(const std::string &fn, const struct stat *stp, 
+FsIndexer::processone(const std::string &fn, const struct PathStat *stp, 
                       FsTreeWalker::CbFlag flg)
 {
     if (m_updater) {
@@ -633,7 +633,7 @@ bool FsIndexer::launchAddOrUpdate(const string& udi, const string& parent_udi,
 
 FsTreeWalker::Status 
 FsIndexer::processonefile(RclConfig *config, 
-                          const std::string &fn, const struct stat *stp,
+                          const std::string &fn, const struct PathStat *stp,
                           const map<string, string>& localfields)
 {
     ////////////////////
@@ -671,7 +671,7 @@ FsIndexer::processonefile(RclConfig *config,
     // miss the data update. We would have to store both the mtime and
     // the ctime to avoid this
     bool xattronly = m_detectxattronly && !m_db->inFullReset() && 
-        existingDoc && needupdate && (stp->st_mtime < stp->st_ctime);
+        existingDoc && needupdate && (stp->pst_mtime < stp->pst_ctime);
 
     LOGDEB("processone: needupdate " << needupdate << " noretry " <<
            m_noretryfailed << " existing " << existingDoc << " oldsig [" <<
@@ -708,7 +708,7 @@ FsIndexer::processonefile(RclConfig *config,
     }
 
     LOGDEB0("processone: processing: [" <<
-            displayableBytes(stp->st_size) << "] " << fn << "\n");
+            displayableBytes(stp->pst_size) << "] " << fn << "\n");
 
     // Note that we used to do the full path here, but I ended up
     // believing that it made more sense to use only the file name
@@ -720,7 +720,7 @@ FsIndexer::processonefile(RclConfig *config,
 
     Rcl::Doc doc;
     char ascdate[30];
-    sprintf(ascdate, "%ld", long(stp->st_mtime));
+    sprintf(ascdate, "%ld", long(stp->pst_mtime));
 
     bool hadNullIpath = false;
     string mimetype;
@@ -789,7 +789,7 @@ FsIndexer::processonefile(RclConfig *config,
             // Set container file name for all docs, top or subdoc
             doc.meta[Rcl::Doc::keytcfn] = utf8fn;
 
-            doc.pcbytes = lltodecstr(stp->st_size);
+            doc.pcbytes = lltodecstr(stp->pst_size);
             // Document signature for up to date checks. All subdocs inherit the
             // file's.
             doc.sig = sig;
@@ -880,7 +880,7 @@ FsIndexer::processonefile(RclConfig *config,
             fileDoc.url = path_pathtofileurl(fn);
             if (m_havelocalfields) 
                 setlocalfields(localfields, fileDoc);
-            fileDoc.pcbytes = lltodecstr(stp->st_size);
+            fileDoc.pcbytes = lltodecstr(stp->pst_size);
         }
 
         fileDoc.sig = sig;

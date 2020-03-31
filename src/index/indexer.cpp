@@ -33,7 +33,6 @@
 #include "pathut.h"
 #include "idxstatus.h"
 #include "execmd.h"
-#include "safesysstat.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -86,9 +85,9 @@ bool runWebFilesMoverScript(RclConfig *config)
     /* Arrange to not actually run the script if the directory did not change */
     static time_t dirmtime;
     time_t ndirmtime = 0;
-    struct stat st;
+    struct PathStat st;
     if (path_fileprops(downloadsdir.c_str(), &st) == 0) {
-        ndirmtime = st.st_mtime;
+        ndirmtime = st.pst_mtime;
     }
     /* If stat fails, presumably Downloads does not exist or is not
        accessible, dirmtime and mdirmtime stay at 0, and we never

@@ -15,10 +15,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef TEST_MIMETYPE
 #include "autoconfig.h"
-
-#include "safesysstat.h"
 
 #include <ctype.h>
 #include <string>
@@ -139,7 +136,7 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 
 /// Guess mime type, first from suffix, then from file data. We also
 /// have a list of suffixes that we don't touch at all.
-string mimetype(const string &fn, const struct stat *stp,
+string mimetype(const string &fn, const struct PathStat *stp,
 		RclConfig *cfg, bool usfc)
 {
     // Use stat data if available to check for non regular files
@@ -149,14 +146,14 @@ string mimetype(const string &fn, const struct stat *stp,
 	// comes from bsd. Thos may surprise a user trying to use a
 	// 'mime:' filter with the query language, but it's not work
 	// changing (would force a reindex).
-	if (S_ISDIR(stp->st_mode))
+	if (stp->pst_type == PathStat::PST_DIR)
 	    return "inode/directory";
-	if (S_ISLNK(stp->st_mode))
+	if (stp->pst_type == PathStat::PST_SYMLINK)
 	    return "inode/symlink";
-	if (!S_ISREG(stp->st_mode))
+	if (stp->pst_type != PathStat::PST_REGULAR)
 	    return "inode/x-fsspecial";
 	// Empty files are just this: avoid further errors with actual filters.
-	if (stp->st_size == 0) 
+	if (stp->pst_size == 0) 
 	    return "inode/x-empty";
     }
 
@@ -203,49 +200,3 @@ string mimetype(const string &fn, const struct stat *stp,
 
     return mtype;
 }
-
-
-#else // TEST->
-
-#include <stdio.h>
-#include "safesysstat.h"
-
-#include <cstdlib>
-#include <iostream>
-
-#include "log.h"
-
-#include "rclconfig.h"
-#include "rclinit.h"
-#include "mimetype.h"
-
-using namespace std;
-int main(int argc, const char **argv)
-{
-    string reason;
-    RclConfig *config = recollinit(0, 0, 0, reason);
-
-    if (config == 0 || !config->ok()) {
-	string str = "Configuration problem: ";
-	str += reason;
-	fprintf(stderr, "%s\n", str.c_str());
-	exit(1);
-    }
-
-    while (--argc > 0) {
-	string filename = *++argv;
-	struct stat st;
-	if (lstat(filename.c_str(), &st)) {
-	    fprintf(stderr, "Can't stat %s\n", filename.c_str());
-	    continue;
-	}
-	cout << filename << " -> " << 
-	    mimetype(filename, &st, config, true) << endl;
-
-    }
-    return 0;
-}
-
-
-#endif // TEST
-

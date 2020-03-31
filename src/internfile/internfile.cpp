@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include "safefcntl.h"
 #include <sys/types.h>
-#include "safesysstat.h"
 #include "safeunistd.h"
 
 #include <string>
@@ -117,7 +116,7 @@ bool FileInterner::ipathContains(const string& parent, const string& child)
 // Empty handler on return says that we're in error, this will be
 // processed by the first call to internfile().
 // Split into "constructor calls init()" to allow use from other constructor
-FileInterner::FileInterner(const string &fn, const struct stat *stp,
+FileInterner::FileInterner(const string &fn, const struct PathStat *stp,
                            RclConfig *cnf, int flags, const string *imime)
 {
     LOGDEB0("FileInterner::FileInterner(fn=" << fn << ")\n");
@@ -137,8 +136,8 @@ FileInterner::FileInterner(const string &fn, const struct stat *stp,
 // used to not be the case, and was changed because this was the
 // simplest way to solve the retry issues (simpler than changing the
 // caller in e.g. fsindexer).
-void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
-                        int flags, const string *imime)
+void FileInterner::init(const string &f, const struct PathStat *stp,
+                        RclConfig *cnf, int flags, const string *imime)
 {
     if (f.empty()) {
         LOGERR("FileInterner::init: empty file name!\n");
@@ -185,7 +184,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
             l_mime = *imime;
     }
 
-    int64_t docsize = stp->st_size;
+    int64_t docsize = stp->pst_size;
 
     if (!l_mime.empty()) {
         // Has mime: check for a compressed file. If so, create a
@@ -196,7 +195,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
             // Check for compressed size limit
             int maxkbs = -1;
             if (!m_cfg->getConfParam("compressedfilemaxkbs", &maxkbs) ||
-                maxkbs < 0 || !stp || int(stp->st_size / 1024) < maxkbs) {
+                maxkbs < 0 || !stp || int(stp->pst_size / 1024) < maxkbs) {
                 if (!m_uncomp->uncompressfile(m_fn, ucmd, m_tfile)) {
                     m_ok = true;
                     return;
@@ -204,14 +203,14 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
                 LOGDEB1("FileInterner:: after ucomp: tfile " << m_tfile <<"\n");
                 m_fn = m_tfile;
                 // Stat the uncompressed file, mainly to get the size
-                struct stat ucstat;
+                struct PathStat ucstat;
                 if (path_fileprops(m_fn, &ucstat) != 0) {
                     LOGERR("FileInterner: can't stat the uncompressed file[" <<
                            m_fn << "] errno " << errno << "\n");
                     m_ok = true;
                     return;
                 } else {
-                    docsize = ucstat.st_size;
+                    docsize = ucstat.pst_size;
                 }
                 l_mime = mimetype(m_fn, &ucstat, m_cfg, usfci);
                 if (l_mime.empty() && imime)
@@ -1096,7 +1095,7 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
 bool FileInterner::isCompressed(const string& fn, RclConfig *cnf)
 {
     LOGDEB("FileInterner::isCompressed: [" << fn << "]\n");
-    struct stat st;
+    struct PathStat st;
     if (path_fileprops(fn, &st) < 0) {
         LOGERR("FileInterner::isCompressed: can't stat [" << fn << "]\n");
         return false;
@@ -1120,7 +1119,7 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
                                          RclConfig *cnf, const Rcl::Doc& doc)
 {
     LOGDEB("FileInterner::maybeUncompressToTemp: [" << fn << "]\n");
-    struct stat st;
+    struct PathStat st;
     if (path_fileprops(fn.c_str(), &st) < 0) {
         LOGERR("FileInterner::maybeUncompressToTemp: can't stat [" <<fn<<"]\n");
         return false;
@@ -1139,7 +1138,7 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
     // Check for compressed size limit
     int maxkbs = -1;
     if (cnf->getConfParam("compressedfilemaxkbs", &maxkbs) &&
-        maxkbs >= 0 && int(st.st_size / 1024) > maxkbs) {
+        maxkbs >= 0 && int(st.pst_size / 1024) > maxkbs) {
         LOGINFO("FileInterner:: " << fn << " over size limit " << maxkbs <<
                 " kbs\n");
         return false;

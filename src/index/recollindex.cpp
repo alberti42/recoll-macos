@@ -26,7 +26,6 @@
 #else
 #include <direct.h>
 #endif
-#include "safesysstat.h"
 #include "safefcntl.h"
 #include "safeunistd.h"
 
@@ -264,8 +263,8 @@ public:
     {
     }
     virtual FsTreeWalker::Status 
-    processone(const string& fn, const struct stat *, FsTreeWalker::CbFlag flg) 
-    {
+    processone(const string& fn, const struct PathStat *,
+               FsTreeWalker::CbFlag flg) {
         if (flg== FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwRegular){
             if (m_pats.empty()) {
                 cerr << "Selecting " << fn << endl;

@@ -684,14 +684,29 @@ bool path_makepath(const string& ipath, int mode)
     return true;
 }
 
-bool path_isdir(const string& path)
+bool path_isdir(const string& path, bool follow)
 {
     struct STATBUF st;
     SYSPATH(path, syspath);
-    if (LSTAT(syspath, &st) < 0) {
+    int ret = follow ? STAT(syspath, &st) : LSTAT(syspath, &st);
+    if (ret < 0) {
         return false;
     }
     if (S_ISDIR(st.st_mode)) {
+        return true;
+    }
+    return false;
+}
+
+bool path_isfile(const string& path, bool follow)
+{
+    struct STATBUF st;
+    SYSPATH(path, syspath);
+    int ret = follow ? STAT(syspath, &st) : LSTAT(syspath, &st);
+    if (ret < 0) {
+        return false;
+    }
+    if (S_ISREG(st.st_mode)) {
         return true;
     }
     return false;
@@ -707,30 +722,36 @@ long long path_filesize(const string& path)
     return (long long)st.st_size;
 }
 
-int path_fileprops(const std::string path, struct stat *stp, bool follow)
+int path_fileprops(const std::string path, struct PathStat *stp, bool follow)
 {
-    if (!stp) {
+    if (nullptr == stp) {
         return -1;
     }
-    memset(stp, 0, sizeof(struct stat));
+    memset(stp, 0, sizeof(struct PathStat));
     struct STATBUF mst;
     SYSPATH(path, syspath);
     int ret = follow ? STAT(syspath, &mst) : LSTAT(syspath, &mst);
     if (ret != 0) {
         return ret;
     }
-    stp->st_size = mst.st_size;
-    stp->st_mode = mst.st_mode;
-    stp->st_mtime = mst.st_mtime;
+    stp->pst_size = mst.st_size;
+    stp->pst_mode = mst.st_mode;
+    stp->pst_mtime = mst.st_mtime;
 #ifdef _WIN32
-    stp->st_ctime = mst.st_mtime;
+    stp->pst_ctime = mst.st_mtime;
 #else
-    stp->st_ino = mst.st_ino;
-    stp->st_dev = mst.st_dev;
-    stp->st_ctime = mst.st_ctime;
-    stp->st_blocks = mst.st_blocks;
-    stp->st_blksize = mst.st_blksize;
+    stp->pst_ino = mst.st_ino;
+    stp->pst_dev = mst.st_dev;
+    stp->pst_ctime = mst.st_ctime;
+    stp->pst_blocks = mst.st_blocks;
+    stp->pst_blksize = mst.st_blksize;
 #endif
+    switch (mst.st_mode & S_IFMT) {
+    case S_IFDIR: stp->pst_type = PathStat::PST_DIR;break;
+    case S_IFLNK:  stp->pst_type = PathStat::PST_SYMLINK;break;
+    case S_IFREG: stp->pst_type = PathStat::PST_REGULAR;break;
+    default: stp->pst_type = PathStat::PST_OTHER;break;
+    }
     return 0;
 }
 

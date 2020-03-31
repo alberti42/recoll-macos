@@ -28,7 +28,7 @@
 
 class DbIxStatusUpdater;
 class FIMissingStore;
-struct stat;
+struct PathStat;
 
 class DbUpdTask;
 class InternfileTask;
@@ -75,10 +75,10 @@ public:
 
     /**  Tree walker callback method */
     FsTreeWalker::Status 
-    processone(const string &fn, const struct stat *, FsTreeWalker::CbFlag);
+    processone(const string &fn, const struct PathStat *, FsTreeWalker::CbFlag);
 
     /** Make signature for file up to date checks */
-    static void makesig(const struct stat *stp, string& out);
+    static void makesig(const struct PathStat *stp, string& out);
 
     
 private:
@@ -160,7 +160,8 @@ private:
     string getDbDir() {return m_config->getDbDir();}
     FsTreeWalker::Status 
     processonefile(RclConfig *config, const string &fn, 
-                   const struct stat *, const map<string,string>& localfields);
+                   const struct PathStat *,
+                   const map<string,string>& localfields);
 };
 
 #endif /* _fsindexer_h_included_ */

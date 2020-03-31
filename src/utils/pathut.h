@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <cstdint>
 
 // Must be called in main thread before starting other threads
 extern void pathut_init_mt();
@@ -66,7 +67,9 @@ extern std::string url_parentfolder(const std::string& url);
 extern std::string url_gpath(const std::string& url);
 
 /// Stat parameter and check if it's a directory
-extern bool path_isdir(const std::string& path);
+extern bool path_isdir(const std::string& path, bool follow = false);
+/// Stat parameter and check if it's a regular file
+extern bool path_isfile(const std::string& path, bool follow = false);
 
 /// Retrieve file size
 extern long long path_filesize(const std::string& path);
@@ -79,8 +82,19 @@ extern long long path_filesize(const std::string& path);
 /// all systems. st_dev and st_ino are set for special posix usage.
 /// The rest is zeroed.
 /// @ret 0 for success
-struct stat;
-extern int path_fileprops(const std::string path, struct stat *stp,
+struct PathStat {
+    enum PstType {PST_REGULAR, PST_SYMLINK, PST_DIR, PST_OTHER};
+    PstType pst_type;
+    int64_t pst_size;
+    uint64_t pst_mode;
+    int64_t pst_mtime;
+    int64_t pst_ctime;
+    uint64_t pst_ino;
+    uint64_t pst_dev;
+    uint64_t pst_blocks;
+    uint64_t pst_blksize;
+};
+extern int path_fileprops(const std::string path, struct PathStat *stp,
                           bool follow = true);
 
 /// Check that path is traversable and last element exists
@@ -150,9 +164,6 @@ public:
 /// Convert \ separators to /
 void path_slashize(std::string& s);
 void path_backslashize(std::string& s);
-#include "safeunistd.h"
-#else
-#include <unistd.h>
 #endif
 
 /// Lock/pid file class. This is quite close to the pidfile_xxx

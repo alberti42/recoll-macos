@@ -24,6 +24,7 @@
 
 #include "rclinit.h"
 #include "rclconfig.h"
+#include "pathut.h"
 
 using namespace std;
 
@@ -47,25 +48,25 @@ static int     op_flags;
 class myCB : public FsTreeWalkerCB {
 public:
     FsTreeWalker::Status processone(const string &path, 
-                                    const struct stat *st,
+                                    const struct PathStat *st,
                                     FsTreeWalker::CbFlag flg) {
-            if (flg == FsTreeWalker::FtwDirEnter) {
-                if (op_flags & OPT_r) {
-                    cout << path << endl;
-                } else {
-                    if (!(op_flags&OPT_s)) {
-                        cout << "[Entering " << path << "]" << endl;
-                    }
-                }
-            } else if (flg == FsTreeWalker::FtwDirReturn) {
-                    if (!(op_flags&OPT_s)) {
-                        cout << "[Returning to " << path << "]" << endl;
-                    }
-            } else if (flg == FsTreeWalker::FtwRegular) {
+        if (flg == FsTreeWalker::FtwDirEnter) {
+            if (op_flags & OPT_r) {
                 cout << path << endl;
+            } else {
+                if (!(op_flags&OPT_s)) {
+                    cout << "[Entering " << path << "]" << endl;
+                }
             }
-            return FsTreeWalker::FtwOk;
+        } else if (flg == FsTreeWalker::FtwDirReturn) {
+            if (!(op_flags&OPT_s)) {
+                cout << "[Returning to " << path << "]" << endl;
+            }
+        } else if (flg == FsTreeWalker::FtwRegular) {
+            cout << path << endl;
         }
+        return FsTreeWalker::FtwOk;
+    }
 };
 
 static const char *thisprog;
@@ -89,22 +90,22 @@ static const char *thisprog;
 // real    17m10.585s user    0m4.532s sys     0m35.033s
 
 static char usage [] =
-"trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] [-L] topdir\n"
-" -D : skip dotfiles\n"
-" -L : follow symbolic links\n"
-" -M <depth>: limit depth (works with -b/m/d)\n"
-" -P <pattern> : add skippedPaths entry\n"
-" -p <pattern> : add skippedNames entry\n"
-" -b : use breadth first walk\n"
-" -c : no path canonification\n"
-" -d : use almost depth first (dir files, then subdirs)\n"
-" -k : like du\n"
-" -m : use breadth up to 4 deep then switch to -d\n"
-" -r : norecurse\n"
-" -s : don't print dir change info\n"
-" -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
-" -y <pattern> : add onlyNames entry\n"
-;
+                    "trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] [-L] topdir\n"
+                    " -D : skip dotfiles\n"
+                    " -L : follow symbolic links\n"
+                    " -M <depth>: limit depth (works with -b/m/d)\n"
+                    " -P <pattern> : add skippedPaths entry\n"
+                    " -p <pattern> : add skippedNames entry\n"
+                    " -b : use breadth first walk\n"
+                    " -c : no path canonification\n"
+                    " -d : use almost depth first (dir files, then subdirs)\n"
+                    " -k : like du\n"
+                    " -m : use breadth up to 4 deep then switch to -d\n"
+                    " -r : norecurse\n"
+                    " -s : don't print dir change info\n"
+                    " -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
+                    " -y <pattern> : add onlyNames entry\n"
+                    ;
 static void
 Usage(void)
 {

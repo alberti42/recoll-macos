@@ -21,7 +21,6 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fnmatch.h>
-#include "safesysstat.h"
 #include <cstring>
 #include <algorithm>
 
@@ -228,8 +227,7 @@ static inline int slashcount(const string& p)
     return n;
 }
 
-FsTreeWalker::Status FsTreeWalker::walk(const string& _top, 
-                                        FsTreeWalkerCB& cb)
+FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)
 {
     string top = (data->options & FtwNoCanon) ? _top : path_canon(_top);
 
@@ -238,7 +236,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
     }
 
     data->basedepth = slashcount(top); // Only used for breadthxx
-    struct stat st;
+    struct PathStat st;
     // We always follow symlinks at this point. Makes more sense.
     if (path_fileprops(top, &st) == -1) {
         // Note that we do not return an error if the stat call
@@ -343,19 +341,19 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
 // This means that we always go into the top 'walk()' parameter if it is a 
 // directory, even if norecurse is set. Bug or Feature ?
 FsTreeWalker::Status FsTreeWalker::iwalk(const string &top, 
-                                         struct stat *stp,
+                                         struct PathStat *stp,
                                          FsTreeWalkerCB& cb)
 {
     Status status = FtwOk;
     bool nullpush = false;
 
     // Tell user to process the top entry itself
-    if (S_ISDIR(stp->st_mode)) {
+    if (stp->pst_type == PathStat::PST_DIR) {
         if ((status = cb.processone(top, stp, FtwDirEnter)) & 
             (FtwStop|FtwError)) {
             return status;
         }
-    } else if (S_ISREG(stp->st_mode)) {
+    } else if (stp->pst_type == PathStat::PST_REGULAR) {
         return cb.processone(top, stp, FtwRegular);
     } else {
         return status;
@@ -377,7 +375,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     // For now, we'll ignore the "other kind of cycle" part and only monitor
     // this is FtwFollow is set
     if (data->options & FtwFollow) {
-        DirId dirid(stp->st_dev, stp->st_ino);
+        DirId dirid(stp->pst_dev, stp->pst_ino);
         if (data->donedirs.find(dirid) != data->donedirs.end()) {
             LOGINFO("Not processing [" << top <<
                     "] (already seen as other path)\n");
@@ -420,7 +418,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     struct DIRENT *ent;
     while (errno = 0, ((ent = READDIR(d)) != 0)) {
         string fn;
-        struct stat st;
+        struct PathStat st;
 #ifdef _WIN32
         string sdname;
         if (!wchartoutf8(ent->d_name, sdname)) {
@@ -468,7 +466,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
                 continue;
         }
 
-        if (S_ISDIR(st.st_mode)) {
+        if (st.pst_type == PathStat::PST_DIR) {
             if (!o_nowalkfn.empty() && path_exists(path_cat(fn, o_nowalkfn))) {
                 continue;
             }
@@ -498,7 +496,8 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
                 if ((status = cb.processone(top, &st, FtwDirReturn)) 
                     & (FtwStop|FtwError))
                     goto out;
-        } else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
+        } else if (st.pst_type == PathStat::PST_REGULAR ||
+                   st.pst_type == PathStat::PST_SYMLINK) {
             // Filtering patterns match ?
             if (!data->onlyNames.empty()) {
                 if (!inOnlyNames(dname))
@@ -536,14 +535,14 @@ int64_t fsTreeBytes(const string& topdir)
     class bytesCB : public FsTreeWalkerCB {
     public:
         FsTreeWalker::Status processone(const string &path, 
-                                        const struct stat *st,
+                                        const struct PathStat *st,
                                         FsTreeWalker::CbFlag flg) {
             if (flg == FsTreeWalker::FtwDirEnter ||
                 flg == FsTreeWalker::FtwRegular) {
 #ifdef _WIN32
-                totalbytes += st->st_size;
+                totalbytes += st->pst_size;
 #else
-                totalbytes += st->st_blocks * 512;
+                totalbytes += st->pst_blocks * 512;
 #endif
             }
             return FsTreeWalker::FtwOk;

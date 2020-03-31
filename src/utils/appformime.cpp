@@ -37,12 +37,13 @@ public:
         {
         }
     virtual FsTreeWalker::Status 
-    processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
+    processone(const string &, const struct PathStat *, FsTreeWalker::CbFlag);
     DesktopDb::AppMap *m_appdefs;
 };
 
-FsTreeWalker::Status FstCb::processone(const string& fn, const struct stat *, 
-                                       FsTreeWalker::CbFlag flg) 
+struct PathStat;
+FsTreeWalker::Status FstCb::processone(
+    const string& fn, const struct PathStat*, FsTreeWalker::CbFlag flg) 
 {
     if (flg != FsTreeWalker::FtwRegular)
         return FsTreeWalker::FtwOk;
