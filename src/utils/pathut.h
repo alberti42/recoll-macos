@@ -175,7 +175,7 @@ public:
     ~Pidfile();
     /// Open/create the pid file.
     /// @return 0 if ok, > 0 for pid of existing process, -1 for other error.
-    pid_t open();
+    int open();
     /// Write pid into the pid file
     /// @return 0 ok, -1 error
     int write_pid();
@@ -190,7 +190,7 @@ private:
     std::string m_path;
     int    m_fd;
     std::string m_reason;
-    pid_t read_pid();
+    int read_pid();
     int flopen();
 };
 

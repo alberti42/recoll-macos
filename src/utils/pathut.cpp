@@ -1096,24 +1096,24 @@ Pidfile::~Pidfile()
     this->close();
 }
 
-pid_t Pidfile::read_pid()
+int Pidfile::read_pid()
 {
     int fd = ::open(m_path.c_str(), O_RDONLY);
     if (fd == -1) {
-        return (pid_t) -1;
+        return -1;
     }
 
     char buf[16];
     int i = read(fd, buf, sizeof(buf) - 1);
     ::close(fd);
     if (i <= 0) {
-        return (pid_t) -1;
+        return -1;
     }
     buf[i] = '\0';
     char *endptr;
-    pid_t pid = strtol(buf, &endptr, 10);
+    int pid = strtol(buf, &endptr, 10);
     if (endptr != &buf[i]) {
-        return (pid_t) - 1;
+        return - 1;
     }
     return pid;
 }
@@ -1161,12 +1161,12 @@ int Pidfile::flopen()
     return 0;
 }
 
-pid_t Pidfile::open()
+int Pidfile::open()
 {
     if (flopen() < 0) {
         return read_pid();
     }
-    return (pid_t)0;
+    return 0;
 }
 
 int Pidfile::write_pid()
