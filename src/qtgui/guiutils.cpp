@@ -72,7 +72,9 @@ static bool havereadsettings;
 
 #ifdef _WIN32
 static void maybeCopyFromRegistry();
-#endif /*_WIN32*/
+#else /* ! _WIN32 */
+static void maybeRenameGUISettings();
+#endif /* ! _WIN32 */
 
 void rwSettings(bool writing)
 {
@@ -87,7 +89,9 @@ void rwSettings(bool writing)
             once = 0;
         }
     }
-#endif /*_WIN32*/
+#else
+    maybeRenameGUISettings();
+#endif /* !_WIN32 */
     // Keep this AFTER maybecopy...()
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
@@ -493,7 +497,25 @@ void maybeCopyFromRegistry()
     }
     settings.setValue(markerkey, 1);
 }
-#endif
+
+#else /* ! _WIN32 -> */
+
+// The Linux settings name unvontarily changed from
+// ~/.config/Recoll.org/recoll.conf to ~/.config/Recoll.org/recoll.ini
+// when the Windows version switched from registry to ini storage. Too
+// late to really fix as 1.26.6 was released (at least in the
+// lesbonscomptes repo and Debian unstable). For the lucky guys who
+// did not run 1.26.6, the following was added in 1.26.7 to rename the
+// file if the .ini target does not exist.
+static void maybeRenameGUISettings()
+{
+    string opath = path_cat(path_home(), ".config/Recoll.org/recoll.conf");
+    string npath = path_cat(path_home(), ".config/Recoll.org/recoll.ini");
+    if (path_exists(opath) && !path_exists(npath)) {
+        rename(opath.c_str(), npath.c_str());
+    }
+}
+#endif /* ! _WIN32 */
 
 #ifdef SHOWEVENTS
 const char *eventTypeToStr(int tp)
