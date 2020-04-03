@@ -103,6 +103,7 @@ static bool initCmd()
 
 bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
 {
+    LOGDEB1("ko_to_words\n");
     std::unique_lock<std::mutex> mylock(o_mutex);
     initCmd();
     if (nullptr == o_talker) {
@@ -131,16 +132,13 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         c = *it;
         if (!isHANGUL(c) && isalpha(c)) {
             // Done with Korean stretch, process and go back to main routine
-            //std::cerr << "Broke on char " << (std::string)it << endl;
+            LOGDEB1("ko_to_words: broke on " << (std::string)it << endl);
             break;
         } else {
             if (c == '\f') {
-                inputdata += magicpage;
+                inputdata += magicpage + " ";
             } else {
-                if (isKomoran && (c == '\n' || c == '\r')) {
-                    // Komoran does not like some control chars (initially
-                    // thought only formfeed, but not), which is a prob
-                    // for pdf pages counts. will need to fix this
+                if (c < 0x20 || (c > 0x7e && c < 0xa0)) {
                     inputdata += ' ';
                 } else {
                     it.appendchartostring(inputdata);
@@ -175,9 +173,10 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     vector<string> tags;
     stringToTokens(outtags, tags, sepchars);
 
-    // This is the position in the whole text, not the local fragment,
-    // which is bytepos-orgbytepos
-    string::size_type bytepos(orgbytepos);
+    // This is the position in the local fragment,
+    // not in the whole text which is orgbytepos + bytepos
+    string::size_type bytepos{0};
+    string::size_type pagefix{0};
     for (unsigned int i = 0; i < words.size(); i++) {
         // The POS tagger strips characters from the input (e.g. multiple
         // spaces, sometimes new lines, possibly other stuff). This
@@ -190,25 +189,32 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         string word = words[i];
         trimstring(word);
         if (word == magicpage) {
+            LOGDEB1("ko_to_words: NEWPAGE\n");
             newpage(m_wordpos);
+            bytepos += word.size() + 1;
+            pagefix += word.size();
+            continue;
         }
-        string::size_type newpos = bytepos - orgbytepos;
-        newpos = inputdata.find(word, newpos);
+        // Find the actual start position of the word in the section.
+        string::size_type newpos = inputdata.find(word, bytepos);
         if (newpos != string::npos) {
-            bytepos = orgbytepos + newpos;
+            bytepos = newpos;
+        } else {
+            LOGDEB("textsplitko: word [" << word << "] not found in text\n");
         }
-        LOGDEB1("WORD OPOS " << bytepos-orgbytepos <<
-                " FOUND POS " << newpos << endl);
+        LOGDEB1("WORD [" << word << "] size " << word.size() <<
+                " TAG " << tags[i] << " inputdata size " << inputdata.size() <<
+                " absbytepos " << orgbytepos + bytepos << 
+                " bytepos " << bytepos << " word from text: " <<
+                inputdata.substr(bytepos, word.size()) << endl);
         if (tags[i] == "Noun" || tags[i] == "Verb" ||
             tags[i] == "Adjective" || tags[i] == "Adverb") {
-            if (!takeword(
-                    word, m_wordpos++, bytepos, bytepos + words[i].size())) {
+            string::size_type abspos = orgbytepos + bytepos - pagefix;
+            if (!takeword(word, m_wordpos++, abspos, abspos + word.size())) {
                 return false;
             }
         }
-        LOGDEB1("WORD [" << words[i] << "] size " << words[i].size() <<
-               " TAG " << tags[i] << endl);
-        bytepos += words[i].size();
+        bytepos += word.size();
     }
 
 #if DO_CHECK_THINGS
@@ -229,5 +235,6 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     clearsplitstate();
     m_spanpos = m_wordpos = pos;
     *cp = c;
+    LOGDEB1("ko_to_words: returning\n");
     return true;
 }
