@@ -262,16 +262,11 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
             " popup "<<m_completer->popup() << " lineedit "<<queryText<< "\n");
 
     QKeyEvent *keyEvent = (QKeyEvent *)event;
-    if (keyEvent->key() == Qt::Key_Backspace) {
-        LOGDEB("SSearch::eventFilter: backspace\n");
+    if (keyEvent->key() == Qt::Key_Backspace ||
+        keyEvent->key()==Qt::Key_Delete) {
+        LOGDEB("SSearch::eventFilter: backspace/delete\n");
         queryText->setCompleter(nullptr);
-        queryText->backspace();
-        return true;
-    } else if (keyEvent->key()==Qt::Key_Delete) {
-        LOGDEB("SSearch::eventFilter: delete\n");
-        queryText->setCompleter(nullptr);
-        queryText->del();
-        return true;
+        return false;
     } else {
         if (nullptr == queryText->completer()) {
             queryText->setCompleter(m_completer);
