@@ -21,9 +21,9 @@
 #include ASPELL_INCLUDE
 
 #include <mutex>
-#include <unistd.h>
 #include <stdlib.h>
 
+#include "safeunistd.h"
 #include "dlib.h"
 #include "pathut.h"
 #include "execmd.h"

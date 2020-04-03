@@ -2939,6 +2939,7 @@ extern "C" {
 #include <sys/stat.h>
 
 #if defined(_MSC_VER) || defined(__MINGW64__)
+#if defined(__MINGW64__)
 static FILE *mz_fopen(const char *pFilename, const char *pMode)
 {
     FILE *pFile = NULL;
@@ -2952,11 +2953,17 @@ static FILE *mz_freopen(const char *pPath, const char *pMode, FILE *pStream)
         return NULL;
     return pFile;
 }
+#endif /* MINGW64 */
 #ifndef MINIZ_NO_TIME
 #include <sys/utime.h>
 #endif
+#if defined(__MINGW64__)
 #define MZ_FOPENREAD mz_fopen
 #define MZ_FOPEN mz_fopen
+#else /*->msc*/
+#define MZ_FOPENREAD(f, m) _wfopen(f, m)
+#define MZ_FOPEN(f, m) fopen(f, m)
+#endif
 #define MZ_FCLOSE fclose
 #define MZ_FREAD fread
 #define MZ_FWRITE fwrite

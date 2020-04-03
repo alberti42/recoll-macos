@@ -15,6 +15,8 @@ DEFINES += PSAPI_VERSION=1
 DEFINES += READFILE_ENABLE_MINIZ
 DEFINES += READFILE_ENABLE_MD5
 DEFINES += READFILE_ENABLE_ZLIB
+# VC only defines __WIN32, not __WIN32__ . For some reason xapian uses __WIN32__ which it actually defines in conf_post.h if __WIN32 is set. Reason: mystery.
+DEFINES += __WIN32__
 
 # This is necessary to avoid an undefined impl__xmlFree.
 # See comment in libxml/xmlexports.h
@@ -115,7 +117,6 @@ SOURCES += \
 ../../utils/miniz.cpp \
 ../../utils/pathut.cpp \
 ../../utils/pxattr.cpp \
-../../utils/rclionice.cpp \
 ../../utils/rclutil.cpp \
 ../../utils/readfile.cpp \
 ../../utils/smallut.cpp \
@@ -129,22 +130,34 @@ INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
             ../../xaposix ../../confgui ../../bincimapmime 
 
 windows {
-    contains(QMAKE_CC, gcc){
-        # MingW
-        QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
+  contains(QMAKE_CC, gcc){
+    # MingW
+    QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
+    LIBS += C:/recolldeps/libxslt/libxslt-1.1.29/win32/bin.mingw/libxslt.a \
+      C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
+      c:/recolldeps/xapian-core-1.4.11/.libs/libxapian-30.dll \
+      c:/recolldeps/zlib-1.2.8/zlib1.dll \
+      -liconv -lshlwapi -lpsapi -lkernel32
+    INCLUDEPATH += ../../windows \
+      C:/recolldeps/xapian-core-1.4.15/include \
+      C:/recolldeps/libxslt/libxslt-1.1.29/ \
+      C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/include
     }
-    contains(QMAKE_CC, cl){
-        # Visual Studio
-    }
-  LIBS += C:/recolldeps/libxslt/libxslt-1.1.29/win32/bin.mingw/libxslt.a \
-          C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
-          c:/recolldeps/xapian-core-1.4.11/.libs/libxapian-30.dll \
-          c:/recolldeps/zlib-1.2.8/zlib1.dll \
-          -liconv -lshlwapi -lpsapi -lkernel32
-  INCLUDEPATH += ../../windows \
-          C:/recolldeps/xapian-core-1.4.11/include \
-          C:/recolldeps/libxslt/libxslt-1.1.29/ \
-          C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/include
+  contains(QMAKE_CC, cl){
+    # Visual Studio
+    LIBS += C:/users/bill/documents/recolldeps-vc/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
+      C:/users/bill/documents/recolldeps-vc/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
+      c:/users/bill/documents/recolldeps-vc/xapian-core-1.4.15/.libs/xapian.lib \
+      c:/users/bill/documents/recolldeps-vc/zlib-1.2.11/zlib.lib \
+      c:/users/bill/documents/recolldeps-vc/libiconv-for-windows/lib/libiconv.lib \
+      -lshlwapi -lpsapi -lkernel32
+    INCLUDEPATH += ../../windows \
+      C:/users/bill/documents/recolldeps-vc/xapian-core-1.4.15/include \
+      C:/users/bill/documents/recolldeps-vc/zlib-1.2.11/ \
+      C:/users/bill/documents/recolldeps-vc/libxslt/libxslt-1.1.29/ \
+     C:/users/bill/documents/recolldeps-vc/libxml2/libxml2-2.9.4+dfsg1/include \
+     C:/users/bill/documents/recolldeps-vc/libiconv-for-windows/include
+  }
 
 }
 
