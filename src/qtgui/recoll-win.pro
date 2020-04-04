@@ -5,17 +5,19 @@ TEMPLATE        = app
 LANGUAGE        = C++
 TARGET          = recoll
 
-QT += webkit
+#QT += webkit
+#DEFINES += USING_WEBKIT
+QT += widgets webenginewidgets
+DEFINES += USING_WEBENGINE
+
+QT += xml printsupport
 
 DEFINES += BUILDING_RECOLL
-DEFINES += USING_WEBKIT
 DEFINES -= UNICODE
 DEFINES -= _UNICODE
 DEFINES += _MBCS
 DEFINES += PSAPI_VERSION=1
-
-QT += xml
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets printsupport
+DEFINES += __WIN32__
 
 HEADERS += \
         advsearch_w.h \
@@ -112,11 +114,24 @@ windows {
     contains(QMAKE_CC, gcc){
         # MingW
         QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+        LIBS += C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
     }
-    contains(QMAKE_CC, cl){
-        # Visual Studio
-    }
-    LIBS += C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
+
+  contains(QMAKE_CC, cl){
+    # MSVC
+    RECOLLDEPS = ../../../recolldeps-vc
+    LIBS += \
+    -L../windows/build-librecoll-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \
+        -llibrecoll \
+    $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
+    $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
+    -L../windows/build-libxapian-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \
+        -llibxapian \
+    $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
+    $$RECOLLDEPS/libiconv-for-windows/lib/libiconv.lib \
+    -lrpcrt4 -lws2_32 -luser32 \
+    -lshlwapi -lpsapi -lkernel32
+  }
 }
 
 TRANSLATIONS = \

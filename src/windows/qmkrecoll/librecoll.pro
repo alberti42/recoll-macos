@@ -18,10 +18,6 @@ DEFINES += READFILE_ENABLE_ZLIB
 # VC only defines __WIN32, not __WIN32__ . For some reason xapian uses __WIN32__ which it actually defines in conf_post.h if __WIN32 is set. Reason: mystery.
 DEFINES += __WIN32__
 
-# This is necessary to avoid an undefined impl__xmlFree.
-# See comment in libxml/xmlexports.h
-DEFINES += LIBXML_STATIC
-
 SOURCES += \
 ../../aspell/rclaspell.cpp \
 ../../bincimapmime/convert.cc \
@@ -35,6 +31,7 @@ SOURCES += \
 ../../common/rclinit.cpp \
 ../../common/syngroups.cpp \
 ../../common/textsplit.cpp \
+../../common/textsplitko.cpp \
 ../../common/unacpp.cpp \
 ../../common/utf8fn.cpp \
 ../../index/webqueue.cpp \
@@ -95,6 +92,7 @@ SOURCES += \
 ../../utils/cancelcheck.cpp \
 ../../utils/chrono.cpp \
 ../../utils/circache.cpp \
+../../utils/cmdtalk.cpp \
 ../../utils/conftree.cpp \
 ../../utils/copyfile.cpp \
 ../../utils/cpuconf.cpp \
@@ -132,31 +130,45 @@ INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
 windows {
   contains(QMAKE_CC, gcc){
     # MingW
+    # This is necessary to avoid an undefined impl__xmlFree.
+    # See comment in libxml/xmlexports.h
+    DEFINES += LIBXML_STATIC
+    RECOLLDEPS = C:/recolldeps
     QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
-    LIBS += C:/recolldeps/libxslt/libxslt-1.1.29/win32/bin.mingw/libxslt.a \
-      C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
-      c:/recolldeps/xapian-core-1.4.11/.libs/libxapian-30.dll \
-      c:/recolldeps/zlib-1.2.8/zlib1.dll \
+    LIBS += \
+      $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.mingw/libxslt.a \
+      $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
+      $$RECOLLDEPS/xapian-core-1.4.11/.libs/libxapian-30.dll \
+      $$RECOLLDEPS/zlib-1.2.8/zlib1.dll \
       -liconv -lshlwapi -lpsapi -lkernel32
     INCLUDEPATH += ../../windows \
-      C:/recolldeps/xapian-core-1.4.15/include \
-      C:/recolldeps/libxslt/libxslt-1.1.29/ \
-      C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/include
-    }
+      $$RECOLLDEPS/xapian-core-1.4.15/include \
+      $$RECOLLDEPS/libxslt/libxslt-1.1.29/ \
+      $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/include
+  }
+
   contains(QMAKE_CC, cl){
     # Visual Studio
-    LIBS += C:/users/bill/documents/recolldeps-vc/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
-      C:/users/bill/documents/recolldeps-vc/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
-      c:/users/bill/documents/recolldeps-vc/xapian-core-1.4.15/.libs/xapian.lib \
-      c:/users/bill/documents/recolldeps-vc/zlib-1.2.11/zlib.lib \
-      c:/users/bill/documents/recolldeps-vc/libiconv-for-windows/lib/libiconv.lib \
-      -lshlwapi -lpsapi -lkernel32
+    RECOLLDEPS = ../../../../recolldeps-vc
+    CONFIG += staticlib
+    LIBS += \
+    $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
+    $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
+    -L../build-libxapian-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \
+        -llibxapian \
+    $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
+    $$RECOLLDEPS/libiconv-for-windows/lib/libiconv.lib \
+    -lrpcrt4 -lws2_32 -luser32 \
+    -lshlwapi -lpsapi -lkernel32
+
     INCLUDEPATH += ../../windows \
-      C:/users/bill/documents/recolldeps-vc/xapian-core-1.4.15/include \
-      C:/users/bill/documents/recolldeps-vc/zlib-1.2.11/ \
-      C:/users/bill/documents/recolldeps-vc/libxslt/libxslt-1.1.29/ \
-     C:/users/bill/documents/recolldeps-vc/libxml2/libxml2-2.9.4+dfsg1/include \
-     C:/users/bill/documents/recolldeps-vc/libiconv-for-windows/include
+      $$RECOLLDEPS/xapian-core-1.4.15/include \
+      $$RECOLLDEPS/zlib-1.2.11/ \
+      $$RECOLLDEPS/libxslt/libxslt-1.1.29/ \
+      $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/include \
+      $$RECOLLDEPS/libiconv-for-windows/include
+    QMAKE_CXXFLAGS_WARN_ON -= -w34100
+    QMAKE_CXXFLAGS += -wd4100
   }
 
 }
