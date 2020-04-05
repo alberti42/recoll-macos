@@ -26,8 +26,10 @@
 #include "log.h"
 #include "utf8iter.h"
 
-bool unacmaybefold(const string &in, string &out, 
-                   const char *encoding, UnacOp what)
+using namespace std;
+
+bool unacmaybefold(const string &in, string &out,
+		   const char *encoding, UnacOp what)
 {
     char *cout = 0;
     size_t out_len;

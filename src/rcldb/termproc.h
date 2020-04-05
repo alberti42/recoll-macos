@@ -24,6 +24,7 @@
 #include "stoplist.h"
 #include "smallut.h"
 #include "utf8iter.h"
+#include "unacpp.h"
 
 namespace Rcl {
 
