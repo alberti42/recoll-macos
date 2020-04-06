@@ -15,7 +15,9 @@ DEFINES += PSAPI_VERSION=1
 DEFINES += READFILE_ENABLE_MINIZ
 DEFINES += READFILE_ENABLE_MD5
 DEFINES += READFILE_ENABLE_ZLIB
-# VC only defines __WIN32, not __WIN32__ . For some reason xapian uses __WIN32__ which it actually defines in conf_post.h if __WIN32 is set. Reason: mystery.
+# VC only defines __WIN32, not __WIN32__ . For some reason xapian uses
+#  __WIN32__ which it actually defines in conf_post.h if __WIN32 is
+#  set. Reason: mystery.
 DEFINES += __WIN32__
 
 SOURCES += \
@@ -151,22 +153,13 @@ windows {
     # Visual Studio
     RECOLLDEPS = ../../../../recolldeps-vc
     CONFIG += staticlib
-    LIBS += \
-    $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
-    $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
-    -L../build-libxapian-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \
-        -llibxapian \
-    $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
-    $$RECOLLDEPS/libiconv-for-windows/lib/libiconv.lib \
-    -lrpcrt4 -lws2_32 -luser32 \
-    -lshlwapi -lpsapi -lkernel32
-
+    DEFINES += USING_STATIC_LIBICONV
     INCLUDEPATH += ../../windows \
       $$RECOLLDEPS/xapian-core-1.4.15/include \
       $$RECOLLDEPS/zlib-1.2.11/ \
       $$RECOLLDEPS/libxslt/libxslt-1.1.29/ \
       $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/include \
-      $$RECOLLDEPS/libiconv-for-windows/include
+      $$RECOLLDEPS/wlibiconv/include
     QMAKE_CXXFLAGS_WARN_ON -= -w34100
     QMAKE_CXXFLAGS += -wd4100
   }

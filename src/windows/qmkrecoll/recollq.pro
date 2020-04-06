@@ -9,7 +9,7 @@ TEMPLATE = app
 DEFINES += BUILDING_RECOLL
 DEFINES += UNICODE
 DEFINES += PSAPI_VERSION=1
-
+DEFINES += __WIN32__
 
 SOURCES += \
 ../../query/recollqmain.cpp
@@ -19,16 +19,29 @@ INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
             ../../xaposix ../../confgui ../../bincimapmime 
 
 windows {
-    contains(QMAKE_CC, gcc){
-        # MingW
-        QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
-    }
-    contains(QMAKE_CC, cl){
-        # Visual Studio
-    }
-  LIBS += \
-    C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
+  contains(QMAKE_CC, gcc){
+     MingW
+    QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+    LIBS += \
+      C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
     -lshlwapi -lpsapi -lkernel32
+  }
+  contains(QMAKE_CC, cl){
+    # Visual Studio
+    RECOLLDEPS = ../../../../recolldeps-vc
+    LIBS += \
+      -L../build-librecoll-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \
+        -llibrecoll \
+      $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
+      $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
+      -L../build-libxapian-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \
+        -llibxapian \
+      -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release/ \
+        -llibiconv \
+      $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
+      -lrpcrt4 -lws2_32 -luser32 \
+      -lshlwapi -lpsapi -lkernel32
+  }
 
   INCLUDEPATH += ../../windows
 }

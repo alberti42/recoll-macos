@@ -22,24 +22,55 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 ################################
 # Local values (to be adjusted)
 
-# Recoll src tree
-RCL=c:/recoll/src/
+BUILD=MSVC
+#BUILD=MINGW
+
+if test $BUILD = MSVC ; then
+    # Recoll src tree
+    RCL=c:/users/bill/documents/recoll/src/
+    # Recoll dependancies
+    RCLDEPS=c:/users/bill/documents/recolldeps-vc/
+    QTA=Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release
+    LIBXAPIAN=${RCL}windows/build-libxapian-${QTA}/libxapian.dll
+    LIBXML=${RCLDEPS}libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.dll
+    LIBXSLT=${RCLDEPS}libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.dll
+    LIBICONV=${RCLDEPS}build-libiconv-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release/libiconv.dll
+    ZLIB=${RCLDEPS}zlib-1.2.11
+    QTBIN=C:/Qt/5.14.1/msvc2017/bin
+else
+    # Recoll src tree
+    RCL=c:/recoll/src/
+    # Recoll dependancies
+    RCLDEPS=c:/recolldeps/
+    LIBXAPIAN=${RCLDEPS}xapian-core-1.4.11/.libs/libxapian-30.dll
+    ZLIB=${RCLDEPS}zlib-1.2.8
+    QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
+    QTGCCBIN=C:/qt/Qt5.8.0/Tools/mingw530_32/bin/
+    QTA=Desktop_Qt_5_8_0_MinGW_32bit/release
+    PATH=$MINGWBIN:$QTGCCBIN:$PATH
+    export PATH
+fi
+
+# Where to find libgcc_s_dw2-1.dll et all for progs compiled with
+# c:/MinGW (as opposed to the mingw bundled with qt). This is the same
+# for either a msvc or mingw build of recoll itself.
+MINGWBIN=C:/MinGW/bin
+
 RCLW=$RCL/windows/
-# Recoll dependancies
-RCLDEPS=c:/recolldeps/
-
-ReleaseBuild=y
-
+LIBR=$RCLW/build-librecoll-${QTA}/${qtsdir}/librecoll.dll
+GUIBIN=$RCL/build-recoll-win-${QTA}/${qtsdir}/recoll.exe
+RCLIDX=$RCLW/build-recollindex-${QTA}/${qtsdir}/recollindex.exe
+RCLQ=$RCLW/build-recollq-${QTA}/${qtsdir}/recollq.exe
+RCLS=$RCLW/build-rclstartw-${QTA}/${qtsdir}/rclstartw.exe
+    
 PYTHON=${RCLDEPS}py-python3
 UNRTF=${RCLDEPS}unrtf
 ANTIWORD=${RCLDEPS}antiword
 PYXSLT=${RCLDEPS}pyxslt
 PYEXIV2=${RCLDEPS}pyexiv2
-LIBXAPIAN=${RCLDEPS}xapian-core-1.4.11/.libs/libxapian-30.dll
 MUTAGEN=${RCLDEPS}mutagen-1.32/
 EPUB=${RCLDEPS}epub-0.5.2
 FUTURE=${RCLDEPS}python2-future
-ZLIB=${RCLDEPS}zlib-1.2.8
 POPPLER=${RCLDEPS}poppler-0.68.0/
 LIBWPD=${RCLDEPS}libwpd/libwpd-0.10.0/
 LIBREVENGE=${RCLDEPS}libwpd/librevenge-0.0.1.jfd/
@@ -47,38 +78,6 @@ CHM=${RCLDEPS}pychm
 MISC=${RCLDEPS}misc
 LIBPFF=${RCLDEPS}pffinstall
 ASPELL=${RCLDEPS}/aspell-0.60.7/aspell-installed
-
-# Where to copy the Qt Dlls from:
-QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
-QTGCCBIN=C:/qt/Qt5.8.0/Tools/mingw530_32/bin/
-
-# Where to find libgcc_s_dw2-1.dll et all for progs compiled with c:/MinGW
-# (as opposed to the mingw bundled with qt
-MINGWBIN=C:/MinGW/bin
-
-
-PATH=$MINGWBIN:$QTGCCBIN:$PATH
-export PATH
-
-# Qt arch
-QTA=Desktop_Qt_5_8_0_MinGW_32bit
-
-if test X$ReleaseBuild = X'y'; then
-    qtsdir=release
-else
-    qtsdir=debug
-fi
-LIBR=$RCLW/build-librecoll-${QTA}-${qtsdir}/${qtsdir}/librecoll.dll
-GUIBIN=$RCL/build-recoll-win-${QTA}-${qtsdir}/${qtsdir}/recoll.exe
-RCLIDX=$RCLW/build-recollindex-${QTA}-${qtsdir}/${qtsdir}/recollindex.exe
-RCLQ=$RCLW/build-recollq-${QTA}-${qtsdir}/${qtsdir}/recollq.exe
-RCLS=$RCLW/build-rclstartw-${QTA}-${qtsdir}/${qtsdir}/rclstartw.exe
-
-
-# Needed for a VS build (which we did not ever complete because of
-# missing Qt VS2015 support).
-#CONFIGURATION=Release
-#PLATFORM=Win32
 
 ################
 # Script:
@@ -97,38 +96,32 @@ chkcp()
     cp $@ || fatal cp $@ failed
 }
 
-# Note: can't build static recoll as there is no static qtwebkit (ref: 5.5.0)
+# Note: can't build static recoll as there is no static qtwebkit (ref:
+# 5.5.0)
 copyqt()
 {
     cd $DESTDIR
     PATH=$QTBIN:$PATH
     export PATH
     $QTBIN/windeployqt recoll.exe
-    # Apparently because the webkit part was grafted "by hand" on the
-    # Qt set, we need to copy some dll explicitly
-    addlibs="Qt5Core.dll Qt5Multimedia.dll \
-Qt5MultimediaWidgets.dll Qt5Network.dll Qt5OpenGL.dll \
-Qt5Positioning.dll Qt5PrintSupport.dll Qt5Sensors.dll \
-Qt5Sql.dll icudt57.dll \
-icuin57.dll icuuc57.dll libQt5WebKit.dll \
-libQt5WebKitWidgets.dll \
-libxml2-2.dll libxslt-1.dll"
-   for i in $addlibs;do
-       chkcp $QTBIN/$i $DESTDIR
-   done
-    chkcp $QTBIN/libwinpthread-1.dll $DESTDIR
-    chkcp $QTBIN/libstdc++-6.dll $DESTDIR
+    if test $BUILD = MINGW;then
+        # Apparently because the webkit part was grafted "by hand" on
+	# the Qt set, we need to copy some dll explicitly
+	addlibs="Qt5Core.dll Qt5Multimedia.dll \
+	   Qt5MultimediaWidgets.dll Qt5Network.dll Qt5OpenGL.dll \
+	   Qt5Positioning.dll Qt5PrintSupport.dll Qt5Sensors.dll \
+	   Qt5Sql.dll icudt57.dll \
+	   icuin57.dll icuuc57.dll libQt5WebKit.dll \
+	   libQt5WebKitWidgets.dll \
+	   libxml2-2.dll libxslt-1.dll"
+        for i in $addlibs;do
+            chkcp $QTBIN/$i $DESTDIR
+        done
+        chkcp $QTBIN/libwinpthread-1.dll $DESTDIR
+        chkcp $QTBIN/libstdc++-6.dll $DESTDIR
+    fi
 }
 
-copyxapian()
-{
-    chkcp $LIBXAPIAN $DESTDIR
-}
-
-copyzlib()
-{
-    chkcp $ZLIB/zlib1.dll $DESTDIR
-}
 copypython()
 {
     mkdir -p $DESTDIR/Share/filters/python
@@ -137,17 +130,21 @@ copypython()
 }
 copyrecoll()
 {
-#    bindir=$RCL/windows/$PLATFORM/$CONFIGURATION/
-#    chkcp  $bindir/recollindex.exe         $DESTDIR
-#    chkcp  $bindir/recollq.exe             $DESTDIR
-#    chkcp  $bindir/pthreadVC2.dll          $DESTDIR
-    chkcp $LIBR $DESTDIR 
+    
     chkcp $GUIBIN $DESTDIR
     chkcp $RCLIDX $DESTDIR
     chkcp $RCLQ $DESTDIR 
     chkcp $RCLS $DESTDIR 
-    chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DESTDIR
-
+    chkcp $ZLIB/zlib1.dll $DESTDIR
+    chkcp $LIBXAPIAN $DESTDIR
+    if test $BUILD = MINGW;then
+	chkcp $LIBR $DESTDIR 
+        chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DESTDIR
+    else
+	chkcp $LIBXML $DESTDIR
+	chkcp $LIBXSLT $DESTDIR
+#	chkcp $LIBICONV $DESTDIR
+    fi
     chkcp $RCL/COPYING                  $DESTDIR/COPYING.txt
     chkcp $RCL/doc/user/usermanual.html $DESTDIR/Share/doc
     chkcp $RCL/doc/user/docbook-xsl.css $DESTDIR/Share/doc
@@ -166,7 +163,7 @@ copyrecoll()
     rm -f $FILTERS/rclimg*
     chkcp $RCL/filters/*       $FILTERS
     rm -f $FILTERS/rclimg $FILTERS/rclimg.py
-    chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
+#LATER    chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
     chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
     chkcp $RCL/qtgui/i18n/*.qm $DESTDIR/Share/translations
 }
@@ -227,7 +224,7 @@ copypyexiv2()
     chkcp $PYEXIV2/libexiv2python.pyd $FILTERS/
 }
 
-copyxslt()
+copypyxslt()
 {
     chkcp $PYXSLT/libxslt.py $FILTERS/
     cp -rp $PYXSLT/* $FILTERS
@@ -296,14 +293,8 @@ copyaspell()
     chkcp $MINGWBIN/libstdc++-6.dll $DEST
 }
 
-for d in doc examples filters images translations; do
-    test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
-        fatal mkdir $d failed
-done
-
-
 # First check that the config is ok
- cmp -s $RCL/common/autoconfig.h $RCL/common/autoconfig-win.h || \
+diff -q $RCL/common/autoconfig.h $RCL/common/autoconfig-win.h || \
     fatal autoconfig.h and autoconfig-win.h differ
 VERSION=`cat $RCL/VERSION`
 CFVERS=`grep PACKAGE_VERSION $RCL/common/autoconfig.h | \
@@ -311,28 +302,33 @@ cut -d ' ' -f 3 | sed -e 's/"//g'`
 test "$VERSION" = "$CFVERS" ||
     fatal Versions in VERSION and autoconfig.h differ
 
+
 echo Packaging version $CFVERS
 
-copyaspell
+for d in doc examples filters images translations; do
+    test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
+        fatal mkdir $d failed
+done
+
+#LATER copyaspell
 # copyrecoll must stay before copyqt so that windeployqt can do its thing
 copyrecoll
 copyqt
-copyxapian
-copyzlib
-copypoppler
-copyantiword
-copyunrtf
-copyxslt
+#LATER copypyxslt
+#LATER copypoppler
+#LATER copyantiword
+#LATER copyunrtf
 # Copied into python3 and installed with it
 #copyfuture
-copymutagen
+#LATER copymutagen
 # Switched to perl for lack of python3 version
 #copypyexiv2
-copywpd
+#LATER copywpd
 # Chm is now copied into the python tree, which is installed by copypython
 #copychm
-copypff
+#LATER copypff
 
 # Note that pychm and pyhwp are pre-copied into the py-python3 python
-# distribution directory. The latter also needs olefile and six (also copied)
-copypython
+# distribution directory. The latter also needs olefile and six (also
+# copied)
+#LATER copypython

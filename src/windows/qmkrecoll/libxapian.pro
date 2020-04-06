@@ -7,7 +7,6 @@ DEFINES += __WIN32__
 DEFINES -= _UNICODE
 DEFINES -= UNICODE
 DEFINES += HAVE_CONFIG_H
-CONFIG += staticlib
 
 XAPIANDIR = ../../../../recolldeps-vc/xapian-core-1.4.15/
 
@@ -242,14 +241,11 @@ INCLUDEPATH += $$XAPIANDIR $$XAPIANDIR/include \
 
 windows {
   contains(QMAKE_CC, cl){
-    # Visual Studio
-    LIBS += \
-      ../../../../recolldeps-vc/zlib-1.2.11/zdll.lib \
-      ../../../../recolldeps-vc/libiconv-for-windows/lib/libiconv.lib \
-      -lrpcrt4 -lws2_32 \
-      -lshlwapi -lpsapi -lkernel32
+    # msvc
+    CONFIG += staticlib
+    DEFINES += USING_STATIC_LIBICONV
     INCLUDEPATH += \
       ../../../../recolldeps-vc/zlib-1.2.11/ \
-      ../../../../recolldeps-vc/libiconv-for-windows/include
-  }
+      ../../../../recolldeps-vc/wlibiconv/include
+   }
 }

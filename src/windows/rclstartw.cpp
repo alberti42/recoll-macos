@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include "safewindows.h"
 #include "pathut.h"
-#include "transcode.h"
 
 using namespace std;
 
