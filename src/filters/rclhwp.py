@@ -36,7 +36,6 @@ from hwp5.transforms import BaseTransform
 from hwp5.xmlmodel import Hwp5File as xml_Hwp5File
 from hwp5.utils import cached_property
 
-
 # Associate HTML meta names and hwp summaryinfo values
 def metafields(summaryinfo):
     yield(('Description', summaryinfo.subject + " " +
@@ -49,8 +48,7 @@ def metafields(summaryinfo):
 # Extractor class. We use hwp summaryinfo to extract metadata and code
 # extracted from hwp.hwp5txt.py to extract the text.
 class HWP5Dump(RclBaseHandler):
-    def __init__(self, em, td):
-        self.execdir = td
+    def __init__(self, em):
         super(HWP5Dump, self).__init__(em)
 
     def html_text(self, fn):
@@ -83,13 +81,9 @@ class HWP5Dump(RclBaseHandler):
         # the hwp5 module (no subproc). But this apparently mishandled
         # tables. Switched to executing hwp5html instead. See 1st git
         # version for the old approach.
-        cmd = [sys.executable, os.path.join(self.execdir, "hwp5html"),
-               "--html", fn]
-        html = subprocess.check_output(cmd)
-        return html
+        return rclexecm.execPythonScript(["hwp5html", "--html", fn])
 
 if __name__ == '__main__':
-    execdir = os.path.dirname(sys.argv[0])
     proto = rclexecm.RclExecM()
-    extract = HWP5Dump(proto, execdir)
+    extract = HWP5Dump(proto)
     rclexecm.main(proto, extract)

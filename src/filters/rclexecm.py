@@ -32,6 +32,7 @@ import cmdtalk
 
 PY3 = (sys.version > '3')
 _mswindows = (sys.platform == "win32")
+_execdir = os.path.dirname(sys.argv[0])
 
 # Convert to bytes if not already such.
 def makebytes(data):
@@ -47,7 +48,7 @@ def subprocfile(fn):
     # to convert.
     # On Unix all list elements get converted to bytes in the C
     # _posixsubprocess module, nothing to do.
-    if PY3 and _mswindows:
+    if PY3 and _mswindows and type(fn) != type(''):
         return fn.decode('UTF-8')
     else:
         return fn
@@ -239,7 +240,16 @@ def which(program):
                     return candidate
     return None
 
-
+# Execute Python script. cmd is a list with the script name as first elt.
+def execPythonScript(icmd):
+    import subprocess
+    cmd = list(icmd)
+    if _mswindows:
+        if not os.path.isabs(cmd[0]):
+            cmd[0] = os.path.join(_execdir, cmd[0])
+        cmd = [sys.executable] + cmd
+    return subprocess.check_output(cmd)
+    
 # Temp dir helper
 class SafeTmpDir:
     def __init__(self, em):
