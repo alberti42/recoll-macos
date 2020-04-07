@@ -27,12 +27,13 @@ windows {
         # MingW
         QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
      LIBS += \
-       C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
-         -lshlwapi -lpsapi -lkernel32
+       ../build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
+       -lshlwapi -lpsapi -lkernel32
     }
+
     contains(QMAKE_CC, cl){
       # MSVC
-      RECOLLDEPS = ../../../../recolldeps-vc
+      RECOLLDEPS = ../../../../recolldeps/msvc
       DEFINES += USING_STATIC_LIBICONV
       LIBS += \
         -L../build-librecoll-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \

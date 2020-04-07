@@ -138,28 +138,28 @@ windows {
     RECOLLDEPS = C:/recolldeps
     QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
     LIBS += \
-      $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.mingw/libxslt.a \
-      $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
-      $$RECOLLDEPS/xapian-core-1.4.11/.libs/libxapian-30.dll \
-      $$RECOLLDEPS/zlib-1.2.8/zlib1.dll \
+      $$RECOLLDEPS/mingw/libxslt/libxslt-1.1.29/win32/bin.mingw/libxslt.a \
+      $$RECOLLDEPS/mingw/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
+      $$RECOLLDEPS/mingw/xapian-core-1.4.11/.libs/libxapian-30.dll \
+      $$RECOLLDEPS/mingw/zlib-1.2.8/zlib1.dll \
       -liconv -lshlwapi -lpsapi -lkernel32
     INCLUDEPATH += ../../windows \
-      $$RECOLLDEPS/xapian-core-1.4.15/include \
-      $$RECOLLDEPS/libxslt/libxslt-1.1.29/ \
-      $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/include
+      $$RECOLLDEPS/mingw/xapian-core-1.4.11/include \
+      $$RECOLLDEPS/mingw/libxslt/libxslt-1.1.29/ \
+      $$RECOLLDEPS/mingw/libxml2/libxml2-2.9.4+dfsg1/include
   }
 
   contains(QMAKE_CC, cl){
-    # Visual Studio
-    RECOLLDEPS = ../../../../recolldeps-vc
+    # MSVC
+    RECOLLDEPS = ../../../../recolldeps
     CONFIG += staticlib
     DEFINES += USING_STATIC_LIBICONV
     INCLUDEPATH += ../../windows \
-      $$RECOLLDEPS/xapian-core-1.4.15/include \
-      $$RECOLLDEPS/zlib-1.2.11/ \
-      $$RECOLLDEPS/libxslt/libxslt-1.1.29/ \
-      $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/include \
-      $$RECOLLDEPS/wlibiconv/include
+      $$RECOLLDEPS/msvc/xapian-core-1.4.15/include \
+      $$RECOLLDEPS/msvc/zlib-1.2.11/ \
+      $$RECOLLDEPS/msvc/libxslt/libxslt-1.1.29/ \
+      $$RECOLLDEPS/msvc/libxml2/libxml2-2.9.4+dfsg1/include \
+      $$RECOLLDEPS/msvc/wlibiconv/include
     QMAKE_CXXFLAGS_WARN_ON -= -w34100
     QMAKE_CXXFLAGS += -wd4100
   }

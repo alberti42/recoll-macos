@@ -5,10 +5,10 @@ TEMPLATE        = app
 LANGUAGE        = C++
 TARGET          = recoll
 
-#QT += webkit
-#DEFINES += USING_WEBKIT
-QT += widgets webenginewidgets
-DEFINES += USING_WEBENGINE
+DEFINES += USING_WEBKIT
+QT += webkit webkitwidgets
+#QT += widgets webenginewidgets
+#DEFINES += USING_WEBENGINE
 
 QT += xml printsupport
 
@@ -119,7 +119,7 @@ windows {
 
   contains(QMAKE_CC, cl){
     # MSVC
-    RECOLLDEPS = ../../../recolldeps-vc
+    RECOLLDEPS = ../../../recolldeps/msvc
     DEFINES += USING_STATIC_LIBICONV
     LIBS += \
   -L../windows/build-librecoll-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \

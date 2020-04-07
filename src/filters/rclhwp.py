@@ -24,6 +24,7 @@
 #
 
 import sys
+import os
 from io import BytesIO
 import subprocess
 
@@ -48,14 +49,18 @@ def metafields(summaryinfo):
 # Extractor class. We use hwp summaryinfo to extract metadata and code
 # extracted from hwp.hwp5txt.py to extract the text.
 class HWP5Dump(RclBaseHandler):
-    def __init__(self, em):
+    def __init__(self, em, td):
+        self.execdir = td
         super(HWP5Dump, self).__init__(em)
 
     def html_text(self, fn):
         # hwp wants str filenames. This is unfortunate
         fn = fn.decode('utf-8')
-
-        hwpfile = fs_Hwp5File(fn)
+        try:
+            hwpfile = fs_Hwp5File(fn)
+        except Exception as ex:
+            self.em.rclog("hwpfile open failed: %s" % ex)
+            raise ex
         try:
             tt = hwpfile.summaryinfo.title.strip()
             if tt:
@@ -78,10 +83,13 @@ class HWP5Dump(RclBaseHandler):
         # the hwp5 module (no subproc). But this apparently mishandled
         # tables. Switched to executing hwp5html instead. See 1st git
         # version for the old approach.
-        html = subprocess.check_output(["hwp5html", "--html", fn])
+        cmd = [sys.executable, os.path.join(self.execdir, "hwp5html"),
+               "--html", fn]
+        html = subprocess.check_output(cmd)
         return html
 
 if __name__ == '__main__':
+    execdir = os.path.dirname(sys.argv[0])
     proto = rclexecm.RclExecM()
-    extract = HWP5Dump(proto)
+    extract = HWP5Dump(proto, execdir)
     rclexecm.main(proto, extract)

@@ -22,8 +22,8 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 ################################
 # Local values (to be adjusted)
 
-BUILD=MSVC
-#BUILD=MINGW
+#BUILD=MSVC
+BUILD=MINGW
 
 if test $BUILD = MSVC ; then
     # Recoll src tree
@@ -36,17 +36,19 @@ if test $BUILD = MSVC ; then
     LIBICONV=${RCLDEPS}/msvc/build-libiconv-${QTA}/libiconv.dll
     ZLIB=${RCLDEPS}/msvc/zlib-1.2.11
     QTBIN=C:/Qt/5.14.1/msvc2017/bin
+    MINGWBIN=c:/Qt/5.14.1/mingw73_32/bin/
 else
     # Recoll src tree
     RCL=c:/recoll/src/
     # Recoll dependancies
     RCLDEPS=c:/recolldeps/
-    QTA=Desktop_Qt_5_8_0_MinGW_32bit/release
+    QTA=Desktop_Qt_5_8_0_MinGW_32bit-Release/release
     LIBXAPIAN=${RCLDEPS}/mingw/xapian-core-1.4.11/.libs/libxapian-30.dll
     ZLIB=${RCLDEPS}/mingw/zlib-1.2.8
     ASPELL=${RCLDEPS}/mingw/aspell-0.60.7/aspell-installed
     QTGCCBIN=C:/qt/Qt5.8.0/Tools/mingw530_32/bin/
     QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
+    MINGWBIN=$QTBIN
     PATH=$MINGWBIN:$QTGCCBIN:$PATH
     export PATH
 fi
@@ -54,8 +56,7 @@ fi
 # Where to find libgcc_s_dw2-1.dll et all for progs compiled with
 # c:/MinGW (as opposed to the mingw bundled with qt). This is the same
 # for either a msvc or mingw build of recoll itself.
-MINGWBIN=C:/MinGW/bin
-MINGWBIN=c:/Qt/5.14.1/mingw73_32/bin/
+#MINGWBIN=C:/MinGW/bin
 
 RCLW=$RCL/windows/
 # Only used for mingw, the msvc one is static
@@ -129,6 +130,7 @@ copypython()
     mkdir -p $DESTDIR/Share/filters/python
     cp -rp $PYTHON/* $DESTDIR/Share/filters/python
     chkcp $PYTHON/python.exe $DESTDIR/Share/filters/python/python.exe
+    chkcp $MISC/hwp5html $FILTERS
 }
 
 copyrecoll()

@@ -23,7 +23,7 @@ windows {
      MingW
     QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
     LIBS += \
-      C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
+      ../build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
     -lshlwapi -lpsapi -lkernel32
   }
   contains(QMAKE_CC, cl){
