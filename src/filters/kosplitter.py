@@ -42,6 +42,8 @@ class Processor(object):
             self.tagger = Okt()
             self.tagsOkt = True
         elif taggername == "Mecab":
+            # Use Mecab(dicpath="c:/some/path/mecab-ko-dic") for a
+            # non-default location
             self.tagger = Mecab()
             self.tagsMecab = True
         elif taggername == "Komoran":
