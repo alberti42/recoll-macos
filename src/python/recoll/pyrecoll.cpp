@@ -19,8 +19,6 @@
 #include <structmember.h>
 #include <bytesobject.h>
 
-#include <strings.h>
-
 #include <string>
 #include <iostream>
 #include <set>

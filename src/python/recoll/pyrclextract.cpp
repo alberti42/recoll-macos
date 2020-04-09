@@ -20,8 +20,6 @@
 #include <structmember.h>
 #include <bytearrayobject.h>
 
-#include <strings.h>
-
 #include <string>
 #include <memory>
 

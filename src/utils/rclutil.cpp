@@ -40,6 +40,7 @@
 #include <map>
 #include <unordered_map>
 #include <list>
+#include <vector>
 
 #include "rclutil.h"
 #include "pathut.h"
@@ -193,23 +194,44 @@ string path_defaultrecollconfsubdir()
 #endif
 }
 
-// Location for sample config, filters, etc. (e.g. /usr/share/recoll/)
+// Location for sample config, filters, etc. E.g. /usr/share/recoll/ on linux
+// or c:/program files (x86)/recoll/share on Windows
 const string& path_pkgdatadir()
 {
     static string datadir;
-    if (datadir.empty()) {
-#ifdef _WIN32
-        datadir = path_cat(path_thisexecpath(), "Share");
-#else
-        const char *cdatadir = getenv("RECOLL_DATADIR");
-        if (cdatadir == 0) {
-            // If not in environment, use the compiled-in constant.
-            datadir = RECOLL_DATADIR;
-        } else {
-            datadir = cdatadir;
-        }
-#endif
+    if (!datadir.empty()) {
+        return datadir;
     }
+    const char *cdatadir = getenv("RECOLL_DATADIR");
+    if (nullptr != cdatadir) {
+        datadir = cdatadir;
+        return datadir;
+    }
+    
+#ifdef _WIN32
+    // Try a path relative with the exec. This works if we are
+    // recoll/recollindex etc.
+    // But maybe we are the python module, and execpath is the python
+    // exe which could be anywhere. Try the default installation
+    // directory, else tell the user to set the environment
+    // variable.
+    vector<string> paths{path_thisexecpath(), "c:/program files (x86)/recoll",
+            "c:/program files/recoll"};
+    for (const auto& path : paths) {
+        datadir = path_cat(path, "Share");
+        if (path_exists(datadir)) {
+            return datadir;
+        }
+    }
+    // Not found
+    std::cerr << "Could not find the recoll installation data. It is usually "
+        "a subfolder of the installation directory. \n"
+        "Please set the RECOLL_DATADIR environment variable to point to it\n"
+        "(e.g. setx RECOLL_DATADIR \"C:/Program Files (X86)/Recoll/Share)\"\n";
+#else
+    // If not in environment, use the compiled-in constant.
+    datadir = RECOLL_DATADIR;
+#endif
     return datadir;
 }
 

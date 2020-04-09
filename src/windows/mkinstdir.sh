@@ -22,14 +22,14 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 ################################
 # Local values (to be adjusted)
 
-#BUILD=MSVC
-BUILD=MINGW
+BUILD=MSVC
+#BUILD=MINGW
 
 if test $BUILD = MSVC ; then
     # Recoll src tree
     RCL=c:/users/bill/documents/recoll/src/
     # Recoll dependancies
-    RCLDEPS=c:/users/bill/documents/recolldeps/
+    RCLDEPS=/c/users/bill/documents/recolldeps/
     QTA=Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release
     LIBXML=${RCLDEPS}/msvc/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.dll
     LIBXSLT=${RCLDEPS}/msvc/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.dll
@@ -37,6 +37,7 @@ if test $BUILD = MSVC ; then
     ZLIB=${RCLDEPS}/msvc/zlib-1.2.11
     QTBIN=C:/Qt/5.14.1/msvc2017/bin
     MINGWBIN=c:/Qt/5.14.1/mingw73_32/bin/
+    PYRECOLL=${RCL}/python/recoll/
 else
     # Recoll src tree
     RCL=c:/recoll/src/
@@ -45,13 +46,17 @@ else
     QTA=Desktop_Qt_5_8_0_MinGW_32bit-Release/release
     LIBXAPIAN=${RCLDEPS}/mingw/xapian-core-1.4.11/.libs/libxapian-30.dll
     ZLIB=${RCLDEPS}/mingw/zlib-1.2.8
-    ASPELL=${RCLDEPS}/mingw/aspell-0.60.7/aspell-installed
     QTGCCBIN=C:/qt/Qt5.8.0/Tools/mingw530_32/bin/
     QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
     MINGWBIN=$QTBIN
     PATH=$MINGWBIN:$QTGCCBIN:$PATH
     export PATH
 fi
+
+# We use the mingw-compiled aspell program in both cases. When
+# compiling with msvc, we copy the msvc dll to the recoll top dir (and
+# don't use the exec, we keep the already tested mingw one).
+ASPELL=${RCLDEPS}/mingw/aspell-0.60.7/aspell-installed
 
 # Where to find libgcc_s_dw2-1.dll et all for progs compiled with
 # c:/MinGW (as opposed to the mingw bundled with qt). This is the same
@@ -128,7 +133,7 @@ copyqt()
 copypython()
 {
     mkdir -p $DESTDIR/Share/filters/python
-    cp -rp $PYTHON/* $DESTDIR/Share/filters/python
+    rsync -av $PYTHON/* $DESTDIR/Share/filters/python
     chkcp $PYTHON/python.exe $DESTDIR/Share/filters/python/python.exe
     chkcp $MISC/hwp5html $FILTERS
 }
@@ -170,6 +175,7 @@ copyrecoll()
     chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
     chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
     chkcp $RCL/qtgui/i18n/*.qm $DESTDIR/Share/translations
+    chkcp $RCL/desktop/recoll.ico $DESTDIR/Share
 }
 
 copyantiword()
@@ -285,13 +291,27 @@ copypff()
 copyaspell()
 {
     DEST=$FILTERS
-    if test $BUILD = MINGW ; then
-        cp -rp $ASPELL $DEST || fatal "can't copy $ASPELL"
-        DEST=$DEST/aspell-installed/mingw32/bin
-        # Check that we do have an aspell.exe.
-        chkcp $ASPELL/mingw32/bin/aspell.exe $DEST
-        chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DEST
-        chkcp $MINGWBIN/libstdc++-6.dll $DEST
+    cp -rp $ASPELL $DEST || fatal "can't copy $ASPELL"
+    DEST=$DEST/aspell-installed/mingw32/bin
+    # Check that we do have an aspell.exe.
+    chkcp $ASPELL/mingw32/bin/aspell.exe $DEST
+    chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DEST
+    chkcp $MINGWBIN/libstdc++-6.dll $DEST
+    chkcp $MINGWBIN/libwinpthread-1.dll $DEST
+    if test $BUILD = MSVC ; then
+        chkcp $RCLDEPS/mingw/build-libaspell-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release/aspell.dll $DESTDIR/libaspell-15.dll
+    fi
+}
+
+# Recoll python package. Only when compiled with msvc as this is what
+# the standard Python dist is built with
+copypyrecoll()
+{
+    if test $BUILD = MSVC ; then
+        PYRCLWHEEL=${PYRECOLL}/dist/Recoll-${VERSION}-cp37-cp37m-win32.whl
+        DEST=${DESTDIR}/Share/dist
+        test -d $DEST || mkdir $DEST || fatal cant create $DEST
+        chkcp ${PYRCLWHEEL} $DEST
     fi
 }
 
@@ -312,10 +332,11 @@ for d in doc examples filters images translations; do
         fatal mkdir $d failed
 done
 
-copyaspell
 # copyrecoll must stay before copyqt so that windeployqt can do its thing
 copyrecoll
+copypyrecoll
 copyqt
+copyaspell
 copypyxslt
 copypoppler
 copyantiword

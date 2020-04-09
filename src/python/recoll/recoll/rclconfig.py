@@ -54,7 +54,14 @@ class RclConfig:
             self.datadir = os.environ["RECOLL_DATADIR"]
         else:
             if platsys == "Windows":
-                self.datadir = os.path.join(os.path.dirname(sys.argv[0]), "..")
+                dirs = (os.path.join(os.path.dirname(sys.argv[0]), "..", ".."),
+                        "C:/Program Files (X86)/Recoll/",
+                        "C:/Program Files/Recoll/",
+                        "C:/install/recoll/")
+                for dir in dirs:
+                    if os.path.exists(os.path.join(dir, "Share")):
+                        self.datadir = os.path.join(dir, "Share")
+                        break
             else:
                 dirs = ("/opt/local", "/usr", "/usr/local")
                 for dir in dirs:
