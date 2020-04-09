@@ -8,7 +8,7 @@ DEFINES -= _UNICODE
 DEFINES -= UNICODE
 DEFINES += HAVE_CONFIG_H
 
-XAPIANDIR = ../../../../recolldeps-vc/xapian-core-1.4.15/
+XAPIANDIR = ../../../../recolldeps/msvc/xapian-core-1.4.15/
 
 SOURCES += \
 $$XAPIANDIR/api/compactor.cc \
@@ -245,7 +245,7 @@ windows {
     CONFIG += staticlib
     DEFINES += USING_STATIC_LIBICONV
     INCLUDEPATH += \
-      ../../../../recolldeps-vc/zlib-1.2.11/ \
-      ../../../../recolldeps-vc/wlibiconv/include
+      ../../../../recolldeps/msvc/zlib-1.2.11/ \
+      ../../../../recolldeps/msvc/wlibiconv/include
    }
 }
