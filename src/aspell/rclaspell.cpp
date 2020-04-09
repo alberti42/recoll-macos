@@ -71,14 +71,14 @@ static std::mutex o_aapi_mutex;
 static const vector<string> aspell_lib_suffixes {
 #if defined(__APPLE__) 
     ".15.dylib",
-        ".dylib",
+    ".dylib",
 #elif defined(_WIN32)
-        "-15.dll",
+    "-15.dll",
 #else
-        ".so",
-        ".so.15",
+    ".so",
+    ".so.15",
 #endif
-        };
+};
 
 // Private rclaspell data
 class AspellData {
@@ -211,8 +211,11 @@ bool Aspell::init(string &reason)
             }
         }
 #endif
-#if defined(_WIN32)
-        // Look in the directory of the aspell binary
+#if defined(_WIN32) && !defined(_MSC_VER)
+        // Look in the directory of the aspell binary. When building
+        // with msvc, the aspell .exe is still the mingw one, but we
+        // copy the msvc dll in the recoll top directory, so no need
+        // to look in the aspell one.
         {
             string bindir = path_getfather(m_data->m_exec);
             string lib1 = path_cat(bindir, lib);
