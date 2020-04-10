@@ -680,8 +680,8 @@ bool TextSplit::text_to_words(const string &in)
         // nothing right after a CJK section). Because
         // katakana-western transitions sometimes have no whitespace
         // (and maybe hangul too, but probably not).
-        if (prev_csc != CSC_CJK && csc != prev_csc &&
-            (m_wordLen || m_span.length())) {
+        if (prev_csc != CSC_CJK && prev_csc != CSC_HANGUL &&
+            csc != prev_csc && (m_wordLen || m_span.length())) {
             LOGDEB2("csc " << valToString(csc_names, csc) << " prev_csc " <<
                     valToString(csc_names, prev_csc) << " wl " <<
                     m_wordLen << " spl " << m_span.length() << endl);
