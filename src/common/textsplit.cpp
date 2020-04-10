@@ -34,6 +34,17 @@
 #include "smallut.h"
 #include "rclconfig.h"
 
+using namespace std;
+/**
+ * Splitting a text into words. The code in this file works with utf-8
+ * in a semi-clean way (see uproplist.h). Ascii still gets special
+ * treatment in the sense that many special characters can only be
+ * ascii (e.g. @, _,...). However, this compromise works quite well
+ * while being much more light-weight than a full-blown Unicode
+ * approach (ICU...)
+ */
+
+
 // Decide if we treat katakana as western scripts, splitting into
 // words instead of n-grams. This is not absurd (katakana is a kind of
 // alphabet, albeit phonetic and syllabic and is mostly used to
@@ -49,16 +60,6 @@
 // is defined at compile time.
 #define HANGUL_AS_WORDS
 
-using namespace std;
-
-/**
- * Splitting a text into words. The code in this file works with utf-8
- * in a semi-clean way (see uproplist.h). Ascii still gets special
- * treatment in the sense that many special characters can only be
- * ascii (e.g. @, _,...). However, this compromise works quite well
- * while being much more light-weight than a full-blown Unicode
- * approach (ICU...)
- */
 
 // Ascii character classes: we have three main groups, and then some chars
 // are their own class because they want special handling.
@@ -73,6 +74,58 @@ const unsigned int charclasses_size = 256;
 enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259, 
                 A_ULETTER=260, A_LLETTER=261, SKIP=262};
 static int charclasses[charclasses_size];
+
+
+bool          TextSplit::o_processCJK{true};
+unsigned int  TextSplit::o_CJKNgramLen{2};
+bool          TextSplit::o_noNumbers{false};
+bool          TextSplit::o_deHyphenate{false};
+int           TextSplit::o_maxWordLength{40};
+static const int o_CJKMaxNgramLen{5};
+bool o_exthangultagger{false};
+
+void TextSplit::staticConfInit(RclConfig *config)
+{
+    config->getConfParam("maxtermlength", &o_maxWordLength);
+
+    bool bvalue{false};
+    if (config->getConfParam("nocjk", &bvalue) && bvalue == true) {
+        o_processCJK = false;
+    } else {
+        o_processCJK = true;
+        int ngramlen;
+        if (config->getConfParam("cjkngramlen", &ngramlen)) {
+            o_CJKNgramLen = (unsigned int)(ngramlen <= o_CJKMaxNgramLen ?
+                                           ngramlen : o_CJKMaxNgramLen);
+        }
+    }
+
+    bvalue = false;
+    if (config->getConfParam("nonumbers", &bvalue)) {
+        o_noNumbers = bvalue;
+    }
+
+    bvalue = false;
+    if (config->getConfParam("dehyphenate", &bvalue)) {
+        o_deHyphenate = bvalue;
+    }
+
+    bvalue = false;
+    if (config->getConfParam("backslashasletter", &bvalue)) {
+        if (bvalue) {
+        } else {
+            charclasses[int('\\')] = SPACE;
+        }
+    }
+
+    string kotagger;
+    config->getConfParam("hangultagger", kotagger);
+    if (!kotagger.empty()) {
+        o_exthangultagger = true;
+        koStaticConfInit(config, kotagger);
+    }
+}
+
 
 // Non-ascii UTF-8 characters are handled with sets holding all
 // characters with interesting properties. This is far from full-blown
@@ -249,13 +302,16 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 #endif
 
 #ifdef HANGUL_AS_WORDS
+// If no external tagger is configured, we process HANGUL as generic
+// cjk (n-grams)
 #define UNICODE_IS_HANGUL(p) (                 \
-        ((p) >= 0x1100 && (p) <= 0x11FF) ||    \
-        ((p) >= 0x3130 && (p) <= 0x318F) ||    \
-        ((p) >= 0x3200 && (p) <= 0x321e) ||    \
-        ((p) >= 0x3248 && (p) <= 0x327F) ||    \
-        ((p) >= 0x3281 && (p) <= 0x32BF) ||    \
-        ((p) >= 0xAC00 && (p) <= 0xD7AF)       \
+        o_exthangultagger &&                   \
+        (((p) >= 0x1100 && (p) <= 0x11FF) ||   \
+         ((p) >= 0x3130 && (p) <= 0x318F) ||   \
+         ((p) >= 0x3200 && (p) <= 0x321e) ||   \
+         ((p) >= 0x3248 && (p) <= 0x327F) ||   \
+         ((p) >= 0x3281 && (p) <= 0x32BF) ||   \
+         ((p) >= 0xAC00 && (p) <= 0xD7AF))     \
         )
 #else
 #define UNICODE_IS_HANGUL(p) false
@@ -284,56 +340,6 @@ enum CharSpanClass {CSC_HANGUL, CSC_CJK, CSC_KATAKANA, CSC_OTHER};
 std::vector<CharFlags> csc_names {CHARFLAGENTRY(CSC_HANGUL),
         CHARFLAGENTRY(CSC_CJK), CHARFLAGENTRY(CSC_KATAKANA),
         CHARFLAGENTRY(CSC_OTHER)};
-
-bool          TextSplit::o_processCJK{true};
-unsigned int  TextSplit::o_CJKNgramLen{2};
-bool          TextSplit::o_noNumbers{false};
-bool          TextSplit::o_deHyphenate{false};
-int           TextSplit::o_maxWordLength{40};
-static const int o_CJKMaxNgramLen{5};
-bool o_exthangultagger{false};
-
-void TextSplit::staticConfInit(RclConfig *config)
-{
-    config->getConfParam("maxtermlength", &o_maxWordLength);
-
-    bool bvalue{false};
-    if (config->getConfParam("nocjk", &bvalue) && bvalue == true) {
-        o_processCJK = false;
-    } else {
-        o_processCJK = true;
-        int ngramlen;
-        if (config->getConfParam("cjkngramlen", &ngramlen)) {
-            o_CJKNgramLen = (unsigned int)(ngramlen <= o_CJKMaxNgramLen ?
-                                           ngramlen : o_CJKMaxNgramLen);
-        }
-    }
-
-    bvalue = false;
-    if (config->getConfParam("nonumbers", &bvalue)) {
-        o_noNumbers = bvalue;
-    }
-
-    bvalue = false;
-    if (config->getConfParam("dehyphenate", &bvalue)) {
-        o_deHyphenate = bvalue;
-    }
-
-    bvalue = false;
-    if (config->getConfParam("backslashasletter", &bvalue)) {
-        if (bvalue) {
-        } else {
-            charclasses[int('\\')] = SPACE;
-        }
-    }
-
-    string kotagger;
-    config->getConfParam("hangultagger", kotagger);
-    if (!kotagger.empty()) {
-        o_exthangultagger = true;
-        koStaticConfInit(config, kotagger);
-    }
-}
 
 // Final term checkpoint: do some checking (the kind which is simpler
 // to do here than in the main loop), then send term to our client.
@@ -635,11 +641,7 @@ bool TextSplit::text_to_words(const string &in)
         if (UNICODE_IS_KATAKANA(c)) {
             csc = CSC_KATAKANA;
         } else if (UNICODE_IS_HANGUL(c)) {
-            if (o_exthangultagger) {
-                csc = CSC_HANGUL;
-            } else {
-                csc = CSC_CJK;
-            }
+            csc = CSC_HANGUL;
         } else if (UNICODE_IS_CJK(c)) {
             csc = CSC_CJK;
         } else {
@@ -998,10 +1000,10 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     unsigned int c = 0;
     for (; !it.eof() && !it.error(); it++) {
         c = *it;
-        if (c == ' ' || c == '\t' || c == '\n') {
-            continue;
-        }
-        if (!UNICODE_IS_CJK(c)) {
+		// We had a version which ignored whitespace for some time,
+		// but this was a bad idea. Only break on an non-cjk
+		// alphabetic character.
+        if (!UNICODE_IS_CJK(c) && isalpha(c)) {
             // Return to normal handler
             break;
         }
