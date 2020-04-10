@@ -28,7 +28,15 @@
 import sys
 import cmdtalk
 
-from konlpy.tag import Okt,Mecab,Komoran
+# We can either use konlpy, which supports different analysers, or use
+# the python-mecab-ko, a direct interface to mecab, with the same
+# interface as konlpy https://pypi.org/project/python-mecab-ko/
+try:
+    import mecab
+    usingkonlpy = False
+except:
+    from konlpy.tag import Okt,Mecab,Komoran
+    usingkonlpy = True
 
 class Processor(object):
     def __init__(self, proto):
@@ -38,13 +46,21 @@ class Processor(object):
         self.tagsKomoran = False
 
     def _init_tagger(self, taggername):
+        global usingkonlpy
+        if not usingkonlpy and taggername != "Mecab":
+            from konlpy.tag import Okt,Mecab,Komoran
+            usingkonlpy = True
         if taggername == "Okt":
             self.tagger = Okt()
             self.tagsOkt = True
         elif taggername == "Mecab":
-            # Use Mecab(dicpath="c:/some/path/mecab-ko-dic") for a
-            # non-default location
-            self.tagger = Mecab()
+            if usingkonlpy:
+                # Use Mecab(dicpath="c:/some/path/mecab-ko-dic") for a
+                # non-default location. (?? mecab uses rcfile and dicdir not
+                # dicpath)
+                self.tagger = Mecab()
+            else:
+                self.tagger = mecab.MeCab()
             self.tagsMecab = True
         elif taggername == "Komoran":
             self.tagger = Komoran()
