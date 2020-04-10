@@ -46,6 +46,7 @@ static const string sepchars("\t");
 static CmdTalk *o_talker;
 static bool o_starterror{false};
 static string o_cmdpath;
+static vector<string> o_cmdargs;
 std::mutex o_mutex;
 static string o_taggername{"Okt"};
 static bool isKomoran{false};
@@ -58,7 +59,13 @@ static const string magicpage{"NEWPPPAGE"};
 
 void TextSplit::koStaticConfInit(RclConfig *config, const string& tagger)
 {
+#ifdef _WIN32
+    o_cmdpath = config->findFilter("python");
+    o_cmdargs.clear();
+    o_cmdargs.push_back(config->findFilter("kosplitter.py"));
+#else
     o_cmdpath = config->findFilter("kosplitter.py");
+#endif
     if (tagger == "Okt" || tagger == "Mecab" || tagger == "Komoran") {
         o_taggername = tagger;
         if (tagger == "Komoran")
@@ -92,7 +99,7 @@ static bool initCmd()
         o_starterror = true;
         return false;
     }
-    if (!o_talker->startCmd(o_cmdpath)) {
+    if (!o_talker->startCmd(o_cmdpath, o_cmdargs)) {
         delete o_talker;
         o_talker = nullptr;
         o_starterror = true;
