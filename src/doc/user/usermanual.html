@@ -2468,7 +2468,13 @@ metadatacmds = ; <em class=
           work with the good old <span class=
           "command"><strong>cron</strong></span>, and do not give
           access to all features of <span class=
-          "command"><strong>cron</strong></span> scheduling.</p>
+          "command"><strong>cron</strong></span> scheduling.
+          Entries created via the tool are marked with a
+          <code class="literal">RCLCRON_RCLINDEX=</code> marker so
+          that the tool knows which entries belong to it. As a side
+          effect, this sets an environment variable for the
+          process, but it's not actually used, this is just a
+          marker.</p>
           <p>The usual command to edit your <code class=
           "filename">crontab</code> is <span class=
           "command"><strong>crontab</strong></span> <code class=
@@ -8454,11 +8460,6 @@ for i in range(nres):
                 result has to be compatible with the <code class=
                 "filename">libaspell</code> which <span class=
                 "application">Recoll</span> is using.</p>
-              </dd>
-              <dt><span class="term"><code class=
-              "varname">VARNAME</code></span></dt>
-              <dd>
-                <p>Blabla</p>
               </dd>
             </dl>
           </div>

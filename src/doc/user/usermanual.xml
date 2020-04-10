@@ -1675,7 +1675,12 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
         </menuchoice> 
         menu. They only 
         work with the good old <command>cron</command>, and do not give
-        access to all features of <command>cron</command> scheduling.</para>
+        access to all features of <command>cron</command>
+        scheduling. Entries created via the tool are marked with
+        a <literal>RCLCRON_RCLINDEX=</literal> marker so that the tool
+        knows which entries belong to it. As a side effect, this sets an
+        environment variable for the process, but it's not actually used,
+        this is just a marker.</para> 
 
         <para>The usual command to edit your
         <filename>crontab</filename> is <command>crontab</command>
@@ -6545,11 +6550,6 @@ for i in range(nres):
             creating the spelling dictionary. The result has to be
             compatible with the <filename>libaspell</filename> which &RCL;
             is using.</para></listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term><varname>VARNAME</varname></term>
-            <listitem><para>Blabla</para></listitem>
           </varlistentry>
 
         </variablelist>
