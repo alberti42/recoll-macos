@@ -74,10 +74,14 @@ public:
     : QWebEnginePage((QWidget *)parent), m_parent(parent) {}
 protected:
     virtual bool acceptNavigationRequest(const QUrl& url, 
-                                         NavigationType, 
+                                         NavigationType tp, 
                                          bool) {
-        m_parent->onLinkClicked(url);
-        return false;
+        if (tp == QWebEnginePage::NavigationTypeLinkClicked) {
+            m_parent->onLinkClicked(url);
+            return false;
+        } else {
+            return true;
+        }
     }
 private:
     SnippetsW *m_parent;
