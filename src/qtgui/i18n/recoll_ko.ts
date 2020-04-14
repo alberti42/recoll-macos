@@ -1494,6 +1494,10 @@ Please check the desktop file</source>
         <source>Could not open/create file</source>
         <translation>파일 열기/만들기 불가</translation>
     </message>
+    <message>
+        <source>F&amp;ilter</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2661,6 +2665,33 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
 </context>
 <context>
+    <name>WinSchedToolW</name>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">오류</translation>
+    </message>
+    <message>
+        <source>Configuration not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command already started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recoll Batch indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Windows Task Scheduler tool</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Web page store directory name</source>
@@ -2963,7 +2994,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>미리보기를 위한 강조된 글자 수 크기의 최대값(MB)</translation>
+        <translation type="vanished">미리보기를 위한 강조된 글자 수 크기의 최대값(MB)</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
@@ -3289,6 +3320,10 @@ The default value is 2 (percent). </source>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
         <translation>앵커 텍스트 앞에 공백을 삽입하여 QTBUG-78923을 해결합니다.</translation>
+    </message>
+    <message>
+        <source>Maximum text size highlighted for preview (kilobytes)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

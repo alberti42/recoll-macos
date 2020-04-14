@@ -898,12 +898,12 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="+668"/>
+        <location filename="../preview_w.cpp" line="+651"/>
         <source>Canceled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="-63"/>
         <source>Error loading the document: file missing.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -933,17 +933,17 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+132"/>
         <source>Could not fetch stored text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+49"/>
         <source>Creating preview text</source>
         <translation>Создание текста для просмотра</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+65"/>
         <source>Loading preview text into editor</source>
         <translation>Загрузка текста в редактор</translation>
     </message>
@@ -952,7 +952,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="obsolete">Невозможно создать временный каталог</translation>
     </message>
     <message>
-        <location line="-211"/>
+        <location line="-148"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -961,7 +961,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="vanished">Закрыть вкладку</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="-63"/>
         <source>Missing helper program: </source>
         <translation>Отсутствует вспомогательное приложение: </translation>
     </message>
@@ -982,7 +982,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
 <context>
     <name>PreviewTextEdit</name>
     <message>
-        <location line="+301"/>
+        <location line="+339"/>
         <location line="+11"/>
         <source>Show fields</source>
         <translation>Показать поля</translation>
@@ -1558,7 +1558,12 @@ Please check the mimeconf file</source>
         <translation>фильтрованные</translation>
     </message>
     <message>
-        <location line="+919"/>
+        <location line="+103"/>
+        <source>F&amp;ilter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+816"/>
         <source>Confirm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2828,7 +2833,7 @@ Please check the desktop file</source>
         <translation>Язык запроса</translation>
     </message>
     <message>
-        <location line="+217"/>
+        <location line="+212"/>
         <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4040,6 +4045,39 @@ This should give higher precedence to the results where the search terms appear 
     </message>
 </context>
 <context>
+    <name>WinSchedToolW</name>
+    <message>
+        <location filename="../winschedtool.cpp" line="+38"/>
+        <source>Error</source>
+        <translation type="unfinished">Ошибка</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Configuration not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Command already started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../winschedtool.ui" line="+14"/>
+        <source>Recoll Batch indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Start Windows Task Scheduler tool</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Steal Beagle indexing queue</source>
@@ -4374,7 +4412,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Интерфейс пользователя</translation>
     </message>
     <message>
-        <location line="+330"/>
+        <location line="+336"/>
         <source>Generate desktop notifications.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4418,8 +4456,8 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Установка используемого по умолчанию системного шрифта для списка результатов</translation>
     </message>
     <message>
-        <location line="-382"/>
-        <location line="+385"/>
+        <location line="-388"/>
+        <location line="+391"/>
         <location line="+103"/>
         <source>Reset</source>
         <translation>Сброс</translation>
@@ -4433,21 +4471,20 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="obsolete">Строка форматирования&lt;br&gt;блока результатов</translation>
     </message>
     <message>
-        <location line="-471"/>
+        <location line="-477"/>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
         <translation>Тексты большего размера не будут подсвечиваться при просмотре (медленно).</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Максимальный размер текста, подсвечиваемого при просмотре (Мб)</translation>
+        <translation type="vanished">Максимальный размер текста, подсвечиваемого при просмотре (Мб)</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
         <translation type="obsolete">Использовать десктопные настройки для выбора редактора документов.</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+98"/>
         <source>Choose editor applications</source>
         <translation>Выбор приложений-редакторов</translation>
     </message>
@@ -4479,12 +4516,12 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Просмотр простого текста в формате HTML.</translation>
     </message>
     <message>
-        <location line="-76"/>
+        <location line="-82"/>
         <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+324"/>
+        <location line="+330"/>
         <source>Suppress all beeps.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4494,7 +4531,12 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="-206"/>
+        <source>Maximum text size highlighted for preview (kilobytes)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+491"/>
         <source>Maximum number of snippets displayed in the snippets window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4660,19 +4702,19 @@ May be slow for big documents.</source>
         <translation type="vanished">Таблица стилей</translation>
     </message>
     <message>
-        <location line="-451"/>
+        <location line="-457"/>
         <source>Opens a dialog to select the style sheet file</source>
         <translation>Открыть диалог выбора файла стилей</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+488"/>
+        <location line="+494"/>
         <location line="+383"/>
         <source>Choose</source>
         <translation>Выбрать</translation>
     </message>
     <message>
-        <location line="-864"/>
+        <location line="-870"/>
         <source>Resets the style sheet to default</source>
         <translation>Сброс таблицы стилей к значению по умолчанию</translation>
     </message>
@@ -4685,7 +4727,7 @@ May be slow for big documents.</source>
         <translation type="obsolete">Использовать теги &lt;PRE&gt; вместо &lt;BR&gt; для отображения обычного текста как HTML при предварительном просмотре.</translation>
     </message>
     <message>
-        <location line="+322"/>
+        <location line="+328"/>
         <source>Result List</source>
         <translation>Список результатов</translation>
     </message>
@@ -4790,12 +4832,12 @@ The default value is 2 (percent). </source>
         <translation>Стиль отображения фильтров: в виде кнопок-переключателей, поле со списком на панели инструментов или меню.</translation>
     </message>
     <message>
-        <location line="-141"/>
+        <location line="-147"/>
         <source>Application Qt style sheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+144"/>
+        <location line="+150"/>
         <source>Document filter choice style:</source>
         <translation>Стиль отображения фильтров:</translation>
     </message>
@@ -4855,7 +4897,7 @@ The default value is 2 (percent). </source>
         <translation>Показывать предупреждение при открытии временного файла.</translation>
     </message>
     <message>
-        <location line="-330"/>
+        <location line="-336"/>
         <source>Highlight CSS style for query terms</source>
         <translation>CSS-стиль подсветки слов запроса</translation>
     </message>
@@ -4865,7 +4907,7 @@ The default value is 2 (percent). </source>
         <translation>Recoll — Пользовательская настройка</translation>
     </message>
     <message>
-        <location line="+1000"/>
+        <location line="+1006"/>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation>Задать корректировку путей для выбранного или главного индекса, если ничего не выбрано.</translation>
     </message>

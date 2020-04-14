@@ -1532,6 +1532,10 @@ Please check the desktop file</source>
         <source>Could not open/create file</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>F&amp;ilter</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2715,6 +2719,33 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
 </context>
 <context>
+    <name>WinSchedToolW</name>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">Fout</translation>
+    </message>
+    <message>
+        <source>Configuration not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command already started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recoll Batch indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Windows Task Scheduler tool</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Web page store directory name</source>
@@ -3018,7 +3049,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Maximale tekst groote highlighted voor preview (megabytes)</translation>
+        <translation type="vanished">Maximale tekst groote highlighted voor preview (megabytes)</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
@@ -3343,6 +3374,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum text size highlighted for preview (kilobytes)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

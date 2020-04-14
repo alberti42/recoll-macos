@@ -1501,6 +1501,10 @@ Please check the desktop file</source>
         <source>Could not open/create file</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>F&amp;ilter</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -3020,6 +3024,33 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     </message>
 </context>
 <context>
+    <name>WinSchedToolW</name>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configuration not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command already started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recoll Batch indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Windows Task Scheduler tool</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
@@ -3214,7 +3245,7 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Dimensione massima del testo da evidenziare nell&apos;anteprima (megabytes)</translation>
+        <translation type="vanished">Dimensione massima del testo da evidenziare nell&apos;anteprima (megabytes)</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
@@ -3541,6 +3572,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum text size highlighted for preview (kilobytes)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

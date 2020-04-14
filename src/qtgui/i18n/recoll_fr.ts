@@ -363,11 +363,11 @@
     </message>
     <message>
         <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
-        <translation type="unfinished"></translation>
+        <translation>Langues pour lesquelles les dictionnaires d&apos;expansion des racines.&lt;br&gt;Consulter la liste des valeurs possibles dans documentation Xapian (stemmers). Ex: english, french, german...</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
-        <translation type="unfinished"></translation>
+        <translation>Langue du dictionnaire aspell. Les valeurs sont des codes en deux lettres, par exemple &apos;en&apos;, &apos;fr&apos;...&lt;br&gt;Si cette valeur n&apos;est pas renseignée, l&apos;environnement système sera utilisé pour la déterminer, ce qui marche bien le plus souvent. Pour avoir une idée de ce qui est installé sur votre système, utiliser la commande &apos;aspell --help&apos; qui affiche entre autres la liste des dictionnaires disponibles.</translation>
     </message>
 </context>
 <context>
@@ -808,11 +808,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Previous result document</source>
-        <translation type="unfinished"></translation>
+        <translation>Prévisualisation du résultat</translation>
     </message>
     <message>
         <source>Next result document</source>
-        <translation type="unfinished"></translation>
+        <translation>Résultat suivant</translation>
     </message>
 </context>
 <context>
@@ -1655,23 +1655,27 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Batch scheduling</source>
-        <translation type="unfinished"></translation>
+        <translation>Programmation du traitement par lots</translation>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisez cet outil pour déterminer à quelle heure l&apos;indexation doit s&apos;exécuter. Il est basé sur l&apos;outile de programmation de tâches Windows.</translation>
     </message>
     <message>
         <source>Confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmer</translation>
     </message>
     <message>
         <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Effacement des historique de recherche, cliquer Ok pour confirmer</translation>
     </message>
     <message>
         <source>Could not open/create file</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;ouvrir ou créer le fichier</translation>
+    </message>
+    <message>
+        <source>F&amp;ilter</source>
+        <translation>F&amp;iltre</translation>
     </message>
 </context>
 <context>
@@ -1986,7 +1990,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>E&amp;xport simple search history</source>
-        <translation type="unfinished"></translation>
+        <translation>E&amp;xporter l&apos;historique de recherches simples</translation>
     </message>
 </context>
 <context>
@@ -3479,6 +3483,33 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
 </context>
 <context>
+    <name>WinSchedToolW</name>
+    <message>
+        <source>Error</source>
+        <translation>Erreur</translation>
+    </message>
+    <message>
+        <source>Configuration not initialized</source>
+        <translation>Configuration non initialisée</translation>
+    </message>
+    <message>
+        <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
+        <translation>&lt;h3&gt;Programmation de l&apos;indexation par lots&lt;/h3&gt;&lt;p&gt;Recoll utilise l&apos;outil standard Windows de programmation de tâches. Ce programme sera démarré quand vous cliquerez le bouton ci-dessous.&lt;/p&gt;&lt;p&gt;Vous pouvez utiliser soit l&apos;interface complète (&lt;i&gt;Créer&lt;/i&gt; dans le menu à droite), ou l&apos;interface simplifiée &lt;i&gt;Créer une tâche basique&lt;/i&gt;. Dans les deux cas, Copier/Coller le chemin du fichier de tâche listé ci-dessous comme l&apos;&lt;i&gt;Action&lt;/i&gt; à exécuter.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>Command already started</source>
+        <translation>Commande déjà démarrée</translation>
+    </message>
+    <message>
+        <source>Recoll Batch indexing</source>
+        <translation>Indexation par lots</translation>
+    </message>
+    <message>
+        <source>Start Windows Task Scheduler tool</source>
+        <translation>Démarrer l&apos;outil de programmation de tâches</translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Steal Beagle indexing queue</source>
@@ -3861,7 +3892,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Taille maximum des textes surlignés avant prévisualisation (Mo)</translation>
+        <translation type="vanished">Taille maximum des textes surlignés avant prévisualisation (Mo)</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
@@ -4207,31 +4238,35 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Application Qt style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Feuille de style Qt pour l&apos;application</translation>
     </message>
     <message>
         <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
-        <translation type="unfinished"></translation>
+        <translation>Limiter la taille de l&apos;historique de recherche. Entrer 0 pour ne pas avoir d&apos;historique, et -1 pour ne pas avoir de limite de taille.</translation>
     </message>
     <message>
         <source>Maximum size of search history (0: disable, -1: unlimited):</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille maximum de l&apos;historique de recherche (0:inactivé, -1: sans limite):</translation>
     </message>
     <message>
         <source>Generate desktop notifications.</source>
-        <translation type="unfinished"></translation>
+        <translation>Générer des notifications bureau.</translation>
     </message>
     <message>
         <source>Misc</source>
-        <translation type="unfinished"></translation>
+        <translation>Divers</translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="unfinished"></translation>
+        <translation>Contourner le QTBUG-78923 en inseŕant un espace devant le texte du lien</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher un lien Extraits me quand le document n&apos;est pas paginé (vous devrez redémarrer Recoll).</translation>
+    </message>
+    <message>
+        <source>Maximum text size highlighted for preview (kilobytes)</source>
+        <translation>Taille maximum de texte surligné pour la prévisualisation (kilo-octets)</translation>
     </message>
 </context>
 </TS>
