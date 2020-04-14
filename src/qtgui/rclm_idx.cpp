@@ -222,10 +222,40 @@ void RclMain::periodic100()
         fileExit();
 }
 
+// On win32 we have trouble passing filename args on the command line
+// (recollindex would need to use wmain and process wchar args. So we
+// use a temp file: if the first and only arg to recollindex is not an
+// option, it's a file with the command line inside it.
+bool RclMain::maybeArgsToFile(vector<string>& args)
+{
+#ifdef _WIN32
+    if (!m_idxargstmp || !m_idxargstmp->ok()) {
+        TempFile temp("");
+        m_idxargstmp = rememberTempFile(temp);
+    }
+    string s;
+    stringsToString(args, s);
+    fstream fout(m_idxargstmp->filename(), ios::out|ios::trunc);
+    fout << s;
+    fout.close();
+    return true;
+    if (args[0] == "recollindex") {
+        args = {args[0], m_idxargstmp->filename()};
+    } else {
+        args = {m_idxargstmp->filename()};
+    }
+    return true;
+#else
+    args = args;
+    return true;
+#endif
+}
+
 bool RclMain::checkIdxPaths()
 {
     string badpaths;
-    vector<string> args {"recollindex", "-c", theconfig->getConfDir(), "-E"};
+    vector<string> args{"recollindex", "-c", theconfig->getConfDir(), "-E"};
+    maybeArgsToFile(args);
     ExecCmd::backtick(args, badpaths);
     if (!badpaths.empty()) {
         int rep = QMessageBox::warning(
@@ -295,6 +325,7 @@ void RclMain::toggleIndexing()
             args.push_back(m_idxreasontmp->filename());
         }
         m_idxproc = new ExecCmd;
+        maybeArgsToFile(args);
         m_idxproc->startExec("recollindex", args, false, false);
     }
     break;
@@ -400,6 +431,7 @@ void RclMain::rebuildIndex()
                 args.push_back(m_idxreasontmp->filename());
             }
             m_idxproc = new ExecCmd;
+            maybeArgsToFile(args);
             m_idxproc->startExec("recollindex", args, false, false);
         }
     }
@@ -526,6 +558,7 @@ void RclMain::specialIndex()
         args.push_back(top);
     }
     m_idxproc = new ExecCmd;
+    maybeArgsToFile(args);
     LOGINFO("specialIndex: exec: " << execToString("recollindex", args) <<endl);
     m_idxproc->startExec("recollindex", args, false, false);
 }
@@ -548,6 +581,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
         }
         args.insert(args.end(), paths.begin(), paths.end());
         m_idxproc = new ExecCmd;
+        maybeArgsToFile(args);
         m_idxproc->startExec("recollindex", args, false, false);
         // Call periodic100 to update the menu entries states
         periodic100();

@@ -66,7 +66,7 @@ public:
     QString getQueryDescription();
 
     /** This is only called from main() to set an URL to be displayed (using
-    recoll as a doc extracter for embedded docs */
+        recoll as a doc extracter for embedded docs */
     virtual void setUrlToView(const QString& u) {
         m_urltoview = u;
     }
@@ -130,7 +130,7 @@ public slots:
     virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
     virtual void startNativeViewer(Rcl::Doc, int pagenum = -1,
-                                  QString term = QString());
+                                   QString term = QString());
     virtual void openWith(Rcl::Doc, string);
     virtual void saveDocToFile(Rcl::Doc);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
@@ -208,6 +208,7 @@ private:
     ExecCmd          *m_idxproc{0}; // Indexing process
     bool             m_idxkilled{false}; // Killed my process
     TempFile        *m_idxreasontmp{nullptr};
+    TempFile        *m_idxargstmp{nullptr};
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
     int               m_catgbutvecidx{0};
@@ -250,6 +251,7 @@ private:
     virtual bool containerUpToDate(Rcl::Doc& doc);
     virtual void setFiltSpec();
     virtual bool checkIdxPaths();
+    bool maybeArgsToFile(std::vector<std::string>& args);
 };
 
 #endif // RCLMAIN_W_H
