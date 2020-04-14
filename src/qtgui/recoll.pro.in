@@ -91,6 +91,7 @@ SOURCES += \
         viewaction_w.cpp \
         webcache.cpp \
         widgets/qxtconfirmationmessage.cpp \
+        winschedtool.cpp \
         xmltosd.cpp
 
 FORMS   = \
@@ -111,7 +112,8 @@ FORMS   = \
         viewaction.ui \
         webcache.ui \
         widgets/editdialog.ui \
-        widgets/listdialog.ui 
+        widgets/listdialog.ui \
+        winschedtool.ui
         
 RESOURCES = recoll.qrc
 

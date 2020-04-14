@@ -14,6 +14,7 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+#ifdef _WIN32
 #include "autoconfig.h"
 #include "winschedtool.h"
 
@@ -86,3 +87,4 @@ void WinSchedToolW::startWinScheduler()
     vector<string> lcmd{"c:/windows/system32/taskschd.msc"};
     m_cmd->startExec("rclstartw", lcmd, false, false);
 }
+#endif /* _WIN32 */
