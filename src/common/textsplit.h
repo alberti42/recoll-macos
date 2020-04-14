@@ -89,11 +89,13 @@ public:
     static bool stringToStrings(const std::string &s,
                                 std::vector<std::string> &tokens);
 
-    /** Is char CJK ? (excluding Katakana) */
+    /** Is char CJK ? */
     static bool isCJK(int c);
     static bool isKATAKANA(int c);
     static bool isHANGUL(int c);
-
+    /* Not split in words */
+    static bool isNGRAMMED(int c);
+    
     /** Statistics about word length (average and dispersion) can
      * detect bad data like undecoded base64 or other mis-identified
      * pieces of data taken as text. In practise, this keeps some junk out 

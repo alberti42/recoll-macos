@@ -319,8 +319,7 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 
 bool TextSplit::isCJK(int c)
 {
-    return UNICODE_IS_CJK(c) && !UNICODE_IS_KATAKANA(c) &&
-        !UNICODE_IS_HANGUL(c);
+    return UNICODE_IS_CJK(c);
 }
 bool TextSplit::isKATAKANA(int c)
 {
@@ -329,6 +328,11 @@ bool TextSplit::isKATAKANA(int c)
 bool TextSplit::isHANGUL(int c)
 {
     return UNICODE_IS_HANGUL(c);
+}
+bool TextSplit::isNGRAMMED(int c)
+{
+    return UNICODE_IS_CJK(c) && !UNICODE_IS_KATAKANA(c) &&
+        !UNICODE_IS_HANGUL(c);
 }
 
 

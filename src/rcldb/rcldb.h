@@ -202,9 +202,8 @@ public:
 
         Utf8Iter u8i(term);
         if (with_aspell) {
-            // If spelling with aspell, neither katakana nor other cjk
-            // scripts are candidates
-            if (TextSplit::isCJK(*u8i) || TextSplit::isKATAKANA(*u8i))
+            // If spelling with aspell, CJK scripts are not candidates
+            if (TextSplit::isCJK(*u8i))
                 return false;
         } else {
 #ifdef TESTING_XAPIAN_SPELL

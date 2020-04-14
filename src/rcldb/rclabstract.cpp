@@ -478,7 +478,7 @@ void Query::Native::abstractCreateSnippetsVector(
         }
         Utf8Iter uit(ent.second);
         bool newcjk = false;
-        if (TextSplit::isCJK(*uit))
+        if (TextSplit::isNGRAMMED(*uit))
             newcjk = true;
         if (!incjk || (incjk && !newcjk))
             chunk += " ";
