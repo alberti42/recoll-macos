@@ -108,7 +108,7 @@
     </message>
     <message>
         <source>Ignored file types</source>
-        <translation>무시된 파일 형식들</translation>
+        <translation>무시할 파일 형식</translation>
     </message>
     <message>
         <source>Enter top directory for search</source>
@@ -195,7 +195,7 @@
     </message>
     <message>
         <source>Global parameters</source>
-        <translation>광역 매개변수들</translation>
+        <translation>광역 환경설정</translation>
     </message>
     <message>
         <source>Local parameters</source>
@@ -207,15 +207,15 @@
     </message>
     <message>
         <source>Top directories</source>
-        <translation>최상위 폴더들</translation>
+        <translation>색인할 최상위 폴더</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>재귀 색인 작성이 시작되는 폴더 목록. 기본값 : home.</translation>
+        <translation>색인 작성이 시작되는 폴더 목록. 기본값 : home(리눅스).</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation>건너뛴 경로들</translation>
+        <translation>제외할 폴더</translation>
     </message>
     <message>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
@@ -235,15 +235,15 @@
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation>메시지가 기록 될 파일입니다.&lt;br&gt;터미널 출력에 &apos;stderr&apos;을 사용하십시오.</translation>
+        <translation>메시지가 기록 될 파일입니다.&lt;br&gt;터미널에 출력하려면 &apos;stderr&apos;을 입력하십시오.</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation>로그 상세 수준</translation>
+        <translation>상세 로그 수준</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation>이 값은 메시지의 범위를&lt;br&gt;오류부터 많은 디버깅 데이터에까지 조정합니다.</translation>
+        <translation>이 값은 메시지의 범위를&lt;br&gt;단순 오류에서부터 많은 디버깅 데이터에까지 조정합니다.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
@@ -259,7 +259,7 @@
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation>색인을 실패시키고 중지시킬 디스크 크기(색인 크기가 아닌 전체 디스크 사용량)의 백분율입니다.&lt;br&gt;기본값 0은 제한을 두지 않습니다.</translation>
+        <translation>색인을 실패시키고 중지시킬 디스크 크기의 백분율입니다.&lt;br&gt;기준은 색인 크기가 아닌 전체 디스크 사용량입니다.&lt;br&gt;기본값인 0은 제한을 두지 않습니다.</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -296,7 +296,7 @@
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation>웹 히스토리 큐 처리</translation>
+        <translation>웹 기록 큐 처리</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
@@ -308,7 +308,7 @@
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation>방문한 웹 페이지의 사본을 저장할 디렉토리의 이름.&lt;br&gt;상대적인 경로인 경우 환경설정 폴더를 기준으로합니다.</translation>
+        <translation>방문한 웹 페이지의 사본을 저장할 디렉토리의 이름을 지정해줍니다.&lt;br&gt;상대적인 경로를 입력한 경우, 환경설정 폴더를 기준으로 합니다.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
@@ -355,15 +355,15 @@
     <name>ConfSubPanelW</name>
     <message>
         <source>Only mime types</source>
-        <translation>오직 MIME 유형만</translation>
+        <translation>특정 MIME만 색인</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation>색인 처리된 MIME 유형들의 독점 목록입니다.&lt;br&gt;다른 것들은 색인되지 않을 것입니다. 보통 비어있음, 비활성화.</translation>
+        <translation>여기서 설정된 MIME 유형들만 색인합니다.&lt;br&gt;보통은 비어있음(비활성화).</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation>제외된 MIME 유형들</translation>
+        <translation>제외할 MIME 유형</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
@@ -375,7 +375,7 @@
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation>이 값은 압축 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로, 압축 해제가 없으면 0으로 설정하십시오.</translation>
+        <translation>이 값은 압축 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로, 압축 해제를 하지 않으려면 0으로 설정하십시오.</translation>
     </message>
     <message>
         <source>Max. text file size (MB)</source>
@@ -385,7 +385,7 @@
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
         <translation>이 값은 텍스트 파일이 처리되지 않게 할 임계 값을 설정합니다. 제한이 없으면 -1로 설정하십시오.
-이것은 색인에서 너무 큰 로그 파일을 제외하기위한 것입니다.</translation>
+이것은 색인에서 너무 큰 로그 파일을 제외하기 위한 것입니다.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
@@ -399,7 +399,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max. filter exec. time (s)</source>
-        <translation>필터 최대 실행시간</translation>
+        <translation>필터 최대 실행시간(초)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
@@ -817,19 +817,19 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
-        <translation>&lt;b&gt;사용자 정의된 하위 트리</translation>
+        <translation>&lt;b&gt;폴더별 환경설정</translation>
     </message>
     <message>
         <source>The list of subdirectories in the indexed hierarchy &lt;br&gt;where some parameters need to be redefined. Default: empty.</source>
-        <translation>색인 구조 중 하위 디렉터리 목록 &lt;br&gt; 일부 매개 변수는 재정의해야합니다. 기본값 : 비어 있음</translation>
+        <translation>색인 구조 중 하위 디렉터리 목록을 선택하십시오.&lt;br&gt;일부 환경 설정는 재정의해야합니다.&lt;br&gt;기본값 : 비어 있음</translation>
     </message>
     <message>
         <source>Skipped names</source>
-        <translation>생략된 이름들</translation>
+        <translation>생략할 이름</translation>
     </message>
     <message>
         <source>These are patterns for file or directory  names which should not be indexed.</source>
-        <translation>파일 또는 디렉토리 이름이 색인 작성해서는 안되는 패턴을 가지고 있습니다.</translation>
+        <translation>파일 또는 디렉토리 이름 중 색인 작성해서는 안되는 패턴을 설정합니다.</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
@@ -837,7 +837,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Follow symbolic links while indexing. The default is no, to avoid duplicate indexing</source>
-        <translation>색인 작성 중 심볼릭 링크 따라가기. 중복 색인 작성을 피하기 위해, 기본값은 no.</translation>
+        <translation>이중 색인 작성을 피하기 위해서, 심볼릭 링크의 본래 경로로 색인합니다. 기본값은 no.</translation>
     </message>
     <message>
         <source>Index all file names</source>
@@ -845,7 +845,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation>내용들을 파악할 수 없거나 처리할 수 없는 파일들(없거나 지원하지 않는 MIME 형식)의 이름들도 색인합니다. 기본값: true</translation>
+        <translation>내용들을 파악할 수 없거나 처리할 수 없는 파일들(확장자가 없거나 지원하지 않는 MIME 형식)의 이름들도 색인합니다. 기본값: true</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -865,17 +865,20 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Ignored endings</source>
-        <translation>무시된 확장자들</translation>
+        <translation>무시할 확장자</translation>
     </message>
     <message>
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
-        <translation>이름만으로 색인되는 파일의 확장자입니다.
+        <translation>파일 이름만 색인하고, 파일 내용은 색인하지 않습니다.
 (지원 안되는 MIME 유형, 압축 내 파일, 색인할 컨텐츠 없음)</translation>
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;위 목록 상자에서 아무것도 선택하지 않거나, 빈 줄을 선택하거나, 하위 폴더를 선택한다면, 다음에 오는 매개변수는 최상위 레벨에서 설정됩니다. +/- 버튼을 클릭하여 폴더들을 추가하거나 지울 수 있습니다.</translation>
+        <translation>위에 추가할 폴더는 &apos;광역 환경설정&apos;에서 정해준 &apos;색인할 최상위 폴더&apos;의 하위 폴더이어야 합니다.
+&lt;i&gt;위 목록 상자에서 아무것도 추가하지 않았거나, 빈 줄을 선택한다면, 아래의 설정들은 최상위 레벨에서 설정됩니다.
+추가한 하위 폴더를 선택하였다면, 아래 설정한 내용은 해당 폴더에만 적용됩니다.
++/- 버튼을 클릭하여 폴더들을 추가하거나 지울 수 있습니다.</translation>
     </message>
 </context>
 <context>
@@ -1061,7 +1064,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Query results</source>
-        <translation>검색어 결과들</translation>
+        <translation>검색 결과</translation>
     </message>
     <message>
         <source>Cannot retrieve document info from database</source>
@@ -1097,7 +1100,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Document history</source>
-        <translation>문서 역사</translation>
+        <translation></translation>
     </message>
     <message>
         <source>Update &amp;Index</source>
@@ -1145,15 +1148,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>No helpers found missing</source>
-        <translation>도우미 프로그램을 찾을 수 없습니다.</translation>
+        <translation>누락된 도우미 프로그램이 없습니다.</translation>
     </message>
     <message>
         <source>Missing helper programs</source>
-        <translation>도우미 프로그램들이 누락되었습니다.</translation>
+        <translation>누락된 도우미 프로그램들</translation>
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
-        <translation>다음 MIME 형식에 대한 위부 뷰어 구성이 없습니다: [</translation>
+        <translation>다음 MIME 형식에 대해 구성된 외부 뷰어가 없습니다: [</translation>
     </message>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
@@ -1175,7 +1178,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Result count (est.)</source>
-        <translation>결과 계수 (추정값)</translation>
+        <translation>결과 목록 갯수 (추정값)</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -1236,7 +1239,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Indexed MIME Types</source>
-        <translation>색인된 MIME 유형들</translation>
+        <translation>색인된 MIME 목록</translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
@@ -1254,7 +1257,7 @@ mimeview 파일을 확인하십시오.</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
-        <translation>외부 프로그램들/명령들이 최근 색인 처리가 되어 저장된 파일 유형에 필요하지만, 찾을 수 없습니다.</translation>
+        <translation>최근 색인 처리가 되어 저장된 일부 파일 유형에 외부(도우미) 프로그램들/명령들이 필요하지만, 찾을 수 없습니다.</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
@@ -1404,7 +1407,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Results</source>
-        <translation>결과들</translation>
+        <translation>검색 결과</translation>
     </message>
     <message>
         <source>Content has been indexed for these MIME types:</source>
@@ -1512,11 +1515,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation>도움(&amp;H)</translation>
+        <translation type="unfinished">도움말(&amp;H)</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation>나가기(&amp;E)</translation>
+        <translation type="unfinished">종료(&amp;E)</translation>
     </message>
     <message>
         <source>Ctrl+Q</source>
@@ -1528,7 +1531,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Erase document history</source>
-        <translation>문서 히스토리 삭제(&amp;E)</translation>
+        <translation>문서 기록 삭제(&amp;E)</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
@@ -1536,15 +1539,15 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;User manual</source>
-        <translation>사용자 메뉴얼(&amp;U)</translation>
+        <translation>(영어)사용자 메뉴얼(&amp;U)</translation>
     </message>
     <message>
         <source>Document &amp;History</source>
-        <translation>문서 히스토리(&amp;H)</translation>
+        <translation>문서 기록(&amp;H)</translation>
     </message>
     <message>
         <source>Document  History</source>
-        <translation>문서 히스토리</translation>
+        <translation>문서 기록</translation>
     </message>
     <message>
         <source>&amp;Advanced Search</source>
@@ -1620,7 +1623,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Erase search history</source>
-        <translation>검색 히스토리를 삭제(&amp;E)</translation>
+        <translation>검색 기록을 삭제(&amp;E)</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -1636,7 +1639,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
-        <translation>색인 재작성(&amp;R)</translation>
+        <translation>색인 재구축(&amp;R)</translation>
     </message>
     <message>
         <source>Shift+PgUp</source>
@@ -1724,7 +1727,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Special Indexing</source>
-        <translation>특별한 색인 작성</translation>
+        <translation>특별한 색인</translation>
     </message>
     <message>
         <source>Indexing with special options</source>
@@ -1744,7 +1747,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Index &amp;statistics</source>
-        <translation>색인 상태(&amp;s)</translation>
+        <translation>색인 현황(&amp;s)</translation>
     </message>
     <message>
         <source>Webcache Editor</source>
@@ -1756,7 +1759,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>E&amp;xport simple search history</source>
-        <translation>단순 검색 기록 내보내기(&amp;x)</translation>
+        <translation>단순 검색어 기록 내보내기(&amp;x)</translation>
     </message>
 </context>
 <context>
@@ -1853,11 +1856,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>(show query)</source>
-        <translation>(검색어 요청 보기)</translation>
+        <translation>(요청된 검색어 보기)</translation>
     </message>
     <message>
         <source>Document history</source>
-        <translation>문서 히스토리</translation>
+        <translation>문서 기록</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
@@ -1889,15 +1892,15 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Documents</source>
-        <translation>문서들</translation>
+        <translation>문서 번호</translation>
     </message>
     <message>
         <source>out of at least</source>
-        <translation>적어도</translation>
+        <translation>, 총 갯수는 최소</translation>
     </message>
     <message>
         <source>for</source>
-        <translation></translation>
+        <translation> </translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
@@ -1909,7 +1912,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation>검색어 명령 상세보기</translation>
+        <translation>검색어 요청 상세보기</translation>
     </message>
     <message>
         <source>Snippets</source>
@@ -2173,7 +2176,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Clear</source>
-        <translation>지우기</translation>
+        <translation>목록 지우기</translation>
     </message>
     <message>
         <source>Ctrl+S</source>
@@ -2197,7 +2200,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Show query history</source>
-        <translation>검색어 요청 히스토리 보기</translation>
+        <translation>검색어 요청 기록 보기</translation>
     </message>
 </context>
 <context>
@@ -2228,7 +2231,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Phrase</source>
-        <translation>어구</translation>
+        <translation>어구(Phrase)</translation>
     </message>
     <message>
         <source>Proximity</source>
@@ -2289,7 +2292,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Erase selected files data before indexing.</source>
-        <translation>색인 검색 전에 선택한 파일들의 데이터를 지웁니다.</translation>
+        <translation>색인 작업 전에 선택된 파일들의 데이터를 지웁니다.</translation>
     </message>
     <message>
         <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
@@ -2317,7 +2320,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
-        <translation>폴더를 시작하십시오. 색인처리 된 폴더들 중에 하나여야합니다. 만일 비어있다면, 전체 색인 영역을 사용하십시오.</translation>
+        <translation>폴더를 지정하십시오. 색인된 폴더들 중 하나여야합니다. 만일 지정하지 않는다면, 전체 색인 영역이 사용됩니다.</translation>
     </message>
 </context>
 <context>
@@ -2415,11 +2418,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Number of documents</source>
-        <translation>문서들의 숫자</translation>
+        <translation>문서 개수</translation>
     </message>
     <message>
         <source>Average terms per document</source>
-        <translation>문서당 용어들의 평균값</translation>
+        <translation>문서당 평균 용어 개수</translation>
     </message>
     <message>
         <source>Database directory size</source>
@@ -2427,7 +2430,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>MIME types:</source>
-        <translation>MIME 유형:</translation>
+        <translation>색인된 MIME 유형:</translation>
     </message>
     <message>
         <source>Item</source>
@@ -2439,11 +2442,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Smallest document length (terms)</source>
-        <translation>가장 작은 문서 길이(용어들)</translation>
+        <translation>가장 작은 문서 길이(용어 개수)</translation>
     </message>
     <message>
         <source>Longest document length (terms)</source>
-        <translation>가장 긴 문서 길이(용어들)</translation>
+        <translation>가장 긴 문서 길이(용어 개수)</translation>
     </message>
     <message>
         <source>Results from last indexing:</source>
@@ -2490,7 +2493,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose</source>
-        <translation>선택하십시오.</translation>
+        <translation>선택</translation>
     </message>
     <message>
         <source>Result list paragraph format (erase all to reset to default)</source>
@@ -2573,7 +2576,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
-        <translation>하나 또는 여러 개의 MIME 유형을 선택한 다음 하단 프레임의 컨트롤을 사용하여 처리 방식을 변경하십시오.</translation>
+        <translation>하나 또는 여러 개의 MIME 유형을 선택한 다음, 창 하단에 있는 명령을 수정하여 파일 실행 방식을 변경할 수 있습니다.</translation>
     </message>
     <message>
         <source>Use Desktop preferences by default</source>
@@ -2585,19 +2588,19 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Exception to Desktop preferences</source>
-        <translation>데스크톱 환경설정 예외</translation>
+        <translation>기본값을 사용하지 않으려면 선택하십시오.</translation>
     </message>
     <message>
         <source>Action (empty -&gt; recoll default)</source>
-        <translation>행동 (비어있음 -&gt; Recoll 기본값)</translation>
+        <translation>명령 (비어있음 -&gt; Recoll 기본값) :</translation>
     </message>
     <message>
         <source>Apply to current selection</source>
-        <translation>현재 선택을 적용합니다.</translation>
+        <translation>명령을 선택한 곳에 적용합니다(기본값을 사용하지 않아야 적용됩니다).</translation>
     </message>
     <message>
         <source>Recoll action:</source>
-        <translation>Recoll 행동:</translation>
+        <translation>현재 명령 :</translation>
     </message>
     <message>
         <source>current value</source>
@@ -2924,15 +2927,15 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation>결과 페이지의 항목 수</translation>
+        <translation>결과 페이지 당 자료 갯수</translation>
     </message>
     <message>
         <source>If checked, results with the same content under different names will only be shown once.</source>
-        <translation>이 옵션을 선택하면 다른 이름으로 동일한 내용의 결과가 한 번만 표시됩니다.</translation>
+        <translation>이 옵션을 선택하면, 이름이 달라도 내용이 동일할 경우 결과가 한 번만 표시됩니다.</translation>
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation>중복된 결과들을 숨김</translation>
+        <translation>중복된 결과들을 숨깁니다.</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -2964,19 +2967,19 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Choose editor applications</source>
-        <translation>에디터 앱을 선택하십시오.</translation>
+        <translation>MIME별 실행 프로그램 선택 창</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation>고급 검색창과 함께 시작</translation>
+        <translation>Recoll을 시작할 때마다 고급 검색창을 엽니다.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation>활성화된 정렬 상태를 기억합니다.</translation>
+        <translation>검색 결과창의 정렬 기준을 기억합니다.</translation>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>미리보기에서 텍스트보다 HTML을 우선</translation>
+        <translation>미리보기에서 텍스트보다 HTML을 우선합니다.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -2990,29 +2993,29 @@ This will help searching very big text  files (ie: log files).</source>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
         <translation>[rolling stones]을 검색했다면, (2 음절들)은 [rolling] 혹은 [stones] 혹은 [rolling (절 2개) stones]로 변환됩니다.
-입력한대로 검색어가 정확하게 나타나는 결과에 더 높은 우선순위를 부여합니다..</translation>
+입력한 검색어대로 정확히 보여주는 결과에 더 높은 우선순위가 부여됩니다.</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation>간단한 검색들에 자동으로 문구를 추가합니다.</translation>
+        <translation>단순한 검색을 수행할 시, 자동으로 검색어를 추가합니다.</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation>검색 결과를 위하여, 검색어 단어의 문맥을 사용하여 추출한 것들을 빌드하도록 시도할까요?
+        <translation>검색 결과에서, 검색된 단어들을 문맥적으로 표시하도록 할까요?
 큰 문서들은 아마 느려질 것입니다.</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation>추출한 글자들을 능동적으로 빌드합니다.</translation>
+        <translation>검색 결과에 나타나는 문서 내용에 검색어를 표시합니다.</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation>문서 내 단 하나만 있어도 추출한 것을 합성할까요?</translation>
+        <translation>검색어가 문서 내 단 하나만 있어도 추출한 단어를 합성할까요?(무슨 기능인지 잘 모르겠음-역자 주)</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation>문서들로부터 발췌한 것들을 재정렬</translation>
+        <translation>문서들로부터 검색된 단어들을 재배치합니다.</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
@@ -3121,13 +3124,13 @@ May be slow for big documents.</source>
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
 The default value is 2 (percent). </source>
-        <translation>빈도 비율 임계 값을 높이면 자주 사용되는 단어를 구문검색에 사용하지 않습니다.
+        <translation type="unfinished">백분율 값을 높이면, 자주 사용되는 단어를 구문검색에 활용하지 않습니다.
 이것은 성능 향상에 도움을 줄 수는 있지만, 원하는 문장을 찾는데에는 지장을 줄 수 있습니다.
 기본값은 2 입니다.(단위는 퍼센트)</translation>
     </message>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
-        <translation>자동 문구 용어 사용의 빈도수. 백분율에 임계.</translation>
+        <translation type="unfinished">용어를 검색 빈도수에 따라서 자동 문구 생성에 활용합니다(백분율).</translation>
     </message>
     <message>
         <source>Plain text to HTML line style</source>
@@ -3135,7 +3138,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</source>
-        <translation>PRE 텍스트의 줄은 접히지 않습니다. BR은 들여 쓰기가 손실됩니다. PRE + Wrap 스타일을 원하고 있을지도 모릅니다.</translation>
+        <translation>PRE 텍스트의 줄은 접히지 않습니다. BR은 들여쓰기가 손실됩니다. PRE + Wrap 스타일을 원하고 있을지도 모릅니다.</translation>
     </message>
     <message>
         <source>&lt;BR&gt;</source>
@@ -3151,7 +3154,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Disable Qt autocompletion in search entry.</source>
-        <translation>검색 항목에서 QT 자동완성을 끔</translation>
+        <translation>검색어 입력창에서 자동완성을 끕니다.</translation>
     </message>
     <message>
         <source>Paths translations</source>
@@ -3175,11 +3178,11 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
-        <translation>문서 필터들을 라디오 버튼으로 할지, 툴바 콤보 박스로 할지, 혹은 메뉴로 할지 결정하십시오.</translation>
+        <translation>검색 결과의 문서 필터를 라디오 버튼으로 볼지, 툴바 콤보 박스로 볼지, 혹은 메뉴로 볼지 결정하십시오.</translation>
     </message>
     <message>
         <source>Document filter choice style:</source>
-        <translation>문서 필터 선택 스타일:</translation>
+        <translation>검색된 자료의 필터 선택 스타일:</translation>
     </message>
     <message>
         <source>Buttons Panel</source>
@@ -3195,15 +3198,15 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Show system tray icon.</source>
-        <translation>시스템 트레이 아이콘 보기</translation>
+        <translation>시스템 트레이에 아이콘을 표시합니다.</translation>
     </message>
     <message>
         <source>Close to tray instead of exiting.</source>
-        <translation>프로그램 종료 대신에 트레이로 최소화</translation>
+        <translation>프로그램 종료 대신, 작업표시줄의 트레이로 최소화합니다.</translation>
     </message>
     <message>
         <source>Start with simple search mode</source>
-        <translation>단순 검색 모드로 시작</translation>
+        <translation>단순 검색의 검색 기준 기본값:</translation>
     </message>
     <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
@@ -3216,7 +3219,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
-        <translation>임시 파일이 열렸을 때 경고창 보기</translation>
+        <translation>임시 파일이 열렸을 때 경고창을 봅니다.</translation>
     </message>
     <message>
         <source>Highlight CSS style for query terms</source>
@@ -3232,12 +3235,11 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Activate links in preview.</source>
-        <translation>미리보기에서 링크를 활성화하십시오.</translation>
+        <translation>미리보기에서 링크를 활성화합니다.</translation>
     </message>
     <message>
         <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
-        <translatorcomment>브라우저는 프로그램을 말하나? 웹 브라우저를 말하나? 파일 브라우저를 말하나?</translatorcomment>
-        <translation>미리보기에 외부 브라우저 시작이 가능한 링크를 만드십시오.</translation>
+        <translation>미리보기에 외부 브라우저 시작이 가능한 링크를 만듭니다.</translation>
     </message>
     <message>
         <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
@@ -3245,8 +3247,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Start search on completer popup activation.</source>
-        <translatorcomment>What`s completer?</translatorcomment>
-        <translation>완전하게 해주는 팝업 활성화시 검색을 시작하십시오.</translation>
+        <translation>자동완성 항목 선택 시 검색을 즉각 시작합니다.</translation>
     </message>
     <message>
         <source>Application Qt style sheet</source>
@@ -3258,7 +3259,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Maximum size of search history (0: disable, -1: unlimited):</source>
-        <translation>검색 기록의 최대 크기 (0:사용 안함, -1:무제한):</translation>
+        <translation>검색 기록 최대 크기 (0:사용 안함, -1:무제한):</translation>
     </message>
     <message>
         <source>Generate desktop notifications.</source>
@@ -3270,11 +3271,11 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Maximum number of snippets displayed in the snippets window</source>
-        <translation>문서별 검색창에 표시되는 최대 문서별 검색기 숫자</translation>
+        <translation>문서별 검색창 내에 표시되는 검색결과의 최대 수</translation>
     </message>
     <message>
         <source>Sort snippets by page number (default: by weight).</source>
-        <translation>문서별 검색 결과를 페이지 숫자별로 정리합니다(기본값: 무게-관련도).</translation>
+        <translation>문서별 검색 결과를 페이지 순서대로 정리합니다(기본값: 검색어 관련도).</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
