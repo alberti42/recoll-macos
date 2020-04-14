@@ -52,21 +52,18 @@ class TermProc {
 public:
     TermProc(TermProc* next) : m_next(next) {}
     virtual ~TermProc() {}
-    virtual bool takeword(const string &term, int pos, int bs, int be)
-    {
+    virtual bool takeword(const string &term, int pos, int bs, int be) {
         if (m_next)
             return m_next->takeword(term, pos, bs, be);
         else
             return true;
     }
     // newpage() is like takeword(), but for page breaks.
-    virtual void newpage(int pos)
-    {
+    virtual void newpage(int pos) {
         if (m_next)
             m_next->newpage(pos);
     }
-    virtual bool flush()
-    {
+    virtual bool flush() {
         if (m_next)
             return m_next->flush();
         else
@@ -137,7 +134,7 @@ public:
             // We don't generate a fatal error because of a bad term,
             // but one has to put the limit somewhere
             if (m_unacerrors > 500 &&
-                    (double(m_totalterms) / double(m_unacerrors)) < 2.0) {
+                (double(m_totalterms) / double(m_unacerrors)) < 2.0) {
                 // More than 1 error for every other term
                 LOGERR("splitter::takeword: too many unac errors " <<
                        m_unacerrors << "/"  << m_totalterms << "\n");
@@ -147,12 +144,12 @@ public:
         }
 
         if (otrm.empty()) {
-	    // It may happen in some weird cases that the output from
-	    // unac is empty (if the word actually consisted entirely
-	    // of diacritics ...)  The consequence is that a phrase
-	    // search won't work without addional slack.
+            // It may happen in some weird cases that the output from
+            // unac is empty (if the word actually consisted entirely
+            // of diacritics ...)  The consequence is that a phrase
+            // search won't work without addional slack.
             return true;
-	}
+        }
 
         // We should have a Japanese stemmer to handle this, but for
         // experimenting, let's do it here: remove 'prolounged sound
@@ -174,34 +171,34 @@ public:
             return true;
         }
         
-	// It may also occur that unac introduces spaces in the string
-	// (when removing isolated accents, may happen for Greek
-	// for example). This is a pathological situation. We
-	// index all the resulting terms at the same pos because
-	// the surrounding code is not designed to handle a pos
-	// change in here. This means that phrase searches and
-	// snippets will be wrong, but at least searching for the
-	// terms will work.
-	bool hasspace = false;
-	for (string::const_iterator it = otrm.begin();it < otrm.end();it++) {
-	    if (*it == ' ') {
-		hasspace=true;
-		break;
-	    }
-	}
-	if (hasspace) {
+        // It may also occur that unac introduces spaces in the string
+        // (when removing isolated accents, may happen for Greek
+        // for example). This is a pathological situation. We
+        // index all the resulting terms at the same pos because
+        // the surrounding code is not designed to handle a pos
+        // change in here. This means that phrase searches and
+        // snippets will be wrong, but at least searching for the
+        // terms will work.
+        bool hasspace = false;
+        for (string::const_iterator it = otrm.begin();it < otrm.end();it++) {
+            if (*it == ' ') {
+                hasspace=true;
+                break;
+            }
+        }
+        if (hasspace) {
             std::vector<std::string> terms;
-	    stringToTokens(otrm, terms, " ", true);
-	    for (std::vector<std::string>::const_iterator it = terms.begin(); 
-		 it < terms.end(); it++) {
-		if (!TermProc::takeword(*it, pos, bs, be)) {
-		    return false;
-		}
-	    }
-	    return true;
-	} else {
-	    return TermProc::takeword(otrm, pos, bs, be);
-	}
+            stringToTokens(otrm, terms, " ", true);
+            for (std::vector<std::string>::const_iterator it = terms.begin(); 
+                 it < terms.end(); it++) {
+                if (!TermProc::takeword(*it, pos, bs, be)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return TermProc::takeword(otrm, pos, bs, be);
+        }
     }
 
     virtual bool flush()
