@@ -232,9 +232,9 @@ void RclMain::init()
 
     // Menu version of the document filter control
     m_filtMN = new QMenu(MenuBar);
-    m_filtMN->setObjectName(QString::fromUtf8("m_filtMN"));
+    m_filtMN->setObjectName("m_filtMN");
     MenuBar->insertMenu(helpMenu->menuAction(), m_filtMN);
-    m_filtMN->setTitle("F&ilter");
+    m_filtMN->setTitle(tr("F&ilter"));
     QActionGroup *fltag = new QActionGroup(this);
     fltag->setExclusive(true);
     QAction *act = fltag->addAction(tr("All"));
