@@ -47,6 +47,7 @@ using namespace std;
 #include "x11mon.h"
 #include "cancelcheck.h"
 #include "rcldb.h"
+#include "readfile.h"
 #ifndef DISABLE_WEB_INDEXER
 #include "webqueue.h"
 #endif
@@ -424,54 +425,54 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
 string thisprog;
 
 static const char usage [] =
-                                                           "\n"
-                                                           "recollindex [-h] \n"
-                                                           "    Print help\n"
-                                                           "recollindex [-z|-Z] [-k]\n"
-                                                           "    Index everything according to configuration file\n"
-                                                           "    -z : reset database before starting indexing\n"
-                                                           "    -Z : in place reset: consider all documents as changed. Can also\n"
-                                                           "         be combined with -i or -r but not -m\n"
-                                                           "    -k : retry files on which we previously failed\n"
+"\n"
+"recollindex [-h] \n"
+"    Print help\n"
+"recollindex [-z|-Z] [-k]\n"
+"    Index everything according to configuration file\n"
+"    -z : reset database before starting indexing\n"
+"    -Z : in place reset: consider all documents as changed. Can also\n"
+"         be combined with -i or -r but not -m\n"
+"    -k : retry files on which we previously failed\n"
 #ifdef RCL_MONITOR
-                                                           "recollindex -m [-w <secs>] -x [-D] [-C]\n"
-                                                           "    Perform real time indexing. Don't become a daemon if -D is set.\n"
-                                                           "    -w sets number of seconds to wait before starting.\n"
-                                                           "    -C disables monitoring config for changes/reexecuting.\n"
-                                                           "    -n disables initial incremental indexing (!and purge!).\n"
+"recollindex -m [-w <secs>] -x [-D] [-C]\n"
+"    Perform real time indexing. Don't become a daemon if -D is set.\n"
+"    -w sets number of seconds to wait before starting.\n"
+"    -C disables monitoring config for changes/reexecuting.\n"
+"    -n disables initial incremental indexing (!and purge!).\n"
 #ifndef DISABLE_X11MON
-                                                           "    -x disables exit on end of x11 session\n"
+"    -x disables exit on end of x11 session\n"
 #endif /* DISABLE_X11MON */
 #endif /* RCL_MONITOR */
-                                                           "recollindex -e [<filepath [path ...]>]\n"
-                                                           "    Purge data for individual files. No stem database updates.\n"
-                                                           "    Reads paths on stdin if none is given as argument.\n"
-                                                           "recollindex -i [-f] [-Z] [<filepath [path ...]>]\n"
-                                                           "    Index individual files. No database purge or stem database updates\n"
-                                                           "    Will read paths on stdin if none is given as argument\n"
-                                                           "    -f : ignore skippedPaths and skippedNames while doing this\n"
-                                                           "recollindex -r [-K] [-f] [-Z] [-p pattern] <top> \n"
-                                                           "   Recursive partial reindex. \n"
-                                                           "     -p : filter file names, multiple instances are allowed, e.g.: \n"
-                                                           "        -p *.odt -p *.pdf\n"
-                                                           "     -K : skip previously failed files (they are retried by default)\n"
-                                                           "recollindex -l\n"
-                                                           "    List available stemming languages\n"
-                                                           "recollindex -s <lang>\n"
-                                                           "    Build stem database for additional language <lang>\n"
-                                                           "recollindex -E\n"
-                                                           "    Check configuration file for topdirs and other paths existence\n"
+"recollindex -e [<filepath [path ...]>]\n"
+"    Purge data for individual files. No stem database updates.\n"
+"    Reads paths on stdin if none is given as argument.\n"
+"recollindex -i [-f] [-Z] [<filepath [path ...]>]\n"
+"    Index individual files. No database purge or stem database updates\n"
+"    Will read paths on stdin if none is given as argument\n"
+"    -f : ignore skippedPaths and skippedNames while doing this\n"
+"recollindex -r [-K] [-f] [-Z] [-p pattern] <top> \n"
+"   Recursive partial reindex. \n"
+"     -p : filter file names, multiple instances are allowed, e.g.: \n"
+"        -p *.odt -p *.pdf\n"
+"     -K : skip previously failed files (they are retried by default)\n"
+"recollindex -l\n"
+"    List available stemming languages\n"
+"recollindex -s <lang>\n"
+"    Build stem database for additional language <lang>\n"
+"recollindex -E\n"
+"    Check configuration file for topdirs and other paths existence\n"
 #ifdef FUTURE_IMPROVEMENT
-                                                           "recollindex -W\n"
-                                                           "    Process the Web queue\n"
+"recollindex -W\n"
+"    Process the Web queue\n"
 #endif
 #ifdef RCL_USE_ASPELL
-                                                           "recollindex -S\n"
-                                                           "    Build aspell spelling dictionary.>\n"
+"recollindex -S\n"
+"    Build aspell spelling dictionary.>\n"
 #endif
-                                                           "Common options:\n"
-                                                           "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
-                                                           ;
+"Common options:\n"
+"    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+;
 
 static void
 Usage(FILE *where = stderr)
@@ -545,6 +546,26 @@ static void flushIdxReasons()
     }
 }
 
+static vector<string> argstovector(int argc, char **argv)
+{
+	vector<string> args;
+	for (int i = 0; i < argc; i++) {
+		args.push_back(argv[i]);
+	}
+	return args;
+}
+static vector<string> fileToArgs(const string& fn)
+{
+	string reason, data;
+	if (!file_to_string(fn, data, &reason)) {
+		cerr << "Failed reading args file " << fn << " errno " << errno << "\n";
+		exit(1);
+	}
+	vector<string> args;
+	stringToStrings(data, args);
+	return args;
+}
+
 int main(int argc, char **argv)
 {
     string a_config;
@@ -562,16 +583,27 @@ int main(int argc, char **argv)
     thisprog = path_absolute(argv[0]);
     argc--; argv++;
 
-    while (argc > 0 && **argv == '-') {
-        (*argv)++;
-        if (!(**argv))
-            Usage();
-        while (**argv)
-            switch (*(*argv)++) {
+	vector<string> args = argstovector(argc, argv);
+
+	// Passing args through a temp file: this is used on Windows to
+	// avoid issues with charsets in args (avoid using wmain)
+	if (args.size() == 1 && args[0][0] != '-') {
+		args = fileToArgs(args[0]);
+	}
+
+	unsigned int aremain = args.size();
+	unsigned int argidx = 0;
+	for (; argidx < args.size(); argidx++) {
+		const string& arg{args[argidx]};
+		aremain = args.size() - argidx;
+		if (arg[0] != '-') {
+			break;
+		}
+		for (unsigned int cidx = 1; cidx < arg.size(); cidx++) {
+            switch (arg[cidx]) {
             case 'b': op_flags |= OPT_b; break;
-            case 'c':   op_flags |= OPT_c; if (argc < 2)  Usage();
-                a_config = *(++argv);
-                argc--; goto b1;
+            case 'c':   op_flags |= OPT_c; if (aremain < 2)  Usage();
+                a_config = args[argidx+1]; argidx++; goto b1;
 #ifdef RCL_MONITOR
             case 'C': op_flags |= OPT_C; break;
             case 'D': op_flags |= OPT_D; break;
@@ -587,27 +619,29 @@ int main(int argc, char **argv)
             case 'm': op_flags |= OPT_m; break;
             case 'n': op_flags |= OPT_n; break;
             case 'P': op_flags |= OPT_P; break;
-            case 'p': op_flags |= OPT_p; if (argc < 2)  Usage();
-                selpatterns.push_back(*(++argv));
-                argc--; goto b1;
+            case 'p': op_flags |= OPT_p; if (aremain < 2)  Usage();
+                selpatterns.push_back(args[argidx+1]); argidx++; goto b1;
             case 'r': op_flags |= OPT_r; break;
-            case 'R':   op_flags |= OPT_R; if (argc < 2)  Usage();
-                reasonsfile = *(++argv); argc--; goto b1;
+            case 'R':   op_flags |= OPT_R; if (aremain < 2)  Usage();
+                reasonsfile = args[argidx+1]; argidx++; goto b1;
             case 's': op_flags |= OPT_s; break;
 #ifdef RCL_USE_ASPELL
             case 'S': op_flags |= OPT_S; break;
 #endif
-            case 'w':   op_flags |= OPT_w; if (argc < 2)  Usage();
-                if ((sscanf(*(++argv), "%d", &sleepsecs)) != 1) 
+            case 'w':   op_flags |= OPT_w; if (aremain < 2)  Usage();
+                if ((sscanf(args[argidx+1].c_str(), "%d", &sleepsecs)) != 1) 
                     Usage(); 
-                argc--; goto b1;
+                argidx++; goto b1;
             case 'x': op_flags |= OPT_x; break;
             case 'Z': op_flags |= OPT_Z; break;
             case 'z': op_flags |= OPT_z; break;
             default: Usage(); break;
             }
-    b1: argc--; argv++;
-    }
+		}
+	b1:
+		;
+	}
+
     if (op_flags & OPT_h)
         Usage(stdout);
 #ifndef RCL_MONITOR
@@ -716,9 +750,9 @@ int main(int argc, char **argv)
     setMyPriority(config);
     
     if (op_flags & OPT_r) {
-        if (argc != 1) 
+        if (aremain != 1) 
             Usage();
-        string top = *argv++; argc--;
+        string top = args[argidx++]; aremain--;
         bool status = recursive_index(config, top, selpatterns);
         if (confindexer && !confindexer->getReason().empty()) {
             addIdxReason("indexer", confindexer->getReason());
@@ -730,8 +764,7 @@ int main(int argc, char **argv)
         lockorexit(&pidfile, config);
 
         list<string> filenames;
-
-        if (argc == 0) {
+        if (aremain == 0) {
             // Read from stdin
             char line[1024];
             while (fgets(line, 1023, stdin)) {
@@ -740,8 +773,8 @@ int main(int argc, char **argv)
                 filenames.push_back(sl);
             }
         } else {
-            while (argc--) {
-                filenames.push_back(*argv++);
+            while (aremain--) {
+                filenames.push_back(args[argidx++]);
             }
         }
 
@@ -773,7 +806,7 @@ int main(int argc, char **argv)
     } else if (op_flags & OPT_s) {
         if (argc != 1) 
             Usage();
-        string lang = *argv++; argc--;
+        string lang = args[argidx++]; aremain--;
         exit(!createstemdb(config, lang));
 #ifdef RCL_USE_ASPELL
     } else if (op_flags & OPT_S) {
