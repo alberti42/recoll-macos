@@ -158,7 +158,7 @@ copyrecoll()
     chkcp $RCL/doc/user/usermanual.html $DESTDIR/Share/doc
     chkcp $RCL/doc/user/docbook-xsl.css $DESTDIR/Share/doc
     mkdir -p $DESTDIR/Share/doc/webhelp
-    cp -rp $RCL/doc/user/webhelp/docs/* $DESTDIR/Share/doc/webhelp
+    rsync -av $RCL/doc/user/webhelp/docs/* $DESTDIR/Share/doc/webhelp
     chkcp $RCL/sampleconf/fields        $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
     chkcp $RCL/windows/mimeconf         $DESTDIR/Share/examples
@@ -184,7 +184,7 @@ copyantiword()
     bindir=$ANTIWORD/
     test -d $Filters/Resources || mkdir -p $FILTERS/Resources || exit 1
     chkcp  $bindir/antiword.exe            $FILTERS
-    chkcp  $ANTIWORD/Resources/*           $FILTERS/Resources
+    rsync -av  $ANTIWORD/Resources/*       $FILTERS/Resources
 }
 
 copyunrtf()
