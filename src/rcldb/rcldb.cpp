@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -283,12 +284,12 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
             // Force Chert format, don't store the text.
             string stub = path_cat(m_rcldb->m_config->getConfDir(),
                                    "xapian.stub");
-            FILE *fp = fopen(stub.c_str(), "w");
-            if (nullptr == fp) {
+            std::fstream fp = path_open(stub, std::ios::out|std::ios::trunc);
+            if (!fp.is_open()) {
                 throw(string("Can't create ") + stub);
             }
-            fprintf(fp, "chert %s\n", dir.c_str());
-            fclose(fp);
+            fp << "chert " << dir << "\n";
+            fp.close();
             xwdb = Xapian::WritableDatabase(stub, action);
             m_storetext = false;
         }

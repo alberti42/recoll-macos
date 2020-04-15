@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <fstream>
 
 #include <Qt>
 #include <QShortcut>
@@ -418,7 +419,7 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
     return QString::fromUtf8(lr.front().c_str());
 }
 
-void RecollModel::saveAsCSV(FILE *fp)
+void RecollModel::saveAsCSV(std::fstream& fp)
 {
     if (!m_source)
         return;
@@ -433,7 +434,7 @@ void RecollModel::saveAsCSV(FILE *fp)
     }
     string csv;
     stringsToCSV(tokens, csv);
-    fprintf(fp, "%s\n", csv.c_str());
+    fp << csv << "\n";
     tokens.clear();
 
     for (int row = 0; row < rows; row++) {
@@ -445,7 +446,7 @@ void RecollModel::saveAsCSV(FILE *fp)
             tokens.push_back(m_getters[col](m_fields[col], doc));
         }
         stringsToCSV(tokens, csv);
-        fprintf(fp, "%s\n", csv.c_str());
+        fp << csv << "\n";
         tokens.clear();
     }
 }
@@ -785,22 +786,19 @@ void ResTable::saveAsCSV()
     LOGDEB("ResTable::saveAsCSV\n");
     if (!m_model)
         return;
-    QString s = 
-        QFileDialog::getSaveFileName(this, //parent
-                                     tr("Save table to CSV file"),
-                                     QString::fromLocal8Bit(path_home().c_str())
-            );
+    QString s = QFileDialog::getSaveFileName(
+        this, tr("Save table to CSV file"), path2qs(path_home()));
     if (s.isEmpty())
         return;
-    const char *tofile = s.toLocal8Bit();
-    FILE *fp = fopen(tofile, "w");
-    if (fp == 0) {
+    std::string tofile = qs2path(s);
+    std::fstream fp = path_open(tofile, std::ios::out|std::ios::trunc);
+    if (!fp.is_open()) {
         QMessageBox::warning(0, "Recoll", 
                              tr("Can't open/create file: ") + s);
         return;
     }
     m_model->saveAsCSV(fp);
-    fclose(fp);
+    fp.close();
 }
 
 // This is called when the sort order is changed from another widget

@@ -118,6 +118,10 @@ static const string& path_wingetrcltmpdir()
                 LOGSYSERR("path_wingettempfilename", "path_makepath", tdir);
             }
         }
+        // Try to use a short path to avoid issues in case the user
+        // login name is not ascii, especially with command line
+        // parameter passing
+        tdir = path_shortpath(tdir);
     }
     return tdir;
 }

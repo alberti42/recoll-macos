@@ -24,6 +24,7 @@
 #include <map>
 #include <vector>
 #include <memory>
+#include <fstream>
 
 #include "ui_restable.h"
 #include "docseq.h"
@@ -47,7 +48,7 @@ public:
 				 int role = Qt::DisplayRole ) const;
     virtual QVariant data(const QModelIndex& index, 
 			   int role = Qt::DisplayRole ) const;
-    virtual void saveAsCSV(FILE *fp);
+    virtual void saveAsCSV(std::fstream& fp);
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
     // Specific methods
     virtual void readDocSource();

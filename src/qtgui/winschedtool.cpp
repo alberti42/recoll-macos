@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <fstream>
 
 #include <QPushButton>
 #include <QMessageBox>
@@ -42,18 +43,21 @@ void WinSchedToolW::init()
 
     connect(startPB, SIGNAL(clicked()), this, SLOT(startWinScheduler()));
 
-    // thisexecpath returns the directory
+    // Use a short path on Windows if possible to avoid issues with
+    // accented characters
+    string confdir = path_shortpath(theconfig->getConfDir());
+    
+    // path_thisexecpath() returns the directory
     string recollindex = path_cat(path_thisexecpath(), "recollindex.exe");
     LOGDEB("WinSchedTool: recollindex: " << recollindex << endl);
 
-    string batchfile = path_cat(theconfig->getConfDir(), "winsched.bat");
+    string batchfile = path_cat(confdir, "winsched.bat");
     LOGDEB("WinSchedTool: batch file " << batchfile << endl);
 
     if (!path_exists(batchfile)) {
-        FILE *fp = fopen(batchfile.c_str(), "w");
-        fprintf(fp, "\"%s\" -c \"%s\"\n", recollindex.c_str(),
-                theconfig->getConfDir().c_str());
-        fclose(fp);
+        std::fstream fp = path_open(batchfile, ios::out|ios::trunc);
+        fp << "\"" << recollindex << "\" -c \"" << confdir << "\"\n";
+        fp.close();
     }
     QString blurb = tr(
         "<h3>Recoll indexing batch scheduling</h3>"

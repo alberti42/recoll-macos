@@ -21,6 +21,7 @@
 #include <vector>
 #include <set>
 #include <cstdint>
+#include <fstream>
 
 // Must be called in main thread before starting other threads
 extern void pathut_init_mt();
@@ -129,6 +130,22 @@ bool fsocc(const std::string& path, int *pc, long long *avmbs = 0);
 /// mkdir -p
 extern bool path_makepath(const std::string& path, int mode);
 
+/* Open file, trying to do the right thing with non-ASCII paths on
+ * Windows, where it only works with MSVC at the moment if the path is
+ * not ASCII, because it uses fstream(wchar_t*), which is an MSVC
+ * extension. On other OSes, just builds the fstream.  We'd need to
+ * find a way to make this work with g++. It would be easier in this
+ * case to use a FILE (_openw(), then fdopen()), but conftree really
+ * depends on std::iostream. One possible workaround for g++ would be
+ * to use shortpaths (which we already use to pass file names to
+ * xapian and aspell). Most of the problems are caused by the home
+ * directory name being non-ASCII, so returning a short path in
+ * path_home() would probably solve everything (but not pretty).
+ *
+ * @param path an utf-8 file path.
+ * @param mode is an std::fstream mode (ios::in etc.) */
+extern std::fstream path_open(const std::string& path, int mode);
+
 /// Where we create the user data subdirs
 extern std::string path_homedata();
 /// Test if path is absolute
@@ -164,6 +181,9 @@ public:
 /// Convert \ separators to /
 void path_slashize(std::string& s);
 void path_backslashize(std::string& s);
+extern std::string path_shortpath(const std::string& path);
+#else
+#define path_shortpath(path) (path)
 #endif
 
 /// Lock/pid file class. This is quite close to the pidfile_xxx

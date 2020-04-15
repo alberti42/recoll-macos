@@ -18,6 +18,7 @@
 
 #include <utility>
 #include <memory>
+#include <fstream>
 #include <stdlib.h>
 
 #include <qapplication.h>
@@ -1071,16 +1072,15 @@ void RclMain::exportSimpleSearchHistory()
     }
     string path = qs2utf8s(dialog.selectedFiles().value(0));
     LOGDEB("Chosen path: " << path << "\n");
-    FILE *fp = fopen(path.c_str(), "wb");
-    if (fp == 0) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("Could not open/create file"));
+    std::fstream fp = path_open(path, std::ios::out | std::ios::trunc);
+    if (!fp.is_open()) {
+        QMessageBox::warning(0, "Recoll", tr("Could not open/create file"));
         return;
     }
     for (int i = 0; i < prefs.ssearchHistory.count(); i++) {
-        fprintf(fp, "%s\n", qs2utf8s(prefs.ssearchHistory[i]).c_str());
+        fp << qs2utf8s(prefs.ssearchHistory[i]) << "\n";
     }
-    fclose(fp);
+    fp.close();
 }
 
 // Called when the uiprefs dialog is ok'd

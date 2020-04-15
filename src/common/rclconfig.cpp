@@ -36,6 +36,7 @@
 #include <list>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>
@@ -936,12 +937,9 @@ bool RclConfig::getMissingHelperDesc(string& out) const
 void RclConfig::storeMissingHelperDesc(const string &s)
 {
     string fmiss = path_cat(getCacheDir(), "missing");
-    FILE *fp = fopen(fmiss.c_str(), "w");
-    if (fp) {
-        if (s.size() > 0 && fwrite(s.c_str(), s.size(), 1, fp) != 1) {
-            LOGERR("storeMissingHelperDesc: fwrite failed\n");
-        }
-        fclose(fp);
+    fstream fp = path_open(fmiss, ios::trunc | ios::out);
+    if (fp.is_open()) {
+        fp << s;
     }
 }
 
@@ -1340,9 +1338,23 @@ string RclConfig::getCachedirPath(const char *varname, const char *dflt) const
     return path_canon(result);
 }
 
+// On Windows, try to translate a possibly non-ascii path into the
+// shortpath alias. We first create the target, as this only works if
+// it exists. Used for xapiandb and aspell as these can't handle
+// Unicode paths.
+static string maybeshortpath(const std::string& in)
+{
+#ifdef _WIN32
+    path_makepath(in, 0700);
+    return path_shortpath(in);
+#else
+    return in;
+#endif
+}
+
 string RclConfig::getDbDir() const
 {
-    return getCachedirPath("dbdir", "xapiandb");
+    return maybeshortpath(getCachedirPath("dbdir", "xapiandb"));
 }
 string RclConfig::getWebcacheDir() const
 {
@@ -1354,7 +1366,7 @@ string RclConfig::getMboxcacheDir() const
 }
 string RclConfig::getAspellcacheDir() const
 {
-    return getCachedirPath("aspellDicDir", "");
+    return maybeshortpath(getCachedirPath("aspellDicDir", ""));
 }
 
 string RclConfig::getStopfile() const
@@ -1730,31 +1742,28 @@ bool RclConfig::initUserConfig()
 
     // Use protective 700 mode to create the top configuration
     // directory: documents can be reconstructed from index data.
-    if (!path_exists(m_confdir) && 
-        mkdir(m_confdir.c_str(), 0700) < 0) {
-        m_reason += string("mkdir(") + m_confdir + ") failed: " + 
-            strerror(errno);
+    if (!path_exists(m_confdir) && !path_makepath(m_confdir, 0700)) {
+        m_reason += string("mkdir(") + m_confdir + ") failed: "+strerror(errno);
         return false;
     }
     string lang = localelang();
     for (int i = 0; i < ncffiles; i++) {
         string dst = path_cat(m_confdir, string(configfiles[i])); 
         if (!path_exists(dst)) {
-            FILE *fp = fopen(dst.c_str(), "w");
-            if (fp) {
-                fprintf(fp, "%s\n", blurb);
+            fstream output = path_open(dst, ios::out);
+            if (output.is_open()) {
+                output << blurb << "\n";
                 if (!strcmp(configfiles[i], "recoll.conf")) {
                     // Add improved unac_except_trans for some languages
                     if (lang == "se" || lang == "dk" || lang == "no" || 
                         lang == "fi") {
-                        fprintf(fp, "%s\n", swedish_ex);
+                        output << swedish_ex << "\n";
                     } else if (lang == "de") {
-                        fprintf(fp, "%s\n", german_ex);
+                        output << german_ex << "\n";
                     }
                 }
-                fclose(fp);
             } else {
-                m_reason += string("fopen ") + dst + ": " + strerror(errno);
+                m_reason += string("open ") + dst + ": " + strerror(errno);
                 return false;
             }
         }
