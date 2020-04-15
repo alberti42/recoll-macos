@@ -312,7 +312,7 @@ void SpellW::showStats()
     resTW->setItem(row++, 1,
                    new QTableWidgetItem(QString::number(st.fileerrors)));
 
-    baseWordLE->setText(QString::fromLocal8Bit(theconfig->getDbDir().c_str()));
+    baseWordLE->setText(path2qs(theconfig->getDbDir()));
 
     int64_t dbkbytes = fsTreeBytes(theconfig->getDbDir()) / 1024;
     if (dbkbytes < 0) {

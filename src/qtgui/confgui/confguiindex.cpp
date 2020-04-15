@@ -173,7 +173,7 @@ void ConfIndexW::showPrefs(bool modal)
 
     if (nullptr == m_w) {
         QString title = u8s2qs("Recoll - Index Settings: ");
-        title += QString::fromLocal8Bit(m_rclconf->getConfDir().c_str());
+        title += path2qs(m_rclconf->getConfDir());
         conflinkfactory = MyConfLinkFactRCL(&m_conf, &sknull);
         if (nullptr == (m_w = new ConfTabsW(this, title, &conflinkfactory))) {
             return;

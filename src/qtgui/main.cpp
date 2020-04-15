@@ -159,9 +159,9 @@ static void recollCleanup()
 
 void applyStyleSheet(const QString& ssfname)
 {
-    const char *cfname = (const char *)ssfname.toLocal8Bit();
-    LOGDEB0("Applying style sheet: ["  << (cfname) << "]\n" );
-    if (cfname && *cfname) {
+    const char *cfname = qs2path(ssfname).c_str();
+    LOGDEB0("Applying style sheet: [" << cfname << "]\n");
+    if (*cfname) {
         string stylesheet;
         file_to_string(cfname, stylesheet);
         qApp->setStyleSheet(QString::fromUtf8(stylesheet.c_str()));
@@ -356,7 +356,7 @@ int main(int argc, char **argv)
         QString msg = app.translate
             ("Main",
              "\"history\" file is damaged, please check "
-             "or remove it: ") + QString::fromLocal8Bit(historyfile.c_str());
+             "or remove it: ") + path2qs(historyfile);
         QMessageBox::critical(0, "Recoll",  msg);
         exit(1);
     }

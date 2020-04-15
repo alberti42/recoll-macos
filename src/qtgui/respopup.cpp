@@ -29,12 +29,16 @@
 
 namespace ResultPopup {
 
-QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source, Rcl::Doc& doc)
+QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
+              Rcl::Doc& doc)
 {
     QMenu *popup = new QMenu(me);
 
-    LOGDEB("ResultPopup::create: opts "  << (opts) << " haspages "  << (doc.haspages) << " "  << (source ? "Source not null" : "Source is Null") << " "  << (source ? (source->snippetsCapable() ? 
-		      "snippetsCapable" : "not snippetsCapable") : "") << "\n" );
+    LOGDEB("ResultPopup::create: opts " << opts << " haspages " <<
+           doc.haspages << " " <<(source ? "Source not null" : "Source is Null")
+           << " "  << (source ? (source->snippetsCapable() ? 
+                                 "snippetsCapable" : "not snippetsCapable") : "")
+           << "\n");
 
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
@@ -158,7 +162,7 @@ void copyFN(const Rcl::Doc &doc)
     // conversion, but it's probably better (less worse...) to
     // make a "best effort" tentative and try to convert from the
     // locale's charset than accept the default conversion.
-    QString qfn = QString::fromLocal8Bit(doc.url.c_str()+7);
+    QString qfn = path2qs(doc.url.c_str()+7);
     QApplication::clipboard()->setText(qfn, QClipboard::Selection);
     QApplication::clipboard()->setText(qfn, QClipboard::Clipboard);
 }

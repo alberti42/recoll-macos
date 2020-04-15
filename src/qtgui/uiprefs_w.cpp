@@ -187,16 +187,16 @@ void UIPrefsDialog::setFromPrefs()
     if (qssFile.isEmpty()) {
         stylesheetPB->setText(tr("Choose"));
     } else {
-        string nm = path_getsimple((const char *)qssFile.toLocal8Bit());
-        stylesheetPB->setText(QString::fromLocal8Bit(nm.c_str()));
+        string nm = path_getsimple(qs2path(qssFile));
+        stylesheetPB->setText(path2qs(nm));
     }
 
     snipCssFile = prefs.snipCssFile;
     if (snipCssFile.isEmpty()) {
         snipCssPB->setText(tr("Choose"));
     } else {
-        string nm = path_getsimple((const char *)snipCssFile.toLocal8Bit());
-        snipCssPB->setText(QString::fromLocal8Bit(nm.c_str()));
+        string nm = path_getsimple(qs2path(snipCssFile));
+        snipCssPB->setText(path2qs(nm));
     }
     snipwMaxLenSB->setValue(prefs.snipwMaxLength);
     snipwByPageCB->setChecked(prefs.snipwSortByPage);
@@ -240,21 +240,21 @@ void UIPrefsDialog::setFromPrefs()
     if (synFile.isEmpty()) {
         synFilePB->setText(tr("Choose"));
     } else {
-        string nm = path_getsimple((const char *)synFile.toLocal8Bit());
-        synFilePB->setText(QString::fromLocal8Bit(nm.c_str()));
+        string nm = path_getsimple(qs2path(synFile));
+        synFilePB->setText(path2qs(nm));
     }
 
     // Initialize the extra indexes listboxes
     idxLV->clear();
     for (const auto& dbdir : prefs.allExtraDbs) {
         QListWidgetItem *item = 
-            new QListWidgetItem(QString::fromLocal8Bit(dbdir.c_str()), idxLV);
+            new QListWidgetItem(path2qs(dbdir), idxLV);
         if (item) 
             item->setCheckState(Qt::Unchecked);
     }
     for (const auto& dbdir : prefs.activeExtraDbs) {
         auto items =
-            idxLV->findItems (QString::fromLocal8Bit(dbdir.c_str()), 
+            idxLV->findItems(path2qs(dbdir), 
                               Qt::MatchFixedString|Qt::MatchCaseSensitive);
         for (auto& entry : items) {
             entry->setCheckState(Qt::Checked);
@@ -377,10 +377,9 @@ void UIPrefsDialog::accept()
     for (int i = 0; i < idxLV->count(); i++) {
         QListWidgetItem *item = idxLV->item(i);
         if (item) {
-            prefs.allExtraDbs.push_back((const char *)item->text().toLocal8Bit());
+            prefs.allExtraDbs.push_back(qs2path(item->text()));
             if (item->checkState() == Qt::Checked) {
-                prefs.activeExtraDbs.push_back((const char *)
-                                               item->text().toLocal8Bit());
+                prefs.activeExtraDbs.push_back(qs2path(item->text()));
             }
         }
     }
@@ -463,9 +462,9 @@ void UIPrefsDialog::showFontDialog()
 void UIPrefsDialog::showStylesheetDialog()
 {
     qssFile = myGetFileName(false, "Select stylesheet file", true);
-    string nm = path_getsimple((const char *)qssFile.toLocal8Bit());
+    string nm = path_getsimple(qs2path(qssFile));
     if (!nm.empty()) {
-        stylesheetPB->setText(QString::fromLocal8Bit(nm.c_str()));
+        stylesheetPB->setText(path2qs(nm));
     } else {
         stylesheetPB->setText(tr("Choose"));
     }
@@ -479,8 +478,8 @@ void UIPrefsDialog::resetStylesheet()
 void UIPrefsDialog::showSnipCssDialog()
 {
     snipCssFile = myGetFileName(false, "Select snippets window CSS file", true);
-    string nm = path_getsimple((const char *)snipCssFile.toLocal8Bit());
-    snipCssPB->setText(QString::fromLocal8Bit(nm.c_str()));
+    string nm = path_getsimple(qs2path(snipCssFile));
+    snipCssPB->setText(path2qs(nm));
 }
 void UIPrefsDialog::resetSnipCss()
 {
@@ -493,8 +492,8 @@ void UIPrefsDialog::showSynFileDialog()
     synFile = myGetFileName(false, "Select synonyms file", true);
     if (synFile.isEmpty())
         return;
-    string nm = path_getsimple((const char *)synFile.toLocal8Bit());
-    synFilePB->setText(QString::fromLocal8Bit(nm.c_str()));
+    string nm = path_getsimple(qs2path(synFile));
+    synFilePB->setText(path2qs(nm));
 }
 
 void UIPrefsDialog::resetReslistFont()
@@ -539,7 +538,7 @@ void UIPrefsDialog::extraDbEditPtrans()
     } else if (idxLV->selectedItems().size() == 1) {
         QListWidgetItem *item = idxLV->selectedItems()[0];
         QString qd = item->data(Qt::DisplayRole).toString();
-        dbdir = (const char *)qd.toLocal8Bit();
+        dbdir = qs2path(qd);
     } else {
         QMessageBox::warning(
             0, "Recoll", tr("At most one index should be selected"));
@@ -629,7 +628,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
 
     if (input.isEmpty())
         return;
-    string dbdir = (const char *)input.toLocal8Bit();
+    string dbdir = qs2path(input);
     if (path_exists(path_cat(dbdir, "recoll.conf"))) {
         // Chosen dir is config dir.
         RclConfig conf(&dbdir);
@@ -646,8 +645,8 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     LOGDEB("ExtraDbDial: got: ["  << (dbdir) << "]\n" );
     bool stripped;
     if (!Rcl::Db::testDbDir(dbdir, &stripped)) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("The selected directory does not appear to be a Xapian index"));
+        QMessageBox::warning(0, "Recoll", tr("The selected directory does not "
+                                             "appear to be a Xapian index"));
         return;
     }
     if (o_index_stripchars != stripped) {
@@ -657,14 +656,13 @@ void UIPrefsDialog::addExtraDbPB_clicked()
         return;
     }
     if (samedir(dbdir, theconfig->getDbDir())) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("This is the main/local index!"));
+        QMessageBox::warning(0, "Recoll", tr("This is the main/local index!"));
         return;
     }
 
     for (int i = 0; i < idxLV->count(); i++) {
         QListWidgetItem *item = idxLV->item(i);
-        string existingdir = (const char *)item->text().toLocal8Bit();
+        string existingdir = qs2path(item->text());
         if (samedir(dbdir, existingdir)) {
             QMessageBox::warning(
                 0, "Recoll", tr("The selected directory is already in the "
@@ -673,8 +671,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
         }
     }
 
-    QListWidgetItem *item = 
-        new QListWidgetItem(QString::fromLocal8Bit(dbdir.c_str()), idxLV);
+    QListWidgetItem *item = new QListWidgetItem(path2qs(dbdir), idxLV);
     item->setCheckState(Qt::Checked);
     idxLV->sortItems();
 }

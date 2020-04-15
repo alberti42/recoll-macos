@@ -439,9 +439,8 @@ void AdvSearch::runSearch()
     if (!subtreeCMB->currentText().isEmpty()) {
 	QString current = subtreeCMB->currentText();
 
-        Rcl::SearchDataClausePath *pathclause = 
-            new Rcl::SearchDataClausePath((const char*)current.toLocal8Bit(), 
-                                          direxclCB->isChecked());
+        Rcl::SearchDataClausePath *pathclause = new Rcl::SearchDataClausePath(
+            qs2path(current), direxclCB->isChecked());
         if (sdata->getTp() == SCLT_AND) {
             sdata->addClause(pathclause);
         } else {
@@ -506,7 +505,7 @@ void AdvSearch::fromSearch(std::shared_ptr<SearchData> sdata)
 		dynamic_cast<SearchDataClausePath*>(sdata->m_query[i]);
 	    // We can only use one such clause. There should be only one too 
 	    // if this is sfrom aved search data.
-	    QString qdir = QString::fromLocal8Bit(cs->gettext().c_str());
+	    QString qdir = path2qs(cs->gettext());
 	    subtreeCMB->setEditText(qdir);
 	    direxclCB->setChecked(cs->getexclude());
 	    continue;

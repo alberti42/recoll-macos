@@ -345,7 +345,7 @@ void RclMain::showMissingHelpers()
 	tr("External applications/commands needed for your file types "
 	   "and not found, as stored by the last indexing pass in ");
     msg += "<i>";
-    msg += QString::fromLocal8Bit(theconfig->getConfDir().c_str());
+    msg += path2qs(theconfig->getConfDir());
     msg += "/missing</i>:<pre>\n";
     if (!miss.empty()) {
 	msg += QString::fromUtf8(miss.c_str());
@@ -451,10 +451,9 @@ void RclMain::newDupsW(const Rcl::Doc, const vector<Rcl::Doc> dups)
     for (vector<Rcl::Doc>::const_iterator it = dups.begin(); 
 	 it != dups.end(); it++) {
 	if (it->ipath.empty()) 
-	    editor->append(QString::fromLocal8Bit(it->url.c_str()));
+	    editor->append(path2qs(it->url));
 	else 
-	    editor->append(QString::fromLocal8Bit(it->url.c_str()) + " | " +
-			   QString::fromUtf8(it->ipath.c_str()));
+	    editor->append(path2qs(it->url) + " | " + u8s2qs(it->ipath));
     }
     editor->moveCursor(QTextCursor::Start);
     editor->ensureCursorVisible();

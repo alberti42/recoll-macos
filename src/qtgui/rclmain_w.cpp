@@ -138,8 +138,7 @@ void RclMain::init()
     // idxstatus file. Make sure it exists before trying to watch it
     // (case where we're started on an older index, or if the status
     // file was deleted since indexing)
-    QString idxfn = 
-        QString::fromLocal8Bit(theconfig->getIdxStatusFile().c_str());
+    QString idxfn = path2qs(theconfig->getIdxStatusFile());
     QFile qf(idxfn);
     qf.open(QIODevice::ReadWrite);
     qf.setPermissions(QFile::ReadOwner|QFile::WriteOwner);
@@ -719,8 +718,7 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
     }
 
     if (prefs.synFileEnable && !prefs.synFile.isEmpty()) {
-        string sf = (const char *)prefs.synFile.toLocal8Bit();
-        if (!rcldb->setSynGroupsFile(sf)) {
+        if (!rcldb->setSynGroupsFile(qs2path(prefs.synFile))) {
             QMessageBox::warning(0, "Recoll",
                                  tr("Can't set synonyms file (parse error?)"));
             return;
@@ -932,12 +930,9 @@ void RclMain::on_actionSortByDateDesc_toggled(bool on)
 
 void RclMain::saveDocToFile(Rcl::Doc doc)
 {
-    QString s = 
-        QFileDialog::getSaveFileName(this, //parent
-                                     tr("Save file"), 
-                                     QString::fromLocal8Bit(path_home().c_str())
-            );
-    string tofile((const char *)s.toLocal8Bit());
+    QString s = QFileDialog::getSaveFileName(
+        this, tr("Save file"), path2qs(path_home()));
+    string tofile = qs2path(s);
     TempFile temp; // not used because tofile is set.
     if (!FileInterner::idocToFile(temp, tofile, theconfig, doc)) {
         QMessageBox::warning(0, "Recoll",

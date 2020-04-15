@@ -126,11 +126,10 @@ void RclMain::openWith(Rcl::Doc doc, string cmdspec)
     // Split the command line
     vector<string> lcmd;
     if (!stringToStrings(cmdspec, lcmd)) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("Bad desktop app spec for %1: [%2]\n"
-				"Please check the desktop file")
-			     .arg(QString::fromUtf8(doc.mimetype.c_str()))
-			     .arg(QString::fromLocal8Bit(cmdspec.c_str())));
+	QMessageBox::warning(
+            0, "Recoll", tr("Bad desktop app spec for %1: [%2]\n"
+                            "Please check the desktop file")
+            .arg(u8s2qs(doc.mimetype)).arg(path2qs(cmdspec)));
 	return;
     }
 
@@ -192,11 +191,10 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     // Split the command line
     vector<string> lcmd;
     if (!stringToStrings(cmd, lcmd)) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("Bad viewer command line for %1: [%2]\n"
-				"Please check the mimeview file")
-			     .arg(QString::fromUtf8(doc.mimetype.c_str()))
-			     .arg(QString::fromLocal8Bit(cmd.c_str())));
+	QMessageBox::warning(
+            0, "Recoll", tr("Bad viewer command line for %1: [%2]\n"
+                            "Please check the mimeview file")
+            .arg(u8s2qs(doc.mimetype)).arg(path2qs(cmd)));
 	return;
     }
 
@@ -231,7 +229,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	QString message = tr("The viewer specified in mimeview for %1: %2"
 			     " is not found.\nDo you want to start the "
 			     " preferences dialog ?")
-	    .arg(mt).arg(QString::fromLocal8Bit(lcmd.front().c_str()));
+            .arg(mt).arg(path2qs(lcmd.front()));
 
 	switch(QMessageBox::warning(0, "Recoll", message, 
 				    "Yes", "No", 0, 0, 1)) {
@@ -348,11 +346,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
         }
         TempFile temp;
         if (FileInterner::isCompressed(fn, theconfig)) {
-            if (!FileInterner::maybeUncompressToTemp(temp, fn, theconfig,  
-                                                     doc)) {
-                QMessageBox::warning(0, "Recoll", 
-                                     tr("Can't uncompress file: ") + 
-                                     QString::fromLocal8Bit(fn.c_str()));
+            if (!FileInterner::maybeUncompressToTemp(temp, fn, theconfig,doc)) {
+                QMessageBox::warning(
+                    0, "Recoll", tr("Can't uncompress file: ") + path2qs(fn));
                 return;
             }
         }

@@ -483,7 +483,7 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     if (doc.getmeta(Rcl::Doc::keytt, &ctitle) && !ctitle.empty()) {
         title = QString::fromUtf8(ctitle.c_str(), ctitle.length());
     } else {
-        title = QString::fromLocal8Bit(path_getsimple(doc.url).c_str());
+        title = path2qs(path_getsimple(doc.url));
     }
     if (title.length() > 20) {
         title = title.left(10) + "..." + title.right(10);
@@ -641,7 +641,7 @@ bool Preview::runLoadThread(LoadThread& lthr, QTimer& tT, QEventLoop& loop,
     if (!lthr.missing.empty()) {
         explain = QString::fromUtf8("<br>") +
             tr("Missing helper program: ") +
-            QString::fromLocal8Bit(lthr.missing.c_str());
+            path2qs(lthr.missing);
         QMessageBox::warning(0, "Recoll",
                              tr("Can't turn doc into internal "
                                 "representation for ") +
@@ -700,8 +700,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     setCurTabProps(idoc, docnum);
 
     QString msg = QString("Loading: %1 (size %2 bytes)")
-        .arg(QString::fromLocal8Bit(idoc.url.c_str()))
-        .arg(QString::fromUtf8(idoc.fbytes.c_str()));
+        .arg(path2qs(idoc.url)).arg(u8s2qs(idoc.fbytes));
 
     QProgressDialog progress(msg, tr("Cancel"), 0, 0, this);
     progress.setMinimumDuration(2000);
@@ -774,7 +773,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     string path = fileurltolocalpath(idoc.url);
     if (!path.empty()) {
         path = path_getfather(path);
-        QStringList paths(QString::fromLocal8Bit(path.c_str()));
+        QStringList paths(path2qs(path));
         editor->setSearchPaths(paths);
     }
 #endif
@@ -1034,16 +1033,16 @@ void PreviewTextEdit::displayFields()
     LOGDEB1("PreviewTextEdit::displayFields()\n");
 
     QString txt = "<html><head></head><body>\n";
-    txt += "<b>" + QString::fromLocal8Bit(m_url.c_str());
+    txt += "<b>" + path2qs(m_url);
     if (!m_ipath.empty())
-        txt += "|" + QString::fromUtf8(m_ipath.c_str());
+        txt += "|" + u8s2qs(m_ipath);
     txt += "</b><br><br>";
     txt += "<dl>\n";
     for (const auto& entry: m_fdoc.meta) {
-        if (!entry.second.empty())
-            txt += "<dt>" + QString::fromUtf8(entry.first.c_str()) + "</dt> " 
-                + "<dd>" + QString::fromUtf8(escapeHtml(entry.second).c_str()) 
-                + "</dd>\n";
+        if (!entry.second.empty()) {
+            txt += "<dt>" + u8s2qs(entry.first) + "</dt> " 
+                + "<dd>" + u8s2qs(escapeHtml(entry.second)) + "</dd>\n";
+        }
     }
     txt += "</dl></body></html>";
     setHtml(txt);

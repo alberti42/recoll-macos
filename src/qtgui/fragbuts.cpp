@@ -155,10 +155,9 @@ FragButs::FragButs(QWidget* parent)
         copyfile(src.c_str(), m_fn.c_str(), reason);
     }
     if (!file_to_string(m_fn, data, &reason)) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("%1 not found.").arg(
-                                 QString::fromLocal8Bit(m_fn.c_str())));
-        LOGERR("Fragbuts:: can't read ["  << (m_fn) << "]\n" );
+	QMessageBox::warning(
+            0, "Recoll", tr("%1 not found.").arg(path2qs(m_fn)));
+        LOGERR("Fragbuts:: can't read [" << m_fn << "]\n");
         return;
     }
     FragButsParser parser(this, m_buttons);
@@ -169,8 +168,7 @@ FragButs::FragButs(QWidget* parent)
     xmlInputSource.setData(QString::fromUtf8(data.c_str()));
     if (!reader.parse(xmlInputSource)) {
 	QMessageBox::warning(0, "Recoll", tr("%1:\n %2")
-                             .arg(QString::fromLocal8Bit(m_fn.c_str()))
-                             .arg(parser.errorMessage));
+                             .arg(path2qs(m_fn)).arg(parser.errorMessage));
         return;
     }
     for (vector<ButFrag>::iterator it = m_buttons.begin(); 

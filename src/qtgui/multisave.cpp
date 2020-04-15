@@ -51,8 +51,8 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 			     QWidget::tr("Choose exactly one directory"));
 	return;
     }
-    string dir((const char *)dirl[0].toLocal8Bit());
-    LOGDEB2("multiSave: got dir "  << (dir) << "\n" );
+    string dir(qs2path(dirl[0]));
+    LOGDEB2("multiSave: got dir " << dir << "\n");
 
     /* Save doc to files in target directory. Issues:
        - It is quite common to have docs in the array with the same
@@ -80,7 +80,7 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
     if (!listdir(dir, reason, existingNames)) {
 	QMessageBox::warning(0, "Recoll",
 			     QWidget::tr("Could not read directory: ") +
-			     QString::fromLocal8Bit(reason.c_str()));
+			     path2qs(reason));
 	return;
     }
 
@@ -110,8 +110,7 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	    if (!suffix.empty()) 
 		ss << "." << suffix;
 
-	    string fn = 
-		(const char *)QString::fromUtf8(ss.str().c_str()).toLocal8Bit();
+	    string fn = qs2path(u8s2qs(ss.str()));
 	    if (existingNames.find(fn) == existingNames.end() &&
 		toBeCreated.find(fn) == toBeCreated.end()) {
 		toBeCreated.insert(fn);
@@ -132,12 +131,9 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	// There is still a race condition here, should we care ?
 	TempFile temp;// not used
 	if (!FileInterner::idocToFile(temp, fn, theconfig, docs[i], false)) {
-	    QMessageBox::warning(0, "Recoll",
-				 QWidget::tr("Cannot extract document: ") +
-				 QString::fromLocal8Bit(docs[i].url.c_str()) +
-				 " | " +
-				 QString::fromLocal8Bit(docs[i].ipath.c_str())
-		);
+	    QMessageBox::warning(
+                0, "Recoll", QWidget::tr("Cannot extract document: ") +
+                path2qs(docs[i].url) + " | " + u8s2qs(docs[i].ipath));
 	}
     }
 }

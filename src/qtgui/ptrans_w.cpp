@@ -48,7 +48,7 @@ void EditTrans::init(const string& dbdir)
     connect(cancelPB, SIGNAL(clicked()), this, SLOT(close()));
 
     QString lab = whatIdxLA->text();
-    lab.append(QString::fromLocal8Bit(m_dbdir.c_str()));
+    lab.append(path2qs(m_dbdir));
     whatIdxLA->setText(lab);
 
     QStringList labels(tr("Source path"));
@@ -64,12 +64,10 @@ void EditTrans::init(const string& dbdir)
     for (vector<string>::const_iterator it = opaths.begin(); 
 	 it != opaths.end(); it++) {
 	transTW->setRowCount(row+1);
-	transTW->setItem(row, 0, new QTableWidgetItem(
-			     QString::fromLocal8Bit(it->c_str())));
+	transTW->setItem(row, 0, new QTableWidgetItem(path2qs(*it)));
 	string npath;
 	conftrans->get(*it, npath, m_dbdir);
-	transTW->setItem(row, 1, new QTableWidgetItem(
-			     QString::fromLocal8Bit(npath.c_str())));
+	transTW->setItem(row, 1, new QTableWidgetItem(path2qs(npath)));
 	row++;
     }
 
@@ -93,9 +91,9 @@ void EditTrans::on_savePB_clicked()
 
     for (int row = 0; row < transTW->rowCount(); row++) {
 	QTableWidgetItem *item0 = transTW->item(row, 0);
-	string from = path_canon((const char *)item0->text().toLocal8Bit());
+	string from = path_canon(qs2path(item0->text()));
 	QTableWidgetItem *item1 = transTW->item(row, 1);
-	string to = path_canon((const char*)item1->text().toLocal8Bit());
+	string to = path_canon(qs2path(item1->text()));
 	conftrans->set(from, to, m_dbdir);
     }
     conftrans->holdWrites(false);
