@@ -44,7 +44,7 @@ windows {
           -llibxapian \
         $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
  -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \
-        -llibiconv \
+        -llibiconv -lShell32  \
         -lrpcrt4 -lws2_32 -luser32 \
         -lshlwapi -lpsapi -lkernel32
     }

@@ -5,10 +5,10 @@ TEMPLATE        = app
 LANGUAGE        = C++
 TARGET          = recoll
 
-DEFINES += USING_WEBKIT
-QT += webkit webkitwidgets
-#QT += widgets webenginewidgets
-#DEFINES += USING_WEBENGINE
+#DEFINES += USING_WEBKIT
+#QT += webkit webkitwidgets
+QT += widgets webenginewidgets
+DEFINES += USING_WEBENGINE
 
 QT += xml printsupport
 
@@ -132,7 +132,7 @@ windows {
         -llibiconv \
       $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
       -lrpcrt4 -lws2_32 -luser32 \
-      -lshlwapi -lpsapi -lkernel32
+      -lshell32 -lshlwapi -lpsapi -lkernel32
   }
 }
 

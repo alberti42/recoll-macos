@@ -24,7 +24,7 @@ windows {
     QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
     LIBS += \
       ../build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
-    -lshlwapi -lpsapi -lkernel32
+    -lShell32 -lshlwapi -lpsapi -lkernel32
   }
   contains(QMAKE_CC, cl){
     # Visual Studio
@@ -39,7 +39,7 @@ windows {
       -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release/ \
         -llibiconv \
       $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
-      -lrpcrt4 -lws2_32 -luser32 \
+      -lrpcrt4 -lws2_32 -luser32 -lshell32 \
       -lshlwapi -lpsapi -lkernel32
   }
 

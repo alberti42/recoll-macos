@@ -100,6 +100,7 @@ SOURCES += \
 ../../utils/cpuconf.cpp \
 ../../utils/dlib.cpp \
 ../../utils/ecrontab.cpp \
+../../utils/listmem.cpp \
 ../../utils/utf8iter.cpp \
 ../../utils/zlibut.cpp \
 ../../utils/zlibut.h \
@@ -142,7 +143,7 @@ windows {
       $$RECOLLDEPS/mingw/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
       $$RECOLLDEPS/mingw/xapian-core-1.4.11/.libs/libxapian-30.dll \
       $$RECOLLDEPS/mingw/zlib-1.2.8/zlib1.dll \
-      -liconv -lshlwapi -lpsapi -lkernel32
+      -lshell32 -liconv -lshlwapi -lpsapi -lkernel32
     INCLUDEPATH += ../../windows \
       $$RECOLLDEPS/mingw/xapian-core-1.4.11/include \
       $$RECOLLDEPS/mingw/libxslt/libxslt-1.1.29/ \
