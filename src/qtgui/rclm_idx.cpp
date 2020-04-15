@@ -223,7 +223,7 @@ void RclMain::periodic100()
 }
 
 // On win32 we have trouble passing filename args on the command line
-// (recollindex would need to use wmain and process wchar args. So we
+// (recollindex would need to use wmain and process wchar args). So we
 // use a temp file: if the first and only arg to recollindex is not an
 // option, it's a file with the command line inside it.
 bool RclMain::maybeArgsToFile(vector<string>& args)
@@ -233,20 +233,23 @@ bool RclMain::maybeArgsToFile(vector<string>& args)
         TempFile temp("");
         m_idxargstmp = rememberTempFile(temp);
     }
+    bool hasrclindex = (args[0] == "recollindex");
+    if (hasrclindex) {
+        args.erase(args.begin());
+    }
     string s;
     stringsToString(args, s);
     fstream fout(m_idxargstmp->filename(), ios::out|ios::trunc);
     fout << s;
     fout.close();
-    return true;
-    if (args[0] == "recollindex") {
-        args = {args[0], m_idxargstmp->filename()};
+    if (hasrclindex) {
+        args = {"recollindex", m_idxargstmp->filename()};
     } else {
         args = {m_idxargstmp->filename()};
     }
     return true;
 #else
-    args = args;
+    (void)args;
     return true;
 #endif
 }
@@ -263,7 +266,7 @@ bool RclMain::checkIdxPaths()
             tr("Empty or non-existant paths in configuration file. "
                "Click Ok to start indexing anyway "
                "(absent data will not be purged from the index):\n") +
-            QString::fromLocal8Bit(badpaths.c_str()),
+            path2qs(badpaths),
             QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
         if (rep == QMessageBox::Cancel)
             return false;
