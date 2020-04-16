@@ -58,7 +58,6 @@
 #include "safewindows.h"
 #include "safesysstat.h"
 #include "transcode.h"
-#include "log.h"
 
 #define STAT _wstati64
 #define LSTAT _wstati64
@@ -111,6 +110,7 @@
 
 #include "pathut.h"
 #include "smallut.h"
+#include "log.h"
 
 
 using namespace std;
@@ -739,13 +739,13 @@ std::fstream path_open(const std::string& path, int mode)
     // is not ASCII. Actually don't know how to do this with gcc
     wchar_t wpath[MAX_PATH + 1];
     utf8towchar(path, wpath, MAX_PATH);
-    std::fstream ret(wpath, mode);
+    std::fstream ret(wpath, std::ios_base::openmode(mode));
     if (!ret.is_open()) {
         LOGERR("path_open("<< path << ", "<< mode <<") errno " << errno <<"\n");
     }
     return ret;
 #else
-    return std::fstream(path, mode);
+    return std::fstream(path, std::ios_base::openmode(mode));
 #endif
 }
 
