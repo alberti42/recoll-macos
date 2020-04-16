@@ -49,6 +49,7 @@
 #include "md5ut.h"
 #include "log.h"
 #include "smallut.h"
+#include "rclconfig.h"
 
 using namespace std;
 
@@ -275,6 +276,23 @@ string url_gpathS(const string& url)
 #else
     return url_gpath(url);
 #endif
+}
+
+std::string utf8datestring(const std::string& format, struct tm *tm)
+{
+    string u8date;
+#ifdef _WIN32
+    wchar_t wformat[200];
+    utf8towchar(format, wformat, 199);
+    wchar_t wdate[250];
+    wcsftime(wdate, 250, wformat, tm);
+    wchartoutf8(wformat, u8date);
+#else
+    char datebuf[200];
+    strftime(datebuf, 199, format.c_str(), tm);
+    transcode(datebuf, u8date, RclConfig::getLocaleCharset(), "UTF-8");
+#endif
+    return u8date;
 }
 
 const string& tmplocation()

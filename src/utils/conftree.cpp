@@ -16,6 +16,7 @@
  */
 #ifdef BUILDING_RECOLL
 #include "autoconfig.h"
+#include "transcode.h"
 #else
 #include "config.h"
 #endif
