@@ -242,8 +242,8 @@ ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp,
     }
     fstream input = path_open(fname, mode);
     if (!input.is_open()) {
-        LOGERR("ConfSimple::ConfSimple: fstream(w)("<<fname<<", "<< mode <<
-               ") errno" << errno << "\n");
+        LOGDEB("ConfSimple::ConfSimple: fstream(w)("<<fname<<", "<< mode <<
+               ") errno " << errno << "\n");
     }
 
     if (!readonly && !input.is_open()) {
