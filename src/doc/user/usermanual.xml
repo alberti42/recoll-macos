@@ -6197,14 +6197,6 @@ for i in range(nres):
               avoid building the Python libchm interface used to index CHM
               files.</para></listitem>
 
-              <listitem><para><option>--disable-xattr</option> will prevent
-              fetching data from file extended attributes. Beyond a
-              few standard attributes, fetching extended attributes
-              data can only be useful is some application stores data
-              in there, and also needs some simple configuration (see
-              comments in the <filename>fields</filename> configuration
-              file).</para></listitem>
-
               <listitem><para><option>--enable-camelcase</option> will enable
               splitting <replaceable>camelCase</replaceable> words. This
               is not enabled by default as it has the unfortunate
