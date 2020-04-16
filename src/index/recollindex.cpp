@@ -641,6 +641,7 @@ int main(int argc, char **argv)
 	b1:
 		;
 	}
+    aremain = args.size() - argidx;
 
     if (op_flags & OPT_h)
         Usage(stdout);
@@ -795,7 +796,7 @@ int main(int argc, char **argv)
         flushIdxReasons();
         exit(status ? 0 : 1);
     } else if (op_flags & OPT_l) {
-        if (argc != 0) 
+        if (aremain != 0) 
             Usage();
         vector<string> stemmers = ConfIndexer::getStemmerNames();
         for (vector<string>::const_iterator it = stemmers.begin(); 
@@ -804,7 +805,7 @@ int main(int argc, char **argv)
         }
         exit(0);
     } else if (op_flags & OPT_s) {
-        if (argc != 1) 
+        if (aremain != 1) 
             Usage();
         string lang = args[argidx++]; aremain--;
         exit(!createstemdb(config, lang));
@@ -816,7 +817,7 @@ int main(int argc, char **argv)
 
 #ifdef RCL_MONITOR
     } else if (op_flags & OPT_m) {
-        if (argc != 0) 
+        if (aremain != 0) 
             Usage();
         lockorexit(&pidfile, config);
         if (updater) {
