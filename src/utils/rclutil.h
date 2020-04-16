@@ -47,6 +47,10 @@ extern bool printableUrl(const std::string& fcharset,
 /// "/c/" This should be used only for splitting the path in rcldb.
 extern std::string url_gpathS(const std::string& url);
 
+/// Like strftime but guaranteed utf-8 output (esp. useful on Windows)
+struct tm;
+extern std::string utf8datestring(const std::string& format, struct tm *tm);
+
 /// Retrieve the temp dir location: $RECOLL_TMPDIR else $TMPDIR else /tmp
 extern const std::string& tmplocation();
 

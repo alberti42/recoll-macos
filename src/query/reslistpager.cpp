@@ -196,13 +196,10 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     // Document date: either doc or file modification times
     string datebuf;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
-        char cdate[100];
-        cdate[0] = 0;
         time_t mtime = doc.dmtime.empty() ?
             atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
         struct tm *tm = localtime(&mtime);
-        strftime(cdate, 99, dateFormat().c_str(), tm);
-        transcode(cdate, datebuf, RclConfig::getLocaleCharset(), "UTF-8");
+        datebuf = utf8datestring(dateFormat(), tm);
     }
 
     // Size information. We print both doc and file if they differ a lot

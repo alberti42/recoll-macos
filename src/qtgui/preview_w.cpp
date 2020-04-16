@@ -491,23 +491,21 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     int curidx = pvTab->currentIndex();
     pvTab->setTabText(curidx, title);
 
-    char datebuf[100];
-    datebuf[0] = 0;
+    string datebuf;
     if (!doc.fmtime.empty() || !doc.dmtime.empty()) {
         time_t mtime = doc.dmtime.empty() ? 
             atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
         struct tm *tm = localtime(&mtime);
-        strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S", tm);
+        datebuf = utf8datestring("%Y-%m-%d %H:%M:%S", tm);
     }
     LOGDEB("Doc.url: [" << doc.url << "]\n");
     string url;
     printableUrl(theconfig->getDefCharset(), doc.url, url);
     string tiptxt = url + string("\n");
-    tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
+    tiptxt += doc.mimetype + " " + datebuf + "\n";
     if (!ctitle.empty())
         tiptxt += ctitle + "\n";
-    pvTab->setTabToolTip(curidx,
-                         QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
+    pvTab->setTabToolTip(curidx, u8s2qs(tiptxt));
 
     PreviewTextEdit *e = currentEditor();
     if (e) {

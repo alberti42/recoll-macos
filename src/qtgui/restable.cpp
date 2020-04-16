@@ -194,26 +194,22 @@ static string dategetter(const string&, const Rcl::Doc& doc)
 {
     string sdate;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
-        char datebuf[100];
-        datebuf[0] = 0;
         time_t mtime = doc.dmtime.empty() ?
             atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
         struct tm *tm = localtime(&mtime);
-        strftime(datebuf, 99, "%Y-%m-%d", tm);
-        transcode(datebuf, sdate, RclConfig::getLocaleCharset(), "UTF-8");
+        sdate = utf8datestring("%Y-%m-%d", tm);
     }
     return sdate;
 }
 
 static string datetimegetter(const string&, const Rcl::Doc& doc)
 {
-    char datebuf[100];
-    datebuf[0] = 0;
+    string datebuf;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
         time_t mtime = doc.dmtime.empty() ?
             atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
         struct tm *tm = localtime(&mtime);
-        strftime(datebuf, 99, prefs.creslistdateformat.c_str(), tm);
+        datebuf = utf8datestring(prefs.creslistdateformat.c_str(), tm);
     }
     return datebuf;
 }
