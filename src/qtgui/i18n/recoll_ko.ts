@@ -875,10 +875,10 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>위에 추가할 폴더는 &apos;광역 환경설정&apos;에서 정해준 &apos;색인할 최상위 폴더&apos;의 하위 폴더이어야 합니다.
-&lt;i&gt;위 목록 상자에서 아무것도 추가하지 않았거나, 빈 줄을 선택한다면, 아래의 설정들은 최상위 레벨에서 설정됩니다.
+        <translation>&lt;i&gt;위에 추가할 폴더는 &apos;광역 환경설정&apos;에서 정해준 &apos;색인할 최상위 폴더&apos;의 하위 폴더이어야 합니다.
+위 목록 상자에서 아무것도 추가하지 않았거나, 빈 줄을 선택한다면, 아래의 설정들은 최상위 레벨에서 설정됩니다.
 추가한 하위 폴더를 선택하였다면, 아래 설정한 내용은 해당 폴더에만 적용됩니다.
-+/- 버튼을 클릭하여 폴더들을 추가하거나 지울 수 있습니다.</translation>
++/- 버튼을 클릭하여 폴더들을 추가하거나 지울 수 있습니다.&lt;/i&gt;</translation>
     </message>
 </context>
 <context>
@@ -1496,7 +1496,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>F&amp;ilter</source>
-        <translation type="unfinished"></translation>
+        <translation>필터(&amp;i)</translation>
     </message>
 </context>
 <context>
@@ -1519,11 +1519,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation type="unfinished">도움말(&amp;H)</translation>
+        <translation>도움말(&amp;H)</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation type="unfinished">종료(&amp;E)</translation>
+        <translation>종료(&amp;x)</translation>
     </message>
     <message>
         <source>Ctrl+Q</source>
@@ -1627,7 +1627,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Erase search history</source>
-        <translation>검색 기록을 삭제(&amp;E)</translation>
+        <translation>검색 기록 삭제(&amp;E)</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -2668,27 +2668,27 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="unfinished">오류</translation>
+        <translation>오류</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation>구성이 초기화되지 않았습니다.</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Recoll 색인 일괄 예약&lt;/h3&gt;&lt;p&gt;우리는 이 작업을 위해 기본적으로 &apos;윈도우즈 작업 스케쥴러&apos;를 사용합니다. 아래 버튼을 클릭하여 스캐쥴러를 시작할 수 있습니다.&lt;/p&gt;&lt;p&gt;당신은 오른쪽의 메뉴 안에 &lt;i&gt;작업 만들기&lt;/i&gt;로 전체 인터페이스를 사용할 수 있으며, 혹은 간단하게 &lt;i&gt; 기본 작업 만들기&lt;/i&gt; 마법사를 사용할 수 있습니다.&lt;p&gt; 작업을 수행하기 위하여 아래 나열된 일괄 파일 경로를 복사/붙여넣기 하십시오.</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="unfinished"></translation>
+        <translation>명령이 이미 시작되었습니다.</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Recoll 일괄 색인</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="unfinished"></translation>
+        <translation>윈도우즈 작업 스캐쥴러 도구 시작</translation>
     </message>
 </context>
 <context>
@@ -2958,7 +2958,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation>결과 페이지 당 자료 갯수</translation>
+        <translation>결과 페이지 당 표시할 자료 갯수</translation>
     </message>
     <message>
         <source>If checked, results with the same content under different names will only be shown once.</source>
@@ -3155,13 +3155,13 @@ May be slow for big documents.</source>
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
 The default value is 2 (percent). </source>
-        <translation type="unfinished">백분율 값을 높이면, 자주 사용되는 단어를 구문검색에 활용하지 않습니다.
+        <translation>백분율 값을 높이면, 자주 사용되는 단어를 구문검색에 활용하지 않습니다.
 이것은 성능 향상에 도움을 줄 수는 있지만, 원하는 문장을 찾는데에는 지장을 줄 수 있습니다.
 기본값은 2 입니다.(단위는 퍼센트)</translation>
     </message>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
-        <translation type="unfinished">용어를 검색 빈도수에 따라서 자동 문구 생성에 활용합니다(백분율).</translation>
+        <translation>용어를 검색 빈도수에 따라서 자동 문구 생성에 활용합니다(백분율).</translation>
     </message>
     <message>
         <source>Plain text to HTML line style</source>
@@ -3323,7 +3323,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
-        <translation type="unfinished"></translation>
+        <translation>미리보기를 위한 하이라이트 처리된 글자의 최대 용량(KB)</translation>
     </message>
 </context>
 </TS>
