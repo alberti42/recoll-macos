@@ -286,7 +286,7 @@ std::string utf8datestring(const std::string& format, struct tm *tm)
     utf8towchar(format, wformat, 199);
     wchar_t wdate[250];
     wcsftime(wdate, 250, wformat, tm);
-    wchartoutf8(wformat, u8date);
+    wchartoutf8(wdate, u8date);
 #else
     char datebuf[200];
     strftime(datebuf, 199, format.c_str(), tm);
