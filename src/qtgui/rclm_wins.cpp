@@ -280,7 +280,7 @@ void RclMain::execRTITool()
 {
     showRTITool(true);
 }
-void RclMain::showRTITool(bool modal)
+void RclMain::showRTITool(bool)
 {
 #ifndef _WIN32
     LOGDEB("showRTITool()\n" );

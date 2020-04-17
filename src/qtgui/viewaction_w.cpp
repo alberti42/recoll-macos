@@ -154,7 +154,7 @@ void ViewAction::onCurrentItemChanged(QTableWidgetItem *item, QTableWidgetItem *
 void ViewAction::editActions()
 {
     QString action0;
-    int except0 = -1;
+    bool except0 = false;
 
     set<string> viewerXs = theconfig->getMimeViewerAllEx();
     vector<string> mtypes;
