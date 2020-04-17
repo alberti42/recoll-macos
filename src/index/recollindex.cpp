@@ -646,7 +646,7 @@ int main(int argc, char **argv)
     aremain = args.size() - argidx;
 
     if (op_flags & OPT_h)
-        Usage(stdout);
+        Usage();
 #ifndef RCL_MONITOR
     if (op_flags & (OPT_m | OPT_w|OPT_x)) {
         cerr << "Sorry, -m not available: real-time monitoring was not "
