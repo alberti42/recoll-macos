@@ -57,7 +57,7 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
 }
 
 void output_fields(vector<string> fields, Rcl::Doc& doc,
-                   Rcl::Query& query, Rcl::Db& rcldb, bool printnames)
+                   Rcl::Query& query, Rcl::Db&, bool printnames)
 {
     if (fields.empty()) {
         map<string,string>::const_iterator it;

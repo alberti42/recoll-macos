@@ -33,7 +33,7 @@ using namespace Rcl;
 
 
 void
-yy::parser::error (const location_type& l, const std::string& m)
+yy::parser::error (const location_type&, const std::string& m)
 {
     d->setreason(m);
 }
@@ -55,7 +55,7 @@ WasaParserDriver::WasaParserDriver(const RclConfig *c, const std::string sl,
                                    const std::string& as)
     : m_stemlang(sl), m_autosuffs(as), m_config(c),
       m_index(0), m_result(0), m_haveDates(false), 
-      m_maxSize((size_t)-1), m_minSize((size_t)-1)
+      m_maxSize(-1), m_minSize(-1)
 {
 
 }
@@ -95,10 +95,10 @@ SearchData *WasaParserDriver::parse(const std::string& in)
     if (m_haveDates) {
         m_result->setDateSpan(&m_dates);
     }
-    if (m_minSize != (size_t)-1) {
+    if (m_minSize != -1) {
         m_result->setMinSize(m_minSize);
     }
-    if (m_maxSize != (size_t)-1) {
+    if (m_maxSize != -1) {
         m_result->setMaxSize(m_maxSize);
     }
     //if (m_result)  m_result->dump(cout);
@@ -193,13 +193,13 @@ bool WasaParserDriver::addClause(SearchData *sd,
     // Handle "size" spec
     if (!fld.compare("size")) {
         char *cp;
-        size_t size = strtoll(cl->gettext().c_str(), &cp, 10);
+        int64_t size = strtoll(cl->gettext().c_str(), &cp, 10);
         if (*cp != 0) {
             switch (*cp) {
             case 'k': case 'K': size *= 1000;break;
             case 'm': case 'M': size *= 1000*1000;break;
             case 'g': case 'G': size *= 1000*1000*1000;break;
-            case 't': case 'T': size *= size_t(1000)*1000*1000*1000;break;
+            case 't': case 'T': size *= int64_t(1000)*1000*1000*1000;break;
             default: 
                 m_reason = string("Bad multiplier suffix: ") + *cp;
                 delete cl;

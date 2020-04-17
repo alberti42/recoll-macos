@@ -112,7 +112,7 @@ HtmlParser::HtmlParser()
 }
 
 void
-HtmlParser::decode_entities(string &s)
+HtmlParser::decode_entities(string &)
 {
     // Not used for recoll. Kept here to minimize the amount of
     // diffs. Almost the same code in myhtmlparse except that the

@@ -48,6 +48,8 @@ using namespace std;
 static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 {
     LOGDEB1("mimetypefromdata: fn [" << fn << "]\n");
+    PRETEND_USE(usfc);
+    PRETEND_USE(cfg);
     // First try the internal identifying routine
     string mime = idFile(fn.c_str());
 

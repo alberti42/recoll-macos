@@ -161,8 +161,6 @@ windows {
       $$RECOLLDEPS/msvc/libxslt/libxslt-1.1.29/ \
       $$RECOLLDEPS/msvc/libxml2/libxml2-2.9.4+dfsg1/include \
       $$RECOLLDEPS/msvc/wlibiconv/include
-    QMAKE_CXXFLAGS_WARN_ON -= -w34100
-    QMAKE_CXXFLAGS += -wd4100
   }
 
 }

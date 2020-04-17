@@ -388,7 +388,7 @@ int Query::Native::abstractFromText(
     Xapian::docid docid,
     const vector<string>& matchTerms,
     const multimap<double, vector<string>> byQ,
-    double totalweight,
+    double,
     int ctxwords,
     unsigned int maxtotaloccs,
     vector<Snippet>& vabs,

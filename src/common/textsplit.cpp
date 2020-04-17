@@ -319,18 +319,22 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 
 bool TextSplit::isCJK(int c)
 {
+    PRETEND_USE(c);
     return UNICODE_IS_CJK(c);
 }
 bool TextSplit::isKATAKANA(int c)
 {
+    PRETEND_USE(c);
     return UNICODE_IS_KATAKANA(c);
 }
 bool TextSplit::isHANGUL(int c)
 {
+    PRETEND_USE(c);
     return UNICODE_IS_HANGUL(c);
 }
 bool TextSplit::isNGRAMMED(int c)
 {
+    PRETEND_USE(c);
     return UNICODE_IS_CJK(c) && !UNICODE_IS_KATAKANA(c) &&
         !UNICODE_IS_HANGUL(c);
 }
@@ -359,6 +363,8 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
     // long words because stats are used to detect bad text
     if (!isspan || m_wordLen == m_span.length())
         m_stats.newsamp(m_wordChars);
+#else
+    PRETEND_USE(isspan);
 #endif
 
     if (l > 0 && l <= o_maxWordLength) {

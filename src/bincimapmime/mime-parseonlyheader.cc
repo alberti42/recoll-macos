@@ -63,7 +63,7 @@ void Binc::MimeDocument::parseOnlyHeader(int fd)
   nlines = 0;
   nbodylines = 0;
 
-  doParseOnlyHeader(doc_mimeSource, "");
+  doParseOnlyHeader(doc_mimeSource);
 }
 
 void Binc::MimeDocument::parseOnlyHeader(istream& s)
@@ -86,12 +86,11 @@ void Binc::MimeDocument::parseOnlyHeader(istream& s)
   nlines = 0;
   nbodylines = 0;
 
-  doParseOnlyHeader(doc_mimeSource, "");
+  doParseOnlyHeader(doc_mimeSource);
 }
 
 //------------------------------------------------------------------------
-int Binc::MimePart::doParseOnlyHeader(MimeInputSource *ms, 
-				      const string &toboundary)
+int Binc::MimePart::doParseOnlyHeader(MimeInputSource *ms)
 {
   mimeSource = ms;
   string name;

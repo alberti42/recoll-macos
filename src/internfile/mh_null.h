@@ -39,7 +39,7 @@ class MimeHandlerNull : public RecollFilter {
     }
     virtual ~MimeHandlerNull() {}
 
-    virtual bool is_data_input_ok(DataInput input) const {
+    virtual bool is_data_input_ok(DataInput) const {
         return true;
     }
     

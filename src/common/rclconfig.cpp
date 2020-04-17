@@ -969,7 +969,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
                    "]: [" << val << "]\n");
             return 0;
         }
-        ft.wdfinc = attrs.getInt("wdfinc", 1);
+        ft.wdfinc = (int)attrs.getInt("wdfinc", 1);
         ft.boost = attrs.getFloat("boost", 1.0);
         ft.pfxonly = attrs.getBool("pfxonly", false);
         ft.noterms = attrs.getBool("noterms", false);
@@ -1012,7 +1012,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
                 return 0;
             }
         }
-        int valuelen = attrs.getInt("len", 0);
+        int valuelen = (int)attrs.getInt("len", 0);
         // Find or insert traits entry
         const auto pit =
             m_fldtotraits.insert(

@@ -65,13 +65,13 @@ EXEDocFetcher::EXEDocFetcher(const EXEDocFetcher::Internal& _m)
            stringsToString(m->sfetch) << "\n");
 }
 
-bool EXEDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
+bool EXEDocFetcher::fetch(RclConfig*, const Rcl::Doc& idoc, RawDoc& out)
 {
     out.kind = RawDoc::RDK_DATADIRECT;
     return m->docmd(m->sfetch, idoc, out.data);
 }
 
-bool EXEDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
+bool EXEDocFetcher::makesig(RclConfig*, const Rcl::Doc& idoc, string& sig)
 {
     return m->docmd(m->smkid, idoc, sig);
 }

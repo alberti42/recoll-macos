@@ -78,8 +78,8 @@ private:
     std::vector<std::string>  m_nfiletypes;
     bool                      m_haveDates;
     DateInterval              m_dates; // Restrict to date interval
-    size_t                    m_maxSize;
-    size_t                    m_minSize;
+    int64_t                   m_maxSize;
+    int64_t                   m_minSize;
 
     std::string m_reason;
 

@@ -502,7 +502,7 @@ void Query::Native::abstractCreateSnippetsVector(
 int Query::Native::abstractFromIndex(
     Rcl::Db::Native *ndb,
     Xapian::docid docid,
-    const vector<string>& matchTerms,
+    const vector<string>&,
     const multimap<double, vector<string>> byQ,
     double totalweight,
     int ctxwords,

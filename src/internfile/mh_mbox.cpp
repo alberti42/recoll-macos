@@ -324,7 +324,9 @@ void MimeHandlerMbox::clear_impl()
     m->fn.erase();
     m->ipath.erase();
     m->instream = ifstream();
-    m->msgnum = m->lineno = m->fsize = 0;
+    m->msgnum = 0;
+    m->lineno = 0;
+    m->fsize = 0;
     m->offsets.clear();
     m->quirks = 0;
 }
@@ -334,7 +336,7 @@ bool MimeHandlerMbox::skip_to_document(const std::string& ipath) {
     return true;
 }
 
-bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
+bool MimeHandlerMbox::set_document_file_impl(const string&, const string &fn)
 {
     LOGDEB("MimeHandlerMbox::set_document_file(" << fn << ")\n");
     clear_impl();

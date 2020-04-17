@@ -218,15 +218,15 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     }
 
 
-    if (m_minSize != size_t(-1) || m_maxSize != size_t(-1)) {
+    if (m_minSize != -1 || m_maxSize != -1) {
         Xapian::Query sq;
 	string min = lltodecstr(m_minSize);
 	string max = lltodecstr(m_maxSize);
-	if (m_minSize == size_t(-1)) {
+	if (m_minSize == -1) {
 	    string value(max);
 	    leftzeropad(value, 12);
 	    sq = Xapian::Query(Xapian::Query::OP_VALUE_LE, VALUE_SIZE, value);
-	} else if (m_maxSize == size_t(-1)) {
+	} else if (m_maxSize == -1) {
 	    string value(min);
 	    leftzeropad(value, 12);
 	    sq = Xapian::Query(Xapian::Query::OP_VALUE_GE, VALUE_SIZE, value);
@@ -331,7 +331,7 @@ public:
         m_ts = ts;
     }
     
-    bool takeword(const std::string &term, int pos, int bs, int be) {
+    bool takeword(const std::string &term, int pos, int, int be) {
 	m_alltermcount++;
 	if (m_lastpos < pos)
 	    m_lastpos = pos;

@@ -224,7 +224,7 @@ bool CreateInvisibleWindow()
     return TRUE;
 }
 
-DWORD WINAPI RunInvisibleWindowThread(LPVOID lpParam)
+DWORD WINAPI RunInvisibleWindowThread(LPVOID)
 {
     MSG msg;
     CreateInvisibleWindow();

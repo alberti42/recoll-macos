@@ -455,8 +455,9 @@ public:
                 m_reason << "CirCache::weh: erase requested but not empty";
                 return false;
             }
-            string buf(d.padsize, ' ');
-            if (write(m_fd, buf.c_str(), d.padsize) != (ssize_t)d.padsize) {
+            string buf((size_t)d.padsize, ' ');
+            if (write(m_fd, buf.c_str(), (size_t)d.padsize) !=
+                (ssize_t)d.padsize) {
                 m_reason << "CirCache::weh: write failed. errno " << errno;
                 return false;
             }
@@ -675,7 +676,7 @@ public:
     CCScanHookRecord()
         : headoffs(0), padsize(0) {
     }
-    virtual status takeone(int64_t offs, const string& udi,
+    virtual status takeone(int64_t offs, const string&,
                            const EntryHeaderData& d) {
         headoffs = offs;
         padsize = d.padsize;

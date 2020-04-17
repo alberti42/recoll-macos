@@ -710,6 +710,7 @@ bool path_makepath(const string& ipath, int mode)
     path = "/";
     for (const auto& elem : elems) {
 #ifdef _WIN32
+        PRETEND_USE(mode);
         if (path == "/" && path_strlookslikedrive(elem)) {
             path = "";
         }

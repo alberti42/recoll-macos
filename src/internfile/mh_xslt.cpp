@@ -71,8 +71,7 @@ public:
         return ctxt->myDoc;
     }
 
-    virtual bool init(int64_t size, string *) {
-        LOGDEB1("FileScanXML: init: size " << size << endl);
+    virtual bool init(int64_t, string *) {
         ctxt = xmlCreatePushParserCtxt(NULL, NULL, NULL, 0, m_fn.c_str());
         if (ctxt == nullptr) {
             LOGERR("FileScanXML: xmlCreatePushParserCtxt failed\n");
@@ -276,8 +275,7 @@ bool MimeHandlerXslt::Internal::process_doc_or_string(
     return true;
 }
 
-bool MimeHandlerXslt::set_document_file_impl(const std::string& mt, 
-                                             const std::string &fn)
+bool MimeHandlerXslt::set_document_file_impl(const string&, const string &fn)
 {
     LOGDEB0("MimeHandlerXslt::set_document_file_: fn: " << fn << endl);
     if (!m || !m->ok) {
@@ -290,8 +288,7 @@ bool MimeHandlerXslt::set_document_file_impl(const std::string& mt,
     return ret;
 }
 
-bool MimeHandlerXslt::set_document_string_impl(const string& mt, 
-                                               const string& txt)
+bool MimeHandlerXslt::set_document_string_impl(const string&, const string& txt)
 {
     LOGDEB0("MimeHandlerXslt::set_document_string_\n");
     if (!m || !m->ok) {

@@ -75,7 +75,7 @@ public:
     virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,
                          std::string& sig) = 0;
     enum Reason{FetchOk, FetchNotExist, FetchNoPerm, FetchOther};
-    virtual Reason testAccess(RclConfig* cnf, const Rcl::Doc& idoc) {
+    virtual Reason testAccess(RclConfig*, const Rcl::Doc&) {
         return FetchOther;
     }
     virtual ~DocFetcher() {}

@@ -534,7 +534,7 @@ int64_t fsTreeBytes(const string& topdir)
 {
     class bytesCB : public FsTreeWalkerCB {
     public:
-        FsTreeWalker::Status processone(const string &path, 
+        FsTreeWalker::Status processone(const string &, 
                                         const struct PathStat *st,
                                         FsTreeWalker::CbFlag flg) {
             if (flg == FsTreeWalker::FtwDirEnter ||

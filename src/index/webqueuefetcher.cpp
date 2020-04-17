@@ -58,7 +58,7 @@ bool WQDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
     return true;
 }
     
-bool WQDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
+bool WQDocFetcher::makesig(RclConfig*, const Rcl::Doc&, string& sig)
 {
     // Web queue sigs are empty
     sig.clear();

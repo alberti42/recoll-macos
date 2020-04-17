@@ -229,6 +229,7 @@ static void makeIndexerOrExit(RclConfig *config, bool inPlaceReset)
 
 void rclIxIonice(const RclConfig *config)
 {
+    PRETEND_USE(config);
 #ifndef _WIN32
     string clss, classdata;
     if (!config->getConfParam("monioniceclass", clss) || clss.empty())
@@ -241,6 +242,7 @@ void rclIxIonice(const RclConfig *config)
 
 static void setMyPriority(const RclConfig *config)
 {
+    PRETEND_USE(config);
 #ifndef _WIN32
     int prio{19};
     std::string sprio;
@@ -474,8 +476,7 @@ static const char usage [] =
 "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
 ;
 
-static void
-Usage(FILE *where = stderr)
+static void Usage()
 {
     FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
     fprintf(fp, "%s: Usage: %s", path_getsimple(thisprog).c_str(), usage);
@@ -487,6 +488,7 @@ static RclConfig *config;
 
 static void lockorexit(Pidfile *pidfile, RclConfig *config)
 {
+    PRETEND_USE(config);
     pid_t pid;
     if ((pid = pidfile->open()) != 0) {
         if (pid > 0) {

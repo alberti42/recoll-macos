@@ -1290,7 +1290,7 @@ bool SimpleRegexp::simpleMatch(const string& val) const
     return regex_search(val, m->res, m->expr);
 }
 
-string SimpleRegexp::getMatch(const string& val, int i) const
+string SimpleRegexp::getMatch(const string&, int i) const
 {
     return m->res.str(i);
 }

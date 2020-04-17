@@ -50,3 +50,5 @@ typedef int ssize_t;
 #define lstat stat
 
 #endif // _WIN32
+
+#define PRETEND_USE(expr) ((void)(expr))

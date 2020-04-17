@@ -85,6 +85,10 @@ void reapXAttrs(const RclConfig* cfg, const string& path,
 	xfields[key] = value;
 	LOGDEB2("reapXAttrs: [" << key << "] -> [" << value << "]\n");
     }
+#else
+    PRETEND_USE(cfg);
+    PRETEND_USE(path);
+    PRETEND_USE(xfields);
 #endif
 }
 

@@ -271,8 +271,8 @@ FileInterner::FileInterner(const string &data, RclConfig *cnf,
     init(data, cnf, flags, imime);
 }
 
-void FileInterner::init(const string &data, RclConfig *cnf, 
-                        int flags, const string& imime)
+void FileInterner::init(const string &data, RclConfig *,
+                        int, const string& imime)
 {
     if (imime.empty()) {
         LOGERR("FileInterner: inmemory constructor needs input mime type\n");

@@ -34,6 +34,7 @@ using namespace std;
 bool checkRetryFailed(RclConfig *conf, bool record)
 {
 #ifdef _WIN32
+    PRETEND_USE(record);
     // Under Windows we only retry if the recollindex program is newer
     // than the index
     struct PathStat st;

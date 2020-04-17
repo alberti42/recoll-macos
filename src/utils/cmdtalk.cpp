@@ -39,7 +39,7 @@ public:
     Canceler(int tmsecs) 
         : m_timeosecs(tmsecs) {}
 
-    virtual void newData(int cnt) {
+    virtual void newData(int) {
         if (m_starttime && (time(0) - m_starttime) > m_timeosecs) {
             throw TimeoutExcept();
         }

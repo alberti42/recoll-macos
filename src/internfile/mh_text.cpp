@@ -40,7 +40,7 @@ const int MB = 1024*1024;
 const int KB = 1024;
 
 // Process a plain text file
-bool MimeHandlerText::set_document_file_impl(const string& mt, const string &fn)
+bool MimeHandlerText::set_document_file_impl(const string&, const string &fn)
 {
     LOGDEB("MimeHandlerText::set_document_file: [" << fn << "] offs " <<
            m_offs << "\n");
@@ -94,7 +94,7 @@ bool MimeHandlerText::set_document_file_impl(const string& mt, const string &fn)
     return true;
 }
 
-bool MimeHandlerText::set_document_string_impl(const string& mt,
+bool MimeHandlerText::set_document_string_impl(const string&,
                                                const string& otext)
 {
     m_text = otext;

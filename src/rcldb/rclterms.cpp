@@ -334,7 +334,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 }
 
 bool Db::Native::idxTermMatch_p(
-    int typ, const string &lang, const string &root,
+    int typ, const string&, const string& root,
     std::function<bool(const string& term,
                        Xapian::termcount colfreq,
                        Xapian::doccount termfreq)> client,

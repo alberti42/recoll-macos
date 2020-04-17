@@ -32,7 +32,7 @@ class MimeHandlerUnknown : public RecollFilter {
 	: RecollFilter(cnf, id) {
     }
     virtual ~MimeHandlerUnknown() {}
-    virtual bool is_data_input_ok(DataInput input) const {
+    virtual bool is_data_input_ok(DataInput) const {
         return true;
     }
     

@@ -47,6 +47,7 @@ void MEAdv::reset()
 
 void MEAdv::newData(int n) 
 {
+    PRETEND_USE(n);
     LOGDEB2("MHExec:newData(" << n << ")\n");
     if (m_filtermaxseconds > 0 && 
         time(0L) - m_start > m_filtermaxseconds) {

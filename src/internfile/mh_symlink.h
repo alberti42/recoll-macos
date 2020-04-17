@@ -60,7 +60,7 @@ class MimeHandlerSymlink : public RecollFilter {
 	return true;
     }
 protected:
-    virtual bool set_document_file_impl(const string& mt, const string& fn) {
+    virtual bool set_document_file_impl(const string&, const string& fn) {
 	m_fn = fn;
 	return m_havedoc = true;
     }

@@ -44,7 +44,7 @@ bool MimeHandlerHtml::set_document_file_impl(const string& mt, const string &fn)
     return set_document_string(mt, otext);
 }
 
-bool MimeHandlerHtml::set_document_string_impl(const string& mt, 
+bool MimeHandlerHtml::set_document_string_impl(const string&,
                                                const string& htext) 
 {
     m_html = htext;

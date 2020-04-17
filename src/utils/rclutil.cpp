@@ -127,7 +127,7 @@ static const string& path_wingetrcltmpdir()
     return tdir;
 }
 
-static bool path_gettempfilename(string& filename, string& reason)
+static bool path_gettempfilename(string& filename, string&)
 {
     string tdir = path_wingetrcltmpdir();
     wchar_t dbuf[MAX_PATH + 1];
@@ -245,6 +245,7 @@ const string& path_pkgdatadir()
 bool printableUrl(const string& fcharset, const string& in, string& out)
 {
 #ifdef _WIN32
+    PRETEND_USE(fcharset);
     // On windows our paths are always utf-8
     out = in;
 #else

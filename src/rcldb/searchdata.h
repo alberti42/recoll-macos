@@ -113,8 +113,8 @@ public:
 
     const std::string& getStemLang() {return m_stemlang;}
 
-    void setMinSize(size_t size) {m_minSize = size;}
-    void setMaxSize(size_t size) {m_maxSize = size;}
+    void setMinSize(int64_t size) {m_minSize = size;}
+    void setMaxSize(int64_t size) {m_maxSize = size;}
 
     /** Set date span for filtering results */
     void setDateSpan(DateInterval *dip) {m_dates = *dip; m_haveDates = true;}
@@ -179,8 +179,8 @@ private:
     // something else (date and size specs)
     bool                      m_haveDates;
     DateInterval              m_dates; // Restrict to date interval
-    size_t                    m_maxSize;
-    size_t                    m_minSize;
+    int64_t                    m_maxSize;
+    int64_t                    m_minSize;
 
     // Printable expanded version of the complete query, retrieved/set
     // from rcldb after the Xapian::setQuery() call
