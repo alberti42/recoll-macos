@@ -29,7 +29,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 // PXALINUX: platforms like kfreebsd which aren't linux but use the
 // same xattr interface
-#if defined(__gnu_linux__) || \
+#if defined(__linux__) || \
     (defined(__FreeBSD_kernel__)&&defined(__GLIBC__)&&!defined(__FreeBSD__)) ||\
     defined(__CYGWIN__)
 #define PXALINUX

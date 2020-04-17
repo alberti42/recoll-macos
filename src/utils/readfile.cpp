@@ -18,6 +18,9 @@
 #include "autoconfig.h"
 #else
 #include "config.h"
+#ifndef PRETEND_USE
+#define PRETEND_USE(expr) ((void)(expr))
+#endif
 #endif
 
 #include "readfile.h"
