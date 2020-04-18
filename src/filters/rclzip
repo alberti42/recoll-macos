@@ -46,11 +46,11 @@ if not hasrclconfig:
 #
 # There is a bit in zip entries to indicate if the filename is encoded
 # as utf-8 or not. If the bit is set, zipfile decodes the file name
-# and stores it in the catalog as an unicode object. Else it uses a
-# binary string.
+# and stores it in the catalog as an unicode object. Else it uses the
+# binary string, which it decodes as CP437 (zip standard).
 #
-# When reading the file, the input file name is used directly as an
-# index into the catalog.
+# When reading the file, the input file name is used by rclzip
+# directly as an index into the catalog.
 #
 # When we send the file name data to the indexer, we have to serialize
 # it as byte string, we can't pass unicode objects to and fro. This
@@ -73,6 +73,14 @@ if not hasrclconfig:
 # the utf-8 validity test (ie have a 1st char switch), but this would be
 # incompatible with existing indexes. Instead we try both ways...
 #
+# Also, some zip files contain file names which are not encoded as
+# CP437 (Ex: EUC-KR which was the test case). Python produces garbage
+# paths in this case (this does not affect the ipath validity, just
+# the display), which is expected, but unzip succeeds in guessing the
+# correct encoding, I have no idea how, but apparently the magic
+# occurs in process.c:GetUnicodeData(), which succeeds in finding an
+# utf-8 string which zipfile does not see (to be checked: was a quick look). 
+# Anyway: this is a python zipfile issue.
 class ZipExtractor:
     def __init__(self, em):
         self.filename = None
