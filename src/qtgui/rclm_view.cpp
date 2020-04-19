@@ -37,6 +37,12 @@
 
 using namespace std;
 
+// Browser list used if xdg-open fails for opening the help doc
+static const vector<string> browser_list{
+    "opera", "google-chrome", "chromium-browser",
+    "palemoon", "iceweasel", "firefox", "konqueror", "epiphany"};
+
+
 // Start native viewer or preview for input Doc. This is used to allow
 // using recoll from another app (e.g. Unity Scope) to view embedded
 // result docs (docs with an ipath). . We act as a proxy to extract
@@ -45,12 +51,11 @@ using namespace std;
 void RclMain::viewUrl()
 {
     if (m_urltoview.isEmpty() || !rcldb)
-	return;
+        return;
 
     QUrl qurl(m_urltoview);
-    LOGDEB("RclMain::viewUrl: Path [" <<
-           ((const char *)qurl.path().toLocal8Bit()) << "] fragment ["
-           << ((const char *)qurl.fragment().toLocal8Bit()) << "]\n");
+    LOGDEB("RclMain::viewUrl: Path [" << qs2path(qurl.path()) <<
+           "] fragment [" << qs2path(qurl.fragment()) << "]\n");
 
     /* In theory, the url might not be for a file managed by the fs
        indexer so that the make_udi() call here would be
@@ -58,13 +63,12 @@ void RclMain::viewUrl()
        inside internfile and have some url magic to indicate the
        appropriate indexer/identification scheme */
     string udi;
-    make_udi((const char *)qurl.path().toLocal8Bit(),
-	     (const char *)qurl.fragment().toLocal8Bit(), udi);
+    make_udi(qs2path(qurl.path()), qs2path(qurl.fragment()), udi);
     
     Rcl::Doc doc;
     Rcl::Doc idxdoc; // idxdoc.idxi == 0 -> works with base index only
     if (!rcldb->getDoc(udi, idxdoc, doc) || doc.pc == -1)
-	return;
+        return;
 
     // StartNativeViewer needs a db source to call getEnclosing() on.
     Rcl::Query *query = new Rcl::Query(rcldb.get());
@@ -79,22 +83,22 @@ void RclMain::viewUrl()
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
     string viewer = theconfig->getMimeViewerDef(doc.mimetype, apptag, 
-						prefs.useDesktopOpen);
+                                                prefs.useDesktopOpen);
     if (viewer.empty()) {
-	startPreview(doc);
+        startPreview(doc);
     } else {
-	hide();
-	startNativeViewer(doc);
-	// We have a problem here because xdg-open will exit
-	// immediately after starting the command instead of waiting
-	// for it, so we can't wait either and we don't know when we
-	// can exit (deleting the temp file). As a bad workaround we
-	// sleep some time then exit. The alternative would be to just
-	// prevent the temp file deletion completely, leaving it
-	// around forever. Better to let the user save a copy if he
-	// wants I think.
-	sleep(30);
-	fileExit();
+        hide();
+        startNativeViewer(doc);
+        // We have a problem here because xdg-open will exit
+        // immediately after starting the command instead of waiting
+        // for it, so we can't wait either and we don't know when we
+        // can exit (deleting the temp file). As a bad workaround we
+        // sleep some time then exit. The alternative would be to just
+        // prevent the temp file deletion completely, leaving it
+        // around forever. Better to let the user save a copy if he
+        // wants I think.
+        sleep(30);
+        fileExit();
     }
 }
 
@@ -103,17 +107,14 @@ void RclMain::viewUrl()
  * (xdg-open etc.) failed */
 static bool lookForHtmlBrowser(string &exefile)
 {
-    vector<string> blist{"opera", "google-chrome", "chromium-browser",
-            "palemoon", "iceweasel", "firefox", "konqueror", "epiphany"};
-
     const char *path = getenv("PATH");
     if (path == 0) {
-	path = "/usr/local/bin:/usr/bin:/bin";
+        path = "/usr/local/bin:/usr/bin:/bin";
     }
     // Look for each browser 
-    for (const auto& entry : blist) {
-	if (ExecCmd::which(entry, exefile, path)) 
-	    return true;
+    for (const auto& entry : browser_list) {
+        if (ExecCmd::which(entry, exefile, path)) 
+            return true;
     }
     exefile.clear();
     return false;
@@ -126,11 +127,11 @@ void RclMain::openWith(Rcl::Doc doc, string cmdspec)
     // Split the command line
     vector<string> lcmd;
     if (!stringToStrings(cmdspec, lcmd)) {
-	QMessageBox::warning(
+        QMessageBox::warning(
             0, "Recoll", tr("Bad desktop app spec for %1: [%2]\n"
                             "Please check the desktop file")
             .arg(u8s2qs(doc.mimetype)).arg(path2qs(cmdspec)));
-	return;
+        return;
     }
 
     // Look for the command to execute in the exec path and the filters 
@@ -165,12 +166,12 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 
     // Look for appropriate viewer
     string cmdplusattr = theconfig->getMimeViewerDef(doc.mimetype, apptag, 
-						     prefs.useDesktopOpen);
+                                                     prefs.useDesktopOpen);
     if (cmdplusattr.empty()) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("No external viewer configured for mime type [")
-			     + doc.mimetype.c_str() + "]");
-	return;
+        QMessageBox::warning(0, "Recoll", 
+                             tr("No external viewer configured for mime type [")
+                             + doc.mimetype.c_str() + "]");
+        return;
     }
     LOGDEB("StartNativeViewer: viewerdef from config: " << cmdplusattr << endl);
 
@@ -191,59 +192,59 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     // Split the command line
     vector<string> lcmd;
     if (!stringToStrings(cmd, lcmd)) {
-	QMessageBox::warning(
+        QMessageBox::warning(
             0, "Recoll", tr("Bad viewer command line for %1: [%2]\n"
                             "Please check the mimeview file")
             .arg(u8s2qs(doc.mimetype)).arg(path2qs(cmd)));
-	return;
+        return;
     }
 
     // Look for the command to execute in the exec path and the filters 
     // directory
     string execpath;
     if (!ExecCmd::which(lcmd.front(), execpath)) {
-	execpath = theconfig->findFilter(lcmd.front());
-	// findFilter returns its input param if the filter is not in
-	// the normal places. As we already looked in the path, we
-	// have no use for a simple command name here (as opposed to
-	// mimehandler which will just let execvp do its thing). Erase
-	// execpath so that the user dialog will be started further
-	// down.
-	if (!execpath.compare(lcmd.front())) 
-	    execpath.erase();
+        execpath = theconfig->findFilter(lcmd.front());
+        // findFilter returns its input param if the filter is not in
+        // the normal places. As we already looked in the path, we
+        // have no use for a simple command name here (as opposed to
+        // mimehandler which will just let execvp do its thing). Erase
+        // execpath so that the user dialog will be started further
+        // down.
+        if (!execpath.compare(lcmd.front())) 
+            execpath.erase();
 
-	// Specialcase text/html because of the help browser need
-	if (execpath.empty() && !doc.mimetype.compare("text/html") && 
-	    apptag.empty()) {
-	    if (lookForHtmlBrowser(execpath)) {
-		lcmd.clear();
-		lcmd.push_back(execpath);
-		lcmd.push_back("%u");
-	    }
-	}
+        // Specialcase text/html because of the help browser need
+        if (execpath.empty() && !doc.mimetype.compare("text/html") && 
+            apptag.empty()) {
+            if (lookForHtmlBrowser(execpath)) {
+                lcmd.clear();
+                lcmd.push_back(execpath);
+                lcmd.push_back("%u");
+            }
+        }
     }
 
     // Command not found: start the user dialog to help find another one:
     if (execpath.empty()) {
-	QString mt = QString::fromUtf8(doc.mimetype.c_str());
-	QString message = tr("The viewer specified in mimeview for %1: %2"
-			     " is not found.\nDo you want to start the "
-			     " preferences dialog ?")
+        QString mt = QString::fromUtf8(doc.mimetype.c_str());
+        QString message = tr("The viewer specified in mimeview for %1: %2"
+                             " is not found.\nDo you want to start the "
+                             " preferences dialog ?")
             .arg(mt).arg(path2qs(lcmd.front()));
 
-	switch(QMessageBox::warning(0, "Recoll", message, 
-				    "Yes", "No", 0, 0, 1)) {
-	case 0: 
-	    showUIPrefs();
-	    if (uiprefs)
-		uiprefs->showViewAction(mt);
-	    break;
-	case 1:
-	    break;
-	}
+        switch(QMessageBox::warning(0, "Recoll", message, 
+                                    "Yes", "No", 0, 0, 1)) {
+        case 0: 
+            showUIPrefs();
+            if (uiprefs)
+                uiprefs->showViewAction(mt);
+            break;
+        case 1:
+            break;
+        }
         // The user will have to click on the link again to try the
         // new command.
-	return;
+        return;
     }
     // Get rid of the command name. lcmd is now argv[1...n]
     lcmd.erase(lcmd.begin());
@@ -270,42 +271,42 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     } 
 
     if (wantsparentfile && !urlisfileurl(doc.url)) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("Viewer command line for %1 specifies "
-				"parent file but URL is http[s]: unsupported")
-			     .arg(QString::fromUtf8(doc.mimetype.c_str())));
-	return;
+        QMessageBox::warning(0, "Recoll", 
+                             tr("Viewer command line for %1 specifies "
+                                "parent file but URL is http[s]: unsupported")
+                             .arg(QString::fromUtf8(doc.mimetype.c_str())));
+        return;
     }
     if (wantsfile && wantsparentfile) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("Viewer command line for %1 specifies both "
-				"file and parent file value: unsupported")
-			     .arg(QString::fromUtf8(doc.mimetype.c_str())));
-	return;
+        QMessageBox::warning(0, "Recoll", 
+                             tr("Viewer command line for %1 specifies both "
+                                "file and parent file value: unsupported")
+                             .arg(QString::fromUtf8(doc.mimetype.c_str())));
+        return;
     }
-	
+    
     string url = doc.url;
     string fn = fileurltolocalpath(doc.url);
     Rcl::Doc pdoc;
     if (wantsparentfile) {
-	// We want the path for the parent document. For example to
-	// open the chm file, not the internal page. Note that we just
-	// override the other file name in this case.
-	if (!m_source || !m_source->getEnclosing(doc, pdoc)) {
-	    QMessageBox::warning(0, "Recoll",
-				 tr("Cannot find parent document"));
-	    return;
-	}
-	// Override fn with the parent's : 
-	fn = fileurltolocalpath(pdoc.url);
+        // We want the path for the parent document. For example to
+        // open the chm file, not the internal page. Note that we just
+        // override the other file name in this case.
+        if (!m_source || !m_source->getEnclosing(doc, pdoc)) {
+            QMessageBox::warning(0, "Recoll",
+                                 tr("Cannot find parent document"));
+            return;
+        }
+        // Override fn with the parent's : 
+        fn = fileurltolocalpath(pdoc.url);
 
-	// If the parent document has an ipath too, we need to create
-	// a temp file even if the command takes an ipath
-	// parameter. We have no viewer which could handle a double
-	// embedding. Will have to change if such a one appears.
-	if (!pdoc.ipath.empty()) {
-	    groksipath = false;
-	}
+        // If the parent document has an ipath too, we need to create
+        // a temp file even if the command takes an ipath
+        // parameter. We have no viewer which could handle a double
+        // embedding. Will have to change if such a one appears.
+        if (!pdoc.ipath.empty()) {
+            groksipath = false;
+        }
     }
 
     // Can't remember what enterHistory was actually for. Set it to
@@ -320,20 +321,20 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     // there is an ipath that it won't understand, we need a temp file:
     theconfig->setKeyDir(fn.empty() ? "" : path_getfather(fn));
     if (((wantsfile || wantsparentfile) && fn.empty()) ||
-	(!groksipath && !doc.ipath.empty()) ) {
-	TempFile temp;
-	Rcl::Doc& thedoc = wantsparentfile ? pdoc : doc;
-	if (!FileInterner::idocToFile(temp, string(), theconfig, thedoc)) {
-	    QMessageBox::warning(0, "Recoll",
-				 tr("Cannot extract document or create "
-				    "temporary file"));
-	    return;
-	}
-	enterHistory = true;
+        (!groksipath && !doc.ipath.empty()) ) {
+        TempFile temp;
+        Rcl::Doc& thedoc = wantsparentfile ? pdoc : doc;
+        if (!FileInterner::idocToFile(temp, string(), theconfig, thedoc)) {
+            QMessageBox::warning(0, "Recoll",
+                                 tr("Cannot extract document or create "
+                                    "temporary file"));
+            return;
+        }
+        enterHistory = true;
         istempfile = true;
-	rememberTempFile(temp);
-	fn = temp.filename();
-	url = path_pathtofileurl(fn);
+        rememberTempFile(temp);
+        fn = temp.filename();
+        url = path_pathtofileurl(fn);
     }
 
     // If using an actual file, check that it exists, and if it is
@@ -354,7 +355,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
         }
         if (temp.ok()) {
             istempfile = true;
-	    rememberTempFile(temp);
+            rememberTempFile(temp);
             fn = temp.filename();
             url = path_pathtofileurl(fn);
         }
@@ -381,14 +382,14 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     // If we are not called with a page number (which would happen for a call
     // from the snippets window), see if we can compute a page number anyway.
     if (pagenum == -1) {
-	pagenum = 1;
-	string lterm;
-	if (m_source)
-	    pagenum = m_source->getFirstMatchPage(doc, lterm);
-	if (pagenum == -1)
-	    pagenum = 1;
-	else // We get the match term used to compute the page
-	    term = QString::fromUtf8(lterm.c_str());
+        pagenum = 1;
+        string lterm;
+        if (m_source)
+            pagenum = m_source->getFirstMatchPage(doc, lterm);
+        if (pagenum == -1)
+            pagenum = 1;
+        else // We get the match term used to compute the page
+            term = QString::fromUtf8(lterm.c_str());
     }
     char cpagenum[20];
     sprintf(cpagenum, "%d", pagenum);
@@ -445,20 +446,20 @@ void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
 #endif
     QStatusBar *stb = statusBar();
     if (stb) {
-	string prcmd;
+        string prcmd;
 #ifdef _WIN32
         prcmd = ncmd;
 #else
-	string fcharset = theconfig->getDefCharset(true);
-	transcode(ncmd, prcmd, fcharset, "UTF-8");
+        string fcharset = theconfig->getDefCharset(true);
+        transcode(ncmd, prcmd, fcharset, "UTF-8");
 #endif
-	QString msg = tr("Executing: [") + 
-	    QString::fromUtf8(prcmd.c_str()) + "]";
-	stb->showMessage(msg, 10000);
+        QString msg = tr("Executing: [") + 
+            QString::fromUtf8(prcmd.c_str()) + "]";
+        stb->showMessage(msg, 10000);
     }
 
     if (enterHistory)
-	historyEnterDoc(rcldb.get(), g_dynconf, doc);
+        historyEnterDoc(rcldb.get(), g_dynconf, doc);
     
     // Do the zeitgeist thing
     zg_send_event(ZGSEND_OPEN, doc);
@@ -497,8 +498,8 @@ void RclMain::startManual(const string& index)
 #endif
     
     if (!indexempty) {
-	usermanual += "#";
-	usermanual += index;
+        usermanual += "#";
+        usermanual += index;
     }
     Rcl::Doc doc;
     if (has_wh && indexempty) {

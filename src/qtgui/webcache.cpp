@@ -1,4 +1,4 @@
-/* Copyright (C) 2016 J.F.Dockes
+/* Copyright (C) 2016-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -37,6 +37,7 @@
 #include "conftree.h"
 #include "rclmain_w.h"
 #include "smallut.h"
+#include "log.h"
 
 using namespace std;
 
@@ -160,15 +161,16 @@ QVariant WebcacheModel::data(const QModelIndex& index, int role) const
 
 void WebcacheModel::setSearchFilter(const QString& _txt)
 {
-    SimpleRegexp re(qs2utf8s(_txt), SimpleRegexp::SRE_NOSUB);
+    SimpleRegexp re(
+        qs2utf8s(_txt), SimpleRegexp::SRE_NOSUB|SimpleRegexp::SRE_ICASE);
     
     m->disp.clear();
     for (unsigned int i = 0; i < m->all.size(); i++) {
         if (re(m->all[i].url)) {
             m->disp.push_back(m->all[i]);
         } else {
-            //qDebug() << "match failed. exp" << _txt << "data" <<
-            // m->all[i].url.c_str();
+            LOGDEB1(" WebcacheMOdel::filter: match failed. exp" <<
+                    qs2utf8s(_txt) << "data" << m->all[i].url);
         }
     }
     emit dataChanged(createIndex(0,0), createIndex(1, m->all.size()));
@@ -197,19 +199,19 @@ WebcacheEdit::WebcacheEdit(RclMain *parent)
     wl = settings.value(cwnm).toStringList();
     QHeaderView *header = tableview->horizontalHeader();
     if (header) {
-	if (int(wl.size()) == header->count()) {
-	    for (int i = 0; i < header->count(); i++) {
-		header->resizeSection(i, wl[i].toInt());
-	    }
-	}
+        if (int(wl.size()) == header->count()) {
+            for (int i = 0; i < header->count(); i++) {
+                header->resizeSection(i, wl[i].toInt());
+            }
+        }
     }
     connect(header, SIGNAL(sectionResized(int,int,int)),
             this, SLOT(saveColState()));
 
     header = tableview->verticalHeader();
     if (header) {
-	header->setDefaultSectionSize(QApplication::fontMetrics().height() + 
-				      ROWHEIGHTPAD);
+        header->setDefaultSectionSize(QApplication::fontMetrics().height() + 
+                                      ROWHEIGHTPAD);
     }
 
     int width = settings.value(wwnm, 0).toInt();
@@ -223,7 +225,7 @@ WebcacheEdit::WebcacheEdit(RclMain *parent)
     connect(new QShortcut(closeKS, this), SIGNAL (activated()), 
             this, SLOT (close()));
     connect(tableview, SIGNAL(customContextMenuRequested(const QPoint&)),
-	    this, SLOT(createPopupMenu(const QPoint&)));
+            this, SLOT(createPopupMenu(const QPoint&)));
 
 }
 
@@ -279,13 +281,11 @@ void WebcacheEdit::copyURL()
     QModelIndexList selection = tableview->selectionModel()->selectedRows();
     if (selection.size() != 1)
         return;
-    string url = m_model->getURL(selection[0].row());
+    const string& url = m_model->getURL(selection[0].row());
     if (!url.empty()) {
-        url =  url_encode(url, 7);
-        QApplication::clipboard()->setText(url.c_str(), 
-                                           QClipboard::Selection);
-        QApplication::clipboard()->setText(url.c_str(), 
-                                           QClipboard::Clipboard);
+        QString qurl =  path2qs(url);
+        QApplication::clipboard()->setText(qurl, QClipboard::Selection);
+        QApplication::clipboard()->setText(qurl, QClipboard::Clipboard);
     }
 }
 
@@ -295,8 +295,8 @@ void WebcacheEdit::saveColState()
     QHeaderView *header = tableview->horizontalHeader();
     QStringList newwidths;
     for (int vi = 0; vi < header->count(); vi++) {
-	int li = header->logicalIndex(vi);
-	newwidths.push_back(lltodecstr(header->sectionSize(li)).c_str());
+        int li = header->logicalIndex(vi);
+        newwidths.push_back(lltodecstr(header->sectionSize(li)).c_str());
     }
     
     QSettings settings;

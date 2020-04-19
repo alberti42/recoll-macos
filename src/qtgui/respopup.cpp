@@ -37,7 +37,7 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
     LOGDEB("ResultPopup::create: opts " << opts << " haspages " <<
            doc.haspages << " " <<(source ? "Source not null" : "Source is Null")
            << " "  << (source ? (source->snippetsCapable() ? 
-                                 "snippetsCapable" : "not snippetsCapable") : "")
+                                 "snippetsCapable":"not snippetsCapable") : "")
            << "\n");
 
     string apptag;
@@ -46,7 +46,7 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
     popup->addAction(QWidget::tr("&Preview"), me, SLOT(menuPreview()));
 
     if (!theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
-	popup->addAction(QWidget::tr("&Open"), me, SLOT(menuEdit()));
+        popup->addAction(QWidget::tr("&Open"), me, SLOT(menuEdit()));
     }
 
     bool needopenwith = true;
@@ -105,17 +105,17 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
     popup->addAction(QWidget::tr("Copy &URL"), me, SLOT(menuCopyURL()));
 
     if ((opts&showSaveOne) && (!doc.isFsFile() || !doc.ipath.empty()))
-	popup->addAction(QWidget::tr("&Write to File"), me, 
+        popup->addAction(QWidget::tr("&Write to File"), me, 
                          SLOT(menuSaveToFile()));
 
     if ((opts&showSaveSel))
-	popup->addAction(QWidget::tr("Save selection to files"), 
-			 me, SLOT(menuSaveSelection()));
+        popup->addAction(QWidget::tr("Save selection to files"), 
+                         me, SLOT(menuSaveSelection()));
 
     Rcl::Doc pdoc;
     if (source && source->getEnclosing(doc, pdoc)) {
-	popup->addAction(QWidget::tr("Preview P&arent document/folder"), 
-			 me, SLOT(menuPreviewParent()));
+        popup->addAction(QWidget::tr("Preview P&arent document/folder"), 
+                         me, SLOT(menuPreviewParent()));
     }
     // Open parent is useful even if there is no parent because we open
     // the enclosing folder.
@@ -124,16 +124,16 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
                          me, SLOT(menuOpenParent()));
 
     if (opts & showExpand)
-	popup->addAction(QWidget::tr("Find &similar documents"), 
-			 me, SLOT(menuExpand()));
+        popup->addAction(QWidget::tr("Find &similar documents"), 
+                         me, SLOT(menuExpand()));
 
     if (doc.haspages && source && source->snippetsCapable()) 
-	popup->addAction(QWidget::tr("Open &Snippets window"), 
-			 me, SLOT(menuShowSnippets()));
+        popup->addAction(QWidget::tr("Open &Snippets window"), 
+                         me, SLOT(menuShowSnippets()));
 
     if ((opts & showSubs) && rcldb && rcldb->hasSubDocs(doc)) 
-	popup->addAction(QWidget::tr("Show subdocuments / attachments"), 
-			 me, SLOT(menuShowSubDocs()));
+        popup->addAction(QWidget::tr("Show subdocuments / attachments"), 
+                         me, SLOT(menuShowSubDocs()));
 
     return popup;
 }
@@ -142,12 +142,12 @@ Rcl::Doc getParent(std::shared_ptr<DocSequence> source, Rcl::Doc& doc)
 {
     Rcl::Doc pdoc;
     if (!source || !source->getEnclosing(doc, pdoc)) {
-	// No parent doc: show enclosing folder with app configured for
-	// directories
+        // No parent doc: show enclosing folder with app configured for
+        // directories
         pdoc.url = url_parentfolder(doc.url);
-	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
-	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
-	pdoc.mimetype = "inode/directory";
+        pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
+        pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
+        pdoc.mimetype = "inode/directory";
     }
     return pdoc;
 }
@@ -169,12 +169,9 @@ void copyFN(const Rcl::Doc &doc)
 
 void copyURL(const Rcl::Doc &doc)
 {
-    string url =  url_encode(doc.url, 7);
-    QApplication::clipboard()->setText(url.c_str(), 
-				       QClipboard::Selection);
-    QApplication::clipboard()->setText(url.c_str(), 
-				       QClipboard::Clipboard);
+    QString url =  path2qs(doc.url);
+    QApplication::clipboard()->setText(url, QClipboard::Selection);
+    QApplication::clipboard()->setText(url, QClipboard::Clipboard);
 }
 
 }
-

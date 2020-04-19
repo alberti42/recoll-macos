@@ -405,14 +405,14 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
         int ecnt;
         string data1;
         if (!transcode(data, data1, "UTF-8", "UTF-8", &ecnt) || ecnt > 0) {
-            data = url_encode(data);
+            data = url_encode(data, 7);
         }
     }
 #endif
 
     list<string> lr;
     g_hiliter.plaintorich(data, lr, m_hdata);
-    return QString::fromUtf8(lr.front().c_str());
+    return u8s2qs(lr.front());
 }
 
 void RecollModel::saveAsCSV(std::fstream& fp)
