@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -43,24 +43,22 @@ using namespace std;
 class FragButsParser : public QXmlDefaultHandler {
 public:
     FragButsParser(FragButs *_parent, vector<FragButs::ButFrag>& _buttons)
-    : parent(_parent), vlw(new QVBoxLayout(parent)), 
-      vl(new QVBoxLayout()), buttons(_buttons),
-      hl(0), bg(0), radio(false)
-    {
-    }
+        : parent(_parent), vlw(new QVBoxLayout(parent)), 
+          vl(new QVBoxLayout()), buttons(_buttons),
+          hl(0), bg(0), radio(false) {
+        }
 
     bool startElement(const QString & /* namespaceURI */,
-		      const QString & /* localName */,
-		      const QString &qName,
-		      const QXmlAttributes &attributes);
+                      const QString & /* localName */,
+                      const QString &qName,
+                      const QXmlAttributes &attributes);
     bool endElement(const QString & /* namespaceURI */,
-		    const QString & /* localName */,
-		    const QString &qName);
-    bool characters(const QString &str)
-    {
-	currentText += str;
-	return true;
-    }
+                    const QString & /* localName */,
+                    const QString &qName);
+    bool characters(const QString &str) {
+            currentText += str;
+            return true;
+        }
 
     bool error(const QXmlParseException& exception) {
         fatalError(exception);
@@ -103,6 +101,12 @@ bool FragButsParser::startElement(const QString & /* namespaceURI */,
         radio = true;
         bg = new QButtonGroup(parent);
         hl = new QHBoxLayout();
+    } else if (qName == "label" || qName == "frag" || qName == "fragbuts" ||
+               qName == "fragbut") {
+    } else {
+        QMessageBox::warning(0, "Recoll",
+                             QString("Bad element name: [%1]").arg(qName));
+        return false;
     }
     return true;
 }
@@ -130,7 +134,7 @@ bool FragButsParser::endElement(const QString & /* namespaceURI */,
             QCheckBox *but = new QCheckBox(label, parent);
             abut = but;
         }
-	abut->setToolTip(currentText);
+        abut->setToolTip(currentText);
         buttons.push_back(FragButs::ButFrag(abut, frag));
         hl->addWidget(abut);
     } else if (qName == "buttons" || qName == "radiobuttons") {
@@ -138,6 +142,10 @@ bool FragButsParser::endElement(const QString & /* namespaceURI */,
         hl = 0;
     } else if (qName == "fragbuts") {
         vlw->addLayout(vl);
+    } else {
+        QMessageBox::warning(0, "Recoll",
+                             QString("Bad element name: [%1]").arg(qName));
+        return false;
     }
     return true;
 }
@@ -155,7 +163,7 @@ FragButs::FragButs(QWidget* parent)
         copyfile(src.c_str(), m_fn.c_str(), reason);
     }
     if (!file_to_string(m_fn, data, &reason)) {
-	QMessageBox::warning(
+        QMessageBox::warning(
             0, "Recoll", tr("%1 not found.").arg(path2qs(m_fn)));
         LOGERR("Fragbuts:: can't read [" << m_fn << "]\n");
         return;
@@ -167,7 +175,7 @@ FragButs::FragButs(QWidget* parent)
     QXmlInputSource xmlInputSource;
     xmlInputSource.setData(QString::fromUtf8(data.c_str()));
     if (!reader.parse(xmlInputSource)) {
-	QMessageBox::warning(0, "Recoll", tr("%1:\n %2")
+        QMessageBox::warning(0, "Recoll", tr("%1:\n %2")
                              .arg(path2qs(m_fn)).arg(parser.errorMessage));
         return;
     }
