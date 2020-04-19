@@ -194,6 +194,10 @@ class ZipExtractor:
             return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
             entryname = self.zip.namelist()[self.currentindex]
+            # This is how we'd fix a badly decoded entry, but then
+            # this can't be used as ipath any more
+            #fixedname = entryname.encode('cp437').decode('euc-kr')
+            #self.em.rclog("REENCODED: %s"%fixedname)
 
             if hasrclconfig and len(self.skiplist) != 0:
                 while self.currentindex < len(self.zip.namelist()):
