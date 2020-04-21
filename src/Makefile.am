@@ -515,6 +515,9 @@ qtgui/widgets/listdialog.ui \
 qtgui/widgets/qxtconfirmationmessage.cpp \
 qtgui/widgets/qxtconfirmationmessage.h \
 qtgui/widgets/qxtglobal.h \
+qtgui/winschedtool.cpp \
+qtgui/winschedtool.h \
+qtgui/winschedtool.ui \
 qtgui/xmltosd.cpp \
 qtgui/xmltosd.h \
 \

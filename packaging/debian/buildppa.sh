@@ -6,7 +6,7 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.26.5
+RCLVERS=1.27.0pre1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=2
@@ -22,7 +22,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-#PPANAME=recollexp-ppa
+PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -55,7 +55,7 @@ debdir=debian
 # 19.10    eoan   2020-07
 # 20.04LTS focal  2025-04
 series="xenial bionic disco eoan focal"
-#series=
+series=bionic
 
 if test "X$series" != X ; then
     check_recoll_orig
