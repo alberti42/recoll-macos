@@ -159,9 +159,9 @@ static void recollCleanup()
 
 void applyStyleSheet(const QString& ssfname)
 {
-    const char *cfname = qs2path(ssfname).c_str();
+	const std::string cfname = qs2path(ssfname);
     LOGDEB0("Applying style sheet: [" << cfname << "]\n");
-    if (*cfname) {
+    if (!cfname.empty()) {
         string stylesheet;
         file_to_string(cfname, stylesheet);
         qApp->setStyleSheet(QString::fromUtf8(stylesheet.c_str()));
