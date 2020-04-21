@@ -552,16 +552,16 @@ void AdvSearch::fromSearch(std::shared_ptr<SearchData> sdata)
 	maxDateDTE->setDate(date);
     }
 
-    if (sdata->m_maxSize != (size_t)-1 || sdata->m_minSize != (size_t)-1) {
+    if (sdata->m_maxSize != -1 || sdata->m_minSize != -1) {
 	filterSizesCB->setChecked(1);
 	QString sz;
-	if (sdata->m_minSize != (size_t)-1) {
+	if (sdata->m_minSize != -1) {
 	    sz.setNum(sdata->m_minSize);
 	    minSizeLE->setText(sz);
 	} else {
 	    minSizeLE->setText("");
 	}
-	if (sdata->m_maxSize != (size_t)-1) {
+	if (sdata->m_maxSize != -1) {
 	    sz.setNum(sdata->m_maxSize);
 	    maxSizeLE->setText(sz);
 	} else {

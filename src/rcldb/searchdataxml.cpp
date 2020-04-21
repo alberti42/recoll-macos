@@ -139,10 +139,10 @@ string SearchData::asXML()
 	}
     }
 
-    if (m_minSize != size_t(-1)) {
+    if (m_minSize != -1) {
 	os << "<MIS>" << m_minSize << "</MIS>" << endl;
     }
-    if (m_maxSize != size_t(-1)) {
+    if (m_maxSize != -1) {
 	os << "<MAS>" << m_maxSize << "</MAS>" << endl;
     }
 

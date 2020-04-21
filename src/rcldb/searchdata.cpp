@@ -53,19 +53,6 @@ namespace Rcl {
 typedef  vector<SearchDataClause *>::iterator qlist_it_t;
 typedef  vector<SearchDataClause *>::const_iterator qlist_cit_t;
 
-void SearchData::commoninit()
-{
-    m_haveDates = false;
-    m_maxSize = size_t(-1);
-    m_minSize = size_t(-1);
-    m_haveWildCards = false;
-    m_autodiacsens = false;
-    m_autocasesens = true;
-    m_maxexp = 10000;
-    m_maxcl = 100000;
-    m_softmaxexpand = -1;
-}
-
 SearchData::~SearchData() 
 {
     LOGDEB0("SearchData::~SearchData\n" );
@@ -215,8 +202,8 @@ void SearchData::simplify()
         if (!clsubp->getSub()->m_filetypes.empty() || 
             !clsubp->getSub()->m_nfiletypes.empty() ||
             clsubp->getSub()->m_haveDates || 
-            clsubp->getSub()->m_maxSize != size_t(-1) ||
-            clsubp->getSub()->m_minSize != size_t(-1) ||
+            clsubp->getSub()->m_maxSize != -1 ||
+            clsubp->getSub()->m_minSize != -1 ||
             clsubp->getSub()->m_haveWildCards) {
             if (!clsubp->getSub()->m_query.empty())
                 continue;
@@ -229,9 +216,9 @@ void SearchData::simplify()
             if (clsubp->getSub()->m_haveDates && !m_haveDates) {
                 m_dates = clsubp->getSub()->m_dates;
             }
-            if (m_maxSize == size_t(-1))
+            if (m_maxSize == -1)
                 m_maxSize = clsubp->getSub()->m_maxSize;
-            if (m_minSize == size_t(-1))
+            if (m_minSize == -1)
                 m_minSize = clsubp->getSub()->m_minSize;
             m_haveWildCards = m_haveWildCards ||
                 clsubp->getSub()->m_haveWildCards;
@@ -305,8 +292,8 @@ void SearchData::dump(ostream& o) const
     o << dumptabs <<
         "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
         " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
-        " hd " << m_haveDates << " maxs " << int(m_maxSize) << " mins " << 
-        int(m_minSize) << " wc " << m_haveWildCards << "\n";
+        " hd " << m_haveDates << " maxs " << m_maxSize << " mins " << 
+        m_minSize << " wc " << m_haveWildCards << "\n";
     for (std::vector<SearchDataClause*>::const_iterator it =
              m_query.begin(); it != m_query.end(); it++) {
         o << dumptabs;
