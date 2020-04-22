@@ -1,8 +1,8 @@
-/*	$OpenBSD: md5.c,v 1.7 2004/05/28 15:10:27 millert Exp $	*/
+/*	$OpenBSD: md5.c,v 1.4 2014/12/28 10:04:35 tedu Exp $	*/
 
 /*
  * This code implements the MD5 message-digest algorithm.
- * The algorithm is due to Ron Rivest.  This code was
+ * The algorithm is due to Ron Rivest.	This code was
  * written by Colin Plumb in 1993, no copyright is claimed.
  * This code is in the public domain; do with it what you wish.
  *
@@ -17,35 +17,43 @@
  * will fill a supplied 16-byte array with the digest.
  */
 
+#ifdef BUILDING_RECOLL
+#include "autoconfig.h"
+#else
+#include "config.h"
+#endif
+
 #include "md5.h"
 
 #include <string.h>
 
+#define PUT_BIT_LE(i, cp, value) do {			\
+	(cp)[i] = (uint8_t)(((value) >> 8 * i) & 0xFF);	\
+} while (0)
 
-#define PUT_64BIT_LE(cp, value) do {					\
-	(cp)[7] = (value) >> 56;					\
-	(cp)[6] = (value) >> 48;					\
-	(cp)[5] = (value) >> 40;					\
-	(cp)[4] = (value) >> 32;					\
-	(cp)[3] = (value) >> 24;					\
-	(cp)[2] = (value) >> 16;					\
-	(cp)[1] = (value) >> 8;						\
-	(cp)[0] = (value); } while (0)
+#define PUT_64BIT_LE(cp, value) do {	\
+	PUT_BIT_LE(7, cp, value);	\
+	PUT_BIT_LE(6, cp, value);	\
+	PUT_BIT_LE(5, cp, value);	\
+	PUT_BIT_LE(4, cp, value);	\
+	PUT_BIT_LE(3, cp, value);	\
+	PUT_BIT_LE(2, cp, value);	\
+	PUT_BIT_LE(1, cp, value);	\
+	PUT_BIT_LE(0, cp, value);	\
+} while (0)
 
-#define PUT_32BIT_LE(cp, value) do {					\
-	(cp)[3] = (value) >> 24;					\
-	(cp)[2] = (value) >> 16;					\
-	(cp)[1] = (value) >> 8;						\
-	(cp)[0] = (value); } while (0)
+#define PUT_32BIT_LE(cp, value) do {	\
+	PUT_BIT_LE(3, cp, value);	\
+	PUT_BIT_LE(2, cp, value);	\
+	PUT_BIT_LE(1, cp, value);	\
+	PUT_BIT_LE(0, cp, value);	\
+} while (0)
 
 static uint8_t PADDING[MD5_BLOCK_LENGTH] = {
 	0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
-
-static void MD5Pad(MD5_CTX *);
-static void MD5Transform(uint32_t [4], const uint8_t [MD5_BLOCK_LENGTH]);
 
 /*
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
@@ -66,8 +74,9 @@ MD5Init(MD5_CTX *ctx)
  * of bytes.
  */
 void
-MD5Update(MD5_CTX *ctx, const unsigned char *input, size_t len)
+MD5Update(MD5_CTX *ctx, const void *inputptr, size_t len)
 {
+	const uint8_t *input = (const uint8_t *)inputptr;
 	size_t have, need;
 
 	/* Check how many bytes we already have and how many more we need. */
@@ -100,14 +109,15 @@ MD5Update(MD5_CTX *ctx, const unsigned char *input, size_t len)
 }
 
 /*
- * Pad pad to 64-byte boundary with the bit pattern
+ * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
-static void
-MD5Pad(MD5_CTX *ctx)
+void
+MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
 {
 	uint8_t count[8];
 	size_t padlen;
+	int i;
 
 	/* Convert count to 8 bytes in little endian order. */
 	PUT_64BIT_LE(count, ctx->count);
@@ -119,22 +129,10 @@ MD5Pad(MD5_CTX *ctx)
 		padlen += MD5_BLOCK_LENGTH;
 	MD5Update(ctx, PADDING, padlen - 8);		/* padlen - 8 <= 64 */
 	MD5Update(ctx, count, 8);
-}
 
-/*
- * Final wrapup--call MD5Pad, fill in digest and zero out ctx.
- */
-void
-MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
-{
-	int i;
-
-	MD5Pad(ctx);
-	if (digest != NULL) {
-		for (i = 0; i < 4; i++)
-			PUT_32BIT_LE(digest + i * 4, ctx->state[i]);
-		memset(ctx, 0, sizeof(*ctx));
-	}
+	for (i = 0; i < 4; i++)
+		PUT_32BIT_LE(digest + i * 4, ctx->state[i]);
+	memset(ctx, 0, sizeof(*ctx));	/* in case it's sensitive */
 }
 
 
@@ -155,12 +153,12 @@ MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
  */
-static void
+void
 MD5Transform(uint32_t state[4], const uint8_t block[MD5_BLOCK_LENGTH])
 {
 	uint32_t a, b, c, d, in[MD5_BLOCK_LENGTH / 4];
 
-#ifndef WORDS_BIGENDIAN
+#if BYTE_ORDER == LITTLE_ENDIAN
 	memcpy(in, block, sizeof(in));
 #else
 	for (a = 0; a < MD5_BLOCK_LENGTH / 4; a++) {
@@ -251,7 +249,6 @@ MD5Transform(uint32_t state[4], const uint8_t block[MD5_BLOCK_LENGTH])
 	state[3] += d;
 }
 
-
 // C++ utilities
 using std::string;
 
@@ -283,6 +280,7 @@ string& MD5HexPrint(const string& digest, string &out)
     }
     return out;
 }
+
 string& MD5HexScan(const string& xdigest, string& digest)
 {
     digest.erase();
