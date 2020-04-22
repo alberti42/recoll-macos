@@ -47,13 +47,13 @@ public:
     virtual ~FileScanXML() {
         if (ctxt) {
             xmlFreeParserCtxt(ctxt);
-			// This should not be necessary (done by free), but see
-			// http://xmlsoft.org/xmlmem.html#Compacting The
-			// malloc_trim() and mallopt() doc seems to be a bit
-			// misleading, there is probably a frag size under which
-			// free() does not try to malloc_trim() at all
+            // This should not be necessary (done by free), but see
+            // http://xmlsoft.org/xmlmem.html#Compacting The
+            // malloc_trim() and mallopt() doc seems to be a bit
+            // misleading, there is probably a frag size under which
+            // free() does not try to malloc_trim() at all
 #ifdef HAVE_MALLOC_TRIM
-			malloc_trim(0);
+            malloc_trim(0);
 #endif /* HAVE_MALLOC_TRIM */
         }
     }
@@ -112,11 +112,11 @@ public:
     Internal(MimeHandlerXslt *_p)
         : p(_p) {}
     ~Internal() {
-        if (metaOrAllSS) {
-            xsltFreeStylesheet(metaOrAllSS);
+        for (auto& entry : metaOrAllSS) {
+            xsltFreeStylesheet(entry.second);
         }
-        if (bodySS) {
-            xsltFreeStylesheet(bodySS);
+        for (auto& entry : bodySS) {
+            xsltFreeStylesheet(entry.second);
         }
     }
 
@@ -128,10 +128,16 @@ public:
 
     MimeHandlerXslt *p;
     bool ok{false};
-    string metamember;
-    xsltStylesheet *metaOrAllSS{nullptr};
-    string bodymember;
-    xsltStylesheet *bodySS{nullptr};
+
+    // Pairs of zip archive member names and style sheet names for the
+    // metadata, and map of style sheets refd by their names.
+    // Exception: there can be a single entry which does meta and
+    // body, in which case bodymembers/bodySS are empty.
+    vector<pair<string,string>> metaMembers;
+    map <string, xsltStylesheet*> metaOrAllSS;
+    // Same for body data
+    vector<pair<string,string>> bodyMembers;
+    map<string, xsltStylesheet*> bodySS;
     string result;
     string filtersdir;
 };
@@ -152,20 +158,43 @@ MimeHandlerXslt::MimeHandlerXslt(RclConfig *cnf, const std::string& id,
     xmlLoadExtDtdDefaultValue = 0;
 
     // params can be "xslt stylesheetall" or
-    // "xslt metamember metastylesheet bodymember bodystylesheet"
+    // "xslt meta/body memberpath stylesheetnm [... ... ...] ...
     if (params.size() == 2) {
-        m->metaOrAllSS = m->prepare_stylesheet(params[1]);
-        if (m->metaOrAllSS) {
+        auto ss = m->prepare_stylesheet(params[1]);
+        if (ss) {
             m->ok = true;
+            m->metaOrAllSS[""] = ss;
         }
-    } else if (params.size() == 5) {
-        m->metamember = params[1];
-        m->metaOrAllSS = m->prepare_stylesheet(params[2]);
-        m->bodymember = params[3];
-        m->bodySS =  m->prepare_stylesheet(params[4]);
-        if (m->metaOrAllSS && m->bodySS) {
-            m->ok = true;
+    } else if (params.size() > 3 && params.size() % 3 == 1) {
+        auto it = params.begin();
+        it++;
+        while (it != params.end()) {
+            // meta/body membername ssname
+            const string& tp = *it++;
+            const string& znm = *it++;
+            const string& ssnm = *it++;
+            vector<pair<string,string>> *mbrv;
+            map<string,xsltStylesheet*> *ssmp;
+            if (tp == "meta") {
+                mbrv = &m->metaMembers;
+                ssmp = &m->metaOrAllSS;
+            } else if (tp == "body") {
+                mbrv = &m->bodyMembers;
+                ssmp = &m->bodySS;
+            } else {
+                LOGERR("MimeHandlerXslt: bad member type " << tp << endl);
+                return;
+            }
+            if (ssmp->find(ssnm) == ssmp->end()) {
+                auto ss = m->prepare_stylesheet(ssnm);
+                if (nullptr == ss) {
+                    return;
+                }
+                ssmp->insert({ssnm, ss});
+            }
+            mbrv->push_back({znm, ssnm});
         }
+        m->ok = true;
     } else {
         LOGERR("MimeHandlerXslt: constructor with wrong param vector: " <<
                stringsToString(params) << endl);
@@ -209,7 +238,7 @@ bool MimeHandlerXslt::Internal::apply_stylesheet(
             res = string_scan(data.c_str(), data.size(), &XMLdoc, &reason, md5p);
         } else {
             res = string_scan(data.c_str(), data.size(), member, &XMLdoc,
-                                                      &reason);
+                              &reason);
         }
     }
     if (!res) {
@@ -231,7 +260,7 @@ bool MimeHandlerXslt::Internal::apply_stylesheet(
     }
     xmlChar *outstr;
     int outlen;
-    xsltSaveResultToString(&outstr, &outlen, transformed, metaOrAllSS);
+    xsltSaveResultToString(&outstr, &outlen, transformed, ssp);
     result = string((const char*)outstr, outlen);
     xmlFree(outstr);
     xmlFreeDoc(transformed);
@@ -242,14 +271,15 @@ bool MimeHandlerXslt::Internal::apply_stylesheet(
 bool MimeHandlerXslt::Internal::process_doc_or_string(
     bool forpreview, const string& fn, const string& data)
 {
-    if (nullptr == metaOrAllSS && nullptr == bodySS) {
-        LOGERR("MimeHandlerXslt::set_document_file_impl: both ss empty??\n");
-        return false;
-    }
     p->m_metaData[cstr_dj_keycharset] = cstr_utf8;
-    if (nullptr == bodySS) {
+    if (bodySS.empty()) {
+        auto ssp = metaOrAllSS.find("");
+        if (ssp == metaOrAllSS.end()) {
+            LOGERR("MimeHandlerXslt::process: no style sheet !\n");
+            return false;
+        }
         string md5;
-        if (apply_stylesheet(fn, string(), data, metaOrAllSS, result,
+        if (apply_stylesheet(fn, string(), data, ssp->second, result,
                              forpreview ? nullptr : &md5)) {
             if (!forpreview) {
                 p->m_metaData[cstr_dj_keymd5] = md5;
@@ -260,16 +290,34 @@ bool MimeHandlerXslt::Internal::process_doc_or_string(
     } else {
         result = "<html>\n<head>\n<meta http-equiv=\"Content-Type\""
             "content=\"text/html; charset=UTF-8\">";
-        string part;
-        if (!apply_stylesheet(fn,metamember, data, metaOrAllSS, part, nullptr)) {
-            return false;
+        for (auto& member : metaMembers) {
+            auto it = metaOrAllSS.find(member.second);
+            if (it == metaOrAllSS.end()) {
+                LOGERR("MimeHandlerXslt::process: no style sheet found for " <<
+                       member.first << ":" << member.second << "!\n");
+                return false;
+            }
+            string part;
+            if (!apply_stylesheet(fn, member.first, data, it->second, part, nullptr)) {
+                return false;
+            }
+            result += part;
         }
-        result += part;
         result += "</head>\n<body>\n";
-        if (!apply_stylesheet(fn, bodymember, data, bodySS, part, nullptr)) {
-            return false;
+        
+        for (auto& member : bodyMembers) {
+            auto it = bodySS.find(member.second);
+            if (it == bodySS.end()) {
+                LOGERR("MimeHandlerXslt::process: no style sheet found for " <<
+                       member.first << ":" << member.second << "!\n");
+                return false;
+            }
+            string part;
+            if (!apply_stylesheet(fn, member.first, data, it->second, part, nullptr)) {
+                return false;
+            }
+            result += part;
         }
-        result += part;
         result += "</body></html>";
     }
     return true;
@@ -307,7 +355,7 @@ bool MimeHandlerXslt::next_document()
         return false;
     }
     if (m_havedoc == false)
-	return false;
+        return false;
     m_havedoc = false;
     m_metaData[cstr_dj_keymt] = cstr_texthtml;
     m_metaData[cstr_dj_keycontent].swap(m->result);
