@@ -690,6 +690,7 @@ void RclMain::fileExit()
     // cleanup:
     deleteAllTempFiles();
     // and scram out
+    LOGDEB("RclMain: fileExit: calling _Exit(0)\n");
     _Exit(0);
 }
 
