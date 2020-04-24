@@ -36,8 +36,8 @@ public:
      * temporary directory).
      */
     bool uncompressfile(const std::string& ifn, 
-			const std::vector<std::string>& cmdv,
-			std::string& tfile);
+                        const std::vector<std::string>& cmdv,
+                        std::string& tfile);
     static void clearcache();
     
 private:
@@ -48,14 +48,14 @@ private:
 
     class UncompCache {
     public:
-	UncompCache() {}
-	~UncompCache() {
-	    delete m_dir;
-	}
+        UncompCache() {}
+        ~UncompCache() {
+            delete m_dir;
+        }
         std::mutex m_lock;
-	TempDir *m_dir{0};
-	std::string   m_tfile;
-	std::string   m_srcpath;
+        TempDir *m_dir{0};
+        std::string   m_tfile;
+        std::string   m_srcpath;
     };
     static UncompCache o_cache;
 };
