@@ -184,6 +184,9 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     // not in the whole text which is orgbytepos + bytepos
     string::size_type bytepos{0};
     string::size_type pagefix{0};
+    string lastNoun;
+    string::size_type lastNounBytePos{0};
+    int lastNounWordPos{0};
     for (unsigned int i = 0; i < words.size(); i++) {
         // The POS tagger strips characters from the input (e.g. multiple
         // spaces, sometimes new lines, possibly other stuff). This
@@ -214,13 +217,27 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
                 " absbytepos " << orgbytepos + bytepos << 
                 " bytepos " << bytepos << " word from text: " <<
                 inputdata.substr(bytepos, word.size()) << endl);
-        if (tags[i] == "Noun" || tags[i] == "Verb" ||
+        bool isNoun = (tags[i] == "Noun");
+        if (isNoun) {
+            lastNoun = word;
+            lastNounWordPos = m_wordpos;
+            lastNounBytePos = orgbytepos + bytepos - pagefix;
+        } else {
+            if (tags[i] == "JX" && !lastNoun.empty()) {
+                if (!takeword(lastNoun+word, lastNounWordPos, lastNounBytePos,
+                              lastNounBytePos + word.size())) {
+                    return false;
+                }
+            }
+            lastNoun.clear();
+        }
+        if (isNoun || tags[i] == "Verb" ||
             tags[i] == "Adjective" || tags[i] == "Adverb") {
             string::size_type abspos = orgbytepos + bytepos - pagefix;
             if (!takeword(word, m_wordpos++, abspos, abspos + word.size())) {
                 return false;
             }
-        }
+        } 
         bytepos += word.size();
     }
 
