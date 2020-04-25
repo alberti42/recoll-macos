@@ -1701,7 +1701,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         // won't work).
         time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
                              doc.dmtime.c_str());
-        struct tm tmb{0};
+        struct tm tmb{0,0,0,0,0,0,0,0,0};
         localtime_r(&mtime, &tmb);
         char buf[50]; // It's actually 9, but use 50 to suppress warnings.
         snprintf(buf, 50, "%04d%02d%02d",

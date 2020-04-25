@@ -14,10 +14,13 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+#include "autoconfig.h"
+
+#include "sortseq.h"
+
 #include <algorithm>
 
 #include "log.h"
-#include "sortseq.h"
 
 using std::string;
 

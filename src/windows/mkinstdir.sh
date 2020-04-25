@@ -22,8 +22,8 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 ################################
 # Local values (to be adjusted)
 
-BUILD=MSVC
-#BUILD=MINGW
+#BUILD=MSVC
+BUILD=MINGW
 
 if test $BUILD = MSVC ; then
     # Recoll src tree
@@ -40,14 +40,14 @@ if test $BUILD = MSVC ; then
     PYRECOLL=${RCL}/python/recoll/
 else
     # Recoll src tree
-    RCL=c:/recoll/src/
+    RCL=/c/recoll/src/
     # Recoll dependancies
-    RCLDEPS=c:/recolldeps/
-    QTA=Desktop_Qt_5_8_0_MinGW_32bit-Release/release
+    RCLDEPS=/c/recolldeps/
+    QTA=Desktop_Qt_5_8_0_MinGW_32bit-Release/release/
     LIBXAPIAN=${RCLDEPS}/mingw/xapian-core-1.4.11/.libs/libxapian-30.dll
     ZLIB=${RCLDEPS}/mingw/zlib-1.2.8
     QTGCCBIN=C:/qt/Qt5.8.0/Tools/mingw530_32/bin/
-    QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
+    QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin/
     MINGWBIN=$QTBIN
     PATH=$MINGWBIN:$QTGCCBIN:$PATH
     export PATH
@@ -132,8 +132,9 @@ copyqt()
 
 copypython()
 {
-    mkdir -p $DESTDIR/Share/filters/python
-    rsync -av $PYTHON/* $DESTDIR/Share/filters/python
+    set -x
+    mkdir -p ${DESTDIR}Share/filters/python
+    rsync -av $PYTHON/ ${DESTDIR}Share/filters/python || exit 1
     chkcp $PYTHON/python.exe $DESTDIR/Share/filters/python/python.exe
     chkcp $MISC/hwp5html $FILTERS
 }
@@ -158,7 +159,7 @@ copyrecoll()
     chkcp $RCL/doc/user/usermanual.html $DESTDIR/Share/doc
     chkcp $RCL/doc/user/docbook-xsl.css $DESTDIR/Share/doc
     mkdir -p $DESTDIR/Share/doc/webhelp
-    rsync -av $RCL/doc/user/webhelp/docs/* $DESTDIR/Share/doc/webhelp
+    rsync -av $RCL/doc/user/webhelp/docs/* $DESTDIR/Share/doc/webhelp || exit 1
     chkcp $RCL/sampleconf/fields        $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
     chkcp $RCL/windows/mimeconf         $DESTDIR/Share/examples
@@ -184,7 +185,7 @@ copyantiword()
     bindir=$ANTIWORD/
     test -d $Filters/Resources || mkdir -p $FILTERS/Resources || exit 1
     chkcp  $bindir/antiword.exe            $FILTERS
-    rsync -av  $ANTIWORD/Resources/*       $FILTERS/Resources
+    rsync -av  $ANTIWORD/Resources/*       $FILTERS/Resources || exit 1
 }
 
 copyunrtf()

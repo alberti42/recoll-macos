@@ -1,9 +1,9 @@
 
 #ifdef _WIN32
-#include "safewindows.h"
 
 
 #ifdef _MSC_VER
+#include "safewindows.h"
 // gmtime is supposedly thread-safe on windows
 #define gmtime_r(A, B) gmtime(A)
 #define localtime_r(A,B) localtime(A)
@@ -18,6 +18,12 @@ typedef int mode_t;
 #define timegm _mkgmtime
 
 #else // End _MSC_VER -> Gminw
+
+// Allow use of features specific to Windows 7 or later.
+#define WINVER 0x0601
+#define _WIN32_WINNT 0x0601
+#define LOGFONTW void
+#include "safewindows.h"
 
 #undef RCL_ICONV_INBUF_CONST
 #define timegm portable_timegm

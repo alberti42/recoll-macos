@@ -15,6 +15,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 // Takes a query and run it, no gui, results to stdout
+#include "autoconfig.h"
 
 #include <stdio.h>
 #include <stdlib.h>
