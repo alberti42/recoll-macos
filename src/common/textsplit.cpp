@@ -1001,25 +1001,26 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     // We use an offset buffer to remember the starts of the utf-8
     // characters which we still need to use.
     assert(o_CJKNgramLen < o_CJKMaxNgramLen);
-    unsigned int boffs[o_CJKMaxNgramLen+1];
+    string::size_type boffs[o_CJKMaxNgramLen+1];
     string mybuf;
-    unsigned int myboffs[o_CJKMaxNgramLen+1];
+    string::size_type myboffs[o_CJKMaxNgramLen+1];
     
     // Current number of valid offsets;
     unsigned int nchars = 0;
     unsigned int c = 0;
     for (; !it.eof() && !it.error(); it++) {
         c = *it;
-		// We had a version which ignored whitespace for some time,
-		// but this was a bad idea. Only break on an non-cjk
-		// alphabetic character.
-        if (!UNICODE_IS_CJK(c) && isalpha(c)) {
+        // We had a version which ignored whitespace for some time,
+        // but this was a bad idea. Only break on an non-cjk
+        // alphabetic character.
+        if (!UNICODE_IS_CJK(c) && (c > 255 || isalpha(c))) {
             // Return to normal handler
             break;
         }
         if (whatcc(c) == SPACE) {
             // Flush the ngram buffer and go on
             nchars = 0;
+            mybuf.clear();
             continue;
         }
         if (nchars == o_CJKNgramLen) {
@@ -1040,13 +1041,13 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
         myboffs[nchars-1] = mybuf.size();
         it.appendchartostring(mybuf);
         // Take note of document byte offset for this character.
-        boffs[nchars-1] = int(it.getBpos());
+        boffs[nchars-1] = it.getBpos();
 
         // Output all new ngrams: they begin at each existing position
         // and end after the new character. onlyspans->only output
         // maximum words, nospans=> single chars
         if (!(m_flags & TXTS_ONLYSPANS) || nchars == o_CJKNgramLen) {
-            int btend = int(it.getBpos() + it.getBlen());
+            int btend = it.getBpos() + it.getBlen();
             int loopbeg = (m_flags & TXTS_NOSPANS) ? nchars-1 : 0;
             int loopend = (m_flags & TXTS_ONLYSPANS) ? 1 : nchars;
             for (int i = loopbeg; i < loopend; i++) {
