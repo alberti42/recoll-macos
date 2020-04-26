@@ -691,7 +691,11 @@ void RclMain::fileExit()
     deleteAllTempFiles();
     // and scram out
     LOGDEB("RclMain: fileExit: calling _Exit(0)\n");
+#ifdef USING_WEBENGINE
+    qApp->exit(0);
+#else
     _Exit(0);
+#endif
 }
 
 // Start a db query and set the reslist docsource
