@@ -22,12 +22,12 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 ################################
 # Local values (to be adjusted)
 
-#BUILD=MSVC
-BUILD=MINGW
+BUILD=MSVC
+#BUILD=MINGW
 
 if test $BUILD = MSVC ; then
     # Recoll src tree
-    RCL=c:/users/bill/documents/recoll/src/
+    RCL=/c/users/bill/documents/recoll/src/
     # Recoll dependancies
     RCLDEPS=/c/users/bill/documents/recolldeps/
     QTA=Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release
