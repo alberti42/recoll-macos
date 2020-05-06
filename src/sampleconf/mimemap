@@ -15,6 +15,7 @@
 .rst = text/plain
 .md = text/plain
 .gv = text/plain
+.org = text/plain
 .srt = text/x-srt
 .ini = text/x-ini
 .csv = text/x-csv
