@@ -250,7 +250,8 @@ void SSearch::onCompleterShown()
 // This is to avoid that if the user types Backspace or Del while we
 // have inserted / selected the current completion, the lineedit text
 // goes back to what it was, the completion fires, and it looks like
-// nothing was typed. So we disable the completion if a
+// nothing was typed. Disable the completionn after Del or Backspace
+// is typed.
 bool SSearch::eventFilter(QObject *target, QEvent *event)
 {
     Q_UNUSED(target);
@@ -419,7 +420,9 @@ void SSearch::searchTypeChanged(int typ)
 
 void SSearch::startSimpleSearch()
 {
-    if (queryText->completer() && queryText->completer()->popup()->isVisible()) {
+    // Avoid a double search if we are fired on CR and the completer is active
+    if (queryText->completer() && queryText->completer()->popup()->isVisible()
+        && !queryText->completer()->currentCompletion().isEmpty()) {
         return;
     }
     string u8 = qs2u8s(queryText->text());
