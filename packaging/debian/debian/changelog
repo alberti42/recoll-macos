@@ -1,10 +1,10 @@
-recoll (1.27.0pre3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.27.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Support for language-sensitive analysis of Korean text
   * Index docx endnotes and footnotes
   * Other small improvements.
-  
- -- Jean-Francois Dockes <jf@dockes.org>  Tue, 21 Apr 2020 15:32:00 +0100
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 06 May 2020 15:32:00 +0200
 
 recoll (1.26.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
