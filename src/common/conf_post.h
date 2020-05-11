@@ -1,3 +1,5 @@
+#ifndef _AUTOCONF_CONF_POST_H_INCLUDED
+#define _AUTOCONF_CONF_POST_H_INCLUDED
 
 #ifdef _WIN32
 
@@ -58,3 +60,5 @@ typedef int ssize_t;
 #endif // _WIN32
 
 #define PRETEND_USE(expr) ((void)(expr))
+
+#endif /* INCLUDED */
