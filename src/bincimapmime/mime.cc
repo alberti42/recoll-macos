@@ -35,14 +35,12 @@
 #include <map>
 #include <exception>
 #include <iostream>
-#ifndef NO_NAMESPACES
-using namespace ::std;
-#endif /* NO_NAMESPACES */
-
 
 #include "mime.h"
 #include "convert.h"
 #include "mime-inputsource.h"
+
+using namespace std;
 
 //------------------------------------------------------------------------
 Binc::MimeDocument::MimeDocument(void)

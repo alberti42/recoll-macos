@@ -36,14 +36,13 @@
 #include <exception>
 #include <iostream>
 
-#ifndef NO_NAMESPACES
-using namespace ::std;
-#endif /* NO_NAMESPACES */
-
 #include "mime.h"
 #include "mime-utils.h"
 #include "mime-inputsource.h"
 #include "convert.h"
+
+using namespace std;
+
 
 // #define MPF
 #ifdef MPF
