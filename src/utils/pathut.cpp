@@ -163,17 +163,16 @@ using namespace std;
 
 bool wchartoutf8(const wchar_t *in, std::string& out)
 {
+    // fprintf(stderr, "WCHARTOUTF8: in [%S]\n", in);
     out.clear();
     if (nullptr == in) {
         return true;
     }
     size_t wlen = wcslen(in);
-    const UINT codePageUtf8 = CP_UTF8;
-    const DWORD flags = MB_ERR_INVALID_CHARS;
     int bytes = ::WideCharToMultiByte(
-        codePageUtf8, flags, in, wlen, nullptr, 0, nullptr, nullptr);
+        CP_UTF8, WC_ERR_INVALID_CHARS, in, wlen, nullptr, 0, nullptr, nullptr);
     if (bytes <= 0) {
-        std::cerr << "wchartoutf8: CONVERSION ERROR\n";
+        std::cerr << "wchartoutf8: CONVERSION ERROR1\n";
         return false;
     }
     char *cp = (char *)malloc(bytes+1);
@@ -182,9 +181,9 @@ bool wchartoutf8(const wchar_t *in, std::string& out)
         return false;
     }
     bytes = ::WideCharToMultiByte(
-        codePageUtf8, flags, in, wlen, cp, bytes, nullptr, nullptr);
+        CP_UTF8, WC_ERR_INVALID_CHARS, in, wlen, cp, bytes, nullptr, nullptr);
     if (bytes <= 0) {
-        std::cerr << "wchartoutf8: CONVERSION ERROR\n";
+        std::cerr << "wchartoutf8: CONVERSION ERROR2\n";
         free(cp);
         return false;
     }
@@ -202,10 +201,8 @@ bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
     }
     out[0] = 0;
 
-    const UINT codePageUtf8 = CP_UTF8;
-    const DWORD flags = MB_ERR_INVALID_CHARS;
     int wcharcnt = MultiByteToWideChar(
-        codePageUtf8, flags, in.c_str(), in.size(), nullptr, 0);
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(), nullptr, 0);
     if (wcharcnt <= 0) {
         std::cerr << "utf8towchar: CONVERSION ERROR\n";
         return false;
@@ -215,7 +212,7 @@ bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
         return false;
     }
     wcharcnt = MultiByteToWideChar(
-        codePageUtf8, flags, in.c_str(), in.size(), out, wcharsavail);
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(), out, wcharsavail);
     if (wcharcnt <= 0) {
         std::cerr << "utf8towchar: CONVERSION ERROR\n";
         return false;
