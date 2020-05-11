@@ -1,7 +1,6 @@
 /* Manually edited version of autoconfig.h for windows. Many things are
-overriden in the c++ code by ifdefs _WIN32 anyway  */
-#ifndef _AUTOCONFIG_H_INCLUDED
-#define _AUTOCONFIG_H_INCLUDED
+   overriden in the c++ code by ifdefs _WIN32 anyway  */
+
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
@@ -34,11 +33,20 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
+/* Define to 1 if you have the `kqueue' function. */
+/* #undef HAVE_KQUEUE */
+
+/* Define to 1 if you have the `chm' library (-lchm). */
+#define HAVE_LIBCHM 1
+
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #define HAVE_LIBPTHREAD 1
 
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1
+
+/* Define to 1 if you have the `malloc_trim' function. */
+/* #undef HAVE_MALLOC_TRIM */
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
@@ -119,16 +127,16 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 #define PACKAGE_NAME "Recoll"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Recoll 1.27.0"
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "1.27.0"
+#define PACKAGE_STRING "Recoll 1.27.1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "recoll"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "1.27.1"
 
 /* putenv parameter is const */
 /* #undef PUTENV_ARG_CONST */
@@ -146,7 +154,7 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* #undef RCL_USE_FAM */
 
 /* Compile the inotify interface */
-#define RCL_USE_INOTIFY 1
+/* #undef RCL_USE_INOTIFY */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -184,7 +192,4 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* Define for large files, on AIX-style hosts. */
 /* #undef _LARGE_FILES */
 
-// #define DISABLE_WEB_INDEXER
-
 #include "conf_post.h"
-#endif // already included

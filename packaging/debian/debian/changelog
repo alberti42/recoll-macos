@@ -1,4 +1,4 @@
-recoll (1.27.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.27.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Support for language-sensitive analysis of Korean text
   * Index docx endnotes and footnotes
