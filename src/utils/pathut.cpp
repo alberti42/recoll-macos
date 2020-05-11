@@ -47,6 +47,13 @@
 
 #include "pathut.h"
 
+#include "smallut.h"
+#ifdef MDU_INCLUDE_LOG
+#include MDU_INCLUDE_LOG
+#else
+#include "log.h"
+#endif
+
 #include <cstdlib>
 #include <cstring>
 #include <dirent.h>
@@ -118,6 +125,12 @@
 
 #define ftruncate _chsize_s
 
+#ifdef _MSC_VER
+// For getpid
+#include <process.h>
+#define getpid _getpid
+#endif
+
 #else /* !_WIN32 -> */
 
 #include <unistd.h>
@@ -143,13 +156,6 @@
 #define UNLINK unlink
 
 #endif /* !_WIN32 */
-
-#include "smallut.h"
-#ifdef MDU_INCLUDE_LOG
-#include MDU_INCLUDE_LOG
-#else
-#include "log.h"
-#endif
 
 using namespace std;
 
