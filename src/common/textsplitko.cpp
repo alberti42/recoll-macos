@@ -231,8 +231,10 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
             }
             lastNoun.clear();
         }
-        if (isNoun || tags[i] == "Verb" ||
-            tags[i] == "Adjective" || tags[i] == "Adverb") {
+		// 11/05/2020 For now index everything until more precise
+		// verification of what should be pruned
+        if (true || (isNoun || tags[i] == "Verb" ||
+					 tags[i] == "Adjective" || tags[i] == "Adverb")) {
             string::size_type abspos = orgbytepos + bytepos - pagefix;
             if (!takeword(word, m_wordpos++, abspos, abspos + word.size())) {
                 return false;
