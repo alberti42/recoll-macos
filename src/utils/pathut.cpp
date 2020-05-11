@@ -45,19 +45,63 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
-#include <math.h>
-#include <errno.h>
+#include "pathut.h"
+
+#include <cstdlib>
+#include <cstring>
 #include <dirent.h>
+#include <errno.h>
 #include <fstream>
+#include <iostream>
+#include <math.h>
+#include <regex>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <stdio.h>
+#include <vector>
+#include <fcntl.h>
+
+#ifndef PRETEND_USE
+#define PRETEND_USE(expr) ((void)(expr))
+#endif
 
 #ifdef _WIN32
 
-#include "safefcntl.h"
-#include "safeunistd.h"
-#include "safewindows.h"
-#include "safesysstat.h"
-#include "transcode.h"
+#if !defined(S_IFLNK)
+#define S_IFLNK 0
+#endif
+
+#ifndef _MSC_VER
+#undef WINVER
+#define WINVER 0x0601
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0601
+#define LOGFONTW void
+#endif
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#define WIN32_LEAN_AND_MEAN
+#define NOGDI
+#define MAXPATHLEN PATH_MAX
+
+#include <windows.h>
+#include <io.h>
+
+#include <sys/stat.h>
+#ifndef S_ISDIR
+# define S_ISDIR(ST_MODE) (((ST_MODE) & _S_IFMT) == _S_IFDIR)
+#endif
+#ifndef S_ISREG
+# define S_ISREG(ST_MODE) (((ST_MODE) & _S_IFMT) == _S_IFREG)
+#endif
+
+#include <direct.h>
+
+#include <Shlobj.h>
+#include <Stringapiset.h>
 
 #define STAT _wstati64
 #define LSTAT _wstati64
@@ -72,9 +116,10 @@
 #define OPEN ::_wopen
 #define UNLINK _wunlink
 
+#define ftruncate _chsize_s
+
 #else /* !_WIN32 -> */
 
-#include <fcntl.h>
 #include <unistd.h>
 #include <sys/param.h>
 #include <pwd.h>
@@ -99,16 +144,6 @@
 
 #endif /* !_WIN32 */
 
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <sstream>
-#include <stack>
-#include <set>
-#include <vector>
-#include <regex>
-
-#include "pathut.h"
 #include "smallut.h"
 #ifdef MDU_INCLUDE_LOG
 #include MDU_INCLUDE_LOG
@@ -119,8 +154,69 @@
 using namespace std;
 
 #ifdef _WIN32
-//#include <shlobj_core.h>
-#include <Shlobj.h>
+
+bool wchartoutf8(const wchar_t *in, std::string& out)
+{
+    out.clear();
+    if (nullptr == in) {
+        return true;
+    }
+    size_t wlen = wcslen(in);
+    const UINT codePageUtf8 = CP_UTF8;
+    const DWORD flags = MB_ERR_INVALID_CHARS;
+    int bytes = ::WideCharToMultiByte(
+        codePageUtf8, flags, in, wlen, nullptr, 0, nullptr, nullptr);
+    if (bytes <= 0) {
+        std::cerr << "wchartoutf8: CONVERSION ERROR\n";
+        return false;
+    }
+    char *cp = (char *)malloc(bytes+1);
+    if (nullptr == cp) {
+        std::cerr << "wchartoutf8: MALLOC FAILED\n";
+        return false;
+    }
+    bytes = ::WideCharToMultiByte(
+        codePageUtf8, flags, in, wlen, cp, bytes, nullptr, nullptr);
+    if (bytes <= 0) {
+        std::cerr << "wchartoutf8: CONVERSION ERROR\n";
+        free(cp);
+        return false;
+    }
+    cp[bytes] = 0;
+    out = cp;
+    free(cp);
+    return true;
+}
+
+bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
+{
+    size_t wcharsavail = obytescap / sizeof(wchar_t);
+    if (nullptr == out || wcharsavail < 1) {
+        return false;
+    }
+    out[0] = 0;
+
+    const UINT codePageUtf8 = CP_UTF8;
+    const DWORD flags = MB_ERR_INVALID_CHARS;
+    int wcharcnt = MultiByteToWideChar(
+        codePageUtf8, flags, in.c_str(), in.size(), nullptr, 0);
+    if (wcharcnt <= 0) {
+        std::cerr << "utf8towchar: CONVERSION ERROR\n";
+        return false;
+    }
+    if (wcharcnt + 1 >  int(wcharsavail)) {
+        std::cerr << "utf8towchar: NOT ENOUGH SPACE\n";
+        return false;
+    }
+    wcharcnt = MultiByteToWideChar(
+        codePageUtf8, flags, in.c_str(), in.size(), out, wcharsavail);
+    if (wcharcnt <= 0) {
+        std::cerr << "utf8towchar: CONVERSION ERROR\n";
+        return false;
+    }
+    out[wcharcnt] = 0;
+    return true;
+}
 
 /// Convert \ separators to /
 void path_slashize(string& s)

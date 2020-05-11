@@ -18,9 +18,8 @@
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
 
-#include <sys/types.h>
 #include <stdint.h>
-
+#include <time.h>
 #include <string>
 #include <vector>
 #include <map>
