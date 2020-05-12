@@ -133,8 +133,8 @@ copyqt()
 copypython()
 {
     set -x
-    mkdir -p ${DESTDIR}Share/filters/python
-    rsync -av $PYTHON/ ${DESTDIR}Share/filters/python || exit 1
+    mkdir -p ${DESTDIR}/Share/filters/python
+    rsync -av $PYTHON/ ${DESTDIR}/Share/filters/python || exit 1
     chkcp $PYTHON/python.exe $DESTDIR/Share/filters/python/python.exe
     chkcp $MISC/hwp5html $FILTERS
 }
