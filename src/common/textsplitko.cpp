@@ -218,6 +218,10 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
                 " bytepos " << bytepos << " word from text: " <<
                 inputdata.substr(bytepos, word.size()) << endl);
         bool isNoun = (tags[i] == "Noun");
+#if 0
+		// When Noun followed by JX, emit both Noun and Noun+JX at the
+		// same pos Experimental, it seems that this is sometimes
+		// problematic, so turned off for now.
         if (isNoun) {
             lastNoun = word;
             lastNounWordPos = m_wordpos;
@@ -231,6 +235,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
             }
             lastNoun.clear();
         }
+#endif
 		// 11/05/2020 For now index everything until more precise
 		// verification of what should be pruned
         if (true || (isNoun || tags[i] == "Verb" ||
