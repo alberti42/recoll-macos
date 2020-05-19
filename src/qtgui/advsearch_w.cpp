@@ -52,29 +52,29 @@ void AdvSearch::init()
 {
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)objectName().toUtf8(), 
-			   "RCL.SEARCH.GUI.COMPLEX");
+                           "RCL.SEARCH.GUI.COMPLEX");
 
     // signals and slots connections
     connect(delFiltypPB, SIGNAL(clicked()), this, SLOT(delFiltypPB_clicked()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(runSearch()));
     connect(filterDatesCB, SIGNAL(toggled(bool)), 
-	    this, SLOT(filterDatesCB_toggled(bool)));
+            this, SLOT(filterDatesCB_toggled(bool)));
     connect(filterSizesCB, SIGNAL(toggled(bool)), 
-	    this, SLOT(filterSizesCB_toggled(bool)));
+            this, SLOT(filterSizesCB_toggled(bool)));
     connect(restrictFtCB, SIGNAL(toggled(bool)), 
-	    this, SLOT(restrictFtCB_toggled(bool)));
+            this, SLOT(restrictFtCB_toggled(bool)));
     connect(restrictCtCB, SIGNAL(toggled(bool)), 
-	    this, SLOT(restrictCtCB_toggled(bool)));
+            this, SLOT(restrictCtCB_toggled(bool)));
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
     connect(browsePB, SIGNAL(clicked()), this, SLOT(browsePB_clicked()));
     connect(addFiltypPB, SIGNAL(clicked()), this, SLOT(addFiltypPB_clicked()));
 
     connect(delAFiltypPB, SIGNAL(clicked()), 
-	    this, SLOT(delAFiltypPB_clicked()));
+            this, SLOT(delAFiltypPB_clicked()));
     connect(addAFiltypPB, SIGNAL(clicked()), 
-	    this, SLOT(addAFiltypPB_clicked()));
+            this, SLOT(addAFiltypPB_clicked()));
     connect(saveFileTypesPB, SIGNAL(clicked()), 
-	    this, SLOT(saveFileTypes()));
+            this, SLOT(saveFileTypes()));
     connect(addClausePB, SIGNAL(clicked()), this, SLOT(addClause()));
     connect(delClausePB, SIGNAL(clicked()), this, SLOT(delClause()));
 
@@ -86,31 +86,31 @@ void AdvSearch::init()
 
     // Create preconfigured clauses
     for (unsigned int i = 0; i < iclausescnt; i++) {
-	addClause(initclausetypes[i], false);
+        addClause(initclausetypes[i], false);
     }
     // Tune initial state according to last saved
     {
-	vector<SearchClauseW *>::iterator cit = m_clauseWins.begin();
+        vector<SearchClauseW *>::iterator cit = m_clauseWins.begin();
         unsigned int existing = m_clauseWins.size();
-	for (unsigned int i = 0; i < prefs.advSearchClauses.size(); i++) {
-	    if (i < existing) {
-		(*cit)->tpChange(prefs.advSearchClauses[i]);
-		cit++;
-	    } else {
-		addClause(prefs.advSearchClauses[i], false);
-	    }
-	}
+        for (unsigned int i = 0; i < prefs.advSearchClauses.size(); i++) {
+            if (i < existing) {
+                (*cit)->tpChange(prefs.advSearchClauses[i]);
+                cit++;
+            } else {
+                addClause(prefs.advSearchClauses[i], false);
+            }
+        }
     }
     (*m_clauseWins.begin())->wordsLE->setFocus();
 
     // Initialize min/max mtime from extrem values in the index
     int minyear, maxyear;
     if (rcldb) {
-	rcldb->maxYearSpan(&minyear, &maxyear);
-	minDateDTE->setDisplayFormat("yyyy-MM-dd");
-	maxDateDTE->setDisplayFormat("yyyy-MM-dd");
-	minDateDTE->setDate(QDate(minyear, 1, 1));
-	maxDateDTE->setDate(QDate(maxyear, 12, 31));
+        rcldb->maxYearSpan(&minyear, &maxyear);
+        minDateDTE->setDisplayFormat("yyyy-MM-dd");
+        maxDateDTE->setDisplayFormat("yyyy-MM-dd");
+        minDateDTE->setDate(QDate(minyear, 1, 1));
+        maxDateDTE->setDate(QDate(maxyear, 12, 31));
     }
 
     // Initialize lists of accepted and ignored mime types from config
@@ -159,7 +159,7 @@ void AdvSearch::saveCnf()
     // Save my state
     prefs.advSearchClauses.clear(); 
     for (const auto& clause : m_clauseWins) {
-	prefs.advSearchClauses.push_back(clause->sTpCMB->currentIndex());
+        prefs.advSearchClauses.push_back(clause->sTpCMB->currentIndex());
     }
 }
 
@@ -176,9 +176,9 @@ void AdvSearch::addClause(int tp, bool updsaved)
     w->show();
     w->tpChange(tp);
     if (m_clauseWins.size() > iclausescnt) {
-	delClausePB->setEnabled(true);
+        delClausePB->setEnabled(true);
     } else {
-	delClausePB->setEnabled(false);
+        delClausePB->setEnabled(false);
     }
     if (updsaved) {
         saveCnf();
@@ -188,13 +188,13 @@ void AdvSearch::addClause(int tp, bool updsaved)
 void AdvSearch::delClause(bool updsaved)
 {
     if (m_clauseWins.size() <= iclausescnt)
-	return;
+        return;
     delete m_clauseWins.back();
     m_clauseWins.pop_back();
     if (m_clauseWins.size() > iclausescnt) {
-	delClausePB->setEnabled(true);
+        delClausePB->setEnabled(true);
     } else {
-	delClausePB->setEnabled(false);
+        delClausePB->setEnabled(false);
     }
     if (updsaved) {
         saveCnf();
@@ -212,10 +212,10 @@ void AdvSearch::delFiltypPB_clicked()
 {
     QList<QListWidgetItem *> items = yesFiltypsLB->selectedItems();
     for (QList<QListWidgetItem *>::iterator it = items.begin(); 
-	 it != items.end(); it++) {
-	int row = yesFiltypsLB->row(*it);
-	QListWidgetItem *item = yesFiltypsLB->takeItem(row);
-	noFiltypsLB->insertItem(0, item);
+         it != items.end(); it++) {
+        int row = yesFiltypsLB->row(*it);
+        QListWidgetItem *item = yesFiltypsLB->takeItem(row);
+        noFiltypsLB->insertItem(0, item);
     }
     guiListsToIgnTypes();
 }
@@ -225,13 +225,13 @@ void AdvSearch::addFiltypPB_clicked()
 {
     QList<QListWidgetItem *> items = noFiltypsLB->selectedItems();
     for (QList<QListWidgetItem *>::iterator it = items.begin(); 
-	 it != items.end(); it++) {
-	int row = noFiltypsLB->row(*it);
-	QListWidgetItem *item = noFiltypsLB->takeItem(row);
-	yesFiltypsLB->insertItem(0, item);
+         it != items.end(); it++) {
+        int row = noFiltypsLB->row(*it);
+        QListWidgetItem *item = noFiltypsLB->takeItem(row);
+        yesFiltypsLB->insertItem(0, item);
     }
     guiListsToIgnTypes();
- }
+}
 
 // Compute list of ignored mime type from widget lists
 void AdvSearch::guiListsToIgnTypes()
@@ -240,8 +240,8 @@ void AdvSearch::guiListsToIgnTypes()
     noFiltypsLB->sortItems();
     m_ignTypes.clear();
     for (int i = 0; i < noFiltypsLB->count();i++) {
-	QListWidgetItem *item = noFiltypsLB->item(i);
-	m_ignTypes.append(item->text());
+        QListWidgetItem *item = noFiltypsLB->item(i);
+        m_ignTypes.append(item->text());
     }
 }
 void AdvSearch::addAFiltypPB_clicked()
@@ -281,7 +281,7 @@ void AdvSearch::restrictCtCB_toggled(bool on)
     m_ignByCats = on;
     // Only reset the list if we're enabled. Else this is init from prefs
     if (restrictCtCB->isEnabled())
-	m_ignTypes.clear();
+        m_ignTypes.clear();
     fillFileTypes();
 }
 
@@ -293,32 +293,32 @@ void AdvSearch::fillFileTypes()
 
     QStringList ql;
     if (m_ignByCats == false) {
-	vector<string> types = theconfig->getAllMimeTypes();
-	rcldb->getAllDbMimeTypes(types);
-	sort(types.begin(), types.end());
-	types.erase(unique(types.begin(), types.end()), types.end());
-	for (vector<string>::iterator it = types.begin(); 
-	     it != types.end(); it++) {
-	    QString qs = QString::fromUtf8(it->c_str());
-	    if (m_ignTypes.indexOf(qs) < 0)
-		ql.append(qs);
-	}
+        vector<string> types = theconfig->getAllMimeTypes();
+        rcldb->getAllDbMimeTypes(types);
+        sort(types.begin(), types.end());
+        types.erase(unique(types.begin(), types.end()), types.end());
+        for (vector<string>::iterator it = types.begin(); 
+             it != types.end(); it++) {
+            QString qs = QString::fromUtf8(it->c_str());
+            if (m_ignTypes.indexOf(qs) < 0)
+                ql.append(qs);
+        }
     } else {
-	vector<string> cats;
-	theconfig->getMimeCategories(cats);
-	for (vector<string>::const_iterator it = cats.begin();
-	     it != cats.end(); it++) {
-	    map<QString, QString>::const_iterator it1;
-	    QString cat;
-	    if ((it1 = cat_translations.find(QString::fromUtf8(it->c_str())))
-		!= cat_translations.end()) {
-		cat = it1->second;
-	    } else {
-		cat = QString::fromUtf8(it->c_str());
-	    } 
-	    if (m_ignTypes.indexOf(cat) < 0)
-		ql.append(cat);
-	}
+        vector<string> cats;
+        theconfig->getMimeCategories(cats);
+        for (vector<string>::const_iterator it = cats.begin();
+             it != cats.end(); it++) {
+            map<QString, QString>::const_iterator it1;
+            QString cat;
+            if ((it1 = cat_translations.find(QString::fromUtf8(it->c_str())))
+                != cat_translations.end()) {
+                cat = it1->second;
+            } else {
+                cat = QString::fromUtf8(it->c_str());
+            } 
+            if (m_ignTypes.indexOf(cat) < 0)
+                ql.append(cat);
+        }
     }
     yesFiltypsLB->insertItems(0, ql);
 }
@@ -355,21 +355,21 @@ size_t AdvSearch::stringToSize(QString qsize)
     size_t size = size_t(-1);
     qsize.replace(QRegExp("[\\s]+"), "");
     if (!qsize.isEmpty()) {
-	string csize(qs2utf8s(qsize));
-	char *cp;
-	size = strtoll(csize.c_str(), &cp, 10);
-	if (*cp != 0) {
-	    switch (*cp) {
-	    case 'k': case 'K': size *= 1E3;break;
-	    case 'm': case 'M': size *= 1E6;break;
-	    case 'g': case 'G': size *= 1E9;break;
-	    case 't': case 'T': size *= 1E12;break;
-	    default: 
-		QMessageBox::warning(0, "Recoll", 
-			     tr("Bad multiplier suffix in size filter"));
-		size = size_t(-1);
-	    }
-	}
+        string csize(qs2utf8s(qsize));
+        char *cp;
+        size = strtoll(csize.c_str(), &cp, 10);
+        if (*cp != 0) {
+            switch (*cp) {
+            case 'k': case 'K': size *= 1E3;break;
+            case 'm': case 'M': size *= 1E6;break;
+            case 'g': case 'G': size *= 1E9;break;
+            case 't': case 'T': size *= 1E12;break;
+            default: 
+                QMessageBox::warning(0, "Recoll", 
+                                     tr("Bad multiplier suffix in size filter"));
+                size = size_t(-1);
+            }
+        }
     }
     return size;
 }
@@ -379,65 +379,65 @@ void AdvSearch::runSearch()
 {
     string stemLang = prefs.stemlang();
     std::shared_ptr<SearchData> sdata(new SearchData(conjunctCMB->currentIndex() == 0 ?
-					     SCLT_AND : SCLT_OR, stemLang));
+                                                     SCLT_AND : SCLT_OR, stemLang));
     bool hasclause = false;
 
     for (vector<SearchClauseW*>::iterator it = m_clauseWins.begin();
-	 it != m_clauseWins.end(); it++) {
-	SearchDataClause *cl;
-	if ((cl = (*it)->getClause())) {
-	    sdata->addClause(cl);
+         it != m_clauseWins.end(); it++) {
+        SearchDataClause *cl;
+        if ((cl = (*it)->getClause())) {
+            sdata->addClause(cl);
             hasclause = true;
-	}
+        }
     }
     if (!hasclause)
         return;
 
     if (restrictFtCB->isChecked() && noFiltypsLB->count() > 0) {
-	for (int i = 0; i < yesFiltypsLB->count(); i++) {
-	    if (restrictCtCB->isChecked()) {
-		QString qcat = yesFiltypsLB->item(i)->text();
-		map<QString,QString>::const_iterator qit;
-		string cat;
-		if ((qit = cat_rtranslations.find(qcat)) != 
-		    cat_rtranslations.end()) {
-		    cat = qs2utf8s(qit->second);
-		} else {
-		    cat = qs2utf8s(qcat);
-		}
-		vector<string> types;
-		theconfig->getMimeCatTypes(cat, types);
-		for (vector<string>::const_iterator it = types.begin();
-		     it != types.end(); it++) {
-		    sdata->addFiletype(*it);
-		}
-	    } else {
-		sdata->addFiletype(qs2utf8s(yesFiltypsLB->item(i)->text()));
-	    }
-	}
+        for (int i = 0; i < yesFiltypsLB->count(); i++) {
+            if (restrictCtCB->isChecked()) {
+                QString qcat = yesFiltypsLB->item(i)->text();
+                map<QString,QString>::const_iterator qit;
+                string cat;
+                if ((qit = cat_rtranslations.find(qcat)) != 
+                    cat_rtranslations.end()) {
+                    cat = qs2utf8s(qit->second);
+                } else {
+                    cat = qs2utf8s(qcat);
+                }
+                vector<string> types;
+                theconfig->getMimeCatTypes(cat, types);
+                for (vector<string>::const_iterator it = types.begin();
+                     it != types.end(); it++) {
+                    sdata->addFiletype(*it);
+                }
+            } else {
+                sdata->addFiletype(qs2utf8s(yesFiltypsLB->item(i)->text()));
+            }
+        }
     }
 
     if (filterDatesCB->isChecked()) {
-	QDate mindate = minDateDTE->date();
-	QDate maxdate = maxDateDTE->date();
-	DateInterval di;
-	di.y1 = mindate.year();
-	di.m1 = mindate.month();
-	di.d1 = mindate.day();
-	di.y2 = maxdate.year();
-	di.m2 = maxdate.month();
-	di.d2 = maxdate.day();
-	sdata->setDateSpan(&di);
+        QDate mindate = minDateDTE->date();
+        QDate maxdate = maxDateDTE->date();
+        DateInterval di;
+        di.y1 = mindate.year();
+        di.m1 = mindate.month();
+        di.d1 = mindate.day();
+        di.y2 = maxdate.year();
+        di.m2 = maxdate.month();
+        di.d2 = maxdate.day();
+        sdata->setDateSpan(&di);
     }
     if (filterSizesCB->isChecked()) {
-	size_t size = stringToSize(minSizeLE->text());
-	sdata->setMinSize(size);
-	size = stringToSize(maxSizeLE->text());
-	sdata->setMaxSize(size);
+        size_t size = stringToSize(minSizeLE->text());
+        sdata->setMinSize(size);
+        size = stringToSize(maxSizeLE->text());
+        sdata->setMaxSize(size);
     }
 
     if (!subtreeCMB->currentText().isEmpty()) {
-	QString current = subtreeCMB->currentText();
+        QString current = subtreeCMB->currentText();
 
         Rcl::SearchDataClausePath *pathclause = new Rcl::SearchDataClausePath(
             qs2path(current), direxclCB->isChecked());
@@ -451,25 +451,25 @@ void AdvSearch::runSearch()
             sdata = nsdata;
         }
 
-	// Keep history clean and sorted. Maybe there would be a
-	// simpler way to do this
-	list<QString> entries;
-	for (int i = 0; i < subtreeCMB->count(); i++) {
-	    entries.push_back(subtreeCMB->itemText(i));
-	}
-	entries.push_back(subtreeCMB->currentText());
-	entries.sort();
-	entries.unique();
-	LOGDEB("Subtree list now has "  << (entries.size()) << " entries\n" );
-	subtreeCMB->clear();
-	for (list<QString>::iterator it = entries.begin(); 
-	     it != entries.end(); it++) {
-	    subtreeCMB->addItem(*it);
-	}
-	subtreeCMB->setCurrentIndex(subtreeCMB->findText(current));
-	prefs.asearchSubdirHist.clear();
-	for (int index = 0; index < subtreeCMB->count(); index++)
-	    prefs.asearchSubdirHist.push_back(subtreeCMB->itemText(index));
+        // Keep history clean and sorted. Maybe there would be a
+        // simpler way to do this
+        list<QString> entries;
+        for (int i = 0; i < subtreeCMB->count(); i++) {
+            entries.push_back(subtreeCMB->itemText(i));
+        }
+        entries.push_back(subtreeCMB->currentText());
+        entries.sort();
+        entries.unique();
+        LOGDEB("Subtree list now has "  << (entries.size()) << " entries\n" );
+        subtreeCMB->clear();
+        for (list<QString>::iterator it = entries.begin(); 
+             it != entries.end(); it++) {
+            subtreeCMB->addItem(*it);
+        }
+        subtreeCMB->setCurrentIndex(subtreeCMB->findText(current));
+        prefs.asearchSubdirHist.clear();
+        for (int index = 0; index < subtreeCMB->count(); index++)
+            prefs.asearchSubdirHist.push_back(subtreeCMB->itemText(index));
     }
     saveCnf();
     g_advshistory && g_advshistory->push(sdata);
@@ -483,114 +483,114 @@ void AdvSearch::runSearch()
 void AdvSearch::fromSearch(std::shared_ptr<SearchData> sdata)
 {
     if (sdata->m_tp == SCLT_OR)
-	conjunctCMB->setCurrentIndex(1);
+        conjunctCMB->setCurrentIndex(1);
     else
-	conjunctCMB->setCurrentIndex(0);
+        conjunctCMB->setCurrentIndex(0);
 
     while (sdata->m_query.size() > m_clauseWins.size()) {
-	addClause();
+        addClause();
     }
 
     subtreeCMB->setEditText("");
     direxclCB->setChecked(0);
 
     for (unsigned int i = 0; i < sdata->m_query.size(); i++) {
-	// Set fields from clause
-	if (sdata->m_query[i]->getTp() == SCLT_SUB) {
-	    LOGERR("AdvSearch::fromSearch: SUB clause found !\n" );
-	    continue;
-	}
-	if (sdata->m_query[i]->getTp() == SCLT_PATH) {
-	    SearchDataClausePath *cs = 
-		dynamic_cast<SearchDataClausePath*>(sdata->m_query[i]);
-	    // We can only use one such clause. There should be only one too 
-	    // if this is sfrom aved search data.
-	    QString qdir = path2qs(cs->gettext());
-	    subtreeCMB->setEditText(qdir);
-	    direxclCB->setChecked(cs->getexclude());
-	    continue;
-	}
-	SearchDataClauseSimple *cs = 
-	    dynamic_cast<SearchDataClauseSimple*>(sdata->m_query[i]);
-	m_clauseWins[i]->setFromClause(cs);
+        // Set fields from clause
+        if (sdata->m_query[i]->getTp() == SCLT_SUB) {
+            LOGERR("AdvSearch::fromSearch: SUB clause found !\n" );
+            continue;
+        }
+        if (sdata->m_query[i]->getTp() == SCLT_PATH) {
+            SearchDataClausePath *cs = 
+                dynamic_cast<SearchDataClausePath*>(sdata->m_query[i]);
+            // We can only use one such clause. There should be only one too 
+            // if this is sfrom aved search data.
+            QString qdir = path2qs(cs->gettext());
+            subtreeCMB->setEditText(qdir);
+            direxclCB->setChecked(cs->getexclude());
+            continue;
+        }
+        SearchDataClauseSimple *cs = 
+            dynamic_cast<SearchDataClauseSimple*>(sdata->m_query[i]);
+        m_clauseWins[i]->setFromClause(cs);
     }
     for (unsigned int i = sdata->m_query.size(); i < m_clauseWins.size(); i++) {
-	m_clauseWins[i]->clear();
+        m_clauseWins[i]->clear();
     }
 
     restrictCtCB->setChecked(0);
     if (!sdata->m_filetypes.empty()) {
-	restrictFtCB_toggled(1);
-	delAFiltypPB_clicked();
-	for (unsigned int i = 0; i < sdata->m_filetypes.size(); i++) {
-	    QString ft = QString::fromUtf8(sdata->m_filetypes[i].c_str());
-	    QList<QListWidgetItem *> lst = 
-		noFiltypsLB->findItems(ft, Qt::MatchExactly);
-	    if (!lst.isEmpty()) {
-		int row = noFiltypsLB->row(lst[0]);
-		QListWidgetItem *item = noFiltypsLB->takeItem(row);
-		yesFiltypsLB->insertItem(0, item);
-	    }
-	}
-	yesFiltypsLB->sortItems();
+        restrictFtCB_toggled(1);
+        delAFiltypPB_clicked();
+        for (unsigned int i = 0; i < sdata->m_filetypes.size(); i++) {
+            QString ft = QString::fromUtf8(sdata->m_filetypes[i].c_str());
+            QList<QListWidgetItem *> lst = 
+                noFiltypsLB->findItems(ft, Qt::MatchExactly);
+            if (!lst.isEmpty()) {
+                int row = noFiltypsLB->row(lst[0]);
+                QListWidgetItem *item = noFiltypsLB->takeItem(row);
+                yesFiltypsLB->insertItem(0, item);
+            }
+        }
+        yesFiltypsLB->sortItems();
     } else {
-	addAFiltypPB_clicked();
-	restrictFtCB_toggled(0);
+        addAFiltypPB_clicked();
+        restrictFtCB_toggled(0);
     }
 
     if (sdata->m_haveDates) {
-	filterDatesCB->setChecked(1);
-	DateInterval &di(sdata->m_dates);
-	QDate mindate(di.y1, di.m1, di.d1);
-	QDate maxdate(di.y2, di.m2, di.d2);
+        filterDatesCB->setChecked(1);
+        DateInterval &di(sdata->m_dates);
+        QDate mindate(di.y1, di.m1, di.d1);
+        QDate maxdate(di.y2, di.m2, di.d2);
         minDateDTE->setDate(mindate);
         maxDateDTE->setDate(maxdate);
     } else {
-	filterDatesCB->setChecked(0);
-	QDate date;
-	minDateDTE->setDate(date);
-	maxDateDTE->setDate(date);
+        filterDatesCB->setChecked(0);
+        QDate date;
+        minDateDTE->setDate(date);
+        maxDateDTE->setDate(date);
     }
 
     if (sdata->m_maxSize != -1 || sdata->m_minSize != -1) {
-	filterSizesCB->setChecked(1);
-	QString sz;
-	if (sdata->m_minSize != -1) {
-	    sz.setNum(sdata->m_minSize);
-	    minSizeLE->setText(sz);
-	} else {
-	    minSizeLE->setText("");
-	}
-	if (sdata->m_maxSize != -1) {
-	    sz.setNum(sdata->m_maxSize);
-	    maxSizeLE->setText(sz);
-	} else {
-	    maxSizeLE->setText("");
-	}
+        filterSizesCB->setChecked(1);
+        QString sz;
+        if (sdata->m_minSize != -1) {
+            sz.setNum(sdata->m_minSize);
+            minSizeLE->setText(sz);
+        } else {
+            minSizeLE->setText("");
+        }
+        if (sdata->m_maxSize != -1) {
+            sz.setNum(sdata->m_maxSize);
+            maxSizeLE->setText(sz);
+        } else {
+            maxSizeLE->setText("");
+        }
     } else {
-	filterSizesCB->setChecked(0);
-	minSizeLE->setText("");
-	maxSizeLE->setText("");
+        filterSizesCB->setChecked(0);
+        minSizeLE->setText("");
+        maxSizeLE->setText("");
     }
 }
 
 void AdvSearch::slotHistoryNext()
 {
     if (g_advshistory == 0)
-	return;
+        return;
     std::shared_ptr<Rcl::SearchData> sd = g_advshistory->getnewer();
     if (!sd)
-	return;
+        return;
     fromSearch(sd);
 }
 
 void AdvSearch::slotHistoryPrev()
 {
     if (g_advshistory == 0)
-	return;
+        return;
     std::shared_ptr<Rcl::SearchData> sd = g_advshistory->getolder();
     if (!sd)
-	return;
+        return;
     fromSearch(sd);
 }
 
