@@ -111,8 +111,6 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
     if (!edbs->empty()) {
         rcldb->setExtraQueryDbs(*edbs);
     }
-    prefs.useTmpActiveExtraDbs = false;
-	prefs.tmpActiveExtraDbs.clear();
 	
     Rcl::Db::OpenError error;
     if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO, &error)) {
