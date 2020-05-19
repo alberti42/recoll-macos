@@ -35,7 +35,7 @@ try:
     import mecab
     usingkonlpy = False
 except:
-    from konlpy.tag import Okt,Mecab,Komoran
+    import konlpy.tag
     usingkonlpy = True
 
 class Processor(object):
@@ -51,19 +51,19 @@ class Processor(object):
             from konlpy.tag import Okt,Mecab,Komoran
             usingkonlpy = True
         if taggername == "Okt":
-            self.tagger = Okt()
+            self.tagger = konlpy.tag.Okt()
             self.tagsOkt = True
         elif taggername == "Mecab":
             if usingkonlpy:
                 # Use Mecab(dicpath="c:/some/path/mecab-ko-dic") for a
                 # non-default location. (?? mecab uses rcfile and dicdir not
                 # dicpath)
-                self.tagger = Mecab()
+                self.tagger = konlpy.tag.Mecab()
             else:
                 self.tagger = mecab.MeCab()
             self.tagsMecab = True
         elif taggername == "Komoran":
-            self.tagger = Komoran()
+            self.tagger = konlpy.tag.Komoran()
             self.tagsKomoran = True
         else:
             raise Exception("Bad tagger name " + taggername)
@@ -75,9 +75,17 @@ class Processor(object):
             if 'tagger' not in params:
                 return {'error':'No "tagger" field in parameters'}
             self._init_tagger(params['tagger']);
-                              
-        pos = self.tagger.pos(params['data'])
-        #proto.log("%s" % pos)
+
+        spliteojeol = False
+        if spliteojeol:
+            data = params['data'].split()
+            pos = []
+            for d in data:
+                pos += self.tagger.pos(d)
+        else:
+            pos = self.tagger.pos(params['data'])
+            
+        #proto.log("POS: %s" % pos)
         text = ""
         tags = ""
         for e in pos:
