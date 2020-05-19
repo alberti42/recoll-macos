@@ -98,16 +98,22 @@ void startManual(const string& helpindex)
 
 bool maybeOpenDb(string &reason, bool force, bool *maindberror)
 {
-    LOGDEB2("maybeOpenDb: force " << force << "\n");
+    LOGDEB1("maybeOpenDb: force " << force << "\n");
 
-    if (force) {
+    if (force || nullptr == rcldb) {
         rcldb = std::shared_ptr<Rcl::Db>(new Rcl::Db(theconfig));
     }
     rcldb->rmQueryDb("");
-    for (const auto& dbdir : prefs.activeExtraDbs) {
-        LOGDEB("main: adding [" << dbdir << "]\n");
-        rcldb->addQueryDb(dbdir);
+	auto edbs = &prefs.activeExtraDbs;
+	if (prefs.useTmpActiveExtraDbs) {
+		edbs = &prefs.tmpActiveExtraDbs;
+	}
+    if (!edbs->empty()) {
+        rcldb->setExtraQueryDbs(*edbs);
     }
+    prefs.useTmpActiveExtraDbs = false;
+	prefs.tmpActiveExtraDbs.clear();
+	
     Rcl::Db::OpenError error;
     if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO, &error)) {
         reason = "Could not open database";
@@ -130,7 +136,7 @@ bool getStemLangs(vector<string>& vlangs)
 {
     // Try from db
     string reason;
-    if (maybeOpenDb(reason)) {
+    if (maybeOpenDb(reason, false)) {
         vlangs = rcldb->getStemLangs();
         LOGDEB0("getStemLangs: from index: " << stringsToString(vlangs) <<"\n");
         return true;
@@ -385,7 +391,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    maybeOpenDb(reason);
+    maybeOpenDb(reason, false);
 
     if (op_flags & OPT_w) {
         mainWindow->showMinimized();

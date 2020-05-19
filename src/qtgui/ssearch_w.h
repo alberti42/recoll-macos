@@ -113,6 +113,7 @@ signals:
 private:
     int getPartialWord(QString& word);
     bool startSimpleSearch(const string& q, int maxexp = -1);
+    bool checkExtIndexes(const std::vector<std::string>& dbs);
 
     RclCompleterModel *m_completermodel{nullptr};
     QCompleter *m_completer{nullptr};

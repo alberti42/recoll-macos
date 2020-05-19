@@ -717,7 +717,7 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
     string reason;
     // If indexing is being performed, we reopen the db at each query.
     if (!maybeOpenDb(reason, m_idxproc != 0)) {
-        QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+        QMessageBox::critical(0, "Recoll", u8s2qs(reason));
         m_queryActive = false;
         restable->setEnabled(true);
         return;
@@ -952,7 +952,7 @@ void RclMain::showSubDocs(Rcl::Doc doc)
 {
     LOGDEB("RclMain::showSubDocs\n");
     string reason;
-    if (!maybeOpenDb(reason)) {
+    if (!maybeOpenDb(reason, false)) {
         QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
         return;
     }
@@ -1010,7 +1010,7 @@ void RclMain::showDocHistory()
     curPreview = 0;
 
     string reason;
-    if (!maybeOpenDb(reason)) {
+    if (!maybeOpenDb(reason, false)) {
         QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
         return;
     }

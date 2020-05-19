@@ -535,6 +535,20 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
     return true;
 }
 
+bool SSearch::checkExtIndexes(const std::vector<std::string>& dbs)
+{
+	std::string reason;
+	if (!maybeOpenDb(reason, false)) {
+        QMessageBox::critical(0, "Recoll", tr("Can't open index") +
+                              u8s2qs(reason));
+        return false;
+	}
+    if (!rcldb->setExtraQueryDbs(dbs)) {
+        return false;
+    }
+    return true;
+}
+
 bool SSearch::fromXML(const SSearchDef& fxml)
 {
     string asString;
@@ -565,14 +579,20 @@ bool SSearch::fromXML(const SSearchDef& fxml)
             tr(" differ from current preferences (kept)"));
     }
 
-    cur = set<string>(prefs.activeExtraDbs.begin(), prefs.activeExtraDbs.end());
-    stored = set<string>(fxml.extindexes.begin(), fxml.extindexes.end());
-    stringsToString(fxml.extindexes, asString);
-    if (cur != stored) {
+
+    if (!checkExtIndexes(fxml.extindexes)) {
+        std::string asString;
+        stringsToString(fxml.extindexes, asString);
         QMessageBox::warning(
-            0, "Recoll", tr("External indexes for stored query: ") + 
-            QString::fromUtf8(asString.c_str()) + 
-            tr(" differ from current preferences (kept)"));
+            0, "Recoll",
+            tr("Could not restore external indexes for stored query:<br> ") +
+            (rcldb ? u8s2qs(rcldb->getReason()) : tr("???")) + QString("<br>") +
+            tr("Using current preferences."));
+        string s;
+        maybeOpenDb(s, true);
+    } else {
+        prefs.useTmpActiveExtraDbs = true;
+        prefs.tmpActiveExtraDbs = fxml.extindexes;
     }
 
     if (prefs.ssearchAutoPhrase && !fxml.autophrase) {

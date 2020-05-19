@@ -29,8 +29,7 @@
 // Misc declarations in need of sharing between the UI files
 
 // Open the database if needed. We now force a close/open by default
-extern bool maybeOpenDb(std::string &reason, bool force = true, 
-			bool *maindberror = 0);
+extern bool maybeOpenDb(std::string &reason, bool force, bool *maindberror = 0);
 
 /** Retrieve configured stemming languages */
 bool getStemLangs(vector<string>& langs);

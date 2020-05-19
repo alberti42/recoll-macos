@@ -338,6 +338,8 @@ public:
     bool addQueryDb(const string &dir);
     /** Remove extra database. if dir == "", remove all. */
     bool rmQueryDb(const string &dir);
+    /** Set the extra indexes to the input list. */
+	bool setExtraQueryDbs(const std::vector<std::string>& dbs);
 
     /** Check if document comes from the main index (this is used to
        decide if we can update the index for it */

@@ -1055,23 +1055,6 @@ bool Db::i_close(bool final)
     return false;
 }
 
-// Reopen the db with a changed list of additional dbs
-bool Db::adjustdbs()
-{
-    if (m_mode != DbRO) {
-        LOGERR("Db::adjustdbs: mode not RO\n");
-        return false;
-    }
-    if (m_ndb && m_ndb->m_isopen) {
-        if (!close())
-            return false;
-        if (!open(m_mode)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 int Db::docCnt()
 {
     int res = -1;
@@ -1112,6 +1095,42 @@ int Db::termDocCnt(const string& _term)
         return -1;
     }
     return res;
+}
+
+// Reopen the db with a changed list of additional dbs
+bool Db::adjustdbs()
+{
+    if (m_mode != DbRO) {
+        LOGERR("Db::adjustdbs: mode not RO\n");
+        return false;
+    }
+    if (m_ndb && m_ndb->m_isopen) {
+        if (!close())
+            return false;
+        if (!open(m_mode)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Set the extra indexes to the input list.
+bool Db::setExtraQueryDbs(const std::vector<std::string>& dbs)
+{
+    LOGDEB0("Db::setExtraQueryDbs: ndb " << m_ndb << " iswritable " <<
+            ((m_ndb)?m_ndb->m_iswritable:0) << " dbs [" <<
+            stringsToString(dbs) << "]\n");
+    if (!m_ndb) {
+        return false;
+    }
+    if (m_ndb->m_iswritable) {
+        return false;
+    }
+    m_extraDbs.clear();
+    for (const auto& dir : dbs) {
+        m_extraDbs.push_back(path_canon(dir));
+    }
+    return adjustdbs();
 }
 
 bool Db::addQueryDb(const string &_dir) 
