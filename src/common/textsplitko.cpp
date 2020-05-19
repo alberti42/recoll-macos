@@ -218,10 +218,9 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
                 " bytepos " << bytepos << " word from text: " <<
                 inputdata.substr(bytepos, word.size()) << endl);
         bool isNoun = (tags[i] == "Noun");
-#if 0
 		// When Noun followed by JX, emit both Noun and Noun+JX at the
-		// same pos Experimental, it seems that this is sometimes
-		// problematic, so turned off for now.
+		// same pos. This is because the compound term may actually
+		// mean something else, if it's a phonetic transcription.
         if (isNoun) {
             lastNoun = word;
             lastNounWordPos = m_wordpos;
@@ -229,13 +228,12 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         } else {
             if (tags[i] == "JX" && !lastNoun.empty()) {
                 if (!takeword(lastNoun+word, lastNounWordPos, lastNounBytePos,
-                              lastNounBytePos + word.size())) {
+							 lastNounBytePos + word.size())) {
                     return false;
                 }
             }
             lastNoun.clear();
         }
-#endif
 		// 11/05/2020 For now index everything until more precise
 		// verification of what should be pruned
         if (true || (isNoun || tags[i] == "Verb" ||
