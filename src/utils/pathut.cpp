@@ -836,7 +836,7 @@ bool path_makepath(const string& ipath, int mode)
     return true;
 }
 
-#if !defined(__GNUC__) || __GNUC__ > 4
+#if !defined(__GNUC__) || __GNUC__ > 4 || defined(__clang__)
 // Not sure what g++ version supports fstream assignment but 4.9
 // (jessie) certainly does not
 std::fstream path_open(const std::string& path, int mode)
