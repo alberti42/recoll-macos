@@ -37,7 +37,6 @@ AC_SYS_LARGEFILE
 # OpenBSD needs sys/param.h for mount.h to compile
 AC_CHECK_HEADERS([sys/param.h, spawn.h])
 
-AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf malloc_trim])
 
 if test "x$ac_cv_func_posix_spawn" = xyes; then :
    AC_ARG_ENABLE(posix_spawn,
@@ -49,34 +48,13 @@ if test X$posixSpawnEnabled = Xyes ; then
   AC_DEFINE(USE_POSIX_SPAWN, 1, [Use posix_spawn()])
 fi
 
-# Check for where to find unordered_map etc.
-AC_LANG_PUSH([C++])
-AC_CHECK_HEADER(tr1/unordered_map,[AC_DEFINE([HAVE_TR1_UNORDERED],
-    [],["Have tr1"])],[])
-AC_CHECK_HEADER(unordered_map,[AC_DEFINE([HAVE_CXX0X_UNORDERED],
-    [],["Have C++0x"])],[])
-AC_TRY_COMPILE([
-    #include <memory>
-  ],[
-    std::shared_ptr<int> ptr;
-  ], rcl_shared_ptr_std="1", rcl_shared_ptr_std="0")
-AC_TRY_COMPILE([
-    #include <tr1/memory>
-  ],[
-    std::tr1::shared_ptr<int> ptr;
-  ], rcl_shared_ptr_tr1="1", rcl_shared_ptr_tr1="0")
-if test X$rcl_shared_ptr_std = X1; then 
-   AC_DEFINE(HAVE_SHARED_PTR_STD, [], [Has std::shared_ptr])
-elif test X$rcl_shared_ptr_tr1 = X1; then 
-   AC_DEFINE(HAVE_SHARED_PTR_TR1, [], [Has std::tr1::shared_ptr])
-fi
-AC_LANG_POP([C++])
-
-AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h], [], [],
+AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h malloc.h malloc/malloc.h], [], [],
 [#ifdef HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 ])
+
+AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf malloc_trim])
 
 # Use specific 'file' command ? (Useful on solaris to specify
 # /usr/local/bin/file instead of the system's which doesn't understand '-i'

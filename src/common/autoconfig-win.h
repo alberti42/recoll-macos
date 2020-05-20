@@ -19,9 +19,6 @@
 /* Path to the file program */
 #define FILE_PROG "/usr/bin/file"
 
-/* "Have C++0x" */
-#define HAVE_CXX0X_UNORDERED 1
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
@@ -45,8 +42,14 @@
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1
 
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <malloc/malloc.h> header file. */
+#undef HAVE_MALLOC_MALLOC_H
+
 /* Define to 1 if you have the `malloc_trim' function. */
-/* #undef HAVE_MALLOC_TRIM */
+#undef HAVE_MALLOC_TRIM
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
@@ -59,12 +62,6 @@
 
 /* Define to 1 if you have the `setrlimit' function. */
 #define HAVE_SETRLIMIT 1
-
-/* Has std::shared_ptr */
-#define HAVE_SHARED_PTR_STD
-
-/* Has std::tr1::shared_ptr */
-/* #undef HAVE_SHARED_PTR_TR1 */
 
 /* Define to 1 if you have the <spawn.h> header file. */
 #define HAVE_SPAWN_H 1
@@ -101,9 +98,6 @@
 
 /* Define to 1 if you have the <sys/vfs.h> header file. */
 /* #undef HAVE_SYS_VFS_H */
-
-/* "Have tr1" */
-/* #undef HAVE_TR1_UNORDERED */
 
 /* Define to 1 if you have the <unistd.h> header file. */
 /* #undef HAVE_UNISTD_H */

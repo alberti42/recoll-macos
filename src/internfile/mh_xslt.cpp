@@ -16,7 +16,11 @@
  */
 #include "autoconfig.h"
 
+#if defined(HAVE_MALLOC_H)
 #include <malloc.h>
+#elif defined(HAVE_MALLOC_MALLOC_H)
+#include <malloc/malloc.h>
+#endif
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
