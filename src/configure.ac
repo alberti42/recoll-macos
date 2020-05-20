@@ -27,6 +27,19 @@ if test "$rcl_link_ok" = "no" ; then
 fi
 AC_LANG_POP([C++])
 
+AC_CANONICAL_HOST
+
+# We want librecoll.so to have no undefined symbols because it makes our
+# life easier when building the loadable modules for, e.g. Python Can't
+# make sense of the libtool -no-undefined flag. It seems to do nothing on
+# Linux. Otoh, -Wl,--no-undefined or -z,defs is not portable (e.g. does not
+# work on the mac). So set this link flag as a system-dependant value here
+case $host_os in
+  linux*)
+    NO_UNDEF_LINK_FLAG=-Wl,--no-undefined
+    ;;
+esac
+
 AC_PROG_YACC
 
 AC_PROG_LIBTOOL
@@ -505,6 +518,7 @@ RECOLL_DATADIR=${m_datadir}/recoll
 RCLVERSION=$PACKAGE_VERSION
 RCLLIBVERSION=$RCLVERSION
 
+AC_SUBST(NO_UNDEF_LINK_FLAG)
 AC_SUBST(RECOLL_DATADIR)
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)

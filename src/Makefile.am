@@ -279,10 +279,11 @@ BUILT_SOURCES = query/wasaparse.cpp
 AM_YFLAGS = -d
 
 # We use -release: the lib is only shared
-# between recoll programs from the same release.
-# -version-info $(VERSION_INFO)
-librecoll_la_LDFLAGS = -release $(VERSION) \
-    -Wl,--no-undefined -Wl,--warn-unresolved-symbols
+# between recoll programs from the same release. So the lib is just named
+# after the recoll version (e.g librecoll-1.27.1.so)
+# -version-info $(VERSION_INFO) would handle ABI compat issues, we don't
+# need it
+librecoll_la_LDFLAGS = -release $(VERSION) -no-undefined @NO_UNDEF_LINK_FLAG@
 
 librecoll_la_LIBADD = $(XSLT_LIBS) $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
 
