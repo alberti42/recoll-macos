@@ -273,7 +273,10 @@ RclConfig *recollinit(int flags,
     if (cleanup)
 	atexit(cleanup);
 
-#ifdef MACPORTS
+#if defined(MACPORTS) || defined(HOMEBREW)
+    // The MACPORTS and HOMEBREW flags are set by the resp. portfile
+    // and recipee
+    
     // Apple keeps changing the way to set the environment (PATH) for
     // a desktop app (started by launchd or whatever). Life is too
     // short.
@@ -281,7 +284,11 @@ RclConfig *recollinit(int flags,
     if (!cp) //??
         cp = "";
     string PATH(cp);
+#if defined(MACPORTS)
     PATH = string("/opt/local/bin/") + ":" + PATH;
+#elif defined(HOMEBREW)
+    PATH = string("/usr/local/bin/") + ":" + PATH;
+#endif
     setenv("PATH", PATH.c_str(), 1);
 #endif
     
