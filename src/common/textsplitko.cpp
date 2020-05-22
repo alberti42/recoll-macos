@@ -108,6 +108,8 @@ static bool initCmd()
     return true;
 }
 
+#define STRSZT std::string::size_type
+
 bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
 {
     LOGDEB1("ko_to_words\n");
@@ -132,36 +134,70 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     // significant
     args.insert(pair<string,string>{"tagger", o_taggername});
     
-    // Walk the Korean characters section and send the text to the
-    // analyser
-    string::size_type orgbytepos = it.getBpos();
+    // Walk the Korean characters section, and accumulate tagger
+    // input.
+    // While doing this, we compute spans (space-less chunks), which
+    // we will index in addition to the parts.
+    // We also strip some useless chars, and prepare page number computations.
+    STRSZT orgbytepos = it.getBpos();
+    bool wasspace{true};
+    STRSZT spanstart{0};
+    std::vector<std::pair<STRSZT, STRSZT>> spans;
     for (; !it.eof() && !it.error(); it++) {
         c = *it;
         if (!isHANGUL(c) && isalpha(c)) {
-            // Done with Korean stretch, process and go back to main routine
+            // Done with Korean stretch. Process to next step.
             LOGDEB1("ko_to_words: broke on " << (std::string)it << endl);
             break;
         } else {
             if (c == '\f') {
+                if (!wasspace) {
+                    // End of span
+                    spans.push_back({spanstart, inputdata.size()});
+                    wasspace = true;
+                }
                 inputdata += magicpage + " ";
             } else {
-                if (c < 0x20 || (c > 0x7e && c < 0xa0)) {
+                // Alpha was taken care of above. Keep only ascii
+                // numbers, replace all punctuation with spaces.
+                if (c <= 0x7f && (c < 0x30 || c > 0x39)) {
+                    if (!wasspace) {
+                        // End of span
+                        spans.push_back({spanstart, inputdata.size()});
+                        wasspace = true;
+                    }
                     inputdata += ' ';
                 } else {
+                    if (wasspace) {
+                        // Beginning of span
+                        spanstart = inputdata.size();
+                        wasspace = false;
+                    }
                     it.appendchartostring(inputdata);
                 }
             }
         }
     }
+    // Possible dangling span
+    if (!wasspace && inputdata.size() != spanstart) {
+        spans.push_back({spanstart, inputdata.size()});
+    }
+        
     LOGDEB1("TextSplit::k_to_words: sending out " << inputdata.size() <<
             " bytes " << inputdata << endl);
+
+    // Overall data counter for slave restarts
     restartcount += inputdata.size();
+    // Have the slave analyse the data, check that we get a result,
     unordered_map<string,string> result;
     if (!o_talker->talk(args, result)) {
         LOGERR("Python splitter for Korean failed for [" << inputdata << "]\n");
         return false;
     }
 
+    // Split the resulting words and tags strings into vectors. This
+    // could be optimized (less data copying) by using positions
+    // instead.
     auto resit = result.find("text");
     if (resit == result.end()) {
         LOGERR("No text in Python splitter for Korean\n");
@@ -170,7 +206,10 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     string& outtext = resit->second;
     vector<string> words;
     stringToTokens(outtext, words, sepchars);
-
+#if 0
+    // Actually we don't use the tags (word kind) any more, so don't
+    // compute them. KEEP the code around in case we want to show the
+    // tagger output further below
     resit = result.find("tags");
     if (resit == result.end()) {
         LOGERR("No tags in Python splitter for Korean\n");
@@ -179,14 +218,19 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     string& outtags = resit->second;
     vector<string> tags;
     stringToTokens(outtags, tags, sepchars);
-
-    // This is the position in the local fragment,
-    // not in the whole text which is orgbytepos + bytepos
-    string::size_type bytepos{0};
-    string::size_type pagefix{0};
-    string lastNoun;
-    string::size_type lastNounBytePos{0};
-    int lastNounWordPos{0};
+#endif
+    
+    // Process the words and their tags. Some versions selected on tag
+    // type (did not index everything, only Nouns, Verbs etc, but we
+    // just now process everything.
+    
+    // bytepos is the position in the local fragment, not in the whole
+    // text which is orgbytepos + bytepos
+    STRSZT bytepos{0};
+    // Adjustment for our page markers
+    STRSZT pagefix{0};
+    // Current span
+    string span;
     for (unsigned int i = 0; i < words.size(); i++) {
         // The POS tagger strips characters from the input (e.g. multiple
         // spaces, sometimes new lines, possibly other stuff). This
@@ -206,43 +250,48 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
             continue;
         }
         // Find the actual start position of the word in the section.
-        string::size_type newpos = inputdata.find(word, bytepos);
+        STRSZT newpos = inputdata.find(word, bytepos);
         if (newpos != string::npos) {
             bytepos = newpos;
         } else {
-            LOGDEB("textsplitko: word [" << word << "] not found in text\n");
+            LOGINF("textsplitko: word [" << word << "] not found in text\n");
         }
+        STRSZT abspos = orgbytepos + bytepos - pagefix;
+
         LOGDEB1("WORD [" << word << "] size " << word.size() <<
                 " TAG " << tags[i] << " inputdata size " << inputdata.size() <<
                 " absbytepos " << orgbytepos + bytepos << 
                 " bytepos " << bytepos << " word from text: " <<
                 inputdata.substr(bytepos, word.size()) << endl);
-        bool isNoun = (tags[i] == "Noun");
-		// When Noun followed by JX, emit both Noun and Noun+JX at the
-		// same pos. This is because the compound term may actually
-		// mean something else, if it's a phonetic transcription.
-        if (isNoun) {
-            lastNoun = word;
-            lastNounWordPos = m_wordpos;
-            lastNounBytePos = orgbytepos + bytepos - pagefix;
-        } else {
-            if (tags[i] == "JX" && !lastNoun.empty()) {
-                if (!takeword(lastNoun+word, lastNounWordPos, lastNounBytePos,
-							 lastNounBytePos + word.size())) {
-                    return false;
-                }
-            }
-            lastNoun.clear();
-        }
-		// 11/05/2020 For now index everything until more precise
-		// verification of what should be pruned
-        if (true || (isNoun || tags[i] == "Verb" ||
-					 tags[i] == "Adjective" || tags[i] == "Adverb")) {
-            string::size_type abspos = orgbytepos + bytepos - pagefix;
-            if (!takeword(word, m_wordpos++, abspos, abspos + word.size())) {
+
+        // See if we are at a span start position, emit a span if we are.
+        auto it = std::find_if(spans.begin(), spans.end(),
+                               [bytepos] (const std::pair<STRSZT, STRSZT>& e){
+                                   return e.first == bytepos;
+                               });
+        if (it != spans.end()) {
+            span = inputdata.substr(it->first, it->second-it->first);
+            LOGDEB1("KO: SPAN: [" << span << "] pos " << m_wordpos <<
+                   " bytepos " << bytepos << "\n");
+            if (!takeword(span, m_wordpos, abspos, abspos + span.size())) {
                 return false;
             }
-        } 
+        }
+
+        // Possibly emit a part of span word.
+        LOGDEB1("KO: WORD: [" << word << "] pos " << m_wordpos <<
+                " bytepos " << bytepos << "\n");
+        // Emit words only if not in onlyspans mode, and different
+        // from span. Else, just increase the position
+        if (!(m_flags & TXTS_ONLYSPANS) &&
+            (it == spans.end() || word != span)) {
+            if (!takeword(word, m_wordpos, abspos, abspos + word.size())) {
+                return false;
+            }
+        } else {
+            LOGDEB1("KO: WORD: SKIP\n");
+        }
+        m_wordpos++;
         bytepos += word.size();
     }
 
