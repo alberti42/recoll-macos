@@ -108,6 +108,8 @@ static bool initCmd()
     return true;
 }
 
+#define LOGKO LOGDEB1
+
 #define STRSZT std::string::size_type
 
 #define ISASCIIPUNCTORCTL(c) (c <= 0x7f && \
@@ -155,7 +157,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
 			// ASCII punctuation. Allows sending longer pieces of text
 			// to the splitter (perf). Else break, process this piece,
 			// and return to the main splitter
-            LOGINF("ko_to_words: broke on " << (std::string)it << endl);
+            LOGKO("ko_to_words: broke on " << (std::string)it << endl);
             break;
         } else {
             if (c == '\f') {
@@ -191,7 +193,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         spans.push_back({spanstart, inputdata.size()});
     }
         
-    LOGINF("TextSplit::k_to_words: sending out " << inputdata.size() <<
+    LOGKO("TextSplit::k_to_words: sending out " << inputdata.size() <<
 		   " bytes " << inputdata << endl);
 
     // Overall data counter for slave restarts
@@ -279,7 +281,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
                                });
         if (it != spans.end()) {
             span = inputdata.substr(it->first, it->second-it->first);
-            LOGINF("KO: SPAN: [" << span << "] pos " << m_wordpos <<
+            LOGKO("KO: SPAN: [" << span << "] pos " << m_wordpos <<
                    " bytepos " << bytepos << "\n");
             if (!takeword(span, m_wordpos, abspos, abspos + span.size())) {
                 return false;
@@ -287,7 +289,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         }
 
         // Possibly emit a part of span word.
-        LOGINF("KO: WORD: [" << word << "] pos " << m_wordpos <<
+        LOGKO("KO: WORD: [" << word << "] pos " << m_wordpos <<
                 " bytepos " << bytepos << "\n");
         // Emit words only if not in onlyspans mode, and different
         // from span. Else, just increase the position
@@ -297,7 +299,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
                 return false;
             }
         } else {
-            LOGINF("KO: WORD: SKIP\n");
+            LOGKO("KO: WORD: SKIP\n");
         }
         m_wordpos++;
         bytepos += word.size();
