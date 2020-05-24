@@ -110,6 +110,11 @@ static bool initCmd()
 
 #define STRSZT std::string::size_type
 
+#define ISASCIIPUNCTORCTL(c) (c <= 0x7f && \
+							  !((c >= 'A' && c <= 'Z') ||			 \
+								(c >= 'a' && c <= 'z') ||			 \
+								(c >= '0' && c <= '9')))
+
 bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
 {
     LOGDEB1("ko_to_words\n");
@@ -145,9 +150,12 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     std::vector<std::pair<STRSZT, STRSZT>> spans;
     for (; !it.eof() && !it.error(); it++) {
         c = *it;
-        if (!isHANGUL(c) && isalpha(c)) {
-            // Done with Korean stretch. Process to next step.
-            LOGDEB1("ko_to_words: broke on " << (std::string)it << endl);
+        if (!isHANGUL(c) && !ISASCIIPUNCTORCTL(c)) {
+			// Non-Korean: we keep on if encountering space and other
+			// ASCII punctuation. Allows sending longer pieces of text
+			// to the splitter (perf). Else break, process this piece,
+			// and return to the main splitter
+            LOGINF("ko_to_words: broke on " << (std::string)it << endl);
             break;
         } else {
             if (c == '\f') {
@@ -160,7 +168,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
             } else {
                 // Alpha was taken care of above. Keep only ascii
                 // numbers, replace all punctuation with spaces.
-                if (c <= 0x7f && (c < 0x30 || c > 0x39)) {
+                if (ISASCIIPUNCTORCTL(c)) {
                     if (!wasspace) {
                         // End of span
                         spans.push_back({spanstart, inputdata.size()});
@@ -183,8 +191,8 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         spans.push_back({spanstart, inputdata.size()});
     }
         
-    LOGDEB1("TextSplit::k_to_words: sending out " << inputdata.size() <<
-            " bytes " << inputdata << endl);
+    LOGINF("TextSplit::k_to_words: sending out " << inputdata.size() <<
+		   " bytes " << inputdata << endl);
 
     // Overall data counter for slave restarts
     restartcount += inputdata.size();
@@ -271,7 +279,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
                                });
         if (it != spans.end()) {
             span = inputdata.substr(it->first, it->second-it->first);
-            LOGDEB1("KO: SPAN: [" << span << "] pos " << m_wordpos <<
+            LOGINF("KO: SPAN: [" << span << "] pos " << m_wordpos <<
                    " bytepos " << bytepos << "\n");
             if (!takeword(span, m_wordpos, abspos, abspos + span.size())) {
                 return false;
@@ -279,7 +287,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         }
 
         // Possibly emit a part of span word.
-        LOGDEB1("KO: WORD: [" << word << "] pos " << m_wordpos <<
+        LOGINF("KO: WORD: [" << word << "] pos " << m_wordpos <<
                 " bytepos " << bytepos << "\n");
         // Emit words only if not in onlyspans mode, and different
         // from span. Else, just increase the position
@@ -289,7 +297,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
                 return false;
             }
         } else {
-            LOGDEB1("KO: WORD: SKIP\n");
+            LOGINF("KO: WORD: SKIP\n");
         }
         m_wordpos++;
         bytepos += word.size();
