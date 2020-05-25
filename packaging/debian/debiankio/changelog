@@ -1,3 +1,10 @@
+recoll (1.27.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Korean: index the whole words along the split ones.
+  * Saved simple searches: also save/restore the active external indexes.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 25 May 2020 09:29:00 +0200
+
 kio-recoll (1.26.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fixes potential infinite loop in decompression. Other small bug fixes.
