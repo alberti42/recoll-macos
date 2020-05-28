@@ -4,9 +4,9 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-PPA_KEYID=D38B9201
+PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.27.0pre3
+RCLVERS=1.27.2
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=2
@@ -22,7 +22,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -45,17 +45,13 @@ check_recoll_orig()
 
 ####### QT
 debdir=debian
-# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-# No new releases for trusty either because of risk of kio compat (kio
-# wont build)
 # Active series:
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
-# 19.04    disco  2020-01
 # 19.10    eoan   2020-07
 # 20.04LTS focal  2025-04
-series="xenial bionic disco eoan focal"
-series=bionic
+series="xenial bionic eoan focal"
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -89,18 +85,13 @@ done
 
 
 
-### KIO. Does not build on trusty from recoll 1.23 because of the need
-### for c++11
-# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-# No new releases for trusty either because of risk of kio compat (kio
-# wont build)
+### KIO.
 # Active series:
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
-# 19.04    disco  2020-01
 # 19.10    eoan   2020-07
 # 20.04LTS focal  2025-04
-series="xenial bionic disco eoan focal"
+series="xenial bionic eoan focal"
 series=
 
 debdir=debiankio
@@ -140,16 +131,13 @@ for svers in $series ; do
 done
 
 ### GSSP
-# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-# No new releases for trusty either because of risk of kio compat (kio
-# wont build)
 # Active series:
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
-# 19.04    disco  2020-01
 # 19.10    eoan   2020-07
-series="xenial bionic disco eoan"
-series=
+# 20.04LTS focal  2025-04
+series="xenial bionic eoan focal"
+series=focal
 
 debdir=debiangssp
 if test ! -d ${debdir}/ ; then
