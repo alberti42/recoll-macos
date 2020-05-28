@@ -348,9 +348,8 @@ void UIPrefsDialog::accept()
     m_mainWindow->enableTrayIcon(prefs.showTrayIcon);
     prefs.closeToTray = closeToTrayCB->isChecked();
     prefs.trayMessages = trayMessagesCB->isChecked();
-
-    prefs.showTempFileWarning = showTempFileWarningCB->isChecked() ?
-        -1 : 1024;
+    // -1 is the qxtconf... predefined value to show the dialog
+    prefs.showTempFileWarning = showTempFileWarningCB->isChecked() ? -1 : 1;
     settings.setValue("anchorSpcHack", anchorTamilHackCB->isChecked());
     prefs.previewHtml = previewHtmlCB->isChecked();
     prefs.previewActiveLinks = previewActiveLinksCB->isChecked();

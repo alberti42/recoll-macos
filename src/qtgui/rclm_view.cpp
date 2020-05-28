@@ -363,17 +363,13 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 
     if (istempfile) {
         QxtConfirmationMessage confirm(
-            QMessageBox::Warning,
-            "Recoll",
+            QMessageBox::Warning, "Recoll",
             tr("Opening a temporary copy. Edits will be lost if you don't save"
                "<br/>them to a permanent location."),
             tr("Do not show this warning next time (use GUI preferences "
                "to restore)."));
-        confirm.setSettingsPath("Recoll/prefs");
-        confirm.setOverrideSettingsKey("showTempFileWarning");
+        confirm.setOverrideSettingsKey("Recoll/prefs/showTempFileWarning");
         confirm.exec();
-        // Pita: need to keep the prefs struct in sync, else the value
-        // will be clobbered on program exit.
         QSettings settings;
         prefs.showTempFileWarning =
             settings.value("Recoll/prefs/showTempFileWarning").toInt();
