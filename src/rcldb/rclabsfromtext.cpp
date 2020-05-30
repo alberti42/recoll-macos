@@ -432,7 +432,7 @@ int Query::Native::abstractFromText(
     LOGABS("abstractFromText: getterms: " << chron.millis() << "mS\n");
 
     TextSplitABS splitter(rawtext, matchTerms, hld, wordcoefs, ctxwords,
-                          TextSplit::TXTS_ONLYSPANS,
+                          TextSplit::TXTS_NONE,
                           m_q->m_snipMaxPosWalk);
     splitter.text_to_words(rawtext);
     LOGABS("abstractFromText: text_to_words: " << chron.millis() << "mS\n");
