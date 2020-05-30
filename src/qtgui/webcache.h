@@ -40,9 +40,9 @@ public:
     virtual int rowCount (const QModelIndex& = QModelIndex()) const;
     virtual int columnCount(const QModelIndex& = QModelIndex()) const;
     virtual QVariant headerData (int col, Qt::Orientation orientation, 
-				 int role = Qt::DisplayRole) const;
+                 int role = Qt::DisplayRole) const;
     virtual QVariant data(const QModelIndex& index, 
-			   int role = Qt::DisplayRole ) const;
+               int role = Qt::DisplayRole ) const;
     bool deleteIdx(unsigned int idx);
     std::string getURL(unsigned int idx);
 

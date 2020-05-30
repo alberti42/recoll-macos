@@ -47,7 +47,7 @@ using std::multimap;
 class RclMonEvent {
  public: 
     enum EvType {RCLEVT_NONE= 0, RCLEVT_MODIFY=1, RCLEVT_DELETE=2, 
-		 RCLEVT_DIRCREATE=3, RCLEVT_ISDIR=0x10};
+         RCLEVT_DIRCREATE=3, RCLEVT_ISDIR=0x10};
     string m_path;
     // Type and flags
     int  m_etyp;
@@ -61,13 +61,13 @@ class RclMonEvent {
     bool   m_needidx;
 
     RclMonEvent() : m_etyp(RCLEVT_NONE),
-		    m_itvsecs(0), m_minclock(0), m_needidx(false) {}
+            m_itvsecs(0), m_minclock(0), m_needidx(false) {}
     EvType evtype() {return EvType(m_etyp & 0xf);}
     int evflags() {return m_etyp & 0xf0;}
 };
 
 enum RclMonitorOption {RCLMON_NONE=0, RCLMON_NOFORK=1, RCLMON_NOX11=2,
-		       RCLMON_NOCONFCHECK=4};
+               RCLMON_NOCONFCHECK=4};
 
 /**
  * Monitoring event queue. This is the shared object between the main thread 

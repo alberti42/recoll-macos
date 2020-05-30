@@ -550,22 +550,22 @@ static void flushIdxReasons()
 
 static vector<string> argstovector(int argc, char **argv)
 {
-	vector<string> args;
-	for (int i = 0; i < argc; i++) {
-		args.push_back(argv[i]);
-	}
-	return args;
+    vector<string> args;
+    for (int i = 0; i < argc; i++) {
+        args.push_back(argv[i]);
+    }
+    return args;
 }
 static vector<string> fileToArgs(const string& fn)
 {
-	string reason, data;
-	if (!file_to_string(fn, data, &reason)) {
-		cerr << "Failed reading args file " << fn << " errno " << errno << "\n";
-		exit(1);
-	}
-	vector<string> args;
-	stringToStrings(data, args);
-	return args;
+    string reason, data;
+    if (!file_to_string(fn, data, &reason)) {
+        cerr << "Failed reading args file " << fn << " errno " << errno << "\n";
+        exit(1);
+    }
+    vector<string> args;
+    stringToStrings(data, args);
+    return args;
 }
 
 int main(int argc, char **argv)
@@ -585,23 +585,23 @@ int main(int argc, char **argv)
     thisprog = path_absolute(argv[0]);
     argc--; argv++;
 
-	vector<string> args = argstovector(argc, argv);
+    vector<string> args = argstovector(argc, argv);
 
-	// Passing args through a temp file: this is used on Windows to
-	// avoid issues with charsets in args (avoid using wmain)
-	if (args.size() == 1 && args[0][0] != '-') {
-		args = fileToArgs(args[0]);
-	}
+    // Passing args through a temp file: this is used on Windows to
+    // avoid issues with charsets in args (avoid using wmain)
+    if (args.size() == 1 && args[0][0] != '-') {
+        args = fileToArgs(args[0]);
+    }
 
-	unsigned int aremain = args.size();
-	unsigned int argidx = 0;
-	for (; argidx < args.size(); argidx++) {
-		const string& arg{args[argidx]};
-		aremain = args.size() - argidx;
-		if (arg[0] != '-') {
-			break;
-		}
-		for (unsigned int cidx = 1; cidx < arg.size(); cidx++) {
+    unsigned int aremain = args.size();
+    unsigned int argidx = 0;
+    for (; argidx < args.size(); argidx++) {
+        const string& arg{args[argidx]};
+        aremain = args.size() - argidx;
+        if (arg[0] != '-') {
+            break;
+        }
+        for (unsigned int cidx = 1; cidx < arg.size(); cidx++) {
             switch (arg[cidx]) {
             case 'b': op_flags |= OPT_b; break;
             case 'c':   op_flags |= OPT_c; if (aremain < 2)  Usage();
@@ -639,10 +639,10 @@ int main(int argc, char **argv)
             case 'z': op_flags |= OPT_z; break;
             default: Usage(); break;
             }
-		}
-	b1:
-		;
-	}
+        }
+    b1:
+        ;
+    }
     aremain = args.size() - argidx;
 
     if (op_flags & OPT_h)

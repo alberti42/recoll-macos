@@ -35,13 +35,13 @@ using std::string;
 void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
 {
     if (maxlen < HASHLEN) {
-	fprintf(stderr, "pathHash: internal error: requested len too small\n");
-	abort();
+    fprintf(stderr, "pathHash: internal error: requested len too small\n");
+    abort();
     }
 
     if (path.length() <= maxlen) {
-	phash = path;
-	return;
+    phash = path;
+    return;
     }
 
     // Compute the md5
@@ -49,7 +49,7 @@ void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
     MD5_CTX ctx;
     MD5Init(&ctx);
     MD5Update(&ctx, (const unsigned char *)(path.c_str()+maxlen-HASHLEN), 
-	      path.length() - (maxlen - HASHLEN));
+          path.length() - (maxlen - HASHLEN));
     MD5Final(chash, &ctx);
 
     // Encode it to ascii. This shouldn't be strictly necessary as
@@ -100,11 +100,11 @@ int main(int argc, char **argv)
     make_udi(path, ipath, udi);
     printf("udi [%s]\n", udi.c_str());
     path = "/some/much/too/looooooooooooooong/path/bla/bla/bla"
-	"/looooooooooooooong/path/bla/bla/bla/llllllllllllllllll"
-	"/looooooooooooooong/path/bla/bla/bla/llllllllllllllllll";
+    "/looooooooooooooong/path/bla/bla/bla/llllllllllllllllll"
+    "/looooooooooooooong/path/bla/bla/bla/llllllllllllllllll";
     ipath = "1:2:3:4:5:10"
-	"1:2:3:4:5:10"
-	"1:2:3:4:5:10";
+    "1:2:3:4:5:10"
+    "1:2:3:4:5:10";
     make_udi(path, ipath, udi);
     printf("udi [%s]\n", udi.c_str());
 }

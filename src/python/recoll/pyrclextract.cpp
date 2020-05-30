@@ -63,9 +63,9 @@ Extractor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     LOGDEB("Extractor_new\n" );
     rclx_ExtractorObject *self = 
-	(rclx_ExtractorObject *)type->tp_alloc(type, 0);
+    (rclx_ExtractorObject *)type->tp_alloc(type, 0);
     if (self == 0) 
-	return 0;
+    return 0;
     self->xtr = 0;
     self->docobject = 0;
     return (PyObject *)self;
@@ -79,19 +79,19 @@ Extractor_init(rclx_ExtractorObject *self, PyObject *args, PyObject *kwargs)
     PyObject *pdobj;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", (char**)kwlist, 
-				     recoll_DocType, &pdobj))
-	return -1;
+                     recoll_DocType, &pdobj))
+    return -1;
     recoll_DocObject *dobj = (recoll_DocObject *)pdobj;
     if (dobj->doc == 0) {
         PyErr_SetString(PyExc_AttributeError, "Null Doc ?");
-	return -1;
+    return -1;
     }
     self->docobject = dobj;
     Py_INCREF(dobj);
 
     self->rclconfig = dobj->rclconfig;
     self->xtr = new FileInterner(*dobj->doc, self->rclconfig.get(), 
-				 FileInterner::FIF_forPreview);
+                 FileInterner::FIF_forPreview);
     return 0;
 }
 
@@ -104,30 +104,30 @@ PyDoc_STRVAR(doc_Extractor_textextract,
 
 static PyObject *
 Extractor_textextract(rclx_ExtractorObject* self, PyObject *args, 
-		      PyObject *kwargs)
+              PyObject *kwargs)
 {
     LOGDEB("Extractor_textextract\n" );
     static const char* kwlist[] = {"ipath", NULL};
     char *sipath = 0;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es:Extractor_textextract",
-				     (char**)kwlist, 
-				     "utf-8", &sipath))
-	return 0;
+                     (char**)kwlist, 
+                     "utf-8", &sipath))
+    return 0;
 
     string ipath(sipath);
     PyMem_Free(sipath);
 
     if (self->xtr == 0) {
         PyErr_SetString(PyExc_AttributeError, "extract: null object");
-	return 0;
+    return 0;
     }
     /* Call the doc class object to create a new doc. */
     recoll_DocObject *result = 
        (recoll_DocObject *)PyObject_CallObject((PyObject *)recoll_DocType, 0);
     if (!result) {
         PyErr_SetString(PyExc_AttributeError, "extract: doc create failed");
-	return 0;
+    return 0;
     }
     FileInterner::Status status = self->xtr->internfile(*(result->doc), ipath);
     if (status != FileInterner::FIDone && status != FileInterner::FIAgain) {
@@ -137,14 +137,14 @@ Extractor_textextract(rclx_ExtractorObject* self, PyObject *args,
 
     string html = self->xtr->get_html();
     if (!html.empty()) {
-	result->doc->text = html;
-	result->doc->mimetype = "text/html";
+    result->doc->text = html;
+    result->doc->mimetype = "text/html";
     }
 
     // Is this actually needed ? Useful for url which is also formatted .
     Rcl::Doc *doc = result->doc;
     printableUrl(self->rclconfig->getDefCharset(), doc->url, 
-		 doc->meta[Rcl::Doc::keyurl]);
+         doc->meta[Rcl::Doc::keyurl]);
     doc->meta[Rcl::Doc::keytp] = doc->mimetype;
     doc->meta[Rcl::Doc::keyipt] = doc->ipath;
     doc->meta[Rcl::Doc::keyfs] = doc->fbytes;
@@ -158,7 +158,7 @@ PyDoc_STRVAR(doc_Extractor_idoctofile,
 );
 static PyObject *
 Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args, 
-		     PyObject *kwargs)
+             PyObject *kwargs)
 {
     LOGDEB("Extractor_idoctofile\n" );
     static const char* kwlist[] = {"ipath", "mimetype", "ofilename", NULL};
@@ -166,11 +166,11 @@ Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args,
     char *smt = 0;
     char *soutfile = 0; // no freeing
     if (!PyArg_ParseTupleAndKeywords(args,kwargs, "eses|s:Extractor_idoctofile",
-				     (char**)kwlist, 
-				     "utf-8", &sipath,
-				     "utf-8", &smt,
-				     &soutfile))
-	return 0;
+                     (char**)kwlist, 
+                     "utf-8", &sipath,
+                     "utf-8", &smt,
+                     &soutfile))
+    return 0;
 
     string ipath(sipath);
     PyMem_Free(sipath);
@@ -178,11 +178,11 @@ Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args,
     PyMem_Free(smt);
     string outfile;
     if (soutfile && *soutfile)
-	outfile.assign(soutfile); 
+    outfile.assign(soutfile); 
     
     if (self->xtr == 0) {
         PyErr_SetString(PyExc_AttributeError, "idoctofile: null object");
-	return 0;
+    return 0;
     }
 
     // If ipath is empty and we want the original mimetype, we can't
@@ -209,9 +209,9 @@ Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args,
         return 0;
     }
     if (outfile.empty())
-	temp.setnoremove(1);
+    temp.setnoremove(1);
     PyObject *result = outfile.empty() ? PyBytes_FromString(temp.filename()) :
-	PyBytes_FromString(outfile.c_str());
+    PyBytes_FromString(outfile.c_str());
     return (PyObject *)result;
 }
 
@@ -251,12 +251,12 @@ static PyTypeObject rclx_ExtractorType = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,  /*tp_flags*/
     doc_ExtractorObject,      /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                       /* tp_traverse */
+    0,                       /* tp_clear */
+    0,                       /* tp_richcompare */
+    0,                       /* tp_weaklistoffset */
+    0,                       /* tp_iter */
+    0,                       /* tp_iternext */
     Extractor_methods,        /* tp_methods */
     0,                         /* tp_members */
     0,                         /* tp_getset */
@@ -275,7 +275,7 @@ static PyMethodDef rclextract_methods[] = {
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 PyDoc_STRVAR(rclx_doc_string,
-	     "This is an interface to the Recoll text extraction features.");
+         "This is an interface to the Recoll text extraction features.");
 
 struct module_state {
     PyObject *error;
@@ -332,8 +332,8 @@ initrclextract(void)
     string reason;
     RclConfig *rclconfig = recollinit(RCLINIT_PYTHON, 0, 0, reason, 0);
     if (rclconfig == 0) {
-	PyErr_SetString(PyExc_EnvironmentError, reason.c_str());
-	INITERROR;
+    PyErr_SetString(PyExc_EnvironmentError, reason.c_str());
+    INITERROR;
     } else {
         delete rclconfig;
     }

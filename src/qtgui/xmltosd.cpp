@@ -35,19 +35,19 @@ public:
     SDHXMLHandler()
         : isvalid(false)
     {
-	resetTemps();
+    resetTemps();
     }
     bool startElement(const QString & /* namespaceURI */,
-		      const QString & /* localName */,
-		      const QString &qName,
-		      const QXmlAttributes &attributes);
+              const QString & /* localName */,
+              const QString &qName,
+              const QXmlAttributes &attributes);
     bool endElement(const QString & /* namespaceURI */,
-		    const QString & /* localName */,
-		    const QString &qName);
+            const QString & /* localName */,
+            const QString &qName);
     bool characters(const QString &str)
     {
-	currentText += str;
-	return true;
+    currentText += str;
+    return true;
     }
 
     // The object we set up
@@ -57,14 +57,14 @@ public:
 private:
     void resetTemps() 
     {
-	currentText = whatclause = "";
-	text.clear();
+    currentText = whatclause = "";
+    text.clear();
         text2.clear();
-	field.clear();
-	slack = 0;
-	d = m = y = di.d1 = di.m1 = di.y1 = di.d2 = di.m2 = di.y2 = 0;
-	hasdates = false;
-	exclude = false;
+    field.clear();
+    slack = 0;
+    d = m = y = di.d1 = di.m1 = di.y1 = di.d2 = di.m2 = di.y2 = 0;
+    hasdates = false;
+    exclude = false;
     }
 
     // Temporary data while parsing.
@@ -79,9 +79,9 @@ private:
 };
 
 bool SDHXMLHandler::startElement(const QString & /* namespaceURI */,
-				const QString & /* localName */,
-				const QString &qName,
-				const QXmlAttributes &attrs)
+                const QString & /* localName */,
+                const QString &qName,
+                const QXmlAttributes &attrs)
 {
     LOGDEB2("SDHXMLHandler::startElement: name ["  << qs2utf8s(qName) << "]\n");
     if (qName == "SD") {
@@ -90,16 +90,16 @@ bool SDHXMLHandler::startElement(const QString & /* namespaceURI */,
         int idx = attrs.index("type");
         if (idx >= 0 && attrs.value(idx).compare("searchdata")) {
             LOGDEB("XMLTOSD: bad type: " << qs2utf8s(attrs.value(idx)) << endl);
-	    return false;
-	}
-	resetTemps();
-	// A new search descriptor. Allocate data structure
+        return false;
+    }
+    resetTemps();
+    // A new search descriptor. Allocate data structure
         sd = std::shared_ptr<SearchData>(new SearchData);
-	if (!sd) {
-	    LOGERR("SDHXMLHandler::startElement: out of memory\n");
-	    return false;
-	}
-    }	
+    if (!sd) {
+        LOGERR("SDHXMLHandler::startElement: out of memory\n");
+        return false;
+    }
+    }    
     return true;
 }
 
@@ -110,101 +110,101 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
     LOGDEB2("SDHXMLHandler::endElement: name ["  << qs2utf8s(qName) << "]\n");
 
     if (qName == "CLT") {
-	if (currentText == "OR") {
-	    sd->setTp(SCLT_OR);
-	}
+    if (currentText == "OR") {
+        sd->setTp(SCLT_OR);
+    }
     } else if (qName == "CT") {
-	whatclause = currentText.trimmed();
+    whatclause = currentText.trimmed();
     } else if (qName == "NEG") {
-	exclude = true;
+    exclude = true;
     } else if (qName == "F") {
-	field = base64_decode(qs2utf8s(currentText.trimmed()));
+    field = base64_decode(qs2utf8s(currentText.trimmed()));
     } else if (qName == "T") {
-	text = base64_decode(qs2utf8s(currentText.trimmed()));
+    text = base64_decode(qs2utf8s(currentText.trimmed()));
     } else if (qName == "T2") {
-	text2 = base64_decode(qs2utf8s(currentText.trimmed()));
+    text2 = base64_decode(qs2utf8s(currentText.trimmed()));
     } else if (qName == "S") {
-	slack = atoi((const char *)currentText.toUtf8());
+    slack = atoi((const char *)currentText.toUtf8());
     } else if (qName == "C") {
-	SearchDataClause *c;
-	if (whatclause == "AND" || whatclause.isEmpty()) {
-	    c = new SearchDataClauseSimple(SCLT_AND, text, field);
-	    c->setexclude(exclude);
-	} else if (whatclause == "OR") {
-	    c = new SearchDataClauseSimple(SCLT_OR, text, field);
-	    c->setexclude(exclude);
-	} else if (whatclause == "RG") {
-	    c = new SearchDataClauseRange(text, text2, field);
-	    c->setexclude(exclude);
-	} else if (whatclause == "EX") {
-	    // Compat with old hist. We don't generete EX (SCLT_EXCL) anymore
-	    // it's replaced with OR + exclude flag
-	    c = new SearchDataClauseSimple(SCLT_OR, text, field);
-	    c->setexclude(true);
-	} else if (whatclause == "FN") {
-	    c = new SearchDataClauseFilename(text);
-	    c->setexclude(exclude);
-	} else if (whatclause == "PH") {
-	    c = new SearchDataClauseDist(SCLT_PHRASE, text, slack, field);
-	    c->setexclude(exclude);
-	} else if (whatclause == "NE") {
-	    c = new SearchDataClauseDist(SCLT_NEAR, text, slack, field);
-	    c->setexclude(exclude);
-	} else {
-	    LOGERR("Bad clause type ["  << qs2utf8s(whatclause) << "]\n");
-	    return false;
-	}
-	sd->addClause(c);
-	whatclause = "";
-	text.clear();
-	field.clear();
-	slack = 0;
-	exclude = false;
+    SearchDataClause *c;
+    if (whatclause == "AND" || whatclause.isEmpty()) {
+        c = new SearchDataClauseSimple(SCLT_AND, text, field);
+        c->setexclude(exclude);
+    } else if (whatclause == "OR") {
+        c = new SearchDataClauseSimple(SCLT_OR, text, field);
+        c->setexclude(exclude);
+    } else if (whatclause == "RG") {
+        c = new SearchDataClauseRange(text, text2, field);
+        c->setexclude(exclude);
+    } else if (whatclause == "EX") {
+        // Compat with old hist. We don't generete EX (SCLT_EXCL) anymore
+        // it's replaced with OR + exclude flag
+        c = new SearchDataClauseSimple(SCLT_OR, text, field);
+        c->setexclude(true);
+    } else if (whatclause == "FN") {
+        c = new SearchDataClauseFilename(text);
+        c->setexclude(exclude);
+    } else if (whatclause == "PH") {
+        c = new SearchDataClauseDist(SCLT_PHRASE, text, slack, field);
+        c->setexclude(exclude);
+    } else if (whatclause == "NE") {
+        c = new SearchDataClauseDist(SCLT_NEAR, text, slack, field);
+        c->setexclude(exclude);
+    } else {
+        LOGERR("Bad clause type ["  << qs2utf8s(whatclause) << "]\n");
+        return false;
+    }
+    sd->addClause(c);
+    whatclause = "";
+    text.clear();
+    field.clear();
+    slack = 0;
+    exclude = false;
     } else if (qName == "D") {
-	d = atoi((const char *)currentText.toUtf8());
+    d = atoi((const char *)currentText.toUtf8());
     } else if (qName == "M") {
-	m = atoi((const char *)currentText.toUtf8());
+    m = atoi((const char *)currentText.toUtf8());
     } else if (qName == "Y") {
-	y = atoi((const char *)currentText.toUtf8());
+    y = atoi((const char *)currentText.toUtf8());
     } else if (qName == "DMI") {
-	di.d1 = d;
-	di.m1 = m;
-	di.y1 = y;
-	hasdates = true;
+    di.d1 = d;
+    di.m1 = m;
+    di.y1 = y;
+    hasdates = true;
     } else if (qName == "DMA") {
-	di.d2 = d;
-	di.m2 = m;
-	di.y2 = y;
-	hasdates = true;
+    di.d2 = d;
+    di.m2 = m;
+    di.y2 = y;
+    hasdates = true;
     } else if (qName == "MIS") {
-	sd->setMinSize(atoll((const char *)currentText.toUtf8()));
+    sd->setMinSize(atoll((const char *)currentText.toUtf8()));
     } else if (qName == "MAS") {
-	sd->setMaxSize(atoll((const char *)currentText.toUtf8()));
+    sd->setMaxSize(atoll((const char *)currentText.toUtf8()));
     } else if (qName == "ST") {
-	string types = (const char *)currentText.toUtf8();
-	vector<string> vt;
-	stringToTokens(types, vt);
-	for (unsigned int i = 0; i < vt.size(); i++) 
-	    sd->addFiletype(vt[i]);
+    string types = (const char *)currentText.toUtf8();
+    vector<string> vt;
+    stringToTokens(types, vt);
+    for (unsigned int i = 0; i < vt.size(); i++) 
+        sd->addFiletype(vt[i]);
     } else if (qName == "IT") {
-	string types(qs2utf8s(currentText));
-	vector<string> vt;
-	stringToTokens(types, vt);
-	for (unsigned int i = 0; i < vt.size(); i++) 
-	    sd->remFiletype(vt[i]);
+    string types(qs2utf8s(currentText));
+    vector<string> vt;
+    stringToTokens(types, vt);
+    for (unsigned int i = 0; i < vt.size(); i++) 
+        sd->remFiletype(vt[i]);
     } else if (qName == "YD") {
-	string d;
-	base64_decode(qs2utf8s(currentText.trimmed()), d);
-	sd->addClause(new SearchDataClausePath(d));
+    string d;
+    base64_decode(qs2utf8s(currentText.trimmed()), d);
+    sd->addClause(new SearchDataClausePath(d));
     } else if (qName == "ND") {
-	string d;
-	base64_decode(qs2utf8s(currentText.trimmed()), d);
-	sd->addClause(new SearchDataClausePath(d, true));
+    string d;
+    base64_decode(qs2utf8s(currentText.trimmed()), d);
+    sd->addClause(new SearchDataClausePath(d, true));
     } else if (qName == "SD") {
-	// Closing current search descriptor. Finishing touches...
-	if (hasdates)
-	    sd->setDateSpan(&di);
-	resetTemps();
+    // Closing current search descriptor. Finishing touches...
+    if (hasdates)
+        sd->setDateSpan(&di);
+    resetTemps();
         isvalid = true;
     } 
     currentText.clear();
@@ -242,12 +242,12 @@ public:
             resetTemps();
         }
     bool startElement(const QString & /* namespaceURI */,
-		      const QString & /* localName */,
-		      const QString &qName,
-		      const QXmlAttributes &attributes);
+              const QString & /* localName */,
+              const QString &qName,
+              const QXmlAttributes &attributes);
     bool endElement(const QString & /* namespaceURI */,
-		    const QString & /* localName */,
-		    const QString &qName);
+            const QString & /* localName */,
+            const QString &qName);
     bool characters(const QString &str)
         {
             currentText += str;
@@ -289,8 +289,8 @@ bool SSHXMLHandler::startElement(const QString & /* namespaceURI */,
             }
             return false;
         }
-	resetTemps();
-    }	
+    resetTemps();
+    }    
     return true;
 }
 
@@ -326,8 +326,8 @@ bool SSHXMLHandler::endElement(const QString & /* namespaceURI */,
     } else if (qName == "AP") {
         data.autophrase = true;
     } else if (qName == "SD") {
-	// Closing current search descriptor. Finishing touches...
-	resetTemps();
+    // Closing current search descriptor. Finishing touches...
+    resetTemps();
         isvalid = true;
     } 
     currentText.clear();

@@ -62,8 +62,8 @@ class MyHtmlParser : public HtmlParser {
     void reset_charsets() {fromcharset = tocharset = "";}
     void set_charsets(const string& f, const string& t) 
     {
-	fromcharset = f;
-	tocharset = t;
+    fromcharset = f;
+    tocharset = t;
     }
     // Return charset as determined from html
     const string& get_charset() {return charset;}

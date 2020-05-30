@@ -72,7 +72,7 @@ class PrefsPack {
     int toolArea; // Area for "tools" toolbar
     int resArea; // Area for "results" toolbar
     bool ssearchTypSav; // Remember last search mode (else always
-			// start with same)
+            // start with same)
     int ssearchTyp{0};
     // Use single app (default: xdg-open), instead of per-mime settings
     bool useDesktopOpen; 
@@ -109,9 +109,9 @@ class PrefsPack {
     // Extra query indexes. This are stored in the history file, not qt prefs
     vector<string> allExtraDbs;
     vector<string> activeExtraDbs;
-	// Temporary value while we run a saved query. Erased right after use.
+    // Temporary value while we run a saved query. Erased right after use.
     bool useTmpActiveExtraDbs{false};
-	vector<string> tmpActiveExtraDbs;
+    vector<string> tmpActiveExtraDbs;
     // Advanced search subdir restriction: we don't activate the last value
     // but just remember previously entered values
     QStringList asearchSubdirHist;

@@ -21,30 +21,30 @@
 // Generic Xapian exception catching code. We do this quite often,
 // and I have no idea how to do this except for a macro
 #define XCATCHERROR(MSG) \
- catch (const Xapian::Error &e) {		   \
-    MSG = e.get_msg();				   \
+ catch (const Xapian::Error &e) {           \
+    MSG = e.get_msg();                   \
     if (MSG.empty()) MSG = "Empty error message";  \
- } catch (const std::string &s) {		   \
-    MSG = s;					   \
+ } catch (const std::string &s) {           \
+    MSG = s;                       \
     if (MSG.empty()) MSG = "Empty error message";  \
- } catch (const char *s) {			   \
-    MSG = s;					   \
+ } catch (const char *s) {               \
+    MSG = s;                       \
     if (MSG.empty()) MSG = "Empty error message";  \
- } catch (...) {				   \
-    MSG = "Caught unknown xapian exception";	   \
+ } catch (...) {                   \
+    MSG = "Caught unknown xapian exception";       \
  } 
 
 #define XAPTRY(STMTTOTRY, XAPDB, ERSTR)       \
     for (int tries = 0; tries < 2; tries++) { \
-	try {                                 \
+    try {                                 \
             STMTTOTRY;                        \
             ERSTR.erase();                    \
             break;                            \
-	} catch (const Xapian::DatabaseModifiedError &e) { \
+    } catch (const Xapian::DatabaseModifiedError &e) { \
             ERSTR = e.get_msg();                           \
-	    XAPDB.reopen();                                \
+        XAPDB.reopen();                                \
             continue;                                      \
-	} XCATCHERROR(ERSTR);                              \
+    } XCATCHERROR(ERSTR);                              \
         break;                                             \
     }
 

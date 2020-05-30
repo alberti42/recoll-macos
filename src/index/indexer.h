@@ -45,7 +45,7 @@ class DbIxStatusUpdater {
     virtual bool update(DbIxStatus::Phase phase, const string& fn)
     {
 #ifdef IDX_THREADS
-	std::unique_lock<std::mutex>  lock(m_mutex);
+    std::unique_lock<std::mutex>  lock(m_mutex);
 #endif
         status.phase = phase;
         status.fn = fn;

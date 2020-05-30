@@ -79,7 +79,7 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
             for (unsigned int i = 0; i < langs.size(); i++) {
                 unacstemdbs.push_back(
                     XapWritableComputableSynFamMember(
-						wdb, synFamStemUnac, langs[i], stemmers.back().get()));
+                        wdb, synFamStemUnac, langs[i], stemmers.back().get()));
                 unacstemdbs.back().recreate();
             }
         }

@@ -41,32 +41,32 @@ bool HelpClient::eventFilter(QObject *obj, QEvent *event)
 {
     static time_t last_start;
     if (event->type() == QEvent::KeyPress || 
-	event->type() == QEvent::ShortcutOverride) {
-	//	LOGDEB("HelpClient::eventFilter: "  << ((int)event->type()) << "\n" );
-	QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-	if (ke->key() == Qt::Key_F1 || ke->key() == Qt::Key_Help) {
-	    if (obj->isWidgetType()) {
-		QWidget *widget = static_cast<QWidget *>(obj)->focusWidget();
-		map<string, string>::iterator it = helpmap.end();
-		while (widget) {
-		    it = helpmap.find((const char *)widget->objectName().toUtf8());
-		    if (it != helpmap.end())
-			break;
-		    widget = widget->parentWidget();
-		}
-		if (time(0) - last_start > 5) {
-		    last_start = time(0);
-		    if (it != helpmap.end()) {
-			LOGDEB("HelpClient::eventFilter: "  << (it->first) << "->"  << (it->second) << "\n" );
-			startManual(it->second);
-		    } else {
-			LOGDEB("HelpClient::eventFilter: no help section\n" );
-			startManual("");
-		    }
-		}
-	    }
-	    return true;
-	}
+    event->type() == QEvent::ShortcutOverride) {
+    //    LOGDEB("HelpClient::eventFilter: "  << ((int)event->type()) << "\n" );
+    QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+    if (ke->key() == Qt::Key_F1 || ke->key() == Qt::Key_Help) {
+        if (obj->isWidgetType()) {
+        QWidget *widget = static_cast<QWidget *>(obj)->focusWidget();
+        map<string, string>::iterator it = helpmap.end();
+        while (widget) {
+            it = helpmap.find((const char *)widget->objectName().toUtf8());
+            if (it != helpmap.end())
+            break;
+            widget = widget->parentWidget();
+        }
+        if (time(0) - last_start > 5) {
+            last_start = time(0);
+            if (it != helpmap.end()) {
+            LOGDEB("HelpClient::eventFilter: "  << (it->first) << "->"  << (it->second) << "\n" );
+            startManual(it->second);
+            } else {
+            LOGDEB("HelpClient::eventFilter: no help section\n" );
+            startManual("");
+            }
+        }
+        }
+        return true;
+    }
     }
     return false;
 }

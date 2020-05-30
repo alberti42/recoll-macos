@@ -537,12 +537,12 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
 
 bool SSearch::checkExtIndexes(const std::vector<std::string>& dbs)
 {
-	std::string reason;
-	if (!maybeOpenDb(reason, false)) {
+    std::string reason;
+    if (!maybeOpenDb(reason, false)) {
         QMessageBox::critical(0, "Recoll", tr("Can't open index") +
                               u8s2qs(reason));
         return false;
-	}
+    }
     if (!rcldb->setExtraQueryDbs(dbs)) {
         return false;
     }

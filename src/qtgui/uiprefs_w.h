@@ -31,12 +31,12 @@ class UIPrefsDialog : public QDialog, public Ui::uiPrefsDialogBase
 
 public:
     UIPrefsDialog(RclMain* parent)
-	: QDialog((QWidget*)parent), m_mainWindow(parent)
-	{
-	    setupUi(this);
-	    init();
-	}
-	~UIPrefsDialog(){};
+    : QDialog((QWidget*)parent), m_mainWindow(parent)
+    {
+        setupUi(this);
+        init();
+    }
+    ~UIPrefsDialog(){};
 
     QString reslistFontFamily;
     int reslistFontSize;

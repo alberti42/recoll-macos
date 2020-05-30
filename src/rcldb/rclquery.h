@@ -40,7 +40,7 @@ enum abstract_result {
 class Snippet {
 public:
     Snippet(int page, const std::string& snip) 
-	: page(page), snippet(snip)
+    : page(page), snippet(snip)
     {
     }
     Snippet& setTerm(const std::string& trm)

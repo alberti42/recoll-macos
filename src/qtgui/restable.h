@@ -45,9 +45,9 @@ public:
     virtual int rowCount (const QModelIndex& = QModelIndex()) const;
     virtual int columnCount(const QModelIndex& = QModelIndex()) const;
     virtual QVariant headerData (int col, Qt::Orientation orientation, 
-				 int role = Qt::DisplayRole ) const;
+                 int role = Qt::DisplayRole ) const;
     virtual QVariant data(const QModelIndex& index, 
-			   int role = Qt::DisplayRole ) const;
+               int role = Qt::DisplayRole ) const;
     virtual void saveAsCSV(std::fstream& fp);
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
     // Specific methods
@@ -58,7 +58,7 @@ public:
     virtual const std::vector<std::string>& getFields() {return m_fields;}
     virtual const std::map<std::string, QString>& getAllFields() 
     { 
-	return o_displayableFields;
+    return o_displayableFields;
     }
     virtual void addColumn(int, const std::string&);
     // Some column name are aliases/translator for base document field 
@@ -112,14 +112,14 @@ class ResTable : public QWidget, public Ui::ResTable
 
 public:
     ResTable(QWidget* parent = 0) 
-	: QWidget(parent),
-	  m_model(0), m_pager(0), m_detail(0), m_detaildocnum(-1),
-	  m_rclmain(0), m_ismainres(true)
+    : QWidget(parent),
+      m_model(0), m_pager(0), m_detail(0), m_detaildocnum(-1),
+      m_rclmain(0), m_ismainres(true)
     {
-	setupUi(this);
-	init();
+    setupUi(this);
+    init();
     }
-	
+    
     virtual ~ResTable() {}
     virtual RecollModel *getModel() {return m_model;}
     virtual ResTableDetailArea* getDetailArea() {return m_detail;}

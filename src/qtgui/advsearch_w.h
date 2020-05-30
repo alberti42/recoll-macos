@@ -39,10 +39,10 @@ class AdvSearch : public QDialog, public Ui::AdvSearchBase
 
 public:
     AdvSearch(QDialog* parent = 0) 
-	: QDialog(parent)
+    : QDialog(parent)
     {
-	setupUi(this);
-	init();
+    setupUi(this);
+    init();
     }
 
 public slots:

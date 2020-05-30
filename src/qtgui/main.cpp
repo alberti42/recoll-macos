@@ -104,14 +104,14 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
         rcldb = std::shared_ptr<Rcl::Db>(new Rcl::Db(theconfig));
     }
     rcldb->rmQueryDb("");
-	auto edbs = &prefs.activeExtraDbs;
-	if (prefs.useTmpActiveExtraDbs) {
-		edbs = &prefs.tmpActiveExtraDbs;
-	}
+    auto edbs = &prefs.activeExtraDbs;
+    if (prefs.useTmpActiveExtraDbs) {
+        edbs = &prefs.tmpActiveExtraDbs;
+    }
     if (!edbs->empty()) {
         rcldb->setExtraQueryDbs(*edbs);
     }
-	
+    
     Rcl::Db::OpenError error;
     if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO, &error)) {
         reason = "Could not open database";
@@ -163,7 +163,7 @@ static void recollCleanup()
 
 void applyStyleSheet(const QString& ssfname)
 {
-	const std::string cfname = qs2path(ssfname);
+    const std::string cfname = qs2path(ssfname);
     LOGDEB0("Applying style sheet: [" << cfname << "]\n");
     if (!cfname.empty()) {
         string stylesheet;

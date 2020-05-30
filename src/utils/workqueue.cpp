@@ -39,13 +39,13 @@ Usage(void)
 
 static int     op_flags;
 #define OPT_MOINS 0x1
-#define OPT_s	  0x2 
-#define OPT_b	  0x4 
+#define OPT_s      0x2 
+#define OPT_b      0x4 
 
 class Task {
 public:
     Task()
-	: m_id(o_id++)
+    : m_id(o_id++)
     {}
     int m_id;
     static int o_id;
@@ -58,15 +58,15 @@ void *worker(void *vtp)
     WorkQueue<Task> *tqp = (WorkQueue<Task> *)vtp;
     Task tsk;
     for (;;) {
-	if (!tqp->take(&tsk)) {
-	    fprintf(stderr, "Worker: take failed\n");
-	    return (void*)0;
-	}
-	fprintf(stderr, "WORKER: got task %d\n", tsk.m_id);
-	if (tsk.m_id > 20) {
-	    tqp->workerExit();
-	    break;
-	}
+    if (!tqp->take(&tsk)) {
+        fprintf(stderr, "Worker: take failed\n");
+        return (void*)0;
+    }
+    fprintf(stderr, "WORKER: got task %d\n", tsk.m_id);
+    if (tsk.m_id > 20) {
+        tqp->workerExit();
+        break;
+    }
     }
     return (void*)1;
 }
@@ -85,13 +85,13 @@ int main(int argc, char **argv)
       Usage();
     while (**argv)
       switch (*(*argv)++) {
-      case 's':	op_flags |= OPT_s; break;
-      case 'b':	op_flags |= OPT_b; if (argc < 2)  Usage();
-	if ((sscanf(*(++argv), "%d", &count)) != 1) 
-	  Usage(); 
-	argc--; 
-	goto b1;
-      default: Usage();	break;
+      case 's':    op_flags |= OPT_s; break;
+      case 'b':    op_flags |= OPT_b; if (argc < 2)  Usage();
+    if ((sscanf(*(++argv), "%d", &count)) != 1) 
+      Usage(); 
+    argc--; 
+    goto b1;
+      default: Usage();    break;
       }
   b1: argc--; argv++;
   }
@@ -110,11 +110,11 @@ int main(int argc, char **argv)
       Task tsk;
       fprintf(stderr, "BOSS: put task %d\n", tsk.m_id);
       if (!wq.put(tsk)) {
-	  fprintf(stderr, "Boss: put failed\n");
-	  exit(1);
+      fprintf(stderr, "Boss: put failed\n");
+      exit(1);
       }
       if ((tsk.m_id % 10) == 0)
-	  sleep(1);
+      sleep(1);
   }
   exit(0);
 }

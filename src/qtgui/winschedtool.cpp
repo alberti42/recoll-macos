@@ -36,9 +36,9 @@ using namespace std;
 void WinSchedToolW::init()
 {
     if (!theconfig) {
-	QMessageBox::warning(0, tr("Error"), 
-			     tr("Configuration not initialized"));
-	return;
+    QMessageBox::warning(0, tr("Error"), 
+                 tr("Configuration not initialized"));
+    return;
     }
 
     connect(startPB, SIGNAL(clicked()), this, SLOT(startWinScheduler()));

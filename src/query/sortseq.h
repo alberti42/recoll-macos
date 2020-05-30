@@ -31,9 +31,9 @@
 class DocSeqSorted : public DocSeqModifier {
  public:
     DocSeqSorted(std::shared_ptr<DocSequence> iseq, DocSeqSortSpec &sortspec)
-	:  DocSeqModifier(iseq)
+    :  DocSeqModifier(iseq)
     {
-	setSortSpec(sortspec);
+    setSortSpec(sortspec);
     }
     virtual ~DocSeqSorted() {}
     virtual bool canSort() {return true;}

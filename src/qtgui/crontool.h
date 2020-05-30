@@ -25,12 +25,12 @@ class CronToolW : public QDialog, public Ui::CronToolW {
     Q_OBJECT
     public:
     CronToolW(QWidget * parent = 0) 
-	: QDialog(parent),
-	  enableButton(0),
-	  disableButton(0)
+    : QDialog(parent),
+      enableButton(0),
+      disableButton(0)
     {
-	setupUi(this);
-	init();
+    setupUi(this);
+    init();
     }
     QPushButton *enableButton;
     QPushButton *disableButton;

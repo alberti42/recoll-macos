@@ -28,7 +28,7 @@ class DocSequenceDb : public DocSequence {
  public:
     DocSequenceDb(std::shared_ptr<Rcl::Db> db,
                   std::shared_ptr<Rcl::Query> q, const std::string &t, 
-		  std::shared_ptr<Rcl::SearchData> sdata);
+          std::shared_ptr<Rcl::SearchData> sdata);
     virtual ~DocSequenceDb() {}
     virtual bool getDoc(int num, Rcl::Doc &doc, std::string * = 0) override;
     virtual int getResCnt() override;
@@ -55,7 +55,7 @@ class DocSequenceDb : public DocSequence {
     }
 
     virtual bool snippetsCapable() override {
-	return true;
+    return true;
     }
     virtual std::string title() override;
 

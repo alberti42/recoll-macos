@@ -23,9 +23,9 @@ class FirstIdxDialog : public QDialog, public Ui::FirstIdxDialog {
     Q_OBJECT
     public:
     FirstIdxDialog(QWidget * parent = 0) 
-	: QDialog(parent)
+    : QDialog(parent)
     {
-	setupUi(this);
+    setupUi(this);
     }
 };
 

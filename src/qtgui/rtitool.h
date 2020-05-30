@@ -25,10 +25,10 @@ class RTIToolW : public QDialog, public Ui::RTIToolW {
     Q_OBJECT
     public:
     RTIToolW(QWidget * parent = 0) 
-	: QDialog(parent)
+    : QDialog(parent)
     {
-	setupUi(this);
-	init();
+    setupUi(this);
+    init();
     }
 public slots:
 #ifdef _WIN32

@@ -31,8 +31,8 @@
  *     errors like unknown charset names
  */
 extern bool transcode(const std::string &in, std::string &out, 
-		      const std::string &icode,
-		      const std::string &ocode, 
-		      int *ecnt = 0);
+              const std::string &icode,
+              const std::string &ocode, 
+              int *ecnt = 0);
 
 #endif /* _TRANSCODE_H_INCLUDED_ */

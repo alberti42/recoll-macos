@@ -32,16 +32,16 @@ bool StopList::setFile(const string &filename)
     m_stops.clear();
     string stoptext, reason;
     if (!file_to_string(filename, stoptext, &reason)) {
-	LOGDEB0("StopList::StopList: file_to_string("  << (filename) << ") failed: "  << (reason) << "\n" );
-	return false;
+    LOGDEB0("StopList::StopList: file_to_string("  << (filename) << ") failed: "  << (reason) << "\n" );
+    return false;
     }
     set<string> stops;
     stringToStrings(stoptext, stops);
     for (set<string>::iterator it = stops.begin(); 
-	 it != stops.end(); it++) {
-	string dterm;
-	unacmaybefold(*it, dterm, "UTF-8", UNACOP_UNACFOLD);
-	m_stops.insert(dterm);
+     it != stops.end(); it++) {
+    string dterm;
+    unacmaybefold(*it, dterm, "UTF-8", UNACOP_UNACFOLD);
+    m_stops.insert(dterm);
     }
 
     return true;
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
   for (int i = 0; i < tstsz; i++) {
       const string &tst = tstwords[i];
       cout << "[" << tst << "] " << 
-	  (sl.isStop(tst) ? "in stop list" : "not in stop list") << endl;
+      (sl.isStop(tst) ? "in stop list" : "not in stop list") << endl;
   }
   exit(0);
 }

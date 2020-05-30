@@ -30,9 +30,9 @@ class SpecIdxW : public QDialog, public Ui::SpecIdxW {
 public:
 
     SpecIdxW(QWidget * parent = 0) 
-	: QDialog(parent)
+    : QDialog(parent)
     {
-	setupUi(this);
+    setupUi(this);
         selPatsLE->setEnabled(false);
         connect(browsePB, SIGNAL(clicked()), this, SLOT(onBrowsePB_clicked()));
         connect(targLE, SIGNAL(textChanged(const QString&)), 

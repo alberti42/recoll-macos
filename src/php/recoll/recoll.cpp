@@ -100,22 +100,22 @@ PHP_METHOD(Query, query)
     long ctxwords;
 
     if (zend_parse_parameters(3 TSRMLS_CC, "sll", &qs_c, &qs_len, &maxchars, &ctxwords) == FAILURE) {
-	printf("failed to get parameters\n");
-	RETURN_BOOL(false);
+    printf("failed to get parameters\n");
+    RETURN_BOOL(false);
     }
     string qs = qs_c;
 
     RclConfig *rclconfig = recollinit(0, 0, 0, reason, &a_config);
     if (!rclconfig || !rclconfig->ok()) {
-	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
-	RETURN_BOOL(false);
+    fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
+    RETURN_BOOL(false);
     }
 
     Rcl::Db *pRclDb = new Rcl::Db(rclconfig);
     if (!pRclDb->open(Rcl::Db::DbRO)) {
-	cerr << "Cant open database in " << rclconfig->getDbDir() << 
-	    " reason: " << pRclDb->getReason() << endl;
-	RETURN_BOOL(false);
+    cerr << "Cant open database in " << rclconfig->getDbDir() << 
+        " reason: " << pRclDb->getReason() << endl;
+    RETURN_BOOL(false);
     }
 
     pRclDb->setAbstractParams(-1, maxchars, ctxwords);
@@ -127,8 +127,8 @@ PHP_METHOD(Query, query)
     sd = wasaStringToRcl(rclconfig, "english", qs, reason);
 
     if (!sd) {
-	cerr << "Query string interpretation failed: " << reason << endl;
-	RETURN_BOOL(false);
+    cerr << "Query string interpretation failed: " << reason << endl;
+    RETURN_BOOL(false);
     }
 
     std::shared_ptr<Rcl::SearchData> rq(sd);
@@ -151,19 +151,19 @@ PHP_METHOD(Query, get_doc)
     pRclQuery = obj->pRclQuery;
     if(NULL == pRclQuery)
     {
-	printf("error, NULL pointer pRclQuery\n");
-	RETURN_BOOL(false);
+    printf("error, NULL pointer pRclQuery\n");
+    RETURN_BOOL(false);
     }
 
     long index;
     if (zend_parse_parameters(1 TSRMLS_CC, "l", &index) == FAILURE) {
-	    RETURN_BOOL(false);
+        RETURN_BOOL(false);
     }
 
     Rcl::Doc doc;
     if (!pRclQuery->getDoc(index, doc))
     {
-	RETURN_BOOL(false);
+    RETURN_BOOL(false);
     }
 
     string abs;
@@ -172,10 +172,10 @@ PHP_METHOD(Query, get_doc)
     char splitter[] = {7,8,1,2,0};
     char ret_string[1000];
     snprintf(ret_string, 1000, "mime:%s%surl:%s%stitle:%s%sabs:%s",
-	    doc.mimetype.c_str(),splitter,
-	    doc.url.c_str(),splitter,
-	    doc.meta[Rcl::Doc::keytt].c_str(), splitter,
-	    abs.c_str());
+        doc.mimetype.c_str(),splitter,
+        doc.url.c_str(),splitter,
+        doc.meta[Rcl::Doc::keytt].c_str(), splitter,
+        abs.c_str());
     RETURN_STRING(ret_string, 1);
 }
 
@@ -200,8 +200,8 @@ PHP_FUNCTION(recoll_connect)
 }
 
 function_entry recoll_functions[] = {
-	PHP_FE(recoll_connect,		NULL)
-	{NULL, NULL, NULL}
+    PHP_FE(recoll_connect,        NULL)
+    {NULL, NULL, NULL}
 };
 
 PHP_MINIT_FUNCTION(recoll)

@@ -85,14 +85,14 @@ void SearchClauseW::languageChange()
 
     fldCMB->addItem(tr("No field"));
     if (theconfig) {
-	set<string> fields = theconfig->getIndexedFields();
-	for (set<string>::const_iterator it = fields.begin(); 
-	     it != fields.end(); it++) {
-	    // Some fields don't make sense here
-	    if (it->compare("filename")) {
-		fldCMB->addItem(QString::fromUtf8(it->c_str()));
-	    }
-	}
+    set<string> fields = theconfig->getIndexedFields();
+    for (set<string>::const_iterator it = fields.begin(); 
+         it != fields.end(); it++) {
+        // Some fields don't make sense here
+        if (it->compare("filename")) {
+        fldCMB->addItem(QString::fromUtf8(it->c_str()));
+        }
+    }
     }
     // Ensure that the spinbox will be enabled/disabled depending on
     // combobox state
@@ -106,35 +106,35 @@ void SearchClauseW::languageChange()
 SearchDataClause *SearchClauseW::getClause()
 {
     if (wordsLE->text().isEmpty())
-	return 0;
+    return 0;
     string field;
     if (fldCMB->currentIndex() != 0) {
-	field = (const char *)fldCMB->currentText().toUtf8();
+    field = (const char *)fldCMB->currentText().toUtf8();
     }
     string text = (const char *)wordsLE->text().toUtf8();
     switch (sTpCMB->currentIndex()) {
     case 0:
-	return new SearchDataClauseSimple(SCLT_OR, text, field);
+    return new SearchDataClauseSimple(SCLT_OR, text, field);
     case 1:
-	return new SearchDataClauseSimple(SCLT_AND, text, field);
+    return new SearchDataClauseSimple(SCLT_AND, text, field);
     case 2:
     {
-	SearchDataClauseSimple *cl = 
-	    new SearchDataClauseSimple(SCLT_OR, text, field);
-	cl->setexclude(true);
-	return cl;
+    SearchDataClauseSimple *cl = 
+        new SearchDataClauseSimple(SCLT_OR, text, field);
+    cl->setexclude(true);
+    return cl;
     }
     case 3:
-	return new SearchDataClauseDist(SCLT_PHRASE, text, 
-					proxSlackSB->value(), field);
+    return new SearchDataClauseDist(SCLT_PHRASE, text, 
+                    proxSlackSB->value(), field);
     case 4:
-	return new SearchDataClauseDist(SCLT_NEAR, text,
-					proxSlackSB->value(), field);
+    return new SearchDataClauseDist(SCLT_NEAR, text,
+                    proxSlackSB->value(), field);
     case 5:
-	return new SearchDataClauseFilename(text);
+    return new SearchDataClauseFilename(text);
     case 6:
     default:
-	return 0;
+    return 0;
     }
 }
 
@@ -147,7 +147,7 @@ void SearchClauseW::setFromClause(SearchDataClauseSimple *cl)
     case SCLT_AND: tpChange(1); break;
     case SCLT_PHRASE: tpChange(3); break;
     case SCLT_NEAR: tpChange(4); break;
-    case SCLT_FILENAME:	tpChange(5); break;
+    case SCLT_FILENAME:    tpChange(5); break;
     default: return;
     }
     LOGDEB("SearchClauseW::setFromClause: calling erase\n" );
@@ -159,26 +159,26 @@ void SearchClauseW::setFromClause(SearchDataClauseSimple *cl)
     switch(cl->getTp()) {
     case SCLT_OR: case SCLT_AND: 
     case SCLT_PHRASE: case SCLT_NEAR:
-	if (!field.isEmpty()) {
-	    int idx = fldCMB->findText(field);
-	    if (field >= 0) {
-		fldCMB->setCurrentIndex(idx);
-	    } else {
-		fldCMB->setEditText(field);
-	    }
-	}
-	/* FALLTHROUGH */
+    if (!field.isEmpty()) {
+        int idx = fldCMB->findText(field);
+        if (field >= 0) {
+        fldCMB->setCurrentIndex(idx);
+        } else {
+        fldCMB->setEditText(field);
+        }
+    }
+    /* FALLTHROUGH */
     case SCLT_FILENAME:
-	wordsLE->setText(text);
-	break;
+    wordsLE->setText(text);
+    break;
     default: break;
     }
 
     switch(cl->getTp()) {
     case SCLT_PHRASE: case SCLT_NEAR:
     {
-	SearchDataClauseDist *cls = dynamic_cast<SearchDataClauseDist*>(cl);
-	proxSlackSB->setValue(cls->getslack());
+    SearchDataClauseDist *cls = dynamic_cast<SearchDataClauseDist*>(cl);
+    proxSlackSB->setValue(cls->getslack());
     }
     break;
     default: break;
@@ -197,26 +197,26 @@ void SearchClauseW::clear()
 void SearchClauseW::tpChange(int index)
 {
     if (index < 0 || index > 5)
-	return;
+    return;
     if (sTpCMB->currentIndex() != index)
-	sTpCMB->setCurrentIndex(index);
+    sTpCMB->setCurrentIndex(index);
     switch (index) {
     case 3:
     case 4:
-	proxSlackSB->show();
-	proxSlackSB->setEnabled(true);
-	if (index == 4)
-	    proxSlackSB->setValue(10);
+    proxSlackSB->show();
+    proxSlackSB->setEnabled(true);
+    if (index == 4)
+        proxSlackSB->setValue(10);
         else
             proxSlackSB->setValue(0);
-	break;
+    break;
     default:
-	proxSlackSB->close();
+    proxSlackSB->close();
     }
     if (index == 5) {
-	fldCMB->close();
+    fldCMB->close();
     } else {
-	fldCMB->show();
+    fldCMB->show();
     }
 }
 

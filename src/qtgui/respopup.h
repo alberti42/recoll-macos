@@ -20,12 +20,12 @@
 
 namespace ResultPopup {
     enum Options {showExpand = 0x1, showSubs = 0x2, isMain = 0x3,
-		  showSaveOne = 0x4, showSaveSel = 0x8};
+          showSaveOne = 0x4, showSaveSel = 0x8};
     extern QMenu *create(QWidget *me, int opts,  
-			 std::shared_ptr<DocSequence> source,
-			 Rcl::Doc& doc);
+             std::shared_ptr<DocSequence> source,
+             Rcl::Doc& doc);
     extern Rcl::Doc getParent(std::shared_ptr<DocSequence> source,
-			      Rcl::Doc& doc);
+                  Rcl::Doc& doc);
     extern void copyFN(const Rcl::Doc &doc);
     extern void copyURL(const Rcl::Doc &doc);
 };

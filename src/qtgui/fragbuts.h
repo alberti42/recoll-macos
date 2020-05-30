@@ -49,7 +49,7 @@ public:
     };
 
     void getfrags(std::vector<std::string>&);
-	bool ok() {return m_ok;}
+    bool ok() {return m_ok;}
     bool isStale(time_t *reftime);
 private slots:
     void onButtonClicked(bool);

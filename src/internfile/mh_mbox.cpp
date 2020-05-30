@@ -298,7 +298,7 @@ public:
 };
 
 MimeHandlerMbox::MimeHandlerMbox(RclConfig *cnf, const std::string& id) 
-	: RecollFilter(cnf, id)
+    : RecollFilter(cnf, id)
 {
     m = new Internal(this);
 

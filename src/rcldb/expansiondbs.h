@@ -51,17 +51,17 @@ public:
     }
     virtual std::string operator()(const std::string& in) {
         std::string out;
-	unacmaybefold(in, out, "UTF-8", m_op);
-	LOGDEB2("SynTermTransUnac(" << m_op << "): in [" << in << "] out [" <<
-		out << "]\n");
-	return out;
+    unacmaybefold(in, out, "UTF-8", m_op);
+    LOGDEB2("SynTermTransUnac(" << m_op << "): in [" << in << "] out [" <<
+        out << "]\n");
+    return out;
     }
     UnacOp m_op;
 };
 
 /** Walk the Xapian term list and create all the expansion dbs in one go. */
 extern bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
-			       const std::vector<std::string>& langs);
+                   const std::vector<std::string>& langs);
 }
 
 #endif /* _EXPANSIONDBS_H_INCLUDED_ */

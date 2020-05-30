@@ -33,7 +33,7 @@ class RclConfig;
 class DocSeqFiltered : public DocSeqModifier {
 public:
     DocSeqFiltered(RclConfig *conf, std::shared_ptr<DocSequence> iseq, 
-		   DocSeqFiltSpec &filtspec);
+           DocSeqFiltSpec &filtspec);
     virtual ~DocSeqFiltered() {}
     virtual bool canFilter() {return true;}
     virtual bool setFiltSpec(const DocSeqFiltSpec &filtspec);

@@ -22,7 +22,7 @@
 // A small stringified wrapper for unac.c
 enum UnacOp {UNACOP_UNAC = 1, UNACOP_FOLD = 2, UNACOP_UNACFOLD = 3};
 extern bool unacmaybefold(const std::string& in, std::string& out, 
-			  const char *encoding, UnacOp what);
+              const char *encoding, UnacOp what);
 
 // Utility function to determine if string begins with capital
 extern bool unaciscapital(const std::string& in);

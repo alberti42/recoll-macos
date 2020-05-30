@@ -28,13 +28,13 @@
 #include "log.h"
 
 bool subtreelist(RclConfig *config, const string& top, 
-		 vector<string>& paths)
+         vector<string>& paths)
 {
     LOGDEB("subtreelist: top: ["  << (top) << "]\n" );
     Rcl::Db rcldb(config);
     if (!rcldb.open(Rcl::Db::DbRO)) {
-	LOGERR("subtreelist: can't open database in ["  << (config->getDbDir()) << "]: "  << (rcldb.getReason()) << "\n" );
-	return false;
+    LOGERR("subtreelist: can't open database in ["  << (config->getDbDir()) << "]: "  << (rcldb.getReason()) << "\n" );
+    return false;
     }
 
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_OR, cstr_null);
@@ -47,12 +47,12 @@ bool subtreelist(RclConfig *config, const string& top,
     int cnt = query.getResCnt();
 
     for (int i = 0; i < cnt; i++) {
-	Rcl::Doc doc;
-	if (!query.getDoc(i, doc))
-	    break;
-	string path = fileurltolocalpath(doc.url);
-	if (!path.empty())
-	    paths.push_back(path);
+    Rcl::Doc doc;
+    if (!query.getDoc(i, doc))
+        break;
+    string path = fileurltolocalpath(doc.url);
+    if (!path.empty())
+        paths.push_back(path);
     }
     return true;
 }
@@ -104,26 +104,26 @@ int main(int argc, char **argv)
             switch (*(*argv)++) {
             default: Usage();   break;
             }
-	argc--; argv++;
+    argc--; argv++;
     }
     if (argc < 1)
-	Usage();
+    Usage();
     top = *argv++;argc--;
     string reason;
     RclConfig *config = recollinit(0, 0, 0, reason, 0);
     if (!config || !config->ok()) {
-	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
-	exit(1);
+    fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
+    exit(1);
     }
 
     vector<string> paths;
     if (!subtreelist(config, top, paths)) {
-	cerr << "subtreelist failed" << endl;
-	exit(1);
+    cerr << "subtreelist failed" << endl;
+    exit(1);
     }
     for (vector<string>::const_iterator it = paths.begin(); 
-	 it != paths.end(); it++) {
-	cout << *it << endl;
+     it != paths.end(); it++) {
+    cout << *it << endl;
     }
     exit(0);
 }

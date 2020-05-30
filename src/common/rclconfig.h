@@ -100,7 +100,7 @@ class RclConfig {
     RclConfig(const RclConfig &r);
 
     ~RclConfig() {
-	freeAll();
+    freeAll();
     }
 
     // Return a writable clone of the main config. This belongs to the
@@ -136,9 +136,9 @@ class RclConfig {
     bool getConfParam(const string &name, string &value, 
                       bool shallow=false) const
     {
-	if (m_conf == 0)
-	    return false;
-	return m_conf->get(name, value, m_keydir, shallow);
+    if (m_conf == 0)
+        return false;
+    return m_conf->get(name, value, m_keydir, shallow);
     }
     /** Variant with autoconversion to int */
     bool getConfParam(const string &name, int *value, bool shallow=false) const;
@@ -166,7 +166,7 @@ class RclConfig {
      */
     vector<string> getConfNames(const char *pattern = 0) const
     {
-	return m_conf->getNames(m_keydir, pattern);
+    return m_conf->getNames(m_keydir, pattern);
     }
 
     /** Check if name exists anywhere in config */
@@ -207,7 +207,7 @@ class RclConfig {
     /** Do path translation according to the ptrans table */
     void urlrewrite(const string& dbdir, string& url) const;
     ConfSimple *getPTrans() {
-	return m_ptrans;
+    return m_ptrans;
     }
     /** Get Web Queue directory name */
     string getWebQueueDir() const;
@@ -221,7 +221,7 @@ class RclConfig {
     /** Get list of skipped paths patterns. Doesn't depend on the keydir */
     vector<string> getSkippedPaths() const;
     /** Get list of skipped paths patterns, daemon version (may add some)
-	Doesn't depend on the keydir */
+    Doesn't depend on the keydir */
     vector<string> getDaemSkippedPaths() const;
 
     /** Return list of no content suffixes. Used by confgui, indexing uses
@@ -260,7 +260,7 @@ class RclConfig {
      * @param whole the raw value. No way to escape a semi-colon in there.
      */
     static bool valueSplitAttributes(const string& whole, string& value, 
-				     ConfSimple& attrs) ;
+                     ConfSimple& attrs) ;
 
     /** Compute difference between 'base' and 'changed', as elements to be
      * added and substracted from base. Input and output strings are in
@@ -315,7 +315,7 @@ class RclConfig {
 
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype, const string& apptag, 
-			    bool useall) const;
+                bool useall) const;
     set<string> getMimeViewerAllEx() const;
     bool setMimeViewerAllEx(const set<string>& allex);
     bool getMimeViewerDefs(vector<pair<string, string> >&) const;
@@ -348,21 +348,21 @@ class RclConfig {
     string findFilter(const string& cmd) const;
 
     /** Thread config init is not done automatically because not all
-	programs need it and it uses the debug log so that it's better to
-	call it after primary init */
+    programs need it and it uses the debug log so that it's better to
+    call it after primary init */
     void initThrConf();
 
     const string& getOrigCwd() 
     {
-	return o_origcwd;
+    return o_origcwd;
     }
 
     RclConfig& operator=(const RclConfig &r) {
-	if (this != &r) {
-	    freeAll();
-	    initFrom(r);
-	}
-	return *this;
+    if (this != &r) {
+        freeAll();
+        initFrom(r);
+    }
+    return *this;
     }
 
     friend class ParamStale;

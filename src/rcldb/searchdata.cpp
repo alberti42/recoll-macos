@@ -263,10 +263,10 @@ void SearchData::simplify()
 void SearchData::getTerms(HighlightData &hld) const
 {
     for (qlist_cit_t it = m_query.begin(); it != m_query.end(); it++) {
-	if (!((*it)->getmodifiers() & SearchDataClause::SDCM_NOTERMS) &&
-	    !(*it)->getexclude()) {
-	    (*it)->getTerms(hld);
-	}
+    if (!((*it)->getmodifiers() & SearchDataClause::SDCM_NOTERMS) &&
+        !(*it)->getexclude()) {
+        (*it)->getTerms(hld);
+    }
     }
     return;
 }

@@ -9,8 +9,8 @@ static const char *thisprog;
 
 static int     op_flags;
 #define OPT_MOINS 0x1
-#define OPT_r	  0x2 
-#define OPT_s	  0x4 
+#define OPT_r      0x2 
+#define OPT_s      0x4 
 static char usage [] =
 "wipedir [-r -s] topdir\n"
 " -r : recurse\n"
@@ -29,21 +29,21 @@ int main(int argc, const char **argv)
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'r':	op_flags |= OPT_r; break;
-	    case 's':	op_flags |= OPT_s; break;
-	    default: Usage();	break;
-	    }
+    (*argv)++;
+    if (!(**argv))
+        /* Cas du "adb - core" */
+        Usage();
+    while (**argv)
+        switch (*(*argv)++) {
+        case 'r':    op_flags |= OPT_r; break;
+        case 's':    op_flags |= OPT_s; break;
+        default: Usage();    break;
+        }
     b1: argc--; argv++;
     }
 
     if (argc != 1)
-	Usage();
+    Usage();
 
     string dir = *argv++;argc--;
 

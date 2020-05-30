@@ -24,12 +24,12 @@ class IdxSchedW : public QDialog, public Ui::IdxSchedW {
     Q_OBJECT
     public:
     IdxSchedW(QWidget * parent = 0) 
-	: QDialog(parent)
+    : QDialog(parent)
     {
-	setupUi(this);
-	(void)new HelpClient(this);
-	HelpClient::installMap((const char *)this->objectName().toUtf8(), 
-			   "RCL.INDEXING");
+    setupUi(this);
+    (void)new HelpClient(this);
+    HelpClient::installMap((const char *)this->objectName().toUtf8(), 
+               "RCL.INDEXING");
     }
 };
 

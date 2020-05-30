@@ -78,23 +78,23 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
     SYSPATH(dir, sysdir);
     statret = LSTAT(sysdir, &st);
     if (statret == -1) {
-	LOGSYSERR("wipedir", "stat", dir);
-	return -1;
+    LOGSYSERR("wipedir", "stat", dir);
+    return -1;
     }
     if (!S_ISDIR(st.st_mode)) {
-	LOGERR("wipedir: " << dir << " not a directory\n");
-	return -1;
+    LOGERR("wipedir: " << dir << " not a directory\n");
+    return -1;
     }
 
     if (ACCESS(sysdir, R_OK|W_OK|X_OK) < 0) {
-	LOGSYSERR("wipedir", "access", dir);
-	return -1;
+    LOGSYSERR("wipedir", "access", dir);
+    return -1;
     }
 
     DIRHDL *d = OPENDIR(sysdir);
     if (d == 0) {
-	LOGSYSERR("wipedir", "opendir", dir);
-	return -1;
+    LOGSYSERR("wipedir", "opendir", dir);
+    return -1;
     }
     int remaining = 0;
     struct DIRENT *ent;
@@ -108,46 +108,46 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
 #else
         const char *dname = ent->d_name;
 #endif
-	if (!strcmp(dname, ".") || !strcmp(dname, "..")) 
-	    continue;
+    if (!strcmp(dname, ".") || !strcmp(dname, "..")) 
+        continue;
 
-	string fn = path_cat(dir, dname);
+    string fn = path_cat(dir, dname);
 
         SYSPATH(fn, sysfn);
-	struct STATBUF st;
-	int statret = LSTAT(sysfn, &st);
-	if (statret == -1) {
-	    LOGSYSERR("wipedir", "stat", fn);
-	    goto out;
-	}
-	if (S_ISDIR(st.st_mode)) {
-	    if (recurse) {
-		int rr = wipedir(fn, true, true);
-		if (rr == -1) 
-		    goto out;
-		else 
-		    remaining += rr;
-	    } else {
-		remaining++;
-	    }
-	} else {
-	    if (UNLINK(sysfn) < 0) {
-		LOGSYSERR("wipedir", "unlink", fn);
-		goto out;
-	    }
-	}
+    struct STATBUF st;
+    int statret = LSTAT(sysfn, &st);
+    if (statret == -1) {
+        LOGSYSERR("wipedir", "stat", fn);
+        goto out;
+    }
+    if (S_ISDIR(st.st_mode)) {
+        if (recurse) {
+        int rr = wipedir(fn, true, true);
+        if (rr == -1) 
+            goto out;
+        else 
+            remaining += rr;
+        } else {
+        remaining++;
+        }
+    } else {
+        if (UNLINK(sysfn) < 0) {
+        LOGSYSERR("wipedir", "unlink", fn);
+        goto out;
+        }
+    }
     }
 
     ret = remaining;
     if (selfalso && ret == 0) {
-	if (RMDIR(sysdir) < 0) {
-	    LOGSYSERR("wipedir", "rmdir", dir);
-	    ret = -1;
-	}
+    if (RMDIR(sysdir) < 0) {
+        LOGSYSERR("wipedir", "rmdir", dir);
+        ret = -1;
+    }
     }
 
 out:
     if (d)
-	CLOSEDIR(d);
+    CLOSEDIR(d);
     return ret;
 }

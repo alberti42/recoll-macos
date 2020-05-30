@@ -42,7 +42,7 @@ class FsTreeWalker {
     // a value to the config file (skippedPathsNoFnmPathname)
     static bool o_useFnmPathname;
     static void setNoFnmPathname() {
-	o_useFnmPathname = false;
+    o_useFnmPathname = false;
     }
 
     // Global option to observe a "nowalk" file, which makes us treat
@@ -58,7 +58,7 @@ class FsTreeWalker {
     // after processing a subdirectory.
     enum CbFlag {FtwRegular, FtwDirEnter, FtwDirReturn};
     enum Status {FtwOk=0, FtwError=1, FtwStop=2, 
-		 FtwStatAll = FtwError|FtwStop};
+         FtwStatAll = FtwError|FtwStop};
     enum Options {FtwOptNone = 0, FtwNoRecurse = 1, FtwFollow = 2,
                   FtwNoCanon = 4, FtwSkipDotFiles = 8,
     // Tree walking options.  Natural is close to depth first: process
@@ -107,7 +107,7 @@ class FsTreeWalker {
     bool setOnlyNames(const std::vector<std::string> &patterns);
 
     /** Same for skipped paths: this are paths, not names, under which we
-	do not descend (ie: /home/me/.recoll) */
+    do not descend (ie: /home/me/.recoll) */
     bool addSkippedPath(const std::string &path); 
     /** Set the ignored paths list */
     bool setSkippedPaths(const std::vector<std::string> &patterns);

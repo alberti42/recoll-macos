@@ -30,20 +30,20 @@ using std::string;
 using std::map;
 
 static void docfieldfrommeta(RclConfig* cfg, const string& name, 
-			     const string &value, Rcl::Doc& doc)
+                 const string &value, Rcl::Doc& doc)
 {
     string fieldname = cfg->fieldCanon(name);
     LOGDEB0("Internfile:: setting [" << fieldname <<
             "] from cmd/xattr value [" << value << "]\n");
     if (fieldname == cstr_dj_keymd) {
-	doc.dmtime = value;
+    doc.dmtime = value;
     } else {
-	doc.meta[fieldname] = value;
+    doc.meta[fieldname] = value;
     }
 }
 
 void reapXAttrs(const RclConfig* cfg, const string& path, 
-		map<string, string>& xfields)
+        map<string, string>& xfields)
 {
     LOGDEB2("reapXAttrs: [" << path << "]\n");
 #ifndef _WIN32
@@ -57,7 +57,7 @@ void reapXAttrs(const RclConfig* cfg, const string& path,
             LOGERR("FileInterner::reapXattrs: pxattr::list: errno " <<
                    errno << "\n");
         }
-	return;
+    return;
     }
     const map<string, string>& xtof = cfg->getXattrToField();
 
@@ -65,25 +65,25 @@ void reapXAttrs(const RclConfig* cfg, const string& path,
     // or mapped depending if the translation is empty. Other names
     // are recorded as-is
     for (vector<string>::const_iterator it = xnames.begin();
-	 it != xnames.end(); it++) {
-	string key = *it;
-	map<string, string>::const_iterator mit = xtof.find(*it);
-	if (mit != xtof.end()) {
-	    if (mit->second.empty()) {
-		continue;
-	    } else {
-		key = mit->second;
-	    }
-	}
-	string value;
-	if (!pxattr::get(path, *it, &value, pxattr::PXATTR_NOFOLLOW)) {
-	    LOGERR("FileInterner::reapXattrs: pxattr::get failed for " << *it
+     it != xnames.end(); it++) {
+    string key = *it;
+    map<string, string>::const_iterator mit = xtof.find(*it);
+    if (mit != xtof.end()) {
+        if (mit->second.empty()) {
+        continue;
+        } else {
+        key = mit->second;
+        }
+    }
+    string value;
+    if (!pxattr::get(path, *it, &value, pxattr::PXATTR_NOFOLLOW)) {
+        LOGERR("FileInterner::reapXattrs: pxattr::get failed for " << *it
                    << ", errno " << errno << "\n");
-	    continue;
-	}
-	// Encode should we ?
-	xfields[key] = value;
-	LOGDEB2("reapXAttrs: [" << key << "] -> [" << value << "]\n");
+        continue;
+    }
+    // Encode should we ?
+    xfields[key] = value;
+    LOGDEB2("reapXAttrs: [" << key << "] -> [" << value << "]\n");
     }
 #else
     PRETEND_USE(cfg);
@@ -93,34 +93,34 @@ void reapXAttrs(const RclConfig* cfg, const string& path,
 }
 
 void docFieldsFromXattrs(RclConfig *cfg, const map<string, string>& xfields, 
-			 Rcl::Doc& doc)
+             Rcl::Doc& doc)
 {
     for (map<string,string>::const_iterator it = xfields.begin(); 
-	 it != xfields.end(); it++) {
-	docfieldfrommeta(cfg, it->first, it->second, doc);
+     it != xfields.end(); it++) {
+    docfieldfrommeta(cfg, it->first, it->second, doc);
     }
 }
 
 void reapMetaCmds(RclConfig* cfg, const string& path, 
-		  map<string, string>& cfields)
+          map<string, string>& cfields)
 {
     const vector<MDReaper>& reapers = cfg->getMDReapers();
     if (reapers.empty())
-	return;
+    return;
     map<char,string> smap = {{'f', path}};
     for (vector<MDReaper>::const_iterator rp = reapers.begin();
-	 rp != reapers.end(); rp++) {
-	vector<string> cmd;
-	for (vector<string>::const_iterator it = rp->cmdv.begin();
-	     it != rp->cmdv.end(); it++) {
-	    string s;
-	    pcSubst(*it, s, smap);
-	    cmd.push_back(s);
-	}
-	string output;
-	if (ExecCmd::backtick(cmd, output)) {
-	    cfields[rp->fieldname] =  output;
-	}
+     rp != reapers.end(); rp++) {
+    vector<string> cmd;
+    for (vector<string>::const_iterator it = rp->cmdv.begin();
+         it != rp->cmdv.end(); it++) {
+        string s;
+        pcSubst(*it, s, smap);
+        cmd.push_back(s);
+    }
+    string output;
+    if (ExecCmd::backtick(cmd, output)) {
+        cfields[rp->fieldname] =  output;
+    }
     }
 }
 
@@ -133,25 +133,25 @@ void reapMetaCmds(RclConfig* cfg, const string& path,
 // and the output from anything beginning with "rclmulti" will be
 // interpreted as multiple fields in configuration file format...
 void docFieldsFromMetaCmds(RclConfig *cfg, const map<string, string>& cfields, 
-			   Rcl::Doc& doc)
+               Rcl::Doc& doc)
 {
     for (map<string,string>::const_iterator it = cfields.begin(); 
-	 it != cfields.end(); it++) {
-	if (!it->first.compare(0, 8, "rclmulti")) {
-	    ConfSimple simple(it->second);
-	    if (simple.ok()) {
-		vector<string> names = simple.getNames("");
-		for (vector<string>::const_iterator nm = names.begin(); 
-		     nm != names.end(); nm++) {
-		    string value;
-		    if (simple.get(*nm, value)) {
-			docfieldfrommeta(cfg, *nm, value, doc);
-		    }
-		}
-	    }
-	} else {
-	    docfieldfrommeta(cfg, it->first, it->second, doc);
-	}
+     it != cfields.end(); it++) {
+    if (!it->first.compare(0, 8, "rclmulti")) {
+        ConfSimple simple(it->second);
+        if (simple.ok()) {
+        vector<string> names = simple.getNames("");
+        for (vector<string>::const_iterator nm = names.begin(); 
+             nm != names.end(); nm++) {
+            string value;
+            if (simple.get(*nm, value)) {
+            docfieldfrommeta(cfg, *nm, value, doc);
+            }
+        }
+        }
+    } else {
+        docfieldfrommeta(cfg, it->first, it->second, doc);
+    }
     }
 }
 

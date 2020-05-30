@@ -199,7 +199,7 @@ int libclf_closefrom(int fd0)
         maxfd = libclf_maxfd();
     }
     if (maxfd < 0)
-	maxfd = OPEN_MAX;
+    maxfd = OPEN_MAX;
 
     DPRINT((stderr, "libclf_closefrom: using loop to %d\n", maxfd));
 

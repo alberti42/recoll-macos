@@ -31,18 +31,18 @@ public:
     virtual bool match(const std::string &val) const = 0;
     virtual std::string::size_type baseprefixlen() const = 0;
     virtual bool setExp(const std::string& newexp) {
-	m_sexp = newexp;
-	return true;
+    m_sexp = newexp;
+    return true;
     }
     virtual bool ok() const {
-	return true;
+    return true;
     }
     virtual const std::string& exp() const {
-	return m_sexp;
+    return m_sexp;
     }
     virtual StrMatcher *clone() const = 0;
     const std::string& getreason() const {
-	return m_reason;
+    return m_reason;
     }
 protected:
     std::string m_sexp;
@@ -57,7 +57,7 @@ public:
     virtual bool match(const std::string& val) const override;
     virtual std::string::size_type baseprefixlen() const override;
     virtual StrWildMatcher *clone() const override {
-	return new StrWildMatcher(m_sexp);
+    return new StrWildMatcher(m_sexp);
     }
 };
 
@@ -70,7 +70,7 @@ public:
     virtual std::string::size_type baseprefixlen() const override;
     virtual bool ok() const override;
     virtual StrRegexpMatcher *clone() const override {
-	return new StrRegexpMatcher(m_sexp);
+    return new StrRegexpMatcher(m_sexp);
     }
 private:
     SimpleRegexp m_re;

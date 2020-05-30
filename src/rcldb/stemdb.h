@@ -66,15 +66,15 @@ namespace Rcl {
 class SynTermTransStem : public SynTermTrans {
 public:
     SynTermTransStem(const std::string& lang)
-	: m_stemmer(lang), m_lang(lang)
+    : m_stemmer(lang), m_lang(lang)
     {
     }
     virtual ~SynTermTransStem() {}
     virtual std::string operator()(const std::string& in)
     {
-	string out = m_stemmer(in);
-	LOGDEB2("SynTermTransStem("  << (m_lang) << "): in ["  << (in) << "] out ["  << (out) << "]\n" );
-	return out;
+    string out = m_stemmer(in);
+    LOGDEB2("SynTermTransStem("  << (m_lang) << "): in ["  << (in) << "] out ["  << (out) << "]\n" );
+    return out;
     }
     Xapian::Stem m_stemmer;
     std::string m_lang;
@@ -85,7 +85,7 @@ public:
 class StemDb : public XapSynFamily {
 public:
     StemDb(Xapian::Database& xdb)
-	: XapSynFamily(xdb, synFamStem)
+    : XapSynFamily(xdb, synFamStem)
     {
     }
 
@@ -94,8 +94,8 @@ public:
      *  @param term  term to expand
      */
     bool stemExpand(const std::string& langs,
-		    const std::string& term,
-		    std::vector<std::string>& result);
+            const std::string& term,
+            std::vector<std::string>& result);
 };
 
 }

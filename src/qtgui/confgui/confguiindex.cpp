@@ -254,8 +254,8 @@ bool ConfIndexW::setupTopPanel(int idx)
                   tr("Stemming languages"),
                   tr("The languages for which stemming expansion "
                      "dictionaries will be built.<br>See the Xapian stemmer "
-					 "documentation for possible values. E.g. english, "
-					 "french, german..."), 0, 0, &m_stemlangs);
+                     "documentation for possible values. E.g. english, "
+                     "french, german..."), 0, 0, &m_stemlangs);
 
     m_w->addParam(idx, ConfTabsW::CFPT_FN, "logfilename",
                   tr("Log file name"),
@@ -292,7 +292,7 @@ bool ConfIndexW::setupTopPanel(int idx)
         tr("Aspell language"),
         tr("The language for the aspell dictionary. "
            "The values are are 2-letter "
-		   "language codes, e.g. 'en', 'fr' ...<br>"
+           "language codes, e.g. 'en', 'fr' ...<br>"
            "If this value is not set, the NLS environment "
            "will be used to compute it, which usually works. "
            "To get an idea of what is installed on your system, "

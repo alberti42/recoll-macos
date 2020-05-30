@@ -113,9 +113,9 @@ static bool initCmd()
 #define STRSZT std::string::size_type
 
 #define ISASCIIPUNCTORCTL(c) (c <= 0x7f && \
-							  !((c >= 'A' && c <= 'Z') ||			 \
-								(c >= 'a' && c <= 'z') ||			 \
-								(c >= '0' && c <= '9')))
+                              !((c >= 'A' && c <= 'Z') ||             \
+                                (c >= 'a' && c <= 'z') ||             \
+                                (c >= '0' && c <= '9')))
 
 bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
 {
@@ -153,10 +153,10 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     for (; !it.eof() && !it.error(); it++) {
         c = *it;
         if (!isHANGUL(c) && !ISASCIIPUNCTORCTL(c)) {
-			// Non-Korean: we keep on if encountering space and other
-			// ASCII punctuation. Allows sending longer pieces of text
-			// to the splitter (perf). Else break, process this piece,
-			// and return to the main splitter
+            // Non-Korean: we keep on if encountering space and other
+            // ASCII punctuation. Allows sending longer pieces of text
+            // to the splitter (perf). Else break, process this piece,
+            // and return to the main splitter
             LOGKO("ko_to_words: broke on " << (std::string)it << endl);
             break;
         } else {
@@ -194,7 +194,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     }
         
     LOGKO("TextSplit::k_to_words: sending out " << inputdata.size() <<
-		   " bytes " << inputdata << endl);
+           " bytes " << inputdata << endl);
 
     // Overall data counter for slave restarts
     restartcount += inputdata.size();

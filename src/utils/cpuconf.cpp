@@ -54,8 +54,8 @@ int main(int argc, const char **argv)
 {
     CpuConf cpus;
     if (!getCpuConf(cpus)) {
-	cerr << "getCpuConf failed" << endl;
-	exit(1);
+    cerr << "getCpuConf failed" << endl;
+    exit(1);
     }
     cout << "Cpus: " << cpus.ncpus << endl;
     exit(0);

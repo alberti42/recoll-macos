@@ -67,16 +67,16 @@ class RclSListEntry : public DynConfEntry {
     : value(v) {
     }
     virtual bool decode(const std::string &enc) {
-	base64_decode(enc, value);
-	return true;
+    base64_decode(enc, value);
+    return true;
     }
     virtual bool encode(std::string& enc) {
-	base64_encode(value, enc);
-	return true;
+    base64_encode(value, enc);
+    return true;
     }
     virtual bool equal(const DynConfEntry& other) {
-	const RclSListEntry& e = dynamic_cast<const RclSListEntry&>(other);
-	return e.value == value;
+    const RclSListEntry& e = dynamic_cast<const RclSListEntry&>(other);
+    return e.value == value;
     }
 
     std::string value;
@@ -88,16 +88,16 @@ class RclDynConf {
     RclDynConf(const std::string &fn);
 
     bool ro() {
-	return m_data.getStatus() == ConfSimple::STATUS_RO;
+    return m_data.getStatus() == ConfSimple::STATUS_RO;
     }
     bool rw() {
-	return m_data.getStatus() == ConfSimple::STATUS_RW;
+    return m_data.getStatus() == ConfSimple::STATUS_RW;
     }
     bool ok() {
-	return m_data.getStatus() != ConfSimple::STATUS_ERROR;
+    return m_data.getStatus() != ConfSimple::STATUS_ERROR;
     }
     std::string getFilename() {
-	return m_data.getFilename();
+    return m_data.getFilename();
     }
 
     // Generic methods
@@ -140,12 +140,12 @@ Container<Type, std::allocator<Type>>
     Type entry;
     std::vector<std::string> names = m_data.getNames(sk);
     for (const auto& name : names) {
-	std::string value;
-	if (m_data.get(name, value, sk)) {
-	    if (!entry.decode(value))
-		continue;
-	    out.push_back(entry);
-	}
+    std::string value;
+    if (m_data.get(name, value, sk)) {
+        if (!entry.decode(value))
+        continue;
+        out.push_back(entry);
+    }
     }
     return out;
 }
@@ -157,7 +157,7 @@ Container<std::string, std::allocator<std::string>>
     std::vector<RclSListEntry> el = getEntries<std::vector, RclSListEntry>(sk);
     Container<std::string, std::allocator<std::string>> sl;
     for (const auto& entry : el) {
-	sl.push_back(entry.value);
+    sl.push_back(entry.value);
     }
     return sl;
 }

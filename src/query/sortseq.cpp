@@ -33,13 +33,13 @@ public:
     // behaves as operator< 
     int operator()(const Rcl::Doc *x, const Rcl::Doc *y) 
     { 
-	LOGDEB1("Comparing .. \n" );
+    LOGDEB1("Comparing .. \n" );
 
-	const auto xit = x->meta.find(ss.field);
-	const auto yit = y->meta.find(ss.field);
-	if (xit == x->meta.end() || yit == y->meta.end())
-	    return 0;
-	return ss.desc ? yit->second < xit->second : xit->second < yit->second;
+    const auto xit = x->meta.find(ss.field);
+    const auto yit = y->meta.find(ss.field);
+    if (xit == x->meta.end() || yit == y->meta.end())
+        return 0;
+    return ss.desc ? yit->second < xit->second : xit->second < yit->second;
     } 
 };
 
@@ -52,16 +52,16 @@ bool DocSeqSorted::setSortSpec(const DocSeqSortSpec &sortspec)
     m_docs.resize(count);
     int i;
     for (i = 0; i < count; i++) {
-	if (!m_seq->getDoc(i, m_docs[i])) {
-	    LOGERR("DocSeqSorted: getDoc failed for doc "  << (i) << "\n" );
-	    count = i;
-	    break;
-	}
+    if (!m_seq->getDoc(i, m_docs[i])) {
+        LOGERR("DocSeqSorted: getDoc failed for doc "  << (i) << "\n" );
+        count = i;
+        break;
+    }
     }
     m_docs.resize(count);
     m_docsp.resize(count);
     for (i = 0; i < count; i++)
-	m_docsp[i] = &m_docs[i];
+    m_docsp[i] = &m_docs[i];
 
     CompareDocs cmp(sortspec);
     sort(m_docsp.begin(), m_docsp.end(), cmp);
@@ -72,7 +72,7 @@ bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, string *)
 {
     LOGDEB("DocSeqSorted::getDoc("  << (num) << ")\n" );
     if (num < 0 || num >= int(m_docsp.size()))
-	return false;
+    return false;
     doc = *m_docsp[num];
     return true;
 }

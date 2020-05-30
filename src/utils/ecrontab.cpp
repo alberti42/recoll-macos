@@ -37,8 +37,8 @@ static bool eCrontabGetLines(vector<string>& lines)
     // status than for an empty one
     args.push_back("-l");
     if ((status = croncmd.doexec("crontab", args, 0, &crontab))) {
-	lines.clear();
-	return false;
+    lines.clear();
+    return false;
     }
 
     // Split crontab into lines
@@ -55,53 +55,53 @@ static bool eCrontabWriteFile(const vector<string>& lines, string& reason)
     int status;
 
     for (vector<string>::const_iterator it = lines.begin();
-	 it != lines.end(); it++) {
-	crontab += *it + "\n";
+     it != lines.end(); it++) {
+    crontab += *it + "\n";
     }
 
     args.push_back("-");
     if ((status = croncmd.doexec("crontab", args, &crontab, 0))) {
-	char nbuf[30]; 
-	sprintf(nbuf, "0x%x", status);
-	reason = string("Exec crontab -l failed: status: ") + nbuf;
-	return false;
+    char nbuf[30]; 
+    sprintf(nbuf, "0x%x", status);
+    reason = string("Exec crontab -l failed: status: ") + nbuf;
+    return false;
     }
     return true;
 }
 
 // Add / change / delete entry identified by marker and id
 bool editCrontab(const string& marker, const string& id, 
-		      const string& sched, const string& cmd, string& reason)
+              const string& sched, const string& cmd, string& reason)
 {
     vector<string> lines;
 
     if (!eCrontabGetLines(lines)) {
-	// Special case: cmd is empty, no crontab, don't create one
-	if (cmd.empty())
-	    return true;
+    // Special case: cmd is empty, no crontab, don't create one
+    if (cmd.empty())
+        return true;
     }
 
     // Remove old copy if any
     for (vector<string>::iterator it = lines.begin();
-	 it != lines.end(); it++) {
-	// Skip comment
-	if (it->find_first_of("#") == it->find_first_not_of(" \t"))
-	    continue;
+     it != lines.end(); it++) {
+    // Skip comment
+    if (it->find_first_of("#") == it->find_first_not_of(" \t"))
+        continue;
 
-	if (it->find(marker) != string::npos && 
-	    it->find(id) != string::npos) {
-	    lines.erase(it);
-	    break;
-	}
+    if (it->find(marker) != string::npos && 
+        it->find(id) != string::npos) {
+        lines.erase(it);
+        break;
+    }
     }
 
     if (!cmd.empty()) {
-	string nline = sched + " " + marker + " " + id + " " + cmd;
-	lines.push_back(nline);
+    string nline = sched + " " + marker + " " + id + " " + cmd;
+    lines.push_back(nline);
     }
     
     if (!eCrontabWriteFile(lines, reason))
-	return false;
+    return false;
 
     return true;
 }
@@ -110,44 +110,44 @@ bool checkCrontabUnmanaged(const string& marker, const string& data)
 {
     vector<string> lines;
     if (!eCrontabGetLines(lines)) {
-	// No crontab, answer is no
-	return false;
+    // No crontab, answer is no
+    return false;
     }
     // Scan crontab
     for (vector<string>::iterator it = lines.begin();
-	 it != lines.end(); it++) {
-	if (it->find(marker) == string::npos && 
-	    it->find(data) != string::npos) {
-	    return true;
-	}
+     it != lines.end(); it++) {
+    if (it->find(marker) == string::npos && 
+        it->find(data) != string::npos) {
+        return true;
+    }
     }
     return false;
 }
 
 /** Retrieve the scheduling for a crontab entry */
 bool getCrontabSched(const string& marker, const string& id, 
-		     vector<string>& sched) 
+             vector<string>& sched) 
 {
     LOGDEB0("getCrontabSched: marker["  << (marker) << "], id["  << (id) << "]\n" );
     vector<string> lines;
     if (!eCrontabGetLines(lines)) {
-	// No crontab, answer is no
-	sched.clear();
-	return false;
+    // No crontab, answer is no
+    sched.clear();
+    return false;
     }
     string line;
 
     for (vector<string>::iterator it = lines.begin();
-	 it != lines.end(); it++) {
-	// Skip comment
-	if (it->find_first_of("#") == it->find_first_not_of(" \t"))
-	    continue;
+     it != lines.end(); it++) {
+    // Skip comment
+    if (it->find_first_of("#") == it->find_first_not_of(" \t"))
+        continue;
 
-	if (it->find(marker) != string::npos && 
-	    it->find(id) != string::npos) {
-	    line = *it;
-	    break;
-	}
+    if (it->find(marker) != string::npos && 
+        it->find(id) != string::npos) {
+        line = *it;
+        break;
+    }
     }
 
     stringToTokens(line, sched);
@@ -188,8 +188,8 @@ Usage(void)
 
 static int     op_flags;
 #define OPT_MOINS 0x1
-#define OPT_a	  0x2 
-#define OPT_d	  0x4 
+#define OPT_a      0x2 
+#define OPT_d      0x4 
 #define OPT_w     0x8
 #define OPT_c     0x10
 #define OPT_s     0x20
@@ -215,17 +215,17 @@ int main(int argc, char **argv)
       Usage();
     while (**argv)
       switch (*(*argv)++) {
-      case 'a':	op_flags |= OPT_a; break;
-      case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
-	  cmd = *(++argv); argc--; 
-	  goto b1;
-      case 'd':	op_flags |= OPT_d; break;
-      case 's':	op_flags |= OPT_s; break;
-      case 'w':	op_flags |= OPT_w; if (argc < 2)  Usage();
-	  wt = *(++argv); argc--; 
-	  goto b1;
-	  
-      default: Usage();	break;
+      case 'a':    op_flags |= OPT_a; break;
+      case 'c':    op_flags |= OPT_c; if (argc < 2)  Usage();
+      cmd = *(++argv); argc--; 
+      goto b1;
+      case 'd':    op_flags |= OPT_d; break;
+      case 's':    op_flags |= OPT_s; break;
+      case 'w':    op_flags |= OPT_w; if (argc < 2)  Usage();
+      wt = *(++argv); argc--; 
+      goto b1;
+      
+      default: Usage();    break;
       }
   b1: argc--; argv++;
   }
@@ -244,19 +244,19 @@ int main(int argc, char **argv)
   } else if (op_flags & OPT_s) {
       vector<string> sched;
       if (!(status = getCrontabSched(marker, id, sched))) {
-	  cerr << "getCrontabSched failed: " << reason << endl;
-	  exit(1);
+      cerr << "getCrontabSched failed: " << reason << endl;
+      exit(1);
       }
       cout << "sched vec size " << sched.size() << endl;
       cout << "mins " << sched[0] << " hours " << sched[1] <<
-	  " days of month " << sched[2] << " months " << sched[3] << 
-	  " days of week " << sched[4] << endl;
+      " days of month " << sched[2] << " months " << sched[3] << 
+      " days of week " << sched[4] << endl;
       exit(0);
       
   } else if (op_flags & OPT_c) {
       if ((status = checkCrontabUnmanaged(marker, cmd))) {
-	  cerr << "crontab has unmanaged lines for " << cmd << endl;
-	  exit(1);
+      cerr << "crontab has unmanaged lines for " << cmd << endl;
+      exit(1);
       }
       exit(0);
   } else {

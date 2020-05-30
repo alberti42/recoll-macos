@@ -64,7 +64,7 @@ class Aspell {
 
     /** Return a list of possible expansions for a given word */
     bool suggest(Rcl::Db &db, const std::string& term, 
-		 std::list<std::string> &suggestions, std::string &reason);
+         std::list<std::string> &suggestions, std::string &reason);
 
  private:
     std::string dicPath();

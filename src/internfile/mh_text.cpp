@@ -86,9 +86,9 @@ bool MimeHandlerText::set_document_file_impl(const string&, const string &fn)
                "), contents will not be indexed: " << fn << endl);
     }
     if (!m_forPreview) {
-	string md5, xmd5;
-	MD5String(m_text, md5);
-	m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+    string md5, xmd5;
+    MD5String(m_text, md5);
+    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
     }
     m_havedoc = true;
     return true;
@@ -99,9 +99,9 @@ bool MimeHandlerText::set_document_string_impl(const string&,
 {
     m_text = otext;
     if (!m_forPreview) {
-	string md5, xmd5;
-	MD5String(m_text, md5);
-	m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+    string md5, xmd5;
+    MD5String(m_text, md5);
+    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
     }
     m_havedoc = true;
     return true;
@@ -112,9 +112,9 @@ bool MimeHandlerText::skip_to_document(const string& ipath)
     char *endptr;
     int64_t t = strtoll(ipath.c_str(), &endptr, 10);
     if (endptr == ipath.c_str()) {
-	LOGERR("MimeHandlerText::skip_to_document: bad ipath offs ["  <<
+    LOGERR("MimeHandlerText::skip_to_document: bad ipath offs ["  <<
                ipath << "]\n");
-	return false;
+    return false;
     }
     m_offs = t;
     readnext();
@@ -126,12 +126,12 @@ bool MimeHandlerText::next_document()
     LOGDEB("MimeHandlerText::next_document: m_havedoc "  << m_havedoc << "\n");
 
     if (m_havedoc == false)
-	return false;
+    return false;
 
     if (m_charsetfromxattr.empty())
-	m_metaData[cstr_dj_keyorigcharset] = m_dfltInputCharset;
+    m_metaData[cstr_dj_keyorigcharset] = m_dfltInputCharset;
     else 
-	m_metaData[cstr_dj_keyorigcharset] = m_charsetfromxattr;
+    m_metaData[cstr_dj_keyorigcharset] = m_charsetfromxattr;
 
     m_metaData[cstr_dj_keymt] = cstr_textplain;
 

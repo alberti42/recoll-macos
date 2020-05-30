@@ -38,18 +38,18 @@ bool x11IsAlive()
     // Xlib always exits on IO errors. Need a setjmp to avoid this (will jump
     // from IO error handler instead of returning).
     if (setjmp(env)) {
-	DEBUG((stderr, "x11IsAlive: Long jump\n"));
-	return false;
+    DEBUG((stderr, "x11IsAlive: Long jump\n"));
+    return false;
     }
     if (m_display == 0) {
-	signal(SIGPIPE, SIG_IGN);
-	XSetErrorHandler(errorHandler);
-	XSetIOErrorHandler(ioErrorHandler);
-	if ((m_display = XOpenDisplay(0)) == 0) {
-	    DEBUG((stderr, "x11IsAlive: cant connect\n"));
-	    m_ok = false;
-	    return false;
-	}
+    signal(SIGPIPE, SIG_IGN);
+    XSetErrorHandler(errorHandler);
+    XSetIOErrorHandler(ioErrorHandler);
+    if ((m_display = XOpenDisplay(0)) == 0) {
+        DEBUG((stderr, "x11IsAlive: cant connect\n"));
+        m_ok = false;
+        return false;
+    }
     }
     m_ok = true;
     bool sync= XSynchronize(m_display, true);
@@ -77,12 +77,12 @@ bool x11IsAlive()
 int main(int argc, char **argv)
 {
     for (;;) {
-	if (!x11IsAlive()) {
-	    fprintf(stderr, "x11IsAlive failed\n");
-	} else {
-	    fprintf(stderr, "x11IsAlive Ok\n");
-	}
-	sleep(1);
+    if (!x11IsAlive()) {
+        fprintf(stderr, "x11IsAlive failed\n");
+    } else {
+        fprintf(stderr, "x11IsAlive Ok\n");
+    }
+    sleep(1);
     }
 }
 #endif
