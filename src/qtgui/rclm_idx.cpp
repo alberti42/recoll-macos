@@ -233,13 +233,20 @@ bool RclMain::maybeArgsToFile(vector<string>& args)
         TempFile temp("");
         m_idxargstmp = rememberTempFile(temp);
     }
+    LOGDEB0("RclMain::maybeArgsToFile: temp file name [" <<
+           m_idxargstmp->filename() << "]\n");
     bool hasrclindex = (args[0] == "recollindex");
     if (hasrclindex) {
         args.erase(args.begin());
     }
     string s;
     stringsToString(args, s);
-    fstream fout(m_idxargstmp->filename(), ios::out|ios::trunc);
+    fstream fout;
+    if (!path_open(m_idxargstmp->filename(), ios::out|ios::trunc, fout)) {
+        QMessageBox::warning(
+            0, "Recoll", tr("Could not start recollindex (temp file error)"));
+        return false;
+    }
     fout << s;
     fout.close();
     if (hasrclindex) {
@@ -258,7 +265,9 @@ bool RclMain::checkIdxPaths()
 {
     string badpaths;
     vector<string> args{"recollindex", "-c", theconfig->getConfDir(), "-E"};
-    maybeArgsToFile(args);
+    if (!maybeArgsToFile(args)) {
+        return false;
+    }
     ExecCmd::backtick(args, badpaths);
     if (!badpaths.empty()) {
         int rep = QMessageBox::warning(
@@ -328,7 +337,9 @@ void RclMain::toggleIndexing()
             args.push_back(m_idxreasontmp->filename());
         }
         m_idxproc = new ExecCmd;
-        maybeArgsToFile(args);
+        if (!maybeArgsToFile(args)) {
+            return;
+        }
         m_idxproc->startExec("recollindex", args, false, false);
     }
     break;
@@ -434,7 +445,9 @@ void RclMain::rebuildIndex()
                 args.push_back(m_idxreasontmp->filename());
             }
             m_idxproc = new ExecCmd;
-            maybeArgsToFile(args);
+            if (!maybeArgsToFile(args)) {
+                return;
+            }
             m_idxproc->startExec("recollindex", args, false, false);
         }
     }
@@ -561,7 +574,9 @@ void RclMain::specialIndex()
         args.push_back(top);
     }
     m_idxproc = new ExecCmd;
-    maybeArgsToFile(args);
+    if (!maybeArgsToFile(args)) {
+        return;
+    }
     LOGINFO("specialIndex: exec: " << execToString("recollindex", args) <<endl);
     m_idxproc->startExec("recollindex", args, false, false);
 }
@@ -584,7 +599,9 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
         }
         args.insert(args.end(), paths.begin(), paths.end());
         m_idxproc = new ExecCmd;
-        maybeArgsToFile(args);
+        if (!maybeArgsToFile(args)) {
+            return;
+        }
         m_idxproc->startExec("recollindex", args, false, false);
         // Call periodic100 to update the menu entries states
         periodic100();

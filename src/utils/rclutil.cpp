@@ -129,7 +129,8 @@ static const string& path_wingetrcltmpdir()
 
 static bool path_gettempfilename(string& filename, string&)
 {
-    string tdir = path_wingetrcltmpdir();
+    string tdir = tmplocation();
+    LOGDEB0("path_gettempfilename: tdir: [" << tdir << "]\n");
     wchar_t dbuf[MAX_PATH + 1];
     utf8towchar(tdir, dbuf, MAX_PATH);
 
@@ -145,6 +146,7 @@ static bool path_gettempfilename(string& filename, string&)
         LOGDEB1("path_wingettempfilename: DeleteFile " << filename << " Ok\n");
     }
     path_slashize(filename);
+    LOGDEB1("path_gettempfilename: filename: [" << filename << "]\n");
     return true;
 }
 
@@ -312,9 +314,7 @@ const string& tmplocation()
         }
         if (tmpdir == 0) {
 #ifdef _WIN32
-            wchar_t bufw[MAX_PATH + 1];
-            GetTempPathW(MAX_PATH + 1, bufw);
-            wchartoutf8(bufw, stmpdir);
+            stmpdir = path_wingetrcltmpdir();
 #else
             stmpdir = "/tmp";
 #endif
@@ -444,24 +444,18 @@ TempFile::Internal::Internal(const string& suffix)
         return;
     }
     m_filename += suffix;
-    LOGDEB1("TempFile: filename: " << m_filename << endl);
-    int fd1 = open(m_filename.c_str(), O_CREAT | O_EXCL, 0600);
-    if (fd1 < 0) {
+    std::fstream fout;
+    if (!path_open(m_filename, ios::out|ios::trunc, fout)) {
         m_reason = string("Open/create error. errno : ") +
             lltodecstr(errno) + " file name: " + m_filename;
+        LOGSYSERR("Tempfile::Internal::Internal", "open/create", m_filename);
         m_filename.erase();
-    } else {
-        close(fd1);
     }
 }
 
 const std::string& TempFile::rcltmpdir()
 {
-#ifdef _WIN32
-    return path_wingetrcltmpdir();
-#else
     return tmplocation();
-#endif
 }
 
 #ifdef _WIN32
