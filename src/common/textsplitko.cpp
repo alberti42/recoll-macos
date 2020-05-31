@@ -283,7 +283,13 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
             span = inputdata.substr(it->first, it->second-it->first);
             LOGKO("KO: SPAN: [" << span << "] pos " << m_wordpos <<
                    " bytepos " << bytepos << "\n");
-            if (!takeword(span, m_wordpos, abspos, abspos + span.size())) {
+            // Xapian max term length is 245 bytes. textsplit default
+            // max word is 40 bytes. Let's take into account the
+            // longer utf-8 Korean chars (usually 3 bytes).
+            if (int(span.size()) > 3 * o_maxWordLength) {
+                LOGINF("kosplitter: dropping span too long: " << span);
+            } else if (!takeword(
+                           span, m_wordpos, abspos, abspos + span.size())) {
                 return false;
             }
         }
