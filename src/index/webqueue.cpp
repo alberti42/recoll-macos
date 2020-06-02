@@ -472,10 +472,10 @@ WebQueueIndexer::processone(const string &path,
     dounlink = true;
 out:
     if (dounlink) {
-        if (unlink(path.c_str())) {
+        if (!path_unlink(path)) {
             LOGSYSERR("WebQueueIndexer::processone", "unlink", path);
         }
-        if (unlink(dotpath.c_str())) {
+        if (!path_unlink(dotpath)) {
             LOGSYSERR("WebQueueIndexer::processone", "unlink", dotpath);
         }
     }

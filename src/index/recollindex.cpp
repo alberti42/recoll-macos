@@ -145,7 +145,7 @@ public:
         if (path_exists(m_stopfilename)) {
             LOGINF("recollindex: asking indexer to stop because " <<
                    m_stopfilename << " exists\n");
-            unlink(m_stopfilename.c_str());
+            path_unlink(m_stopfilename);
             stopindexing = true;
         }
         if (stopindexing) {

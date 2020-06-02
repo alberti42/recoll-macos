@@ -170,7 +170,7 @@ static bool path_gettempfilename(string& filename, string& reason)
         return false;
     }
     close(fd);
-    unlink(cp);
+    path_unlink(cp);
     filename = cp;
     free(cp);
     return true;
@@ -474,7 +474,7 @@ TempFile::Internal::~Internal()
 {
     if (!m_filename.empty() && !m_noremove) {
         LOGDEB1("TempFile:~: unlinking " << m_filename << endl);
-        if (unlink(m_filename.c_str()) != 0) {
+        if (!path_unlink(m_filename)) {
             LOGSYSERR("TempFile:~", "unlink", m_filename);
 #ifdef _WIN32
             {
@@ -500,7 +500,7 @@ void TempFile::tryRemoveAgain()
     std::unique_lock<std::mutex> lock(remTmpFNMutex);
     std::list<string>::iterator pos = remainingTempFileNames.begin();
     while (pos != remainingTempFileNames.end()) {
-        if (unlink(pos->c_str()) != 0) {
+        if (!path_unlink(*pos)) {
             LOGSYSERR("TempFile::tryRemoveAgain", "unlink", *pos);
             pos++;
         } else {

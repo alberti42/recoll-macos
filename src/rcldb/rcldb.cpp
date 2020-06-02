@@ -246,7 +246,7 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
     if (mode == DbTrunc) {
         if (path_exists(path_cat(dir, "iamchert"))) {
             wipedir(dir);
-            unlink(dir.c_str());
+            path_unlink(dir);
         }
     }
 #endif

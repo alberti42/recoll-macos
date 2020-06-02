@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include "safesysstat.h"
 #include "safeunistd.h"
+#include "pathut.h"
 #ifndef _WIN32
 #include <sys/time.h>
 #include <utime.h>
@@ -83,7 +84,7 @@ bool copyfile(const char *src, const char *dst, string &reason, int flags)
     ret = true;
 out:
     if (ret == false && !(flags&COPYFILE_NOERRUNLINK))
-        ::unlink(dst);
+        path_unlink(dst);
     if (sfd >= 0)
         ::close(sfd);
     if (dfd >= 0)
@@ -121,7 +122,7 @@ bool stringtofile(const string& dt, const char *dst, string& reason,
     ret = true;
 out:
     if (ret == false && !(flags&COPYFILE_NOERRUNLINK))
-        ::unlink(dst);
+        path_unlink(dst);
     if (dfd >= 0)
         ::close(dfd);
     return ret;
@@ -133,7 +134,7 @@ bool renameormove(const char *src, const char *dst, string &reason)
     // Windows refuses to rename to an existing file. It appears that
     // there are workarounds (See MoveFile, MoveFileTransacted), but
     // anyway we are not expecting atomicity here.
-    unlink(dst);
+    path_unlink(dst);
 #endif
     
     // First try rename(2). If this succeeds we're done. If this fails
@@ -182,7 +183,7 @@ bool renameormove(const char *src, const char *dst, string &reason)
     utimes(dst, times);
 #endif
     // All ok, get rid of origin
-    if (unlink(src) < 0) {
+    if (!path_unlink(src)) {
         reason += string("Can't unlink ") + src + "Error : " + strerror(errno);
     }
 

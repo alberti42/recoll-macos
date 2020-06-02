@@ -854,6 +854,12 @@ bool path_chdir(const std::string& path)
     return CHDIR(syspath) == 0;
 }
 
+bool path_unlink(const std::string& path)
+{
+    SYSPATH(path, syspath);
+    return UNLINK(syspath);
+}
+
 #if !defined(__GNUC__) || __GNUC__ > 4 || defined(__clang__)
 // Not sure what g++ version supports fstream assignment but 4.9
 // (jessie) certainly does not
