@@ -10,7 +10,6 @@ TARGET = librecoll
 TEMPLATE = lib
 
 DEFINES += LIBRECOLL_LIBRARY BUILDING_RECOLL
-DEFINES += UNICODE
 DEFINES += PSAPI_VERSION=1
 DEFINES += READFILE_ENABLE_MINIZ
 DEFINES += READFILE_ENABLE_MD5
@@ -131,6 +130,7 @@ INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
             ../../xaposix ../../confgui ../../bincimapmime 
 
 windows {
+  defines += UNICODE
   contains(QMAKE_CC, gcc){
     # MingW
     # This is necessary to avoid an undefined impl__xmlFree.

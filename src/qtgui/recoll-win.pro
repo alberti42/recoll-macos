@@ -13,9 +13,6 @@ DEFINES += USING_WEBENGINE
 QT += xml printsupport
 
 DEFINES += BUILDING_RECOLL
-DEFINES -= UNICODE
-DEFINES -= _UNICODE
-DEFINES += _MBCS
 DEFINES += PSAPI_VERSION=1
 DEFINES += __WIN32__
 
@@ -110,6 +107,7 @@ INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
               ../utils ../aspell ../rcldb ../qtgui ../xaposix \
               confgui widgets
 windows {
+    DEFINES += UNICODE
     RC_FILE = recoll.rc
     contains(QMAKE_CC, gcc){
         # MingW
