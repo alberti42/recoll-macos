@@ -103,7 +103,7 @@ string path_thisexecpath()
     return path;
 }
 
-// On Windows, we ese a subdirectory named "rcltmp" inside the windows
+// On Windows, we use a subdirectory named "rcltmp" inside the windows
 // temp location to create the temporary files in.
 static const string& path_wingetrcltmpdir()
 {
@@ -111,18 +111,18 @@ static const string& path_wingetrcltmpdir()
     static string tdir;
     if (tdir.empty()) {
         wchar_t dbuf[MAX_PATH + 1];
-        GetTempPathW(MAX_PATH + 1, dbuf);
-        wchartoutf8(dbuf, tdir);
-        tdir = path_cat(tdir, "rcltmp");;
+        GetTempPathW(MAX_PATH, dbuf);
+        if (!wchartoutf8(dbuf, tdir)) {
+            LOGERR("path_wingetrcltmpdir: wchartoutf8 failed. Using c:/Temp\n");
+            tdir = "C:/Temp";
+        }
+        LOGDEB1("path_wingetrcltmpdir(): gettemppathw ret: " << tdir << "\n");
+        tdir = path_cat(tdir, "rcltmp");
         if (!path_exists(tdir)) {
-            if (path_makepath(tdir, 0700)) {
+            if (!path_makepath(tdir, 0700)) {
                 LOGSYSERR("path_wingettempfilename", "path_makepath", tdir);
             }
         }
-        // Try to use a short path to avoid issues in case the user
-        // login name is not ascii, especially with command line
-        // parameter passing
-        tdir = path_shortpath(tdir);
     }
     return tdir;
 }
@@ -303,6 +303,11 @@ const string& tmplocation()
     static string stmpdir;
     if (stmpdir.empty()) {
         const char *tmpdir = getenv("RECOLL_TMPDIR");
+
+#ifndef _WIN32
+        /* Don't use these under windows because they will return
+         * non-ascii non-unicode stuff (would have to call _wgetenv()
+         * instead. path_wingetrcltmpdir() will manage */
         if (tmpdir == 0) {
             tmpdir = getenv("TMPDIR");
         }
@@ -312,6 +317,8 @@ const string& tmplocation()
         if (tmpdir == 0) {
             tmpdir = getenv("TEMP");
         }
+#endif
+
         if (tmpdir == 0) {
 #ifdef _WIN32
             stmpdir = path_wingetrcltmpdir();
