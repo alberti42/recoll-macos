@@ -548,19 +548,29 @@ static void flushIdxReasons()
     }
 }
 
+#if defined(_WIN32)
+#define WARGTOSTRING(w) wchartoutf8(w)
+static vector<string> argstovector(int argc, wchar_t **argv)
+#else
+#define WARGTOSTRING(w) (w)
 static vector<string> argstovector(int argc, char **argv)
+#endif
 {
+    thisprog = path_absolute(WARGTOSTRING(argv[0]));
+    argc--; argv++;
     vector<string> args;
     for (int i = 0; i < argc; i++) {
-        args.push_back(argv[i]);
+        args.push_back(WARGTOSTRING(argv[i]));
     }
     return args;
 }
+
 static vector<string> fileToArgs(const string& fn)
 {
     string reason, data;
     if (!file_to_string(fn, data, &reason)) {
-        cerr << "Failed reading args file " << fn << " errno " << errno << "\n";
+        std::cerr << "Failed reading args file " << fn << " reason " <<
+            reason << "\n";
         exit(1);
     }
     vector<string> args;
@@ -568,12 +578,19 @@ static vector<string> fileToArgs(const string& fn)
     return args;
 }
 
-int main(int argc, char **argv)
+// A bit of history: it's difficult to pass non-ascii parameters
+// (e.g. path names) on the command line under Windows without using
+// Unicode. It was first thought possible to use a temporary file to
+// hold the args, and make sure that the path for this would be ASCII,
+// based on using shortpath(). Unfortunately, this does not work in
+// all cases, so the second change was to use wmain(), but the
+// now largely redundant args-in-file passing trick was kept anyway.
+#ifdef _WIN32
+int wmain(int argc, wchar_t *argv[])
+#else
+int main(int argc, char *argv[])
+#endif
 {
-    string a_config;
-    int sleepsecs = 60;
-    vector<string> selpatterns;
-    
     // The reexec struct is used by the daemon to shed memory after
     // the initial indexing pass and to restart when the configuration
     // changes
@@ -581,9 +598,6 @@ int main(int argc, char **argv)
     o_reexec = new ReExec;
     o_reexec->init(argc, argv);
 #endif
-
-    thisprog = path_absolute(argv[0]);
-    argc--; argv++;
 
     vector<string> args = argstovector(argc, argv);
 
@@ -593,6 +607,9 @@ int main(int argc, char **argv)
         args = fileToArgs(args[0]);
     }
 
+    vector<string> selpatterns;
+    int sleepsecs{60};
+    string a_config;
     unsigned int aremain = args.size();
     unsigned int argidx = 0;
     for (; argidx < args.size(); argidx++) {
@@ -703,18 +720,13 @@ int main(int argc, char **argv)
 
     string rundir;
     config->getConfParam("idxrundir", rundir);
-    if (!rundir.compare("tmp")) {
-        LOGINFO("recollindex: changing current directory to [" <<
-                tmplocation() << "]\n");
-        if (chdir(tmplocation().c_str()) < 0) {
-            LOGERR("chdir(" << tmplocation() << ") failed, errno " << errno <<
-                   "\n");
+    if (!rundir.empty()) {
+        if (!rundir.compare("tmp")) {
+            rundir = tmplocation();
         }
-    } else if (!rundir.empty()) {
-        LOGINFO("recollindex: changing current directory to [" << rundir <<
-                "]\n");
-        if (chdir(rundir.c_str()) < 0) {
-            LOGERR("chdir(" << rundir << ") failed, errno " << errno << "\n");
+        LOGINFO("recollindex: changing current directory to [" <<rundir<<"]\n");
+        if (!path_chdir(rundir)) {
+            LOGSYSERR("main", "chdir", rundir);
         }
     }
 
