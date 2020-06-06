@@ -156,7 +156,7 @@ windows {
     CONFIG += staticlib
     DEFINES += USING_STATIC_LIBICONV
     INCLUDEPATH += ../../windows \
-      $$RECOLLDEPS/msvc/xapian-core-1.4.15/include \
+      $$RECOLLDEPS/msvc/xapian-core/include \
       $$RECOLLDEPS/msvc/zlib-1.2.11/ \
       $$RECOLLDEPS/msvc/libxslt/libxslt-1.1.29/ \
       $$RECOLLDEPS/msvc/libxml2/libxml2-2.9.4+dfsg1/include \

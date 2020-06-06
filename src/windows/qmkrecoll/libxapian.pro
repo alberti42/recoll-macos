@@ -4,11 +4,10 @@ TARGET = libxapian
 TEMPLATE = lib
 
 DEFINES += __WIN32__
-DEFINES -= _UNICODE
-DEFINES -= UNICODE
+DEFINES += UNICODE
 DEFINES += HAVE_CONFIG_H
 
-XAPIANDIR = ../../../../recolldeps/msvc/xapian-core-1.4.15/
+XAPIANDIR = ../../../../recolldeps/msvc/xapian-core/
 
 SOURCES += \
 $$XAPIANDIR/api/compactor.cc \
