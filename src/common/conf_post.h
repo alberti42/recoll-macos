@@ -8,7 +8,7 @@
 #include "safewindows.h"
 // gmtime is supposedly thread-safe on windows
 #define gmtime_r(A, B) gmtime(A)
-#define localtime_r(A,B) localtime(A)
+#define localtime_r(A,B) localtime_s(B,A)
 typedef int mode_t;
 #define fseeko _fseeki64
 #define ftello (off_t)_ftelli64
