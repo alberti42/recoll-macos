@@ -548,7 +548,13 @@ static void flushIdxReasons()
     }
 }
 
-#if defined(_WIN32)
+// With more recent versions of mingw, we could use -municode to
+// enable wmain.  Another workaround is to use main, then call
+// GetCommandLineW and CommandLineToArgvW, to then call wmain(). If
+// ever we need to build with mingw again.
+#define USE_WMAIN (defined(_WIN32) && defined(_MSC_VER))
+
+#if USE_WMAIN
 #define WARGTOSTRING(w) wchartoutf8(w)
 static vector<string> argstovector(int argc, wchar_t **argv)
 #else
@@ -578,14 +584,15 @@ static vector<string> fileToArgs(const string& fn)
     return args;
 }
 
-// A bit of history: it's difficult to pass non-ascii parameters
+
+// A bit of history: it's difficult to pass non-ASCII parameters
 // (e.g. path names) on the command line under Windows without using
 // Unicode. It was first thought possible to use a temporary file to
 // hold the args, and make sure that the path for this would be ASCII,
 // based on using shortpath(). Unfortunately, this does not work in
 // all cases, so the second change was to use wmain(), but the
 // now largely redundant args-in-file passing trick was kept anyway.
-#ifdef _WIN32
+#if USE_WMAIN
 int wmain(int argc, wchar_t *argv[])
 #else
 int main(int argc, char *argv[])

@@ -180,11 +180,12 @@ bool wchartoutf8(const wchar_t *in, std::string& out, size_t wlen)
     if (wlen == 0) {
         wlen = wcslen(in);
     }
-    int flags = WC_ERR_INVALID_CHARS|WC_NO_BEST_FIT_CHARS;
+    int flags = WC_ERR_INVALID_CHARS;
     int bytes = ::WideCharToMultiByte(
         CP_UTF8, flags, in, wlen, nullptr, 0, nullptr, nullptr);
     if (bytes <= 0) {
         LOGERR("wchartoutf8: conversion error1\n");
+        fwprintf(stderr, L"wchartoutf8: conversion error1 for [%s]\n", in);
         return false;
     }
     char *cp = (char *)malloc(bytes+1);
@@ -202,6 +203,8 @@ bool wchartoutf8(const wchar_t *in, std::string& out, size_t wlen)
     cp[bytes] = 0;
     out = cp;
     free(cp);
+    fwprintf(stderr, L"wchartoutf8: in: [%s]\n", in);
+    fprintf(stderr, "wchartoutf8: out:  [%s]\n", out.c_str());
     return true;
 }
 
