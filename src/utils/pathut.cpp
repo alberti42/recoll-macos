@@ -203,8 +203,8 @@ bool wchartoutf8(const wchar_t *in, std::string& out, size_t wlen)
     cp[bytes] = 0;
     out = cp;
     free(cp);
-    fwprintf(stderr, L"wchartoutf8: in: [%s]\n", in);
-    fprintf(stderr, "wchartoutf8: out:  [%s]\n", out.c_str());
+    //fwprintf(stderr, L"wchartoutf8: in: [%s]\n", in);
+    //fprintf(stderr, "wchartoutf8: out:  [%s]\n", out.c_str());
     return true;
 }
 
