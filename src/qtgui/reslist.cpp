@@ -144,31 +144,20 @@ public:
                          map<string, vector<string> >& sugg);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
 #ifdef USING_WEBENGINE
-    virtual string linkPrefix() override {return "http://localhost/";} 
+    virtual string linkPrefix() override {return "http://localhost/";}
+    virtual string bodyAttrs() override {
+        return "onload=\"addEventListener('contextmenu', saveLoc)\"";
+    }
 #endif
 private:
     ResList *m_reslist;
 };
-
-#if 0
-FILE *fp;
-void logdata(const char *data)
-{
-    if (fp == 0)
-        fp = fopen("/tmp/recolltoto.html", "a");
-    if (fp)
-        fprintf(fp, "%s", data);
-}
-#else
-#define logdata(X)
-#endif
 
 //////////////////////////////
 // /// QtGuiResListPager methods:
 bool QtGuiResListPager::append(const string& data)
 {
     LOGDEB2("QtGuiReslistPager::appendString   : " << data << "\n");
-    logdata(data.c_str());
     m_reslist->append(QString::fromUtf8(data.c_str()));
     return true;
 }
@@ -178,7 +167,6 @@ bool QtGuiResListPager::append(const string& data, int docnum,
 {
     LOGDEB2("QtGuiReslistPager::appendDoc: blockCount " <<
             m_reslist->document()->blockCount() << ", " << data << "\n");
-    logdata(data.c_str());
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     QString sdoc = QString(
         "<div class=\"rclresult\" id=\"%1\" rcldocnum=\"%1\">").arg(docnum);
@@ -827,15 +815,6 @@ void ResList::displayPage()
     setHtml(m_text);
 #endif
 
-#if defined(USING_WEBENGINE)
-    // Have to delay running this. Alternative would be to set it as
-    // onload on the body element in the html, like upplay does, but
-    // this would need an ennoying reslistpager modification.
-    m_js = "elt=document.getElementsByTagName('body')[0];"
-        "elt.addEventListener('contextmenu', saveLoc);";
-    QTimer::singleShot(200, this, SLOT(runStoredJS()));
-#endif
-
     LOGDEB0("ResList::displayPg: hasNext " << m_pager->hasNext() <<
             " atBot " << scrollIsAtBottom() << " hasPrev " <<
             m_pager->hasPrev() << " at Top " << scrollIsAtTop() << " \n");
@@ -1108,7 +1087,7 @@ void ResList::onPopupJsDone(const QVariant &jr)
             QString nm = qsl[i].left(eq).trimmed();
             QString value = qsl[i].right(qsl[i].size() - (eq+1)).trimmed();
             if (!nm.compare("rcldocnum")) {
-                m_popDoc = atoi(qs2utf8s(value).c_str());
+                m_popDoc = pageFirstDocNum() + atoi(qs2utf8s(value).c_str());
             } else {
                 LOGERR("onPopupJsDone: unknown key: " << qs2utf8s(nm) << "\n");
             }

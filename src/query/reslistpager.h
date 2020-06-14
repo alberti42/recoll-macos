@@ -116,6 +116,7 @@ public:
     }
     virtual string absSep() {return "&hellip;";}
     virtual string linkPrefix() {return "";}
+    virtual string bodyAttrs() {return string();}
 private:
     int                  m_pagesize;
     bool                 m_alwaysSnippets;
