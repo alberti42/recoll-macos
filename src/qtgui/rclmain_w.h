@@ -48,6 +48,7 @@ class SpecIdxW;
 class WebcacheEdit;
 class ConfIndexW;
 class RclTrayIcon;
+class QShortcut;
 
 #include "ui_rclmain.h"
 
@@ -203,6 +204,7 @@ private:
     QComboBox      *m_filtCMB{0};
     QButtonGroup   *m_filtBGRP{0};
     QMenu          *m_filtMN{0};
+    QShortcut      *m_tablefocseq{0};
     QFileSystemWatcher m_watcher;
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc{0}; // Indexing process

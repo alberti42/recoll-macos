@@ -120,7 +120,10 @@ unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
   LIBS += -L../.libs -lrecoll
-
+  # You will need LD_PRELOAD=/path/to/libasan.xx because -lasan need to be
+  # first in libs, so can't use LIBS +=
+  #  QMAKE_CXXFLAGS += -fsanitize=address -fno-omit-frame-pointer
+  
   !macx {
     # Note: libdir may be substituted with sthing like $(exec_prefix)/lib
     # at this point and will go as such in the Makefile. Expansion will be

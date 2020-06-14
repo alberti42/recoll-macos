@@ -590,7 +590,7 @@ void ResTable::init()
         splitter->setSizes(sizes);
     }
 
-    delete textBrowser;
+    deleteZ(textBrowser);
     m_detail = new ResTableDetailArea(this);
     m_detail->setReadOnly(true);
     m_detail->setUndoRedoEnabled(false);

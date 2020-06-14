@@ -402,11 +402,6 @@ int main(int argc, char **argv)
     }
     QTimer::singleShot(0, mainWindow, SLOT(initDbOpen()));
 
-    // Connect exit handlers etc.. Beware, apparently this must come
-    // after mainWindow->show()?
-    app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
-    app.connect(&app, SIGNAL(aboutToQuit()), mainWindow, SLOT(close()));
-
     mainWindow->sSearch->searchTypCMB->setCurrentIndex(prefs.ssearchTyp);
     mainWindow->sSearch->searchTypeChanged(prefs.ssearchTyp);
     if (op_flags & OPT_q) {

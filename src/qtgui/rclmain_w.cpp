@@ -134,6 +134,10 @@ void RclMain::init()
     DocSequence::set_translations((const char *)tr("sorted").toUtf8(), 
                                   (const char *)tr("filtered").toUtf8());
 
+    // A shortcut to get the focus back to the search entry, in table
+    // mode only.
+    m_tablefocseq = new QShortcut(QKeySequence("Ctrl+r"), this);
+
     periodictimer = new QTimer(this);
 
     // idxstatus file. Make sure it exists before trying to watch it
@@ -279,7 +283,6 @@ void RclMain::init()
     actionShowResultsAsTable->setChecked(prefs.showResultsAsTable);
     on_actionShowResultsAsTable_toggled(prefs.showResultsAsTable);
 
-    // A shortcut to get the focus back to the search entry. 
     QKeySequence seq("Ctrl+Shift+s");
     QShortcut *sc = new QShortcut(seq, this);
     connect(sc, SIGNAL (activated()), sSearch, SLOT (takeFocus()));
@@ -462,8 +465,7 @@ void RclMain::enableTrayIcon(bool on)
         }
         m_trayicon->show();
     } else {
-        delete m_trayicon;
-        m_trayicon = 0;
+        deleteZ(m_trayicon);
     }
 }
 
@@ -643,12 +645,12 @@ void RclMain::closeEvent(QCloseEvent *ev)
     } else {
         prefs.showmode = PrefsPack::SHOW_NORMAL;
     }
+    ev->ignore();
     if (prefs.closeToTray && m_trayicon && m_trayicon->isVisible()) {
         hide();
-        ev->ignore();
-    } else {
-        fileExit();
+        return;
     }
+    fileExit();
 }
 
 void RclMain::fileExit()
@@ -684,18 +686,8 @@ void RclMain::fileExit()
 
     rwSettings(true);
 
-    // We should do the right thing and let exit() call all the
-    // cleanup handlers. But we have few persistent resources and qt
-    // exit is a great source of crashes and pita. So do our own
-    // cleanup:
     deleteAllTempFiles();
-    // and scram out
-    LOGDEB("RclMain: fileExit: calling _Exit(0)\n");
-#ifdef USING_WEBENGINE
     qApp->exit(0);
-#else
-    _Exit(0);
-#endif
 }
 
 // Start a db query and set the reslist docsource
@@ -886,13 +878,12 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
     restable->setVisible(on);
     reslist->setVisible(!on);
     actionSaveResultsAsCSV->setEnabled(on);
-    static QShortcut tablefocseq(QKeySequence("Ctrl+r"), this);
     if (!on) {
         int docnum = restable->getDetailDocNumOrTopRow();
         if (docnum >= 0) {
             reslist->resultPageFor(docnum);
         }
-        disconnect(&tablefocseq, SIGNAL(activated()),
+        disconnect(m_tablefocseq, SIGNAL(activated()),
                    restable, SLOT(takeFocus()));
         sSearch->takeFocus();
     } else {
@@ -903,7 +894,7 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
         nextPageAction->setEnabled(false);
         prevPageAction->setEnabled(false);
         firstPageAction->setEnabled(false);
-        connect(&tablefocseq, SIGNAL(activated()), 
+        connect(m_tablefocseq, SIGNAL(activated()), 
                 restable, SLOT(takeFocus()));
     }
 }

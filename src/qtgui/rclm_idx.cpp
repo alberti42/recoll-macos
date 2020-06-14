@@ -203,23 +203,15 @@ void RclMain::periodic100()
     }
 
     // Possibly cleanup the dead viewers
-    for (vector<ExecCmd*>::iterator it = m_viewers.begin();
-         it != m_viewers.end(); it++) {
+    for (auto it = m_viewers.begin(); it != m_viewers.end(); ) {
         int status;
         if ((*it)->maybereap(&status)) {
-            deleteZ(*it);
+            delete *it;
+            it = m_viewers.erase(it);
+        } else {
+            it++;
         }
     }
-    vector<ExecCmd*> v;
-    for (vector<ExecCmd*>::iterator it = m_viewers.begin();
-         it != m_viewers.end(); it++) {
-        if (*it)
-            v.push_back(*it);
-    }
-    m_viewers = v;
-
-    if (recollNeedsExit)
-        fileExit();
 }
 
 // On win32 we have trouble passing filename args on the command line

@@ -420,7 +420,7 @@ void RclMain::showActiveTypes()
     dialog.groupBox->setTitle(tr("Content has been indexed for these MIME types:"));
 
     // We replace the list with an editor so that the user can copy/paste
-    delete dialog.listWidget;
+    deleteZ(dialog.listWidget);
     QTextEdit *editor = new QTextEdit(dialog.groupBox);
     editor->setReadOnly(true);
     dialog.horizontalLayout->addWidget(editor);
@@ -447,7 +447,7 @@ void RclMain::newDupsW(const Rcl::Doc, const vector<Rcl::Doc> dups)
     dialog.groupBox->setTitle(tr("These Urls ( | ipath) share the same"
                                  " content:"));
     // We replace the list with an editor so that the user can copy/paste
-    delete dialog.listWidget;
+    deleteZ(dialog.listWidget);
     QTextEdit *editor = new QTextEdit(dialog.groupBox);
     editor->setReadOnly(true);
     dialog.horizontalLayout->addWidget(editor);
