@@ -860,7 +860,7 @@ bool path_chdir(const std::string& path)
 bool path_unlink(const std::string& path)
 {
     SYSPATH(path, syspath);
-    return UNLINK(syspath);
+    return UNLINK(syspath) == 0;
 }
 
 #if !defined(__GNUC__) || __GNUC__ > 4 || defined(__clang__)
