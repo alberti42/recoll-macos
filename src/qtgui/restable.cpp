@@ -83,7 +83,6 @@ public:
     virtual string trans(const string& in);
     virtual const string &parFormat();
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
-    virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
 private:
     ResTable *m_parent;
 };
@@ -109,22 +108,6 @@ const string& ResTablePager::parFormat()
     return prefs.creslistformat;
 }
 
-string ResTablePager::iconUrl(RclConfig *config, Rcl::Doc& doc)
-{
-    if (doc.ipath.empty()) {
-        vector<Rcl::Doc> docs;
-        docs.push_back(doc);
-        vector<string> paths;
-        Rcl::docsToPaths(docs, paths);
-        if (!paths.empty()) {
-            string path;
-            if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
-                return cstr_fileu + path;
-            }
-        }
-    }
-    return ResListPager::iconUrl(config, doc);
-}
 
 /////////////////////////////////////////////////////////////////////////////
 /// Detail text area methods

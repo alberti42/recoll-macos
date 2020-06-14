@@ -143,7 +143,6 @@ public:
     virtual void suggest(const vector<string>uterms, 
                          map<string, vector<string> >& sugg);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
-    virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
 #ifdef USING_WEBENGINE
     virtual string linkPrefix() override {return "http://localhost/";} 
 #endif
@@ -290,29 +289,6 @@ void QtGuiResListPager::suggest(const vector<string>uterms,
             }
         }
     }
-}
-
-string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
-{
-    if (doc.ipath.empty()) {
-        vector<Rcl::Doc> docs;
-        docs.push_back(doc);
-        vector<string> paths;
-        Rcl::docsToPaths(docs, paths);
-        if (!paths.empty()) {
-            string path;
-            LOGDEB2("ResList::iconUrl: source path [" << paths[0] << "]\n");
-            if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
-                LOGDEB2("ResList::iconUrl: icon path [" << path << "]\n");
-                return cstr_fileu + path;
-            } else {
-                LOGDEB2("ResList::iconUrl: no icon: path [" << path << "]\n");
-            }
-        } else {
-            LOGDEB("ResList::iconUrl: docsToPaths failed\n");
-        }
-    }
-    return ResListPager::iconUrl(config, doc);
 }
 
 /////// /////// End reslistpager methods

@@ -478,9 +478,29 @@ string ResListPager::prevUrl()
 
 string ResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 {
+    // If this is a top level doc, check for a thumbnail image
+    if (doc.ipath.empty()) {
+        vector<Rcl::Doc> docs;
+        docs.push_back(doc);
+        vector<string> paths;
+        Rcl::docsToPaths(docs, paths);
+        if (!paths.empty()) {
+            string path;
+            LOGDEB2("ResList::iconUrl: source path [" << paths[0] << "]\n");
+            if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
+                LOGDEB2("ResList::iconUrl: icon path [" << path << "]\n");
+                return cstr_fileu + path;
+            } else {
+                LOGDEB2("ResList::iconUrl: no icon: path [" << path << "]\n");
+            }
+        } else {
+            LOGDEB("ResList::iconUrl: docsToPaths failed\n");
+        }
+    }
+
+    // No thumbnail, look for the MIME type icon.
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
-
     return path_pathtofileurl(config->getMimeIconPath(doc.mimetype, apptag));
 }
 
