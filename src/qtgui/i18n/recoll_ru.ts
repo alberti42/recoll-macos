@@ -250,47 +250,47 @@
     <message>
         <location filename="../confgui/confguiindex.cpp" line="+205"/>
         <source>Can&apos;t write configuration file</source>
-        <translation type="unfinished">Невозможно записать файл конфигурации</translation>
+        <translation>Невозможно записать файл конфигурации</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Global parameters</source>
-        <translation type="unfinished">Общие параметры</translation>
+        <translation>Общие параметры</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Local parameters</source>
-        <translation type="unfinished">Частные параметры</translation>
+        <translation>Частные параметры</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Search parameters</source>
-        <translation type="unfinished">Параметры поиска</translation>
+        <translation>Параметры поиска</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Top directories</source>
-        <translation type="unfinished">Каталоги верхнего уровня</translation>
+        <translation>Каталоги верхнего уровня</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation type="unfinished">Список каталогов, где начинается рекурсивное индексирование. По умолчанию: домашний каталог.</translation>
+        <translation>Список каталогов, где начинается рекурсивное индексирование. По умолчанию: домашний каталог.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Skipped paths</source>
-        <translation type="unfinished">Пропускать</translation>
+        <translation>Пропускать</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished">Полный путь к директории, которая не будет затрагиваться при индексировании. &lt;br&gt;Может содержать маски. Записи должны совпадать с путями, которые видит индексатор (например, если topdirs включает «/home/me», а «/home» на самом деле ведёт к «/usr/home», правильной записью skippedPath будет «/home/me/tmp*», а не «/usr/home/me/tmp*»)</translation>
+        <translation>Полный путь к каталогу, который не будет затрагиваться при индексировании. &lt;br&gt;Может содержать маски. Записи должны совпадать с путями, которые видит индексатор (например, если topdirs включает «/home/me», а «/home» на самом деле ведёт к «/usr/home», правильной записью skippedPath будет «/home/me/tmp*», а не «/usr/home/me/tmp*»)</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Stemming languages</source>
-        <translation type="unfinished">Языки со словоформами</translation>
+        <translation>Языки со словоформами</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
@@ -299,57 +299,57 @@
     <message>
         <location line="+7"/>
         <source>Log file name</source>
-        <translation type="unfinished">Файл журнала</translation>
+        <translation>Файл журнала</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation type="unfinished">Файл, куда будут записываться сообщения.&lt;br&gt;Используйте &apos;stderr&apos; для вывода в терминал</translation>
+        <translation>Файл, куда будут записываться сообщения.&lt;br&gt;Используйте «stderr» для вывода в терминал</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Log verbosity level</source>
-        <translation type="unfinished">Уровень подробности журнала</translation>
+        <translation>Уровень подробности журнала</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation type="unfinished">Это значение определяет подробность поступающих сообщений,&lt;br&gt;от ошибок до отладочных данных.</translation>
+        <translation>Это значение определяет подробность поступающих сообщений,&lt;br&gt;от ошибок до отладочных данных.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Index flush megabytes interval</source>
-        <translation type="unfinished">Интервал сброса данных индекса (МБ)</translation>
+        <translation>Интервал сброса данных индекса (МБ)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation type="unfinished">Это значение определяет количество данных, индексируеммых между сбросами на диск.&lt;br&gt;Помогает контролировать использование памяти индексатором. Значение по умолчанию: 10МБ </translation>
+        <translation>Это значение определяет количество данных, индексируемых между сбросами на диск.&lt;br&gt;Помогает контролировать использование памяти индексатором. Значение по умолчанию: 10 МБ </translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
+        <translation>Пороговое значение заполнения диска, при котором индексирование будет прекращено&lt;br&gt;(например, «90%», а «0» означает отсутствие ограничений)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="unfinished">Процент занятого пространства на диске — общее пространство диска, занятое не только индексом, — при котором индексирование завершится ошибкой и прекратится.&lt;br&gt;По умолчанию значение 0 снимает любые ограничения.</translation>
+        <translation>Процент занятого пространства на диске — общее пространство диска, занятое не только индексом, — при котором индексирование завершится ошибкой и прекратится.&lt;br&gt;По умолчанию значение «0» снимает любые ограничения.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>No aspell usage</source>
-        <translation type="unfinished">Не использовать aspell</translation>
+        <translation>Не использовать aspell</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation type="unfinished">Отключает использование aspell для создания вариантов написания в обозревателе терминов.&lt;br&gt; Полезно, если aspell отсутствует или не работает. </translation>
+        <translation>Отключает использование aspell для создания вариантов написания в обозревателе терминов.&lt;br&gt; Полезно, если aspell отсутствует или не работает. </translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Aspell language</source>
-        <translation type="unfinished">Язык aspell</translation>
+        <translation>Язык aspell</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
@@ -358,102 +358,102 @@
     <message>
         <location line="-37"/>
         <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
-        <translation type="unfinished"></translation>
+        <translation>Языки, для которых будут построены словари однокоренных слов.&lt;br&gt;Возможные значения доступны в документации библиотеки Xapian. Например, «english», «french», «german»...</translation>
     </message>
     <message>
         <location line="+38"/>
         <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
-        <translation type="unfinished"></translation>
+        <translation>Язык словаря aspell. Значениями являются двухбуквенные коды языков, например «en» или «ru»...&lt;br&gt;Если значение не установлено, для его расчёта будут использованы параметры системы (локаль). Чтобы узнать, какие варианты доступны в системе, наберите «aspell config» и проверьте, какие .dat-файлы содержатся в каталоге «data-dir».</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Database directory name</source>
-        <translation type="unfinished">Каталог базы данных</translation>
+        <translation>Каталог базы данных</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished">Имя каталога, в котором хранится индекс&lt;br&gt;Путь указывается относительно каталога конфигурации и не является абсолютным. По умолчанию: «xapiandb».</translation>
+        <translation>Имя каталога, в котором хранится индекс&lt;br&gt;Путь указывается относительно каталога конфигурации и не является абсолютным. По умолчанию: «xapiandb».</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Unac exceptions</source>
-        <translation type="unfinished">Исключения unac</translation>
+        <translation>Исключения unac</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished">&lt;p&gt;Это исключения для механизма unac, который по умолчанию отбрасывает все диакритические знаки и проводит каноническую декомпозицию. Можно переопределить механизм удаления надстрочных знаков для отдельных символов или добавить правила декомпозиции (например, для лигатур). В каждой, отделённой запятой записи первый символ является исходным, а остальные — его интерпретация.</translation>
+        <translation>&lt;p&gt;Это исключения для механизма unac, который по умолчанию отбрасывает все диакритические знаки и проводит каноническую декомпозицию. Можно переопределить механизм удаления надстрочных знаков для отдельных символов или добавить правила декомпозиции (например, для лигатур). В каждой, отделённой запятой записи первый символ является исходным, а остальные — его интерпретация.</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Process the WEB history queue</source>
-        <translation type="unfinished">Обрабатывать просмотренные веб-страницы</translation>
+        <translation>Обрабатывать просмотренные веб-страницы</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation type="unfinished">Включает индексирование страниц, просмотренных в Firefox.&lt;br&gt;(требуется установка дополнения Recoll для Firefox)</translation>
+        <translation>Включает индексирование страниц, просмотренных в Firefox.&lt;br&gt;(требуется установка дополнения Recoll для Firefox)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Web page store directory name</source>
-        <translation type="unfinished">Имя каталога хранения веб-страниц</translation>
+        <translation>Имя каталога хранения веб-страниц</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="unfinished">Имя каталога хранения просмотренных веб-страниц.&lt;br&gt;Путь указывается относительно каталога конфигурации и не является абсолютным.</translation>
+        <translation>Имя каталога хранения просмотренных веб-страниц.&lt;br&gt;Путь указывается относительно каталога конфигурации и не является абсолютным.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Max. size for the web store (MB)</source>
-        <translation type="unfinished">Максимальный размер веб-хранилища (МБ)</translation>
+        <translation>Максимальный размер веб-хранилища (МБ)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="unfinished">Записи будут удалены при достижении максимального размера хранилища.&lt;br&gt;Целесообразно увеличить размер, так как уменьшение значения не повлечёт усечение сущесвующего файла (в результате приведёт только к расходованию пространства впустую).</translation>
+        <translation>Записи будут удалены при достижении максимального размера хранилища.&lt;br&gt;Целесообразно увеличить размер, так как уменьшение значения не повлечёт усечение существующего файла (в результате приведёт только к расходованию пространства впустую).</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Automatic diacritics sensitivity</source>
-        <translation type="unfinished">Автоматический учёт диакритических знаков</translation>
+        <translation>Автоматический учёт диакритических знаков</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation type="unfinished">&lt;p&gt;Автоматически включает учёт диакритических знаков, если строка поиска содержит диакритические знаки (кроме unac_except_trans). В противном случае используйте язык запросов и модификатор &lt;i&gt;D&lt;/i&gt; для учёта диакритических знаков.</translation>
+        <translation>&lt;p&gt;Автоматически включает учёт диакритических знаков, если строка поиска содержит диакритические знаки (кроме unac_except_trans). В противном случае используйте язык запросов и модификатор &lt;i&gt;D&lt;/i&gt; для учёта диакритических знаков.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Automatic character case sensitivity</source>
-        <translation type="unfinished">Автоматический учёт регистра</translation>
+        <translation>Автоматический учёт регистра</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation type="unfinished">&lt;p&gt;Автоматически включает учёт регистра, если строка поиска содержит заглавные буквы (кроме первой буквы). В противном случае используйте язык запросов и модификатор &lt;i&gt;C&lt;/i&gt; учёта регистра.</translation>
+        <translation>&lt;p&gt;Автоматически включает учёт регистра, если строка поиска содержит заглавные буквы (кроме первой буквы). В противном случае используйте язык запросов и модификатор &lt;i&gt;C&lt;/i&gt; для учёта регистра.</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Maximum term expansion count</source>
-        <translation type="unfinished">Максимальное число однокоренных слов</translation>
+        <translation>Максимальное число однокоренных слов</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation type="unfinished">&lt;p&gt;Максимальное число однокоренных слов для одного слова (например, при использовании масок). Стандартное значение 10 000 является разумным и поможет избежать ситуаций, когда запрос кажется зависшим при переборе списка слов.</translation>
+        <translation>&lt;p&gt;Максимальное число однокоренных слов для одного слова (например, при использовании масок). Стандартное значение 10 000 является разумным и поможет избежать ситуаций, когда запрос кажется зависшим при переборе списка слов.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Maximum Xapian clauses count</source>
-        <translation type="unfinished">Максимальное число Xapian-предложений</translation>
+        <translation>Максимальное число Xapian-предложений</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation type="unfinished">&lt;p&gt;Максимальное число элементарных условий, добавляемых к запросу Xapian. В некоторых случаях результат поиска однокоренных слов может быть избыточным и занять слишком большой объём памяти. Стандартное значение в 100 000 достаточно для большинства случаев и подходит для современных аппаратных конфигураций.</translation>
+        <translation>&lt;p&gt;Максимальное число элементарных условий, добавляемых к запросу Xapian. В некоторых случаях результат поиска однокоренных слов может быть избыточным и занять слишком большой объём памяти. Стандартное значение в 100 000 достаточно для большинства случаев и подходит для современных аппаратных конфигураций.</translation>
     </message>
 </context>
 <context>
@@ -461,73 +461,73 @@
     <message>
         <location line="+98"/>
         <source>Only mime types</source>
-        <translation type="unfinished">Только MIME-типы</translation>
+        <translation>Только MIME-типы</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation type="unfinished">Исчерпывающий перечень индексируемых типов MIME.&lt;br&gt;Другие типы индексироваться не будут. Обычно пуст и неактивен</translation>
+        <translation>Исчерпывающий перечень индексируемых типов MIME.&lt;br&gt;Другие типы индексироваться не будут. Обычно пуст и неактивен</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Exclude mime types</source>
-        <translation type="unfinished">Исключить MIME-типы</translation>
+        <translation>Исключить MIME-типы</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Mime types not to be indexed</source>
-        <translation type="unfinished">Типы MIME, индексирование которых проводиться не будет</translation>
+        <translation>Типы MIME, индексирование которых проводиться не будет</translation>
     </message>
     <message>
         <location line="+76"/>
         <source>Max. compressed file size (KB)</source>
-        <translation type="unfinished">Максимальный размер сжатого файла (KB)</translation>
+        <translation>Максимальный размер сжатого файла (КБ)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation type="unfinished">Это значение устанавливает предельный размер сжатых файлов, которые будут обрабатываться. Значение -1 снимает ограничение, 0 отключает распаковку.</translation>
+        <translation>Это значение устанавливает предельный размер сжатых файлов, которые будут обрабатываться. Значение «-1» снимает ограничение, «0» отключает распаковку.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Max. text file size (MB)</source>
-        <translation type="unfinished">Максимальный размер текстового файла (MB)</translation>
+        <translation>Максимальный размер текстового файла (МБ)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation type="unfinished">Это значение устанавливает предельный размер текстовых файлов, которые будут обрабатываться. Значение -1 снимает ограничение.
+        <translation>Это значение устанавливает предельный размер текстовых файлов, которые будут обрабатываться. Значение «-1» снимает ограничение.
 Рекомендуется использовать для исключения файлов журнала большого размера из процесса индексирования.</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Text file page size (KB)</source>
-        <translation type="unfinished">Размер страницы текстового файла (KB)</translation>
+        <translation>Размер страницы текстового файла (KБ)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation type="unfinished">Если это значение установлено (т.е. не равно -1), то при индексировании текстовые файлы разбиваются на блоки соответствующего размера.
+        <translation>Если это значение установлено (т.е. не равно «-1»), то при индексировании текстовые файлы разбиваются на блоки соответствующего размера.
 Данный параметр полезен при выполнении поиска в очень больших текстовых файлах (например, файлах журналов).</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Max. filter exec. time (s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное время работы фильтра (сек)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation type="unfinished">Работа внешних фильтров, длящаяся дольше указанного времени, будет прервана. Применяется для редких случаев (например, с фильтром postscript), когда возникает зацикливание фильтра при обработке какого-то документа. Установите значение -1, чтобы снять ограничение.
+        <translation>Работа внешних фильтров, длящаяся дольше указанного времени, будет прервана. Применяется для редких случаев (например, с фильтром postscript), когда возникает зацикливание фильтра при обработке какого-то документа. Установите значение  «-1», чтобы снять ограничение.
 </translation>
     </message>
     <message>
         <location line="+35"/>
         <source>Global</source>
-        <translation type="unfinished">Общее</translation>
+        <translation>Общее</translation>
     </message>
 </context>
 <context>
@@ -586,7 +586,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Для остановки автоматического идексирования по расписанию нажмите &lt;span style=&quot; font-style:italic;&quot;&gt;«Отключить»&lt;/span&gt;, для запуска — &lt;span style=&quot; font-style:italic;&quot;&gt;«Включить»&lt;/span&gt;, для отмены внесённых изменений — &lt;span style=&quot; font-style:italic;&quot;&gt;«Отмена»&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Для остановки автоматического индексирования по расписанию нажмите &lt;span style=&quot; font-style:italic;&quot;&gt;«Отключить»&lt;/span&gt;, для запуска — &lt;span style=&quot; font-style:italic;&quot;&gt;«Включить»&lt;/span&gt;, для отмены внесённых изменений — &lt;span style=&quot; font-style:italic;&quot;&gt;«Отмена»&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../crontool.cpp" line="+42"/>
@@ -850,12 +850,12 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <location filename="../preview.ui" line="+14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Tab 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Вкладка 1</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -880,17 +880,17 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <location line="+30"/>
         <source>Previous result document</source>
-        <translation type="unfinished"></translation>
+        <translation>Предыдущий документ результата</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Next result document</source>
-        <translation type="unfinished"></translation>
+        <translation>Следующий документ результата</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>Open</source>
-        <translation type="unfinished">Открыть</translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <location line="-82"/>
@@ -900,42 +900,42 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <location filename="../preview_w.cpp" line="+651"/>
         <source>Canceled</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменено</translation>
     </message>
     <message>
         <location line="-63"/>
         <source>Error loading the document: file missing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка загрузки документа: отсутствует файл.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Error loading the document: no permission.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка загрузки документа: отсутствует разрешение.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Error loading: backend not configured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка загрузки: не настроен модуль.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Error loading the document: other handler error&lt;br&gt;Maybe the application is locking the file ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка загрузки документа: ошибка другого обработчика&lt;br&gt;Возможно, файл заблокирован приложением?</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Error loading the document: other handler error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка загрузки документа: ошибка другого обработчика.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>&lt;br&gt;Attempting to display from stored text.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;Попытка отобразить из сохранённого текста.</translation>
     </message>
     <message>
         <location line="+132"/>
         <source>Could not fetch stored text</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось получить сохранённый текст</translation>
     </message>
     <message>
         <location line="+49"/>
@@ -968,7 +968,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <location line="+3"/>
         <source>Can&apos;t turn doc into internal representation for </source>
-        <translation>Невозможно сконвертировать документ во внутреннее представление для </translation>
+        <translation>Невозможно преобразовать документ во внутреннее представление для </translation>
     </message>
     <message>
         <source>Cannot create temporary directory: </source>
@@ -1001,7 +1001,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <location line="+11"/>
         <source>Open document</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть документ</translation>
     </message>
     <message>
         <location line="+75"/>
@@ -1117,7 +1117,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <location line="-117"/>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;Приведённые ниже параметры применяются либо к каталогу верхнего уровня (если в списке выше ничего не выбрано или выбрана пустая строка), либо к выбранному подкаталогу. Добавлять и удалять каталоги можно с помощью кнопок +/-.</translation>
     </message>
     <message>
         <location line="+91"/>
@@ -1262,7 +1262,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Индексирование при помощи &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; может быть настроено как сервис, обновляющий индекс одновременно с изменением файлов, то есть в реальном времени. При этом постоянное обновление индекса будет происходить за счёт непрерывного использования системных ресурсов.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Индексирование с помощью &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; может быть настроено как сервис, обновляющий индекс одновременно с изменением файлов, то есть в реальном времени. При этом постоянное обновление индекса будет происходить за счёт непрерывного использования системных ресурсов.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -1332,22 +1332,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../rclm_preview.cpp" line="+93"/>
         <source>Index not up to date for this file.&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Индекс для этого файла устарел.&lt;br&gt;</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&lt;em&gt;Also, it seems that the last index update for the file failed.&lt;/em&gt;&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;em&gt;Также похоже, что последнее обновление индекса для этого файла завершилось с ошибкой.&lt;/em&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Click Ok to try to update the index for this file. You will need to run the query again when indexing is done.&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Нажмите «ОК», чтобы обновить индекс для данного файла, и повторите запрос по окончании индексирования.&lt;br&gt;</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Нажмите «Отмена» для возврата к списку. &lt;br&gt;Нажмите «Игнорировать», чтобы открыть просмотр (и запомнить выбор для данного сеанса). Есть вероятность, что будет показана не та запись.&lt;br/&gt;</translation>
     </message>
     <message>
         <location line="+154"/>
@@ -1465,37 +1465,37 @@ Please check the mimeconf file</source>
     <message>
         <location line="-66"/>
         <source>documents</source>
-        <translation type="unfinished"></translation>
+        <translation>документа/документов</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>document</source>
-        <translation type="unfinished"></translation>
+        <translation>документ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>files</source>
-        <translation type="unfinished"></translation>
+        <translation>файла/файлов</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>file</source>
-        <translation type="unfinished"></translation>
+        <translation>файл</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>errors</source>
-        <translation type="unfinished"></translation>
+        <translation>ошибки/ошибок</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>error</source>
-        <translation type="unfinished"></translation>
+        <translation>ошибка</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>total files)</source>
-        <translation type="unfinished"></translation>
+        <translation>всего файлов)</translation>
     </message>
     <message>
         <location line="+94"/>
@@ -1560,22 +1560,22 @@ Please check the mimeconf file</source>
     <message>
         <location line="+103"/>
         <source>F&amp;ilter</source>
-        <translation type="unfinished"></translation>
+        <translation>Ф&amp;ильтр</translation>
     </message>
     <message>
         <location line="+816"/>
         <source>Confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Подтвердить</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаление истории простого и сложного поиска, нажмите «ОК» для подтверждения</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Could not open/create file</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть/создать файл</translation>
     </message>
     <message>
         <source>External applications/commands needed and not found for indexing your file types:
@@ -1682,13 +1682,14 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location line="+75"/>
         <source>Indexing done</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексирование завершено</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Пустые или несуществующие пути в файле конфигурации. Нажмите «OK», чтобы начать индексирование (отсутствующие данные не будут удалены из индекса):
+</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -1708,7 +1709,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location line="+195"/>
         <source>Can&apos;t update index: internal error</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось обновить индекс: внутренняя ошибка</translation>
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="-34"/>
@@ -1918,12 +1919,12 @@ Please check the desktop file</source>
     <message>
         <location filename="../rclm_wins.cpp" line="-233"/>
         <source>Batch scheduling</source>
-        <translation type="unfinished"></translation>
+        <translation>Пакетное планирование</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот инструмент позволяет выбрать, в какое время запускать индексирование. Он использует планировщик заданий Windows.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -1933,22 +1934,22 @@ Please check the desktop file</source>
     <message>
         <location line="+4"/>
         <source>This configuration tool only works for the main index.</source>
-        <translation>Данный инструмент настройки применим только к основныму индексу.</translation>
+        <translation>Данный инструмент настройки применим только к основному индексу.</translation>
     </message>
     <message>
         <location line="+112"/>
         <source>No information: initial indexing not yet performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет информации: первоначальное индексирование ещё не выполнялось.</translation>
     </message>
     <message>
         <location line="+75"/>
         <source>Content has been indexed for these MIME types:</source>
-        <translation type="unfinished"></translation>
+        <translation>Проиндексировано содержимое для следующих MIME-типов:</translation>
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="+513"/>
         <source>Can&apos;t set synonyms file (parse error?)</source>
-        <translation>Невозможно установить файл синономов (ошибка анализа?)</translation>
+        <translation>Невозможно установить файл синонимов (ошибка анализа?)</translation>
     </message>
     <message>
         <location filename="../rclm_preview.cpp" line="+4"/>
@@ -2058,7 +2059,7 @@ Please check the desktop file</source>
     <message>
         <location line="+54"/>
         <source>E&amp;xport simple search history</source>
-        <translation type="unfinished"></translation>
+        <translation>Э&amp;кспорт истории простого поиска</translation>
     </message>
     <message>
         <location line="+24"/>
@@ -2493,7 +2494,7 @@ Please check the desktop file</source>
     <message>
         <location line="+203"/>
         <source>Can&apos;t sort by inverse relevance</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировка по обратной релевантности невозможна</translation>
     </message>
     <message>
         <location line="-212"/>
@@ -2830,168 +2831,168 @@ Please check the desktop file</source>
     <message>
         <location line="+1"/>
         <source>Query language</source>
-        <translation>Язык запроса</translation>
+        <translation>Язык запросов</translation>
     </message>
     <message>
         <location line="+212"/>
         <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head&gt;&lt;style&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>table, th, td {</source>
-        <translation type="unfinished"></translation>
+        <translation>table, th, td {</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>border: 1px solid black;</source>
-        <translation type="unfinished"></translation>
+        <translation>border: 1px solid black;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>border-collapse: collapse;</source>
-        <translation type="unfinished"></translation>
+        <translation>border-collapse: collapse;</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+3"/>
         <source>}</source>
-        <translation type="unfinished"></translation>
+        <translation>}</translation>
     </message>
     <message>
         <location line="-2"/>
         <source>th,td {</source>
-        <translation type="unfinished"></translation>
+        <translation>th,td {</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>text-align: center;</source>
-        <translation type="unfinished"></translation>
+        <translation>text-align: center;</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Памятка по языку запросов. В случае сомнений: нажмите &lt;b&gt;Показать запрос&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Рекомендуется ознакомиться с руководством (F1)&lt;/p&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;th&gt;Что&lt;/th&gt;&lt;th&gt;Примеры&lt;/th&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;И&lt;/td&gt;&lt;td&gt;один два&amp;nbsp;&amp;nbsp;&amp;nbsp;один И два&amp;nbsp;&amp;nbsp;&amp;nbsp;один &amp;&amp; два&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Или&lt;/td&gt;&lt;td&gt;один ИЛИ два&amp;nbsp;&amp;nbsp;&amp;nbsp;один || два&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Сложный булев оператор. «ИЛИ» имеет приоритет, используйте скобки&amp;nbsp;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>при необходимости&lt;/td&gt;&lt;td&gt;(один И два) ИЛИ три&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Не&lt;/td&gt;&lt;td&gt;-условие&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Фраза&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Близкие слова с учётом порядка (расстояние=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Близкие слова без учёта порядка (расстояние=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Близкие слова без учёта порядка (расстояние по умолчанию=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Без однокоренных слов: с заглавной&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Конкретное поле&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;«И» внутри поля (без учёта порядка)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;«ИЛИ» внутри поля&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Имена полей&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Фильтр пути к каталогу&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Фильтр типа MIME&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Интервалы дат&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Размер&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+78"/>
@@ -3071,7 +3072,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <location line="+5"/>
         <source>Enter search terms here.</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите здесь условия поиска.</translation>
     </message>
     <message>
         <location line="+133"/>
@@ -3126,7 +3127,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <location line="+52"/>
         <source>Show query history</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать историю запросов</translation>
     </message>
     <message>
         <location line="-58"/>
@@ -3262,12 +3263,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <location line="+82"/>
         <source>Sort By Relevance</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать по релевантности</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sort By Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать по странице</translation>
     </message>
     <message>
         <location line="+86"/>
@@ -3327,7 +3328,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <location line="+8"/>
         <source>Retry previously failed files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обработать файлы с ошибками повторно.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3352,7 +3353,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <location line="+10"/>
         <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Корневой каталог. Должен являться частью индексируемого дерева. Если пусто, используется вся индексируемая область.</translation>
     </message>
     <message>
         <source>Start directory (else use regular topdirs):</source>
@@ -3576,7 +3577,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <location line="-238"/>
         <source>List files which could not be indexed (slow)</source>
-        <translation>Перечислить файы, которые не удалось проиндексировать (медленно)</translation>
+        <translation>Перечислить файлы, которые не удалось проиндексировать (медленно)</translation>
     </message>
     <message>
         <location line="+121"/>
@@ -3638,7 +3639,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <location line="+14"/>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
-        <translation>Вероятно, выбранный каталог является каталогом конфигурации Recoll, но чтение конфигуарции невозможно</translation>
+        <translation>Вероятно, выбранный каталог является каталогом конфигурации Recoll, но чтение конфигурации невозможно</translation>
     </message>
     <message>
         <location line="-94"/>
@@ -4028,7 +4029,7 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location line="+55"/>
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
-        <translation>Содержимое веб-кэша былыо изменено, после закрытия этого окна необходимо запустить индексирование.</translation>
+        <translation>Содержимое веб-кэша было изменено, после закрытия этого окна необходимо запустить индексирование.</translation>
     </message>
 </context>
 <context>
@@ -4049,32 +4050,32 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../winschedtool.cpp" line="+38"/>
         <source>Error</source>
-        <translation type="unfinished">Ошибка</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Configuration not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation>Конфигурация не инициализирована</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Планирование пакетного индексирования Recoll&lt;/h3&gt;&lt;p&gt;Для этого используется стандартный планировщик заданий Windows. Нажмите расположенную ниже кнопку, чтобы запустить данную программу.&lt;/p&gt;&lt;p&gt;Можно использовать как полный интерфейс (&lt;i&gt;Создать задачу&lt;/i&gt; в меню справа), так и упрощённый мастер &lt;i&gt;Создать простую задачу&lt;/i&gt;. В любом случае необходимо Копировать/Вставить путь к пакетному файлу, указанный ниже, в поле &lt;i&gt;Действие&lt;/i&gt;.&lt;/p&gt;</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>Command already started</source>
-        <translation type="unfinished"></translation>
+        <translation>Команда уже запущена</translation>
     </message>
     <message>
         <location filename="../winschedtool.ui" line="+14"/>
         <source>Recoll Batch indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Пакетное индексирование Recoll</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустить планировщик заданий Windows</translation>
     </message>
 </context>
 <context>
@@ -4157,7 +4158,7 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location line="+2"/>
         <source>Add entry</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить запись</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -4167,17 +4168,17 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location line="+2"/>
         <source>Delete selected entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить выбранные записи</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>~</source>
-        <translation type="unfinished"></translation>
+        <translation>~</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Edit selected entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактировать выбранные записи</translation>
     </message>
 </context>
 <context>
@@ -4414,7 +4415,7 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <location line="+336"/>
         <source>Generate desktop notifications.</source>
-        <translation type="unfinished"></translation>
+        <translation>Генерировать уведомления на рабочем столе.</translation>
     </message>
     <message>
         <location line="+65"/>
@@ -4518,32 +4519,32 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <location line="-82"/>
         <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
-        <translation type="unfinished"></translation>
+        <translation>Подсветка поисковых запросов в результатах поиска. &lt;br&gt;Можно, например, задать параметры «color:red;background:yellow», чтобы сделать подсветку поярче (по умолчанию задан синий цвет)...</translation>
     </message>
     <message>
         <location line="+330"/>
         <source>Suppress all beeps.</source>
-        <translation type="unfinished"></translation>
+        <translation>Подавлять все звуковые сигналы.</translation>
     </message>
     <message>
         <location line="-70"/>
         <source>Start search on completer popup activation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Начинать поиск при активации всплывающего окна автодополнения.</translation>
     </message>
     <message>
         <location line="-206"/>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальный размер текста, подсвечиваемого для предварительного просмотра (Кб)</translation>
     </message>
     <message>
         <location line="+491"/>
         <source>Maximum number of snippets displayed in the snippets window</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное количество фрагментов, отображаемых в окне фрагментов</translation>
     </message>
     <message>
         <location line="+38"/>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
-        <translation type="unfinished"></translation>
+        <translation>Отображать ссылку на фрагменты даже в том случае, когда документ не имеет страниц (требуется перезапуск).</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -4607,7 +4608,7 @@ May be slow for big documents.</source>
     <message>
         <location line="+3"/>
         <source>Query language magic file name suffixes.</source>
-        <translation>Распознавание типа файлов при помощи файла магических чисел «magic file».</translation>
+        <translation>Распознавание типа файлов с помощью файла магических чисел «magic file».</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -4657,12 +4658,12 @@ May be slow for big documents.</source>
     <message>
         <location line="+12"/>
         <source>Misc</source>
-        <translation type="unfinished"></translation>
+        <translation>Прочее</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="unfinished"></translation>
+        <translation>Обходить QTBUG-78923 путём вставки пробела перед текстом привязки</translation>
     </message>
     <message>
         <location line="+44"/>
@@ -4749,7 +4750,7 @@ May be slow for big documents.</source>
     <message>
         <location line="+119"/>
         <source>Sort snippets by page number (default: by weight).</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать фрагменты по номеру страницы (по умолчанию: по весу).</translation>
     </message>
     <message>
         <location line="+103"/>
@@ -4834,7 +4835,7 @@ The default value is 2 (percent). </source>
     <message>
         <location line="-147"/>
         <source>Application Qt style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Таблица стилей Qt приложения</translation>
     </message>
     <message>
         <location line="+150"/>
@@ -4859,12 +4860,12 @@ The default value is 2 (percent). </source>
     <message>
         <location line="+37"/>
         <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ограничить размер истории поиска. Значение «0» отключает хранение истории, «-1» означает отсутствие ограничения.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Maximum size of search history (0: disable, -1: unlimited):</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальный размер истории поиска (0: отключить, -1: без ограничения):</translation>
     </message>
     <message>
         <location line="+62"/>
