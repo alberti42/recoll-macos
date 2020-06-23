@@ -53,6 +53,7 @@
 #include "fstreewalk.h"
 #include "cpuconf.h"
 #include "execmd.h"
+#include "md5.h"
 
 using namespace std;
 
@@ -1386,10 +1387,24 @@ string RclConfig::getIdxStatusFile() const
 {
     return getCachedirPath("idxstatusfile", "idxstatus.txt");
 }
+
+// The pid file is opened r/w every second by the GUI to check if the
+// indexer is running. This is a problem for systems which spin down
+// their disks. Locate it in XDG_RUNTIME_DIR if this is set.
+// Thanks to user Madhu for this fix.
 string RclConfig::getPidfile() const
 {
+    const char *p = getenv("XDG_RUNTIME_DIR");
+    if (p) {
+	string base = path_canon(p);
+	string digest;
+	return path_cat(
+            base, "/recoll-" + MD5HexPrint(getConfDir(), digest) + "-index.pid");
+    }
     return path_cat(getCacheDir(), "index.pid");
 }
+
+
 string RclConfig::getIdxStopFile() const
 {
     return path_cat(getCacheDir(), "index.stop");
