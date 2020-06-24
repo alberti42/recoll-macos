@@ -196,7 +196,7 @@ unix {
   iconb.files += @srcdir@/../desktop/recoll.png
   iconb.path = $$PREFIX/share/pixmaps/
   appdata.files = @srcdir@/../desktop/recoll.appdata.xml
-  appdata.path = $$PREFIX/share/appdata/
+  appdata.path = $$PREFIX/share/metainfo/
   INSTALLS += target imdata trdata desktop icona iconb appdata
 
   # The recollinstall script used to do the following to install zh_CN as
