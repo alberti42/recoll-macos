@@ -1866,10 +1866,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
             RECORD_APPEND(record, string(cstr_mbreaks), multibreaks.str());
         }
     
-        // If the file's md5 was computed, add value and term. 
-        // The value is optionally used for query result duplicate elimination, 
-        // and the term to find the duplicates.
-        // We don't do this for empty docs.
+        // If the file's md5 was computed, add value and term.  The
+        // value is optionally used for query result duplicate
+        // elimination, and the term to find the duplicates (XM is the
+        // prefix for rclmd5 in fields) We don't do this for empty
+        // docs.
         const string *md5;
         if (doc.peekmeta(Doc::keymd5, &md5) && !md5->empty() &&
             md5->compare(cstr_md5empty)) {

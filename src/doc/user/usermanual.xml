@@ -3896,27 +3896,36 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         name for an email attachment.</para></listitem> 
 
         <listitem><para><literal>containerfilename</literal>. This is
-        set for all documents, both top-level and contained
-        sub-documents, and is always the name of the filesystem directory
-        entry which contains the data. The terms from this field can
-        only be matched by an explicit field specification (as opposed
-        to terms from <literal>filename</literal> which are also indexed
-        as general document content). This avoids getting matches for
-        all the sub-documents when searching for the container file
-        name.</para></listitem> 
+            set for all documents, both top-level and contained
+            sub-documents, and is always the name of the filesystem directory
+            entry which contains the data. The terms from this field can
+            only be matched by an explicit field specification (as opposed
+            to terms from <literal>filename</literal> which are also indexed
+            as general document content). This avoids getting matches for
+            all the sub-documents when searching for the container file
+            name.</para></listitem> 
         
         <listitem><para><literal>ext</literal> specifies the file
-        name extension (Ex: <literal>ext:html</literal>)</para>
+            name extension
+            (Ex: <literal>ext:html</literal>).</para></listitem>
+
+        <listitem><para><literal>rclmd5</literal> the MD5 checksum for the
+            document. This is used for displaying the duplicates of a
+            search result (when querying with the option to collapse
+            duplicate results). Incidentally, this could be used to find
+            the duplicates of any given file by computing its MD5 checksum
+            and executing a query with just the <literal>rclmd5</literal>
+            value.</para>
         </listitem>
 
       </itemizedlist>
 
       <para>&RCL; 1.20 and later have a way to specify aliases for the
-      field names, which will save typing, for example by aliasing
-      <literal>filename</literal> to <replaceable>fn</replaceable> or
-      <literal>containerfilename</literal> to
-      <replaceable>cfn</replaceable>. See the
-      <link linkend="RCL.INSTALL.CONFIG.FIELDS">section about the <filename>fields</filename> file</link>.
+        field names, which will save typing, for example by aliasing
+        <literal>filename</literal> to <replaceable>fn</replaceable> or
+        <literal>containerfilename</literal> to
+        <replaceable>cfn</replaceable>. See the
+        <link linkend="RCL.INSTALL.CONFIG.FIELDS">section about the <filename>fields</filename> file</link>.
       </para> 
 
       <para>The document input handlers used while indexing have the

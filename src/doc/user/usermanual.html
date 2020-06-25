@@ -3,7 +3,7 @@
 <html>
 <head>
   <meta name="generator" content=
-  "HTML Tidy for HTML5 for Linux version 5.6.0">
+  "HTML Tidy for HTML5 for Linux version 5.2.0">
   <meta http-equiv="Content-Type" content=
   "text/html; charset=utf-8">
   <title>Recoll user manual</title>
@@ -1135,8 +1135,8 @@ alink="#0000FF">
               different areas of the file system to different
               indexes. For example, if you were to issue the
               following command:</p>
-              <pre class=
-              "programlisting">recoll -c ~/.indexes-email</pre>
+              <pre class="programlisting">
+              recoll -c ~/.indexes-email</pre>
               <p>Then <span class="application">Recoll</span> would
               use configuration files stored in <code class=
               "filename">~/.indexes-email/</code> and, (unless
@@ -3874,8 +3874,8 @@ fs.inotify.max_user_watches=32768
           that every user does not have to do it. The variable
           should define a colon-separated list of index
           directories, ie:</p>
-          <pre class=
-          "screen">export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</pre>
+          <pre class="screen">
+          export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</pre>
           <p>Another environment variable, <code class=
           "envar">RECOLL_ACTIVE_EXTRA_DBS</code> allows adding to
           the active list of indexes. This variable was suggested
@@ -4677,8 +4677,8 @@ fs.inotify.max_user_watches=32768
               parent folder expansion, usually creating a file
               manager window on the folder where the container file
               resides. E.g.:</p>
-              <pre class=
-              "programlisting">&lt;a href="F%N"&gt;%P&lt;/a&gt;</pre>
+              <pre class="programlisting">
+              &lt;a href="F%N"&gt;%P&lt;/a&gt;</pre>
               <p>A link target defined as <code class=
               "literal">R%N|<em class=
               "replaceable"><code>scriptname</code></em></code>
@@ -4820,8 +4820,8 @@ fs.inotify.max_user_watches=32768
           <span class="application">javascript</span> program to
           the documents, like the following example, which would
           initiate a search by double-clicking any term:</p>
-          <pre class=
-          "programlisting">&lt;script language="JavaScript"&gt;
+          <pre class="programlisting">
+          &lt;script language="JavaScript"&gt;
         function recollsearch() {
         var t = document.getSelection();
         window.location.href = 'recoll://search/query?qtp=a&amp;p=0&amp;q=' +
@@ -5115,7 +5115,17 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             <li class="listitem">
               <p><code class="literal">ext</code> specifies the
               file name extension (Ex: <code class=
-              "literal">ext:html</code>)</p>
+              "literal">ext:html</code>).</p>
+            </li>
+            <li class="listitem">
+              <p><code class="literal">rclmd5</code> the MD5
+              checksum for the document. This is used for
+              displaying the duplicates of a search result (when
+              querying with the option to collapse duplicate
+              results). Incidentally, this could be used to find
+              the duplicates of any given file by computing its MD5
+              checksum and executing a query with just the
+              <code class="literal">rclmd5</code> value.</p>
             </li>
           </ul>
         </div>
@@ -10055,8 +10065,8 @@ for i in range(nres):
           "filename">.xml</code> extension but should be handled
           specially, which is possible because they are usually all
           located in one place. Example:</p>
-          <pre class=
-          "programlisting">[~/.kde/share/apps/okular/docdata]
+          <pre class="programlisting">
+          [~/.kde/share/apps/okular/docdata]
         .xml = application/x-okular-notes</pre>
           <p>The <code class="varname">recoll_noindex</code>
           <code class="filename">mimemap</code> variable has been
