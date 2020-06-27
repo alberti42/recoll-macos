@@ -1,4 +1,10 @@
-recoll (1.27.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+kio-recoll (1.27.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Misc small fixes. Nothing major, see the git log for details
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 27 Jun 2020 14:29:00 +0200
+
+kio-recoll (1.27.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Korean: index the whole words along the split ones.
   * Saved simple searches: also save/restore the active external indexes.
