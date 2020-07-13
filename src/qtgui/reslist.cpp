@@ -1080,7 +1080,12 @@ void ResList::onPopupJsDone(const QVariant &jr)
 {
     QString qs(jr.toString());
     LOGDEB("onPopupJsDone: parameter: " << qs2utf8s(qs) << "\n");
-    QStringList qsl = qs.split("\n", QString::SkipEmptyParts);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    auto skipflags = Qt::SkipEmptyParts;
+#else
+    auto skipflags = QString::SkipEmptyParts;
+#endif
+    QStringList qsl = qs.split("\n", skipflags);
     for (int i = 0 ; i < qsl.size(); i++) {
         int eq = qsl[i].indexOf("=");
         if (eq > 0) {

@@ -354,7 +354,8 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     }
     Chrono chron;
     LOGDEB("Preview::doSearch: first find call\n");
-    QTextDocument::FindFlags flags = 0;
+    // FindFlags is a QFlags class with default constructor to empty.
+    QTextDocument::FindFlags flags;
     if (reverse)
         flags |= QTextDocument::FindBackward;
     if (wordOnly)
