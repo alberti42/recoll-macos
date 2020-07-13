@@ -585,6 +585,10 @@ static vector<string> fileToArgs(const string& fn)
 }
 
 
+// Working directory before we change: it's simpler to change early
+// but some options need the original for computing absolute paths.
+static std::string orig_cwd;
+
 // A bit of history: it's difficult to pass non-ASCII parameters
 // (e.g. path names) on the command line under Windows without using
 // Unicode. It was first thought possible to use a temporary file to
@@ -725,6 +729,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
+    orig_cwd = path_cwd();
     string rundir;
     config->getConfParam("idxrundir", rundir);
     if (!rundir.empty()) {
@@ -775,6 +780,7 @@ int main(int argc, char *argv[])
         if (aremain != 1) 
             Usage();
         string top = args[argidx++]; aremain--;
+        top = path_canon(top, &orig_cwd);
         bool status = recursive_index(config, top, selpatterns);
         if (confindexer && !confindexer->getReason().empty()) {
             addIdxReason("indexer", confindexer->getReason());
