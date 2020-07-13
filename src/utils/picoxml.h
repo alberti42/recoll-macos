@@ -364,14 +364,17 @@ private:
             }
             epos++;
             skipWS(tag, epos);
-            if (tag[epos] != '"' || epos == tag.size() - 1) {
-                m_reason << "Missing dquote or value at cpos " << m_pos+epos;
+            char qc{0};
+            if ((tag[epos] != '"' && tag[epos] != '\'') ||
+                epos == tag.size() - 1) {
+                m_reason << "Missing quote or value at cpos " << m_pos+epos;
                 return false;
             }
+            qc = tag[epos];
             spos = epos + 1;
-            epos = tag.find_first_of(R"(")", spos);
+            epos = tag.find_first_of(qc, spos);
             if (epos == std::string::npos) {
-                m_reason << "Missing closing dquote at cpos " << m_pos+spos;
+                m_reason << "Missing closing quote at cpos " << m_pos+spos;
                 return false;
             }
             attrs[attrnm] = tag.substr(spos, epos - spos);
