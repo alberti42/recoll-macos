@@ -180,6 +180,7 @@ class PDFExtractor:
                 spec.loader.exec_module(EMF)
             except Exception as err:
                 self.em.rclog("Import extrametafix failed: %s" % err)
+                EMF = None
                 pass
 
     # Extract all attachments if any into temporary directory
