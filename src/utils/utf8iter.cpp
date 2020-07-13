@@ -16,21 +16,114 @@
  */
 
 #include "utf8iter.h"
-#include <string>
 
-using std::string;
+#include <unordered_set>
+#include <iostream>
 
-void utf8truncate(std::string& s, int maxlen)
+using namespace std;
+
+void utf8truncate(std::string& s, int maxlen, int flags, string ellipsis,
+                  string ws)
 {
     if (s.size() <= string::size_type(maxlen)) {
         return;
     }
+    unordered_set<int> wss;
+    if (flags & UTF8T_ATWORD) {
+        Utf8Iter iter(ws);
+        for (; !iter.eof(); iter++) {
+            unsigned int c = *iter;
+            wss.insert(c);
+        }
+    }
+
+    if (flags & UTF8T_ELLIPSIS) {
+        size_t ellen = utf8len(ellipsis);
+        if (maxlen > int(ellen)) {
+            maxlen -= ellen;
+        } else {
+            maxlen = 0;
+        }
+    }
+
     Utf8Iter iter(s);
     string::size_type pos = 0;
-    while (iter++ != string::npos)
-        if (iter.getBpos() < string::size_type(maxlen)) {
-            pos = iter.getBpos();
+    string::size_type lastwspos = 0;
+    for (; !iter.eof(); iter++) {
+        unsigned int c = *iter;
+        if (iter.getCpos() < string::size_type(maxlen)) {
+            pos = iter.getBpos() + iter.getBlen();
+            if ((flags & UTF8T_ATWORD) && wss.find(c) != wss.end()) {
+                lastwspos = pos;
+            }
+        } else {
+            break;
         }
+    }
 
-    s.erase(pos);
+    if (flags & UTF8T_ATWORD) {
+        s.erase(lastwspos);
+        for (;;) {
+            Utf8Iter iter(s);
+            unsigned int c = 0;
+            for (; !iter.eof(); iter++) {
+                c = *iter;
+                pos = iter.getBpos();
+            }
+            if (wss.find(c) == wss.end()) {
+                break;
+            }
+            s.erase(pos);
+        }
+    } else {
+        s.erase(pos);
+    }
+
+    if (flags & UTF8T_ELLIPSIS) {
+        s += ellipsis;
+    }
+}
+
+size_t utf8len(const string& s)
+{
+    size_t len = 0;
+    Utf8Iter iter(s);
+    while (iter++ != string::npos) {
+        len++;
+    }
+    return len;
+}
+
+static const std::string replchar{"\xef\xbf\xbd"};
+
+// Check utf-8 encoding, replacing errors with the ? char above
+int utf8check(const std::string& in, std::string& out, bool fixit, int maxrepl)
+{
+    int cnt = 0;
+    Utf8Iter it(in);
+    for (;!it.eof(); it++) {
+        if (it.error()) {
+            if (!fixit) {
+                return -1;
+            }
+            out += replchar;
+            ++cnt;
+            for (; cnt < maxrepl; cnt++) {
+                it.retryfurther();
+                if (it.eof())
+                    return cnt;
+                if (!it.error())
+                    break;
+                out += replchar;
+            }
+            if (it.error()) {
+                return -1;
+            }
+        }
+        // We have reached a good char and eof is false
+        if (fixit) {
+            it.appendchartostring(out);
+        }
+    }
+    return cnt;
 }

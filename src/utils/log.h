@@ -18,11 +18,9 @@
 #define _LOG_H_X_INCLUDED_
 
 #include <string.h>
-
 #include <fstream> 
 #include <iostream>
 #include <string>
-#include <mutex>
 
 #ifndef LOGGER_THREADSAFE
 #define LOGGER_THREADSAFE 1
@@ -33,30 +31,74 @@
 #endif
 
 // Can't use the symbolic Logger::LLXX names in preproc. 6 is LLDEB1
+// STATICVERBOSITY is the level above which logging statements are
+// preproc'ed out (can't be dynamically turned on).
 #ifndef LOGGER_STATICVERBOSITY
 #define LOGGER_STATICVERBOSITY 5
 #endif
 
+#define LOGGER_DATESIZE 100
+
+/** @brief This is a singleton class. The logger pointer is obtained
+ * when needed by calls to @ref getTheLog(), only the first of which
+ * actually creates the object and initializes the output. */
 class Logger {
 public:
     /** Initialize logging to file name. Use "stderr" for stderr
-        output. Creates the singleton logger object */
+     * output. Creates the singleton logger object. Only the first
+     * call changes the state, further ones just return the Logger
+     * pointer. */
     static Logger *getTheLog(const std::string& fn);
 
+    /** Close and reopen the output file. For rotating the log: rename
+     * then reopen. */
     bool reopen(const std::string& fn);
-    
+
+    /** Retrieve the output stream in case you need to write directly
+     * to it. In a multithreaded program, you probably also need to obtain
+     * the mutex with @ref getmutex, and lock it. */
     std::ostream& getstream() {
         return m_tocerr ? std::cerr : m_stream;
     }
+
+    /** @brief Log level values. Messages at level above the current will
+     * not be printed. Messages at a level above
+     * LOGGER_STATICVERBOSITY will not even be compiled in. */
     enum LogLevel {LLNON=0, LLFAT=1, LLERR=2, LLINF=3, LLDEB=4,
                    LLDEB0=5, LLDEB1=6, LLDEB2=7};
+
+    /** @brief Set the log dynamic verbosity level */
     void setLogLevel(LogLevel level) {
         m_loglevel = level;
     }
-    int getloglevel() {
+    /** @brief Set the log dynamic verbosity level */
+    void setloglevel(LogLevel level) {
+        m_loglevel = level;
+    }
+
+    /** @brief Retrieve the current log level */
+    int getloglevel() const {
         return m_loglevel;
     }
 
+    /** @brief turn date logging on or off (default is off) */
+    void logthedate(bool onoff) {
+        m_logdate = onoff;
+    }
+
+    bool loggingdate() const {
+        return m_logdate;
+    }
+    
+    /** @brief Set the date format, as an strftime() format string. 
+     * Default: "%Y%m%d-%H%M%S" . */
+    void setdateformat(const std::string fmt) {
+        m_datefmt = fmt;
+    }
+
+    /** Call with log locked */
+    const char *datestring();
+    
 #if LOGGER_THREADSAFE
     std::recursive_mutex& getmutex() {
         return m_mutex;
@@ -65,13 +107,15 @@ public:
     
 private:
     bool m_tocerr{false};
+    bool m_logdate{false};
     int m_loglevel{LLERR};
+    std::string m_datefmt{"%Y%m%d-%H%M%S"};
     std::string m_fn;
     std::ofstream m_stream;
 #if LOGGER_THREADSAFE
     std::recursive_mutex m_mutex;
 #endif
-
+    char m_datebuf[LOGGER_DATESIZE];
     Logger(const std::string& fn);
     Logger(const Logger &);
     Logger& operator=(const Logger &);
@@ -93,9 +137,13 @@ private:
 #define LOGGER_LEVEL (Logger::getTheLog("")->getloglevel() +    \
                       LOGGER_LOCAL_LOGINC)
 
-#define LOGGER_DOLOG(L,X) LOGGER_PRT << ":" << L << ":" <<              \
-                                                                      __FILE__ << ":" << __LINE__ << "::" << X \
+#define LOGGER_DATE (Logger::getTheLog("")->loggingdate() ? \
+                     Logger::getTheLog("")->datestring() : "")
+
+#define LOGGER_DOLOG(L,X) LOGGER_PRT << LOGGER_DATE << ":" << L << ":" << \
+                             __FILE__ << ":" << __LINE__ << "::" << X \
     << std::flush
+
 
 #if LOGGER_STATICVERBOSITY >= 7
 #define LOGDEB2(X) {                            \
@@ -142,6 +190,10 @@ private:
 #endif
 
 #if LOGGER_STATICVERBOSITY >= 3
+/** Log a message at level INFO. Other macros exist for other levels (LOGFAT,
+ * LOGERR, LOGINF, LOGDEB, LOGDEB0... Use as: 
+ * LOGINF("some text" << other stuff << ... << "\n");
+ */
 #define LOGINF(X) {                             \
         if (LOGGER_LEVEL >= Logger::LLINF) {    \
             LOGGER_LOCK;                        \
