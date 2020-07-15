@@ -23,11 +23,11 @@
 // Current status of an indexing operation. This is updated in
 // $RECOLL_CONFDIR/idxstatus.txt
 class DbIxStatus {
- public:
+public:
     enum Phase {DBIXS_NONE,
-        DBIXS_FILES, DBIXS_PURGE, DBIXS_STEMDB, DBIXS_CLOSING, 
-        DBIXS_MONITOR,
-        DBIXS_DONE};
+                DBIXS_FILES, DBIXS_PURGE, DBIXS_STEMDB, DBIXS_CLOSING, 
+                DBIXS_MONITOR,
+                DBIXS_DONE};
     Phase phase;
     std::string fn;   // Last file processed
     int docsdone;  // Documents actually updated
@@ -43,9 +43,9 @@ class DbIxStatus {
     bool hasmonitor{false};
     
     void reset() {
-    phase = DBIXS_FILES;
-    fn.erase();
-    docsdone = filesdone = fileerrors = dbtotdocs = totfiles = 0;
+        phase = DBIXS_FILES;
+        fn.erase();
+        docsdone = filesdone = fileerrors = dbtotdocs = totfiles = 0;
     }
     DbIxStatus() {reset();}
 };

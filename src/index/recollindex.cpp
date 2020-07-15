@@ -120,51 +120,51 @@ public:
     }
 
     virtual bool update() 
-    {
-        // Update the status file. Avoid doing it too often. Always do
-        // it at the end (status DONE)
-        if (status.phase == DbIxStatus::DBIXS_DONE || 
-            status.phase != m_prevphase || m_chron.millis() > 300) {
-            if (status.totfiles < status.filesdone ||
-                status.phase == DbIxStatus::DBIXS_DONE) {
-                status.totfiles = status.filesdone;
+        {
+            // Update the status file. Avoid doing it too often. Always do
+            // it at the end (status DONE)
+            if (status.phase == DbIxStatus::DBIXS_DONE || 
+                status.phase != m_prevphase || m_chron.millis() > 300) {
+                if (status.totfiles < status.filesdone ||
+                    status.phase == DbIxStatus::DBIXS_DONE) {
+                    status.totfiles = status.filesdone;
+                }
+                m_prevphase = status.phase;
+                m_chron.restart();
+                m_file.holdWrites(true);
+                m_file.set("phase", int(status.phase));
+                m_file.set("docsdone", status.docsdone);
+                m_file.set("filesdone", status.filesdone);
+                m_file.set("fileerrors", status.fileerrors);
+                m_file.set("dbtotdocs", status.dbtotdocs);
+                m_file.set("totfiles", status.totfiles);
+                m_file.set("fn", status.fn);
+                m_file.set("hasmonitor", status.hasmonitor);
+                m_file.holdWrites(false);
             }
-            m_prevphase = status.phase;
-            m_chron.restart();
-            m_file.holdWrites(true);
-            m_file.set("phase", int(status.phase));
-            m_file.set("docsdone", status.docsdone);
-            m_file.set("filesdone", status.filesdone);
-            m_file.set("fileerrors", status.fileerrors);
-            m_file.set("dbtotdocs", status.dbtotdocs);
-            m_file.set("totfiles", status.totfiles);
-            m_file.set("fn", status.fn);
-            m_file.set("hasmonitor", status.hasmonitor);
-            m_file.holdWrites(false);
-        }
-        if (path_exists(m_stopfilename)) {
-            LOGINF("recollindex: asking indexer to stop because " <<
-                   m_stopfilename << " exists\n");
-            path_unlink(m_stopfilename);
-            stopindexing = true;
-        }
-        if (stopindexing) {
-            return false;
-        }
+            if (path_exists(m_stopfilename)) {
+                LOGINF("recollindex: asking indexer to stop because " <<
+                       m_stopfilename << " exists\n");
+                path_unlink(m_stopfilename);
+                stopindexing = true;
+            }
+            if (stopindexing) {
+                return false;
+            }
 
 #ifndef DISABLE_X11MON
-        // If we are in the monitor, we also need to check X11 status
-        // during the initial indexing pass (else the user could log
-        // out and the indexing would go on, not good (ie: if the user
-        // logs in again, the new recollindex will fail).
-        if ((op_flags & OPT_m) && !(op_flags & OPT_x) && !x11IsAlive()) {
-            LOGDEB("X11 session went away during initial indexing pass\n");
-            stopindexing = true;
-            return false;
-        }
+            // If we are in the monitor, we also need to check X11 status
+            // during the initial indexing pass (else the user could log
+            // out and the indexing would go on, not good (ie: if the user
+            // logs in again, the new recollindex will fail).
+            if ((op_flags & OPT_m) && !(op_flags & OPT_x) && !x11IsAlive()) {
+                LOGDEB("X11 session went away during initial indexing pass\n");
+                stopindexing = true;
+                return false;
+            }
 #endif
-        return true;
-    }
+            return true;
+        }
 
 private:
     ConfSimple m_file;
@@ -263,8 +263,8 @@ class MakeListWalkerCB : public FsTreeWalkerCB {
 public:
     MakeListWalkerCB(list<string>& files, const vector<string>& selpats)
         : m_files(files), m_pats(selpats)
-    {
-    }
+        {
+        }
     virtual FsTreeWalker::Status 
     processone(const string& fn, const struct PathStat *,
                FsTreeWalker::CbFlag flg) {
@@ -427,103 +427,103 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
 string thisprog;
 
 static const char usage [] =
-"\n"
-"recollindex [-h] \n"
-"    Print help\n"
-"recollindex [-z|-Z] [-k]\n"
-"    Index everything according to configuration file\n"
-"    -z : reset database before starting indexing\n"
-"    -Z : in place reset: consider all documents as changed. Can also\n"
-"         be combined with -i or -r but not -m\n"
-"    -k : retry files on which we previously failed\n"
+                                                           "\n"
+                                                           "recollindex [-h] \n"
+                                                           "    Print help\n"
+                                                           "recollindex [-z|-Z] [-k]\n"
+                                                           "    Index everything according to configuration file\n"
+                                                           "    -z : reset database before starting indexing\n"
+                                                           "    -Z : in place reset: consider all documents as changed. Can also\n"
+                                                           "         be combined with -i or -r but not -m\n"
+                                                           "    -k : retry files on which we previously failed\n"
 #ifdef RCL_MONITOR
-"recollindex -m [-w <secs>] -x [-D] [-C]\n"
-"    Perform real time indexing. Don't become a daemon if -D is set.\n"
-"    -w sets number of seconds to wait before starting.\n"
-"    -C disables monitoring config for changes/reexecuting.\n"
-"    -n disables initial incremental indexing (!and purge!).\n"
+                                                           "recollindex -m [-w <secs>] -x [-D] [-C]\n"
+                                                           "    Perform real time indexing. Don't become a daemon if -D is set.\n"
+                                                           "    -w sets number of seconds to wait before starting.\n"
+                                                           "    -C disables monitoring config for changes/reexecuting.\n"
+                                                           "    -n disables initial incremental indexing (!and purge!).\n"
 #ifndef DISABLE_X11MON
-"    -x disables exit on end of x11 session\n"
+                                                           "    -x disables exit on end of x11 session\n"
 #endif /* DISABLE_X11MON */
 #endif /* RCL_MONITOR */
-"recollindex -e [<filepath [path ...]>]\n"
-"    Purge data for individual files. No stem database updates.\n"
-"    Reads paths on stdin if none is given as argument.\n"
-"recollindex -i [-f] [-Z] [<filepath [path ...]>]\n"
-"    Index individual files. No database purge or stem database updates\n"
-"    Will read paths on stdin if none is given as argument\n"
-"    -f : ignore skippedPaths and skippedNames while doing this\n"
-"recollindex -r [-K] [-f] [-Z] [-p pattern] <top> \n"
-"   Recursive partial reindex. \n"
-"     -p : filter file names, multiple instances are allowed, e.g.: \n"
-"        -p *.odt -p *.pdf\n"
-"     -K : skip previously failed files (they are retried by default)\n"
-"recollindex -l\n"
-"    List available stemming languages\n"
-"recollindex -s <lang>\n"
-"    Build stem database for additional language <lang>\n"
-"recollindex -E\n"
-"    Check configuration file for topdirs and other paths existence\n"
+                                                           "recollindex -e [<filepath [path ...]>]\n"
+                                                           "    Purge data for individual files. No stem database updates.\n"
+                                                           "    Reads paths on stdin if none is given as argument.\n"
+                                                           "recollindex -i [-f] [-Z] [<filepath [path ...]>]\n"
+                                                           "    Index individual files. No database purge or stem database updates\n"
+                                                           "    Will read paths on stdin if none is given as argument\n"
+                                                           "    -f : ignore skippedPaths and skippedNames while doing this\n"
+                                                           "recollindex -r [-K] [-f] [-Z] [-p pattern] <top> \n"
+                                                           "   Recursive partial reindex. \n"
+                                                           "     -p : filter file names, multiple instances are allowed, e.g.: \n"
+                                                           "        -p *.odt -p *.pdf\n"
+                                                           "     -K : skip previously failed files (they are retried by default)\n"
+                                                           "recollindex -l\n"
+                                                           "    List available stemming languages\n"
+                                                           "recollindex -s <lang>\n"
+                                                           "    Build stem database for additional language <lang>\n"
+                                                           "recollindex -E\n"
+                                                           "    Check configuration file for topdirs and other paths existence\n"
 #ifdef FUTURE_IMPROVEMENT
-"recollindex -W\n"
-"    Process the Web queue\n"
+                                                           "recollindex -W\n"
+                                                           "    Process the Web queue\n"
 #endif
 #ifdef RCL_USE_ASPELL
-"recollindex -S\n"
-"    Build aspell spelling dictionary.>\n"
+                                                           "recollindex -S\n"
+                                                           "    Build aspell spelling dictionary.>\n"
 #endif
-"Common options:\n"
-"    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
-;
+                                                           "Common options:\n"
+                                                           "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+                                                           ;
 
 static void Usage()
 {
-    FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
-    fprintf(fp, "%s: Usage: %s", path_getsimple(thisprog).c_str(), usage);
-    fprintf(fp, "Recoll version: %s\n", Rcl::version_string().c_str());
-    exit((op_flags & OPT_h)==0);
+FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
+fprintf(fp, "%s: Usage: %s", path_getsimple(thisprog).c_str(), usage);
+fprintf(fp, "Recoll version: %s\n", Rcl::version_string().c_str());
+exit((op_flags & OPT_h)==0);
 }
 
 static RclConfig *config;
 
 static void lockorexit(Pidfile *pidfile, RclConfig *config)
 {
-    PRETEND_USE(config);
-    pid_t pid;
-    if ((pid = pidfile->open()) != 0) {
-        if (pid > 0) {
-            cerr << "Can't become exclusive indexer: " << pidfile->getreason()
-                 << ". Return (other pid?): " << pid << endl;
+PRETEND_USE(config);
+pid_t pid;
+if ((pid = pidfile->open()) != 0) {
+if (pid > 0) {
+cerr << "Can't become exclusive indexer: " << pidfile->getreason()
+<< ". Return (other pid?): " << pid << endl;
 #ifndef _WIN32
-            // Have a look at the status file. If the other process is
-            // a monitor we can tell it to start an incremental pass
-            // by touching the configuration file
-            DbIxStatus status;
-            readIdxStatus(config, status);
-            if (status.hasmonitor) {
-                string cmd("touch ");
-                string path = path_cat(config->getConfDir(), "recoll.conf");
-                cmd += path;
-                int status;
-                if ((status = system(cmd.c_str()))) {
-                    cerr << cmd << " failed with status " << status << endl;
-                } else {
-                    cerr << "Monitoring indexer process was notified of "
-                        "indexing request\n";
-                }
-            }
+// Have a look at the status file. If the other process is
+// a monitor we can tell it to start an incremental pass
+// by touching the configuration file
+DbIxStatus status;
+readIdxStatus(config, status);
+if (status.hasmonitor) {
+    string cmd("touch ");
+    string path = path_cat(config->getConfDir(), "recoll.conf");
+    cmd += path;
+    int status;
+    if ((status = system(cmd.c_str()))) {
+        cerr << cmd << " failed with status " << status << endl;
+    } else {
+        cerr << "Monitoring indexer process was notified of "
+            "indexing request\n";
+    }
+}
 #endif
-        } else {
-            cerr << "Can't become exclusive indexer: " << pidfile->getreason()
-                 << endl;
-        }            
-        exit(1);
-    }
-    if (pidfile->write_pid() != 0) {
-        cerr << "Can't become exclusive indexer: " << pidfile->getreason() <<
-            endl;
-        exit(1);
-    }
+} else {
+    cerr << "Can't become exclusive indexer: " << pidfile->getreason()
+         << endl;
+}            
+exit(1);
+}
+if (pidfile->write_pid() != 0) {
+    cerr << "Can't become exclusive indexer: " << pidfile->getreason() <<
+        endl;
+    exit(1);
+}
 }
 
 static string reasonsfile;
@@ -559,7 +559,7 @@ static void flushIdxReasons()
 static vector<string> argstovector(int argc, wchar_t **argv)
 #else
 #define WARGTOSTRING(w) (w)
-static vector<string> argstovector(int argc, char **argv)
+    static vector<string> argstovector(int argc, char **argv)
 #endif
 {
     thisprog = path_absolute(WARGTOSTRING(argv[0]));
@@ -599,7 +599,7 @@ static std::string orig_cwd;
 #if USE_WMAIN
 int wmain(int argc, wchar_t *argv[])
 #else
-int main(int argc, char *argv[])
+    int main(int argc, char *argv[])
 #endif
 {
     // The reexec struct is used by the daemon to shed memory after

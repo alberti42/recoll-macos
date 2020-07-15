@@ -34,7 +34,7 @@ class WebQueueIndexer;
 /** Callback to say what we're doing. If the update func returns false, we
  * stop as soon as possible without corrupting state */
 class DbIxStatusUpdater {
- public:
+public:
 #ifdef IDX_THREADS
     std::mutex m_mutex;
 #endif
@@ -43,14 +43,14 @@ class DbIxStatusUpdater {
 
     // Convenience: change phase/fn and update
     virtual bool update(DbIxStatus::Phase phase, const string& fn)
-    {
+        {
 #ifdef IDX_THREADS
-    std::unique_lock<std::mutex>  lock(m_mutex);
+            std::unique_lock<std::mutex>  lock(m_mutex);
 #endif
-        status.phase = phase;
-        status.fn = fn;
-        return update();
-    }
+            status.phase = phase;
+            status.fn = fn;
+            return update();
+        }
 
     // To be implemented by user for sending info somewhere
     virtual bool update() = 0;
@@ -62,7 +62,7 @@ class DbIxStatusUpdater {
  * database(s). 
  */
 class ConfIndexer {
- public:
+public:
     enum runStatus {IndexerOk, IndexerError};
     ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0);
     virtual ~ConfIndexer();
@@ -113,7 +113,7 @@ class ConfIndexer {
 
     /** Set in place reset mode */
     void setInPlaceReset() {m_db.setInPlaceReset();}
- private:
+private:
     RclConfig *m_config;
     Rcl::Db    m_db;
     FsIndexer *m_fsindexer; 

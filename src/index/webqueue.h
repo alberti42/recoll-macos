@@ -35,13 +35,13 @@ class CirCache;
 class RclConfig;
 class WebStore;
 namespace Rcl {
-    class Db;
+class Db;
 }
 
 class WebQueueIndexer : public FsTreeWalkerCB {
 public:
     WebQueueIndexer(RclConfig *cnf, Rcl::Db *db,
-                       DbIxStatusUpdater *updfunc = 0);
+                    DbIxStatusUpdater *updfunc = 0);
     ~WebQueueIndexer();
 
     /** This is called by the top indexer in recollindex. 
