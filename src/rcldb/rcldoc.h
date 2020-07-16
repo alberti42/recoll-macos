@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes
+/* Copyright (C) 2006-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -205,9 +205,8 @@ public:
         return true;
     }
 
-    /* Is this document stored as a regular filesystem file ?
-     * (as opposed to e.g. a webcache file), not a subdoc, 
-     */
+    /* Is this document stored in a regular filesystem file ?
+     * (as opposed to e.g. a webcache file). */
     bool isFsFile() {
         std::string backend;
         getmeta(keybcknd, &backend);

@@ -114,39 +114,37 @@ public:
         return false;
     }
 
+    /** For an embedded document: get the immediately enclosing doc
+     * (e.g., for an attachment, the message it is attached to. Only
+     * makes sense is ipath is not empty. */
     virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&);
 
     /** Get estimated total count in results */
     virtual int getResCnt() = 0;
 
     /** Get title for result list */
-    virtual std::string title() 
-        {
-            return m_title;
-        }
+    virtual std::string title() {
+        return m_title;
+    }
 
     /** Can do snippets ? */
-    virtual bool snippetsCapable()
-        {
-            return false;
-        }
+    virtual bool snippetsCapable() {
+        return false;
+    }
     /** Get description for underlying query */
     virtual std::string getDescription() = 0;
 
     /** Get search terms (for highlighting abstracts). Some sequences
      * may have no associated search terms. Implement this for them. */
-    virtual void getTerms(HighlightData& hld)                     
-        {
-            hld.clear();
-        }
-    virtual std::list<std::string> expand(Rcl::Doc &) 
-        {
-            return std::list<std::string>();
-        }
-    virtual std::string getReason() 
-        {
-            return m_reason;
-        }
+    virtual void getTerms(HighlightData& hld) {
+        hld.clear();
+    }
+    virtual std::list<std::string> expand(Rcl::Doc &) {
+        return std::list<std::string>();
+    }
+    virtual std::string getReason() {
+        return m_reason;
+    }
     /** Optional functionality. */
     virtual bool canFilter() {return false;}
     virtual bool canSort() {return false;}

@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -545,19 +545,18 @@ pair<int,int> ResList::parnumfromdocnum(int docnum)
     LOGDEB("parnumfromdocnum: docnum " << docnum << "\n");
     if (m_pager->pageNumber() < 0) {
         LOGDEB("parnumfromdocnum: no page return -1,-1\n");
-        return pair<int,int>(-1,-1);
+        return {-1, -1};
     }
     int winfirst = pageFirstDocNum();
     if (docnum - winfirst < 0) {
         LOGDEB("parnumfromdocnum: docnum " << docnum << " < winfirst " <<
                winfirst << " return -1,-1\n");
-        return pair<int,int>(-1,-1);
+        return {-1, -1};
     }
     docnum -= winfirst;
-    for (std::map<int,int>::iterator it = m_pageParaToReldocnums.begin();
-         it != m_pageParaToReldocnums.end(); it++) {
-        if (docnum == it->second) {
-            int first = it->first;
+    for (const auto& entry : m_pageParaToReldocnums.begin()) {
+        if (docnum == entry.second) {
+            int first = entry.first;
             int last = first+1;
             std::map<int,int>::iterator it1;
             while ((it1 = m_pageParaToReldocnums.find(last)) != 
@@ -565,11 +564,11 @@ pair<int,int> ResList::parnumfromdocnum(int docnum)
                 last++;
             }
             LOGDEB("parnumfromdocnum: return " << first << "," << last << "\n");
-            return pair<int,int>(first, last);
+            return {first, last};
         }
     }
     LOGDEB("parnumfromdocnum: not found return -1,-1\n");
-    return pair<int,int>(-1,-1);
+    return {-1,-1};
 }
 #endif // TEXTBROWSER
 
@@ -1180,8 +1179,23 @@ void ResList::menuPreviewParent()
 void ResList::menuOpenParent()
 {
     Rcl::Doc doc;
-    if (getDoc(m_popDoc, doc) && m_source) 
-        emit editRequested(ResultPopup::getParent(m_source, doc));
+    if (getDoc(m_popDoc, doc) && m_source)  {
+        Rcl::Doc pdoc = ResultPopup::getParent(m_source, doc);
+        if (!pdoc.url.empty()) {
+            emit editRequested(pdoc);
+        }
+    }
+}
+
+void ResList::menuOpenFolder()
+{
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc) && m_source) {
+        Rcl::Doc pdoc = ResultPopup::getFolder(m_source, doc);
+        if (!pdoc.url.empty()) {
+            emit editRequested(pdoc);
+        }
+    }
 }
 
 void ResList::menuShowSnippets()

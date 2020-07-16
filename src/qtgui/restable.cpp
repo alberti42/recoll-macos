@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -247,11 +247,10 @@ RecollModel::RecollModel(const QStringList fields, ResTable *tb,
     // could be protected to be done only once, but it's no real
     // problem
     if (theconfig) {
-        const set<string>& stored = theconfig->getStoredFields();
-        for (set<string>::const_iterator it = stored.begin(); 
-             it != stored.end(); it++) {
-            if (o_displayableFields.find(*it) == o_displayableFields.end()) {
-                o_displayableFields[*it] = QString::fromUtf8(it->c_str());
+        const auto& stored = theconfig->getStoredFields();
+        for (const auto& field : stored) {
+            if (o_displayableFields.find(field) == o_displayableFields.end()) {
+                o_displayableFields[field] = u8s2qs(field);
             }
         }
     }
@@ -1003,9 +1002,24 @@ void ResTable::menuPreviewParent()
 
 void ResTable::menuOpenParent()
 {
-    if (m_detaildocnum >= 0 && m_model && m_model->getDocSource())
-        emit editRequested(
-            ResultPopup::getParent(m_model->getDocSource(), m_detaildoc));
+    if (m_detaildocnum >= 0 && m_model && m_model->getDocSource()) {
+        Rcl::Doc pdoc =
+            ResultPopup::getParent(m_model->getDocSource(), m_detaildoc);
+        if (!pdoc.url.empty()) {
+            emit editRequested(pdoc);
+        }
+    }
+}
+
+void ResTable::menuOpenFolder()
+{
+    if (m_detaildocnum >= 0 && m_model && m_model->getDocSource()) {
+        Rcl::Doc pdoc =
+            ResultPopup::getFolder(m_model->getDocSource(), m_detaildoc);
+        if (!pdoc.url.empty()) {
+            emit editRequested(pdoc);
+        }
+    }
 }
 
 void ResTable::menuEdit()
@@ -1085,12 +1099,11 @@ void ResTable::createHeaderPopupMenu(const QPoint& pos)
     popup->addSeparator();
 
     QAction *act;
-    for (map<string, QString>::const_iterator it = allfields.begin();
-         it != allfields.end(); it++) {
-        if (std::find(fields.begin(), fields.end(), it->first) != fields.end())
+    for (const auto& field : allfields) {
+        if (std::find(fields.begin(), fields.end(), field.first) != fields.end())
             continue;
-        act = new QAction(tr("Add \"%1\" column").arg(it->second), popup);
-        act->setData(QString::fromUtf8(it->first.c_str()));
+        act = new QAction(tr("Add \"%1\" column").arg(field.second), popup);
+        act->setData(u8s2qs(field.first));
         connect(act, SIGNAL(triggered(bool)), this , SLOT(addColumn()));
         popup->addAction(act);
     }

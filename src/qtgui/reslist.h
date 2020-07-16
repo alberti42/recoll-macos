@@ -85,6 +85,7 @@ public slots:
     virtual void menuExpand();
     virtual void menuPreviewParent();
     virtual void menuOpenParent();
+    virtual void menuOpenFolder();
     virtual void menuShowSnippets();
     virtual void menuShowSubDocs();
     virtual void previewExposed(int);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes 
+/* Copyright (C) 2006-2020 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -19,15 +19,17 @@
 #include "autoconfig.h"
 
 namespace ResultPopup {
-    enum Options {showExpand = 0x1, showSubs = 0x2, isMain = 0x3,
-          showSaveOne = 0x4, showSaveSel = 0x8};
-    extern QMenu *create(QWidget *me, int opts,  
-             std::shared_ptr<DocSequence> source,
-             Rcl::Doc& doc);
-    extern Rcl::Doc getParent(std::shared_ptr<DocSequence> source,
-                  Rcl::Doc& doc);
-    extern void copyFN(const Rcl::Doc &doc);
-    extern void copyURL(const Rcl::Doc &doc);
+enum Options {showExpand = 0x1, showSubs = 0x2, isMain = 0x3,
+              showSaveOne = 0x4, showSaveSel = 0x8};
+extern QMenu *create(QWidget *me, int opts,  
+                     std::shared_ptr<DocSequence> source,
+                     Rcl::Doc& doc);
+extern Rcl::Doc getParent(std::shared_ptr<DocSequence> source,
+                          Rcl::Doc& doc);
+extern Rcl::Doc getFolder(std::shared_ptr<DocSequence> source,
+                          Rcl::Doc& doc);
+extern void copyFN(const Rcl::Doc &doc);
+extern void copyURL(const Rcl::Doc &doc);
 };
 
 #endif /* _RESPOPUP_H_INCLUDED_ */

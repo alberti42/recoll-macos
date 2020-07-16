@@ -1,4 +1,5 @@
-/*
+/* Copyright (C) 2005-2020 J.F.Dockes
+ *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -43,34 +44,25 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
 
+    // Is this a top level file system file (accessible by regular utilities)?
+    bool isFsTop = doc.ipath.empty() && doc.isFsFile();
+
     popup->addAction(QWidget::tr("&Preview"), me, SLOT(menuPreview()));
 
     if (!theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
         popup->addAction(QWidget::tr("&Open"), me, SLOT(menuEdit()));
     }
 
-    bool needopenwith = true;
-    if (!doc.ipath.empty())
-        needopenwith = false;
-    if (needopenwith) {
-        string backend;
-        doc.getmeta(Rcl::Doc::keybcknd, &backend);
-        if (!backend.empty() && backend.compare("FS"))
-            needopenwith = false;
-    }
-            
-    if (needopenwith) {
-        vector<DesktopDb::AppDef> aps;
+    if (isFsTop) {
+        // Openable by regular program. Add "open with" entry.
+        vector<DesktopDb::AppDef> apps;
         DesktopDb *ddb = DesktopDb::getDb();
-        if (ddb && ddb->appForMime(doc.mimetype, &aps) && 
-            !aps.empty()) {
+        if (ddb && ddb->appForMime(doc.mimetype, &apps) && !apps.empty()) {
             QMenu *sub = popup->addMenu(QWidget::tr("Open With"));
             if (sub) {
-                for (vector<DesktopDb::AppDef>::const_iterator it = aps.begin();
-                     it != aps.end(); it++) {
-                    QAction *act = new 
-                        QAction(QString::fromUtf8(it->name.c_str()), me);
-                    QVariant v(QString::fromUtf8(it->command.c_str()));
+                for (const auto& app : apps) {
+                    QAction *act = new QAction(u8s2qs(app.name), me);
+                    QVariant v(u8s2qs(app.command));
                     act->setData(v);
                     sub->addAction(act);
                 }
@@ -81,16 +73,14 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
 
         // See if there are any desktop files in $RECOLL_CONFDIR/scripts
         // and possibly create a "run script" menu.
-        aps.clear();
+        apps.clear();
         ddb = new DesktopDb(path_cat(theconfig->getConfDir(), "scripts"));
-        if (ddb && ddb->allApps(&aps) && !aps.empty()) {
+        if (ddb && ddb->allApps(&apps) && !apps.empty()) {
             QMenu *sub = popup->addMenu(QWidget::tr("Run Script"));
             if (sub) {
-                for (vector<DesktopDb::AppDef>::const_iterator it = aps.begin();
-                     it != aps.end(); it++) {
-                    QAction *act = new 
-                        QAction(QString::fromUtf8(it->name.c_str()), me);
-                    QVariant v(QString::fromUtf8(it->command.c_str()));
+                for (const auto& app : apps) {
+                    QAction *act = new QAction(u8s2qs(app.name), me);
+                    QVariant v(u8s2qs(app.command));
                     act->setData(v);
                     sub->addAction(act);
                 }
@@ -101,27 +91,34 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
         delete ddb;
     }
 
-    popup->addAction(QWidget::tr("Copy &File Name"), me, SLOT(menuCopyFN()));
+    if (doc.isFsFile()) {
+        popup->addAction(QWidget::tr("Copy &File Name"), me, SLOT(menuCopyFN()));
+    }
     popup->addAction(QWidget::tr("Copy &URL"), me, SLOT(menuCopyURL()));
 
-    if ((opts&showSaveOne) && (!doc.isFsFile() || !doc.ipath.empty()))
-        popup->addAction(QWidget::tr("&Write to File"), me, 
+    if ((opts&showSaveOne) && !(isFsTop))
+        popup->addAction(QWidget::tr("&Write to File"), me,
                          SLOT(menuSaveToFile()));
 
     if ((opts&showSaveSel))
         popup->addAction(QWidget::tr("Save selection to files"), 
                          me, SLOT(menuSaveSelection()));
 
+
+    // We now separate preview/open parent, which only makes sense for
+    // an embedded doc, and open folder (which was previously done if
+    // the doc was a top level file and was not accessible else).
     Rcl::Doc pdoc;
-    if (source && source->getEnclosing(doc, pdoc)) {
+    bool isEnclosed = source && source->getEnclosing(doc, pdoc);
+    if (isEnclosed) {
         popup->addAction(QWidget::tr("Preview P&arent document/folder"), 
                          me, SLOT(menuPreviewParent()));
-    }
-    // Open parent is useful even if there is no parent because we open
-    // the enclosing folder.
-    if (doc.isFsFile())
-        popup->addAction(QWidget::tr("&Open Parent document/folder"), 
+        popup->addAction(QWidget::tr("&Open Parent document"), 
                          me, SLOT(menuOpenParent()));
+    }
+    if (doc.isFsFile())
+        popup->addAction(QWidget::tr("&Open Parent Folder"),
+                         me, SLOT(menuOpenFolder()));
 
     if (opts & showExpand)
         popup->addAction(QWidget::tr("Find &similar documents"), 
@@ -141,14 +138,19 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
 Rcl::Doc getParent(std::shared_ptr<DocSequence> source, Rcl::Doc& doc)
 {
     Rcl::Doc pdoc;
-    if (!source || !source->getEnclosing(doc, pdoc)) {
-        // No parent doc: show enclosing folder with app configured for
-        // directories
-        pdoc.url = url_parentfolder(doc.url);
-        pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
-        pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
-        pdoc.mimetype = "inode/directory";
+    if (source) {
+        source->getEnclosing(doc, pdoc);
     }
+    return pdoc;
+}
+
+Rcl::Doc getFolder(std::shared_ptr<DocSequence>, Rcl::Doc& doc)
+{
+    Rcl::Doc pdoc;
+    pdoc.url = url_parentfolder(doc.url);
+    pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
+    pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
+    pdoc.mimetype = "inode/directory";
     return pdoc;
 }
 
