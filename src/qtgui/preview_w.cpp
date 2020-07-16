@@ -737,6 +737,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         if (!loadok) {
             QMessageBox::warning(0,"Recoll",tr("Could not fetch stored text"));
         }
+        lthr.fdoc.mimetype = "text/plain";
     }
 
     if (!loadok) {
