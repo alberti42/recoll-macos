@@ -811,7 +811,10 @@ void ResList::displayPage()
     m_pager->displayPage(theconfig);
 
 #if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
-    setHtml(m_text);
+    // webengine from qt 5.15 on won't load local images if the base URL is
+    // not set (previous versions worked with an empty one). Can't hurt anyway.
+    const static QUrl baseUrl("file:///");
+    setHtml(m_text, baseUrl);
 #endif
 
     LOGDEB0("ResList::displayPg: hasNext " << m_pager->hasNext() <<
