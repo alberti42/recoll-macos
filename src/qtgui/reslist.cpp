@@ -67,9 +67,10 @@ static const QKeySequence closeKeySeq("Ctrl+w");
 # define QWEBSETTINGS QWebSettings
 #elif defined(USING_WEBENGINE)
 // Notes for WebEngine:
-// - All links must begin with http:// for acceptNavigationRequest to
-//   be called. Actually not any more since we set baseURL see
-//   comments in linkClicked().
+// - It used to be that all links must begin with http:// for
+//   acceptNavigationRequest to be called. Can't remember if file://
+//   would work. Anyway not any more since we set baseURL. See comments
+//   in linkClicked().
 // - The links passed to acceptNav.. have the host part 
 //   lowercased -> we change S0 to http://localhost/S0, not http://S0
 # include <QWebEnginePage>
@@ -145,7 +146,12 @@ public:
                          map<string, vector<string> >& sugg);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
 #ifdef USING_WEBENGINE
-    virtual string linkPrefix() override {return "http://localhost/";}
+    // We used to use http://localhost/. Now use file:/// as this is
+    // what Webengine will prepend relative links with (as
+    // baseURL). This is for the case where a user adds a link like
+    // P%N, which would not work if linkPrefix and baseURL were not
+    // the same.
+    virtual string linkPrefix() override {return "file:///";}
     virtual string bodyAttrs() override {
         return "onload=\"addEventListener('contextmenu', saveLoc)\"";
     }
@@ -953,6 +959,8 @@ void ResList::onLinkClicked(const QUrl &qurl)
     // baseUrl because we receive links like baseUrl+P1 instead.
     LOGDEB1("ResList::onLinkClicked: [" << strurl << "] prefix " <<
             m_pager->linkPrefix() << "\n");
+    std::cerr << "ResList::onLinkClicked: [" << strurl << "] prefix " <<
+            m_pager->linkPrefix() << "\n";
     if (m_pager->linkPrefix().size() > 0 &&
         (strurl.size() <= m_pager->linkPrefix().size() ||
          !beginswith(strurl, m_pager->linkPrefix()))) {
@@ -960,15 +968,31 @@ void ResList::onLinkClicked(const QUrl &qurl)
     }
     strurl = strurl.substr(m_pager->linkPrefix().size());
 
+    // The content of our URLs is always a single letter possibly
+    // followed by an integer value (document number).
+    if (strurl.size() == 0) {
+        return;
+    }
     int docnum{-1};
     bool havedoc{false};
     Rcl::Doc doc;
-    if (strurl.size() > 1 && (docnum = atoi(strurl.c_str()+1) - 1) >= 0) {
-        if (getDoc(docnum, doc)) {
-            havedoc = true;
-        } else {
-            LOGERR("ResList::onLinkClicked: can't get doc for "<<
-                   docnum << "\n");
+    if (strurl.size() > 1) {
+        // Expecting integer after the letter, and nothing else
+        const char *bptr = strurl.c_str() + 1;
+        char *eptr;
+        docnum = strtol(bptr, &eptr, 10) - 1;
+        if (eptr == bptr || *eptr != 0) {
+            // No digits or non-digit characters following digits, bad link.
+            return;
+        }
+        if (docnum >= 0) {
+            if (getDoc(docnum, doc)) {
+                havedoc = true;
+            } else {
+                LOGERR("ResList::onLinkClicked: can't get doc for "<<
+                       docnum << "\n");
+                return;
+            }
         }
     }
 
