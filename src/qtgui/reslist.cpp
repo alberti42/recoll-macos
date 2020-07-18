@@ -66,9 +66,10 @@ static const QKeySequence closeKeySeq("Ctrl+w");
 # include <QWebSettings>
 # define QWEBSETTINGS QWebSettings
 #elif defined(USING_WEBENGINE)
-// Notes for WebEngine
-// - All links must begin with http:// for acceptNavigationRequest to be
-//   called. 
+// Notes for WebEngine:
+// - All links must begin with http:// for acceptNavigationRequest to
+//   be called. Actually not any more since we set baseURL see
+//   comments in linkClicked().
 // - The links passed to acceptNav.. have the host part 
 //   lowercased -> we change S0 to http://localhost/S0, not http://S0
 # include <QWebEnginePage>
@@ -942,10 +943,34 @@ void ResList::onLinkClicked(const QUrl &qurl)
     // want. e.g. Suggestions links are like Sterm|spelling which we
     // receive as Sterm%7CSpelling
     string strurl = url_decode(qs2utf8s(qurl.toString()));
-    
+
+    // Link prefix remark: it used to be that webengine refused to
+    // acknowledge link clicks on links like "%P1", it needed an
+    // absolute URL like http://localhost/P1. This does not seem to be
+    // the case any more, probably because we now set baseUrl (to fix
+    // icons display which had stopped working). So the linkprefix
+    // thing could probably go away. OTOH, we'd have to substract the
+    // baseUrl because we receive links like baseUrl+P1 instead.
     LOGDEB1("ResList::onLinkClicked: [" << strurl << "] prefix " <<
             m_pager->linkPrefix() << "\n");
+    if (m_pager->linkPrefix().size() > 0 &&
+        (strurl.size() <= m_pager->linkPrefix().size() ||
+         !beginswith(strurl, m_pager->linkPrefix()))) {
+        return;
+    }
     strurl = strurl.substr(m_pager->linkPrefix().size());
+
+    int docnum{-1};
+    bool havedoc{false};
+    Rcl::Doc doc;
+    if (strurl.size() > 1 && (docnum = atoi(strurl.c_str()+1) - 1) >= 0) {
+        if (getDoc(docnum, doc)) {
+            havedoc = true;
+        } else {
+            LOGERR("ResList::onLinkClicked: can't get doc for "<<
+                   docnum << "\n");
+        }
+    }
 
     int what = strurl[0];
     switch (what) {
@@ -953,14 +978,8 @@ void ResList::onLinkClicked(const QUrl &qurl)
         // Open abstract/snippets window
     case 'A':
     {
-        if (!m_source) 
+        if (!havedoc)
             return;
-        int i = atoi(strurl.c_str()+1) - 1;
-        Rcl::Doc doc;
-        if (!getDoc(i, doc)) {
-            LOGERR("ResList::onLinkClicked: can't get doc for " << i << "\n");
-            return;
-        }
         emit(showSnippets(doc));
     }
     break;
@@ -968,14 +987,8 @@ void ResList::onLinkClicked(const QUrl &qurl)
     // Show duplicates
     case 'D':
     {
-        if (!m_source) 
+        if (!m_source || !havedoc) 
             return;
-        int i = atoi(strurl.c_str()+1) - 1;
-        Rcl::Doc doc;
-        if (!getDoc(i, doc)) {
-            LOGERR("ResList::onLinkClicked: can't get doc for " << i << "\n");
-            return;
-        }
         vector<Rcl::Doc> dups;
         if (m_source->docDups(doc, dups) && m_rclmain) {
             m_rclmain->newDupsW(doc, dups);
@@ -986,14 +999,9 @@ void ResList::onLinkClicked(const QUrl &qurl)
     // Open parent folder
     case 'F':
     {
-        int i = atoi(strurl.c_str()+1) - 1;
-        Rcl::Doc doc;
-        if (!getDoc(i, doc)) {
-            LOGERR("ResList::onLinkClicked: can't get doc for " << i << "\n");
+        if (!havedoc)
             return;
-        }
-        emit editRequested(ResultPopup::getParent(std::shared_ptr<DocSequence>(),
-                                                  doc));
+        emit editRequested(ResultPopup::getFolder(doc));
     }
     break;
 
@@ -1009,15 +1017,11 @@ void ResList::onLinkClicked(const QUrl &qurl)
     case 'P': 
     case 'E': 
     {
-        int i = atoi(strurl.c_str()+1) - 1;
-        Rcl::Doc doc;
-        if (!getDoc(i, doc)) {
-            LOGERR("ResList::onLinkClicked: can't get doc for " << i << "\n");
+        if (!havedoc)
             return;
-        }
         if (what == 'P') {
             if (m_ismainres) {
-                emit docPreviewClicked(i, doc, m_lstClckMod);
+                emit docPreviewClicked(docnum, doc, m_lstClckMod);
             } else {
                 emit previewRequested(doc);
             }
@@ -1038,7 +1042,8 @@ void ResList::onLinkClicked(const QUrl &qurl)
         // Run script. Link format Rnn|Script Name
     case 'R':
     {
-        int i = atoi(strurl.c_str() + 1) - 1;
+        if (!havedoc)
+            return;
         QString s = qurl.toString();
         int bar = s.indexOf("|");
         if (bar == -1 || bar >= s.size()-1)
@@ -1050,7 +1055,7 @@ void ResList::onLinkClicked(const QUrl &qurl)
             QAction act(QString::fromUtf8(app.name.c_str()), this);
             QVariant v(QString::fromUtf8(app.command.c_str()));
             act.setData(v);
-            m_popDoc = i;
+            m_popDoc = docnum;
             menuOpenWith(&act);
         }
     }
@@ -1073,8 +1078,9 @@ void ResList::onLinkClicked(const QUrl &qurl)
     break;
 
     default: 
-        LOGERR("ResList::onLinkClicked: bad link [" << strurl.substr(0,20) << "]\n");
-        break;// ?? 
+        LOGERR("ResList::onLinkClicked: bad link [" << strurl.substr(0,20) <<
+               "]\n");
+        break;
     }
 }
 
@@ -1194,7 +1200,7 @@ void ResList::menuOpenFolder()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc) && m_source) {
-        Rcl::Doc pdoc = ResultPopup::getFolder(m_source, doc);
+        Rcl::Doc pdoc = ResultPopup::getFolder(doc);
         if (!pdoc.url.empty()) {
             emit editRequested(pdoc);
         }

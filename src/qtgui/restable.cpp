@@ -718,7 +718,7 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
         m_detail->clear();
         m_detaildocnum = index.row();
         m_detaildoc = doc;
-        m_pager->displayDoc(theconfig, index.row(), m_detaildoc, 
+        m_pager->displayDoc(theconfig, m_detaildocnum, m_detaildoc, 
                             m_model->m_hdata);
         emit(detailDocChanged(doc, m_model->getDocSource()));
     } else {
@@ -841,19 +841,23 @@ void ResTable::linkWasClicked(const QUrl &url)
     const char *ascurl = s.toUtf8();
     LOGDEB("ResTable::linkWasClicked: [" << ascurl << "]\n");
 
-    int i = atoi(ascurl+1) -1;
+    int docseqnum = atoi(ascurl+1) -1;
+    if (m_detaildocnum != docseqnum) {
+        //? Really we should abort...
+        LOGERR("ResTable::linkWasClicked: m_detaildocnum != docseqnum !\n");
+        return;
+    }
+    
     int what = ascurl[0];
     switch (what) {
         // Open abstract/snippets window
     case 'A':
-        if (m_detaildocnum >= 0)
-            emit(showSnippets(m_detaildoc));
+        emit(showSnippets(m_detaildoc));
         break;
     case 'D':
     {
         vector<Rcl::Doc> dups;
-        if (m_detaildocnum >= 0 && m_rclmain && 
-            m_model->getDocSource()->docDups(m_detaildoc, dups)) {
+        if (m_rclmain && m_model->getDocSource()->docDups(m_detaildoc, dups)) {
             m_rclmain->newDupsW(m_detaildoc, dups);
         }
     }
@@ -862,8 +866,7 @@ void ResTable::linkWasClicked(const QUrl &url)
     // Open parent folder
     case 'F':
     {
-        emit editRequested(ResultPopup::getParent(
-                               std::shared_ptr<DocSequence>(), m_detaildoc));
+        emit editRequested(ResultPopup::getFolder(m_detaildoc));
     }
     break;
 
@@ -872,7 +875,7 @@ void ResTable::linkWasClicked(const QUrl &url)
     {
         if (what == 'P') {
             if (m_ismainres) {
-                emit docPreviewClicked(i, m_detaildoc, 0);
+                emit docPreviewClicked(docseqnum, m_detaildoc, 0);
             }  else {
                 emit previewRequested(m_detaildoc);
             }
@@ -1013,9 +1016,8 @@ void ResTable::menuOpenParent()
 
 void ResTable::menuOpenFolder()
 {
-    if (m_detaildocnum >= 0 && m_model && m_model->getDocSource()) {
-        Rcl::Doc pdoc =
-            ResultPopup::getFolder(m_model->getDocSource(), m_detaildoc);
+    if (m_detaildocnum >= 0) {
+        Rcl::Doc pdoc = ResultPopup::getFolder(m_detaildoc);
         if (!pdoc.url.empty()) {
             emit editRequested(pdoc);
         }

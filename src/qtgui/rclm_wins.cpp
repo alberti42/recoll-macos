@@ -466,6 +466,8 @@ void RclMain::newDupsW(const Rcl::Doc, const vector<Rcl::Doc> dups)
 
 void RclMain::showSnippets(Rcl::Doc doc)
 {
+    if (!m_source)
+        return;
     if (!m_snippets) {
         m_snippets = new SnippetsW(doc, m_source);
         connect(m_snippets, SIGNAL(startNativeViewer(Rcl::Doc, int, QString)),

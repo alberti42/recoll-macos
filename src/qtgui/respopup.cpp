@@ -144,7 +144,7 @@ Rcl::Doc getParent(std::shared_ptr<DocSequence> source, Rcl::Doc& doc)
     return pdoc;
 }
 
-Rcl::Doc getFolder(std::shared_ptr<DocSequence>, Rcl::Doc& doc)
+Rcl::Doc getFolder(Rcl::Doc& doc)
 {
     Rcl::Doc pdoc;
     pdoc.url = url_parentfolder(doc.url);

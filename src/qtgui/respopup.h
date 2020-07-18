@@ -26,8 +26,7 @@ extern QMenu *create(QWidget *me, int opts,
                      Rcl::Doc& doc);
 extern Rcl::Doc getParent(std::shared_ptr<DocSequence> source,
                           Rcl::Doc& doc);
-extern Rcl::Doc getFolder(std::shared_ptr<DocSequence> source,
-                          Rcl::Doc& doc);
+extern Rcl::Doc getFolder(Rcl::Doc& doc);
 extern void copyFN(const Rcl::Doc &doc);
 extern void copyURL(const Rcl::Doc &doc);
 };
