@@ -38,9 +38,9 @@ bool StrWildMatcher::match(const string& val) const
     case 0: return true;
     case FNM_NOMATCH: return false;
     default:
-    LOGINFO("StrWildMatcher::match:err: e [" << m_sexp << "] s [" << val
+        LOGINFO("StrWildMatcher::match:err: e [" << m_sexp << "] s [" << val
                 << "] (" << url_encode(val) << ") ret " << ret << "\n");
-    return false;
+        return false;
     }
 }
 
@@ -64,7 +64,7 @@ bool StrRegexpMatcher::setExp(const string& exp)
 bool StrRegexpMatcher::match(const string& val) const
 {
     if (!m_re.ok()) 
-    return false;
+        return false;
     return m_re(val);
 }
 
@@ -77,4 +77,3 @@ bool StrRegexpMatcher::ok() const
 {
     return m_re.ok();
 }
-
