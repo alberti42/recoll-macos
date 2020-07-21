@@ -1396,11 +1396,12 @@ string RclConfig::getPidfile() const
 {
     const char *p = getenv("XDG_RUNTIME_DIR");
     if (p) {
-	string base = path_canon(p);
-	string digest;
-	return path_cat(
-            base, "/recoll-" + MD5HexPrint(getConfDir(), digest) + "-index.pid");
-    }
+        string base = path_canon(p);
+        string digest, hex;
+        MD5String(getConfDir(), digest);
+        MD5HexPrint(digest, hex);
+        return path_cat(base, "/recoll-" + hex + "-index.pid");
+    } 
     return path_cat(getCacheDir(), "index.pid");
 }
 
