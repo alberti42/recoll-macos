@@ -212,7 +212,7 @@ class PDFExtractor:
                 return (False, "", "", rclexecm.RclExecM.eofnow)
         path = os.path.join(tmpdir, ipath)
         if os.path.isfile(path):
-            f = open(path)
+            f = open(path, "rb")
             docdata = f.read();
             f.close()
         if self.currentindex == len(self.attachlist) - 1:
@@ -484,7 +484,9 @@ class PDFExtractor:
 
                 #self.em.rclog("getnext: returning ok for [%s]" % ipath)
                 return (ok, data, ipath, eof)
-            except:
+            except Exception as ex:
+                self.em.rclog("getnext: extractone failed for index %d: %s" %
+                                  (self.currentindex, ex))
                 return (False, "", "", rclexecm.RclExecM.eofnow)
 
 
