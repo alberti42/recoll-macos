@@ -559,6 +559,13 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
             const string *fnp = 0;
             if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
                 doc.meta[Rcl::Doc::keyfn] = ent.second;
+        } else if (ent.first == cstr_dj_keymd5) {
+            // Only if not set during the stack walk: we want the md5
+            // from the actual document, not from further conversions,
+            // as computed, e.g. by the html to text handler
+            const string *val = 0;
+            if (!doc.peekmeta(Rcl::Doc::keymd5, &val) || val->empty())
+                doc.meta[Rcl::Doc::keymd5] = ent.second;
         } else if (ent.first == cstr_dj_keymt || 
                    ent.first == cstr_dj_keycharset) {
             // don't need/want these.
