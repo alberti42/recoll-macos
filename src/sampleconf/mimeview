@@ -19,9 +19,12 @@
 # Use xallexcepts- and xallexcepts+ in a user file to add or remove from
 # the default xallexcepts list
 
+# Visio xml is in there because the desktops tend to try and open it as an
+# archive
 xallexcepts = application/pdf application/postscript application/x-dvi \
  text/html|gnuinfo text/html|chm text/html|epub text/html|rclman \
- application/x-fsdirectory|parentopen inode/directory|parentopen
+ application/x-fsdirectory|parentopen inode/directory|parentopen \
+ application/vnd.ms-visio.drawing
 
 
 [view]
@@ -75,6 +78,7 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
  libreoffice %f
 application/vnd.openxmlformats-officedocument.presentationml.template = \
  libreoffice %f
+application/vnd.ms-visio.drawing = libreoffice %f
 application/vnd.openxmlformats-officedocument.presentationml.presentation = \
  libreoffice %f
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \

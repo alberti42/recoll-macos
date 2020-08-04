@@ -108,6 +108,7 @@ application/vnd.openxmlformats-officedocument.presentationml.template = \
  execm rclopxml.py
 application/vnd.openxmlformats-officedocument.presentationml.presentation = \
  execm rclopxml.py
+application/vnd.ms-visio.drawing = execm rclopxml.py
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
  internal xsltproc meta docProps/core.xml openxml-meta.xsl \
  body xl/sharedStrings.xml openxml-xls-body.xsl
@@ -270,6 +271,7 @@ application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = spreadsheet
 application/vnd.openxmlformats-officedocument.spreadsheetml.template = spreadsheet
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = wordprocessing
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = wordprocessing
+application/vnd.ms-visio.drawing = document
 application/vnd.sun.xml.calc = spreadsheet
 application/vnd.sun.xml.calc.template = spreadsheet
 application/vnd.sun.xml.draw = drawing
@@ -460,6 +462,7 @@ presentation = \
   application/vnd.openxmlformats-officedocument.presentationml.template \
   application/vnd.sun.xml.impress \
   application/vnd.sun.xml.impress.template \
+  application/vnd.ms-visio.drawing
 
 media = \
       application/ogg \
