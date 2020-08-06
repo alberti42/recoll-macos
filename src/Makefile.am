@@ -556,7 +556,7 @@ python/samples/recollqsd.py \
  \
 sampleconf/fields sampleconf/fragbuts.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
-sampleconf/recoll.conf sampleconf/recoll.qss \
+sampleconf/recoll.conf sampleconf/recoll.qss sampleconf/recoll-dark.qss \
 \
 testmains/Makefile.am \
 \
