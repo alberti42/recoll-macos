@@ -16,8 +16,8 @@
  */
 #include "autoconfig.h"
 
-#include <stdio.h>
 #include <cstdlib>
+#include <iostream>
 
 #include "fileudi.h"
 #include "md5.h"
@@ -34,7 +34,7 @@ using std::string;
 void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
 {
     if (maxlen < HASHLEN) {
-        fprintf(stderr, "pathHash: internal error: requested len too small\n");
+        std::cerr << "pathHash: internal error: requested len too small\n";
         abort();
     }
 

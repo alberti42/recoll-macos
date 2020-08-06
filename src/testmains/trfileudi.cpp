@@ -20,25 +20,37 @@
 
 #include "fileudi.h"
 
-#include <stdio.h>
+#include <string.h>
+
+#include <iostream>
 #include <string>
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
-    string path="/usr/lib/toto.cpp";
-    string ipath = "1:2:3:4:5:10";
+    if (argc > 3) {
+        std::cerr << "Usage: trfileudi <path> [ipath]\n";
+        std::cerr << "Usage: trfileudi #reads stdin for paths\n";
+        return 1;
+    }
     string udi;
-    make_udi(path, ipath, udi);
-    printf("udi [%s]\n", udi.c_str());
-    path = "/some/much/too/looooooooooooooong/path/bla/bla/bla"
-        "/looooooooooooooong/path/bla/bla/bla/llllllllllllllllll"
-        "/looooooooooooooong/path/bla/bla/bla/llllllllllllllllll";
-    ipath = "1:2:3:4:5:10"
-        "1:2:3:4:5:10"
-        "1:2:3:4:5:10";
-    make_udi(path, ipath, udi);
-    printf("udi [%s]\n", udi.c_str());
+    if (argc == 1) {
+        char buffer[2048];
+        while (fgets(buffer, 2048, stdin)) {
+            std::string path(buffer, strlen(buffer)-1);
+            make_udi(path, "", udi);
+            std::cout << udi << "\n";
+        }
+        return 0;
+    } else {
+        string path = argv[1];
+        string ipath;
+        if (argc == 3) {
+            ipath = argv[2];
+        }
+        make_udi(path, ipath, udi);
+        std::cout << udi << "\n";
+        return 0;
+    }
 }
-
