@@ -145,17 +145,23 @@ public:
     virtual void suggest(const vector<string>uterms, 
                          map<string, vector<string> >& sugg);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
-#ifdef USING_WEBENGINE
+
+#if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
     // We used to use http://localhost/. Now use file:/// as this is
     // what Webengine will prepend relative links with (as
     // baseURL). This is for the case where a user adds a link like
     // P%N, which would not work if linkPrefix and baseURL were not
     // the same.
+    //
+    // Now also set for webkit because, as we set baseURL to file://,
+    // the relative links we set in the list will also be prefixed (by
+    // the HTML engine)
     virtual string linkPrefix() override {return "file:///";}
     virtual string bodyAttrs() override {
         return "onload=\"addEventListener('contextmenu', saveLoc)\"";
     }
 #endif
+
 private:
     ResList *m_reslist;
 };
@@ -959,8 +965,6 @@ void ResList::onLinkClicked(const QUrl &qurl)
     // baseUrl because we receive links like baseUrl+P1 instead.
     LOGDEB1("ResList::onLinkClicked: [" << strurl << "] prefix " <<
             m_pager->linkPrefix() << "\n");
-    std::cerr << "ResList::onLinkClicked: [" << strurl << "] prefix " <<
-            m_pager->linkPrefix() << "\n";
     if (m_pager->linkPrefix().size() > 0 &&
         (strurl.size() <= m_pager->linkPrefix().size() ||
          !beginswith(strurl, m_pager->linkPrefix()))) {
