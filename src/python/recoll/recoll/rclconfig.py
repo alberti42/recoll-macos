@@ -88,7 +88,11 @@ class RclConfig:
         return self.confdir
     def getDataDir(self):
         return self.datadir
-    
+    def getDbDir(self):
+        dir = self.getConfParam("dbdir")
+        if not os.path.isabs(dir):
+            dir = os.path.join(self.confdir, dir)
+        return dir
     def setKeyDir(self, dir):
         self.keydir = dir
 
