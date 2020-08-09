@@ -23,7 +23,7 @@ class EPUBConcatExtractor(RclBaseHandler):
     def __init__(self, em):
         super(EPUBConcatExtractor, self).__init__(em)
 
-    def _header(self):
+    def _docheader(self):
         meta = self.book.opf.metadata
         title = ""
         for tt, lang in meta.titles:
@@ -40,18 +40,14 @@ class EPUBConcatExtractor(RclBaseHandler):
         if meta.description:
             data += '<meta name="description" content="' + \
                 rclexecm.htmlescape(meta.description) + '">\n'
-        data += "</head><body>"
-        data = data.encode('UTF-8')
+        for value in meta.subjects:
+            data += '<meta name="dc:subject" content="' + \
+                rclexecm.htmlescape(value) + '">\n' 
+        data += "</head>"
+        return data.encode('UTF-8')
 
-        return data
-
-    def html_text(self, fn):
-        """Extract EPUB data as concatenated HTML"""
-
-        f = open(fn, 'rb')
-        self.book = epub.open_epub(f)
-
-        data = self._header()
+    def _catbodies(self):
+        data = b'<body>'
         ids = []
         if self.book.opf.spine:
             for id, linear in self.book.opf.spine.itemrefs:
@@ -66,13 +62,22 @@ class EPUBConcatExtractor(RclBaseHandler):
                 continue
             doc = self.book.read_item(item)
             doc = re.sub(b'''<\?.*\?>''', b'', doc)
-            doc = re.sub(b'''<[hH][tT][mM][lL].*<[bB][oO][dD][yY][^>]*>''',
-                         b'', doc, 1, re.DOTALL)
-            doc = re.sub(b'''</[bB][oO][dD][yY]>''', b'', doc)
-            doc = re.sub(b'''</[hH][tT][mM][lL]>''', b'', doc)
+            doc = re.sub(b'''<html.*<body[^>]*>''',
+                         b'', doc, 1, flags=re.DOTALL|re.I)
+            doc = re.sub(b'''</body>''', b'', doc, flags=re.I)
+            doc = re.sub(b'''</html>''', b'', doc, flags=re.I)
             data += doc
 
         data += b'</body></html>'
+        return data
+        
+    def html_text(self, fn):
+        """Extract EPUB data as concatenated HTML"""
+
+        f = open(fn, 'rb')
+        self.book = epub.open_epub(f)
+        data = self._docheader()
+        data += self._catbodies()
         self.book.close()
         return data
 

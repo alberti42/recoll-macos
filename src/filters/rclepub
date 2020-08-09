@@ -32,7 +32,7 @@ class rclEPUB:
         self.catenate = cf.getConfParam("epubcatenate")
         self.catenate = int(self.catenate) if self.catenate else False
 
-    def _selfdoc(self):
+    def _docheader(self):
         meta = self.book.opf.metadata
         title = ""
         for tt, lang in meta.titles:
@@ -49,7 +49,39 @@ class rclEPUB:
         if meta.description:
             data += '<meta name="description" content="' + \
                 rclexecm.htmlescape(meta.description) + '">\n'
-        data = data.encode('UTF-8')
+        for value in meta.subjects:
+            data += '<meta name="dc:subject" content="' + \
+                rclexecm.htmlescape(value) + '">\n' 
+        data += "</head>"
+        return data.encode('UTF-8')
+
+    def _catbodies(self):
+        data = b'<body>'
+        ids = []
+        if self.book.opf.spine:
+            for id, linear in self.book.opf.spine.itemrefs:
+                ids.append(id)
+        else:
+            for id, item in self.book.opf.manifest.items():
+                ids.append(id)
+
+        for id in ids:
+            item = self.book.get_item(id)
+            if item is None or item.media_type != 'application/xhtml+xml':
+                continue
+            doc = self.book.read_item(item)
+            doc = re.sub(b'''<\?.*\?>''', b'', doc)
+            doc = re.sub(b'''<html.*<body[^>]*>''',
+                         b'', doc, 1, flags=re.DOTALL|re.I)
+            doc = re.sub(b'''</body>''', b'', doc, flags=re.I)
+            doc = re.sub(b'''</html>''', b'', doc, flags=re.I)
+            data += doc
+
+        data += b'</body></html>'
+        return data
+
+    def _selfdoc(self):
+        data = self._docheader()
         self.em.setmimetype('text/html')
         if len(self.contents) == 0:
             self.closefile()
@@ -80,23 +112,9 @@ class rclEPUB:
             return (False, "", id, iseof)
 
     def dumpall(self):
-        self.em.setmimetype('text/plain')
-        alltxt=""
-
-        for idx in range(len(self.contents)):
-            ret,doc,path,iseof = self.extractone(self.contents[idx])
-            if not ret:
-                continue
-            # Feed doc to lynx
-            process = subprocess.Popen(["lynx", "-stdin", "-dump", "-nolist",
-                                        "-display_charset=utf8",
-                                        "-force_html"], 
-                                       stdin=subprocess.PIPE,
-                                       stdout=subprocess.PIPE
-                                       )
-            txt,err = process.communicate(doc)
-            alltxt += txt.decode('utf-8')
-        return alltxt
+        data = self._docheader()
+        data += self._catbodies()
+        return data
 
     def closefile(self):
         self.book.close()
