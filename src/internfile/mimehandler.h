@@ -31,63 +31,63 @@ class RclConfig;
 class RecollFilter : public Dijon::Filter {
 public:
     RecollFilter(RclConfig *config, const std::string& id)
-    : m_config(config), m_id(id) {
+        : m_config(config), m_id(id) {
     }
     virtual ~RecollFilter() {}
 
     virtual void setConfig(RclConfig *config) {
-    m_config = config;
+        m_config = config;
     }
 
     virtual bool set_property(Properties p, const std::string &v) {
-    switch (p) {
-    case DJF_UDI: 
-        m_udi = v;
-        break;
-    case DEFAULT_CHARSET: 
-        m_dfltInputCharset = v;
-        break;
-    case OPERATING_MODE: 
-        if (!v.empty() && v[0] == 'v') 
-        m_forPreview = true; 
-        else 
-        m_forPreview = false;
-        break;
-    }
-    return true;
+        switch (p) {
+        case DJF_UDI: 
+            m_udi = v;
+            break;
+        case DEFAULT_CHARSET: 
+            m_dfltInputCharset = v;
+            break;
+        case OPERATING_MODE: 
+            if (!v.empty() && v[0] == 'v') 
+                m_forPreview = true; 
+            else 
+                m_forPreview = false;
+            break;
+        }
+        return true;
     }
 
     // We don't use this for now
     virtual bool set_document_uri(const std::string& mtype, 
-                  const std::string &) {
-    m_mimeType = mtype;
-    return false;
+                                  const std::string &) {
+        m_mimeType = mtype;
+        return false;
     }
 
     virtual bool set_document_file(const std::string& mtype, 
-                   const std::string &file_path) {
-    m_mimeType = mtype;
-    return set_document_file_impl(mtype, file_path);
+                                   const std::string &file_path) {
+        m_mimeType = mtype;
+        return set_document_file_impl(mtype, file_path);
     }
 
     virtual bool set_document_string(const std::string& mtype, 
-                     const std::string &contents) {
-    m_mimeType = mtype;
-    return set_document_string_impl(mtype, contents);
+                                     const std::string &contents) {
+        m_mimeType = mtype;
+        return set_document_string_impl(mtype, contents);
     }
     
     virtual bool set_document_data(const std::string& mtype, 
-                   const char *cp, size_t sz) 
-    {
-    return set_document_string(mtype, std::string(cp, sz));
-    }
+                                   const char *cp, size_t sz) 
+        {
+            return set_document_string(mtype, std::string(cp, sz));
+        }
 
     virtual void set_docsize(int64_t size) {
-    m_docsize = size;
+        m_docsize = size;
     }
 
     virtual int64_t get_docsize() const {
-    return m_docsize;
+        return m_docsize;
     }
 
     virtual bool has_documents() const {
@@ -96,33 +96,33 @@ public:
 
     // Most doc types are single-doc
     virtual bool skip_to_document(const std::string& s) {
-    if (s.empty())
-        return true;
-    return false;
+        if (s.empty())
+            return true;
+        return false;
     }
 
     virtual bool is_data_input_ok(DataInput input) const {
-    if (input == DOCUMENT_FILE_NAME)
-        return true;
-    return false;
+        if (input == DOCUMENT_FILE_NAME)
+            return true;
+        return false;
     }
 
     virtual std::string get_error() const {
-    return m_reason;
+        return m_reason;
     }
 
     virtual const std::string& get_id() const {
-    return m_id;
+        return m_id;
     }
 
     // Classes which need to do local work in clear() need
     // to implement clear_impl()
     virtual void clear() final {
         clear_impl();
-    Dijon::Filter::clear();
-    m_forPreview = m_havedoc = false;
-    m_dfltInputCharset.clear();
-    m_reason.clear();
+        Dijon::Filter::clear();
+        m_forPreview = m_havedoc = false;
+        m_dfltInputCharset.clear();
+        m_reason.clear();
     }
     virtual void clear_impl() {}
     
@@ -180,7 +180,7 @@ extern void returnMimeHandler(RecollFilter *);
 extern void clearMimeHandlerCache();
 
 namespace Rcl {
-    class Doc;
+class Doc;
 }
 /// Can this mime type be interned ?
 extern bool canIntern(const std::string mimetype, RclConfig *cfg);
