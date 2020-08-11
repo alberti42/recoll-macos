@@ -71,12 +71,14 @@ class QSorter : public Xapian::KeyMaker
 public:
     QSorter(const string& f) 
         : m_fld(docfToDatf(f) + "=") {
-        m_ismtime = !m_fld.compare("dmtime=");
-        if (m_ismtime)
-            m_issize = false;
-        else 
-            m_issize = !m_fld.compare("fbytes=") || !m_fld.compare("dbytes=") ||
-                !m_fld.compare("pcbytes=");
+        if (m_fld == "dmtime=") {
+            m_ismtime = true;
+        } else if (m_fld == "fbytes=" || m_fld == "dbytes=" || 
+                   m_fld == "pcbytes=") {
+            m_issize = true;
+        } else if (m_fld == "mtype=") {
+            m_ismtype = true;
+        }
     }
 
     virtual std::string operator()(const Xapian::Document& xdoc) const {
@@ -111,6 +113,14 @@ public:
             // Left zeropad values for appropriate numeric sorting
             leftzeropad(term, 12);
             return term;
+        } else if (m_ismtype) {
+            // Arrange for directories to always sort first
+            if (term == "inode/directory" ||
+                term == "application/x-fsdirectory") {
+                term.insert(0, 1, ' ');
+            }
+            // No further processing needed for mtype
+            return term;
         }
 
         // Process data for better sorting. We should actually do the
@@ -136,8 +146,9 @@ public:
 
 private:
     string m_fld;
-    bool   m_ismtime;
-    bool   m_issize;
+    bool   m_ismtime{false};
+    bool   m_issize{false};
+    bool   m_ismtype{false};
 };
 
 Query::Query(Db *db)

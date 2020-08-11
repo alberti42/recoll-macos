@@ -296,6 +296,8 @@ void RclMain::init()
     connect(sSearch,
             SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
             this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
+    connect(sSearch, SIGNAL(searchTypeChanged(int)), 
+            this, SLOT(onSearchTypeChanged(int)));
     connect(sSearch, SIGNAL(setDescription(QString)), 
             this, SLOT(onSetDescription(QString)));
     connect(sSearch, SIGNAL(clearSearch()), 
@@ -690,6 +692,21 @@ void RclMain::fileExit()
     qApp->exit(0);
 }
 
+// Reset sort order when search type changes.
+void RclMain::onSearchTypeChanged(int stp)
+{
+    SSearch::SSearchType tp = (SSearch::SSearchType)stp;
+    switch (tp) {
+    case SSearch::SST_FNM:
+        m_sortspec.desc = false;
+        m_sortspec.field = "mtype";
+        break;
+    default:
+        m_sortspec.reset();
+        break;
+    };
+}
+
 // Start a db query and set the reslist docsource
 void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
 {
@@ -735,6 +752,14 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
     src->setAbstractParams(prefs.queryBuildAbstract, 
                            prefs.queryReplaceAbstract);
     m_source = std::shared_ptr<DocSequence>(src);
+
+    // If this is a file name search sort by mtype so that directories
+    // come first (see the rclquery sort key generator)
+    if (sSearch->searchTypCMB->currentIndex() == SSearch::SST_FNM &&
+        m_sortspec.field.empty()) {
+        m_sortspec.field = "mtype";
+        m_sortspec.desc = false;
+    }
     m_source->setSortSpec(m_sortspec);
     m_source->setFiltSpec(m_filtspec);
 
@@ -840,6 +865,12 @@ void RclMain::onSortCtlChanged()
     } else {
         prefs.sortActive = prefs.sortDesc = false;
         prefs.sortField = "";
+        // If this is a file name search sort by mtype so that directories
+        // come first (see the rclquery sort key generator)
+        if (sSearch->searchTypCMB->currentIndex() == SSearch::SST_FNM) {
+            m_sortspec.field = "mtype";
+            m_sortspec.desc = false;
+        }
     }
     if (m_source)
         m_source->setSortSpec(m_sortspec);

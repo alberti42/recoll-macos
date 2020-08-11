@@ -170,7 +170,7 @@ void SSearch::init()
     connect(clearqPB, SIGNAL(clicked()), queryText, SLOT(clear()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(startSimpleSearch()));
     connect(searchTypCMB, SIGNAL(activated(int)), this,
-            SLOT(searchTypeChanged(int)));
+            SLOT(onSearchTypeChanged(int)));
 
     m_completermodel = new RclCompleterModel(this);
     m_completer = new QCompleter(m_completermodel, this);
@@ -355,7 +355,7 @@ void SSearch::searchTextChanged(const QString& text)
     }
 }
 
-void SSearch::searchTypeChanged(int typ)
+void SSearch::onSearchTypeChanged(int typ)
 {
     LOGDEB1("Search type now " << typ << "\n");
     // Adjust context help
@@ -416,6 +416,7 @@ void SSearch::searchTypeChanged(int typ)
     default:
         queryText->setToolTip(tr("Enter search terms here."));
     }
+    emit searchTypeChanged((int)typ);
 }
 
 void SSearch::startSimpleSearch()

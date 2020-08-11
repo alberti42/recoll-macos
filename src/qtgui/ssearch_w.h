@@ -86,7 +86,7 @@ public:
     virtual bool eventFilter(QObject *target, QEvent *event);
                                   
 public slots:
-    virtual void searchTypeChanged(int);
+    virtual void onSearchTypeChanged(int);
     virtual void setSearchString(const QString& text);
     virtual void startSimpleSearch();
     virtual void addTerm(QString);
@@ -105,6 +105,7 @@ private slots:
     virtual void onCompleterShown();
     
 signals:
+    void searchTypeChanged(int);
     void startSearch(std::shared_ptr<Rcl::SearchData>, bool);
     void setDescription(QString);
     void clearSearch();
