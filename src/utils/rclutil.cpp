@@ -66,6 +66,24 @@ template void map_ss_cp_noshr<map<string, string> >(
 template void map_ss_cp_noshr<unordered_map<string, string> >(
     unordered_map<string,string> s, unordered_map<string,string>*d);
 
+// Add data to metadata field, store multiple values as CSV, avoid
+// appending multiple identical instances.
+template <class T> void addmeta(
+    T& store, const string& nm, const string& value)
+{
+    auto it = store.find(nm);
+    if (it == store.end() || it->second.empty()) {
+        store[nm] = value;
+    } else if (it->second.find(value) == string::npos) {
+        store[nm] += ',';
+        store[nm] += value;
+    }
+}
+template void addmeta<map<string, string>>(
+    map<string, string>&, const string&, const string&);
+template void addmeta<unordered_map<string, string>>(
+    unordered_map<string, string>&, const string&, const string&);
+
 #ifdef _WIN32
 static bool path_hasdrive(const string& s)
 {

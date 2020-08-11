@@ -73,7 +73,7 @@ bool MimeHandlerHtml::next_document()
     LOGDEB("MHHtml::next_doc.: default supposed input charset: [" << charset
            << "]\n");
     // Override default input charset if someone took care to set one:
-    map<string,string>::const_iterator it = m_metaData.find(cstr_dj_keycharset);
+    const auto it = m_metaData.find(cstr_dj_keycharset);
     if (it != m_metaData.end() && !it->second.empty()) {
         charset = it->second;
         LOGDEB("MHHtml: next_doc.: input charset from ext. metadata: [" <<

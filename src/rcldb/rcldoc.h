@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "smallut.h"
+#include "rclutil.h"
 
 namespace Rcl {
 
@@ -191,17 +192,7 @@ public:
 
     // Create entry or append text to existing entry.
     bool addmeta(const std::string& nm, const std::string& value) {
-        auto mit = meta.find(nm);
-        if (mit == meta.end()) {
-            meta[nm] = value;
-        } else if (mit->second.empty()) {
-            mit->second = value;
-        } else {
-            // It may happen that the same attr exists several times
-            // in the internfile stack. Avoid duplicating values.
-            if (mit->second != value)
-                mit->second += std::string(" - ") + value;
-        }
+        ::addmeta(meta, nm, value);
         return true;
     }
 

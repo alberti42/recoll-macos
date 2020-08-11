@@ -115,5 +115,8 @@ extern bool thumbPathForUrl(const std::string& url, int size,
 // string data (to pass to other thread):
 template <class T> void map_ss_cp_noshr(T s, T *d);
 
+// Set or extend metadata field. We store the data as CSV
+template <class T> void addmeta(T& store, const std::string& nm,
+                                const std::string& value);
 
 #endif /* _RCLUTIL_H_INCLUDED_ */

@@ -32,6 +32,7 @@ using namespace std;
 #include "rclconfig.h"
 #include "mimetype.h"
 #include "idfile.h"
+#include "rclutil.h"
 
 #include <sys/types.h>
 #include "safesyswait.h"
@@ -266,11 +267,7 @@ bool MimeHandlerExecMultiple::next_document()
             string nm = stringtolower((const string&)name);
             trimstring(nm, ":");
             LOGDEB("MHExecMultiple: got [" << nm << "] -> [" << data << "]\n");
-            auto it = m_metaData.find(nm);
-            if (it == m_metaData.end() ||
-                it->second.find(data) == std::string::npos) {
-                m_metaData[nm] += data;
-            }
+            addmeta(m_metaData, nm, data);
         }
         if (loop == 200) {
             // ?? 
