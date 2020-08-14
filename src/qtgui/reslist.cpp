@@ -370,6 +370,7 @@ ResList::ResList(QWidget* parent, const char* name)
 
     m_pager = new QtGuiResListPager(this, prefs.respagesize, prefs.alwaysSnippets);
     m_pager->setHighLighter(&g_hiliter);
+    resetView();
 }
 
 ResList::~ResList()
@@ -509,7 +510,11 @@ void ResList::resetView()
     // blank. Else, there are often icons or text left around
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     m_text = "";
-    setHtml("<html><body></body></html>");
+    QString html("<html><head>");
+    html += u8s2qs(m_pager->headerContent()) + "</head>";
+    html += "<body></body></html>";
+    std::cerr << "SETTINGT HTML: " << qs2utf8s(html)  << "\n";
+    setHtml(html);
 #else
     m_pageParaToReldocnums.clear();
     clear();
