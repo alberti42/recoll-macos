@@ -29,9 +29,11 @@
 
 /* Light on dark text everywhere*/
 * {
-    background-color: #3c3c3c;
-    color: #d8d8d8;
+/*    font-size: 14pt;*/
+    background-color: #373737;
+    color: #ffffff;
     selection-background-color: #424e72;
+    selection-color: #ffffff;
 }
 
 QToolTip {
@@ -43,19 +45,25 @@ QMenuBar::item:selected {
     background: #424e72;
 }
 
+/* I have used the colour values that were in QTabWidget QTabBar::tab for
+ * QTabWidget QTabBar::tab:selected, and vice-versa. Also, though, I have
+ * brightened the whites.*/
 QTabWidget QTabBar::tab {
-    background: #2f4f4f;
-    color:  	#FFF8DC;
+    background: #5f5f5f;
+    color:      #ffffff;
 }
         
 QTabWidget QTabBar::tab:selected {
-    background: #5f5f5f;
-    color:  	#FFF8DC;
+    background: #2f4f4f;
+    color:      #ffffff;
 }
 
-/* Slightly lighter background for text entry areas*/
-QComboBox[editable="true"], QTextEdit, QLineEdit, QTextBrowser, QTableView,
-QWebView, QPlainTextEdit { 
-    background-color: #505050;
-    color: #D8D8D8;
+/*
+ * Slightly *darker* background for text entry areas, and brighter
+ * (lighter) foreground.
+ */
+QComboBox[editable="true"], QTextEdit, QLineEdit,
+QTextBrowser, QTableView, QWebView, QPlainTextEdit {
+    background-color: #101010; /*Changed*/
+    color: #ffffff; /*Changed*/
 }
