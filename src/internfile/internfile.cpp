@@ -939,7 +939,10 @@ breakloop:
     }
     // Keep this AFTER collectIpathAndMT
     dijontorcl(doc);
-
+    // Fix the bogus mtype used to force mh_text processing of text subdocs
+    if (doc.mimetype == "text/plain1") {
+        doc.mimetype = "text/plain";
+    }
     // Possibly destack so that we can test for FIDone. While doing this
     // possibly set aside an ancestor html text (for the GUI preview)
     while (!m_handlers.empty() && !m_handlers.back()->has_documents()) {

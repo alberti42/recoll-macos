@@ -314,6 +314,15 @@ bool MimeHandlerExecMultiple::next_document()
                     mtype = "application/octet-stream";
                 }
             }
+            /* If we identify text/plain from the suffix (as opposed
+               to the handler setting the type), we use text/plain1
+               instead. As directed in mimeconf, this will cause the
+               text handler to be applied (instead of internfile just
+               ending things there), allowing splitting and default
+               charset conversions. */
+            if (mtype == "text/plain") {
+                mtype = "text/plain1";
+            }
         }
         m_metaData[cstr_dj_keymt] = mtype;
         if (!m_forPreview) {
