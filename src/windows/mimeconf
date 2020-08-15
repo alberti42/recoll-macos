@@ -173,6 +173,7 @@ text/calendar = execm python rclics;mimetype=text/plain
 text/css = internal text/plain
 text/html  = internal 
 text/plain = internal 
+text/plain1 = internal 
 #text/rtf = execm python rclrtf.py
 text/rtf = exec unrtf --nopict --html;mimetype=text/html
 text/x-c = internal

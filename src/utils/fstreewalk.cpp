@@ -18,7 +18,13 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
+
+#ifdef _MSC_VER
+#include "msvc_dirent.h"
+#else // !_MSC_VER
 #include <dirent.h>
+#endif // _MSC_VER
+
 #include <errno.h>
 #include <fnmatch.h>
 #include <cstring>

@@ -167,6 +167,7 @@ copyrecoll()
     chkcp $RCL/windows/mimeview         $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll.conf   $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll.qss    $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/recoll-dark.qss $DESTDIR/Share/examples
 
     chkcp $RCL/python/recoll/recoll/rclconfig.py $FILTERS
     chkcp $RCL/python/recoll/recoll/conftree.py $FILTERS
@@ -312,6 +313,7 @@ copypyrecoll()
         PYRCLWHEEL=${PYRECOLL}/dist/Recoll-${VERSION}-cp37-cp37m-win32.whl
         DEST=${DESTDIR}/Share/dist
         test -d $DEST || mkdir $DEST || fatal cant create $DEST
+        rm -f ${DEST}/*
         chkcp ${PYRCLWHEEL} $DEST
     fi
 }

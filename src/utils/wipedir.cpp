@@ -21,13 +21,18 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <dirent.h>
 
 #include <cstring>
 #include <string>
 
 #include "log.h"
 #include "pathut.h"
+
+#ifdef _MSC_VER
+#include "msvc_dirent.h"
+#else // !_MSC_VER
+#include <dirent.h>
+#endif // _MSC_VER
 
 #ifdef _WIN32
 #include "safefcntl.h"

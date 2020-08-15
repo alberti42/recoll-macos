@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include "safefcntl.h"
 #include "safeunistd.h"
-#include "dirent.h"
 #include "cstr.h"
 #ifdef _WIN32
 #include "safewindows.h"

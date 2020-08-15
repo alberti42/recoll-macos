@@ -198,7 +198,7 @@ bool MimeHandlerText::readnext()
             return false;
         }
     } else {
-        m_text = m_alltext.substr(m_offs, m_pagesz);
+        m_text = m_alltext.substr((size_t)m_offs, m_pagesz);
     }
 
     if (m_text.length() == 0) {
