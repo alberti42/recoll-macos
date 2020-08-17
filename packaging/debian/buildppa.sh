@@ -9,7 +9,7 @@ PPA_KEYID=7808CE96D38B9201
 RCLVERS=1.27.3
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
-PPAVERS=2
+PPAVERS=3
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -48,10 +48,9 @@ debdir=debian
 # Active series:
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
-# 19.10    eoan   2020-07
 # 20.04LTS focal  2025-04
-series="xenial bionic eoan focal"
-#series=
+series="xenial bionic focal"
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -89,10 +88,10 @@ done
 # Active series:
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
-# 19.10    eoan   2020-07
 # 20.04LTS focal  2025-04
-series="xenial bionic eoan focal"
-series=
+#series="xenial bionic focal"
+#series="xenial bionic"
+series=focal
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -134,9 +133,8 @@ done
 # Active series:
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
-# 19.10    eoan   2020-07
 # 20.04LTS focal  2025-04
-series="xenial bionic eoan focal"
+series="xenial bionic focal"
 series=
 
 debdir=debiangssp
