@@ -249,6 +249,7 @@ utils/netcon.cpp \
 utils/netcon.h \
 utils/pathut.cpp \
 utils/pathut.h \
+utils/picoxml.h \
 utils/pxattr.cpp \
 utils/pxattr.h \
 utils/rclionice.cpp \
