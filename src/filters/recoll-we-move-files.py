@@ -103,7 +103,9 @@ config = rclconfig.RclConfig()
 # Source dir is parameter, else from config else default Downloads directory
 downloadsdir = config.getConfParam("webdownloadsdir")
 if not downloadsdir:
-    downloadsdir = os.path.expanduser("~/Downloads")
+    downloadsdir = "~/Downloads"
+downloadsdir = os.path.expanduser(downloadsdir)
+
 if len(sys.argv) == 2:
     mydir = sys.argv[1]
 elif len(sys.argv) == 1:
