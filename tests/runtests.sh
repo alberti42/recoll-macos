@@ -69,14 +69,27 @@ makeindex() {
 if test ! -f shared.sh ; then
     fatal must be run in the top test directory
 fi
-checkcmds recollq recollindex pxattr xadump || exit 1
+checkcmds recollq recollindex pxattr xadump pdftk || exit 1
+
+iscmd pdftk
+pdftk=$iscmdresult
+tmpdir=${RECOLL_TMPDIR:-$TMPDIR}
+case "$pdftk" in
+    /snap/*)
+        if test X$tmpdir = X -o "$tmpdir" = /tmp;then
+            fatal pdftk as snap need '$TMPDIR' to belong to you
+        fi
+    ;;
+esac
 
 if test ! x$reroot = x ; then
     rerootResults
 fi
 
+# Temp directory for test results
 # Make sure this is computed in the same way as in shared.sh
 toptmp=${TMPDIR:-/tmp}/recolltsttmp
+
 test X"$toptmp" = X && fatal "empty toptmp??"
 test X"$toptmp" = X/ && fatal "toptmp == / ??"
 if test -d "$toptmp" ; then

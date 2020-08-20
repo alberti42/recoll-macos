@@ -46,6 +46,9 @@ unac_except_trans = åå Åå ää Ää öö Öö üü Üü ßss œoe Œoe æae 
 pdfextrameta = pdf:Producer dc:identifier
 pdfextrametafix = @RECOLL_TESTS@/config/pdfemf.py
 
+# Can't use dir key as rclpdf doesnt call setkeydir
+pdfattach = 1
+
 [@RECOLL_TESTDATA@/pdf]
 ocrprogs = tesseract
 pdfocr = 1
