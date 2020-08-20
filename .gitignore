@@ -94,6 +94,7 @@ tests/config/index.pid
 tests/config/missing
 tests/config/ocrcache
 tests/config/xapiandb
+tests/config/recoll.conf
 tests/indexedmimetypes/aspdict.en.rws
 tests/indexedmimetypes/idxstatus.txt
 tests/indexedmimetypes/index.pid 

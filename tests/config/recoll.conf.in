@@ -1,3 +1,8 @@
+# The actual recoll.conf is created from this by the top level runtest.sh
+# not by the configure script
+
+cachedir = @RECOLL_TESTCACHEDIR@
+
 loglevel = 6
 logfilename = /tmp/logrcltst
 idxlogfilename = /tmp/idxlogrcltst
@@ -10,7 +15,7 @@ systemfilecommand = xdg-mime query filetype
 indexStripChars = 1
 detectxattronly = 1
 
-topdirs = /home/dockes/projets/fulltext/testrecoll
+topdirs = @RECOLL_TESTDATA@
 
 #thrQSizes = -1 -1 -1
 
@@ -27,48 +32,48 @@ noContentSuffixes- = .md5
 # Comics_12 causes rclppt to loop. We keep it around for general testing
 # but it takes too much time when running the test-set
 skippedPaths = \
-     /home/dockes/projets/fulltext/testrecoll/.hg \
-     /home/dockes/projets/fulltext/testrecoll/skipped/real* \
-     /home/dockes/projets/fulltext/testrecoll/config \
-     /home/dockes/projets/fulltext/testrecoll/ppt/Comics_12.pps
+    @RECOLL_TESTDATA@/.hg \
+    @RECOLL_TESTDATA@/skipped/real* \
+    @RECOLL_TESTDATA@/config \
+    @RECOLL_TESTDATA@/ppt/Comics_12.pps
 daemSkippedPaths =  \
-     /home/dockes/projets/fulltext/testrecoll/.hg \
-    /home/dockes/projets/fulltext/testrecoll/skipped/real* \
-    /home/dockes/projets/fulltext/testrecoll/config
+    @RECOLL_TESTDATA@/.hg \
+    @RECOLL_TESTDATA@/skipped/real* \
+    @RECOLL_TESTDATA@/config
 
 unac_except_trans = åå Åå ää Ää öö Öö üü Üü ßss œoe Œoe æae ÆAE ﬁfi ﬂfl
 
 pdfextrameta = pdf:Producer dc:identifier
-pdfextrametafix = /home/dockes/projets/fulltext/recoll/tests/config/pdfemf.py
+pdfextrametafix = @RECOLL_TESTS@/config/pdfemf.py
 
-[/home/dockes/projets/fulltext/testrecoll/pdf]
+[@RECOLL_TESTDATA@/pdf]
 ocrprogs = tesseract
 pdfocr = 1
 pdfocrlang = eng
 
-[/home/dockes/projets/fulltext/testrecoll/utf8]
+[@RECOLL_TESTDATA@/utf8]
 defaultcharset = utf-8
-[/home/dockes/projets/fulltext/testrecoll/ru_RU.KOI8-R]
+[@RECOLL_TESTDATA@/ru_RU.KOI8-R]
 defaultcharset = KOI8-R
 
-[/home/dockes/projets/fulltext/testrecoll/info]
+[@RECOLL_TESTDATA@/info]
 localfields = rclaptg=gnuinfo
 
-[/home/dockes/projets/fulltext/testrecoll/mail/thunderbird]
+[@RECOLL_TESTDATA@/mail/thunderbird]
 mhmboxquirks = tbird
 
-[/home/dockes/projets/fulltext/testrecoll/cjk]
+[@RECOLL_TESTDATA@/cjk]
 localfields= ; keyword = ckjtsthuniique; blabla= "some string"
 
-[/home/dockes/projets/fulltext/testrecoll/idxtypes]
+[@RECOLL_TESTDATA@/idxtypes]
 indexedmimetypes = text/plain
 
-[/home/dockes/projets/fulltext/testrecoll/excltypes]
+[@RECOLL_TESTDATA@/excltypes]
 excludedmimetypes = text/plain
 
-[/home/dockes/projets/fulltext/testrecoll/excludehtml]
+[@RECOLL_TESTDATA@/excludehtml]
 indexedmimetypes = application/pdf
 
-[/home/dockes/projets/fulltext/testrecoll/onlynames]
+[@RECOLL_TESTDATA@/onlynames]
 onlyNames = *.matchesonepat *.matchestwopat
 

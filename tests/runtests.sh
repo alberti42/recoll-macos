@@ -1,15 +1,33 @@
 #!/bin/sh
 
-if test ! -f shared.sh ; then
-    echo must be run in the top test directory
-    exit 1
-fi
+fatal()
+{
+    echo $*;exit 1
+}
 
-. shared.sh
+rerootResults()
+{
+    savedcd=`pwd`
+    dirs=`ls -F | grep / | grep -v CVS | grep -v non-auto | grep -v config`
+    for dir in $dirs ; do
+    	cd $dir
+	resfile=`basename $dir`.txt
+	sed -i.bak \
+	  -e "s!file:///.*/testrecoll/!file://$RECOLL_TESTDATA/!g" \
+	  $resfile
+    	cd ..
+    done
 
-if test ! x$reroot = x ; then
-    rerootResults
-fi
+    cd $RECOLL_CONFDIR
+    sed -i.bak \
+  -e "s!/.*/testrecoll/!$RECOLL_TESTDATA/!g" \
+      recoll.conf
+    sed -i.bak \
+  -e "s!/.*/testrecoll/!$RECOLL_TESTDATA/!g" \
+      mimemap
+
+    cd $savedcd
+}
 
 iscmd()
 {
@@ -40,13 +58,6 @@ checkcmds()
     return $result
 }
 
-checkcmds recollq recollindex pxattr xadump || exit 1
-
-# Unset DISPLAY because xdg-mime may be affected by the desktop
-# environment on the X server
-unset DISPLAY
-export LC_ALL=en_US.UTF-8
-
 makeindex() {
   echo "Zeroing Index" 
   rm -rf $RECOLL_CONFDIR/xapiandb $RECOLL_CONFDIR/aspdict.*.rws
@@ -55,18 +66,46 @@ makeindex() {
   recollindex -c $RECOLL_CONFDIR -z
 }
 
-if test x$noindex = x ; then
-  makeindex
+if test ! -f shared.sh ; then
+    fatal must be run in the top test directory
+fi
+checkcmds recollq recollindex pxattr xadump || exit 1
+
+if test ! x$reroot = x ; then
+    rerootResults
 fi
 
-# Yes, we could/should use the $toptmp from shared.sh here, but what if
-# this is unset ?
+# Make sure this is computed in the same way as in shared.sh
 toptmp=${TMPDIR:-/tmp}/recolltsttmp
+test X"$toptmp" = X && fatal "empty toptmp??"
+test X"$toptmp" = X/ && fatal "toptmp == / ??"
 if test -d "$toptmp" ; then
    rm -rf $toptmp/*
 else
     mkdir $toptmp || fatal cant create temp dir $toptmp
 fi
+
+# Unset DISPLAY because xdg-mime may be affected by the desktop
+# environment on the X server
+unset DISPLAY
+export LC_ALL=en_US.UTF-8
+
+RECOLL_TESTS=`pwd`
+RECOLL_TESTDATA=${RECOLL_TESTDATA:-/home/dockes/projets/fulltext/testrecoll}
+export RECOLL_CONFDIR=$RECOLL_TESTS/config/
+# Some test need to access RECOLL_TESTCACHEDIR
+export RECOLL_TESTCACHEDIR=$toptmp
+
+sed -e "s,@RECOLL_TESTS@,$RECOLL_TESTS,g" \
+    -e "s,@RECOLL_TESTDATA@,$RECOLL_TESTDATA,g" \
+    -e "s,@RECOLL_TESTCACHEDIR@,$RECOLL_TESTCACHEDIR,g" \
+    < $RECOLL_CONFDIR/recoll.conf.in \
+    > $RECOLL_CONFDIR/recoll.conf || exit 1
+
+if test x$noindex = x ; then
+  makeindex
+fi
+
 
 dirs=`ls -F | grep / | grep -v CVS | grep -v non-auto | grep -v config`
 
@@ -74,7 +113,7 @@ echo
 echo "Running query tests:"
 
 for dir in $dirs ; do
-    cd $dir && $ECHON "$dir "
+    cd $dir && echo -n "$dir "
     sh `basename $dir`.sh
     cd ..
 done
