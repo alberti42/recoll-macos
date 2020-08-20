@@ -193,7 +193,6 @@ class PDFExtractor:
         if not tmpdir or not self.pdftk:
             # no big deal
             return True
-
         try:
             vacuumdir(tmpdir)
             subprocess.check_call([self.pdftk, self.filename, "unpack_files",
@@ -433,6 +432,21 @@ class PDFExtractor:
                 return False
         else:
             tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
+            if self.pdftk and re.match("/snap/", self.pdftk):
+                # We know this is Unix (Ubuntu actually). Check that tmpdir
+                # belongs to the user as snap commands can't use /tmp to share
+                # files. Don't generate an error as this only affects
+                # attachment extraction
+                ok = False
+                if "TMPDIR" in os.environ:
+                    st = os.stat(os.environ["TMPDIR"])
+                    if st.st_uid == os.getuid():
+                        ok = True
+                if not ok:
+                    self.em.rclog(
+                        "pdftk is a snap command and needs TMPDIR to be "
+                        "a directory you own")
+                                      
         
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
