@@ -1,3 +1,20 @@
+kio-recoll (1.27.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Misc small fixes.
+  * Fix recollindex -r not working with relative paths.
+  * Fix PDF attachment processing.
+  * Fix duplicate detection in some cases.
+  * Process text/plain subdocuments (e.g. zip archive members) in the same
+    way as top level files (esp: perform paging for big texts).
+  * Msword .docx: avoid extracting some non-text data
+  * Index Visio documents (.vsdx format only).
+  * Epub: index the metadata "subjects" fields.
+  * GUI: separate popup menu entries for "open parent" and "open folder".
+  * GUI: doc icons were not shown with newer webengine versions.
+  * GUI file name search: sort directories first.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 17 Aug 2020 18:18:00 +0200
+
 kio-recoll (1.27.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Misc small fixes. Nothing major, see the git log for details

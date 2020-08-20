@@ -6,10 +6,10 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.27.3
+RCLVERS=1.27.5
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
-PPAVERS=3
+PPAVERS=1
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -89,9 +89,8 @@ done
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
-#series="xenial bionic focal"
-#series="xenial bionic"
-series=focal
+series="xenial bionic focal"
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
