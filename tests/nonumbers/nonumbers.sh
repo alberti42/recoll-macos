@@ -32,7 +32,7 @@ export RECOLL_CONFDIR
 mkconf()
 {
     nonumbers=$1
-    egrep 'cachedir|loglevel|logfilename|idxlogfilename' \
+    egrep 'loglevel|logfilename|idxlogfilename' \
           ../config/recoll.conf > \
           "$RECOLL_CONFDIR"/recoll.conf
 
