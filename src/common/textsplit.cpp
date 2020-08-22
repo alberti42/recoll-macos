@@ -521,60 +521,60 @@ inline bool TextSplit::doemit(bool spanerase, size_t _bp)
     if (m_wordLen) {
         // We have a current word. Remember it
 
-        // Limit max span word count
         if (m_words_in_span.size() >= 6) {
+            // Limit max span word count
             spanerase = true;
-        } 
-
-        m_words_in_span.push_back(pair<int,int>(m_wordStart, 
-                                                m_wordStart + m_wordLen));
-        m_wordpos++;
+        }
+        
+        if (!(o_noNumbers && m_inNumber)) {
+            m_words_in_span.push_back({m_wordStart, m_wordStart + m_wordLen});
+            m_wordpos++;
+        }
         m_wordLen = m_wordChars = 0;
     }
 
-    if (spanerase) {
-        // We encountered a span-terminating character. Produce terms.
-
-        string acronym;
-        if (span_is_acronym(&acronym)) {
-            if (!emitterm(false, acronym, m_spanpos, bp - m_span.length(), bp))
-                return false;
-        }
-
-        // Maybe trim at end. These are chars that we might keep
-        // inside a span, but not at the end.
-        while (m_span.length() > 0) {
-            switch (*(m_span.rbegin())) {
-            case '.':
-            case '-':
-            case ',':
-            case '@':
-            case '_':
-            case '\'':
-                m_span.resize(m_span.length()-1);
-                if (m_words_in_span.size() &&
-                    m_words_in_span.back().second > int(m_span.size()))
-                    m_words_in_span.back().second = int(m_span.size());
-                if (--bp < 0) 
-                    bp = 0;
-                break;
-            default:
-                goto breaktrimloop;
-            }
-        }
-    breaktrimloop:
-
-        if (!words_from_span(bp)) {
-            return false;
-        }
-        discardspan();
-
-    } else {
-    
+    if (!spanerase) {
+        // Not done with this span. Just update relative word start offset.
         m_wordStart = int(m_span.length());
-
+        return true;
     }
 
+
+    // Span is done (too long or span-terminating character). Produce
+    // terms and reset it.
+    string acronym;
+    if (span_is_acronym(&acronym)) {
+        if (!emitterm(false, acronym, m_spanpos, bp - m_span.length(), bp))
+            return false;
+    }
+
+    // Maybe trim at end. These are chars that we might keep
+    // inside a span, but not at the end.
+    while (m_span.length() > 0) {
+        switch (*(m_span.rbegin())) {
+        case '.':
+        case '-':
+        case ',':
+        case '@':
+        case '_':
+        case '\'':
+            m_span.resize(m_span.length()-1);
+            if (m_words_in_span.size() &&
+                m_words_in_span.back().second > int(m_span.size()))
+                m_words_in_span.back().second = int(m_span.size());
+            if (--bp < 0) 
+                bp = 0;
+            break;
+        default:
+            goto breaktrimloop;
+        }
+    }
+breaktrimloop:
+
+    if (!words_from_span(bp)) {
+        return false;
+    }
+    discardspan();
     return true;
 }
 
