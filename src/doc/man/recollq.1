@@ -25,6 +25,9 @@ recollq \- command line / standard output Recoll query command.
 .B \-A
 ]
 [
+.B \-p
+]
+[
 .B \-e
 ]
 [
@@ -106,7 +109,9 @@ is set, the whole metadata array will be dumped for each document.
 .PP
 If 
 .B \-A
-is set, the document abstracts will be printed.
+is set, the document abstracts will be printed. With an additional
+.B \-p
+option, snippets with page numbers (when available) will be shown instead.
 .PP
 .B \-S
 <fieldname>
