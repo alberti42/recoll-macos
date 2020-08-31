@@ -71,7 +71,6 @@ static int     op_flags;
 #define OPT_R 0x20    
 #define OPT_S 0x40    
 #define OPT_Z 0x80    
-#define OPT_b 0x100   
 #define OPT_c 0x200   
 #define OPT_e 0x400   
 #define OPT_f 0x800   
@@ -119,52 +118,51 @@ public:
         }
     }
 
-    virtual bool update() 
-        {
-            // Update the status file. Avoid doing it too often. Always do
-            // it at the end (status DONE)
-            if (status.phase == DbIxStatus::DBIXS_DONE || 
-                status.phase != m_prevphase || m_chron.millis() > 300) {
-                if (status.totfiles < status.filesdone ||
-                    status.phase == DbIxStatus::DBIXS_DONE) {
-                    status.totfiles = status.filesdone;
-                }
-                m_prevphase = status.phase;
-                m_chron.restart();
-                m_file.holdWrites(true);
-                m_file.set("phase", int(status.phase));
-                m_file.set("docsdone", status.docsdone);
-                m_file.set("filesdone", status.filesdone);
-                m_file.set("fileerrors", status.fileerrors);
-                m_file.set("dbtotdocs", status.dbtotdocs);
-                m_file.set("totfiles", status.totfiles);
-                m_file.set("fn", status.fn);
-                m_file.set("hasmonitor", status.hasmonitor);
-                m_file.holdWrites(false);
+    virtual bool update() {
+        // Update the status file. Avoid doing it too often. Always do
+        // it at the end (status DONE)
+        if (status.phase == DbIxStatus::DBIXS_DONE || 
+            status.phase != m_prevphase || m_chron.millis() > 300) {
+            if (status.totfiles < status.filesdone ||
+                status.phase == DbIxStatus::DBIXS_DONE) {
+                status.totfiles = status.filesdone;
             }
-            if (path_exists(m_stopfilename)) {
-                LOGINF("recollindex: asking indexer to stop because " <<
-                       m_stopfilename << " exists\n");
-                path_unlink(m_stopfilename);
-                stopindexing = true;
-            }
-            if (stopindexing) {
-                return false;
-            }
+            m_prevphase = status.phase;
+            m_chron.restart();
+            m_file.holdWrites(true);
+            m_file.set("phase", int(status.phase));
+            m_file.set("docsdone", status.docsdone);
+            m_file.set("filesdone", status.filesdone);
+            m_file.set("fileerrors", status.fileerrors);
+            m_file.set("dbtotdocs", status.dbtotdocs);
+            m_file.set("totfiles", status.totfiles);
+            m_file.set("fn", status.fn);
+            m_file.set("hasmonitor", status.hasmonitor);
+            m_file.holdWrites(false);
+        }
+        if (path_exists(m_stopfilename)) {
+            LOGINF("recollindex: asking indexer to stop because " <<
+                   m_stopfilename << " exists\n");
+            path_unlink(m_stopfilename);
+            stopindexing = true;
+        }
+        if (stopindexing) {
+            return false;
+        }
 
 #ifndef DISABLE_X11MON
-            // If we are in the monitor, we also need to check X11 status
-            // during the initial indexing pass (else the user could log
-            // out and the indexing would go on, not good (ie: if the user
-            // logs in again, the new recollindex will fail).
-            if ((op_flags & OPT_m) && !(op_flags & OPT_x) && !x11IsAlive()) {
-                LOGDEB("X11 session went away during initial indexing pass\n");
-                stopindexing = true;
-                return false;
-            }
-#endif
-            return true;
+        // If we are in the monitor, we also need to check X11 status
+        // during the initial indexing pass (else the user could log
+        // out and the indexing would go on, not good (ie: if the user
+        // logs in again, the new recollindex will fail).
+        if ((op_flags & OPT_m) && !(op_flags & OPT_x) && !x11IsAlive()) {
+            LOGDEB("X11 session went away during initial indexing pass\n");
+            stopindexing = true;
+            return false;
         }
+#endif
+        return true;
+    }
 
 private:
     ConfSimple m_file;
@@ -478,52 +476,52 @@ static const char usage [] =
 
 static void Usage()
 {
-FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
-fprintf(fp, "%s: Usage: %s", path_getsimple(thisprog).c_str(), usage);
-fprintf(fp, "Recoll version: %s\n", Rcl::version_string().c_str());
-exit((op_flags & OPT_h)==0);
+    FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
+    fprintf(fp, "%s: Usage: %s", path_getsimple(thisprog).c_str(), usage);
+    fprintf(fp, "Recoll version: %s\n", Rcl::version_string().c_str());
+    exit((op_flags & OPT_h)==0);
 }
 
 static RclConfig *config;
 
 static void lockorexit(Pidfile *pidfile, RclConfig *config)
 {
-PRETEND_USE(config);
-pid_t pid;
-if ((pid = pidfile->open()) != 0) {
-if (pid > 0) {
-cerr << "Can't become exclusive indexer: " << pidfile->getreason()
-<< ". Return (other pid?): " << pid << endl;
+    PRETEND_USE(config);
+    pid_t pid;
+    if ((pid = pidfile->open()) != 0) {
+        if (pid > 0) {
+            cerr << "Can't become exclusive indexer: " << pidfile->getreason()
+                 << ". Return (other pid?): " << pid << endl;
 #ifndef _WIN32
-// Have a look at the status file. If the other process is
-// a monitor we can tell it to start an incremental pass
-// by touching the configuration file
-DbIxStatus status;
-readIdxStatus(config, status);
-if (status.hasmonitor) {
-    string cmd("touch ");
-    string path = path_cat(config->getConfDir(), "recoll.conf");
-    cmd += path;
-    int status;
-    if ((status = system(cmd.c_str()))) {
-        cerr << cmd << " failed with status " << status << endl;
-    } else {
-        cerr << "Monitoring indexer process was notified of "
-            "indexing request\n";
-    }
-}
+            // Have a look at the status file. If the other process is
+            // a monitor we can tell it to start an incremental pass
+            // by touching the configuration file
+            DbIxStatus status;
+            readIdxStatus(config, status);
+            if (status.hasmonitor) {
+                string cmd("touch ");
+                string path = path_cat(config->getConfDir(), "recoll.conf");
+                cmd += path;
+                int status;
+                if ((status = system(cmd.c_str()))) {
+                    cerr << cmd << " failed with status " << status << endl;
+                } else {
+                    cerr << "Monitoring indexer process was notified of "
+                        "indexing request\n";
+                }
+            }
 #endif
-} else {
-    cerr << "Can't become exclusive indexer: " << pidfile->getreason()
-         << endl;
-}            
-exit(1);
-}
-if (pidfile->write_pid() != 0) {
-    cerr << "Can't become exclusive indexer: " << pidfile->getreason() <<
-        endl;
-    exit(1);
-}
+        } else {
+            cerr << "Can't become exclusive indexer: " << pidfile->getreason()
+                 << endl;
+        }            
+        exit(1);
+    }
+    if (pidfile->write_pid() != 0) {
+        cerr << "Can't become exclusive indexer: " << pidfile->getreason() <<
+            endl;
+        exit(1);
+    }
 }
 
 static string reasonsfile;
@@ -599,13 +597,13 @@ static std::string orig_cwd;
 #if USE_WMAIN
 int wmain(int argc, wchar_t *argv[])
 #else
-    int main(int argc, char *argv[])
+int main(int argc, char *argv[])
 #endif
 {
+#ifndef _WIN32
     // The reexec struct is used by the daemon to shed memory after
     // the initial indexing pass and to restart when the configuration
     // changes
-#ifndef _WIN32
     o_reexec = new ReExec;
     o_reexec->init(argc, argv);
 #endif
@@ -613,7 +611,8 @@ int wmain(int argc, wchar_t *argv[])
     vector<string> args = argstovector(argc, argv);
 
     // Passing args through a temp file: this is used on Windows to
-    // avoid issues with charsets in args (avoid using wmain)
+    // avoid issues with charsets in args (thought to avoid using
+    // wmain, which proved false, but the args file was kept)
     if (args.size() == 1 && args[0][0] != '-') {
         args = fileToArgs(args[0]);
     }
@@ -631,7 +630,6 @@ int wmain(int argc, wchar_t *argv[])
         }
         for (unsigned int cidx = 1; cidx < arg.size(); cidx++) {
             switch (arg[cidx]) {
-            case 'b': op_flags |= OPT_b; break;
             case 'c':   op_flags |= OPT_c; if (aremain < 2)  Usage();
                 a_config = args[argidx+1]; argidx++; goto b1;
 #ifdef RCL_MONITOR
@@ -675,9 +673,10 @@ int wmain(int argc, wchar_t *argv[])
 
     if (op_flags & OPT_h)
         Usage();
+
 #ifndef RCL_MONITOR
     if (op_flags & (OPT_m | OPT_w|OPT_x)) {
-        cerr << "Sorry, -m not available: real-time monitoring was not "
+        cerr << "-m not available: real-time monitoring was not "
             "configured in this build\n";
         exit(1);
     }
@@ -720,15 +719,24 @@ int wmain(int argc, wchar_t *argv[])
             cerr << "Warning: invalid paths in topdirs, skippedPaths or "
                 "daemSkippedPaths:\n";
         }
-        for (vector<string>::const_iterator it = nonexist.begin(); 
-             it != nonexist.end(); it++) {
-            out << *it << endl;
+        for (const auto& entry : nonexist) {
+            out << entry << endl;
         }
     }
     if ((op_flags & OPT_E)) {
         exit(0);
     }
 
+    if (op_flags & OPT_l) {
+        if (aremain != 0) 
+            Usage();
+        vector<string> stemmers = ConfIndexer::getStemmerNames();
+        for (const auto& stemmer : stemmers) {
+            cout << stemmer << endl;
+        }
+        exit(0);
+    }
+    
     orig_cwd = path_cwd();
     string rundir;
     config->getConfParam("idxrundir", rundir);
@@ -770,6 +778,7 @@ int wmain(int argc, wchar_t *argv[])
 
     Pidfile pidfile(config->getPidfile());
     updater = new MyUpdater(config);
+    lockorexit(&pidfile, config);
 
     // Log something at LOGINFO to reset the trace file. Else at level
     // 3 it's not even truncated if all docs are up to date.
@@ -789,8 +798,6 @@ int wmain(int argc, wchar_t *argv[])
         flushIdxReasons();
         exit(status ? 0 : 1);
     } else if (op_flags & (OPT_i|OPT_e)) {
-        lockorexit(&pidfile, config);
-
         list<string> filenames;
         if (aremain == 0) {
             // Read from stdin
@@ -822,20 +829,12 @@ int wmain(int argc, wchar_t *argv[])
         }
         flushIdxReasons();
         exit(status ? 0 : 1);
-    } else if (op_flags & OPT_l) {
-        if (aremain != 0) 
-            Usage();
-        vector<string> stemmers = ConfIndexer::getStemmerNames();
-        for (vector<string>::const_iterator it = stemmers.begin(); 
-             it != stemmers.end(); it++) {
-            cout << *it << endl;
-        }
-        exit(0);
     } else if (op_flags & OPT_s) {
         if (aremain != 1) 
             Usage();
         string lang = args[argidx++]; aremain--;
         exit(!createstemdb(config, lang));
+
 #ifdef RCL_USE_ASPELL
     } else if (op_flags & OPT_S) {
         makeIndexerOrExit(config, false);
@@ -846,7 +845,6 @@ int wmain(int argc, wchar_t *argv[])
     } else if (op_flags & OPT_m) {
         if (aremain != 0) 
             Usage();
-        lockorexit(&pidfile, config);
         if (updater) {
             updater->status.hasmonitor = true;
         }
@@ -925,30 +923,25 @@ int wmain(int argc, wchar_t *argv[])
         exit(monret == false);
 #endif // MONITOR
 
-    } else if (op_flags & OPT_b) {
-        cerr << "Not yet" << endl;
-        return 1;
-    } else {
-        lockorexit(&pidfile, config);
-        makeIndexerOrExit(config, inPlaceReset);
-        bool status = confindexer->index(rezero, ConfIndexer::IxTAll, 
-                                         indexerFlags);
-        // Record success of indexing pass with failed files retries.
-        if (status && !(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
-            checkRetryFailed(config, true);
-        }
-        if (!status) 
-            cerr << "Indexing failed" << endl;
-        if (!confindexer->getReason().empty()) {
-            addIdxReason("indexer", confindexer->getReason());
-            cerr << confindexer->getReason() << endl;
-        }
-        if (updater) {
-            updater->status.phase = DbIxStatus::DBIXS_DONE;
-            updater->status.fn.clear();
-            updater->update();
-        }
-        flushIdxReasons();
-        return !status;
     }
+
+    makeIndexerOrExit(config, inPlaceReset);
+    bool status = confindexer->index(rezero, ConfIndexer::IxTAll, indexerFlags);
+    // Record success of indexing pass with failed files retries.
+    if (status && !(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
+        checkRetryFailed(config, true);
+    }
+    if (!status) 
+        cerr << "Indexing failed" << endl;
+    if (!confindexer->getReason().empty()) {
+        addIdxReason("indexer", confindexer->getReason());
+        cerr << confindexer->getReason() << endl;
+    }
+    if (updater) {
+        updater->status.phase = DbIxStatus::DBIXS_DONE;
+        updater->status.fn.clear();
+        updater->update();
+    }
+    flushIdxReasons();
+    return !status;
 }

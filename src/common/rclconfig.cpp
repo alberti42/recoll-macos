@@ -1398,7 +1398,9 @@ string RclConfig::getPidfile() const
     if (p) {
         string base = path_canon(p);
         string digest, hex;
-        MD5String(getConfDir(), digest);
+        string cfdir = path_canon(getConfDir());
+        path_catslash(cfdir);
+        MD5String(cfdir, digest);
         MD5HexPrint(digest, hex);
         return path_cat(base, "/recoll-" + hex + "-index.pid");
     } 
