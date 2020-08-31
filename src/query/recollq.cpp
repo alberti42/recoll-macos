@@ -58,13 +58,14 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
     return true;
 }
 
-string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets)
+string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
+                     int snipcount)
 {
     string abstract;
     if (asSnippets) {
         std::vector<Rcl::Snippet> snippets;
         std::ostringstream str;
-        if (query.makeDocAbstract(doc, snippets, -1, -1, true)) {
+        if (query.makeDocAbstract(doc, snippets, snipcount, -1, true)) {
             for (const auto snippet : snippets) {
                 str << snippet.page << " : " << snippet.snippet << endl;
             }
@@ -78,7 +79,8 @@ string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets)
 }
 
 void output_fields(vector<string> fields, Rcl::Doc& doc,
-                   Rcl::Query& query, Rcl::Db&, bool printnames, bool asSnippets)
+                   Rcl::Query& query, Rcl::Db&, bool printnames,
+                   bool asSnippets, int snipcnt)
 {
     if (fields.empty()) {
         map<string,string>::const_iterator it;
@@ -90,7 +92,7 @@ void output_fields(vector<string> fields, Rcl::Doc& doc,
          it != fields.end(); it++) {
         string out;
         if (!it->compare("abstract")) {
-            base64_encode(make_abstract(doc, query, asSnippets), out);
+            base64_encode(make_abstract(doc, query, asSnippets, snipcnt), out);
         } else if (!it->compare("xdocid")) {
             char cdocid[30];
             sprintf(cdocid, "%lu", (unsigned long)doc.xdocid);
@@ -112,46 +114,46 @@ void output_fields(vector<string> fields, Rcl::Doc& doc,
 
 static char *thisprog;
 static char usage [] =
-            " -P: Show the date span for all the documents present in the index.\n"
-            " [-o|-a|-f] [-q] <query string>\n"
-            " Runs a recoll query and displays result lines. \n"
-            "  Default: will interpret the argument(s) as a xesam query string.\n"
-            "  Query elements: \n"
-            "   * Implicit AND, exclusion, field spec:  t1 -t2 title:t3\n"
-            "   * OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)\n"
-            "   * Phrase: \"t1 t2\" (needs additional quoting on cmd line)\n"
-            " -o Emulate the GUI simple search in ANY TERM mode.\n"
-            " -a Emulate the GUI simple search in ALL TERMS mode.\n"
-            " -f Emulate the GUI simple search in filename mode.\n"
-            " -q is just ignored (compatibility with the recoll GUI command line).\n"
-            "Common options:\n"
-            " -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR.\n"
-            " -C : collapse duplicates\n"            
-            " -d also dump file contents.\n"
-            " -n [first-]<cnt> define the result slice. The default value for [first]\n"
-            "    is 0. Without the option, the default max count is 2000.\n"
-            "    Use n=0 for no limit.\n"
-            " -b : basic. Just output urls, no mime types or titles.\n"
-            " -Q : no result lines, just the processed query and result count.\n"
-            " -m : dump the whole document meta[] array for each result.\n"
-            " -A : output the document abstracts.\n"
-            "    -p : show snippets, with page numbers instead of abstract.\n"
-            " -S fld : sort by field <fld>.\n"
-            "   -D : sort descending.\n"
-            " -s stemlang : set stemming language to use (must exist in index...).\n"
-            "    Use -s \"\" to turn off stem expansion.\n"
-            " -T <synonyms file>: use the parameter (Thesaurus) for word expansion.\n"
-            " -i <dbdir> : additional index, several can be given.\n"
-            " -e use url encoding (%xx) for urls.\n"
-            " -E use exact result count instead of lower bound estimate.\n"
-            " -F <field name list> : output exactly these fields for each result.\n"
-            "    The field values are encoded in base64, output in one line and \n"
-            "    separated by one space character. This is the recommended format \n"
-            "    for use by other programs. Use a normal query with option -m to \n"
-            "    see the field names. Use -F '' to output all fields, but you probably\n"
-            "    also want option -N in this case.\n"
-            "  -N : with -F, print the (plain text) field names before the field values.\n"
-            ;
+" -P: Show the date span for all the documents present in the index.\n"
+" [-o|-a|-f] [-q] <query string>\n"
+" Runs a recoll query and displays result lines. \n"
+"  Default: will interpret the argument(s) as a xesam query string.\n"
+"  Query elements: \n"
+"   * Implicit AND, exclusion, field spec:  t1 -t2 title:t3\n"
+"   * OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)\n"
+"   * Phrase: \"t1 t2\" (needs additional quoting on cmd line)\n"
+" -o Emulate the GUI simple search in ANY TERM mode.\n"
+" -a Emulate the GUI simple search in ALL TERMS mode.\n"
+" -f Emulate the GUI simple search in filename mode.\n"
+" -q is just ignored (compatibility with the recoll GUI command line).\n"
+"Common options:\n"
+" -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR.\n"
+" -C : collapse duplicates\n"            
+" -d also dump file contents.\n"
+" -n [first-]<cnt> define the result slice. The default value for [first]\n"
+"    is 0. Without the option, the default max count is 2000.\n"
+"    Use n=0 for no limit.\n"
+" -b : basic. Just output urls, no mime types or titles.\n"
+" -Q : no result lines, just the processed query and result count.\n"
+" -m : dump the whole document meta[] array for each result.\n"
+" -A : output the document abstracts.\n"
+"    -p : show snippets, with page numbers instead of abstract.\n"
+" -S fld : sort by field <fld>.\n"
+"   -D : sort descending.\n"
+" -s stemlang : set stemming language to use (must exist in index...).\n"
+"    Use -s \"\" to turn off stem expansion.\n"
+" -T <synonyms file>: use the parameter (Thesaurus) for word expansion.\n"
+" -i <dbdir> : additional index, several can be given.\n"
+" -e use url encoding (%xx) for urls.\n"
+" -E use exact result count instead of lower bound estimate.\n"
+" -F <field name list> : output exactly these fields for each result.\n"
+"    The field values are encoded in base64, output in one line and \n"
+"    separated by one space character. This is the recommended format \n"
+"    for use by other programs. Use a normal query with option -m to \n"
+"    see the field names. Use -F '' to output all fields, but you probably\n"
+"    also want option -N in this case.\n"
+"  -N : with -F, print the (plain text) field names before the field values.\n"
+;
 
 static void
 Usage(void)
@@ -212,6 +214,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     
     int firstres = 0;
     int maxcount = 2000;
+    int snipcnt = -1;
+    
     thisprog = argv[0];
     argc--; argv++;
 
@@ -265,7 +269,18 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             argc--; goto b1;
             case 'o':   op_flags |= OPT_o; break;
             case 'P':   op_flags |= OPT_P; break;
-            case 'p':   op_flags |= OPT_p; break;
+            case 'p':
+            {
+                op_flags |= OPT_p;
+                if (argc < 2)
+                    Usage();
+                const char *cp = *(++argv);
+                char *cpe;
+                snipcnt = strtol(cp, &cpe, 10);
+                if (*cpe != 0)
+                    Usage();
+                argc--; goto b1;
+            }
             case 'q':   op_flags |= OPT_q; break;
             case 'Q':   op_flags |= OPT_Q; break;
             case 'S':   op_flags |= OPT_S; if (argc < 2)  Usage();
@@ -424,7 +439,7 @@ endopts:
 
         if (op_flags & OPT_F) {
             output_fields(fields, doc, query, rcldb,
-                          op_flags & OPT_N, op_flags & OPT_p);
+                          op_flags & OPT_N, op_flags & OPT_p, snipcnt);
             continue;
         }
 
@@ -458,7 +473,7 @@ endopts:
             }
             if (op_flags & OPT_A) {
                 bool asSnippets = (op_flags & OPT_p) != 0;
-                string abstract = make_abstract(doc, query, asSnippets);
+                string abstract = make_abstract(doc, query, asSnippets, snipcnt);
                 string marker = asSnippets ? "SNIPPETS" : "ABSTRACT";
                 if (!abstract.empty()) {
                     cout << marker << endl;
