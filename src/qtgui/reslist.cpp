@@ -571,7 +571,7 @@ pair<int,int> ResList::parnumfromdocnum(int docnum)
         return {-1, -1};
     }
     docnum -= winfirst;
-    for (const auto& entry : m_pageParaToReldocnums.begin()) {
+    for (const auto& entry : m_pageParaToReldocnums) {
         if (docnum == entry.second) {
             int first = entry.first;
             int last = first+1;
