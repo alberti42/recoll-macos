@@ -452,9 +452,11 @@
 
       <sect2>
         <title>Document types</title>
+
         <para>&RCL; knows about quite a few different document
-        types. The parameters for document types recognition and
-        processing are set in <link linkend="RCL.INDEXING.CONFIG">configuration files</link>.
+          types. The parameters for document types recognition and
+          processing are set in <link linkend="RCL.INDEXING.CONFIG">
+            configuration files</link>.
         </para>
 
         <para>Most file types, like HTML or word processing files, only hold
@@ -484,6 +486,20 @@
         <filename>missing</filename> text file inside the configuration
         directory.</para>
 
+        <para>After installing a missing handler, you may need to
+          tell <command>recollindex</command> 
+          to retry the failed files, by adding option <literal>-k</literal>
+          to the command line, or by using the GUI
+        <menuchoice>
+          <guimenu>File</guimenu>
+          <guimenuitem>Special indexing</guimenuitem> 
+        </menuchoice> menu. This is because <command>recollindex</command>,
+        in its default operation mode, will not retry files which caused an
+        error during an earlier pass. In special cases, it may be useful to
+        reset the data for a category of files before indexing. See
+        the <command>recollindex</command> manual page. If your index is
+        not too big, it may be simpler to just reset it.</para>
+          
         <para>By default, &RCL; will try to index any file type that
         it has a way to read. This is sometimes not desirable, and
         there are ways to either exclude some types, or on the
@@ -493,16 +509,19 @@
 
         <para>Excluding files by name can be done by adding wildcard name
         patterns to the
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">skippedNames</link> 
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">
+          skippedNames</link> 
         list, which can be done from the GUI Index configuration
         menu. Excluding by type can be done by setting the 
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">excludedmimetypes</link> 
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
+          excludedmimetypes</link> 
         list in the configuration file (1.20 and later). This can be
         redefined for subdirectories.</para>
 
         <para>You can also define an exclusive list of MIME types to be
         indexed (no others will be indexed), by settting 
-        the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES">indexedmimetypes</link>
+        the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES">
+            indexedmimetypes</link>
         configuration variable. Example:<programlisting>
         indexedmimetypes = text/html application/pdf
       </programlisting>
