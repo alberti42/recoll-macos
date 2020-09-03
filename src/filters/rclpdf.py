@@ -23,22 +23,34 @@
 # If pdftotext produces no text and the configuration allows it, we may try to
 # perform OCR.
 
-from __future__ import print_function
-
 import os
 import sys
 import re
-import rclexecm
+import urllib.request
 import subprocess
 import tempfile
-import atexit
-import signal
-import rclconfig
 import glob
 import traceback
+import atexit
+import signal
+
+import rclexecm
+import rclconfig
 
 _mswindows = (sys.platform == "win32")
-    
+
+# Can we access the poppler-glib python3 bindings ? This would allow extracting
+# text from annotations. On Ubuntu, this comes with package gir1.2-poppler-0.18
+# (actual versions may differ of course).
+havepopplerglib = False
+try:
+    import gi
+    gi.require_version('Poppler', '0.18')
+    from gi.repository import Poppler
+    havepopplerglib = True
+except:
+    pass
+
 tmpdir = None
 
 _htmlprefix =b'''<html><head>
@@ -204,23 +216,6 @@ class PDFExtractor:
             # Return true anyway, pdf attachments are no big deal
             return True
 
-    def extractone(self, ipath):
-        #self.em.rclog("extractone: [%s]" % ipath)
-        if not self.attextractdone:
-            if not self.extractAttach():
-                return (False, "", "", rclexecm.RclExecM.eofnow)
-        path = os.path.join(tmpdir, ipath)
-        if os.path.isfile(path):
-            f = open(path, "rb")
-            docdata = f.read();
-            f.close()
-        if self.currentindex == len(self.attachlist) - 1:
-            eof = rclexecm.RclExecM.eofnext
-        else:
-            eof = rclexecm.RclExecM.noteof
-        return (True, docdata, ipath, eof)
-
-
     # pdftotext (used to?) badly escape text inside the header
     # fields. We do it here. This is not an html parser, and depends a
     # lot on the actual format output by pdftotext.
@@ -385,6 +380,72 @@ class PDFExtractor:
         else:
             return html
 
+    def maybemaketmpdir(self):
+        global tmpdir
+        if tmpdir:
+            if not vacuumdir(tmpdir):
+                self.em.rclog("openfile: vacuumdir %s failed" % tmpdir)
+                return False
+        else:
+            tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
+            if self.pdftk and re.match("/snap/", self.pdftk):
+                # We know this is Unix (Ubuntu actually). Check that tmpdir
+                # belongs to the user as snap commands can't use /tmp to share
+                # files. Don't generate an error as this only affects
+                # attachment extraction
+                ok = False
+                if "TMPDIR" in os.environ:
+                    st = os.stat(os.environ["TMPDIR"])
+                    if st.st_uid == os.getuid():
+                        ok = True
+                if not ok:
+                    self.em.rclog(
+                        "pdftk is a snap command and needs TMPDIR to be "
+                        "a directory you own")
+
+    def _process_annotations(self, html):
+        doc = Poppler.Document.new_from_file(
+            'file://%s' %
+            urllib.request.pathname2url(os.path.abspath(self.filename)), None)
+        n_pages = doc.get_n_pages()
+        all_annots = 0
+
+        # output format
+        f = 'P.: {0}, {1:10}, {2:10}: {3}'
+
+        # Array of annotations indexed by page number. The page number
+        # here is the physical one (evince -i), not a page label (evince
+        # -p). This may be different for some documents.
+        abypage = {}
+        for i in range(n_pages):
+            page = doc.get_page(i)
+            pnum = i+1
+            annot_mappings = page.get_annot_mapping ()
+            num_annots = len(annot_mappings)
+            for annot_mapping in annot_mappings:
+                atype = annot_mapping.annot.get_annot_type().value_name
+                if atype  != 'POPPLER_ANNOT_LINK':
+                    atext = f.format(
+                        pnum,
+                        annot_mapping.annot.get_modified(),
+                        annot_mapping.annot.get_annot_type().value_nick,
+                        annot_mapping.annot.get_contents()) + "\n"
+                    if pnum in abypage:
+                        abypage[pnum] += atext
+                    else:
+                        abypage[pnum] = atext
+        #self.em.rclog("Annotations: %s" % abypage)
+        pagevec = html.split(b"\f")
+        html = b""
+        pagenum = 1
+        for page in pagevec:
+            html += page
+            if pagenum in abypage:
+                html += abypage[pagenum].encode('utf-8')
+            html += b"\f"
+            pagenum += 1
+        return html
+    
     def _selfdoc(self):
         '''Extract the text from the pdf doc (as opposed to attachment)'''
         self.em.setmimetype('text/html')
@@ -421,32 +482,31 @@ class PDFExtractor:
                 self.em.rclog("Metadata extraction failed: %s %s" %
                               (err, traceback.format_exc()))
 
+        if havepopplerglib:
+            try:
+                html = self._process_annotations(html)
+            except Exception as err:
+                self.em.rclog("Annotation extraction failed: %s %s" %
+                              (err, traceback.format_exc()))
         return (True, html, "", eof)
 
 
-    def maybemaketmpdir(self):
-        global tmpdir
-        if tmpdir:
-            if not vacuumdir(tmpdir):
-                self.em.rclog("openfile: vacuumdir %s failed" % tmpdir)
-                return False
+    def extractone(self, ipath):
+        #self.em.rclog("extractone: [%s]" % ipath)
+        if not self.attextractdone:
+            if not self.extractAttach():
+                return (False, "", "", rclexecm.RclExecM.eofnow)
+        path = os.path.join(tmpdir, ipath)
+        if os.path.isfile(path):
+            f = open(path, "rb")
+            docdata = f.read();
+            f.close()
+        if self.currentindex == len(self.attachlist) - 1:
+            eof = rclexecm.RclExecM.eofnext
         else:
-            tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
-            if self.pdftk and re.match("/snap/", self.pdftk):
-                # We know this is Unix (Ubuntu actually). Check that tmpdir
-                # belongs to the user as snap commands can't use /tmp to share
-                # files. Don't generate an error as this only affects
-                # attachment extraction
-                ok = False
-                if "TMPDIR" in os.environ:
-                    st = os.stat(os.environ["TMPDIR"])
-                    if st.st_uid == os.getuid():
-                        ok = True
-                if not ok:
-                    self.em.rclog(
-                        "pdftk is a snap command and needs TMPDIR to be "
-                        "a directory you own")
-                                      
+            eof = rclexecm.RclExecM.noteof
+        return (True, docdata, ipath, eof)
+
         
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
