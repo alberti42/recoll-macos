@@ -63,13 +63,26 @@ class RclConfig:
                         self.datadir = os.path.join(dir, "Share")
                         break
             else:
-                dirs = ("/opt/local", "/usr", "/usr/local")
+                dirs = ("/opt/local", "/opt", "/usr", "/usr/local")
                 for dir in dirs:
                     dd = os.path.join(dir, "share/recoll")
                     if os.path.exists(dd):
                         self.datadir = dd
         if self.datadir is None:
             self.datadir = "/usr/share/recoll"
+        f = None
+        try:
+            f = open(os.path.join(self.datadir, "examples", "recoll.conf"), "r")
+        except:
+            pass
+        if f is None:
+            raise(Exception(
+                "Can't open default/system recoll.conf. " +
+                "Please set RECOLL_DATADIR in the environment to point " +
+                "to the installed recoll data files."))
+        else:
+            f.close()
+
         #print("Datadir: [%s]" % self.datadir, file=sys.stderr)
         self.cdirs = []
         
