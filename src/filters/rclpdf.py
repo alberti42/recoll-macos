@@ -40,7 +40,9 @@ import rclconfig
 _mswindows = (sys.platform == "win32")
 
 # Can we access the poppler-glib python3 bindings ? This would allow extracting
-# text from annotations. On Ubuntu, this comes with package gir1.2-poppler-0.18
+# text from annotations.
+# - On Ubuntu, this comes with package gir1.2-poppler-0.18
+# - On opensuse the package is named typelib-1_0-Poppler-0_18
 # (actual versions may differ of course).
 havepopplerglib = False
 try:
