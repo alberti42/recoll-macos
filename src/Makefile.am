@@ -536,7 +536,6 @@ python/pychm/recollchm/extra.c \
 python/pychm/recollchm/swig_chm.c \
 python/pychm/recollchm/swig_chm.i \
 python/pychm/setup.py.in \
-python/recoll/Makefile \
 python/recoll/pyrclextract.cpp \
 python/recoll/pyrecoll.cpp \
 python/recoll/pyrecoll.h \
@@ -755,6 +754,8 @@ dist_man5_MANS = doc/man/recoll.conf.5
 dist-hook:
 	(cd $(top_srcdir); find . \
             \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
-	test -z "`git status -s | grep -v '??' | grep -v Makefile.am`"
-	vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
-	git tag -a RECOLL-$$vers -m "Release $$vers tagged"
+	if test -z "$(NOTAG)";then \            
+	  test -z "`git status -s|grep -v recoll-$(VERSION)`"||exit 1; \
+	  vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
+	  git tag -a RECOLL-$$vers -m "Release $$vers tagged"; \
+	fi
