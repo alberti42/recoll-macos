@@ -211,8 +211,6 @@ public:
         }
 
         for (const auto& off : offs) {
-            LOGDEB1("MboxCache::put_offsets: writing value " << off <<
-                    " at offset " << ftello(fp) << endl);
             os.write((char*)&off, sizeof(int64_t));
             if (!os.good()) {
                 LOGSYSERR("MboxCache::put_offsets", "write", "");

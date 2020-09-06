@@ -968,7 +968,6 @@ int ExecCmd::receive(string& data, int cnt)
 
 int ExecCmd::getline(string& data)
 {
-    LOGDEB2("ExecCmd::getline: cnt " << cnt << ", timeo " << timeo << "\n");
     data.erase();
     if (m->m_buf.empty()) {
         m->m_buf.reserve(4096);

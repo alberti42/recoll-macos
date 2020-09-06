@@ -178,8 +178,6 @@ bool QtGuiResListPager::append(const string& data)
 bool QtGuiResListPager::append(const string& data, int docnum, 
                                const Rcl::Doc&)
 {
-    LOGDEB2("QtGuiReslistPager::appendDoc: blockCount " <<
-            m_reslist->document()->blockCount() << ", " << data << "\n");
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     QString sdoc = QString(
         "<div class=\"rclresult\" id=\"%1\" rcldocnum=\"%1\">").arg(docnum);

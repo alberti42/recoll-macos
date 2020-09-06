@@ -268,12 +268,6 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         }
         STRSZT abspos = orgbytepos + bytepos - pagefix;
 
-        LOGDEB1("WORD [" << word << "] size " << word.size() <<
-                " TAG " << tags[i] << " inputdata size " << inputdata.size() <<
-                " absbytepos " << orgbytepos + bytepos << 
-                " bytepos " << bytepos << " word from text: " <<
-                inputdata.substr(bytepos, word.size()) << endl);
-
         // See if we are at a span start position, emit a span if we are.
         auto it = std::find_if(spans.begin(), spans.end(),
                                [bytepos] (const std::pair<STRSZT, STRSZT>& e){

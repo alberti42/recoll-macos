@@ -101,8 +101,8 @@ bool transcode(const string &in, string &out, const string &icode,
 #endif
             if (errno == EILSEQ) {
                 LOGDEB1("transcode:iconv: bad input seq.: shift, retry\n");
-                LOGDEB1(" Input consumed " << ip - in << " output produced " <<
-                        out.length() + OBSIZ - osiz << "\n");
+                LOGDEB1(" Input consumed " << ip - in.c_str() <<
+                        " output produced " << out.length()+OBSIZ-osiz << "\n");
                 out.append(obuf, OBSIZ - osiz);
                 out += "?";
                 mecnt++;

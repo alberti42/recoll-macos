@@ -74,7 +74,7 @@ bool DocSeqFiltered::setFiltSpec(const DocSeqFiltSpec &filtspec)
         m_config->getMimeCatTypes(catg, tps);
         for (vector<string>::const_iterator it = tps.begin();
              it != tps.end(); it++) {
-            LOGDEB2("Adding mime: ["  << (it) << "]\n" );
+            LOGDEB2("Adding mime: [" << *it << "]\n");
             m_spec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);
         }
         }

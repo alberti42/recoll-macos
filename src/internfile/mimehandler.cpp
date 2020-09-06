@@ -154,23 +154,23 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mimeOrParams,
     string lmime(lparams[0]);
     stringtolower(lmime);
     if (cstr_textplain == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerText\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerText\n");
         MD5String("MimeHandlerText", id);
         return nobuild ? 0 : new MimeHandlerText(config, id);
     } else if (cstr_texthtml == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerHtml\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerHtml\n");
         MD5String("MimeHandlerHtml", id);
         return nobuild ? 0 : new MimeHandlerHtml(config, id);
     } else if ("text/x-mail" == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerMbox\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerMbox\n");
         MD5String("MimeHandlerMbox", id);
         return nobuild ? 0 : new MimeHandlerMbox(config, id);
     } else if ("message/rfc822" == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerMail\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerMail\n");
         MD5String("MimeHandlerMail", id);
         return nobuild ? 0 : new MimeHandlerMail(config, id);
     } else if ("inode/symlink" == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerSymlink\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerSymlink\n");
         MD5String("MimeHandlerSymlink", id);
         return nobuild ? 0 : new MimeHandlerSymlink(config, id);
     } else if ("application/x-zerosize" == lmime) {
@@ -183,7 +183,7 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mimeOrParams,
         // mimeconf, not at random. For programs, for example this
         // allows indexing and previewing as text/plain (no filter
         // exec) but still opening with a specific editor.
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerText(x)\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerText(x)\n");
         MD5String("MimeHandlerText", id);
         return nobuild ? 0 : new MimeHandlerText(config, id);
     } else if ("xsltproc" == lmime) {

@@ -1161,7 +1161,7 @@ set<string> RclConfig::getMimeViewerAllEx() const
 
     string base, plus, minus;
     mimeview->get("xallexcepts", base, "");
-    LOGDEB1("RclConfig::getMimeViewerAllEx(): base: " << s << endl);
+    LOGDEB1("RclConfig::getMimeViewerAllEx(): base: " << base << endl);
     mimeview->get("xallexcepts+", plus, "");
     LOGDEB1("RclConfig::getMimeViewerAllEx(): plus: " << plus << endl);
     mimeview->get("xallexcepts-", minus, "");

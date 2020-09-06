@@ -270,7 +270,7 @@ static bool matchesSkipped(const vector<string>& tdl,
              it != tdl.end(); it++) {
             // the topdirs members are already canonized.
             LOGDEB2("matchesSkipped: comparing ancestor [" << mpath <<
-                    "] to topdir [" << it << "]\n");
+                    "] to topdir [" << *it << "]\n");
             if (!mpath.compare(*it)) {
                 topdir = *it;
                 goto goodpath;
@@ -350,7 +350,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
     walker.setSkippedPaths(m_config->getSkippedPaths());
 
     for (list<string>::iterator it = files.begin(); it != files.end(); ) {
-        LOGDEB2("FsIndexer::indexFiles: [" << it << "]\n");
+        LOGDEB2("FsIndexer::indexFiles: [" << *it << "]\n");
 
         m_config->setKeyDir(path_getfather(*it));
         if (m_havelocalfields)

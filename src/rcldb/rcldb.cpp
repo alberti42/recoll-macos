@@ -347,7 +347,7 @@ void Db::Native::openRead(const string& dir)
 bool Db::Native::subDocs(const string &udi, int idxi, 
                          vector<Xapian::docid>& docids) 
 {
-    LOGDEB2("subDocs: [" << uniterm << "]\n");
+    LOGDEB2("subDocs: [" << udi << "]\n");
     string pterm = make_parentterm(udi);
     vector<Xapian::docid> candidates;
     XAPTRY(docids.clear();

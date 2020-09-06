@@ -151,7 +151,7 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     }
     LOGDEB1("MHExecMe:rdDtElt got: name [" << name << "] len " << len <<
             "value [" << (datap->size() > 100 ? 
-                          (datap->substr(0, 100) + " ...") : datap) << endl);
+                          (datap->substr(0, 100) + " ...") : *datap) << endl);
     return true;
 }
 
