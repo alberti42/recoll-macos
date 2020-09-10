@@ -462,7 +462,36 @@ void ResListPager::displayPage(RclConfig *config)
     chunk << "</p>" << endl;
     chunk << "</body></html>" << endl;
     append(chunk.rdbuf()->str());
+    flush();
 }
+
+void ResListPager::displaySingleDoc(RclConfig *config, int idx,
+                                    Rcl::Doc& doc, 
+                                    const HighlightData& hdata)
+{
+    ostringstream chunk;
+
+    // Header
+    // Note: have to append text in chunks that make sense
+    // html-wise. If we break things up too much, the editor
+    // gets confused.
+    string bdtag("<body ");
+    bdtag += bodyAttrs();
+    rtrimstring(bdtag, " ");
+    bdtag += ">";
+    chunk << "<html><head>\n"
+          << "<meta http-equiv=\"content-type\""
+          << " content=\"text/html; charset=utf-8\">\n"
+          << headerContent()
+          << "</head>\n" << bdtag << "\n";
+    append(chunk.rdbuf()->str());
+    // Document
+    displayDoc(config, idx, doc, hdata, string());
+    // Footer 
+    append("</body></html>\n");
+    flush();
+}
+
 
 // Default implementations for things that should be implemented by 
 // specializations

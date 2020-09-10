@@ -29,7 +29,6 @@
 
 /* Light on dark text everywhere*/
 * {
-/*    font-size: 14pt;*/
     background-color: #373737;
     color: #ffffff;
     selection-background-color: #424e72;
@@ -61,9 +60,10 @@ QTabWidget QTabBar::tab:selected {
 /*
  * Slightly *darker* background for text entry areas, and brighter
  * (lighter) foreground.
+ * QTableView excluded until we fix the font color...
  */
 QComboBox[editable="true"], QTextEdit, QLineEdit,
-QTextBrowser, QTableView, QWebView, QPlainTextEdit {
-    background-color: #101010; /*Changed*/
-    color: #ffffff; /*Changed*/
+QTextBrowser, QWebView, QPlainTextEdit {
+    background-color: #101010;
+    color: #ffffff;
 }

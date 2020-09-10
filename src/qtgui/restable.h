@@ -96,7 +96,8 @@ class ResTableDetailArea : public QTextBrowser {
  public slots:
     virtual void createPopupMenu(const QPoint& pos);
     virtual void setFont();
-    
+    virtual void init();
+
 private:
     ResTable *m_table;
 };

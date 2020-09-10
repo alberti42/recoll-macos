@@ -79,22 +79,28 @@ public:
     ResTablePager(ResTable *p)
         : ResListPager(1, prefs.alwaysSnippets), m_parent(p) 
         {}
-    virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
-    virtual string trans(const string& in);
-    virtual const string &parFormat();
-    virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
+    virtual bool append(const string& data) override;
+    virtual bool flush() override;
+    virtual string trans(const string& in) override;
+    virtual const string &parFormat() override;
+    virtual string absSep() override {
+        return (const char *)(prefs.abssep.toUtf8());}
+    virtual string headerContent() override {
+        return qs2utf8s(prefs.reslistheadertext);}
 private:
     ResTable *m_parent;
+    string m_data;
 };
 
-bool ResTablePager::append(const string& data, int, const Rcl::Doc&)
+bool ResTablePager::append(const string& data)
 {
-    m_parent->m_detail->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
-    m_parent->m_detail->textCursor().insertBlock();
-    m_parent->m_detail->insertHtml(u8s2qs(data));
-
-//    LOGDEB("RESTABLEPAGER::APPEND: data : " << data << std::endl);
-//    m_parent->m_detail->setHtml(u8s2qs(data));
+    m_data += data;
+    return true;
+}
+bool ResTablePager::flush()
+{
+    m_parent->m_detail->setHtml(u8s2qs(m_data));
+    m_data = "";
     return true;
 }
 
@@ -145,6 +151,12 @@ void ResTableDetailArea::setFont()
     } else {
         QTextBrowser::setFont(QFont());
     }
+}
+
+void ResTableDetailArea::init()
+{
+    setFont();
+    QTextBrowser::setHtml("");
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -474,51 +486,54 @@ public:
         QStyleOptionViewItem opt = option;
         initStyleOption(&opt, index);
         QVariant value = index.data(Qt::DisplayRole);
+        QString text;
         if (value.isValid() && !value.isNull()) {
-            QString text = value.toString();
-            if (!text.isEmpty()) {
-                QTextDocument document;
-                painter->save();
-                QString fstyle;
-                if (prefs.reslistfontsize > 0) {
-                    int fs = prefs.reslistfontsize <= fsadjusttable ?
-                        prefs.reslistfontsize :
-                        prefs.reslistfontsize - fsadjusttable;
-                    fstyle = QString("font-size: %1pt").arg(fs);
-                }
-                if (opt.state & QStyle::State_Selected) {
-                    painter->fillRect(opt.rect, opt.palette.highlight());
-                    // Set the foreground color. Tried with pen
-                    // approach did not seem to work, probably it's
-                    // reset by the textdocument. Couldn't use
-                    // setdefaultstylesheet() either. the div thing is
-                    // an ugly hack. Works for now
-                    QString ntxt("<div style='color: white");
-                    if (!fstyle.isEmpty()) {
-                        ntxt += QString(";") + fstyle;
-                    }
-                    ntxt += "'>";
-                    ntxt += text + QString::fromUtf8("</div>");
-                    text.swap(ntxt);
-                } else {
-                    if (!fstyle.isEmpty()) {
-                        QString ntxt("<div style='");
-                        ntxt += fstyle;
-                        ntxt += QString("'>") + text + QString("</div>");
-                        text.swap(ntxt);
-                    }
-                }
-                painter->setClipRect(option.rect);
-                QPoint where = option.rect.topLeft();
-                where.ry() += TEXTINCELLVTRANS;
-                painter->translate(where);
-                document.setHtml(text);
-                document.drawContents(painter);
-                painter->restore();
-                return;
-            } 
+            text = value.toString();
         }
-        QStyledItemDelegate::paint(painter, option, index);
+        if (text.isEmpty()) {
+            QStyledItemDelegate::paint(painter, option, index);
+            return;
+        }
+
+        painter->save();
+
+        QTextDocument document;
+        QString fstyle;
+        if (prefs.reslistfontsize > 0) {
+            int fs = prefs.reslistfontsize <= fsadjusttable ?
+                prefs.reslistfontsize :
+                prefs.reslistfontsize - fsadjusttable;
+            fstyle = QString("font-size: %1pt").arg(fs);
+        }
+        if (opt.state & QStyle::State_Selected) {
+            painter->fillRect(opt.rect, opt.palette.highlight());
+            // Set the foreground color. Tried with pen
+            // approach did not seem to work, probably it's
+            // reset by the textdocument. Couldn't use
+            // setdefaultstylesheet() either. the div thing is
+            // an ugly hack. Works for now
+            QString ntxt("<div style='color: white");
+            if (!fstyle.isEmpty()) {
+                ntxt += QString(";") + fstyle;
+            }
+            ntxt += "'>";
+            ntxt += text + QString::fromUtf8("</div>");
+            text.swap(ntxt);
+        } else {
+            if (!fstyle.isEmpty()) {
+                QString ntxt("<div style='");
+                ntxt += fstyle;
+                ntxt += QString("'>") + text + QString("</div>");
+                text.swap(ntxt);
+            }
+        }
+        painter->setClipRect(option.rect);
+        QPoint where = option.rect.topLeft();
+        where.ry() += TEXTINCELLVTRANS;
+        painter->translate(where);
+        document.setHtml(text);
+        document.drawContents(painter);
+        painter->restore();
     }
 };
 
@@ -594,7 +609,7 @@ void ResTable::init()
     m_detail->setReadOnly(true);
     m_detail->setUndoRedoEnabled(false);
     m_detail->setOpenLinks(false);
-    m_detail->setFont();
+    m_detail->init();
     // signals and slots connections
     connect(m_detail, SIGNAL(anchorClicked(const QUrl &)), 
             this, SLOT(linkWasClicked(const QUrl &)));
@@ -652,8 +667,9 @@ void ResTable::setRclMain(RclMain *m, bool ismain)
 
 void ResTable::onUiPrefsChanged()
 {
-    if (m_detail)
-        m_detail->setFont();
+    if (m_detail) {
+        m_detail->init();
+    }        
 }
 
 int ResTable::getDetailDocNumOrTopRow()
@@ -670,7 +686,7 @@ void ResTable::makeRowVisible(int row)
     QModelIndex modelIndex = m_model->index(row, 0);
     tableView->scrollTo(modelIndex, QAbstractItemView::PositionAtTop);
     tableView->selectionModel()->clear();
-    m_detail->clear();
+    m_detail->init();
     m_detaildocnum = -1;
 }
 
@@ -715,11 +731,11 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
         return;
     Rcl::Doc doc;
     if (m_model->getDocSource()->getDoc(index.row(), doc)) {
-        m_detail->clear();
+        m_detail->init();
         m_detaildocnum = index.row();
         m_detaildoc = doc;
-        m_pager->displayDoc(theconfig, m_detaildocnum, m_detaildoc, 
-                            m_model->m_hdata);
+        m_pager->displaySingleDoc(theconfig, m_detaildocnum, m_detaildoc, 
+                                  m_model->m_hdata);
         emit(detailDocChanged(doc, m_model->getDocSource()));
     } else {
         m_detaildocnum = -1;
@@ -748,7 +764,7 @@ void ResTable::setDocSource(std::shared_ptr<DocSequence> nsource)
     if (m_pager)
         m_pager->setDocSource(nsource, 0);
     if (m_detail)
-        m_detail->clear();
+        m_detail->init();
     m_detaildocnum = -1;
 }
 
@@ -828,7 +844,7 @@ void ResTable::readDocSource(bool resetPos)
         m_model->m_hdata.clear();
     }
     m_model->readDocSource();
-    m_detail->clear();
+    m_detail->init();
     m_detaildocnum = -1;
 }
 
@@ -916,7 +932,7 @@ void ResTable::onDoubleClick(const QModelIndex& index)
     Rcl::Doc doc;
     if (m_model->getDocSource()->getDoc(index.row(), doc)) {
         if (m_detaildocnum != index.row()) {
-            m_detail->clear();
+            m_detail->init();
             m_detaildocnum = index.row();
             m_pager->displayDoc(theconfig, index.row(), m_detaildoc, 
                                 m_model->m_hdata);
