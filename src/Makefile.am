@@ -556,7 +556,8 @@ python/samples/recollqsd.py \
  \
 sampleconf/fields sampleconf/fragbuts.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
-sampleconf/recoll.conf sampleconf/recoll.qss sampleconf/recoll-dark.qss \
+sampleconf/recoll.conf sampleconf/recoll.qss \
+sampleconf/recoll-dark.qss sampleconf/recoll-dark.css \
 \
 testmains/Makefile.am \
 \
@@ -645,6 +646,8 @@ sampleconf/fields \
 sampleconf/recoll.conf \
 sampleconf/mimeconf \
 sampleconf/recoll.qss \
+sampleconf/recoll-dark.qss \
+sampleconf/recoll-dark.css \
 sampleconf/mimemap \
 sampleconf/mimeview 
 
@@ -754,7 +757,7 @@ dist_man5_MANS = doc/man/recoll.conf.5
 dist-hook:
 	(cd $(top_srcdir); find . \
             \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
-	if test -z "$(NOTAG)";then \            
+	if test -z "$(NOTAG)";then \
 	  test -z "`git status -s|grep -v recoll-$(VERSION)`"||exit 1; \
 	  vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
 	  git tag -a RECOLL-$$vers -m "Release $$vers tagged"; \

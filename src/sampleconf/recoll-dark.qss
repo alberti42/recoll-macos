@@ -15,16 +15,7 @@
  result list:
    Preferences->GUI configuration->Result list->
                  Edit result page html header insert
- For example:
-   
-<style type="text/css">
- html {
-     background-color: #505050;
-     color: #D8D8D8;
-     selection-background-color: #424e72;
- }
-</style> 
-
+ See recoll-dark.css in src/sampleconf of share/examples
 */
 
 /* Light on dark text everywhere*/
@@ -57,13 +48,9 @@ QTabWidget QTabBar::tab:selected {
     color:      #ffffff;
 }
 
-/*
- * Slightly *darker* background for text entry areas, and brighter
- * (lighter) foreground.
- * QTableView excluded until we fix the font color...
- */
-QComboBox[editable="true"], QTextEdit, QLineEdit,
-QTextBrowser, QWebView, QPlainTextEdit {
+/* Slightly *darker* background for text entry areas. */
+QComboBox[editable="true"], QTextEdit[editable="true"], QLineEdit,
+QPlainTextEdit {
     background-color: #101010;
     color: #ffffff;
 }

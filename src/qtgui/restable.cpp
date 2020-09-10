@@ -483,8 +483,7 @@ public:
     // difficult. Anyway, the display seems fast enough as is.
     void paint(QPainter *painter, const QStyleOptionViewItem &option, 
                const QModelIndex &index) const {
-        QStyleOptionViewItem opt = option;
-        initStyleOption(&opt, index);
+
         QVariant value = index.data(Qt::DisplayRole);
         QString text;
         if (value.isValid() && !value.isNull()) {
@@ -495,39 +494,29 @@ public:
             return;
         }
 
+        QStyleOptionViewItem opt = option;
+        initStyleOption(&opt, index);
+
         painter->save();
 
         QTextDocument document;
+        QString color = opt.palette.color(QPalette::Text).name();
+        QString selcolor = opt.palette.color(QPalette::BrightText).name();
         QString fstyle;
         if (prefs.reslistfontsize > 0) {
             int fs = prefs.reslistfontsize <= fsadjusttable ?
-                prefs.reslistfontsize :
-                prefs.reslistfontsize - fsadjusttable;
+                prefs.reslistfontsize : prefs.reslistfontsize - fsadjusttable;
             fstyle = QString("font-size: %1pt").arg(fs);
         }
-        if (opt.state & QStyle::State_Selected) {
-            painter->fillRect(opt.rect, opt.palette.highlight());
-            // Set the foreground color. Tried with pen
-            // approach did not seem to work, probably it's
-            // reset by the textdocument. Couldn't use
-            // setdefaultstylesheet() either. the div thing is
-            // an ugly hack. Works for now
-            QString ntxt("<div style='color: white");
-            if (!fstyle.isEmpty()) {
-                ntxt += QString(";") + fstyle;
-            }
-            ntxt += "'>";
-            ntxt += text + QString::fromUtf8("</div>");
-            text.swap(ntxt);
-        } else {
-            if (!fstyle.isEmpty()) {
-                QString ntxt("<div style='");
-                ntxt += fstyle;
-                ntxt += QString("'>") + text + QString("</div>");
-                text.swap(ntxt);
-            }
-        }
-        painter->setClipRect(option.rect);
+        QString ntxt("<div style='");
+        ntxt += " color:";
+        ntxt += (opt.state & QStyle::State_Selected)? selcolor:color;
+        ntxt += ";";
+        ntxt += fstyle;
+        ntxt += QString("'>") + text + QString("</div>");
+        text.swap(ntxt);
+        
+        painter->setClipRect(opt.rect);
         QPoint where = option.rect.topLeft();
         where.ry() += TEXTINCELLVTRANS;
         painter->translate(where);
