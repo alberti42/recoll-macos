@@ -53,7 +53,7 @@ public slots:
     virtual void showStylesheetDialog();
     virtual void showSynFileDialog();
     virtual void showSnipCssDialog();
-    virtual void resetStylesheet();
+    virtual void resetStylesheet(QString fn = QString());
     virtual void resetSnipCss();
     virtual void showViewAction();
     virtual void showViewAction(const QString& mt);

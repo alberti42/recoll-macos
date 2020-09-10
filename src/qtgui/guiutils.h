@@ -131,6 +131,8 @@ class PrefsPack {
     QString synFile;
     bool    synFileEnable;
 
+    bool darkMode;
+    
     QStringList restableFields;
     vector<int> restableColWidths;
 

@@ -469,10 +469,14 @@ void UIPrefsDialog::showStylesheetDialog()
     }
 }
 
-void UIPrefsDialog::resetStylesheet()
+void UIPrefsDialog::resetStylesheet(QString fn)
 {
-    qssFile = "";
-    stylesheetPB->setText(tr("Choose"));
+    qssFile = fn;
+    if (fn.isEmpty()) {
+        stylesheetPB->setText(tr("Choose"));
+    } else {
+        stylesheetPB->setText(fn);
+    }
 }
 void UIPrefsDialog::showSnipCssDialog()
 {

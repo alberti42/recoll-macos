@@ -117,6 +117,8 @@
     <addaction name="queryPrefsAction"/>
     <addaction name="extIdxAction"/>
     <addaction name="separator"/>
+    <addaction name="enbDarkModeAction"/>
+    <addaction name="separator"/>
     <addaction name="enbSynAction"/>
     <addaction name="separator"/>
    </widget>
@@ -413,6 +415,20 @@
    </property>
    <property name="name" stdset="0">
     <cstring>enbSynAction</cstring>
+   </property>
+  </action>
+  <action name="enbDarkModeAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use default dark mode</string>
+   </property>
+   <property name="iconText">
+    <string>Dark mode</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>enbDarkModeAction</cstring>
    </property>
   </action>
   <action name="toggleFullScreenAction">

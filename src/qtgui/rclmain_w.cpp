@@ -68,6 +68,7 @@
 #include "systray.h"
 #include "rclmain_w.h"
 #include "rclhelp.h"
+#include "readfile.h"
 #include "moc_rclmain_w.cpp"
 
 using std::pair;
@@ -162,6 +163,7 @@ void RclMain::init()
 
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
     enbSynAction->setChecked(prefs.synFileEnable);
+    enbDarkModeAction->setChecked(prefs.darkMode);
     
     // Stemming language menu
     g_stringNoStem = tr("(no stemming)");
@@ -360,6 +362,8 @@ void RclMain::init()
             this, SLOT(showExtIdxDialog()));
     connect(enbSynAction, SIGNAL(toggled(bool)),
             this, SLOT(setSynEnabled(bool)));
+    connect(enbDarkModeAction, SIGNAL(toggled(bool)),
+            this, SLOT(setDarkModeEnabled(bool)));
 
     connect(toggleFullScreenAction, SIGNAL(triggered()), 
             this, SLOT(toggleFullScreen()));
@@ -476,6 +480,61 @@ void RclMain::setSynEnabled(bool on)
     prefs.synFileEnable = on;
     if (uiprefs)
         uiprefs->synFileCB->setChecked(prefs.synFileEnable);
+}
+
+void RclMain::setDarkModeEnabled(bool on)
+{
+    string fn;
+    
+    if (on) {
+        if (!prefs.reslistheadertext.isEmpty() || !prefs.qssFile.isEmpty()) {
+            QString message =
+                tr("This will replace the current contents of the result list"
+                   " header string and GUI qss file name. Continue ?");
+            switch(QMessageBox::warning(0, "Recoll", message, 
+                                        "Yes", "No", 0, 0, 1)) {
+            case 0: 
+                break;
+            case 1:
+                goto resetcheckednosigs;
+            }
+        }
+        string datadir = theconfig->getDatadir();
+        fn = path_cat(path_cat(datadir, "examples"), "recoll-dark.qss");
+        if (!path_readable(fn)) {
+            goto unreadable;
+        }
+        prefs.qssFile = u8s2qs(fn);
+        fn = path_cat(path_cat(datadir, "examples"), "recoll-dark.css");
+        string data;
+        string reason;
+        if (!file_to_string(fn, data, &reason)) {
+            goto unreadable;
+        }
+        prefs.reslistheadertext = u8s2qs(data);
+    } else {
+        prefs.reslistheadertext.clear();
+        prefs.qssFile.clear();
+    }
+
+    applyStyleSheet();
+    prefs.darkMode = on;
+    if (uiprefs) {
+        uiprefs->resetStylesheet(prefs.qssFile);
+    }
+    QMessageBox::warning(0, "Recoll", tr("You will need to run a query to "
+                                         "complete the display change."));
+    return;
+
+unreadable:
+    QMessageBox::warning(0, "Recoll", tr("Could not read: ") + u8s2qs(fn));
+    prefs.reslistheadertext.clear();
+    prefs.qssFile.clear();
+    // And reset checkbox state:
+resetcheckednosigs:
+    bool oldState = enbDarkModeAction->blockSignals(true);
+    enbDarkModeAction->setChecked(!on);
+    enbDarkModeAction->blockSignals(oldState);
 }
 
 void RclMain::resultCount(int n)
