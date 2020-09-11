@@ -499,9 +499,14 @@ public:
 
         painter->save();
 
-        QTextDocument document;
-        QString color = opt.palette.color(QPalette::Text).name();
-        QString selcolor = opt.palette.color(QPalette::BrightText).name();
+        /* As we draw with a text document, not the normal tableview
+           painter, we need to retrieve the appropriate colors and set
+           them as HTML styles. */
+        QString color = opt.palette.color(QPalette::Base).name();
+        QString textcolor = opt.palette.color(QPalette::Text).name();
+        QString selcolor = opt.palette.color(QPalette::Highlight).name();
+        QString seltextcolor =
+            opt.palette.color(QPalette::HighlightedText).name();
         QString fstyle;
         if (prefs.reslistfontsize > 0) {
             int fs = prefs.reslistfontsize <= fsadjusttable ?
@@ -510,6 +515,9 @@ public:
         }
         QString ntxt("<div style='");
         ntxt += " color:";
+        ntxt += (opt.state & QStyle::State_Selected)? seltextcolor:textcolor;
+        ntxt += ";";
+        ntxt += " background:";
         ntxt += (opt.state & QStyle::State_Selected)? selcolor:color;
         ntxt += ";";
         ntxt += fstyle;
@@ -520,6 +528,7 @@ public:
         QPoint where = option.rect.topLeft();
         where.ry() += TEXTINCELLVTRANS;
         painter->translate(where);
+        QTextDocument document;
         document.setHtml(text);
         document.drawContents(painter);
         painter->restore();
