@@ -212,6 +212,7 @@ ConfParamW *ConfTabsW::addParam(
         cp = new ConfParamCSLW(varname, this, lnk, label, tooltip, *sl);
         break;
     }
+    cp->setToolTip(tooltip);
     panel->addParam(cp);
     return cp;
 }
@@ -386,7 +387,6 @@ bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
     QLabel *tl = new QLabel(this);
     setSzPol(tl, QSizePolicy::Preferred, QSizePolicy::Fixed, 0, 0);
     tl->setText(lbltxt);
-    tl->setToolTip(tltptxt);
 
     m_hl->addWidget(tl);
 
@@ -559,7 +559,6 @@ ConfParamBoolW::ConfParamBoolW(
 
     m_cb = new QCheckBox(lbltxt, this);
     setSzPol(m_cb, QSizePolicy::Fixed, QSizePolicy::Fixed, 0, 0);
-    m_cb->setToolTip(tltptxt);
     m_hl->addWidget(m_cb);
 
     QFrame *fr = new QFrame(this);
@@ -683,7 +682,6 @@ ConfParamSLW::ConfParamSLW(
     QLabel *tl = new QLabel(this);
     setSzPol(tl, QSizePolicy::Preferred, QSizePolicy::Fixed, 0, 0);
     tl->setText(lbltxt);
-    tl->setToolTip(tltptxt);
     vl1->addWidget(tl);
 
     QPushButton *pbA = new QPushButton(this);
