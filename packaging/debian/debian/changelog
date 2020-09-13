@@ -1,3 +1,15 @@
+recoll (1.27.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Process PDF annotations if the poppler-glib Python bindings are available
+  * Fix build error with some compiler versions
+  * Fix inconsistent lock file name issue which could result in background
+    indexer exit.
+  * recollq: new -p option to show snippets lists instead of abstracts with
+    -A
+  * Fix nonumbers option.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 13 Sep 2020 13:29:00 +0200
+
 recoll (1.27.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Misc small fixes.
