@@ -265,6 +265,7 @@ int main(int argc, char **argv)
     if (!kotagger.empty()) {
         fprintf(fp, "hangultagger = %s\n", kotagger.c_str());
     }
+    fprintf(fp, "underscoreasletter = 0\n");
     fclose(fp);
 
     Logger::getTheLog("")->setLogLevel(Logger::LogLevel(loglevel));
