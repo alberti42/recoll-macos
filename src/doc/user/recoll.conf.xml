@@ -253,8 +253,12 @@ in version 1.22, and on by default. Setting the variable to off allows
 restoring the previous behaviour.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.BACKSLASHASLETTER">
 <term><varname>backslashasletter</varname></term>
-<listitem><para>Process backslash as normal letter This may make sense for people wanting to index TeX commands as
+<listitem><para>Process backslash as normal letter. This may make sense for people wanting to index TeX commands as
 such but is not of much general use.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.UNDERSCOREASLETTER">
+<term><varname>underscoreasletter</varname></term>
+<listitem><para>Process underscore as normal letter. This makes sense in so many cases that one wonders if it should
+not be the default.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMLENGTH">
 <term><varname>maxtermlength</varname></term>
 <listitem><para>Maximum term length. Words longer than this will be discarded.
@@ -758,7 +762,7 @@ script. Example values: eng, fra... See the tesseract documentation.</para></lis
 <term><varname>tesseractcmd</varname></term>
 <listitem><para>Path for the tesseract command. This is mostly useful on Windows, or for specifying a non-default
 tesseract command. e.g. on Windows:
-C:/Program&nbsp;Files&nbsp;(x86)/Tesseract-OCR/tesseract.exe</para></listitem></varlistentry>
+C:/ProgramFiles(x86)/Tesseract-OCR/tesseract.exe</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ABBYYLANG">
 <term><varname>abbyylang</varname></term>
 <listitem><para>Language to assume for abbyy OCR. Important for improving the OCR accuracy. This can also be set

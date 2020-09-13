@@ -118,6 +118,13 @@ void TextSplit::staticConfInit(RclConfig *config)
         }
     }
 
+    bvalue = false;
+    if (config->getConfParam("underscoreasletter", &bvalue)) {
+        if (bvalue) {
+            charclasses[int('_')] = A_LLETTER;
+        }
+    }
+
     string kotagger;
     config->getConfParam("hangultagger", kotagger);
     if (!kotagger.empty()) {
@@ -855,7 +862,7 @@ bool TextSplit::text_to_words(const string &in)
             goto SPACE;
 
         case '@':
-        case '_':
+        case '_': // If underscoreasletter is set, we'll never get this
         case '\'':
             // If in word, potential span: o'brien, jf@dockes.org,
             // else just ignore
