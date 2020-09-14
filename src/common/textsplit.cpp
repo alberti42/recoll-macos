@@ -84,6 +84,9 @@ int           TextSplit::o_maxWordLength{40};
 static const int o_CJKMaxNgramLen{5};
 bool o_exthangultagger{false};
 
+// This is changed to 0 if _ is processed as a letter
+static char underscoreatend = '_';
+
 void TextSplit::staticConfInit(RclConfig *config)
 {
     config->getConfParam("maxtermlength", &o_maxWordLength);
@@ -115,6 +118,14 @@ void TextSplit::staticConfInit(RclConfig *config)
         if (bvalue) {
         } else {
             charclasses[int('\\')] = SPACE;
+        }
+    }
+
+    bvalue = false;
+    if (config->getConfParam("underscoreasletter", &bvalue)) {
+        if (bvalue) {
+            charclasses[int('_')] = A_LLETTER;
+            underscoreatend = 0;
         }
     }
 
@@ -550,26 +561,26 @@ inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 
     // Maybe trim at end. These are chars that we might keep
     // inside a span, but not at the end.
-    while (m_span.length() > 0) {
-        switch (*(m_span.rbegin())) {
-        case '.':
-        case '-':
-        case ',':
-        case '@':
-        case '_':
-        case '\'':
-            m_span.resize(m_span.length()-1);
+    string::size_type trimsz{0};
+    while (trimsz < m_span.length()) {
+        auto c = m_span[m_span.length() - 1 - trimsz];
+        if (c == '.' || c == '-' || c == ',' || c == '@' || c == '\'' ||
+            c == underscoreatend) {
+            trimsz++;
             if (m_words_in_span.size() &&
-                m_words_in_span.back().second > int(m_span.size()))
+                m_words_in_span.back().second > int(m_span.size())) {
                 m_words_in_span.back().second = int(m_span.size());
-            if (--bp < 0) 
+            }
+            if (--bp < 0) {
                 bp = 0;
+            }
+        } else {
             break;
-        default:
-            goto breaktrimloop;
         }
     }
-breaktrimloop:
+    if (trimsz > 0) {
+        m_span.resize(m_span.length() - trimsz);
+    }
 
     if (!words_from_span(bp)) {
         return false;
@@ -855,7 +866,7 @@ bool TextSplit::text_to_words(const string &in)
             goto SPACE;
 
         case '@':
-        case '_':
+        case '_': // If underscoreasletter is set, we'll never get this
         case '\'':
             // If in word, potential span: o'brien, jf@dockes.org,
             // else just ignore
