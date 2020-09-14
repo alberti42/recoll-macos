@@ -168,6 +168,7 @@ copyrecoll()
     chkcp $RCL/sampleconf/recoll.conf   $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll.qss    $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll-dark.qss $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/recoll-dark.css $DESTDIR/Share/examples
 
     chkcp $RCL/python/recoll/recoll/rclconfig.py $FILTERS
     chkcp $RCL/python/recoll/recoll/conftree.py $FILTERS
