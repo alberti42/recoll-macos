@@ -390,7 +390,6 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
 
     if (m_rowforcachedoc != index.row()) {
         m_rowforcachedoc = index.row();
-        LOGINF("RecollModel::data: calling getDoc for row "<<index.row()<<"\n");
         if (!m_source->getDoc(index.row(), m_cachedoc)) {
             return QVariant();
         }
