@@ -378,7 +378,7 @@ void setSzPol(QWidget *w, QSizePolicy::Policy hpol,
     w->setSizePolicy(policy);
 }
 
-bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
+bool ConfParamW::createCommon(const QString& lbltxt, const QString&)
 {
     m_hl = new QHBoxLayout(this);
     m_hl->setSpacing(spacing);
@@ -549,7 +549,7 @@ void ConfParamCStrW::setImmediate()
 
 ConfParamBoolW::ConfParamBoolW(
     const QString& varnm, QWidget *parent, ConfLink cflink,
-    const QString& lbltxt, const QString& tltptxt, bool deflt)
+    const QString& lbltxt, const QString&, bool deflt)
     : ConfParamW(varnm, parent, cflink), m_dflt(deflt)
 {
     // No createCommon because the checkbox has a label
@@ -664,7 +664,7 @@ public:
 
 ConfParamSLW::ConfParamSLW(
     const QString& varnm, QWidget *parent, ConfLink cflink,
-    const QString& lbltxt, const QString& tltptxt)
+    const QString& lbltxt, const QString&)
     : ConfParamW(varnm, parent, cflink)
 {
     // Can't use createCommon here cause we want the buttons below the label
