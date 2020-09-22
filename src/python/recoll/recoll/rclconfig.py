@@ -103,9 +103,12 @@ class RclConfig:
         return self.datadir
     def getDbDir(self):
         dir = self.getConfParam("dbdir")
-        if not os.path.isabs(dir):
-            dir = os.path.join(self.confdir, dir)
-        return dir
+        if os.path.isabs(dir):
+            return dir
+        cachedir = self.getConfParam("cachedir")
+        if not cachedir:
+            cachedir = self.confdir
+        return os.path.join(cachedir, dir)
     def setKeyDir(self, dir):
         self.keydir = dir
 
