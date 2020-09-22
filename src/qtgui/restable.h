@@ -82,6 +82,11 @@ private:
     bool m_ignoreSort;
     FieldGetter* chooseGetter(const std::string&);
     HighlightData m_hdata;
+    // Things we cache because we are repeatedly asked for the same.
+    mutable QFont m_cachedfont;
+    mutable int   m_reslfntszforcached{-1};
+    mutable Rcl::Doc m_cachedoc;
+    mutable int m_rowforcachedoc{-1};
 };
 
 class ResTable;
@@ -127,6 +132,7 @@ public:
     virtual int getDetailDocNumOrTopRow();
 
     void setRclMain(RclMain *m, bool ismain);
+    void setDefRowHeight();
 
 public slots:
     virtual void onTableView_currentChanged(const QModelIndex&);

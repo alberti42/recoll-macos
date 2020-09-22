@@ -301,6 +301,7 @@ void RecollModel::readDocSource()
 void RecollModel::setDocSource(std::shared_ptr<DocSequence> nsource)
 {
     LOGDEB("RecollModel::setDocSource\n");
+    m_rowforcachedoc = -1;
     if (!nsource) {
         m_source = std::shared_ptr<DocSequence>();
     } else {
@@ -371,11 +372,15 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
     // this to adjust the row height (there is probably a better way
     // to do it in the delegate?)
     if (role == Qt::FontRole && prefs.reslistfontsize > 0) {
-        QFont font = m_table->font();
-        int fs = prefs.reslistfontsize <= fsadjusttable ? prefs.reslistfontsize:
-            prefs.reslistfontsize - fsadjusttable;
-        font.setPointSize(fs);
-        return font;
+        if (m_reslfntszforcached != prefs.reslistfontsize) {
+            m_reslfntszforcached = prefs.reslistfontsize;
+            m_table->setDefRowHeight();
+            m_cachedfont = m_table->font();
+            int fs = prefs.reslistfontsize <= fsadjusttable ?
+                prefs.reslistfontsize: prefs.reslistfontsize - fsadjusttable;
+            m_cachedfont.setPointSize(fs);
+        }
+        return m_cachedfont;
     }    
 
     if (!m_source || role != Qt::DisplayRole || !index.isValid() ||
@@ -383,14 +388,17 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
         return QVariant();
     }
 
-    Rcl::Doc doc;
-    if (!m_source->getDoc(index.row(), doc)) {
-        return QVariant();
+    if (m_rowforcachedoc != index.row()) {
+        m_rowforcachedoc = index.row();
+        LOGINF("RecollModel::data: calling getDoc for row "<<index.row()<<"\n");
+        if (!m_source->getDoc(index.row(), m_cachedoc)) {
+            return QVariant();
+        }
     }
 
     string colname = m_fields[index.column()];
 
-    string data = m_getters[index.column()](colname, doc);
+    string data = m_getters[index.column()](colname, m_cachedoc);
 
 #ifndef _WIN32
     // Special case url, because it may not be utf-8. URL-encode in this case.
@@ -535,6 +543,26 @@ public:
     }
 };
 
+void ResTable::setDefRowHeight()
+{
+    QHeaderView *header = tableView->verticalHeader();
+    if (header) {
+        // Don't do this: it forces a query on the whole model (all
+        // docs) to compute the height. No idea why this was needed,
+        // things seem to work ok without it. The row height does not
+        // shrink when the font is reduced, but I'm not sure that it
+        // worked before.
+//        header->setSectionResizeMode(QHeaderView::ResizeToContents);
+        // Compute ourselves instead, for one row.
+        QFont font = tableView->font();
+        int fs = prefs.reslistfontsize <= fsadjusttable ?
+            prefs.reslistfontsize : prefs.reslistfontsize - fsadjusttable;
+        font.setPointSize(fs);
+        QFontMetrics fm(font);
+        header->setDefaultSectionSize(fm.height() + ROWHEIGHTPAD);
+    }
+}
+
 void ResTable::init()
 {
     if (!(m_model = new RecollModel(prefs.restableFields, this)))
@@ -574,12 +602,7 @@ void ResTable::init()
     header->setMovable(true);
 #endif
 
-    header = tableView->verticalHeader();
-    if (header) {
-        header->setDefaultSectionSize(QApplication::fontMetrics().height() + 
-                                      ROWHEIGHTPAD);
-        header->setSectionResizeMode(QHeaderView::ResizeToContents);        
-    }
+    setDefRowHeight();
 
     QShortcut *sc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
     connect(sc, SIGNAL(activated()), tableView->selectionModel(), SLOT(clear()));
