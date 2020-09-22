@@ -378,7 +378,8 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
             m_cachedfont = m_table->font();
             int fs = prefs.reslistfontsize <= fsadjusttable ?
                 prefs.reslistfontsize: prefs.reslistfontsize - fsadjusttable;
-            m_cachedfont.setPointSize(fs);
+            if (fs > 0) 
+                m_cachedfont.setPointSize(fs);
         }
         return m_cachedfont;
     }    
@@ -556,7 +557,8 @@ void ResTable::setDefRowHeight()
         QFont font = tableView->font();
         int fs = prefs.reslistfontsize <= fsadjusttable ?
             prefs.reslistfontsize : prefs.reslistfontsize - fsadjusttable;
-        font.setPointSize(fs);
+        if (fs > 0)
+            font.setPointSize(fs);
         QFontMetrics fm(font);
         header->setDefaultSectionSize(fm.height() + ROWHEIGHTPAD);
     }
