@@ -760,9 +760,10 @@ the currently processed directory. See the rclocrtesseract.py
 script. Example values: eng, fra... See the tesseract documentation.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.TESSERACTCMD">
 <term><varname>tesseractcmd</varname></term>
-<listitem><para>Path for the tesseract command. This is mostly useful on Windows, or for specifying a non-default
-tesseract command. e.g. on Windows:
-C:/ProgramFiles(x86)/Tesseract-OCR/tesseract.exe</para></listitem></varlistentry>
+<listitem><para>Path for the tesseract command. Do not quote. This is mostly useful on Windows, or for specifying a non-default
+tesseract command. E.g. on Windows.
+tesseractcmd = C:/ProgramFiles(x86)/Tesseract-OCR/tesseract.exe
+</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ABBYYLANG">
 <term><varname>abbyylang</varname></term>
 <listitem><para>Language to assume for abbyy OCR. Important for improving the OCR accuracy. This can also be set
