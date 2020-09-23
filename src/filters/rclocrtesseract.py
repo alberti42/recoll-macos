@@ -39,9 +39,10 @@ _okexts = ('.tif', '.tiff', '.jpg', '.png', '.jpeg')
 tesseractcmd = None
 pdftoppmcmd = None
 
+
 def _deb(s):
-    if not _mswindows:
-        print("rclocrtesseract: %s" % s, file=sys.stderr)
+    rclexecm.logmsg(s)
+
 
 def vacuumdir(dir):
     if dir:
@@ -50,6 +51,7 @@ def vacuumdir(dir):
             if os.path.isfile(path):
                 os.unlink(path)
     return True
+
 
 tmpdir = None
 def _maybemaketmpdir():
@@ -61,12 +63,15 @@ def _maybemaketmpdir():
     else:
         tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
 
+
 def finalcleanup():
     if tmpdir:
         vacuumdir(tmpdir)
         os.rmdir(tmpdir)
 
+
 atexit.register(finalcleanup)
+
 
 # Return true if tesseract and the appropriate conversion program for
 # the file type (e.g. pdftoppt for pdf) appear to be available
@@ -144,6 +149,7 @@ def _guesstesseractlang(config, path):
         tesseractlang = "eng"
     _deb("Tesseract lang (guessed): %s" % tesseractlang)
     return tesseractlang
+
 
 # Process pdf file: use pdftoppm to split it into ppm pages, then run
 # tesseract on each and concatenate the result. It would probably be

@@ -40,8 +40,7 @@ abbyyocrcmd = ""
 abbyocrdir = ""
 
 def _deb(s):
-    if not _mswindows:
-        print("rclocrabbyy: %s" % s, file=sys.stderr)
+    rclexecm.logmsg(s)
 
 # Return true if abbyy appears to be available
 def ocrpossible(config, path):

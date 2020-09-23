@@ -29,9 +29,6 @@ import sys
 from struct import unpack, pack
 import six
 
-def debug(s):
-    print("%s"%s, file=sys.stderr)
-
 PY3 = sys.version > '3'
 
 if PY3:

@@ -30,11 +30,10 @@ import importlib.util
 
 import rclconfig
 import rclocrcache
+import rclexecm
 
-_mswindows = (sys.platform == "win32")
 def _deb(s):
-    if not _mswindows:
-        print("rclocr: %s" % s, file=sys.stderr)
+    rclexecm.logmsg(s)
     
 def Usage():
     _deb("Usage: rclocr.py <imagefilename>")
@@ -56,6 +55,7 @@ def breakwrite(f, data):
         f.write(data[offset:offset+tow])
         offset += tow
         total -= tow
+
 
 if len(sys.argv) != 2:
     Usage()

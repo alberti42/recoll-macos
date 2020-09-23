@@ -61,9 +61,12 @@ import urllib.parse
 import zlib
 import glob
 
+import rclexecm
+
 def _deb(s):
-    print("rclocrcache: %s" %s, file=sys.stderr)
+    rclexecm.logmsg(s)
     
+
 class OCRCache(object):
     def __init__(self, conf):
         self.config = conf
@@ -324,4 +327,3 @@ if __name__ == '__main__':
 #        if not incache:
 #            trystore(path)
 #
-        

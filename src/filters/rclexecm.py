@@ -31,14 +31,33 @@ import rclconfig
 import cmdtalk
 
 PY3 = (sys.version > '3')
-_mswindows = (sys.platform == "win32")
-_execdir = os.path.dirname(sys.argv[0])
+_g_mswindows = (sys.platform == "win32")
+_g_execdir = os.path.dirname(sys.argv[0])
+
+_g_config = rclconfig.RclConfig()
+_g_debugfile = _g_config.getConfParam("filterdebuglog")
+_g_errfout = None
+
+
+def logmsg(msg):
+    global _g_debugfile, _g_errfout
+    if _g_debugfile and not _g_errfout:
+        try:
+            _g_errfout = open(_g_debugfile, "a")
+        except:
+            pass
+    if _g_errfout:
+        print("%s" % msg, file=_g_errfout)
+    elif not _g_mswindows:
+        print("%s" % msg, file=sys.stderr)
+
 
 # Convert to bytes if not already such.
 def makebytes(data):
     if type(data) == type(u''):
         return data.encode("UTF-8")
     return data
+
 
 # Possibly decode binary file name for use as subprocess argument,
 # depending on platform.
@@ -48,10 +67,11 @@ def subprocfile(fn):
     # to convert.
     # On Unix all list elements get converted to bytes in the C
     # _posixsubprocess module, nothing to do.
-    if PY3 and _mswindows and type(fn) != type(''):
+    if PY3 and _g_mswindows and type(fn) != type(''):
         return fn.decode('UTF-8')
     else:
         return fn
+
 
 # Check for truthness of rclconfig value.
 def configparamtrue(value):
@@ -59,15 +79,10 @@ def configparamtrue(value):
         return False
     try:
         ivalue = int(value)
-        if ivalue:
-            return True
-        else:
-            return False
+        return True if ivalue else False
     except:
-        pass
-    if value[0] in 'tT':
-        return True
-    return False
+        return True if value[0] in 'tT' else False
+
 
 # Escape special characters in plain text for inclusion in HTML doc.
 # Note: tried replacing this with a multiple replacer according to
@@ -83,8 +98,6 @@ def htmlescape(txt):
               replace(">", "&gt;").replace("\"", "&quot;")
     return txt
 
-
-my_config = rclconfig.RclConfig()
 
 ############################################
 # RclExecM implements the communication protocol with the recollindex
@@ -109,7 +122,7 @@ class RclExecM(cmdtalk.CmdTalk):
         self.maxmembersize = self.maxmembersize * 1024
 
         # Tell cmdtalk where to log
-        self.debugfile = my_config.getConfParam("filterdebuglog")
+        self.debugfile = _g_config.getConfParam("filterdebuglog")
         # Some of our params are binary, cmdtalk should not decode them
         self.nodecodeinput = True
 
@@ -222,7 +235,7 @@ def which(program):
 
     def path_candidates():
         yield os.path.dirname(sys.argv[0])
-        rclpath = my_config.getConfParam("recollhelperpath")
+        rclpath = _g_config.getConfParam("recollhelperpath")
         if rclpath:
             for path in rclpath.split(os.pathsep):
                 yield path
@@ -244,9 +257,9 @@ def which(program):
 def execPythonScript(icmd):
     import subprocess
     cmd = list(icmd)
-    if _mswindows:
+    if _g_mswindows:
         if not os.path.isabs(cmd[0]):
-            cmd[0] = os.path.join(_execdir, cmd[0])
+            cmd[0] = os.path.join(_g_execdir, cmd[0])
         cmd = [sys.executable] + cmd
     return subprocess.check_output(cmd)
     
@@ -347,8 +360,8 @@ def main(proto, extract):
 
     # Some filters (e.g. rclaudio) need/get a MIME type from the indexer.
     # We make a half-assed attempt to emulate:
-    mimetype = my_config.mimeType(path)
-    if not mimetype and not _mswindows:
+    mimetype = _g_config.mimeType(path)
+    if not mimetype and not _g_mswindows:
         mimetype = mimetype_with_file(path)
     if mimetype:
         params['mimetype'] = mimetype
