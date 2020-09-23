@@ -80,13 +80,19 @@ def ocrpossible(config, path):
     global tesseractcmd
     if not tesseractcmd:
         config.setKeyDir(os.path.dirname(path))
-        tesseractcmd = config.getConfParam("tesseractcmd")
+        # It is very tempting to quote this value, esp. on Windows where it
+        # will contain whitespace. There is no chance that an actual command
+        # line would have quotes, so unquote it.
+        tesseractcmd = config.getConfParam("tesseractcmd").strip('"')
         if not tesseractcmd:
             tesseractcmd = rclexecm.which("tesseract")
         if not tesseractcmd:
             _deb("tesseractcmd not found")
             return False
-
+    if not os.path.isfile(tesseractcmd):
+        _deb("tesseractcmd parameter [%s] is not a file" % tesseractcmd)
+        return False
+    
     # Check input format
     base,ext = os.path.splitext(path)
     ext = ext.lower()
