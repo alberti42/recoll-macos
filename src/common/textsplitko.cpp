@@ -59,13 +59,13 @@ static const string magicpage{"NEWPPPAGE"};
 
 void TextSplit::koStaticConfInit(RclConfig *config, const string& tagger)
 {
-#ifdef _WIN32
-    o_cmdpath = config->findFilter("python");
-    o_cmdargs.clear();
-    o_cmdargs.push_back(config->findFilter("kosplitter.py"));
-#else
-    o_cmdpath = config->findFilter("kosplitter.py");
-#endif
+    std::vector<std::string> cmdvec;
+    if (config->pythonCmd("kosplitter.py", cmdvec)) {
+        auto it = cmdvec.begin();
+        o_cmdpath = *it++;
+        o_cmdargs.clear();
+        o_cmdargs.insert(o_cmdargs.end(), it, cmdvec.end());
+    }
     if (tagger == "Okt" || tagger == "Mecab" || tagger == "Komoran") {
         o_taggername = tagger;
         if (tagger == "Komoran")

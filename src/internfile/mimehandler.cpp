@@ -231,27 +231,12 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
                "]: [" << hs << "]\n");
         return 0;
     }
-    MimeHandlerExec *h = multiple ? 
-        new MimeHandlerExecMultiple(cfg, id) :
-        new MimeHandlerExec(cfg, id);
-    vector<string>::iterator it = cmdtoks.begin();
-
-    // Special-case python and perl on windows: we need to also locate the
-    // first argument which is the script name "python somescript.py". 
-    // On Unix, thanks to #!, we usually just run "somescript.py", but need
-    // the same change if we ever want to use the same cmdling as windows
-    if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
-        if (cmdtoks.size() < 2) {
-            LOGERR("mhExecFactory: python/perl cmd: no script?. [" <<
-                   mtype << "]: [" << hs << "]\n");
-        }
-        vector<string>::iterator it1(it);
-        it1++;
-        *it1 = cfg->findFilter(*it1);
+    if (!cfg->processFilterCmd(cmdtoks)) {
+        return nullptr;
     }
-            
-    h->params.push_back(cfg->findFilter(*it++));
-    h->params.insert(h->params.end(), it, cmdtoks.end());
+    MimeHandlerExec *h = multiple ? new MimeHandlerExecMultiple(cfg, id) :
+        new MimeHandlerExec(cfg, id);
+    h->params = cmdtoks;
 
     // Handle additional attributes. We substitute the semi-colons
     // with newlines and use a ConfSimple
@@ -261,16 +246,9 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     if (attrs.get(cstr_dj_keymt, value))
         h->cfgFilterOutputMtype = stringtolower((const string&)value);
 
-#if 0
-    string scmd;
-    for (it = h->params.begin(); it != h->params.end(); it++) {
-        scmd += string("[") + *it + "] ";
-    }
-    LOGDEB("mhExecFactory:mt [" << mtype << "] cfgmt [" <<
-           h->cfgFilterOutputMtype << "] cfgcs [" <<
-           h->cfgFilterOutputCharset << "] cmd: [" << scmd << "]\n");
-#endif
-
+    LOGDEB2("mhExecFactory:mt [" << mtype << "] cfgmt [" <<
+            h->cfgFilterOutputMtype << "] cfgcs ["<<h->cfgFilterOutputCharset <<
+            "] cmd: [" << stringsToString(h->params) << "]\n");
     return h;
 }
 

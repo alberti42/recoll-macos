@@ -66,22 +66,9 @@ bool runWebFilesMoverScript(RclConfig *config)
             downloadsdir = path_tildexpand("~/Downloads");
         }
     }
-    static string cmdpath;
-    vector<string> args;
-#ifdef _WIN32
-    const static string cmdnm{"python"};
-    args.push_back(config->findFilter("recoll-we-move-files.py"));
-#else
-    const static string cmdnm{"recoll-we-move-files.py"};
-#endif
-    if (cmdpath.empty()) {
-        cmdpath = config->findFilter(cmdnm);
-        if (cmdpath.empty()) {
-            LOGERR("runWFMoverScript: recoll-we-move-files.py not found\n");
-            return false;
-        }
-    }
-
+    vector<string> cmdvec;
+    config->pythonCmd("recoll-we-move-files.py", cmdvec);
+    
     /* Arrange to not actually run the script if the directory did not change */
     static time_t dirmtime;
     time_t ndirmtime = 0;
@@ -100,7 +87,7 @@ bool runWebFilesMoverScript(RclConfig *config)
            are created during the run. */
         dirmtime = ndirmtime;
         ExecCmd cmd;
-        int status = cmd.doexec(cmdpath, args);
+        int status = cmd.doexec1(cmdvec);
         return status == 0;
     }
     return true;

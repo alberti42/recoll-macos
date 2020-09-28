@@ -1677,6 +1677,43 @@ string RclConfig::findFilter(const string &icmd) const
     }
 }
 
+bool RclConfig::processFilterCmd(std::vector<std::string>& cmd) const
+{
+    LOGDEB0("processFilterCmd: in: " << stringsToString(cmd) << "\n");
+    auto it = cmd.begin();
+
+    // Special-case python and perl on windows: we need to also locate the
+    // first argument which is the script name "python somescript.py". 
+    // On Unix, thanks to #!, we usually just run "somescript.py", but need
+    // the same change if we ever want to use the same cmd line as windows
+    bool hasinterp = !stringlowercmp("python", *it) ||
+        !stringlowercmp("perl", *it);
+
+    *it++ = findFilter(*it);
+    if (hasinterp) {
+        if (cmd.size() < 2) {
+            LOGERR("processFilterCmd: python/perl cmd: no script?. [" <<
+                   stringsToString(cmd) << "]\n");
+            return false;
+        } else {
+            *it = findFilter(*it);
+        }
+    }
+    LOGDEB0("processFilterCmd: out: " << stringsToString(cmd) << "\n");
+    return true;
+}
+
+bool RclConfig::pythonCmd(const std::string& scriptname,
+                          std::vector<std::string>& cmd) const
+{
+#ifdef _WIN32
+    cmd = {"python", scriptname};
+#else
+    cmd = {scriptname};
+#endif
+    return processFilterCmd(cmd);
+}
+
 /** 
  * Return decompression command line for given mime type
  */
@@ -1693,32 +1730,14 @@ bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd) const
         LOGERR("getUncompressor: empty spec for mtype " << mtype << "\n");
         return false;
     }
-    vector<string>::iterator it = tokens.begin();
+    auto it = tokens.begin();
     if (tokens.size() < 2)
         return false;
     if (stringlowercmp("uncompress", *it++)) 
         return false;
     cmd.clear();
-    cmd.push_back(findFilter(*it));
-
-    // Special-case python and perl on windows: we need to also locate the
-    // first argument which is the script name "python somescript.py". 
-    // On Unix, thanks to #!, we usually just run "somescript.py", but need
-    // the same change if we ever want to use the same cmdling as windows
-    if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
-        it++;
-        if (tokens.size() < 3) {
-            LOGERR("getUncpressor: python/perl cmd: no script?. [" <<
-                   mtype << "]\n");
-        } else {
-            *it = findFilter(*it);
-        }
-    } else {
-        it++;
-    }
-    
     cmd.insert(cmd.end(), it, tokens.end());
-    return true;
+    return processFilterCmd(cmd);
 }
 
 static const char blurb0[] = 

@@ -332,6 +332,16 @@ class RclConfig {
     bool getMissingHelperDesc(string&) const;
     void storeMissingHelperDesc(const string &s);
 
+    /** Replace simple command name(s) inside vector with full
+     * paths. May have to replace two if the first entry is an
+     * interpreter name */
+    bool processFilterCmd(std::vector<std::string>& cmd) const;
+
+    /** Build command vector for python script, possibly prepending 
+        interpreter on Windows */
+    bool pythonCmd(
+        const std::string& script,  std::vector<std::string>& cmd) const;
+    
     /** Find exec file for external filter. 
      *
      * If the input is an absolute path, we just return it. Else We
