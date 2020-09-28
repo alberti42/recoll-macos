@@ -75,6 +75,8 @@ extern bool path_isfile(const std::string& path, bool follow = false);
 /// Retrieve file size
 extern long long path_filesize(const std::string& path);
 
+bool path_samefile(const std::string& p1, const std::string& p2);
+
 /// Retrieve essential file attributes. This is used rather than a
 /// bare stat() to ensure consistent use of the time fields (on
 /// windows, we set ctime=mtime as ctime is actually the creation

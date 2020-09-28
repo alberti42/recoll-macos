@@ -969,6 +969,26 @@ long long path_filesize(const string& path)
     return (long long)st.st_size;
 }
 
+bool path_samefile(const std::string& p1, const std::string& p2)
+{
+#ifdef _WIN32
+    std::string cp1, cp2;
+    cp1 = path_canon(p1);
+    cp2 = path_canon(p2);
+    return !cp1.compare(cp2);
+#else
+    struct stat st1, st2;
+    if (stat(p1.c_str(), &st1))
+        return false;
+    if (stat(p2.c_str(), &st2))
+        return false;
+    if (st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino) {
+        return true;
+    }
+    return false;
+#endif
+}
+
 int path_fileprops(const std::string path, struct PathStat *stp, bool follow)
 {
     if (nullptr == stp) {

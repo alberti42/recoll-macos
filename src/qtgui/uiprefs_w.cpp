@@ -255,7 +255,7 @@ void UIPrefsDialog::setFromPrefs()
     for (const auto& dbdir : prefs.activeExtraDbs) {
         auto items =
             idxLV->findItems(path2qs(dbdir), 
-                              Qt::MatchFixedString|Qt::MatchCaseSensitive);
+                             Qt::MatchFixedString|Qt::MatchCaseSensitive);
         for (auto& entry : items) {
             entry->setCheckState(Qt::Checked);
         }
@@ -589,23 +589,6 @@ void UIPrefsDialog::delExtraDbPB_clicked()
     }
 }
 
-static bool samedir(const string& dir1, const string& dir2)
-{
-#ifdef _WIN32
-    return !dir1.compare(dir2);
-#else
-    struct stat st1, st2;
-    if (stat(dir1.c_str(), &st1))
-        return false;
-    if (stat(dir2.c_str(), &st2))
-        return false;
-    if (st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino) {
-        return true;
-    }
-    return false;
-#endif
-}
-
 void UIPrefsDialog::on_showTrayIconCB_clicked()
 {
     if (!showTrayIconCB->checkState()) {
@@ -658,7 +641,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
                                 " stripping option"));
         return;
     }
-    if (samedir(dbdir, theconfig->getDbDir())) {
+    if (path_samefile(dbdir, theconfig->getDbDir())) {
         QMessageBox::warning(0, "Recoll", tr("This is the main/local index!"));
         return;
     }
@@ -666,7 +649,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     for (int i = 0; i < idxLV->count(); i++) {
         QListWidgetItem *item = idxLV->item(i);
         string existingdir = qs2path(item->text());
-        if (samedir(dbdir, existingdir)) {
+        if (path_samefile(dbdir, existingdir)) {
             QMessageBox::warning(
                 0, "Recoll", tr("The selected directory is already in the "
                                 "index list"));
