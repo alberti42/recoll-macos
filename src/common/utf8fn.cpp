@@ -37,10 +37,10 @@ string compute_utf8fn(const RclConfig *config, const string& ifn, bool simple)
     string utf8fn; 
     int ercnt;
     if (!transcode(lfn, utf8fn, charset, "UTF-8", &ercnt)) {
-    LOGERR("compute_utf8fn: fn transcode failure from ["  << charset <<
+        LOGERR("compute_utf8fn: fn transcode failure from ["  << charset <<
                "] to UTF-8 for: [" << lfn << "]\n");
     } else if (ercnt) {
-    LOGDEB("compute_utf8fn: "  << ercnt << " transcode errors from [" <<
+        LOGDEB("compute_utf8fn: "  << ercnt << " transcode errors from [" <<
                charset << "] to UTF-8 for: ["  << lfn << "]\n");
     }
     LOGDEB1("compute_utf8fn: transcoded from ["  << lfn << "] to ["  <<
