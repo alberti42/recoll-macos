@@ -33,6 +33,9 @@ extern std::string path_defaultrecollconfsubdir();
 // Check if path is either non-existing or an empty directory.
 extern bool path_empty(const std::string& path);
 
+/// Where we create the user data subdirs
+extern std::string path_homedata();
+
 /// e.g. /usr/share/recoll. Depends on OS and config
 extern const std::string& path_pkgdatadir();
 

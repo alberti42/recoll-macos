@@ -19,17 +19,10 @@
 
 #include <stdio.h>
 
-#ifdef _MSC_VER
-#include "msvc_dirent.h"
-#else // !_MSC_VER
-#include <dirent.h>
-#endif // _MSC_VER
-
 #include <errno.h>
 #include <fnmatch.h>
 #include <cstring>
 #include <algorithm>
-
 #include <sstream>
 #include <vector>
 #include <deque>
@@ -39,7 +32,6 @@
 #include "log.h"
 #include "pathut.h"
 #include "fstreewalk.h"
-#include "transcode.h"
 
 using namespace std;
 
@@ -329,20 +321,6 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)
     return FtwOk;
 }
 
-#ifdef _WIN32
-#define DIRENT _wdirent
-#define DIRHDL _WDIR
-#define OPENDIR _wopendir
-#define CLOSEDIR _wclosedir
-#define READDIR _wreaddir
-#else
-#define DIRENT dirent
-#define DIRHDL DIR
-#define OPENDIR opendir
-#define CLOSEDIR closedir
-#define READDIR readdir
-#endif
-
 // Note that the 'norecurse' flag is handled as part of the directory read. 
 // This means that we always go into the top 'walk()' parameter if it is a 
 // directory, even if norecurse is set. Bug or Feature ?
@@ -391,20 +369,9 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     }
 #endif
 
-    SYSPATH(top, systop);
-    DIRHDL *d = OPENDIR(systop);
-    if (nullptr == d) {
+    PathDirContents dc(top);
+    if (!dc.opendir()) {
         data->logsyserr("opendir", top);
-#ifdef _WIN32
-        int rc = GetLastError();
-        LOGERR("opendir failed: LastError " << rc << endl);
-        if (rc == ERROR_NETNAME_DELETED) {
-            // 64: share disconnected.
-            // Not too sure of the errno in this case.
-            // Make sure it's not one of the permissible ones
-            errno = ENODEV;
-        }
-#endif
         switch (errno) {
         case EPERM:
         case EACCES:
@@ -421,25 +388,20 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
         }
     }
 
-    struct DIRENT *ent;
-    while (errno = 0, ((ent = READDIR(d)) != 0)) {
+    const struct PathDirContents::Entry *ent;
+    while (errno = 0, ((ent = dc.readdir()) != nullptr)) {
         string fn;
         struct PathStat st;
-#ifdef _WIN32
-        string sdname;
-        if (!wchartoutf8(ent->d_name, sdname)) {
-            LOGERR("wchartoutf8 failed in " << top << endl);
+        const string& dname{ent->d_name};
+        if (dname.empty()) {
+            // ???
             continue;
         }
-        const char *dname = sdname.c_str();
-#else
-        const char *dname = ent->d_name;
-#endif
         // Maybe skip dotfiles
         if ((data->options & FtwSkipDotFiles) && dname[0] == '.')
             continue;
         // Skip . and ..
-        if (!strcmp(dname, ".") || !strcmp(dname, "..")) 
+        if (dname == "." || dname == "..") 
             continue;
 
         // Skipped file names match ?
@@ -530,8 +492,6 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     }
 
 out:
-    if (d)
-        CLOSEDIR(d);
     return status;
 }
 

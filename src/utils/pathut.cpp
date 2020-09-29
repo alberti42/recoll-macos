@@ -68,9 +68,15 @@
 #include <vector>
 #include <fcntl.h>
 
-#ifndef PRETEND_USE
-#define PRETEND_USE(expr) ((void)(expr))
-#endif
+// Listing directories: we include the normal dirent.h on Unix-derived
+// systems, and on MinGW, where it comes with a supplemental wide char
+// interface. When building with MSVC, we use our bundled msvc_dirent.h,
+// which is equivalent to the one in MinGW
+#ifdef _MSC_VER
+#include "msvc_dirent.h"
+#else // !_MSC_VER
+#include <dirent.h>
+#endif // _MSC_VER
 
 #ifdef _WIN32
 
@@ -115,14 +121,17 @@
 #define LSTAT _wstati64
 #define STATBUF _stati64
 #define ACCESS _waccess
-#define OPENDIR _wopendir
+#define OPENDIR ::_wopendir
+#define DIRHDL _WDIR
 #define CLOSEDIR _wclosedir
-#define READDIR _wreaddir
+#define READDIR ::_wreaddir
+#define REWINDDIR ::_wrewinddir
 #define DIRENT _wdirent
 #define DIRHDL _WDIR
 #define MKDIR(a,b) _wmkdir(a)
 #define OPEN ::_wopen
 #define UNLINK _wunlink
+#define RMDIR _wrmdir
 #define CHDIR _wchdir
 
 #define ftruncate _chsize_s
@@ -149,24 +158,21 @@
 #define LSTAT lstat
 #define STATBUF stat
 #define ACCESS access
-#define OPENDIR opendir
+#define OPENDIR ::opendir
+#define DIRHDL DIR
 #define CLOSEDIR closedir
-#define READDIR readdir
+#define READDIR ::readdir
+#define REWINDDIR ::rewinddir
 #define DIRENT dirent
 #define DIRHDL DIR
 #define MKDIR(a,b) mkdir(a,b)
 #define O_BINARY 0
 #define OPEN ::open
 #define UNLINK ::unlink
+#define RMDIR ::rmdir
 #define CHDIR ::chdir
 
 #endif /* !_WIN32 */
-
-#ifdef _MSC_VER
-#include <msvc_dirent.h>
-#else // !_MSC_VER
-#include <dirent.h>
-#endif // _MSC_VER
 
 using namespace std;
 
@@ -645,28 +651,6 @@ string path_home()
 #endif
 }
 
-// The default place to store the default config and other stuff (e.g webqueue)
-string path_homedata()
-{
-#ifdef _WIN32
-    wchar_t *cp;
-    SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &cp);
-    string dir;
-    if (cp != 0) {
-        wchartoutf8(cp, dir);
-    }
-    if (!dir.empty()) {
-        dir = path_canon(dir);
-    } else {
-        dir = path_cat(path_home(), "AppData/Local/");
-    }
-    return dir;
-#else
-    // We should use an xdg-conforming location, but, history...
-    return path_home();
-#endif
-}
-
 string path_tildexpand(const string& s)
 {
     if (s.empty() || s[0] != '~') {
@@ -889,6 +873,12 @@ bool path_unlink(const std::string& path)
     return UNLINK(syspath) == 0;
 }
 
+bool path_rmdir(const std::string& path)
+{
+    SYSPATH(path, syspath);
+    return RMDIR(syspath) == 0;
+}
+
 #if !defined(__GNUC__) || __GNUC__ > 4 || defined(__clang__)
 // Not sure what g++ version supports fstream assignment but 4.9
 // (jessie) certainly does not
@@ -1031,6 +1021,11 @@ bool path_readable(const string& path)
 {
     SYSPATH(path, syspath);
     return ACCESS(syspath, R_OK) == 0;
+}
+bool path_access(const std::string& path, int mode)
+{
+    SYSPATH(path, syspath);
+    return ACCESS(syspath, mode) == 0;
 }
 
 /* There is a lot of vagueness about what should be percent-encoded or
@@ -1296,56 +1291,105 @@ ParsedUri::ParsedUri(std::string uri)
     }
 }
 
+/// Directory reading interface. UTF-8 on Windows.
+class PathDirContents::Internal {
+public:
+    ~Internal() {
+        if (dirhdl) {
+            CLOSEDIR(dirhdl);
+        }
+    }
+        
+    DIRHDL *dirhdl{nullptr};
+    PathDirContents::Entry entry;
+    std::string dirpath;
+};
+
+PathDirContents::PathDirContents(const std::string& dirpath)
+{
+    m = new Internal;
+    m->dirpath = dirpath;
+}
+
+PathDirContents::~PathDirContents()
+{
+    delete m;
+}
+
+bool PathDirContents::opendir()
+{
+    if (m->dirhdl) {
+        CLOSEDIR(m->dirhdl);
+        m->dirhdl = nullptr;
+    }
+    SYSPATH(m->dirpath, sysdir);
+    m->dirhdl = OPENDIR(sysdir);
+#ifdef _WIN32
+    int rc = GetLastError();
+    LOGERR("opendir failed: LastError " << rc << endl);
+    if (rc == ERROR_NETNAME_DELETED) {
+        // 64: share disconnected.
+        // Not too sure of the errno in this case.
+        // Make sure it's not one of the permissible ones
+        errno = ENODEV;
+    }
+#endif
+    return ! (nullptr == m->dirhdl);
+}
+
+void PathDirContents::rewinddir()
+{
+    REWINDDIR(m->dirhdl);
+}
+
+const struct PathDirContents::Entry* PathDirContents::readdir()
+{
+    struct DIRENT *ent = READDIR(m->dirhdl);
+    if (nullptr == ent) {
+        return nullptr;
+    }
+#ifdef _WIN32
+    string sdname;
+    if (!wchartoutf8(ent->d_name, sdname)) {
+        LOGERR("wchartoutf8 failed for " << ent->d_name << endl);
+        return nullptr;
+    }
+    const char *dname = sdname.c_str();
+#else
+    const char *dname = ent->d_name;
+#endif
+    m->entry.d_name = dname;
+    return &m->entry;
+}
+
+
 bool listdir(const string& dir, string& reason, set<string>& entries)
 {
-    struct STATBUF st;
-    int statret;
     ostringstream msg;
-    DIRHDL *d = 0;
-
-    SYSPATH(dir, sysdir);
-
-    statret = LSTAT(sysdir, &st);
-    if (statret == -1) {
-        msg << "listdir: cant stat " << dir << " errno " <<  errno;
-        goto out;
-    }
-    if (!S_ISDIR(st.st_mode)) {
+    PathDirContents dc(dir);
+    
+    if (!path_isdir(dir)) {
         msg << "listdir: " << dir <<  " not a directory";
         goto out;
     }
-    if (ACCESS(sysdir, R_OK) < 0) {
+    if (!path_access(dir, R_OK)) {
         msg << "listdir: no read access to " << dir;
         goto out;
     }
 
-    d = OPENDIR(sysdir);
-    if (d == 0) {
+    if (!dc.opendir()) {
         msg << "listdir: cant opendir " << dir << ", errno " << errno;
         goto out;
     }
-
-    struct DIRENT *ent;
-    while ((ent = READDIR(d)) != 0) {
-#ifdef _WIN32
-        string sdname;
-        if (!wchartoutf8(ent->d_name, sdname)) {
+    const struct PathDirContents::Entry *ent;
+    while ((ent = dc.readdir()) != 0) {
+        if (ent->d_name == "." || ent->d_name == "..") {
             continue;
         }
-        const char *dname = sdname.c_str();
-#else
-        const char *dname = ent->d_name;
-#endif
-        if (!strcmp(dname, ".") || !strcmp(dname, "..")) {
-            continue;
-        }
-        entries.insert(dname);
+        entries.insert(ent->d_name);
     }
 
 out:
-    if (d) {
-        CLOSEDIR(d);
-    }
     reason = msg.str();
     if (reason.empty()) {
         return true;

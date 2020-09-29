@@ -194,6 +194,28 @@ static bool path_gettempfilename(string& filename, string& reason)
 }
 #endif // posix
 
+// The default place to store the default config and other stuff (e.g webqueue)
+string path_homedata()
+{
+#ifdef _WIN32
+    wchar_t *cp;
+    SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &cp);
+    string dir;
+    if (cp != 0) {
+        wchartoutf8(cp, dir);
+    }
+    if (!dir.empty()) {
+        dir = path_canon(dir);
+    } else {
+        dir = path_cat(path_home(), "AppData/Local/");
+    }
+    return dir;
+#else
+    // We should use an xdg-conforming location, but, history...
+    return path_home();
+#endif
+}
+
 // Check if path is either non-existing or an empty directory.
 bool path_empty(const string& path)
 {

@@ -19,140 +19,72 @@
 
 #include "wipedir.h"
 
-#include <stdio.h>
-#include <errno.h>
-
-#include <cstring>
 #include <string>
 
 #include "log.h"
 #include "pathut.h"
 
-#ifdef _MSC_VER
-#include "msvc_dirent.h"
-#else // !_MSC_VER
-#include <dirent.h>
-#endif // _MSC_VER
-
 #ifdef _WIN32
-#include "safefcntl.h"
-#include "safeunistd.h"
-#include "safewindows.h"
-#include "safesysstat.h"
-#include "transcode.h"
-
-#define STAT _wstati64
-#define LSTAT _wstati64
-#define STATBUF _stati64
-#define ACCESS _waccess
-#define OPENDIR _wopendir
-#define CLOSEDIR _wclosedir
-#define READDIR _wreaddir
-#define DIRENT _wdirent
-#define DIRHDL _WDIR
-#define UNLINK _wunlink
-#define RMDIR _wrmdir
-
+#  include "safeunistd.h"
 #else // Not windows ->
-
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-
-#define STAT stat
-#define LSTAT lstat
-#define STATBUF stat
-#define ACCESS access
-#define OPENDIR opendir
-#define CLOSEDIR closedir
-#define READDIR readdir
-#define DIRENT dirent
-#define DIRHDL DIR
-#define UNLINK unlink
-#define RMDIR rmdir
+#  include <unistd.h>
 #endif
 
-using namespace std;
 
-int wipedir(const string& dir, bool selfalso, bool recurse)
+int wipedir(const std::string& dir, bool selfalso, bool recurse)
 {
-    struct STATBUF st;
-    int statret;
     int ret = -1;
 
-    SYSPATH(dir, sysdir);
-    statret = LSTAT(sysdir, &st);
-    if (statret == -1) {
-    LOGSYSERR("wipedir", "stat", dir);
-    return -1;
-    }
-    if (!S_ISDIR(st.st_mode)) {
-    LOGERR("wipedir: " << dir << " not a directory\n");
-    return -1;
+    if (!path_isdir(dir)) {
+        LOGERR("wipedir: " << dir << " not a directory\n");
+        return -1;
     }
 
-    if (ACCESS(sysdir, R_OK|W_OK|X_OK) < 0) {
-    LOGSYSERR("wipedir", "access", dir);
-    return -1;
+    if (!path_access(dir, R_OK|W_OK|X_OK)) {
+        LOGSYSERR("wipedir", "access", dir);
+        return -1;
     }
 
-    DIRHDL *d = OPENDIR(sysdir);
-    if (d == 0) {
-    LOGSYSERR("wipedir", "opendir", dir);
-    return -1;
+    PathDirContents dc(dir);
+    if (!dc.opendir()) {
+        LOGSYSERR("wipedir", "opendir", dir);
+        return -1;
     }
     int remaining = 0;
-    struct DIRENT *ent;
-    while ((ent = READDIR(d)) != 0) {
-#ifdef _WIN32
-        string sdname;
-        if (!wchartoutf8(ent->d_name, sdname)) {
+    const struct PathDirContents::Entry *ent;
+    while ((ent = dc.readdir()) != 0) {
+        const std::string& dname{ent->d_name};
+        if (dname == "." || dname == "..")
             continue;
-        }
-        const char *dname = sdname.c_str();
-#else
-        const char *dname = ent->d_name;
-#endif
-    if (!strcmp(dname, ".") || !strcmp(dname, "..")) 
-        continue;
 
-    string fn = path_cat(dir, dname);
+        std::string fn = path_cat(dir, dname);
 
-        SYSPATH(fn, sysfn);
-    struct STATBUF st;
-    int statret = LSTAT(sysfn, &st);
-    if (statret == -1) {
-        LOGSYSERR("wipedir", "stat", fn);
-        goto out;
-    }
-    if (S_ISDIR(st.st_mode)) {
-        if (recurse) {
-        int rr = wipedir(fn, true, true);
-        if (rr == -1) 
-            goto out;
-        else 
-            remaining += rr;
+        if (path_isdir(fn)) {
+            if (recurse) {
+                int rr = wipedir(fn, true, true);
+                if (rr == -1) 
+                    goto out;
+                else 
+                    remaining += rr;
+            } else {
+                remaining++;
+            }
         } else {
-        remaining++;
+            if (!path_unlink(fn)) {
+                LOGSYSERR("wipedir", "unlink", fn);
+                goto out;
+            }
         }
-    } else {
-        if (UNLINK(sysfn) < 0) {
-        LOGSYSERR("wipedir", "unlink", fn);
-        goto out;
-        }
-    }
     }
 
     ret = remaining;
     if (selfalso && ret == 0) {
-    if (RMDIR(sysdir) < 0) {
-        LOGSYSERR("wipedir", "rmdir", dir);
-        ret = -1;
-    }
+        if (!path_rmdir(dir)) {
+            LOGSYSERR("wipedir", "rmdir", dir);
+            ret = -1;
+        }
     }
 
 out:
-    if (d)
-    CLOSEDIR(d);
     return ret;
 }

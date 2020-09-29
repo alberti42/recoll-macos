@@ -2,48 +2,88 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <getopt.h>
 
 #include <iostream>
+#include <map>
 
 using namespace std;
-static const char *thisprog;
 
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_r     0x2 
-#define OPT_s     0x4 
-static char usage [] =
-    "pathut\n"
-    ;
-static void
-Usage(void)
+static std::map<std::string, int> options {
+    {"path_home", 0},
+    {"path_tildexpand", 0},
+    {"listdir", 0},
+        };
+
+static const char *thisprog;
+static void Usage(void)
 {
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    string sopts;
+    for (const auto& opt: options) {
+        sopts += "--" + opt.first + "\n";
+    }
+    fprintf(stderr, "%s: usage: %s\n%s", thisprog, thisprog, sopts.c_str());
     exit(1);
 }
 
-int main(int argc, const char **argv)
+int main(int argc, char **argv)
 {
-    thisprog = argv[0];
-    argc--; argv++;
+    thisprog = *argv;
+    std::vector<struct option> long_options;
 
-    while (argc > 0 && **argv == '-') {
-        (*argv)++;
-        if (!(**argv))
-            /* Cas du "adb - core" */
-            Usage();
-        while (**argv)
-            switch (*(*argv)++) {
-            default: Usage();   break;
-            }
-    b1: argc--; argv++;
+    for (auto& entry : options) {
+        struct option opt;
+        opt.name = entry.first.c_str();
+        opt.has_arg = 0;
+        opt.flag = &entry.second;
+        opt.val = 1;
+        long_options.push_back(opt);
     }
+    long_options.push_back({0, 0, 0, 0});
 
-    if (argc != 0)
+    while (getopt_long(argc, argv, "", &long_options[0], nullptr) != -1) {
+    }
+    if (options["path_home"]) {
+        if (optind != argc) {
+            cerr << "Usage: trsmallut --path_home\n";
+            return 1;
+        }
+        cout << "path_home() -> [" << path_home() << "]\n";
+    } else if (options["path_tildexpand"]) {
+        if (optind >= argc) {
+            cerr << "Usage: trsmallut --path_tildexpand <arg>\n";
+            return 1;
+        }
+        string s = argv[optind];
+        argc--;
+        if (optind != argc) {
+            return 1;
+        }
+        cout << "path_tildexpand(" << s << ") -> [" << path_tildexpand(s) <<
+            "]\n";
+    } else if (options["listdir"]) {
+        if (optind >= argc) {
+            cerr << "Usage: trsmallut --listdir <arg>\n";
+            return 1;
+        }
+        std::string path = argv[optind];
+        argc--;
+        if (optind != argc) {
+            cerr << "Usage: trsmallut --listdir <arg>\n";
+            return 1;
+        }
+        std::string reason;
+        std::set<std::string> entries;
+        if (!listdir(path, reason, entries)) {
+            std::cerr<< "listdir(" << path << ") failed : " << reason << "\n";
+            return 1;
+        }
+        for (const auto& entry : entries) {
+            cout << entry << "\n";
+        }
+    } else {
         Usage();
-
-    cout << "path_home() -> [" << path_home() << "]\n";
-    cout << "path_tildexpand(~) -> [" << path_tildexpand("~") << "]\n";
+    }
 
     return 0;
 }
