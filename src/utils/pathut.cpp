@@ -879,29 +879,7 @@ bool path_rmdir(const std::string& path)
     return RMDIR(syspath) == 0;
 }
 
-#if !defined(__GNUC__) || __GNUC__ > 4 || defined(__clang__)
-// Not sure what g++ version supports fstream assignment but 4.9
-// (jessie) certainly does not
-std::fstream path_open(const std::string& path, int mode)
-{
-#if defined(_WIN32) && defined (_MSC_VER)
-    // MSC STL has support for using wide chars in fstream
-    // constructor. We need this if, e.g. the user name/home directory
-    // is not ASCII. Actually don't know how to do this with gcc
-    wchar_t wpath[MAX_PATH + 1];
-    utf8towchar(path, wpath, MAX_PATH);
-    std::fstream ret(wpath, std::ios_base::openmode(mode));
-    if (!ret.is_open()) {
-        LOGERR("path_open("<< path << ", "<< mode <<") errno " << errno <<"\n");
-    }
-    return ret;
-#else
-    return std::fstream(path, std::ios_base::openmode(mode));
-#endif
-}
-#endif
-
-bool path_open(const std::string& path, int mode, std::fstream& outstream)
+bool path_streamopen(const std::string& path, int mode, std::fstream& outstream)
 {
 #if defined(_WIN32) && defined (_MSC_VER)
     // MSC STL has support for using wide chars in fstream
@@ -910,15 +888,14 @@ bool path_open(const std::string& path, int mode, std::fstream& outstream)
     wchar_t wpath[MAX_PATH + 1];
     utf8towchar(path, wpath, MAX_PATH);
     outstream.open(wpath, std::ios_base::openmode(mode));
+#else
+    outstream.open(path, std::ios_base::openmode(mode));
+#endif
     if (!outstream.is_open()) {
-        LOGERR("path_open("<< path << ", "<< mode <<") errno " << errno <<"\n");
+        LOGERR("path_streamopen("<<path<< ", "<<mode<<") errno "<<errno<<"\n");
         return false;
     }
     return true;
-#else
-    outstream.open(path, std::ios_base::openmode(mode));
-    return outstream.is_open();
-#endif
 }
 
 bool path_isdir(const string& path, bool follow)

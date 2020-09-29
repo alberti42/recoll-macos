@@ -36,9 +36,9 @@ using namespace std;
 void WinSchedToolW::init()
 {
     if (!theconfig) {
-    QMessageBox::warning(0, tr("Error"), 
-                 tr("Configuration not initialized"));
-    return;
+        QMessageBox::warning(0, tr("Error"), 
+                             tr("Configuration not initialized"));
+        return;
     }
 
     connect(startPB, SIGNAL(clicked()), this, SLOT(startWinScheduler()));
@@ -55,9 +55,15 @@ void WinSchedToolW::init()
     LOGDEB("WinSchedTool: batch file " << batchfile << endl);
 
     if (!path_exists(batchfile)) {
-        std::fstream fp = path_open(batchfile, ios::out|ios::trunc);
-        fp << "\"" << recollindex << "\" -c \"" << confdir << "\"\n";
-        fp.close();
+        std::fstream fp;
+        if (path_streamopen(batchfile, ios::out|ios::trunc, fp)) {
+            fp << "\"" << recollindex << "\" -c \"" << confdir << "\"\n";
+            fp.close();
+        } else {
+            QMessageBox::warning(0, tr("Error"), 
+                                 tr("Could not create batch file"));
+            return;
+        }
     }
     QString blurb = tr(
         "<h3>Recoll indexing batch scheduling</h3>"

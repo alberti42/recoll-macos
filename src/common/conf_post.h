@@ -48,8 +48,12 @@ typedef int ssize_t;
 #define strcasecmp _stricmp
 #define chdir _chdir
 
+#ifndef R_OK
 #define R_OK 4
+#endif
+#ifndef W_OK
 #define W_OK 2
+#endif
 #ifndef X_OK
 #define X_OK 4
 #endif
@@ -59,6 +63,8 @@ typedef int ssize_t;
 
 #endif // _WIN32
 
-#define PRETEND_USE(expr) ((void)(expr))
+#ifndef PRETEND_USE
+#  define PRETEND_USE(expr) ((void)(expr))
+#endif /* PRETEND_USE */
 
 #endif /* INCLUDED */

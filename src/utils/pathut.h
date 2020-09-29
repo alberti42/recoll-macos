@@ -181,8 +181,7 @@ bool path_rmdir(const std::string& path);
  *
  * @param path an utf-8 file path.
  * @param mode is an std::fstream mode (ios::in etc.) */
-extern std::fstream path_open(const std::string& path, int mode);
-extern bool path_open(
+extern bool path_streamopen(
     const std::string& path, int mode, std::fstream& outstream);
 
 /// Encode according to rfc 1738

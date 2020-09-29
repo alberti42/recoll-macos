@@ -284,8 +284,8 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
             // Force Chert format, don't store the text.
             string stub = path_cat(m_rcldb->m_config->getConfDir(),
                                    "xapian.stub");
-            std::fstream fp = path_open(stub, std::ios::out|std::ios::trunc);
-            if (!fp.is_open()) {
+            std::fstream fp;
+            if (!path_streamopen(stub, std::ios::out|std::ios::trunc, fp)) {
                 throw(string("Can't create ") + stub);
             }
             fp << "chert " << dir << "\n";

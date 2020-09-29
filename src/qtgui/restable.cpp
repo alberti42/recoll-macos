@@ -807,8 +807,8 @@ void ResTable::saveAsCSV()
     if (s.isEmpty())
         return;
     std::string tofile = qs2path(s);
-    std::fstream fp = path_open(tofile, std::ios::out|std::ios::trunc);
-    if (!fp.is_open()) {
+    std::fstream fp;
+    if (!path_streamopen(tofile, std::ios::out|std::ios::trunc,fp)) {
         QMessageBox::warning(0, "Recoll", 
                              tr("Can't open/create file: ") + s);
         return;

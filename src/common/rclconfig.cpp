@@ -938,8 +938,8 @@ bool RclConfig::getMissingHelperDesc(string& out) const
 void RclConfig::storeMissingHelperDesc(const string &s)
 {
     string fmiss = path_cat(getCacheDir(), "missing");
-    fstream fp = path_open(fmiss, ios::trunc | ios::out);
-    if (fp.is_open()) {
+    fstream fp;
+    if (path_streamopen(fmiss, ios::trunc | ios::out, fp)) {
         fp << s;
     }
 }
@@ -1787,8 +1787,8 @@ bool RclConfig::initUserConfig()
     for (int i = 0; i < ncffiles; i++) {
         string dst = path_cat(m_confdir, string(configfiles[i])); 
         if (!path_exists(dst)) {
-            fstream output = path_open(dst, ios::out);
-            if (output.is_open()) {
+            fstream output;
+            if (path_streamopen(dst, ios::out, output)) {
                 output << blurb << "\n";
                 if (!strcmp(configfiles[i], "recoll.conf")) {
                     // Add improved unac_except_trans for some languages

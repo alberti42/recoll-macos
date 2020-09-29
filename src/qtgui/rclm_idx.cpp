@@ -234,7 +234,7 @@ bool RclMain::maybeArgsToFile(vector<string>& args)
     string s;
     stringsToString(args, s);
     fstream fout;
-    if (!path_open(m_idxargstmp->filename(), ios::out|ios::trunc, fout)) {
+    if (!path_streamopen(m_idxargstmp->filename(), ios::out|ios::trunc, fout)) {
         QMessageBox::warning(
             0, "Recoll", tr("Could not start recollindex (temp file error)"));
         return false;

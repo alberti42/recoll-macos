@@ -1158,8 +1158,8 @@ void RclMain::exportSimpleSearchHistory()
     }
     string path = qs2utf8s(dialog.selectedFiles().value(0));
     LOGDEB("Chosen path: " << path << "\n");
-    std::fstream fp = path_open(path, std::ios::out | std::ios::trunc);
-    if (!fp.is_open()) {
+    std::fstream fp;
+    if (!path_streamopen(path, std::ios::out | std::ios::trunc, fp)) {
         QMessageBox::warning(0, "Recoll", tr("Could not open/create file"));
         return;
     }
