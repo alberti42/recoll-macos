@@ -1303,16 +1303,18 @@ bool PathDirContents::opendir()
     SYSPATH(dp, sysdir);
     m->dirhdl = OPENDIR(sysdir);
 #ifdef _WIN32
-    int rc = GetLastError();
-    LOGERR("opendir failed: LastError " << rc << endl);
-    if (rc == ERROR_NETNAME_DELETED) {
-        // 64: share disconnected.
-        // Not too sure of the errno in this case.
-        // Make sure it's not one of the permissible ones
-        errno = ENODEV;
+    if (nullptr == m->dirhdl) {
+        int rc = GetLastError();
+        LOGERR("opendir failed: LastError " << rc << endl);
+        if (rc == ERROR_NETNAME_DELETED) {
+            // 64: share disconnected.
+            // Not too sure of the errno in this case.
+            // Make sure it's not one of the permissible ones
+            errno = ENODEV;
+        }
     }
 #endif
-    return ! (nullptr == m->dirhdl);
+    return nullptr != m->dirhdl;
 }
 
 void PathDirContents::rewinddir()
