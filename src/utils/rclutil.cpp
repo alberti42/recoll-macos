@@ -25,6 +25,7 @@
 #include "cstr.h"
 #ifdef _WIN32
 #include "safewindows.h"
+#include <Shlobj.h>
 #else
 #include <sys/param.h>
 #include <pwd.h>

@@ -1299,7 +1299,8 @@ bool PathDirContents::opendir()
         CLOSEDIR(m->dirhdl);
         m->dirhdl = nullptr;
     }
-    SYSPATH(m->dirpath, sysdir);
+    const std::string& dp{m->dirpath};
+    SYSPATH(dp, sysdir);
     m->dirhdl = OPENDIR(sysdir);
 #ifdef _WIN32
     int rc = GetLastError();
