@@ -28,16 +28,16 @@ BUILD=MSVC
 if test $BUILD = MSVC ; then
     # Recoll src tree
     RCL=/c/users/bill/documents/recoll/src/
+    PYRECOLL=${RCL}/python/recoll/
     # Recoll dependancies
     RCLDEPS=/c/users/bill/documents/recolldeps/
-    QTA=Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release
     LIBXML=${RCLDEPS}/msvc/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.dll
     LIBXSLT=${RCLDEPS}/msvc/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.dll
-    LIBICONV=${RCLDEPS}/msvc/build-libiconv-${QTA}/libiconv.dll
     ZLIB=${RCLDEPS}/msvc/zlib-1.2.11
-    QTBIN=C:/Qt/5.14.1/msvc2017/bin
-    MINGWBIN=c:/Qt/5.14.1/mingw73_32/bin/
-    PYRECOLL=${RCL}/python/recoll/
+    # Qt
+    QTA=Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release
+    QTBIN=C:/Qt/5.14.2/msvc2017/bin
+    MINGWBIN=C:/Qt/Tools/mingw730_32/bin/
 else
     # Recoll src tree
     RCL=/c/recoll/src/
