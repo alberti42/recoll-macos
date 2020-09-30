@@ -793,9 +793,9 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     int flags = CREATE_NEW_PROCESS_GROUP | CREATE_UNICODE_ENVIRONMENT;
     // Create the child process. 
     LOGDEB("ExecCmd:startExec: cmdline [" << cmdline << "]\n");
-    SYSPATH(cmdline, wcmdline);
+    auto wcmdline = utf8towchar(cmdline);
     bSuccess = CreateProcessW(NULL,         // app name
-                              wcmdline,     // command line
+                              wcmdline.get(),     // command line
                               NULL,         // process security attributes
                               NULL,         // primary thread security attrs
                               TRUE,         // handles are inherited

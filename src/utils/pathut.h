@@ -123,14 +123,10 @@ extern int path_fileprops(const std::string path, struct PathStat *stp,
 extern std::string path_PATHsep();
 
 #ifdef _WIN32
-extern bool wchartoutf8(const wchar_t *in, std::string& out, size_t len = 0);
-extern std::string wchartoutf8(const wchar_t *in, size_t len = 0);
-extern bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap);
-#define SYSPATH(PATH, SPATH) wchar_t PATH ## _buf[2048];      \
-    utf8towchar(PATH, PATH ## _buf, 2048);                    \
-    wchar_t *SPATH = PATH ## _buf;
-#else
-#define SYSPATH(PATH, SPATH) const char *SPATH = PATH.c_str()
+bool wchartoutf8(const wchar_t *in, std::string& out, size_t len = 0);
+std::string wchartoutf8(const wchar_t *in, size_t len = 0);
+bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap);
+std::unique_ptr<wchar_t[]> utf8towchar(const std::string& in);
 #endif
 
 /// Directory reading interface. UTF-8 on Windows.

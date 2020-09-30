@@ -78,6 +78,7 @@
 #include <dirent.h>
 #endif // _MSC_VER
 
+
 #ifdef _WIN32
 
 #ifndef _MSC_VER
@@ -134,6 +135,10 @@
 #define RMDIR _wrmdir
 #define CHDIR _wchdir
 
+#define SYSPATH(PATH, SPATH) wchar_t PATH ## _buf[2048];      \
+    utf8towchar(PATH, PATH ## _buf, 2048);                    \
+    wchar_t *SPATH = PATH ## _buf;
+
 #define ftruncate _chsize_s
 
 #ifdef _MSC_VER
@@ -171,6 +176,9 @@
 #define UNLINK ::unlink
 #define RMDIR ::rmdir
 #define CHDIR ::chdir
+
+#define SYSPATH(PATH, SPATH) const char *SPATH = PATH.c_str()
+
 
 #endif /* !_WIN32 */
 
@@ -254,6 +262,31 @@ bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
     }
     out[wcharcnt] = 0;
     return true;
+}
+
+std::unique_ptr<wchar_t[]> utf8towchar(const std::string& in)
+{
+    // Note that as we supply in.size(), mbtowch computes the size
+    // without a terminating 0 (and won't write in the second call of
+    // course). We take this into account by allocating one more and
+    // terminating the output.
+    int wcharcnt = MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(), nullptr, 0);
+    if (wcharcnt <= 0) {
+        LOGERR("utf8towchar: conversion error for [" << in << "]\n");
+        return std::unique_ptr<wchar_t[]>();
+    }
+    auto buf = unique_ptr<wchar_t[]>(new wchar_t[wcharcnt+1]);
+
+    wcharcnt = MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(),
+        buf.get(), wcharcnt);
+    if (wcharcnt <= 0) {
+        LOGERR("utf8towchar: conversion error for [" << in << "]\n");
+        return std::unique_ptr<wchar_t[]>();
+    }
+    buf.get()[wcharcnt] = 0;
+    return buf;
 }
 
 /// Convert \ separators to /
