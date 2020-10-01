@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export TMPDIR=$HOME/tmp
+
 fatal()
 {
     echo $*;exit 1
