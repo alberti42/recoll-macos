@@ -44,10 +44,11 @@ void tryempty()
 
 const char *thisprog;
 static char usage [] =
-                                    "utf8iter [opts] infile outfile\n"
-                                    " converts infile to 32 bits unicode (processor order), for testing\n"
-                                    "-v : print stuff as we go\n"
-                                    ;
+"utf8iter [opts] infile outfile\n"
+" converts infile to 32 bits unicode (processor order), for testing\n"
+"  -v : print stuff as we go\n"
+"-t [-w] [-e] <string> <maxlen> : test truncation\n"
+;
 
 void Usage() {
     fprintf(stderr, "%s:%s\n", thisprog, usage);
@@ -55,9 +56,23 @@ void Usage() {
 }
 static int     op_flags;
 #define OPT_v     0x2 
+#define OPT_t     0x4
+#define OPT_w     0x8
+#define OPT_e     0x10
+
+int trytruncate(std::string s, int maxlen)
+{
+    int flag = 0;
+    if (op_flags & OPT_w)
+        flag |= UTF8T_ATWORD;
+    if (op_flags & OPT_e)
+        flag |= UTF8T_ELLIPSIS;
+    utf8truncate(s, maxlen, flag);
+    std::cout << "Truncation result:[" << s << "]\n";
+    return 0;
+}
 
 FILE *infout = stdout;
-
 int main(int argc, char **argv)
 {
     thisprog = argv[0];
@@ -69,12 +84,23 @@ int main(int argc, char **argv)
             Usage();
         while (**argv)
             switch (*(*argv)++) {
+            case 'e': op_flags |= OPT_e;break;
+            case 't': op_flags |= OPT_t;break;
             case 'v':   op_flags |= OPT_v; break;
-
+            case 'w': op_flags |= OPT_w;break;
             default: Usage();   break;
             }
         argc--;argv++;
     }
+
+    if (op_flags & OPT_t) {
+        if (argc < 2)
+            Usage();
+        std::string s = *argv++;argc--;
+        int maxlen = atoi(*argv++);argc--;
+        return trytruncate(s, maxlen);
+    }
+    
     string infile, outfile;
     if (argc == 2) {
         infile = *argv++;argc--;
