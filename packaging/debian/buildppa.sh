@@ -6,7 +6,7 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.27.6
+RCLVERS=1.27.8
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=1
@@ -50,7 +50,7 @@ debdir=debian
 # 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
 series="xenial bionic focal groovy"
-series=
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -90,7 +90,7 @@ done
 # 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
 series="xenial bionic focal groovy"
-# series=
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}

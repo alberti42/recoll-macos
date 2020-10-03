@@ -1,3 +1,18 @@
+kio-recoll (1.27.8-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * A bug in utf8 truncation could lead to indexing failure by trying to
+    add an excessively long file name term.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 03 Oct 2020 15:23:00 +0200
+
+kio-recoll (1.27.7-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Improve result table display speed for big result sets.
+  * "underscoreasletter" configuration parameter.
+  * Menu entry to switch to dark display from .
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 02 Oct 2020 14:25:00 +0200
+
 kio-recoll (1.27.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Process PDF annotations if the poppler-glib Python bindings are available
