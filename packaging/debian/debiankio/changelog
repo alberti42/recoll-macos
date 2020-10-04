@@ -1,3 +1,9 @@
+kio-recoll (1.27.9-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix bug in result table display.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 04 Oct 2020 20:00:00 +0200
+
 kio-recoll (1.27.8-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * A bug in utf8 truncation could lead to indexing failure by trying to
