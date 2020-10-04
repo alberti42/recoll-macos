@@ -1,3 +1,8 @@
+#
+# Derived from the Fedora .spec, with KIO and chmlib disabled to avoid non
+# standard deps  + small adjustements like specifying python2 explicitely
+#
+
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 
@@ -14,16 +19,15 @@ BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
 # kio
-BuildRequires:  kdelibs4-devel
+#BuildRequires:  kdelibs4-devel
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtwebkit-devel
 BuildRequires:  extra-cmake-modules
-BuildRequires:  kf5-kio-devel
+#BuildRequires:  kf5-kio-devel
 BuildRequires:  python2-devel
 BuildRequires:  python3-devel
 BuildRequires:  xapian-core-devel
 BuildRequires:  zlib-devel
-BuildRequires:  chmlib-devel
 BuildRequires:  libxslt-devel
 Requires:       xdg-utils
 
@@ -33,15 +37,6 @@ other Unix systems. It is based on the powerful Xapian backend, for
 which it provides an easy to use, feature-rich, easy administration
 interface.
 
-%package       kio
-Summary:       KIO support for recoll
-Group:         Applications/Databases
-Requires:      %{name} = %{version}-%{release}
-
-%description   kio
-The recoll KIO slave allows performing a recoll search by entering an
-appropriate URL in a KDE open dialog, or with an HTML-based interface
-displayed in Konqueror.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -55,7 +50,7 @@ LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 install -m755 -D %{SOURCE10} qmake-qt5.sh
 export QMAKE=qmake-qt5
 
-%configure
+%configure --disable-python-chm
 make %{?_smp_mflags}
 
 %install
@@ -67,15 +62,6 @@ desktop-file-install --delete-original \
 
 # use /usr/bin/xdg-open
 rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
-
-# kio_recoll -kde5
-(
-mkdir kde/kioslave/kio_recoll/build && pushd kde/kioslave/kio_recoll/build
-%cmake ..
-make %{?_smp_mflags} VERBOSE=1
-make install DESTDIR=%{buildroot}
-popd
-)
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
 echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
@@ -137,27 +123,16 @@ exit 0
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png
 %{_libdir}/recoll
-%{python_sitearch}/recoll
-%{python_sitearch}/Recoll*.egg-info
+%{python2_sitearch}/recoll
+%{python2_sitearch}/Recoll*.egg-info
 %{python3_sitearch}/recoll
 %{python3_sitearch}/Recoll*.egg-info
-%{python_sitearch}/recollchm
-%{python_sitearch}/recollchm*.egg-info
-%{python3_sitearch}/recollchm
-%{python3_sitearch}/recollchm*.egg-info
 %{_mandir}/man1/%{name}.1*
 %{_mandir}/man1/%{name}q.1*
 %{_mandir}/man1/%{name}index.1*
 %{_mandir}/man1/xadump.1*
 %{_mandir}/man5/%{name}.conf.5*
 
-%files kio
-%license COPYING
-%{_libdir}/qt5/plugins/kio_recoll.so
-%{_datadir}/kio_recoll/help.html
-%{_datadir}/kio_recoll/welcome.html
-%{_datadir}/kservices5/recoll.protocol
-%{_datadir}/kservices5/recollf.protocol
 
 %changelog
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.23.7-2
