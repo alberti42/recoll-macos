@@ -427,15 +427,19 @@ class PDFExtractor:
             for annot_mapping in annot_mappings:
                 atype = annot_mapping.annot.get_annot_type().value_name
                 if atype  != 'POPPLER_ANNOT_LINK':
-                    atext = f.format(
-                        pnum,
-                        annot_mapping.annot.get_modified(),
-                        annot_mapping.annot.get_annot_type().value_nick,
-                        annot_mapping.annot.get_contents()) + "\n"
-                    if pnum in abypage:
-                        abypage[pnum] += atext
-                    else:
-                        abypage[pnum] = atext
+                    # Catch because we sometimes get None values
+                    try:
+                        atext = f.format(
+                            pnum,
+                            annot_mapping.annot.get_modified(),
+                            annot_mapping.annot.get_annot_type().value_nick,
+                            annot_mapping.annot.get_contents()) + "\n"
+                        if pnum in abypage:
+                            abypage[pnum] += atext
+                        else:
+                            abypage[pnum] = atext
+                    except:
+                        pass
         #self.em.rclog("Annotations: %s" % abypage)
         pagevec = html.split(b"\f")
         html = b""
