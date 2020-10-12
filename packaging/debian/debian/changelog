@@ -1,4 +1,4 @@
-recoll (1.27.9-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.27.9-2~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix bug in result table display.
 
