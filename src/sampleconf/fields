@@ -71,7 +71,7 @@ rclUnsplitFN = XSFS
 xapyear = Y
 recipient = XTO
 rclbes = XB ; noterms = 1
-
+annotation = XA
 
 [values]
 ###########
@@ -106,6 +106,7 @@ keywords=
 rclaptg=
 rclbes=
 recipient=
+annotation=
 
 [aliases]
 ##########################
@@ -132,6 +133,7 @@ keywords = keyword xesam:keyword tag tags dc:subject xesam:subject \
 mtype = mime mimetype xesam:mimetype contenttype xesam:contenttype dc:format
 recipient = to xesam:recipient
 url = dc:identifier xesam:url
+annotation = pdfannot
 
 ##################
 # The queryaliases section defines aliases which are used exclusively at
@@ -140,6 +142,7 @@ url = dc:identifier xesam:url
 [queryaliases]
 filename = fn
 containerfilename = cfn
+annotation = annot pa
 
 [xattrtofields]
 ######################

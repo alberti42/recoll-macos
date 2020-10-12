@@ -443,13 +443,17 @@ class PDFExtractor:
         #self.em.rclog("Annotations: %s" % abypage)
         pagevec = html.split(b"\f")
         html = b""
+        annotsfield = b""
         pagenum = 1
         for page in pagevec:
             html += page
             if pagenum in abypage:
                 html += abypage[pagenum].encode('utf-8')
+                annotsfield += abypage[pagenum].encode('utf-8') + b" - " 
             html += b"\f"
             pagenum += 1
+        if annotsfield:
+            self.em.setfield("pdfannot", annotsfield)
         return html
     
     def _selfdoc(self):
