@@ -54,3 +54,12 @@ QPlainTextEdit {
     background-color: #101010;
     color: #ffffff;
 }
+
+QToolButton:on {
+    background-color: #505050;
+}
+
+/* Did not find a way to set the background on the indicator/icon part */
+QMenu::item:checked {
+    background: #505050;
+}
