@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 J.F.Dockes
+/* Copyright (C) 2007-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -32,9 +32,6 @@
 #include "pyrecoll.h"
 
 using namespace std;
-
-// Imported from pyrecoll
-static PyObject *recoll_DocType;
 
 //////////////////////////////////////////////////////////////////////
 /// Extractor object code
@@ -76,12 +73,12 @@ Extractor_init(rclx_ExtractorObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB("Extractor_init\n" );
     static const char* kwlist[] = {"doc", NULL};
-    PyObject *pdobj;
+    recoll_DocObject *dobj = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", (char**)kwlist, 
-                                     recoll_DocType, &pdobj))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:Extractor_init",
+                                     (char**)kwlist, 
+                                     &recoll_DocType, &dobj))
         return -1;
-    recoll_DocObject *dobj = (recoll_DocObject *)pdobj;
     if (dobj->doc == 0) {
         PyErr_SetString(PyExc_AttributeError, "Null Doc ?");
         return -1;
@@ -124,7 +121,7 @@ Extractor_textextract(rclx_ExtractorObject* self, PyObject *args,
     }
     /* Call the doc class object to create a new doc. */
     recoll_DocObject *result = 
-        (recoll_DocObject *)PyObject_CallObject((PyObject *)recoll_DocType, 0);
+        (recoll_DocObject *)PyObject_CallObject((PyObject *)&recoll_DocType, 0);
     if (!result) {
         PyErr_SetString(PyExc_AttributeError, "extract: doc create failed");
         return 0;
@@ -229,9 +226,10 @@ PyDoc_STRVAR(doc_ExtractorObject,
              "An Extractor object can extract data from a native simple or compound\n"
              "object.\n"
     );
-static PyTypeObject rclx_ExtractorType = {
+
+PyTypeObject rclx_ExtractorType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "rclextract.Extractor",             /*tp_name*/
+    "_rclextract.Extractor",             /*tp_name*/
     sizeof(rclx_ExtractorObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     (destructor)Extractor_dealloc,    /*tp_dealloc*/
@@ -269,114 +267,3 @@ static PyTypeObject rclx_ExtractorType = {
     0,                         /* tp_alloc */
     Extractor_new,            /* tp_new */
 };
-
-///////////////////////////////////// Module-level stuff
-static PyMethodDef rclextract_methods[] = {
-    {NULL, NULL, 0, NULL}        /* Sentinel */
-};
-PyDoc_STRVAR(rclx_doc_string,
-             "This is an interface to the Recoll text extraction features.");
-
-struct module_state {
-    PyObject *error;
-};
-
-#if PY_MAJOR_VERSION >= 3
-#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
-#else
-#define GETSTATE(m) (&_state)
-static struct module_state _state;
-#endif
-
-#if PY_MAJOR_VERSION >= 3
-static int rclextract_traverse(PyObject *m, visitproc visit, void *arg) {
-    Py_VISIT(GETSTATE(m)->error);
-    return 0;
-}
-
-static int rclextract_clear(PyObject *m) {
-    Py_CLEAR(GETSTATE(m)->error);
-    return 0;
-}
-
-static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "rclextract",
-    NULL,
-    sizeof(struct module_state),
-    rclextract_methods,
-    NULL,
-    rclextract_traverse,
-    rclextract_clear,
-    NULL
-};
-
-#define INITERROR return NULL
-
-extern "C" PyObject *
-PyInit_rclextract(void)
-
-#else
-#define INITERROR return
-    PyMODINIT_FUNC
-    initrclextract(void)
-#endif
-{
-    // We run recollinit. It's responsible for initializing some static data
-    // which is distinct from pyrecoll's as we're separately dlopened.
-    // The rclconfig object is not used, we'll get the config
-    // data from the objects out of the recoll module.
-    // Unfortunately, as we're not getting the actual config directory
-    // from pyrecoll (we could, through a capsule), this needs at
-    // least an empty default configuration directory to work.
-    string reason;
-    RclConfig *rclconfig = recollinit(RCLINIT_PYTHON, 0, 0, reason, 0);
-    if (rclconfig == 0) {
-        PyErr_SetString(PyExc_EnvironmentError, reason.c_str());
-        INITERROR;
-    } else {
-        delete rclconfig;
-    }
-        
-#if PY_MAJOR_VERSION >= 3
-    PyObject *module = PyModule_Create(&moduledef);
-#else
-    PyObject *module = Py_InitModule("rclextract", rclextract_methods);
-#endif
-    if (module == NULL)
-        INITERROR;
-
-    struct module_state *st = GETSTATE(module);
-    // The first parameter is a char *. Hopefully we don't initialize
-    // modules too often...
-    st->error = PyErr_NewException(strdup("rclextract.Error"), NULL, NULL);
-    if (st->error == NULL) {
-        Py_DECREF(module);
-        INITERROR;
-    }
-
-    PyModule_AddStringConstant(module, "__doc__", rclx_doc_string);
-
-    if (PyType_Ready(&rclx_ExtractorType) < 0)
-        INITERROR;
-    Py_INCREF(&rclx_ExtractorType);
-    PyModule_AddObject(module, "Extractor", (PyObject *)&rclx_ExtractorType);
-
-#if PY_MAJOR_VERSION >= 3 || (PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >= 7)
-    recoll_DocType = (PyObject*)PyCapsule_Import(PYRECOLL_PACKAGE "recoll.doctypeptr", 0);
-#else
-    PyObject *module1 = PyImport_ImportModule(PYRECOLL_PACKAGE "recoll");
-    if (module1 != NULL) {
-        PyObject *cobject = PyObject_GetAttrString(module1, "doctypeptr");
-        if (cobject == NULL)
-            INITERROR;
-        if (PyCObject_Check(cobject))
-            recoll_DocType = (PyObject*)PyCObject_AsVoidPtr(cobject);
-        Py_DECREF(cobject);
-    }
-#endif
-
-#if PY_MAJOR_VERSION >= 3
-    return module;
-#endif
-}

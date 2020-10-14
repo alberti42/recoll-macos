@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 J.F.Dockes
+/* Copyright (C) 2007-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -140,7 +140,7 @@ static PyMethodDef SearchData_methods[] = {
 
 static PyTypeObject recoll_SearchDataType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "recoll.SearchData",             /*tp_name*/
+    "_recoll.SearchData",             /*tp_name*/
     sizeof(recoll_SearchDataObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     (destructor)SearchData_dealloc,    /*tp_dealloc*/
@@ -775,9 +775,10 @@ PyDoc_STRVAR(doc_DocObject,
              " title (both)\n"
              " keywords (both)\n"
     );
-static PyTypeObject recoll_DocType = {
+
+PyTypeObject recoll_DocType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "recoll.Doc",             /*tp_name*/
+    "_recoll.Doc",             /*tp_name*/
     sizeof(recoll_DocObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     (destructor)Doc_dealloc,    /*tp_dealloc*/
@@ -1319,6 +1320,7 @@ PyDoc_STRVAR(doc_Query_makedocabstract,
              " terms\n"
              "If methods is set, will also perform highlighting. See the highlight method\n"
     );
+
 static PyObject *
 Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
 {
@@ -1522,7 +1524,7 @@ PyDoc_STRVAR(doc_QueryObject,
     );
 static PyTypeObject recoll_QueryType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "recoll.Query",             /*tp_name*/
+    "_recoll.Query",             /*tp_name*/
     sizeof(recoll_QueryObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     (destructor)Query_dealloc, /*tp_dealloc*/
@@ -2025,7 +2027,7 @@ PyDoc_STRVAR(doc_DbObject,
     );
 static PyTypeObject recoll_DbType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "recoll.Db",             /*tp_name*/
+    "_recoll.Db",             /*tp_name*/
     sizeof(recoll_DbObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     (destructor)Db_dealloc,    /*tp_dealloc*/
@@ -2122,7 +2124,7 @@ static int recoll_clear(PyObject *m) {
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "recoll",
+    "_recoll",
     NULL,
     sizeof(struct module_state),
     recoll_methods,
@@ -2135,13 +2137,13 @@ static struct PyModuleDef moduledef = {
 #define INITERROR return NULL
 
 extern "C" PyObject *
-PyInit_recoll(void)
+PyInit__recoll(void)
 
 #else
 #define INITERROR return
 
     PyMODINIT_FUNC
-    initrecoll(void)
+    init_recoll(void)
 #endif
 {
     // Note: we can't call recollinit here, because the confdir is only really
@@ -2152,7 +2154,7 @@ PyInit_recoll(void)
 #if PY_MAJOR_VERSION >= 3
     PyObject *module = PyModule_Create(&moduledef);
 #else
-    PyObject *module = Py_InitModule("recoll", recoll_methods);
+    PyObject *module = Py_InitModule("_recoll", recoll_methods);
 #endif
     if (module == NULL)
         INITERROR;
@@ -2160,7 +2162,7 @@ PyInit_recoll(void)
     struct module_state *st = GETSTATE(module);
     // The first parameter is a char *. Hopefully we don't initialize
     // modules too often...
-    st->error = PyErr_NewException(strdup("recoll.Error"), NULL, NULL);
+    st->error = PyErr_NewException(strdup("_recoll.Error"), NULL, NULL);
     if (st->error == NULL) {
         Py_DECREF(module);
         INITERROR;
@@ -2186,20 +2188,13 @@ PyInit_recoll(void)
     Py_INCREF((PyObject*)&recoll_SearchDataType);
     PyModule_AddObject(module, "SearchData", 
                        (PyObject *)&recoll_SearchDataType);
-    PyModule_AddStringConstant(module, "__doc__",
-                               pyrecoll_doc_string);
 
-    PyObject *doctypecobject;
+    PyModule_AddStringConstant(module, "__doc__", pyrecoll_doc_string);
 
-#if PY_MAJOR_VERSION >= 3 || (PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >=  7)
-    // Export a few pointers for the benefit of other recoll python modules
-    doctypecobject= 
-        PyCapsule_New(&recoll_DocType, PYRECOLL_PACKAGE "recoll.doctypeptr", 0);
-#else
-    doctypecobject = PyCObject_FromVoidPtr(&recoll_DocType, NULL);
-#endif
-
-    PyModule_AddObject(module, "doctypeptr", doctypecobject);
+    if (PyType_Ready(&rclx_ExtractorType) < 0)
+        INITERROR;
+    Py_INCREF(&rclx_ExtractorType);
+    PyModule_AddObject(module, "Extractor", (PyObject *)&rclx_ExtractorType);
 
 #if PY_MAJOR_VERSION >= 3
     return module;

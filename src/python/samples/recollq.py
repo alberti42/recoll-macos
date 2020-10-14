@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """A python version of the command line query tool recollq (a bit simplified)
 The input string is always interpreted as a query language string.
@@ -14,14 +14,8 @@ if sys.version_info[0] >= 3:
 else:
     ISP3 = False
 
-try:
-    from recoll import recoll
-    from recoll import rclextract
-    hasextract = True
-except:
-    import recoll
-    hasextract = False
-    
+from recoll import recoll, rclextract
+
 allmeta = ("title", "keywords", "abstract", "url", "mimetype", "mtime",
            "ipath", "fbytes", "dbytes", "relevancyrating")
 
@@ -97,7 +91,7 @@ def doquery(db, q):
         print(utf8string(abs))
         print('')
 #        fulldoc = extract(doc)
-#        print "FULLDOC MIMETYPE", fulldoc.mimetype, "TEXT:", fulldoc.text.encode("utf-8")
+#        print("FULLDOC MIMETYPE %s TEXT: %s" % (fulldoc.mimetype,fulldoc.text))
 
 
 ########################################### MAIN
