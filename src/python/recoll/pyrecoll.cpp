@@ -1066,7 +1066,7 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 // Move some data from the dedicated fields to the meta array to make
 // fetching attributes easier. Needed because we only use the meta
 // array when enumerating keys. Also for url which is also formatted.
-// But not that some fields are not copied, and are only reachable if
+// But note that some fields are not copied, and are only reachable if
 // one knows their name (e.g. xdocid).
 static void movedocfields(const RclConfig* rclconfig, Rcl::Doc *doc)
 {
@@ -2205,4 +2205,3 @@ PyInit_recoll(void)
     return module;
 #endif
 }
-

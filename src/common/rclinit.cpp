@@ -77,29 +77,29 @@ void initAsyncSigs(void (*sigcleanup)(int))
 
     // Install app signal handler
     if (sigcleanup) {
-    struct sigaction action;
-    action.sa_handler = sigcleanup;
-    action.sa_flags = 0;
-    sigemptyset(&action.sa_mask);
-    for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
-        if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN) {
-        if (sigaction(catchedSigs[i], &action, 0) < 0) {
-            perror("Sigaction failed");
-        }
-        }
+        struct sigaction action;
+        action.sa_handler = sigcleanup;
+        action.sa_flags = 0;
+        sigemptyset(&action.sa_mask);
+        for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
+            if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN) {
+                if (sigaction(catchedSigs[i], &action, 0) < 0) {
+                    perror("Sigaction failed");
+                }
+            }
     }
 
     // Install log rotate sig handler
     {
-    struct sigaction action;
-    action.sa_handler = siglogreopen;
-    action.sa_flags = 0;
-    sigemptyset(&action.sa_mask);
-    if (signal(SIGHUP, SIG_IGN) != SIG_IGN) {
-        if (sigaction(SIGHUP, &action, 0) < 0) {
-        perror("Sigaction failed");
+        struct sigaction action;
+        action.sa_handler = siglogreopen;
+        action.sa_flags = 0;
+        sigemptyset(&action.sa_mask);
+        if (signal(SIGHUP, SIG_IGN) != SIG_IGN) {
+            if (sigaction(SIGHUP, &action, 0) < 0) {
+                perror("Sigaction failed");
+            }
         }
-    }
     }
 }
 void recoll_exitready()
@@ -150,10 +150,10 @@ static BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
     {
         l_sigcleanup(SIGINT);
         LOGDEB0("CtrlHandler: waiting for exit ready\n" );
-    DWORD res = WaitForSingleObject(eWorkFinished, INFINITE);
-    if (res != WAIT_OBJECT_0) {
+        DWORD res = WaitForSingleObject(eWorkFinished, INFINITE);
+        if (res != WAIT_OBJECT_0) {
             LOGERR("CtrlHandler: exit ack wait failed\n" );
-    }
+        }
         LOGDEB0("CtrlHandler: got exit ready event, exiting\n" );
         return TRUE;
     }
@@ -242,10 +242,10 @@ void initAsyncSigs(void (*sigcleanup)(int))
     // Install app signal handler
     if (sigcleanup) {
         l_sigcleanup = sigcleanup;
-    for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++) {
-        if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN) {
-        signal(catchedSigs[i], sigcleanup);
-        }
+        for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++) {
+            if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN) {
+                signal(catchedSigs[i], sigcleanup);
+            }
         }
     }
 
@@ -267,11 +267,11 @@ void recoll_exitready()
 #endif
 
 RclConfig *recollinit(int flags, 
-              void (*cleanup)(void), void (*sigcleanup)(int), 
-              string &reason, const string *argcnf)
+                      void (*cleanup)(void), void (*sigcleanup)(int), 
+                      string &reason, const string *argcnf)
 {
     if (cleanup)
-    atexit(cleanup);
+        atexit(cleanup);
 
 #if defined(MACPORTS) || defined(HOMEBREW)
     // The MACPORTS and HOMEBREW flags are set by the resp. portfile
@@ -303,12 +303,12 @@ RclConfig *recollinit(int flags,
     
     RclConfig *config = new RclConfig(argcnf);
     if (!config || !config->ok()) {
-    reason = "Configuration could not be built:\n";
-    if (config)
-        reason += config->getReason();
-    else
-        reason += "Out of memory ?";
-    return 0;
+        reason = "Configuration could not be built:\n";
+        if (config)
+            reason += config->getReason();
+        else
+            reason += "Out of memory ?";
+        return 0;
     }
 
     TextSplit::staticConfInit(config);
@@ -318,8 +318,8 @@ RclConfig *recollinit(int flags,
     // ones.
     string logfilename, loglevel;
     if (flags & RCLINIT_DAEMON) {
-    config->getConfParam(string("daemlogfilename"), logfilename);
-    config->getConfParam(string("daemloglevel"), loglevel);
+        config->getConfParam(string("daemlogfilename"), logfilename);
+        config->getConfParam(string("daemloglevel"), loglevel);
     }
     if (flags & RCLINIT_IDX) {
         if (logfilename.empty()) {
@@ -339,22 +339,22 @@ RclConfig *recollinit(int flags,
     }
 
     if (logfilename.empty())
-    config->getConfParam(string("logfilename"), logfilename);
+        config->getConfParam(string("logfilename"), logfilename);
     if (loglevel.empty())
-    config->getConfParam(string("loglevel"), loglevel);
+        config->getConfParam(string("loglevel"), loglevel);
 
     // Initialize logging
     if (!logfilename.empty()) {
-    logfilename = path_tildexpand(logfilename);
-    // If not an absolute path or stderr, compute relative to config dir.
-    if (!path_isabsolute(logfilename) &&
+        logfilename = path_tildexpand(logfilename);
+        // If not an absolute path or stderr, compute relative to config dir.
+        if (!path_isabsolute(logfilename) &&
             logfilename.compare("stderr")) {
-        logfilename = path_cat(config->getConfDir(), logfilename);
-    }
+            logfilename = path_cat(config->getConfDir(), logfilename);
+        }
         Logger::getTheLog("")->reopen(logfilename);
     }
     if (!loglevel.empty()) {
-    int lev = atoi(loglevel.c_str());
+        int lev = atoi(loglevel.c_str());
         Logger::getTheLog("")->setLogLevel(Logger::LogLevel(lev));
     }
     LOGINF(Rcl::version_string() << " [" << config->getConfDir() << "]\n");
@@ -378,7 +378,7 @@ RclConfig *recollinit(int flags,
     // Init Unac translation exceptions
     string unacex;
     if (config->getConfParam("unac_except_trans", unacex) && !unacex.empty()) 
-    unac_set_except_translations(unacex.c_str());
+        unac_set_except_translations(unacex.c_str());
 
 #ifndef IDX_THREADS
     ExecCmd::useVfork(true);
@@ -393,23 +393,23 @@ RclConfig *recollinit(int flags,
     bool novfork;
     config->getConfParam("novfork", &novfork);
     if (novfork) {
-    LOGDEB0("rclinit: will use fork() for starting commands\n" );
+        LOGDEB0("rclinit: will use fork() for starting commands\n" );
         ExecCmd::useVfork(false);
     } else {
-    LOGDEB0("rclinit: will use vfork() for starting commands\n" );
-    ExecCmd::useVfork(true);
+        LOGDEB0("rclinit: will use vfork() for starting commands\n" );
+        ExecCmd::useVfork(true);
     }
 #endif
 
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {
-    LOGDEB1("rclinit: idxflushmb=" << flushmb <<
+        LOGDEB1("rclinit: idxflushmb=" << flushmb <<
                 ", set XAPIAN_FLUSH_THRESHOLD to 10E6\n");
-    static const char *cp = "XAPIAN_FLUSH_THRESHOLD=1000000";
+        static const char *cp = "XAPIAN_FLUSH_THRESHOLD=1000000";
 #ifdef PUTENV_ARG_CONST
-    ::putenv(cp);
+        ::putenv(cp);
 #else
-    ::putenv(strdup(cp));
+        ::putenv(strdup(cp));
 #endif
     }
 
@@ -425,7 +425,7 @@ void recoll_threadinit()
     sigemptyset(&sset);
 
     for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
-    sigaddset(&sset, catchedSigs[i]);
+        sigaddset(&sset, catchedSigs[i]);
     sigaddset(&sset, SIGHUP);
     pthread_sigmask(SIG_BLOCK, &sset, 0);
 #else
@@ -442,5 +442,3 @@ bool recoll_ismainthread()
 {
     return std::this_thread::get_id() == mainthread_id;
 }
-
-

@@ -1115,20 +1115,19 @@ set<string> RclConfig::getIndexedFields() const
 string RclConfig::fieldCanon(const string& f) const
 {
     string fld = stringtolower(f);
-    map<string, string>::const_iterator it = m_aliastocanon.find(fld);
+    const auto it = m_aliastocanon.find(fld);
     if (it != m_aliastocanon.end()) {
         LOGDEB1("RclConfig::fieldCanon: [" << f << "] -> [" << it->second <<
                 "]\n");
         return it->second;
     }
-    LOGDEB1("RclConfig::fieldCanon: ["  << (f) << "] -> ["  << (fld) << "]\n");
+    LOGDEB1("RclConfig::fieldCanon: [" << f << "] -> [" << fld << "]\n");
     return fld;
 }
 
 string RclConfig::fieldQCanon(const string& f) const
 {
-    string fld = stringtolower(f);
-    map<string, string>::const_iterator it = m_aliastoqcanon.find(fld);
+    const auto it = m_aliastoqcanon.find(stringtolower(f));
     if (it != m_aliastoqcanon.end()) {
         LOGDEB1("RclConfig::fieldQCanon: [" << f << "] -> ["  << it->second <<
                 "]\n");
