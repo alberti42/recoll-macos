@@ -276,10 +276,10 @@
         <listitem><para>A <link linkend="RCL.SEARCH.KIO"><application>KDE</application> KIO slave module</link>.
         </para></listitem> 
         <listitem><para>A Ubuntu Unity
-        <ulink url="https://www.lesbonscomptes.com/recoll/download.html">Scope</ulink>
+        <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Scope</ulink>
         module.</para></listitem>
         <listitem><para>A Gnome Shell
-        <ulink url="https://www.lesbonscomptes.com/recoll/download.html">Search Provider</ulink>.
+        <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Search Provider</ulink>.
         </para></listitem>
         <listitem><para>A
         <ulink url="https://github.com/koniu/recoll-webui">WEB interface</ulink>.
@@ -3476,7 +3476,7 @@ fs.inotify.max_user_watches=32768
           the paragraph format.</para>
 
           <para>There are a few examples on the 
-          <ulink url="http://www.recoll.org/custom.html">page about 
+          <ulink url="http://www.recoll.org/pages/custom.html">page about 
           customising the result list</ulink> on the &RCL; web site.</para>
 
           <sect4 id="RCL.SEARCH.GUI.CUSTOM.RESLIST.PARA">
@@ -3602,7 +3602,7 @@ fs.inotify.max_user_watches=32768
             </para>
 
             <para>These samples, and some others are 
-            <ulink url="http://www.recoll.org/custom.html">on the web
+            <ulink url="http://www.recoll.org/pages/custom.html">on the web
             site, with pictures to show how they look.</ulink></para>
 
             <para>It is also possible to 
@@ -4525,7 +4525,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           <para>Users of recent Ubuntu-derived distributions, or
             any other Gnome desktop systems (e.g. Fedora) can install the
             <ulink 
-              url="https://www.lesbonscomptes.com/recoll/download.html#gssp">
+              url="https://www.lesbonscomptes.com/recoll/pages/download.html#gssp">
               Recoll GSSP</ulink> (Gnome Shell Search Provider).</para>
         </listitem>
         <listitem>
@@ -5138,7 +5138,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
         <para>The search interface is used in a number of active projects:
         the <ulink 
-              url="https://www.lesbonscomptes.com/recoll/download.html#gssp">
+              url="https://www.lesbonscomptes.com/recoll/pages/download.html#gssp">
             &RCL; <application>Gnome Shell Search Provider</application>
           </ulink>,
         the <ulink url="https://framagit.org/medoc92/recollwebui">
@@ -5991,7 +5991,7 @@ for i in range(nres):
       ones, or found on the &RCL; WEB site in some
       cases. The most up-to-date information about Recoll packages can
       usually be found on the
-      <ulink url="http://www.recoll.org/download.html">
+      <ulink url="http://www.recoll.org/pages/download.html">
         <application>Recoll</application> WEB site downloads
       page</ulink></para> 
 
@@ -6154,7 +6154,7 @@ for i in range(nres):
 
         </itemizedlist>
 
-        <para>Check the <ulink url="http://www.recoll.org/download.html">
+        <para>Check the <ulink url="http://www.recoll.org/pages/download.html">
         &RCL; download page</ulink> for up to date version
         information.</para>
 
