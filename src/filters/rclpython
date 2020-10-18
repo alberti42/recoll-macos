@@ -31,7 +31,7 @@ __author__ = 'Jürgen Hermann, Mike Brown, Christopher Arndt'
 
 
 # Imports
-import cgi, string, sys
+import string, sys
 import html
 import io
 import keyword, token, tokenize
