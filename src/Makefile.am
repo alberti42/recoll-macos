@@ -708,7 +708,7 @@ filters/rclppt.py \
 filters/rclps \
 filters/rclpst.py \
 filters/rclpurple \
-filters/rclpython \
+filters/rclpython.py \
 filters/rclrar \
 filters/rclrtf.py \
 filters/rclscribus \

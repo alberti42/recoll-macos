@@ -1,13 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: iso-8859-1 -*-
-"""
-    MoinMoin - Python source parser and colorizer
-"""
+#!/usr/bin/python3
 
-# Rclpython is verbatim "colorize.py" from:
+# Rclpython is based on "colorize.py" from:
 # http://chrisarndt.de/en/software/python/colorize.html
 #
-# Based on the code from Jürgen Herman, the following changes where made:
+# Based on the code from JÃ¼rgen Herman, the following changes where made:
 #
 # Mike Brown <http://skew.org/~mike/>:
 # - make script callable as a CGI and a Apache handler for .py files.
@@ -22,24 +18,20 @@
 # - parse script encoding and allow output in any encoding by using unicode
 #   as intermediate
 
-from __future__ import print_function
 
 __version__ = '0.3'
 __date__ = '2005-07-04'
 __license__ = 'GPL'
-__author__ = 'Jürgen Hermann, Mike Brown, Christopher Arndt'
 
+__author__ = 'JÃ¼rgen Hermann, Mike Brown, Christopher Arndt'
 
 # Imports
-import string, sys
+import rclexecm
+from rclbasehandler import RclBaseHandler
+import string, sys, os
 import html
 import io
 import keyword, token, tokenize
-
-def makebytes(data):
-    if type(data) == type(u''):
-        return data.encode("UTF-8")
-    return data
 
 #############################################################################
 ### Python Source Parser (does Hilighting)
@@ -140,7 +132,7 @@ class Parser:
         # parse the source and write it
         self.pos = 0
         text = io.BytesIO(self.raw)
-        self.out.write(makebytes(self.stylesheet))
+        self.out.write(rclexecm.makebytes(self.stylesheet))
         self.out.write(b'<pre class="code">\n')
         try:
             for a,b,c,d,e in tokenize.tokenize(text.readline):
@@ -195,8 +187,8 @@ class Parser:
         css_class = _css_classes.get(toktype, 'text')
 
         # send text
-        self.out.write(makebytes('<span class="%s">' % (css_class,)))
-        self.out.write(makebytes(html.escape(toktext)))
+        self.out.write(rclexecm.makebytes('<span class="%s">' % (css_class,)))
+        self.out.write(rclexecm.makebytes(html.escape(toktext)))
         self.out.write(b'</span>')
 
 
@@ -230,23 +222,41 @@ def colorize_file(file=None, outstream=sys.stdout, standalone=True):
     source = sourcefile.read()
 
     if standalone:
-        outstream.write(makebytes(_HTML_HEADER % {'title': filename}))
+        outstream.write(rclexecm.makebytes(_HTML_HEADER % {'title': filename}))
     Parser(source, out=outstream).format()
     if standalone:
-        outstream.write(makebytes(_HTML_FOOTER))
+        outstream.write(rclexecm.makebytes(_HTML_FOOTER))
 
     if file:
         sourcefile.close()
 
-if __name__ == "__main__":
-    import os
-    out = sys.stdout.buffer
-    if os.environ.get('PATH_TRANSLATED'):
-        filepath = os.environ.get('PATH_TRANSLATED')
-        print('Content-Type: text/html; charset="iso-8859-1"\n')
-        colorize_file(filepath, out)
-    elif len(sys.argv) > 1:
-        filepath = sys.argv[1]
-        colorize_file(filepath, out)
-    else:
-        colorize_file()
+
+def _htmlwrapplain(txt, title=b"", charset=b"utf-8"):
+    return \
+        b'<html>\n<head>\n<title>' + \
+        title + \
+        b'</title>\n' + \
+        b'<meta http-equiv="Content-Type" content="text/html; charset=' + \
+        charset + \
+        b'">\n' + \
+        b'<body>\n<pre>\n' + \
+        rclexecm.htmlescape(txt) + \
+        b'</pre>\n</body>\n</html>\n'
+
+class PythonDump(RclBaseHandler):
+    def __init__(self, em):
+        super(PythonDump, self).__init__(em)
+
+    def html_text(self, fn):
+        preview = os.environ.get("RECOLL_FILTER_FORPREVIEW", "no")
+        if preview == "yes":
+            out = io.BytesIO()
+            colorize_file(fn, out)
+            return out.getvalue()
+        else:
+            return _htmlwrapplain(open(fn, 'rb').read())
+
+if __name__ == '__main__':
+    proto = rclexecm.RclExecM()
+    extract = PythonDump(proto)
+    rclexecm.main(proto, extract)
