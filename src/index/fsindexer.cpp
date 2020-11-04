@@ -1,4 +1,4 @@
-/* Copyright (C) 2009 J.F.Dockes
+/* Copyright (C) 2009-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -252,9 +252,8 @@ bool FsIndexer::index(int flags)
     return true;
 }
 
-static bool matchesSkipped(const vector<string>& tdl,
-                           FsTreeWalker& walker,
-                           const string& path)
+static bool matchesSkipped(
+    const vector<string>& tdl, FsTreeWalker& walker, const string& path)
 {
     // Check path against topdirs and skippedPaths. We go up the
     // ancestors until we find either a topdirs or a skippedPaths
@@ -263,16 +262,17 @@ static bool matchesSkipped(const vector<string>& tdl,
     // config). This matches what happens during the normal fs tree
     // walk.
     string canonpath = path_canon(path);
+
     string mpath = canonpath;
     string topdir;
-    while (!path_isroot(mpath)) { // we assume root not in skipped paths.
-        for (vector<string>::const_iterator it = tdl.begin();  
-             it != tdl.end(); it++) {
+    for (;;) { // Used to test not root here, but root may be in topdirs !
+
+        for (const auto tdlent : tdl) {
             // the topdirs members are already canonized.
-            LOGDEB2("matchesSkipped: comparing ancestor [" << mpath <<
-                    "] to topdir [" << *it << "]\n");
-            if (!mpath.compare(*it)) {
-                topdir = *it;
+            LOGDEB1("matchesSkipped: comparing ancestor [" << mpath <<
+                    "] to topdir [" << tdlent << "]\n");
+            if (mpath == tdlent) {
+                topdir = tdlent;
                 goto goodpath;
             }
         }
@@ -282,6 +282,11 @@ static bool matchesSkipped(const vector<string>& tdl,
             return true;
         }
 
+        if (path_isroot(mpath)) {
+            break;
+        }
+
+        // Compute father
         string::size_type len = mpath.length();
         mpath = path_getfather(mpath);
         // getfather normally returns a path ending with /, canonic
@@ -296,7 +301,9 @@ static bool matchesSkipped(const vector<string>& tdl,
                    "] did not shorten\n");
             return true;
         }
+
     }
+
     // We get there if neither topdirs nor skippedPaths tests matched
     LOGDEB("FsIndexer::indexFiles: skipping [" << path << "] (ntd)\n");
     return true;
