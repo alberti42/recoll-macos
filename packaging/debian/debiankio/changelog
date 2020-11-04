@@ -1,3 +1,19 @@
+kio-recoll (1.27.10-2~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix real-time indexer not working when topdirs was /
+  * rclpython: renamed rclpython.py. Use rclexecm. Only colorize for
+    preview, not indexing.
+  * mimemap: add .xlsm
+  * Python module: merge pyrecoll and pyrclextract C extensions into one
+    _pyrecoll and create 2 python modules to maintain compat 
+  * Fix crash on ARM
+  * dark mode: improve visibility of checkable actions
+  * pdf annot: guard against possible exception while formatting results
+    Index pdf annotations separately under field name annotation. Add
+    annot, pdfannot and pa aliases. 
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 04 Nov 2020 20:00:00 +0100
+
 kio-recoll (1.27.9-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix bug in result table display.
