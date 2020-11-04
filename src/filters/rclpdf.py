@@ -209,8 +209,16 @@ class PDFExtractor:
             return True
         try:
             vacuumdir(tmpdir)
-            subprocess.check_call([self.pdftk, self.filename, "unpack_files",
-                                   "output", tmpdir])
+            # Note: the java version of pdftk sometimes/often fails
+            # here with writing to stdout: "Error occurred during
+            # initialization of VM". Maybe unsufficient resources when
+            # execd from Python ? In any case, the important thing is
+            # to discard the output, until we fix the error or
+            # preferably find a way to do it with poppler...
+            with open(os.devnull, 'w') as FNULL:
+                subprocess.check_call(
+                    [self.pdftk, self.filename, "unpack_files", "output",
+                     tmpdir], stdout=FNULL)
             self.attachlist = sorted(os.listdir(tmpdir))
             return True
         except Exception as e:
