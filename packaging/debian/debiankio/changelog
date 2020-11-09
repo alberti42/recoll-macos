@@ -1,4 +1,4 @@
-kio-recoll (1.27.10-2~ppaPPAVERS~SERIES1) SERIES; urgency=low
+kio-recoll (1.27.10-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix real-time indexer not working when topdirs was /
   * rclpython: renamed rclpython.py. Use rclexecm. Only colorize for
