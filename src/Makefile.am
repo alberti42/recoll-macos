@@ -542,6 +542,8 @@ python/recoll/pyrecoll.h \
 python/recoll/recoll/__init__.py \
 python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py \
+python/recoll/recoll/rclextract.py \
+python/recoll/recoll/recoll.py \
 python/recoll/setup.py.in \
 python/samples/docdups.py \
 python/samples/mutt-recoll.py \
@@ -553,7 +555,6 @@ python/samples/recollgui/rclmain.ui \
 python/samples/recollq.py \
 python/samples/recollqsd.py \
 \
- \
 sampleconf/fields sampleconf/fragbuts.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
 sampleconf/recoll.conf sampleconf/recoll.qss \
