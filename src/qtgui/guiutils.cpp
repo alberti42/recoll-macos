@@ -293,42 +293,6 @@ void rwSettings(bool writing)
             "/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
     }
 
-    // Field list for the restable
-    if (writing) {
-        settings.setValue("/Recoll/prefs/query/restableFields",
-                          prefs.restableFields);
-    } else {
-        prefs.restableFields = 
-            settings.value("/Recoll/prefs/query/restableFields").toStringList();
-        if (prefs.restableFields.empty()) {
-            prefs.restableFields.push_back("date");
-            prefs.restableFields.push_back("title");
-            prefs.restableFields.push_back("filename");
-            prefs.restableFields.push_back("author");
-            prefs.restableFields.push_back("url");
-        }
-    }
-
-    // restable col widths
-    QString rtcw;
-    if (writing) {
-        for (const auto& width : prefs.restableColWidths) {
-            char buf[20];
-            sprintf(buf, "%d ", width);
-            rtcw += QString::fromUtf8(buf);
-        }
-    }
-    SETTING_RW(rtcw, "/Recoll/prefs/query/restableWidths", String, 
-               "83 253 132 172 130 ");
-    if (!writing) {
-        prefs.restableColWidths.clear();
-        vector<string> widths;
-        stringToStrings(qs2utf8s(rtcw), widths);
-        for (const auto& width : widths) {
-            prefs.restableColWidths.push_back(atoi(width.c_str()));
-        }
-    }
-
     SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat",
                Bool, false);
     SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);

@@ -133,9 +133,6 @@ class PrefsPack {
 
     bool darkMode;
     
-    QStringList restableFields;
-    vector<int> restableColWidths;
-
     // Remembered term match mode
     int termMatchType{0};
 

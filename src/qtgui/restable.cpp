@@ -70,6 +70,10 @@ static const int fsadjusttable = 1;
 
 static PlainToRichQtReslist g_hiliter;
 
+static const char *settingskey_fieldlist="/Recoll/prefs/query/restableFields";
+static const char *settingskey_fieldwiths="/Recoll/prefs/query/restableWidths";
+static const char *settingskey_splittersizes="resTableSplitterSizes";
+
 //////////////////////////////////////////////////////////////////////////
 // Restable "pager". We use it to print details for a document in the 
 // detail area
@@ -567,7 +571,16 @@ void ResTable::setDefRowHeight()
 
 void ResTable::init()
 {
-    if (!(m_model = new RecollModel(prefs.restableFields, this)))
+    QSettings settings;
+    auto restableFields = settings.value(settingskey_fieldlist).toStringList();
+    if (restableFields.empty()) {
+        restableFields.push_back("date");
+        restableFields.push_back("title");
+        restableFields.push_back("filename");
+        restableFields.push_back("author");
+        restableFields.push_back("url");
+    }
+    if (!(m_model = new RecollModel(restableFields, this)))
         return;
     tableView->setModel(m_model);
     tableView->setMouseTracking(true);
@@ -584,9 +597,16 @@ void ResTable::init()
 
     QHeaderView *header = tableView->horizontalHeader();
     if (header) {
-        if (int(prefs.restableColWidths.size()) == header->count()) {
+        QString qw = settings.value(settingskey_fieldwiths).toString();
+        vector<string> vw;
+        stringToStrings(qs2utf8s(qw), vw);
+        vector<int> restableColWidths;
+        for (const auto& w : vw) {
+            restableColWidths.push_back(atoi(w.c_str()));
+        }
+        if (int(restableColWidths.size()) == header->count()) {
             for (int i = 0; i < header->count(); i++) {
-                header->resizeSection(i, prefs.restableColWidths[i]);
+                header->resizeSection(i, restableColWidths[i]);
             }
         }
         header->setSortIndicatorShown(true);
@@ -617,16 +637,6 @@ void ResTable::init()
     m_pager = new ResTablePager(this);
     m_pager->setHighLighter(&g_hiliter);
 
-    QSettings settings;
-    QVariant saved = settings.value("resTableSplitterSizes");
-    if (saved != QVariant()) {
-        splitter->restoreState(saved.toByteArray());
-    } else {
-        QList<int> sizes;
-        sizes << 355 << 125;
-        splitter->setSizes(sizes);
-    }
-
     deleteZ(textBrowser);
     m_detail = new ResTableDetailArea(this);
     m_detail->setReadOnly(true);
@@ -638,6 +648,14 @@ void ResTable::init()
             this, SLOT(linkWasClicked(const QUrl &)));
     splitter->addWidget(m_detail);
     splitter->setOrientation(Qt::Vertical);
+    QVariant saved = settings.value(settingskey_splittersizes);
+    if (saved != QVariant()) {
+        splitter->restoreState(saved.toByteArray());
+    } else {
+        QList<int> sizes;
+        sizes << 355 << 125;
+        splitter->setSizes(sizes);
+    }
     installEventFilter(this);
 }
 
@@ -719,7 +737,7 @@ void ResTable::saveColState()
     if (!m_ismainres)
         return;
     QSettings settings;
-    settings.setValue("resTableSplitterSizes", splitter->saveState());
+    settings.setValue(settingskey_splittersizes, splitter->saveState());
 
     QHeaderView *header = tableView->horizontalHeader();
     const vector<string>& vf = m_model->getFields();
@@ -731,18 +749,18 @@ void ResTable::saveColState()
     // Remember the current column order. Walk in visual order and
     // create new list
     QStringList newfields;
-    vector<int> newwidths;
+    QString newwidths;
     for (int vi = 0; vi < header->count(); vi++) {
         int li = header->logicalIndex(vi);
         if (li < 0 || li >= int(vf.size())) {
             LOGERR("saveColState: logical index beyond list size!\n");
             continue;
         }
-        newfields.push_back(QString::fromUtf8(vf[li].c_str()));
-        newwidths.push_back(header->sectionSize(li));
+        newfields.push_back(u8s2qs(vf[li]));
+        newwidths += QString().setNum(header->sectionSize(li)) + QString(" ");
     }
-    prefs.restableFields = newfields;
-    prefs.restableColWidths = newwidths;
+    settings.setValue(settingskey_fieldlist, newfields);
+    settings.setValue(settingskey_fieldwiths, newwidths);
 }
 
 void ResTable::onTableView_currentChanged(const QModelIndex& index)
