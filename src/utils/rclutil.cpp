@@ -41,6 +41,7 @@
 #include <unordered_map>
 #include <list>
 #include <vector>
+#include <numeric>
 
 #include "rclutil.h"
 #include "pathut.h"
@@ -648,9 +649,72 @@ bool thumbPathForUrl(const string& url, int size, string& path)
     return false;
 }
 
+// Compare charset names, removing the more common spelling variations
+bool samecharset(const string& cs1, const string& cs2)
+{
+    auto mcs1 = std::accumulate(cs1.begin(), cs1.end(), "", [](const char* m, char i) { return (i != '_' && i != '-') ? m + ::tolower(i) : m; });
+    auto mcs2 = std::accumulate(cs2.begin(), cs2.end(), "", [](const char* m, char i) { return (i != '_' && i != '-') ? m + ::tolower(i) : m; });
+    return mcs1 == mcs2;
+}
+
+static const std::unordered_map<string, string> lang_to_code {
+    {"be", "cp1251"},
+    {"bg", "cp1251"},
+    {"cs", "iso-8859-2"},
+    {"el", "iso-8859-7"},
+    {"he", "iso-8859-8"},
+    {"hr", "iso-8859-2"},
+    {"hu", "iso-8859-2"},
+    {"ja", "eucjp"},
+    {"kk", "pt154"},
+    {"ko", "euckr"},
+    {"lt", "iso-8859-13"},
+    {"lv", "iso-8859-13"},
+    {"pl", "iso-8859-2"},
+    {"rs", "iso-8859-2"},
+    {"ro", "iso-8859-2"},
+    {"ru", "koi8-r"},
+    {"sk", "iso-8859-2"},
+    {"sl", "iso-8859-2"},
+    {"sr", "iso-8859-2"},
+    {"th", "iso-8859-11"},
+    {"tr", "iso-8859-9"},
+    {"uk", "koi8-u"},
+        };
+
+string langtocode(const string& lang)
+{
+    const auto it = lang_to_code.find(lang);
+
+    // Use cp1252 by default...
+    if (it == lang_to_code.end()) {
+        return cstr_cp1252;
+    }
+
+    return it->second;
+}
+
+string localelang()
+{
+    const char *lang = getenv("LANG");
+
+    if (lang == nullptr || *lang == 0 || !strcmp(lang, "C") ||
+        !strcmp(lang, "POSIX")) {
+        return "en";
+    }
+    string locale(lang);
+    string::size_type under = locale.find_first_of('_');
+    if (under == string::npos) {
+        return locale;
+    }
+    return locale.substr(0, under);
+}
+
 void rclutil_init_mt()
 {
     path_pkgdatadir();
     tmplocation();
     thumbnailsdir();
+    // Init langtocode() static table
+    langtocode("");
 }

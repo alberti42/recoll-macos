@@ -122,4 +122,11 @@ template <class T> void map_ss_cp_noshr(T s, T *d);
 template <class T> void addmeta(T& store, const std::string& nm,
                                 const std::string& value);
 
+// Compare charset names, removing the more common spelling variations
+extern bool samecharset(const std::string& cs1, const std::string& cs2);
+// Divine language from locale
+extern std::string localelang();
+// Divine 8bit charset from language
+extern std::string langtocode(const std::string& lang);
+
 #endif /* _RCLUTIL_H_INCLUDED_ */
