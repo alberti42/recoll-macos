@@ -22,6 +22,7 @@
 #include "mimehandler.h"
 #include "log.h"
 #include "smallut.h"
+#include "rclutil.h"
 #include "listmem.h"
 
 #ifdef _WIN32

@@ -26,6 +26,7 @@
 #include "indextext.h"
 #include "mh_html.h"
 #include "smallut.h"
+#include "rclutil.h"
 #include "md5ut.h"
 
 #include <iostream>
