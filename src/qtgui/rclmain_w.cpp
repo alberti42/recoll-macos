@@ -74,7 +74,8 @@
 using std::pair;
 
 QString g_stringAllStem, g_stringNoStem;
-
+static const char *settingskey_toolarea="/Recoll/geometry/toolArea";
+static const char *settingskey_resarea="/Recoll/geometry/resArea";
 static Qt::ToolBarArea int2area(int in)
 {
     switch (in) {
@@ -204,11 +205,14 @@ void RclMain::init()
     m_toolsTB->addAction(toolsDoc_HistoryAction);
     m_toolsTB->addAction(toolsSpellAction);
     m_toolsTB->addAction(actionQuery_Fragments);
-    this->addToolBar(int2area(prefs.toolArea), m_toolsTB);
+    QSettings settings;
+    int val = settings.value(settingskey_toolarea).toInt();
+    this->addToolBar(int2area(val), m_toolsTB);
 
     m_resTB = new QToolBar(tr("Results"), this);
     m_resTB->setObjectName(QString::fromUtf8("m_resTB"));
-    this->addToolBar(int2area(prefs.resArea), m_resTB);
+    val = settings.value(settingskey_resarea).toInt();
+    this->addToolBar(int2area(val), m_resTB);
 
     // Document filter buttons and combobox
     // Combobox version of the document filter control
@@ -448,7 +452,6 @@ void RclMain::init()
         onSortDataChanged(m_sortspec);
         emit sortDataChanged(m_sortspec);
     }
-    QSettings settings;
     restoreGeometry(settings.value("/Recoll/geometry/maingeom").toByteArray());
 
     enableTrayIcon(prefs.showTrayIcon);
@@ -732,13 +735,12 @@ void RclMain::fileExit()
 
     // Don't save geometry if we're currently maximized. At least under X11
     // this saves the maximized size. otoh isFullscreen() does not seem needed
+    QSettings settings;
     if (!isMaximized()) {
-        QSettings settings;
         settings.setValue("/Recoll/geometry/maingeom", saveGeometry());
     }
-    
-    prefs.toolArea = toolBarArea(m_toolsTB);
-    prefs.resArea = toolBarArea(m_resTB);
+    settings.setValue(settingskey_toolarea, toolBarArea(m_toolsTB));
+    settings.setValue(settingskey_resarea, toolBarArea(m_resTB));
     restable->saveColState();
 
     if (prefs.ssearchTypSav) {

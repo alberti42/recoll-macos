@@ -69,8 +69,6 @@ class PrefsPack {
     int showmode{SHOW_NORMAL};
     int pvwidth; // Preview window geom
     int pvheight;
-    int toolArea; // Area for "tools" toolbar
-    int resArea; // Area for "results" toolbar
     bool ssearchTypSav; // Remember last search mode (else always
             // start with same)
     int ssearchTyp{0};
