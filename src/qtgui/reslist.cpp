@@ -974,8 +974,6 @@ void ResList::onLinkClicked(const QUrl &qurl)
     }
     strurl = strurl.substr(m_pager->linkPrefix().size());
 
-    // The content of our URLs is always a single letter possibly
-    // followed by an integer value (document number).
     if (strurl.size() == 0) {
         return;
     }
@@ -983,21 +981,16 @@ void ResList::onLinkClicked(const QUrl &qurl)
     bool havedoc{false};
     Rcl::Doc doc;
     if (strurl.size() > 1) {
-        // Expecting integer after the letter, and nothing else
+        // If an integer follows interpret as doc number
         const char *bptr = strurl.c_str() + 1;
         char *eptr;
         docnum = strtol(bptr, &eptr, 10) - 1;
-        if (eptr == bptr || *eptr != 0) {
-            // No digits or non-digit characters following digits, bad link.
-            return;
-        }
         if (docnum >= 0) {
             if (getDoc(docnum, doc)) {
                 havedoc = true;
             } else {
                 LOGERR("ResList::onLinkClicked: can't get doc for "<<
                        docnum << "\n");
-                return;
             }
         }
     }
