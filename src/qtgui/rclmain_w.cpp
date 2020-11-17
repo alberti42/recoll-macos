@@ -485,6 +485,22 @@ void RclMain::setSynEnabled(bool on)
         uiprefs->synFileCB->setChecked(prefs.synFileEnable);
 }
 
+QString RclMain::readDarkCSS()
+{
+    if (nullptr == theconfig) {
+        return QString();
+    }
+    string fn = path_cat(
+        path_cat(theconfig->getDatadir(), "examples"), "recoll-dark.css");
+    string data;
+    string reason;
+    if (!file_to_string(fn, data, &reason)) {
+        QMessageBox::warning(0, "Recoll", tr("Could not read: ") + u8s2qs(fn));
+        return QString();
+    }
+    return u8s2qs(data);
+}
+
 void RclMain::setDarkModeEnabled(bool on)
 {
     string fn;
@@ -508,13 +524,8 @@ void RclMain::setDarkModeEnabled(bool on)
             goto unreadable;
         }
         prefs.qssFile = u8s2qs(fn);
-        fn = path_cat(path_cat(datadir, "examples"), "recoll-dark.css");
-        string data;
-        string reason;
-        if (!file_to_string(fn, data, &reason)) {
-            goto unreadable;
-        }
-        prefs.reslistheadertext = u8s2qs(data);
+
+        prefs.reslistheadertext = readDarkCSS();
     } else {
         prefs.reslistheadertext.clear();
         prefs.qssFile.clear();

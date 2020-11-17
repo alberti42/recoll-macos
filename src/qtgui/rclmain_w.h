@@ -88,6 +88,7 @@ public:
         return m_indexerState;
     }
     void enableTrayIcon(bool onoff);
+    QString readDarkCSS();
                             
 public slots:
     virtual void fileExit();
