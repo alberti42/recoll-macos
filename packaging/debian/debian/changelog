@@ -1,3 +1,9 @@
+recoll (1.27.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Repair python source file indexing and spelling replacements
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 18 Nov 2020 16:15:00 +0100
+
 recoll (1.27.11-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Missing files in tar dist broke the python modules.

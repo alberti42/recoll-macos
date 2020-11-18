@@ -6,7 +6,7 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.27.11
+RCLVERS=1.27.12
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=1
@@ -49,6 +49,7 @@ debdir=debian
 # 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
+# 20.10    groovy 2021-07
 series="xenial bionic focal groovy"
 #series=
 
@@ -90,7 +91,7 @@ done
 # 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
 series="xenial bionic focal groovy"
-#series=
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
