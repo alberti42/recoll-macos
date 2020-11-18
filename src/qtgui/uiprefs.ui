@@ -35,7 +35,7 @@
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line">
+        <widget class="Line" name="line1">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -112,7 +112,7 @@
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line">
+        <widget class="Line" name="line2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -163,12 +163,12 @@
         </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="showTempFileWarningCB">
+        <widget class="QCheckBox" name="noToolbarsCB">
          <property name="text">
-          <string>Show warning when opening temporary file.</string>
+          <string>Hide toolbars.</string>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -213,6 +213,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="showTempFileWarningCB">
+         <property name="text">
+          <string>Show warning when opening temporary file.</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="ssNoCompleteCB">
          <property name="text">
           <string>Disable Qt autocompletion in search entry.</string>
@@ -233,7 +243,7 @@
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line">
+        <widget class="Line" name="line3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -346,7 +356,7 @@
         </layout>
        </item>
        <item>
-        <widget class="Line" name="line">
+        <widget class="Line" name="line4">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -732,7 +742,7 @@
           </layout>
          </item>
          <item>
-          <widget class="Line" name="lineX">
+          <widget class="Line" name="line5">
            <property name="frameShape">
             <enum>QFrame::HLine</enum>
            </property>
@@ -789,7 +799,7 @@ The default value is 2 (percent). </string>
           </layout>
          </item>
          <item>
-          <widget class="Line" name="line2">
+          <widget class="Line" name="line6">
            <property name="frameShape">
             <enum>QFrame::HLine</enum>
            </property>
@@ -895,7 +905,7 @@ May be slow for big documents.</string>
           </layout>
          </item>
          <item>
-          <widget class="Line" name="line3">
+          <widget class="Line" name="line7">
            <property name="frameShape">
             <enum>QFrame::HLine</enum>
            </property>
@@ -945,7 +955,7 @@ May be slow for big documents.</string>
           </layout>
          </item>
          <item>
-          <widget class="Line" name="line31">
+          <widget class="Line" name="line8">
            <property name="frameShape">
             <enum>QFrame::HLine</enum>
            </property>
@@ -1064,7 +1074,7 @@ May be slow for big documents.</string>
           </layout>
          </item>
          <item>
-          <widget class="Line" name="line2_2">
+          <widget class="Line" name="line9">
            <property name="frameShape">
             <enum>QFrame::HLine</enum>
            </property>

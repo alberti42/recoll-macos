@@ -89,7 +89,8 @@ public:
     }
     void enableTrayIcon(bool onoff);
     QString readDarkCSS();
-                            
+    void setupToolbars();
+
 public slots:
     virtual void fileExit();
     virtual void periodic100();

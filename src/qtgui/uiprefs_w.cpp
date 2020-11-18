@@ -144,6 +144,7 @@ void UIPrefsDialog::setFromPrefs()
 
     keepSortCB->setChecked(prefs.keepSort);
 
+    noToolbarsCB->setChecked(prefs.noToolbars);
     showTrayIconCB->setChecked(prefs.showTrayIcon);
     if (!prefs.showTrayIcon) {
         prefs.closeToTray = false;
@@ -347,6 +348,8 @@ void UIPrefsDialog::accept()
     prefs.startWithAdvSearchOpen = initStartAdvCB->isChecked();
 
     prefs.keepSort = keepSortCB->isChecked();
+    prefs.noToolbars = noToolbarsCB->isChecked();
+    m_mainWindow->setupToolbars();
     prefs.showTrayIcon = showTrayIconCB->isChecked();
     m_mainWindow->enableTrayIcon(prefs.showTrayIcon);
     prefs.closeToTray = closeToTrayCB->isChecked();

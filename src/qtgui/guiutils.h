@@ -140,6 +140,7 @@ class PrefsPack {
     // Suppress all noises
     bool noBeeps;
     
+    bool noToolbars{false};
     bool showTrayIcon{false};
     bool closeToTray{false};
     bool trayMessages{false};

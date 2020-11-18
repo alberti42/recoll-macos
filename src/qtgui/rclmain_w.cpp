@@ -198,21 +198,7 @@ void RclMain::init()
         }
     }
     curid->setChecked(true);
-
-    m_toolsTB = new QToolBar(tr("Tools"), this);
-    m_toolsTB->setObjectName(QString::fromUtf8("m_toolsTB"));
-    m_toolsTB->addAction(toolsAdvanced_SearchAction);
-    m_toolsTB->addAction(toolsDoc_HistoryAction);
-    m_toolsTB->addAction(toolsSpellAction);
-    m_toolsTB->addAction(actionQuery_Fragments);
-    QSettings settings;
-    int val = settings.value(settingskey_toolarea).toInt();
-    this->addToolBar(int2area(val), m_toolsTB);
-
-    m_resTB = new QToolBar(tr("Results"), this);
-    m_resTB->setObjectName(QString::fromUtf8("m_resTB"));
-    val = settings.value(settingskey_resarea).toInt();
-    this->addToolBar(int2area(val), m_resTB);
+    setupToolbars();
 
     // Document filter buttons and combobox
     // Combobox version of the document filter control
@@ -452,6 +438,7 @@ void RclMain::init()
         onSortDataChanged(m_sortspec);
         emit sortDataChanged(m_sortspec);
     }
+    QSettings settings;
     restoreGeometry(settings.value("/Recoll/geometry/maingeom").toByteArray());
 
     enableTrayIcon(prefs.showTrayIcon);
@@ -462,6 +449,38 @@ void RclMain::init()
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
+}
+
+void RclMain::setupToolbars()
+{
+    if (nullptr == m_toolsTB) {
+        m_toolsTB = new QToolBar(tr("Tools"), this);
+        m_toolsTB->setObjectName(QString::fromUtf8("m_toolsTB"));
+        m_toolsTB->addAction(toolsAdvanced_SearchAction);
+        m_toolsTB->addAction(toolsDoc_HistoryAction);
+        m_toolsTB->addAction(toolsSpellAction);
+        m_toolsTB->addAction(actionQuery_Fragments);
+    }
+    QSettings settings;
+    int val;
+    if (!prefs.noToolbars) {
+        val = settings.value(settingskey_toolarea).toInt();
+        this->addToolBar(int2area(val), m_toolsTB);
+        m_toolsTB->show();
+    } else {
+        m_toolsTB->hide();
+    }
+    if (nullptr == m_resTB) {
+        m_resTB = new QToolBar(tr("Results"), this);
+        m_resTB->setObjectName(QString::fromUtf8("m_resTB"));
+    }
+    if (!prefs.noToolbars) {
+        val = settings.value(settingskey_resarea).toInt();
+        this->addToolBar(int2area(val), m_resTB);
+        m_resTB->show();
+    } else {
+        m_resTB->hide();
+    }
 }
 
 void RclMain::enableTrayIcon(bool on)
@@ -750,8 +769,10 @@ void RclMain::fileExit()
     if (!isMaximized()) {
         settings.setValue("/Recoll/geometry/maingeom", saveGeometry());
     }
-    settings.setValue(settingskey_toolarea, toolBarArea(m_toolsTB));
-    settings.setValue(settingskey_resarea, toolBarArea(m_resTB));
+    if (!prefs.noToolbars) {
+        settings.setValue(settingskey_toolarea, toolBarArea(m_toolsTB));
+        settings.setValue(settingskey_resarea, toolBarArea(m_resTB));
+    }
     restable->saveColState();
 
     if (prefs.ssearchTypSav) {
