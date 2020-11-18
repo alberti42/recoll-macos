@@ -235,11 +235,14 @@ void UIPrefsDialog::setFromPrefs()
     autoSuffsCB->setChecked(prefs.autoSuffsEnable);
     autoSuffsLE->setText(prefs.autoSuffs);
 
-    synFileCB->setChecked(prefs.synFileEnable);
     synFile = prefs.synFile;
     if (synFile.isEmpty()) {
+        synFileCB->setChecked(false);
+        synFileCB->setEnabled(false);
         synFilePB->setText(tr("Choose"));
     } else {
+        synFileCB->setChecked(prefs.synFileEnable);
+        synFileCB->setEnabled(true);
         string nm = path_getsimple(qs2path(synFile));
         synFilePB->setText(path2qs(nm));
     }
@@ -493,8 +496,17 @@ void UIPrefsDialog::resetSnipCss()
 void UIPrefsDialog::showSynFileDialog()
 {
     synFile = myGetFileName(false, "Select synonyms file", true);
-    if (synFile.isEmpty())
+    if (synFile.isEmpty()) {
+        synFileCB->setChecked(false);
+        synFileCB->setEnabled(false);
+        synFilePB->setText(tr("Choose"));
         return;
+    } else {
+        synFileCB->setChecked(prefs.synFileEnable);
+        synFileCB->setEnabled(true);
+        string nm = path_getsimple(qs2path(synFile));
+        synFilePB->setText(path2qs(nm));
+    }
     string nm = path_getsimple(qs2path(synFile));
     synFilePB->setText(path2qs(nm));
 }
