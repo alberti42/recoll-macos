@@ -293,6 +293,7 @@ void rwSettings(bool writing)
 
     SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat",
                Bool, false);
+    SETTING_RW(prefs.noClearSearch, "/Recoll/prefs/noClearSearch", Bool, false);
     SETTING_RW(prefs.noToolbars, "/Recoll/prefs/noToolbars", Bool, false);
     SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);
     SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);

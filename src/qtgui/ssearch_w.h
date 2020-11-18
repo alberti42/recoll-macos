@@ -84,7 +84,8 @@ public:
     virtual bool fromXML(const SSearchDef& fxml);
     virtual QString currentText();
     virtual bool eventFilter(QObject *target, QEvent *event);
-                                  
+    virtual void setupButtons();
+                               
 public slots:
     virtual void onSearchTypeChanged(int);
     virtual void setSearchString(const QString& text);

@@ -173,6 +173,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="noClearSearchCB">
+         <property name="text">
+          <string>Hide Clear and Search buttons.</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="showTrayIconCB">
          <property name="text">
           <string>Show system tray icon.</string>

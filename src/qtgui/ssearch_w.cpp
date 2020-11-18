@@ -187,6 +187,20 @@ void SSearch::init()
     connect(m_completer, SIGNAL(activated(const QString&)), this,
             SLOT(onCompletionActivated(const QString&)));
     connect(historyPB, SIGNAL(clicked()), this, SLOT(onHistoryClicked()));
+    setupButtons();
+}
+
+void SSearch::setupButtons()
+{
+    if (prefs.noClearSearch) {
+        clearqPB->hide();
+        searchPB->hide();
+        queryText->setClearButtonEnabled(true);
+    } else {
+        clearqPB->show();
+        searchPB->show();
+        queryText->setClearButtonEnabled(false);
+    }
 }
 
 void SSearch::takeFocus()
