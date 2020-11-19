@@ -254,10 +254,6 @@
         <translation type="unfinished">Az az adatmennyiség, melyet két lemezre írás között az indexelő feldolgoz.&lt;br&gt;Segíthet kézben tartani a memóriafoglalást. Alapértelmezett: 10MB</translation>
     </message>
     <message>
-        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -348,6 +344,18 @@
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
         <translation type="unfinished">Egy Xapian kereséshez felhasználható elemi feltételek maximális száma. Néha a szavak toldalékolása szorzó hatású, ami túlzott memóriahasználathoz vezethet. Az alapértelmezett 100 000 a legtöbb esetben elegendő, de nem is támaszt különleges igényeket a hardverrel szemben.</translation>
+    </message>
+    <message>
+        <source>Indexer log file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -960,7 +968,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>A szülő megnyi&amp;tása</translation>
+        <translation type="vanished">A szülő megnyi&amp;tása</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -973,6 +981,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>Aldokumentumok / csatolmányok</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent Folder</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1549,6 +1565,22 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
         <source>F&amp;ilter</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Could not start recollindex (temp file error)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You will need to run a query to complete the display change.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1816,6 +1848,14 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
         <source>E&amp;xport simple search history</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Use default dark mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dark mode</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -2078,7 +2118,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>External indexes for stored query: </source>
-        <translation>A mentett keresés külső indexe: </translation>
+        <translation type="vanished">A mentett keresés külső indexe: </translation>
     </message>
     <message>
         <source>Autophrase is set but it was unset for stored query</source>
@@ -2218,6 +2258,22 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t open index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>???</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using current preferences.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2737,27 +2793,7 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Hiba</translation>
-    </message>
-    <message>
-        <source>Configuration not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command already started</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Recoll Batch indexing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Windows Task Scheduler tool</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Hiba</translation>
     </message>
 </context>
 <context>
@@ -3327,7 +3363,7 @@ A PRE+wrap valószínűleg a legjobb választás.</translation>
     </message>
     <message>
         <source>Start with simple search mode</source>
-        <translation>Az egyszerű keresés módja induláskor</translation>
+        <translation type="vanished">Az egyszerű keresés módja induláskor</translation>
     </message>
     <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
@@ -3411,6 +3447,22 @@ A PRE+wrap valószínűleg a legjobb választás.</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start with simple search mode: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide toolbars.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide status bar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Clear and Search buttons.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

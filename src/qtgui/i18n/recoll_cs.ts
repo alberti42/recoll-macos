@@ -266,10 +266,6 @@
         <translation type="unfinished">Tato hodnota upravuje množství dat, která jsou rejstříkována mezi spláchnutími na disk.&lt;br&gt;Pomáhá to řídit použití paměti rejstříkovače. Výchozí je 10 MB </translation>
     </message>
     <message>
-        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
         <translation type="unfinished">Toto je procentní podíl využívání disku - celkové využití disku, ne velikost rejstříku , kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;Výchozí hodnota 0 odstraní všechna omezení, znamená žádné omezení.</translation>
     </message>
@@ -367,6 +363,18 @@
     </message>
     <message>
         <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer log file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1009,7 +1017,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Otevřít rodičovský dokument/složku</translation>
+        <translation type="vanished">&amp;Otevřít rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -1022,6 +1030,14 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>Ukázat podřízené dokumenty/přílohy</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent Folder</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1656,6 +1672,22 @@ Prověřte soubor pracovní plochy</translation>
         <source>F&amp;ilter</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Could not start recollindex (temp file error)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You will need to run a query to complete the display change.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1969,6 +2001,14 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>E&amp;xport simple search history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use default dark mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dark mode</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2446,7 +2486,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>External indexes for stored query: </source>
-        <translation>Vnější rejstříky pro uložená hledání: </translation>
+        <translation type="vanished">Vnější rejstříky pro uložená hledání: </translation>
     </message>
     <message>
         <source>Autophrase is set but it was unset for stored query</source>
@@ -2586,6 +2626,22 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t open index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>???</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using current preferences.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3385,27 +3441,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Chyba</translation>
-    </message>
-    <message>
-        <source>Configuration not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command already started</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Recoll Batch indexing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Windows Task Scheduler tool</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Chyba</translation>
     </message>
 </context>
 <context>
@@ -4059,7 +4095,7 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Start with simple search mode</source>
-        <translation>Spustit v jednoduchém vyhledávacím režimu</translation>
+        <translation type="vanished">Spustit v jednoduchém vyhledávacím režimu</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
@@ -4143,6 +4179,22 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start with simple search mode: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide toolbars.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide status bar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Clear and Search buttons.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

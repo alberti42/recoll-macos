@@ -255,7 +255,7 @@
     </message>
     <message>
         <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
-        <translation>색인 작성을 멈추기 위한 디스크 용량 임계값&lt;br&gt;(예:90%, 0은 제한 없음)</translation>
+        <translation type="vanished">색인 작성을 멈추기 위한 디스크 용량 임계값&lt;br&gt;(예:90%, 0은 제한 없음)</translation>
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
@@ -349,6 +349,18 @@
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
         <translation>단일 Xapian 검색 요청에 넣을 수 있는 절 숫자의 최대값입니다. 경우에 따라 확장된 용어의 결과가 곱해질 수 있기에 과도한 메모리 사용을 피하려고합니다. 기본값 100 000은 대부분의 경우에 충분하며, 하드웨어 구성과 호환되어야합니다.</translation>
+    </message>
+    <message>
+        <source>Indexer log file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -941,7 +953,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>상위 문서/폴더 열기(&amp;O)</translation>
+        <translation type="vanished">상위 문서/폴더 열기(&amp;O)</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -954,6 +966,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>하위 문서들/첨부내용들 보기</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent Folder</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1498,6 +1518,22 @@ Please check the desktop file</source>
         <source>F&amp;ilter</source>
         <translation>필터(&amp;i)</translation>
     </message>
+    <message>
+        <source>Could not start recollindex (temp file error)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You will need to run a query to complete the display change.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1765,6 +1801,14 @@ Please check the desktop file</source>
         <source>E&amp;xport simple search history</source>
         <translation>단순 검색어 기록 내보내기(&amp;x)</translation>
     </message>
+    <message>
+        <source>Use default dark mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dark mode</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -2021,7 +2065,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>External indexes for stored query: </source>
-        <translation>저장된 검색어 요청에 대한 외부 색인:</translation>
+        <translation type="vanished">저장된 검색어 요청에 대한 외부 색인:</translation>
     </message>
     <message>
         <source>Autophrase is set but it was unset for stored query</source>
@@ -2170,6 +2214,22 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Can&apos;t open index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>???</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using current preferences.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2668,27 +2728,27 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation>오류</translation>
+        <translation type="vanished">오류</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation>구성이 초기화되지 않았습니다.</translation>
+        <translation type="vanished">구성이 초기화되지 않았습니다.</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation>&lt;h3&gt;Recoll 색인 일괄 예약&lt;/h3&gt;&lt;p&gt;우리는 이 작업을 위해 기본적으로 &apos;윈도우즈 작업 스케쥴러&apos;를 사용합니다. 아래 버튼을 클릭하여 스캐쥴러를 시작할 수 있습니다.&lt;/p&gt;&lt;p&gt;당신은 오른쪽의 메뉴 안에 &lt;i&gt;작업 만들기&lt;/i&gt;로 전체 인터페이스를 사용할 수 있으며, 혹은 간단하게 &lt;i&gt; 기본 작업 만들기&lt;/i&gt; 마법사를 사용할 수 있습니다.&lt;p&gt; 작업을 수행하기 위하여 아래 나열된 일괄 파일 경로를 복사/붙여넣기 하십시오.</translation>
+        <translation type="vanished">&lt;h3&gt;Recoll 색인 일괄 예약&lt;/h3&gt;&lt;p&gt;우리는 이 작업을 위해 기본적으로 &apos;윈도우즈 작업 스케쥴러&apos;를 사용합니다. 아래 버튼을 클릭하여 스캐쥴러를 시작할 수 있습니다.&lt;/p&gt;&lt;p&gt;당신은 오른쪽의 메뉴 안에 &lt;i&gt;작업 만들기&lt;/i&gt;로 전체 인터페이스를 사용할 수 있으며, 혹은 간단하게 &lt;i&gt; 기본 작업 만들기&lt;/i&gt; 마법사를 사용할 수 있습니다.&lt;p&gt; 작업을 수행하기 위하여 아래 나열된 일괄 파일 경로를 복사/붙여넣기 하십시오.</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation>명령이 이미 시작되었습니다.</translation>
+        <translation type="vanished">명령이 이미 시작되었습니다.</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation>Recoll 일괄 색인</translation>
+        <translation type="vanished">Recoll 일괄 색인</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation>윈도우즈 작업 스캐쥴러 도구 시작</translation>
+        <translation type="vanished">윈도우즈 작업 스캐쥴러 도구 시작</translation>
     </message>
 </context>
 <context>
@@ -3237,7 +3297,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Start with simple search mode</source>
-        <translation>단순 검색의 검색 기준 기본값:</translation>
+        <translation type="vanished">단순 검색의 검색 기준 기본값:</translation>
     </message>
     <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
@@ -3324,6 +3384,22 @@ The default value is 2 (percent). </source>
     <message>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
         <translation>미리보기를 위한 하이라이트 처리된 글자의 최대 용량(KB)</translation>
+    </message>
+    <message>
+        <source>Start with simple search mode: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide toolbars.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide status bar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Clear and Search buttons.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

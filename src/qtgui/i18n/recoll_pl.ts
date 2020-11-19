@@ -262,10 +262,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,6 +351,18 @@
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer log file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -978,7 +986,7 @@ Indeksując, idź za dowiązaniami symbolicznymi. Domyślnia wartość to NIE, c
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">&amp;Otwórz dokument|katalog rodzica</translation>
+        <translation type="obsolete">&amp;Otwórz dokument|katalog rodzica</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -991,6 +999,14 @@ Indeksując, idź za dowiązaniami symbolicznymi. Domyślnia wartość to NIE, c
     <message>
         <source>Show subdocuments / attachments</source>
         <translation type="unfinished">Pokaż poddokumenty|załączniki</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent Folder</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1558,6 +1574,22 @@ Please check the desktop file</source>
         <source>F&amp;ilter</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Could not start recollindex (temp file error)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You will need to run a query to complete the display change.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1847,6 +1879,14 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Webcache Editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use default dark mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dark mode</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2308,15 +2348,27 @@ Użyj &lt;b&gt;Pokaż zapytanie&lt;/b&gt; jeśli jesteś niepewny wyników i spr
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>External indexes for stored query: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Autophrase is set but it was unset for stored query</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Autophrase is unset but it was set for stored query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t open index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>???</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using current preferences.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2835,27 +2887,7 @@ Użyj &lt;b&gt;Pokaż zapytanie&lt;/b&gt; jeśli jesteś niepewny wyników i spr
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Błąd</translation>
-    </message>
-    <message>
-        <source>Configuration not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command already started</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Recoll Batch indexing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Windows Task Scheduler tool</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Błąd</translation>
     </message>
 </context>
 <context>
@@ -3429,10 +3461,6 @@ Domyślna wartość to 2 (%).</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Start with simple search mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3498,6 +3526,22 @@ Domyślna wartość to 2 (%).</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start with simple search mode: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide toolbars.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide status bar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide Clear and Search buttons.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

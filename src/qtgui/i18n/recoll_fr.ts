@@ -266,10 +266,6 @@
         <translation>Ajuste la quantité de données lues entre les écritures sur disque.&lt;br&gt;Contrôle l&apos;utilisation de la mémoire. Défaut 10 Mo </translation>
     </message>
     <message>
-        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
         <translation>C&apos;est le pourcentage d&apos;utilisation disque - utilisation totale, et non taille de l&apos;index - où l&apos;indexation s&apos;arrêtera en erreur.&lt;br&gt;La valeur par défaut de 0 désactive ce test.</translation>
     </message>
@@ -368,6 +364,18 @@
     <message>
         <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
         <translation>Langue du dictionnaire aspell. Les valeurs sont des codes en deux lettres, par exemple &apos;en&apos;, &apos;fr&apos;...&lt;br&gt;Si cette valeur n&apos;est pas renseignée, l&apos;environnement système sera utilisé pour la déterminer, ce qui marche bien le plus souvent. Pour avoir une idée de ce qui est installé sur votre système, utiliser la commande &apos;aspell --help&apos; qui affiche entre autres la liste des dictionnaires disponibles.</translation>
+    </message>
+    <message>
+        <source>Indexer log file name</source>
+        <translation>Nom du fichier journal de l&apos;indexeur</translation>
+    </message>
+    <message>
+        <source>If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</source>
+        <translation>Si la valeur est vide, la valeur du journal commun est utilisée. Il peut être utile d&apos;avoir un fichier séparé pour l&apos;indexeur parce que le fichier commun est effacé quand&lt;br&gt;l&apos;interface graphique démarre.</translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
+        <translation>Pourcentage d&apos;occupation du disque provoquant l&apos;arrêt de l&apos;indexation&lt;br&gt;Ex: 90% pour arrêter quand le disque est 90% plein. 0 ou 100 signifient pas de limite</translation>
     </message>
 </context>
 <context>
@@ -1017,7 +1025,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Ouvrir le document/dossier parent</translation>
+        <translation type="vanished">&amp;Ouvrir le document/dossier parent</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -1030,6 +1038,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>Afficher les sous-documents et attachements</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document</source>
+        <translation>&amp;Ouvrir le document parent</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent Folder</source>
+        <translation>Ouvrir le dossier parent</translation>
     </message>
 </context>
 <context>
@@ -1677,6 +1693,22 @@ Merci de vérifier le fichier desktop </translation>
         <source>F&amp;ilter</source>
         <translation>F&amp;iltre</translation>
     </message>
+    <message>
+        <source>Could not start recollindex (temp file error)</source>
+        <translation>Impossible de démarrer l&apos;indexeur (erreur de fichier temporaire)</translation>
+    </message>
+    <message>
+        <source>Could not read: </source>
+        <translation>Impossible de lire:</translation>
+    </message>
+    <message>
+        <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
+        <translation>Ceci remplacera le contenu courant le la préférence &quot;en-tete de liste de résultats&quot; et le nom du fichier qss. Continuer ?</translation>
+    </message>
+    <message>
+        <source>You will need to run a query to complete the display change.</source>
+        <translation>Exécutez une recherche pour compléter le changement d&apos;affichage.</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1991,6 +2023,14 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>E&amp;xport simple search history</source>
         <translation>E&amp;xporter l&apos;historique de recherches simples</translation>
+    </message>
+    <message>
+        <source>Use default dark mode</source>
+        <translation>Utiliser le mode sombre standard</translation>
+    </message>
+    <message>
+        <source>Dark mode</source>
+        <translation>Mode sombre</translation>
     </message>
 </context>
 <context>
@@ -2483,7 +2523,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>External indexes for stored query: </source>
-        <translation>Les index externes pour la recherche sauvegardée : </translation>
+        <translation type="vanished">Les index externes pour la recherche sauvegardée : </translation>
     </message>
     <message>
         <source>Autophrase is set but it was unset for stored query</source>
@@ -2499,131 +2539,147 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head&gt;&lt;style&gt;</translation>
     </message>
     <message>
         <source>table, th, td {</source>
-        <translation type="unfinished"></translation>
+        <translation>table, th, td {</translation>
     </message>
     <message>
         <source>border: 1px solid black;</source>
-        <translation type="unfinished"></translation>
+        <translation>border: 1px solid black;</translation>
     </message>
     <message>
         <source>border-collapse: collapse;</source>
-        <translation type="unfinished"></translation>
+        <translation>border: 1px solid black;</translation>
     </message>
     <message>
         <source>}</source>
-        <translation type="unfinished"></translation>
+        <translation>}</translation>
     </message>
     <message>
         <source>th,td {</source>
-        <translation type="unfinished"></translation>
+        <translation>th,td {</translation>
     </message>
     <message>
         <source>text-align: center;</source>
-        <translation type="unfinished"></translation>
+        <translation>text-align: center;</translation>
     </message>
     <message>
         <source>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>You should really look at the manual (F1)&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</translation>
     </message>
     <message>
         <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</translation>
     </message>
     <message>
         <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Can&apos;t open index</source>
+        <translation>Impossible d&apos;ouvrir l&apos;index</translation>
+    </message>
+    <message>
+        <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
+        <translation>Impossible de restaurer les index externes utilisés pour la requête d&apos;origine:&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>???</source>
+        <translation>???</translation>
+    </message>
+    <message>
+        <source>Using current preferences.</source>
+        <translation>Utilisation des préférences actuelles.</translation>
     </message>
 </context>
 <context>
@@ -3486,27 +3542,27 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation>Erreur</translation>
+        <translation type="vanished">Erreur</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation>Configuration non initialisée</translation>
+        <translation type="vanished">Configuration non initialisée</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation>&lt;h3&gt;Programmation de l&apos;indexation par lots&lt;/h3&gt;&lt;p&gt;Recoll utilise l&apos;outil standard Windows de programmation de tâches. Ce programme sera démarré quand vous cliquerez le bouton ci-dessous.&lt;/p&gt;&lt;p&gt;Vous pouvez utiliser soit l&apos;interface complète (&lt;i&gt;Créer&lt;/i&gt; dans le menu à droite), ou l&apos;interface simplifiée &lt;i&gt;Créer une tâche basique&lt;/i&gt;. Dans les deux cas, Copier/Coller le chemin du fichier de tâche listé ci-dessous comme l&apos;&lt;i&gt;Action&lt;/i&gt; à exécuter.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;h3&gt;Programmation de l&apos;indexation par lots&lt;/h3&gt;&lt;p&gt;Recoll utilise l&apos;outil standard Windows de programmation de tâches. Ce programme sera démarré quand vous cliquerez le bouton ci-dessous.&lt;/p&gt;&lt;p&gt;Vous pouvez utiliser soit l&apos;interface complète (&lt;i&gt;Créer&lt;/i&gt; dans le menu à droite), ou l&apos;interface simplifiée &lt;i&gt;Créer une tâche basique&lt;/i&gt;. Dans les deux cas, Copier/Coller le chemin du fichier de tâche listé ci-dessous comme l&apos;&lt;i&gt;Action&lt;/i&gt; à exécuter.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation>Commande déjà démarrée</translation>
+        <translation type="vanished">Commande déjà démarrée</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation>Indexation par lots</translation>
+        <translation type="vanished">Indexation par lots</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation>Démarrer l&apos;outil de programmation de tâches</translation>
+        <translation type="vanished">Démarrer l&apos;outil de programmation de tâches</translation>
     </message>
 </context>
 <context>
@@ -4182,7 +4238,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Start with simple search mode</source>
-        <translation>Démarrer en mode recherche simple</translation>
+        <translation type="vanished">Démarrer en mode recherche simple</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
@@ -4267,6 +4323,22 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
         <translation>Taille maximum de texte surligné pour la prévisualisation (kilo-octets)</translation>
+    </message>
+    <message>
+        <source>Start with simple search mode: </source>
+        <translation>Démarrer avec le type de recherche simple qui suit:</translation>
+    </message>
+    <message>
+        <source>Hide toolbars.</source>
+        <translation>Cacher les barres d&apos;outils.</translation>
+    </message>
+    <message>
+        <source>Hide status bar.</source>
+        <translation>Cacher la barre de status.</translation>
+    </message>
+    <message>
+        <source>Hide Clear and Search buttons.</source>
+        <translation>Cacher les boutons Effacer et Recherche.</translation>
     </message>
 </context>
 </TS>
