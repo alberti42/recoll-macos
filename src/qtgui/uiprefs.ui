@@ -46,7 +46,7 @@
          <item>
           <widget class="QLabel" name="textLabelSST">
            <property name="text">
-            <string>Start with simple search mode</string>
+            <string>Start with simple search mode: </string>
            </property>
            <property name="wordWrap">
             <bool>false</bool>
@@ -166,6 +166,16 @@
         <widget class="QCheckBox" name="noToolbarsCB">
          <property name="text">
           <string>Hide toolbars.</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="noStatusBarCB">
+         <property name="text">
+          <string>Hide status bar.</string>
          </property>
          <property name="checked">
           <bool>false</bool>

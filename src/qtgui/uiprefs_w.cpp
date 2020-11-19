@@ -146,6 +146,7 @@ void UIPrefsDialog::setFromPrefs()
 
     noToolbarsCB->setChecked(prefs.noToolbars);
     noClearSearchCB->setChecked(prefs.noClearSearch);
+    noStatusBarCB->setChecked(prefs.noStatusBar);
     showTrayIconCB->setChecked(prefs.showTrayIcon);
     if (!prefs.showTrayIcon) {
         prefs.closeToTray = false;
@@ -350,9 +351,11 @@ void UIPrefsDialog::accept()
 
     prefs.keepSort = keepSortCB->isChecked();
     prefs.noToolbars = noToolbarsCB->isChecked();
+    m_mainWindow->setupToolbars();
+    prefs.noStatusBar = noStatusBarCB->isChecked();
+    m_mainWindow->setupStatusBar();
     prefs.noClearSearch = noClearSearchCB->isChecked();
     m_mainWindow->sSearch->setupButtons();
-    m_mainWindow->setupToolbars();
     prefs.showTrayIcon = showTrayIconCB->isChecked();
     m_mainWindow->enableTrayIcon(prefs.showTrayIcon);
     prefs.closeToTray = closeToTrayCB->isChecked();

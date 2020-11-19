@@ -151,9 +151,7 @@ void RclMain::init()
     qf.setPermissions(QFile::ReadOwner|QFile::WriteOwner);
     qf.close();
     m_watcher.addPath(idxfn);
-    // At least some versions of qt4 don't display the status bar if
-    // it's not created here.
-    (void)statusBar();
+    setupStatusBar();
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)this->objectName().toUtf8(),
@@ -482,6 +480,17 @@ void RclMain::setupToolbars()
         m_resTB->hide();
     }
 }
+
+void RclMain::setupStatusBar()
+{
+    auto bar = statusBar();
+    if (prefs.noStatusBar) {
+        bar->hide();
+    } else {
+        bar->show();
+    }
+}
+
 
 void RclMain::enableTrayIcon(bool on)
 {

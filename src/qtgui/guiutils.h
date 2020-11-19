@@ -142,6 +142,7 @@ class PrefsPack {
     
     bool noToolbars{false};
     bool noClearSearch{false};
+    bool noStatusBar{false};
     bool showTrayIcon{false};
     bool closeToTray{false};
     bool trayMessages{false};
