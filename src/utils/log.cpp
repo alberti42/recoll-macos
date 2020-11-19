@@ -44,7 +44,7 @@ bool Logger::reopen(const std::string& fn)
     if (!m_tocerr && m_stream.is_open()) {
         m_stream.close();
     }
-    if (!m_fn.empty() && m_fn.compare("stderr")) {
+    if (!m_fn.empty() && m_fn != "stderr") {
         m_stream.open(m_fn, std::fstream::out | std::ofstream::trunc);
         if (!m_stream.is_open()) {
             cerr << "Logger::Logger: log open failed: for [" <<
