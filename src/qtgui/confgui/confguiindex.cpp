@@ -267,6 +267,13 @@ bool ConfIndexW::setupTopPanel(int idx)
         tr("This value adjusts the amount of messages,<br>from only "
            "errors to a lot of debugging data."), 0, 6);
 
+    m_w->addParam(idx, ConfTabsW::CFPT_FN, "idxlogfilename",
+                  tr("Indexer log file name"),
+                  tr("If empty, the above log file name value will be used. "
+                     "It may useful to have a separate log for diagnostic "
+                     "purposes because the common log will be erased when<br>"
+                     "the GUI starts up."), 0);
+    
     m_w->addParam(idx, ConfTabsW::CFPT_INT, "idxflushmb",
                   tr("Index flush megabytes interval"),
                   tr("This value adjust the amount of "
