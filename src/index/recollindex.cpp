@@ -396,7 +396,8 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
             }
         }
     }
-    
+
+    bool onegood{false};
     for (auto& dir : o_topdirs) {
         dir = path_tildexpand(dir);
         if (!dir.size() || !path_isabsolute(dir)) {
@@ -411,6 +412,8 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
         }
         if (!path_exists(dir)) {
             nonexist.push_back(dir);
+        } else {
+            onegood = true;
         }
     }
     topdirs_state(o_topdirs_emptiness);
@@ -418,60 +421,60 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
     // We'd like to check skippedPaths too, but these are wildcard
     // exprs, so reasonably can't
 
-    return true;
+    return onegood;
 }
 
 
 string thisprog;
 
 static const char usage [] =
-                                                           "\n"
-                                                           "recollindex [-h] \n"
-                                                           "    Print help\n"
-                                                           "recollindex [-z|-Z] [-k]\n"
-                                                           "    Index everything according to configuration file\n"
-                                                           "    -z : reset database before starting indexing\n"
-                                                           "    -Z : in place reset: consider all documents as changed. Can also\n"
-                                                           "         be combined with -i or -r but not -m\n"
-                                                           "    -k : retry files on which we previously failed\n"
+"\n"
+"recollindex [-h] \n"
+"    Print help\n"
+"recollindex [-z|-Z] [-k]\n"
+"    Index everything according to configuration file\n"
+"    -z : reset database before starting indexing\n"
+"    -Z : in place reset: consider all documents as changed. Can also\n"
+"         be combined with -i or -r but not -m\n"
+"    -k : retry files on which we previously failed\n"
 #ifdef RCL_MONITOR
-                                                           "recollindex -m [-w <secs>] -x [-D] [-C]\n"
-                                                           "    Perform real time indexing. Don't become a daemon if -D is set.\n"
-                                                           "    -w sets number of seconds to wait before starting.\n"
-                                                           "    -C disables monitoring config for changes/reexecuting.\n"
-                                                           "    -n disables initial incremental indexing (!and purge!).\n"
+"recollindex -m [-w <secs>] -x [-D] [-C]\n"
+"    Perform real time indexing. Don't become a daemon if -D is set.\n"
+"    -w sets number of seconds to wait before starting.\n"
+"    -C disables monitoring config for changes/reexecuting.\n"
+"    -n disables initial incremental indexing (!and purge!).\n"
 #ifndef DISABLE_X11MON
-                                                           "    -x disables exit on end of x11 session\n"
+"    -x disables exit on end of x11 session\n"
 #endif /* DISABLE_X11MON */
 #endif /* RCL_MONITOR */
-                                                           "recollindex -e [<filepath [path ...]>]\n"
-                                                           "    Purge data for individual files. No stem database updates.\n"
-                                                           "    Reads paths on stdin if none is given as argument.\n"
-                                                           "recollindex -i [-f] [-Z] [<filepath [path ...]>]\n"
-                                                           "    Index individual files. No database purge or stem database updates\n"
-                                                           "    Will read paths on stdin if none is given as argument\n"
-                                                           "    -f : ignore skippedPaths and skippedNames while doing this\n"
-                                                           "recollindex -r [-K] [-f] [-Z] [-p pattern] <top> \n"
-                                                           "   Recursive partial reindex. \n"
-                                                           "     -p : filter file names, multiple instances are allowed, e.g.: \n"
-                                                           "        -p *.odt -p *.pdf\n"
-                                                           "     -K : skip previously failed files (they are retried by default)\n"
-                                                           "recollindex -l\n"
-                                                           "    List available stemming languages\n"
-                                                           "recollindex -s <lang>\n"
-                                                           "    Build stem database for additional language <lang>\n"
-                                                           "recollindex -E\n"
-                                                           "    Check configuration file for topdirs and other paths existence\n"
+"recollindex -e [<filepath [path ...]>]\n"
+"    Purge data for individual files. No stem database updates.\n"
+"    Reads paths on stdin if none is given as argument.\n"
+"recollindex -i [-f] [-Z] [<filepath [path ...]>]\n"
+"    Index individual files. No database purge or stem database updates\n"
+"    Will read paths on stdin if none is given as argument\n"
+"    -f : ignore skippedPaths and skippedNames while doing this\n"
+"recollindex -r [-K] [-f] [-Z] [-p pattern] <top> \n"
+"   Recursive partial reindex. \n"
+"     -p : filter file names, multiple instances are allowed, e.g.: \n"
+"        -p *.odt -p *.pdf\n"
+"     -K : skip previously failed files (they are retried by default)\n"
+"recollindex -l\n"
+"    List available stemming languages\n"
+"recollindex -s <lang>\n"
+"    Build stem database for additional language <lang>\n"
+"recollindex -E\n"
+"    Check configuration file for topdirs and other paths existence\n"
 #ifdef FUTURE_IMPROVEMENT
-                                                           "recollindex -W\n"
-                                                           "    Process the Web queue\n"
+"recollindex -W\n"
+"    Process the Web queue\n"
 #endif
 #ifdef RCL_USE_ASPELL
-                                                           "recollindex -S\n"
-                                                           "    Build aspell spelling dictionary.>\n"
+"recollindex -S\n"
+"    Build aspell spelling dictionary.>\n"
 #endif
-                                                           "Common options:\n"
-                                                           "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+"Common options:\n"
+"    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
                                                            ;
 
 static void Usage()
@@ -708,7 +711,8 @@ int main(int argc, char *argv[])
 
     vector<string> nonexist;
     if (!checktopdirs(config, nonexist)) {
-        addIdxReason("init", "topdirs not set");
+        std::cerr << "topdirs not set or only contains invalid paths.\n";
+        addIdxReason("init", "topdirs not set or only contains invalid paths.");
         flushIdxReasons();
         exit(1);
     }

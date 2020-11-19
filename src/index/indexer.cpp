@@ -156,7 +156,14 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         addIdxReason("indexer", m_db.getReason());
         return false;
     }
-
+    std::string logloc;
+    if (Logger::getTheLog()->logisstderr()) {
+        logloc = "program error output.";
+    } else {
+        logloc = std::string(" log in ") +
+            Logger::getTheLog()->getlogfilename() + ".";
+    }
+    
     m_config->setKeyDir(cstr_null);
     if (typestorun & IxTFs) {
         if (runFirstIndexing()) {
@@ -168,7 +175,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
             if (stopindexing) {
                 addIdxReason("indexer", "Indexing was interrupted.");
             } else {
-                addIdxReason("indexer", "Index creation failed. See log.");
+                addIdxReason("indexer", "Index creation failed. See" + logloc);
             }
             m_db.close();
             return false;
@@ -181,7 +188,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
         if (!m_webindexer || !m_webindexer->index()) {
             m_db.close();
-            addIdxReason("indexer", "Web index creation failed. See log");
+            addIdxReason("indexer", "Web index creation failed. See" + logloc);
             return false;
         }
     }
@@ -191,7 +198,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         // filesystem anymore. Only if all *configured* indexers ran.
         if (m_updater && !m_updater->update(DbIxStatus::DBIXS_PURGE, "")) {
             m_db.close();
-            addIdxReason("indexer", "Index purge failed. See log");
+            addIdxReason("indexer", "Index purge failed. See" + logloc);
             return false;
         }
         m_db.purge();
@@ -205,7 +212,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     if (!m_db.close()) {
         LOGERR("ConfIndexer::index: error closing database in " <<
                m_config->getDbDir() << "\n");
-        addIdxReason("indexer", "Index close/flush failed. See log");
+        addIdxReason("indexer", "Index close/flush failed. See" +logloc);
         return false;
     }
 
