@@ -91,7 +91,9 @@ public:
     QString readDarkCSS();
     void setupToolbars();
     void setupStatusBar();
-                         
+    void buildMenus();
+    void setupMenus();
+                     
 public slots:
     virtual void fileExit();
     virtual void periodic100();
@@ -238,6 +240,12 @@ private:
     RclTrayIcon     *m_trayicon{0};
     // We sometimes take the indexer lock (e.g.: when editing the webcache)
     Pidfile         *m_pidfile{0};
+    QMenu *fileMenu;
+    QMenu *viewMenu;
+    QMenu *toolsMenu;
+    QMenu *preferencesMenu;
+    QMenu *helpMenu;
+    QMenu *menuResults;
     
     virtual void init();
     virtual void setupResTB(bool combo);

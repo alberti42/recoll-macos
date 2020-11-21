@@ -136,6 +136,8 @@ void RclMain::init()
     DocSequence::set_translations((const char *)tr("sorted").toUtf8(), 
                                   (const char *)tr("filtered").toUtf8());
 
+    buildMenus();
+
     // A shortcut to get the focus back to the search entry, in table
     // mode only.
     m_tablefocseq = new QShortcut(QKeySequence("Ctrl+r"), this);
@@ -152,6 +154,7 @@ void RclMain::init()
     qf.close();
     m_watcher.addPath(idxfn);
     setupStatusBar();
+    setupMenus();
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)this->objectName().toUtf8(),
@@ -488,6 +491,16 @@ void RclMain::setupStatusBar()
         bar->hide();
     } else {
         bar->show();
+    }
+}
+void RclMain::setupMenus()
+{
+    if (prefs.noMenuBar) {
+        MenuBar->hide();
+        sSearch->menuPB->show();
+    } else {
+        MenuBar->show();
+        sSearch->menuPB->hide();
     }
 }
 

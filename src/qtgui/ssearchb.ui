@@ -110,6 +110,24 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="menuPB">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Main menu</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/images/menu.png</normalon>
+        </iconset>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>

@@ -183,6 +183,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="noMenuBarCB">
+         <property name="text">
+          <string>Hide menu bar (show button instead).</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="noClearSearchCB">
          <property name="text">
           <string>Hide Clear and Search buttons.</string>

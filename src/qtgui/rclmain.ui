@@ -68,92 +68,7 @@
      <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="fileMenu">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="fileToggleIndexingAction"/>
-    <addaction name="fileRebuildIndexAction"/>
-    <addaction name="actionSpecial_Indexing"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave_last_query"/>
-    <addaction name="actionLoad_saved_query"/>
-    <addaction name="separator"/>
-    <addaction name="fileExportSSearchHistoryAction"/>
-    <addaction name="fileEraseSearchHistoryAction"/>
-    <addaction name="separator"/>
-    <addaction name="fileEraseDocHistoryAction"/>
-    <addaction name="separator"/>
-    <addaction name="fileExitAction"/>
-   </widget>
-   <widget class="QMenu" name="viewMenu">
-    <property name="title">
-     <string>&amp;View</string>
-    </property>
-    <addaction name="showMissingHelpers_Action"/>
-    <addaction name="showActiveTypes_Action"/>
-    <addaction name="actionShow_index_statistics"/>
-    <addaction name="separator"/>
-    <addaction name="toggleFullScreenAction"/>
-   </widget>
-   <widget class="QMenu" name="toolsMenu">
-    <property name="title">
-     <string>&amp;Tools</string>
-    </property>
-    <addaction name="toolsDoc_HistoryAction"/>
-    <addaction name="toolsAdvanced_SearchAction"/>
-    <addaction name="toolsSpellAction"/>
-    <addaction name="actionShowQueryDetails"/>
-    <addaction name="actionQuery_Fragments"/>
-    <addaction name="actionWebcache_Editor"/>
-   </widget>
-   <widget class="QMenu" name="preferencesMenu">
-    <property name="title">
-     <string>&amp;Preferences</string>
-    </property>
-    <addaction name="indexConfigAction"/>
-    <addaction name="indexScheduleAction"/>
-    <addaction name="separator"/>
-    <addaction name="queryPrefsAction"/>
-    <addaction name="extIdxAction"/>
-    <addaction name="separator"/>
-    <addaction name="enbDarkModeAction"/>
-    <addaction name="separator"/>
-    <addaction name="enbSynAction"/>
-    <addaction name="separator"/>
-   </widget>
-   <widget class="QMenu" name="helpMenu">
-    <property name="title">
-     <string>&amp;Help</string>
-    </property>
-    <addaction name="userManualAction"/>
-    <addaction name="showMissingHelpers_Action"/>
-    <addaction name="showActiveTypes_Action"/>
-    <addaction name="separator"/>
-    <addaction name="helpAbout_RecollAction"/>
-   </widget>
-   <widget class="QMenu" name="menuResults">
-    <property name="title">
-     <string>&amp;Results</string>
-    </property>
-    <addaction name="nextPageAction"/>
-    <addaction name="prevPageAction"/>
-    <addaction name="firstPageAction"/>
-    <addaction name="separator"/>
-    <addaction name="actionSortByDateAsc"/>
-    <addaction name="actionSortByDateDesc"/>
-    <addaction name="separator"/>
-    <addaction name="actionShowResultsAsTable"/>
-    <addaction name="separator"/>
-    <addaction name="actionSaveResultsAsCSV"/>
-   </widget>
-   <addaction name="fileMenu"/>
-   <addaction name="viewMenu"/>
-   <addaction name="toolsMenu"/>
-   <addaction name="menuResults"/>
-   <addaction name="preferencesMenu"/>
    <addaction name="separator"/>
-   <addaction name="helpMenu"/>
   </widget>
   <action name="fileExitAction">
    <property name="text">
@@ -175,14 +90,14 @@
    </property>
   </action>
   <action name="fileBumpIndexingAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Trigger incremental pass</string>
    </property>
    <property name="name" stdset="0">
     <cstring>fileBumpIndexingAction</cstring>
-   </property>
-   <property name="enabled">
-    <bool>false</bool>
    </property>
   </action>
   <action name="fileRebuildIndexAction">
