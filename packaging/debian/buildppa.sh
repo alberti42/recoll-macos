@@ -4,11 +4,17 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
+# Active series:
+# 16.04LTS xenial 2021-04
+# 18.04LTS bionic 2023-04
+# 20.04LTS focal  2025-04
+# 20.10    groovy 2021-07
+
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.27.12
+RCLVERS=1.28.0pre2
 SCOPEVERS=1.20.2.4
-GSSPVERS=1.0.0
+GSSPVERS=1.1.0
 PPAVERS=1
 
 # 
@@ -22,7 +28,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-#PPANAME=recollexp-ppa
+PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -45,11 +51,6 @@ check_recoll_orig()
 
 ####### QT
 debdir=debian
-# Active series:
-# 16.04LTS xenial 2021-04
-# 18.04LTS bionic 2023-04
-# 20.04LTS focal  2025-04
-# 20.10    groovy 2021-07
 series="xenial bionic focal groovy"
 #series=
 
@@ -86,10 +87,6 @@ done
 
 
 ### KIO.
-# Active series:
-# 16.04LTS xenial 2021-04
-# 18.04LTS bionic 2023-04
-# 20.04LTS focal  2025-04
 series="xenial bionic focal groovy"
 series=
 
@@ -130,10 +127,6 @@ for svers in $series ; do
 done
 
 ### GSSP
-# Active series:
-# 16.04LTS xenial 2021-04
-# 18.04LTS bionic 2023-04
-# 20.04LTS focal  2025-04
 series="xenial bionic focal groovy"
 series=
 

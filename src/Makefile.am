@@ -464,6 +464,7 @@ qtgui/ptrans_w.h \
 qtgui/rclhelp.cpp \
 qtgui/rclhelp.h \
 qtgui/rclm_idx.cpp \
+qtgui/rclm_menus.cpp \
 qtgui/rclm_preview.cpp \
 qtgui/rclm_saveload.cpp \
 qtgui/rclm_view.cpp \

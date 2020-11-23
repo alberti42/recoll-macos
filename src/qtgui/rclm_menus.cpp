@@ -85,23 +85,23 @@ void RclMain::buildMenus()
 
     queryMenu->addSection(QIcon(), tr("Simple search type"));
     sstypGroup = new QActionGroup(this);
-    auto actSSAny = new QAction(tr("Any term"));
+    auto actSSAny = new QAction(tr("Any term"), this);
     
     actSSAny->setData(QVariant(SSearch::SST_ANY));
     actSSAny->setCheckable(true);
     sstypGroup->addAction(actSSAny);
     queryMenu->addAction(actSSAny);
-    auto actSSAll = new QAction(tr("All terms"));
+    auto actSSAll = new QAction(tr("All terms"), this);
     actSSAll->setData(QVariant(SSearch::SST_ALL));
     actSSAll->setCheckable(true);
     sstypGroup->addAction(actSSAll);
     queryMenu->addAction(actSSAll);
-    auto actSSFile = new QAction(tr("File name"));
+    auto actSSFile = new QAction(tr("File name"), this);
     actSSFile->setData(QVariant(SSearch::SST_FNM));
     actSSFile->setCheckable(true);
     sstypGroup->addAction(actSSFile);
     queryMenu->addAction(actSSFile);
-    auto actSSQuery = new QAction(tr("Query language"));
+    auto actSSQuery = new QAction(tr("Query language"), this);
     actSSQuery->setData(QVariant(SSearch::SST_LANG));
     actSSQuery->setCheckable(true);
     sstypGroup->addAction(actSSQuery);
