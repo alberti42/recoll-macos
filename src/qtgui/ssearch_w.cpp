@@ -372,6 +372,12 @@ void SSearch::searchTextChanged(const QString& text)
 void SSearch::onSearchTypeChanged(int typ)
 {
     LOGDEB1("Search type now " << typ << "\n");
+
+    // This may come from the menus or the combobox. Ensure that
+    // things are in sync. No loop because we are connected to
+    // combobox or menu activated(), not currentIndexChanged()
+    searchTypCMB->setCurrentIndex(typ);
+    
     // Adjust context help
     if (typ == SST_LANG) {
         HelpClient::installMap((const char *)this->objectName().toUtf8(), 

@@ -18,8 +18,8 @@
 #define RCLMAIN_W_H
 #include "autoconfig.h"
 
-#include <qvariant.h>
-#include <qmainwindow.h>
+#include <QVariant>
+#include <QMainWindow>
 #include <QFileSystemWatcher>
 
 #include "sortseq.h"
@@ -49,6 +49,7 @@ class WebcacheEdit;
 class ConfIndexW;
 class RclTrayIcon;
 class QShortcut;
+class QActionGroup;
 
 #include "ui_rclmain.h"
 
@@ -93,7 +94,8 @@ public:
     void setupStatusBar();
     void buildMenus();
     void setupMenus();
-                     
+    void setupCategoryFiltering();
+                                 
 public slots:
     virtual void fileExit();
     virtual void periodic100();
@@ -170,6 +172,9 @@ public slots:
 private slots:
     virtual void updateIdxStatus();
     virtual void onWebcacheDestroyed(QObject *);
+    virtual void onSSTypMenu(QAction *act);
+    virtual void onSSTypCMB(int);
+
 signals:
     void docSourceChanged(std::shared_ptr<DocSequence>);
     void stemLangChanged(const QString& lang);
@@ -240,12 +245,18 @@ private:
     RclTrayIcon     *m_trayicon{0};
     // We sometimes take the indexer lock (e.g.: when editing the webcache)
     Pidfile         *m_pidfile{0};
+
+    // Menu for the button version of the top menu.
+    QMenu *buttonTopMenu;
+    // Entries/submenus for the top menu.
     QMenu *fileMenu;
     QMenu *viewMenu;
     QMenu *toolsMenu;
     QMenu *preferencesMenu;
     QMenu *helpMenu;
-    QMenu *menuResults;
+    QMenu *resultsMenu;
+    QActionGroup *sstypGroup;
+    QMenu *queryMenu;
     
     virtual void init();
     virtual void setupResTB(bool combo);

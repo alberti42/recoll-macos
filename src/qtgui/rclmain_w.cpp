@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -25,7 +25,6 @@
 #include <qmessagebox.h>
 #include <qfiledialog.h>
 #include <qshortcut.h>
-#include <qtabwidget.h>
 #include <qtimer.h>
 #include <qstatusbar.h>
 #include <qwindowdefs.h>
@@ -124,17 +123,10 @@ static QString configToTitle()
 
 void RclMain::init()
 {
-    // This is just to get the common catg strings into the message file
-    static const char* catg_strings[] = {
-        QT_TR_NOOP("All"), QT_TR_NOOP("media"),  QT_TR_NOOP("message"),
-        QT_TR_NOOP("other"),  QT_TR_NOOP("presentation"),
-        QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text"), 
-        QT_TR_NOOP("sorted"), QT_TR_NOOP("filtered")
-    };
     setWindowTitle(configToTitle());
 
-    DocSequence::set_translations((const char *)tr("sorted").toUtf8(), 
-                                  (const char *)tr("filtered").toUtf8());
+    DocSequence::set_translations(
+        qs2utf8s(tr("sorted")), qs2utf8s(tr("filtered")));
 
     buildMenus();
 
@@ -153,6 +145,7 @@ void RclMain::init()
     qf.setPermissions(QFile::ReadOwner|QFile::WriteOwner);
     qf.close();
     m_watcher.addPath(idxfn);
+
     setupStatusBar();
     setupMenus();
 
@@ -167,109 +160,10 @@ void RclMain::init()
     enbSynAction->setChecked(prefs.synFileEnable);
     enbDarkModeAction->setChecked(prefs.darkMode);
     
-    // Stemming language menu
-    g_stringNoStem = tr("(no stemming)");
-    g_stringAllStem = tr("(all languages)");
-    m_idNoStem = preferencesMenu->addAction(g_stringNoStem);
-    m_idNoStem->setCheckable(true);
-    m_stemLangToId[g_stringNoStem] = m_idNoStem;
-    m_idAllStem = preferencesMenu->addAction(g_stringAllStem);
-    m_idAllStem->setCheckable(true);
-    m_stemLangToId[g_stringAllStem] = m_idAllStem;
-
-    // Can't get the stemming languages from the db at this stage as
-    // db not open yet (the case where it does not even exist makes
-    // things complicated). So get the languages from the config
-    // instead
-    vector<string> langs;
-    if (!getStemLangs(langs)) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("error retrieving stemming languages"));
-    }
-    QAction *curid = prefs.queryStemLang == "ALL" ? m_idAllStem : m_idNoStem;
-    QAction *id; 
-    for (vector<string>::const_iterator it = langs.begin(); 
-         it != langs.end(); it++) {
-        QString qlang = QString::fromUtf8(it->c_str(), it->length());
-        id = preferencesMenu->addAction(qlang);
-        id->setCheckable(true);
-        m_stemLangToId[qlang] = id;
-        if (prefs.queryStemLang == qlang) {
-            curid = id;
-        }
-    }
-    curid->setChecked(true);
     setupToolbars();
 
-    // Document filter buttons and combobox
-    // Combobox version of the document filter control
-    m_filtCMB = new QComboBox(m_resTB);
-    m_filtCMB->setEditable(false);
-    m_filtCMB->addItem(tr("All"));
-    m_filtCMB->setToolTip(tr("Document filter"));
-    // Buttons version of the document filter control
-    m_filtFRM = new QFrame(this);
-    m_filtFRM->setObjectName(QString::fromUtf8("m_filtFRM"));
-    QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    sizePolicy2.setHorizontalStretch(0);
-    sizePolicy2.setVerticalStretch(0);
-    sizePolicy2.setHeightForWidth(m_filtFRM->sizePolicy().hasHeightForWidth());
-    m_filtFRM->setSizePolicy(sizePolicy2);
-    QHBoxLayout *bgrphbox = new QHBoxLayout(m_filtFRM);
-    m_filtBGRP  = new QButtonGroup(m_filtFRM);
-    QRadioButton *allRDB = new QRadioButton(m_filtFRM);
-    verticalLayout->insertWidget(1, m_filtFRM);
-    allRDB->setObjectName(QString::fromUtf8("allRDB"));
-    allRDB->setGeometry(QRect(0, 0, 45, 20));
-    allRDB->setText(tr("All"));
-    bgrphbox->addWidget(allRDB);
-    int bgrpid = 0;
-    m_filtBGRP->addButton(allRDB, bgrpid++);
-    allRDB->setChecked(true);
-
-    // Menu version of the document filter control
-    m_filtMN = new QMenu(MenuBar);
-    m_filtMN->setObjectName("m_filtMN");
-    MenuBar->insertMenu(helpMenu->menuAction(), m_filtMN);
-    m_filtMN->setTitle(tr("F&ilter"));
-    QActionGroup *fltag = new QActionGroup(this);
-    fltag->setExclusive(true);
-    QAction *act = fltag->addAction(tr("All"));
-    m_filtMN->addAction(act);
-    act->setCheckable(true);
-    act->setData((int)0);
-
-    // Go through the filter list and setup buttons and combobox
-    vector<string> cats;
-    theconfig->getGuiFilterNames(cats);
-    m_catgbutvec.push_back(catg_strings[0]);
-    for (vector<string>::const_iterator it = cats.begin();
-         it != cats.end(); it++) {
-        QRadioButton *but = new QRadioButton(m_filtFRM);
-        QString catgnm = QString::fromUtf8(it->c_str(), it->length());
-        m_catgbutvec.push_back(*it);
-        // We strip text before the first colon before setting the button name.
-        // This is so that the user can decide the order of buttons by naming 
-        // the filter,ie, a:media b:messages etc.
-        QString but_txt = catgnm;
-        int colon = catgnm.indexOf(':');
-        if (colon != -1) {
-            but_txt = catgnm.right(catgnm.size()-(colon+1));
-        }
-        but->setText(tr(but_txt.toUtf8()));
-        m_filtCMB->addItem(tr(but_txt.toUtf8()));
-        bgrphbox->addWidget(but);
-        m_filtBGRP->addButton(but, bgrpid++);
-        QAction *act = fltag->addAction(tr(but_txt.toUtf8()));
-        m_filtMN->addAction(act);
-        act->setCheckable(true);
-        act->setData((int)(m_catgbutvec.size()-1));
-        m_filtMN->connect(m_filtMN, SIGNAL(triggered(QAction *)), this, 
-                          SLOT(catgFilter(QAction *)));
-    }
-    m_filtFRM->setLayout(bgrphbox);
-    connect(m_filtBGRP, SIGNAL(buttonClicked(int)),this, SLOT(catgFilter(int)));
-    connect(m_filtCMB, SIGNAL(activated(int)), this, SLOT(catgFilter(int)));
+    //////// 3 versions of results category filtering: buttons, combobox, menu
+    setupCategoryFiltering();
 
     restable = new ResTable(this);
     verticalLayout->insertWidget(2, restable);
@@ -493,6 +387,7 @@ void RclMain::setupStatusBar()
         bar->show();
     }
 }
+
 void RclMain::setupMenus()
 {
     if (prefs.noMenuBar) {
@@ -517,6 +412,81 @@ void RclMain::enableTrayIcon(bool on)
     } else {
         deleteZ(m_trayicon);
     }
+}
+
+void RclMain::setupCategoryFiltering()
+{
+    // This is just to get the common catg strings into the message file
+    static const char* catg_strings[] = {
+        QT_TR_NOOP("All"), QT_TR_NOOP("media"),  QT_TR_NOOP("message"),
+        QT_TR_NOOP("other"),  QT_TR_NOOP("presentation"),
+        QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text"), 
+        QT_TR_NOOP("sorted"), QT_TR_NOOP("filtered")
+    };
+
+    //// Combobox version 
+    m_filtCMB = new QComboBox(m_resTB);
+    m_filtCMB->setEditable(false);
+    m_filtCMB->addItem(tr("All"));
+    m_filtCMB->setToolTip(tr("Document filter"));
+
+    //// Buttons version
+    m_filtFRM = new QFrame(this);
+    m_filtFRM->setObjectName(QString::fromUtf8("m_filtFRM"));
+    QHBoxLayout *bgrphbox = new QHBoxLayout(m_filtFRM);
+    verticalLayout->insertWidget(1, m_filtFRM);
+    m_filtBGRP  = new QButtonGroup(m_filtFRM);
+    QRadioButton *allRDB = new QRadioButton(m_filtFRM);
+    allRDB->setObjectName("allRDB");
+    allRDB->setText(tr("All"));
+    bgrphbox->addWidget(allRDB);
+    int bgrpid = 0;
+    m_filtBGRP->addButton(allRDB, bgrpid++);
+    allRDB->setChecked(true);
+    m_filtFRM->setLayout(bgrphbox);
+
+    //// Menu version of the document filter control
+    m_filtMN = new QMenu(MenuBar);
+    m_filtMN->setObjectName("m_filtMN");
+    MenuBar->insertMenu(viewMenu->menuAction(), m_filtMN);
+    buttonTopMenu->insertMenu(viewMenu->menuAction(), m_filtMN);
+    m_filtMN->setTitle(tr("F&ilter"));
+    QActionGroup *fltag = new QActionGroup(this);
+    fltag->setExclusive(true);
+    QAction *act = fltag->addAction(tr("All"));
+    m_filtMN->addAction(act);
+    act->setCheckable(true);
+    act->setData((int)0);
+
+    //// Go through the categories list and setup menu, buttons and combobox
+    vector<string> cats;
+    theconfig->getGuiFilterNames(cats);
+    m_catgbutvec.push_back(catg_strings[0]);
+    for (const auto& cat : cats) {
+        QRadioButton *but = new QRadioButton(m_filtFRM);
+        QString catgnm = u8s2qs(cat);
+        m_catgbutvec.push_back(cat);
+        // We strip text before the first colon before setting the button name.
+        // This is so that the user can decide the order of buttons by naming 
+        // the filter,ie, a:media b:messages etc.
+        QString but_txt = catgnm;
+        int colon = catgnm.indexOf(':');
+        if (colon != -1) {
+            but_txt = catgnm.right(catgnm.size()-(colon+1));
+        }
+        but->setText(tr(but_txt.toUtf8()));
+        m_filtCMB->addItem(tr(but_txt.toUtf8()));
+        bgrphbox->addWidget(but);
+        m_filtBGRP->addButton(but, bgrpid++);
+        QAction *act = fltag->addAction(tr(but_txt.toUtf8()));
+        m_filtMN->addAction(act);
+        act->setCheckable(true);
+        act->setData((int)(m_catgbutvec.size()-1));
+        m_filtMN->connect(m_filtMN, SIGNAL(triggered(QAction *)), this, 
+                          SLOT(catgFilter(QAction *)));
+    }
+    connect(m_filtBGRP, SIGNAL(buttonClicked(int)),this, SLOT(catgFilter(int)));
+    connect(m_filtCMB, SIGNAL(activated(int)), this, SLOT(catgFilter(int)));
 }
 
 void RclMain::setSynEnabled(bool on)
@@ -662,8 +632,9 @@ void RclMain::initDbOpen()
             // Don't open adv search or run cmd line search in this case.
             return;
         } else {
-            QMessageBox::warning(0, "Recoll", 
-                                 tr("Could not open external index. Db not open. Check external indexes list."));
+            QMessageBox::warning(0, "Recoll",
+                                 tr("Could not open external index. Db not "
+                                    "open. Check external indexes list."));
         }
     }
 
@@ -684,18 +655,16 @@ void RclMain::setStemLang(QAction *id)
     // Check that the menu entry is for a stemming language change
     // (might also be "show prefs" etc.
     bool isLangId = false;
-    for (map<QString, QAction*>::const_iterator it = m_stemLangToId.begin();
-         it != m_stemLangToId.end(); it++) {
-        if (id == it->second)
+    for (const auto& entry : m_stemLangToId) {
+        if (id == entry.second)
             isLangId = true;
     }
     if (!isLangId)
         return;
 
     // Set the "checked" item state for lang entries
-    for (map<QString, QAction*>::const_iterator it = m_stemLangToId.begin();
-         it != m_stemLangToId.end(); it++) {
-        (it->second)->setChecked(false);
+    for (auto& entry : m_stemLangToId) {
+        entry.second->setChecked(false);
     }
     id->setChecked(true);
 
@@ -726,14 +695,13 @@ void RclMain::setStemLang(const QString& lang)
     } else if (lang == "ALL") {
         id = m_idAllStem;
     } else {
-        map<QString, QAction*>::iterator it = m_stemLangToId.find(lang);
+        auto it = m_stemLangToId.find(lang);
         if (it == m_stemLangToId.end()) 
             return;
         id = it->second;
     }
-    for (map<QString, QAction*>::const_iterator it = m_stemLangToId.begin();
-         it != m_stemLangToId.end(); it++) {
-        (it->second)->setChecked(false);
+    for (const auto& entry : m_stemLangToId) {
+        entry.second->setChecked(false);
     }
     id->setChecked(true);
 }
