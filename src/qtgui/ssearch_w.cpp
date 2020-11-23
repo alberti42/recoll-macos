@@ -201,6 +201,11 @@ void SSearch::setupButtons()
         searchPB->show();
         queryText->setClearButtonEnabled(false);
     }
+    if (prefs.noSSTypCMB) {
+        searchTypCMB->hide();
+    } else {
+        searchTypCMB->show();
+    }
 }
 
 void SSearch::takeFocus()

@@ -297,6 +297,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.noToolbars, "/Recoll/prefs/noToolbars", Bool, false);
     SETTING_RW(prefs.noStatusBar, "/Recoll/prefs/noStatusBar", Bool, false);
     SETTING_RW(prefs.noMenuBar, "/Recoll/prefs/noMenuBar", Bool, false);
+    SETTING_RW(prefs.noSSTypCMB, "/Recoll/prefs/noSSTypCMB", Bool, false);
     SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);
     SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);
     SETTING_RW(prefs.trayMessages, "/Recoll/prefs/trayMessages", Bool, false);

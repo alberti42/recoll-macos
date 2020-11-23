@@ -405,6 +405,7 @@ qtgui/images/asearch.png \
 qtgui/images/cancel.png \
 qtgui/images/close.png \
 qtgui/images/clock.png \
+qtgui/images/menu.png \
 qtgui/images/code-block.png \
 qtgui/images/down.png \
 qtgui/images/firstpage.png \

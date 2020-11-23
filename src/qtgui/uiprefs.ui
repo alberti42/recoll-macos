@@ -193,6 +193,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="noSSTypCMBCB">
+         <property name="text">
+          <string>Hide simple search type (show in menu only).</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="noClearSearchCB">
          <property name="text">
           <string>Hide Clear and Search buttons.</string>
