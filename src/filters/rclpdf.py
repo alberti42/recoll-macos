@@ -210,15 +210,16 @@ class PDFExtractor:
         try:
             vacuumdir(tmpdir)
             # Note: the java version of pdftk sometimes/often fails
-            # here with writing to stdout: "Error occurred during
-            # initialization of VM". Maybe unsufficient resources when
-            # execd from Python ? In any case, the important thing is
-            # to discard the output, until we fix the error or
-            # preferably find a way to do it with poppler...
-            with open(os.devnull, 'w') as FNULL:
-                subprocess.check_call(
-                    [self.pdftk, self.filename, "unpack_files", "output",
-                     tmpdir], stdout=FNULL)
+            # here with writing to stdout:
+            #    Error occurred during initialization of VM
+            #    Could not allocate metaspace: 1073741824 bytes
+            # Maybe unsufficient resources when started from Python ?
+            # In any case, the important thing is to discard the
+            # output, until we fix the error or preferably find a way
+            # to do it with poppler...
+            subprocess.check_call(
+                [self.pdftk, self.filename, "unpack_files", "output",
+                 tmpdir], stdout=sys.stderr)
             self.attachlist = sorted(os.listdir(tmpdir))
             return True
         except Exception as e:
