@@ -1,9 +1,11 @@
-recoll (1.28.0pre3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.28.0pre4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Add preferences options to hide most GUI elements except the result
     area and the simple search entry.
-
- -- Jean-Francois Dockes <jf@dockes.org>  Wed, 25 Nov 2020 10:28:00 +0100
+  * Fix CJK indexing in specific case of encountering numeric after CJK
+    punctuation.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 25 Nov 2020 17:57:00 +0100
 
 recoll (1.27.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
