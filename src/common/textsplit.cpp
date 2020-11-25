@@ -684,7 +684,7 @@ bool TextSplit::text_to_words(const string &in)
                     return false;
                 }
             } else {
-                if (!cjk_to_words(&it, &c)) {
+                if (!cjk_to_words(it, &c)) {
                     LOGERR("Textsplit: scan error in cjk handler\n");
                     return false;
                 }
@@ -993,9 +993,6 @@ bool TextSplit::text_to_words(const string &in)
     return true;
 }
 
-// Using an utf8iter pointer just to avoid needing its definition in
-// textsplit.h
-//
 // We output ngrams for exemple for char input a b c and ngramlen== 2, 
 // we generate: a ab b bc c as words
 //
@@ -1004,10 +1001,9 @@ bool TextSplit::text_to_words(const string &in)
 //
 // The routine is sort of a mess and goes to show that we'd probably
 // be better off converting the whole buffer to utf32 on entry...
-bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
+bool TextSplit::cjk_to_words(Utf8Iter& it, unsigned int *cp)
 {
     LOGDEB1("cjk_to_words: m_wordpos " << m_wordpos << "\n");
-    Utf8Iter &it = *itp;
 
     // We use an offset buffer to remember the starts of the utf-8
     // characters which we still need to use.
@@ -1019,12 +1015,18 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     // Current number of valid offsets;
     unsigned int nchars = 0;
     unsigned int c = 0;
+    bool spacebefore{false};
     for (; !it.eof() && !it.error(); it++) {
         c = *it;
         // We had a version which ignored whitespace for some time,
-        // but this was a bad idea. Only break on an non-cjk
-        // alphabetic character.
-        if (!UNICODE_IS_CJK(c) && (c > 255 || isalpha(c))) {
+        // but this was a bad idea. Only break on a non-cjk
+        // *alphabetic* character, except if following punctuation, in
+        // which case we return for any non-cjk. This allows compound
+        // cjk+numeric spans, or punctuated cjk spans to be
+        // continually indexed as cjk. The best approach is a matter
+        // of appreciation...
+        if (!UNICODE_IS_CJK(c) &&
+            (spacebefore || (c > 255 || isalpha(c)))) {
             // Return to normal handler
             break;
         }
@@ -1032,7 +1034,10 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
             // Flush the ngram buffer and go on
             nchars = 0;
             mybuf.clear();
+            spacebefore = true;
             continue;
+        } else {
+            spacebefore = false;
         }
         if (nchars == o_CJKNgramLen) {
             // Offset buffer full, shift it. Might be more efficient

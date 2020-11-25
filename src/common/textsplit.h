@@ -200,7 +200,7 @@ private:
     }
 
     // This processes cjk text:
-    bool cjk_to_words(Utf8Iter *it, unsigned int *cp);
+    bool cjk_to_words(Utf8Iter& it, unsigned int *cp);
 
     // Experimental Korean splitter. This uses an external Python tokenizer
     bool ko_to_words(Utf8Iter *it, unsigned int *cp);
