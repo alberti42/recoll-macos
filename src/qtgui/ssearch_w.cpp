@@ -441,7 +441,6 @@ void SSearch::onSearchTypeChanged(int typ)
     default:
         queryText->setToolTip(tr("Enter search terms here."));
     }
-    emit searchTypeChanged((int)typ);
 }
 
 void SSearch::startSimpleSearch()

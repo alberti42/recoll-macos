@@ -106,7 +106,6 @@ private slots:
     virtual void onCompleterShown();
     
 signals:
-    void searchTypeChanged(int);
     void startSearch(std::shared_ptr<Rcl::SearchData>, bool);
     void setDescription(QString);
     void clearSearch();

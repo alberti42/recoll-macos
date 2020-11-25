@@ -56,10 +56,10 @@ public:
     virtual std::shared_ptr<DocSequence> getDocSource() {return m_source;}
     virtual void deleteColumn(int);
     virtual const std::vector<std::string>& getFields() {return m_fields;}
-    virtual const std::map<std::string, QString>& getAllFields() 
-    { 
-    return o_displayableFields;
+    static const std::map<std::string, QString>& getAllFields() { 
+        return o_displayableFields;
     }
+    static QString displayableField(const std::string& in);
     virtual void addColumn(int, const std::string&);
     // Some column name are aliases/translator for base document field 
     // (ie: date, datetime->mtime). Help deal with this:

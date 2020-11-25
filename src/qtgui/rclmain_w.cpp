@@ -70,8 +70,6 @@
 #include "readfile.h"
 #include "moc_rclmain_w.cpp"
 
-using std::pair;
-
 QString g_stringAllStem, g_stringNoStem;
 static const char *settingskey_toolarea="/Recoll/geometry/toolArea";
 static const char *settingskey_resarea="/Recoll/geometry/resArea";
@@ -124,9 +122,6 @@ static QString configToTitle()
 void RclMain::init()
 {
     setWindowTitle(configToTitle());
-
-    DocSequence::set_translations(
-        qs2utf8s(tr("sorted")), qs2utf8s(tr("filtered")));
 
     buildMenus();
 
@@ -183,8 +178,6 @@ void RclMain::init()
     connect(sSearch,
             SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
             this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
-    connect(sSearch, SIGNAL(searchTypeChanged(int)), 
-            this, SLOT(onSearchTypeChanged(int)));
     connect(sSearch, SIGNAL(setDescription(QString)), 
             this, SLOT(onSetDescription(QString)));
     connect(sSearch, SIGNAL(clearSearch()), 
@@ -268,6 +261,8 @@ void RclMain::init()
             restable, SLOT(readDocSource()));
     connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
             restable, SLOT(onSortDataChanged(DocSeqSortSpec)));
+    connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
+            this, SLOT(onSortDataChanged(DocSeqSortSpec)));
     connect(this, SIGNAL(uiPrefsChanged()), restable, SLOT(onUiPrefsChanged()));
 
     connect(restable->getModel(), SIGNAL(sortDataChanged(DocSeqSortSpec)),
@@ -330,7 +325,6 @@ void RclMain::init()
     if (prefs.keepSort && prefs.sortActive) {
         m_sortspec.field = (const char *)prefs.sortField.toUtf8();
         m_sortspec.desc = prefs.sortDesc;
-        onSortDataChanged(m_sortspec);
         emit sortDataChanged(m_sortspec);
     }
     QSettings settings;
@@ -775,21 +769,6 @@ void RclMain::fileExit()
     qApp->exit(0);
 }
 
-// Reset sort order when search type changes.
-void RclMain::onSearchTypeChanged(int stp)
-{
-    SSearch::SSearchType tp = (SSearch::SSearchType)stp;
-    switch (tp) {
-    case SSearch::SST_FNM:
-        m_sortspec.desc = false;
-        m_sortspec.field = "mtype";
-        break;
-    default:
-        m_sortspec.reset();
-        break;
-    };
-}
-
 // Start a db query and set the reslist docsource
 void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
 {
@@ -831,7 +810,7 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
     curPreview = 0;
     DocSequenceDb *src = 
         new DocSequenceDb(rcldb, std::shared_ptr<Rcl::Query>(query), 
-                          string(tr("Query results").toUtf8()), sdata);
+                          qs2utf8s(tr("Query results")), sdata);
     src->setAbstractParams(prefs.queryBuildAbstract, 
                            prefs.queryReplaceAbstract);
     m_source = std::shared_ptr<DocSequence>(src);
@@ -981,6 +960,14 @@ void RclMain::onSortDataChanged(DocSeqSortSpec spec)
     prefs.sortDesc = spec.desc;
     prefs.sortActive = !spec.field.empty();
 
+    std::string fld;
+    if (!m_sortspec.field.empty()) {
+        fld = qs2utf8s(RecollModel::displayableField(m_sortspec.field));
+    }
+    DocSequence::set_translations(
+        qs2utf8s(tr("sorted")) + ": " + fld +
+        (m_sortspec.desc?" &darr;":" &uarr;"),
+        qs2utf8s(tr("filtered")));
     initiateQuery();
 }
 

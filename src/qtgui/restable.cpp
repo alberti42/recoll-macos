@@ -255,7 +255,7 @@ RecollModel::RecollModel(const QStringList fields, ResTable *tb,
     o_displayableFields["relevancyrating"] = tr("Relevancy rating");
     o_displayableFields["title"] = tr("Title");
     o_displayableFields["url"] = tr("URL");
-    o_displayableFields["mtime"] = tr("Mtime");
+    o_displayableFields["mtime"] = tr("Date");
     o_displayableFields["date"] = tr("Date");
     o_displayableFields["datetime"] = tr("Date and time");
 
@@ -346,6 +346,12 @@ void RecollModel::addColumn(int col, const string& field)
     }
 }
 
+QString RecollModel::displayableField(const std::string& in)
+{
+    const auto it = o_displayableFields.find(in);
+    return (it == o_displayableFields.end()) ? u8s2qs(in) : it->second;
+}
+
 QVariant RecollModel::headerData(int idx, Qt::Orientation orientation, 
                                  int role) const
 {
@@ -357,12 +363,7 @@ QVariant RecollModel::headerData(int idx, Qt::Orientation orientation,
     }
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole &&
         idx < int(m_fields.size())) {
-        map<string, QString>::const_iterator it = 
-            o_displayableFields.find(m_fields[idx]);
-        if (it == o_displayableFields.end())
-            return QString::fromUtf8(m_fields[idx].c_str());
-        else 
-            return it->second;
+        return displayableField(m_fields[idx]);
     }
     return QVariant();
 }

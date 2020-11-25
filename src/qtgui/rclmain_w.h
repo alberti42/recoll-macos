@@ -146,7 +146,6 @@ public slots:
     virtual void previewPrevInTab(Preview *, int sid, int docnum);
     virtual void previewExposed(Preview *, int sid, int docnum);
     virtual void resetSearch();
-    virtual void onSearchTypeChanged(int);
     virtual void eraseDocHistory();
     virtual void eraseSearchHistory();
     virtual void exportSimpleSearchHistory();
