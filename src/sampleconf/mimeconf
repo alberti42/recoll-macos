@@ -222,6 +222,7 @@ text/x-java = internal text/plain
 text/x-lua = internal
 text/x-mail = internal
 text/x-man = exec rclman
+text/x-orgmode = execm rclorgmode.py
 text/x-perl = internal text/plain
 text/x-purple-html-log = internal text/html
 text/x-purple-log = exec rclpurple

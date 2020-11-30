@@ -15,11 +15,12 @@
 .rst = text/plain
 .md = text/plain
 .gv = text/plain
-.org = text/plain
 .srt = text/x-srt
 .ini = text/x-ini
 .csv = text/x-csv
 .bib = text/x-bibtex
+
+.org = text/x-orgmode
 
 # Source files. 
 # Defining them with specific types allows using a specific ext viewer (in 
