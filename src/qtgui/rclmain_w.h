@@ -256,6 +256,7 @@ private:
     QMenu *resultsMenu;
     QActionGroup *sstypGroup;
     QMenu *queryMenu;
+    QShortcut *butmenuSC{nullptr};
     
     virtual void init();
     virtual void setupResTB(bool combo);

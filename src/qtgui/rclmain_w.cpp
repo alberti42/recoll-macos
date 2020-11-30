@@ -387,9 +387,13 @@ void RclMain::setupMenus()
     if (prefs.noMenuBar) {
         MenuBar->hide();
         sSearch->menuPB->show();
+        butmenuSC = new QShortcut(QKeySequence("Alt+m"), this);
+        connect(butmenuSC, SIGNAL(activated()),
+                sSearch->menuPB, SLOT(showMenu()));
     } else {
         MenuBar->show();
         sSearch->menuPB->hide();
+        deleteZ(butmenuSC);
     }
 }
 
