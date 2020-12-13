@@ -39,13 +39,12 @@ yy::parser::error (const location_type&, const std::string& m)
 }
 
 
-SearchData *wasaStringToRcl(const RclConfig *config,
-                                 const std::string& stemlang,
-                                 const std::string& query, string &reason,
-                                 const std::string& autosuffs)
+std::shared_ptr<SearchData> wasaStringToRcl(
+    const RclConfig *config, const std::string& stemlang,
+    const std::string& query, string &reason, const std::string& autosuffs)
 {
     WasaParserDriver d(config, stemlang, autosuffs);
-    SearchData *sd = d.parse(query);
+    auto sd = std::shared_ptr<Rcl::SearchData>(d.parse(query));
     if (!sd) 
         reason = d.getreason();
     return sd;

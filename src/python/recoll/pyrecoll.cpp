@@ -1004,15 +1004,14 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     // SearchData defaults to stemming in english
     // Use default for now but need to add way to specify language
     string reason;
-    Rcl::SearchData *sd = wasaStringToRcl(
+    std::shared_ptr<Rcl::SearchData> rq = wasaStringToRcl(
         self->connection->rclconfig.get(),dostem ? stemlang : "", utf8, reason);
 
-    if (!sd) {
+    if (!rq) {
         PyErr_SetString(PyExc_ValueError, reason.c_str());
         return 0;
     }
-
-    std::shared_ptr<Rcl::SearchData> rq(sd);
+    
     self->query->setSortBy(*self->sortfield, self->ascending);
     self->query->setQuery(rq);
     int cnt = self->query->getResCnt();

@@ -495,7 +495,7 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
     xml << "  <T>" << base64_encode(u8) << "</T>\n";
 
     SSearchType tp = (SSearchType)searchTypCMB->currentIndex();
-    Rcl::SearchData *sdata = 0;
+    std::shared_ptr<Rcl::SearchData> sdata;
 
     if (tp == SST_LANG) {
         xml << "  <SM>QL</SM>\n";
@@ -509,14 +509,14 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
         } else {
             sdata = wasaStringToRcl(theconfig, stemlang, u8, reason);
         }
-        if (sdata == 0) {
+        if (!sdata) {
             QMessageBox::warning(0, "Recoll", tr("Bad query string") + ": " +
                                  QString::fromUtf8(reason.c_str()));
             return false;
         }
     } else {
-        sdata = new Rcl::SearchData(Rcl::SCLT_OR, stemlang);
-        if (sdata == 0) {
+        sdata = std::make_shared<Rcl::SearchData>(Rcl::SCLT_OR, stemlang);
+        if (!sdata) {
             QMessageBox::warning(0, "Recoll", tr("Out of memory"));
             return false;
         }
@@ -554,9 +554,8 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
     m_xml = xml.str();
     LOGDEB("SSearch::startSimpleSearch:xml:[" << m_xml << "]\n");
 
-    std::shared_ptr<Rcl::SearchData> rsdata(sdata);
     emit setDescription(u8s2qs(u8));
-    emit startSearch(rsdata, true);
+    emit startSearch(sdata, true);
     return true;
 }
 

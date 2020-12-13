@@ -161,10 +161,9 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
     std::unique_lock<std::mutex> locker(o_dblock);
     if (fs.isNotNull()) {
         // We build a search spec by adding a filtering layer to the base one.
-        m_fsdata = std::shared_ptr<Rcl::SearchData>(
-            new Rcl::SearchData(Rcl::SCLT_AND, m_sdata->getStemLang()));
-        Rcl::SearchDataClauseSub *cl = 
-            new Rcl::SearchDataClauseSub(m_sdata);
+        m_fsdata = std::make_shared<Rcl::SearchData>(
+            Rcl::SCLT_AND, m_sdata->getStemLang());
+        Rcl::SearchDataClauseSub *cl = new Rcl::SearchDataClauseSub(m_sdata);
         m_fsdata->addClause(cl);
     
         for (unsigned int i = 0; i < fs.crits.size(); i++) {
@@ -178,14 +177,12 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
                     break;
                     
                 string reason;
-                Rcl::SearchData *sd = 
-                    wasaStringToRcl(m_q->whatDb()->getConf(), 
-                                    m_sdata->getStemLang(),
-                                    fs.values[i], reason);
+                auto sd = wasaStringToRcl(m_q->whatDb()->getConf(),
+                                          m_sdata->getStemLang(),
+                                          fs.values[i], reason);
                 if (sd)  {
                     Rcl::SearchDataClauseSub *cl1 = 
-                        new Rcl::SearchDataClauseSub(
-                            std::shared_ptr<Rcl::SearchData>(sd));
+                        new Rcl::SearchDataClauseSub(sd);
                     m_fsdata->addClause(cl1);
                 }
             }

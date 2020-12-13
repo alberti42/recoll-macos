@@ -371,10 +371,10 @@ endopts:
         qs = uq;
     }
 
-    Rcl::SearchData *sd = 0;
+    std::shared_ptr<Rcl::SearchData> sd;
 
     if (op_flags & (OPT_a|OPT_o|OPT_f)) {
-        sd = new Rcl::SearchData(Rcl::SCLT_OR, stemlang);
+        sd = std::make_shared<Rcl::SearchData>(Rcl::SCLT_OR, stemlang);
         Rcl::SearchDataClause *clp = 0;
         if (op_flags & OPT_f) {
             clp = new Rcl::SearchDataClauseFilename(qs);
