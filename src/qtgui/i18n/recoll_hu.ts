@@ -357,6 +357,10 @@
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished">Webes előzmények</translation>
+    </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
@@ -1581,6 +1585,30 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
         <source>You will need to run a query to complete the display change.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Bármely szó</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Minden szó</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Fájlnév</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">Keresőnyelv</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished">A szótőképzés nyelve</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1856,6 +1884,10 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
         <source>Dark mode</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1920,7 +1952,7 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>Módosítás ideje</translation>
+        <translation type="vanished">Módosítás ideje</translation>
     </message>
     <message>
         <source>Date</source>
@@ -2314,6 +2346,10 @@ ESC SZÓKÖZ billentyűsorozat: a szó lehetséges kiegészítéseit ajánlja fe
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main menu</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3463,6 +3499,14 @@ A PRE+wrap valószínűleg a legjobb választás.</translation>
     </message>
     <message>
         <source>Hide Clear and Search buttons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide menu bar (show button instead).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide simple search type (show in menu only).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -357,6 +357,10 @@
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished">Web geschiedenis</translation>
+    </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
@@ -1568,6 +1572,30 @@ Please check the desktop file</source>
         <source>You will need to run a query to complete the display change.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Elke term</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Alle termen</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">Zoek taal</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished">Stam taal</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1843,6 +1871,10 @@ Please check the desktop file</source>
         <source>Dark mode</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1907,7 +1939,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>Mtijd</translation>
+        <translation type="vanished">Mtijd</translation>
     </message>
     <message>
         <source>Date</source>
@@ -2299,6 +2331,10 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main menu</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3430,6 +3466,14 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Hide Clear and Search buttons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide menu bar (show button instead).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide simple search type (show in menu only).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

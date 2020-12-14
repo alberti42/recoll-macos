@@ -357,6 +357,10 @@
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
@@ -1458,6 +1462,30 @@ Please check the desktop file</source>
         <source>You will need to run a query to complete the display change.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1733,6 +1761,10 @@ Please check the desktop file</source>
         <source>Dark mode</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1793,10 +1825,6 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>URL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mtime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2149,6 +2177,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main menu</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3011,6 +3043,14 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Hide Clear and Search buttons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide menu bar (show button instead).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide simple search type (show in menu only).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

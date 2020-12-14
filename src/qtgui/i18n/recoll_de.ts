@@ -373,6 +373,10 @@
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished">Web-Chronik</translation>
+    </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
@@ -1651,6 +1655,30 @@ Please check the desktop file</source>
         <source>You will need to run a query to complete the display change.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Irgendein Ausdruck</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Alle Ausdrücke</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Dateiname</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">Abfragesprache</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1970,6 +1998,10 @@ Please check the desktop file</source>
         <source>Dark mode</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -2042,7 +2074,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>Änderungszeitpunkt</translation>
+        <translation type="vanished">Änderungszeitpunkt</translation>
     </message>
     <message>
         <source>Date and time</source>
@@ -2599,6 +2631,10 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main menu</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4059,6 +4095,14 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Hide Clear and Search buttons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide menu bar (show button instead).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide simple search type (show in menu only).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
