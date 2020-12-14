@@ -365,6 +365,10 @@
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished">Webhistorik</translation>
+    </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
@@ -1595,6 +1599,30 @@ Tjek venligst desktopfilen</translation>
         <source>You will need to run a query to complete the display change.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Vilkårlig ord</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Alle ord</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Filnavn</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">Forespørgselssprog</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished">Ordstammer for sprog</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1882,6 +1910,10 @@ Tjek venligst desktopfilen</translation>
         <source>Dark mode</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1946,7 +1978,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>Mtid</translation>
+        <translation type="vanished">Mtid</translation>
     </message>
     <message>
         <source>Date</source>
@@ -2419,6 +2451,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main menu</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3569,6 +3605,14 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Hide Clear and Search buttons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide menu bar (show button instead).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide simple search type (show in menu only).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

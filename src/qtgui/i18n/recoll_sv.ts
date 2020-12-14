@@ -357,6 +357,10 @@
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation>Tröskelvärde för full disk, i procent, då vi slutar indexera&lt;br&gt;T.ex 90% för att stoppa vid 90% full disk, (0 eller 100 betyder ingen begränsning).</translation>
     </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
@@ -943,11 +947,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Öppna överordnat dokument/mapp</translation>
+        <translation type="vanished">&amp;Öppna överordnat dokument/mapp</translation>
     </message>
     <message>
         <source>&amp;Open Parent Folder</source>
         <translation>Ö&amp;ppna överordnad mapp</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1500,6 +1508,30 @@ Kolla desktop-filen.</translation>
         <source>You will need to run a query to complete the display change.</source>
         <translation>Du behöver köra en sökning för att slutföra visningsändringen.</translation>
     </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Valfri term</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Alla termer</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Filnamn</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">Frågespråk</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished">Igenkänt språk</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1775,6 +1807,10 @@ Kolla desktop-filen.</translation>
         <source>Dark mode</source>
         <translation>Mörkt läge</translation>
     </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1839,7 +1875,7 @@ Kolla desktop-filen.</translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>Mtime</translation>
+        <translation type="vanished">Mtime</translation>
     </message>
     <message>
         <source>Date</source>
@@ -2192,6 +2228,10 @@ Kolla desktop-filen.</translation>
     <message>
         <source>Show query history</source>
         <translation>Visa sökhistorik</translation>
+    </message>
+    <message>
+        <source>Main menu</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3059,6 +3099,14 @@ Standardvärdet är 2 (procent). </translation>
     <message>
         <source>Hide Clear and Search buttons.</source>
         <translation>Dölj knapparna Rensa och Sök.</translation>
+    </message>
+    <message>
+        <source>Hide menu bar (show button instead).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide simple search type (show in menu only).</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

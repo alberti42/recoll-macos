@@ -377,6 +377,10 @@
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation>Pourcentage d&apos;occupation du disque provoquant l&apos;arrêt de l&apos;indexation&lt;br&gt;Ex: 90% pour arrêter quand le disque est 90% plein. 0 ou 100 signifient pas de limite</translation>
     </message>
+    <message>
+        <source>Web history</source>
+        <translation>Historique Web</translation>
+    </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
@@ -1709,6 +1713,30 @@ Merci de vérifier le fichier desktop </translation>
         <source>You will need to run a query to complete the display change.</source>
         <translation>Exécutez une recherche pour compléter le changement d&apos;affichage.</translation>
     </message>
+    <message>
+        <source>Simple search type</source>
+        <translation>Type de recherche simple</translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation>Certains termes</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation>Tous les termes</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation>Nom de fichier</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation>Language d&apos;interrogation</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation>Langue pour l&apos;expansion des termes</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2032,6 +2060,10 @@ Merci de vérifier le fichier desktop </translation>
         <source>Dark mode</source>
         <translation>Mode sombre</translation>
     </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation>R&amp;echerche</translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -2104,7 +2136,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>Mtime</translation>
+        <translation type="vanished">Mtime</translation>
     </message>
     <message>
         <source>Date</source>
@@ -2723,6 +2755,10 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Enter search terms here.</source>
         <translation type="vanished">Entrer les termes recherchés ici.</translation>
+    </message>
+    <message>
+        <source>Main menu</source>
+        <translation>Menu principal</translation>
     </message>
 </context>
 <context>
@@ -4339,6 +4375,14 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Hide Clear and Search buttons.</source>
         <translation>Cacher les boutons Effacer et Recherche.</translation>
+    </message>
+    <message>
+        <source>Hide menu bar (show button instead).</source>
+        <translation>Cacher la barre de menu (afficher un bouton à la place).</translation>
+    </message>
+    <message>
+        <source>Hide simple search type (show in menu only).</source>
+        <translation>Cacher le type de recherche simple (afficher uniquement dans le menu).</translation>
     </message>
 </context>
 </TS>

@@ -377,6 +377,10 @@
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished">Historie webu</translation>
+    </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
@@ -1688,6 +1692,30 @@ Prověřte soubor pracovní plochy</translation>
         <source>You will need to run a query to complete the display change.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Jakýkoli výraz</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Všechny výrazy</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Název souboru</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">Jazyk hledání</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2011,6 +2039,10 @@ Prověřte soubor pracovní plochy</translation>
         <source>Dark mode</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -2087,7 +2119,7 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>Mtime</translation>
+        <translation type="vanished">Mtime</translation>
     </message>
     <message>
         <source>Date and time</source>
@@ -2681,6 +2713,10 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main menu</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4195,6 +4231,14 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Hide Clear and Search buttons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide menu bar (show button instead).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide simple search type (show in menu only).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
