@@ -20,6 +20,7 @@ COMMONCPPFLAGS = -I. \
     -I$(top_srcdir)/common \
     -I$(top_srcdir)/index \
     -I$(top_srcdir)/internfile \
+    -I$(top_srcdir)/query \
     -I$(top_srcdir)/rcldb \
     -I$(top_srcdir)/unac \
     -I$(top_srcdir)/utils \
@@ -38,7 +39,7 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     $(DEFS)
 
 noinst_PROGRAMS = textsplit utf8iter fstreewalk rclconfig hldata unac mbox \
-    circache wipedir mimetype pathut fileudi x11mon
+    circache wipedir mimetype pathut fileudi x11mon rclqdocmem
 
 circache_SOURCES = trcircache.cpp
 circache_LDADD = ../librecoll.la
@@ -78,3 +79,6 @@ wipedir_LDADD = ../librecoll.la
 
 x11mon_SOURCES = trx11mon.cpp
 x11mon_LDADD = ../utils/x11mon.o ../librecoll.la -lX11
+
+rclqdocmem_SOURCES = rclqdocmem.cpp
+rclqdocmem_LDADD = ../librecoll.la
