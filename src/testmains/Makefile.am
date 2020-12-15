@@ -80,5 +80,5 @@ wipedir_LDADD = ../librecoll.la
 x11mon_SOURCES = trx11mon.cpp
 x11mon_LDADD = ../utils/x11mon.o ../librecoll.la -lX11
 
-rclqdocmem_SOURCES = rclqdocmem.cpp
+rclqdocmem_SOURCES = rclqdocmem.cpp qresultstore.cpp
 rclqdocmem_LDADD = ../librecoll.la

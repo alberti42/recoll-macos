@@ -44,7 +44,7 @@
 #include "plaintorich.h"
 #include "hldata.h"
 #include "smallut.h"
-
+#include "qresultstore.h"
 
 //const std::string confdir{"/home/dockes/.recoll-prod"};
 const std::string confdir{"/var/cache/upmpdcli/uprcl"};
@@ -265,7 +265,6 @@ int main(int argc, char *argv[])
     }
 
 #elif defined(STORE_ARRAYS)
-
     //
     // Each result stored as a vector<const char*> with a shared
     // key->intidx map to store the key name to index mapping, and and
@@ -302,6 +301,26 @@ int main(int argc, char *argv[])
     // performance impact which should be quite modest.
     //  ** This supposes that we don't use obstack though, as obstack
     //     placement is unpredictable.
+    //
+    // This the solution now implemented: no obstack, use struct with offsets
+    // This uses 19 MB of storage for the audio index, and 72 MB for
+    // the main one (less keys->less gain)
+{
+#if 1
+    QResultStore store;
+    bool result = store.storeQuery(
+        query, {"author", "ipath", "rcludi", "relevancyrating", 
+                "sig","abstract", "caption", "filename",  "origcharset", "sig"});
+    if (!result) {
+        std::cerr << "storeQuery failed\n";
+        return 1;
+    }
+    meminfo("After storing");
+    std::cerr << "url 20 " << store.fieldvalue(20, "url") << "\n";
+#else
+    /////////////
+    // Enumerate all existing keys and assign array indexes for
+    // them. Count documents while we are at it.
     std::map<std::string, int> keyidx {
         {"url",0},
         {"mimetype", 1},
@@ -310,7 +329,6 @@ int main(int argc, char *argv[])
         {"fbytes", 4},
         {"dbytes", 5},
     };
-
     int ndocs = 0;
     for (;;ndocs++) {
         Rcl::Doc doc;
@@ -327,10 +345,22 @@ int main(int argc, char *argv[])
             }
         }
     }
-    // 49 keys !
+    // The audio db has 49 keys !
     std::cerr << "Found " << keyidx.size() << " different keys\n";
 
-    std::vector<std::vector<char*>> docs;
+    ///////
+    // Populate the main array with doc-equivalent structures.
+    
+    // Notes: offsets[0] is always 0, not really useful, simpler this way. Also
+    // could use simple C array instead of c++ vector...
+    struct docoffs {
+        ~docoffs() {
+            free(base);
+        }
+        char *base{nullptr};
+        std::vector<int> offsets;
+    };
+    std::vector<struct docoffs> docs;
     docs.resize(ndocs);
     meminfo("After resize");
     
@@ -340,7 +370,7 @@ int main(int argc, char *argv[])
             break;
         }
         auto& vdoc = docs[i];
-        vdoc.resize(keyidx.size());
+        vdoc.offsets.resize(keyidx.size());
         int nbytes = 
             doc.url.size() + 1 +
             doc.mimetype.size() + 1 +
@@ -362,21 +392,25 @@ int main(int argc, char *argv[])
         if (nullptr == cp) {
             abort();
         }
-        if (i < 2) {
-            std::cerr << "malloc returned " << (void*)cp << "\n";
-        }
 
 #define STRINGCPCOPY(CHARP, S) do { \
             memcpy(CHARP, S.c_str(), S.size()+1); \
             CHARP += S.size()+1; \
         } while (false);
 
-        vdoc[0] = cp; STRINGCPCOPY(cp, doc.url);
-        vdoc[1] = cp; STRINGCPCOPY(cp, doc.mimetype);
-        vdoc[2] = cp; STRINGCPCOPY(cp, doc.fmtime);
-        vdoc[3] = cp; STRINGCPCOPY(cp, doc.dmtime);
-        vdoc[4] = cp; STRINGCPCOPY(cp, doc.fbytes);
-        vdoc[5] = cp; STRINGCPCOPY(cp, doc.dbytes);
+        vdoc.base = cp;
+        vdoc.offsets[0] = cp - vdoc.base;
+        STRINGCPCOPY(cp, doc.url);
+        vdoc.offsets[1] = cp - vdoc.base;
+        STRINGCPCOPY(cp, doc.mimetype);
+        vdoc.offsets[2] = cp - vdoc.base;
+        STRINGCPCOPY(cp, doc.fmtime);
+        vdoc.offsets[3] = cp - vdoc.base;
+        STRINGCPCOPY(cp, doc.dmtime);
+        vdoc.offsets[4] = cp - vdoc.base;
+        STRINGCPCOPY(cp, doc.fbytes);
+        vdoc.offsets[5] = cp - vdoc.base;
+        STRINGCPCOPY(cp, doc.dbytes);
         for (const auto& entry : doc.meta) {
             if (testentry(entry)) {
                 auto it = keyidx.find(entry.first);
@@ -385,26 +419,19 @@ int main(int argc, char *argv[])
                     abort();
                 }
                 if (it->second <= 5) {
-                    // Already done !
+                    // Already done ! Storing another address would be
+                    // wasteful and crash when freeing...
                     continue;
                 }
-                vdoc[it->second] = cp; STRINGCPCOPY(cp, entry.second);
+                vdoc.offsets[it->second] = cp - vdoc.base;
+                STRINGCPCOPY(cp, entry.second);
             }
-        }
-        if (i < 2) {
-            std::cerr << "vdoc[0] " << (void*)vdoc[0] << "\n";
         }
     }
 
     meminfo("After storing");
-    for (auto& vdoc : docs) {
-        if (!vdoc.empty()) {
-            //std::cerr << "Freeing " << (void*)(vdoc[0]) << "\n";
-            free(vdoc[0]);
-        }
-    }
-    meminfo("After free");
-
+#endif
+}
 #elif defined(STORE_ALLOBSTACK)
 
     //
