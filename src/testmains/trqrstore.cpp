@@ -306,8 +306,7 @@ int main(int argc, char *argv[])
     // This uses 19 MB of storage for the audio index, and 72 MB for
     // the main one (less keys->less gain)
 {
-#if 1
-    QResultStore store;
+    Rcl::QResultStore store;
     bool result = store.storeQuery(
         query, {"author", "ipath", "rcludi", "relevancyrating", 
                 "sig","abstract", "caption", "filename",  "origcharset", "sig"});
@@ -316,121 +315,7 @@ int main(int argc, char *argv[])
         return 1;
     }
     meminfo("After storing");
-    std::cerr << "url 20 " << store.fieldvalue(20, "url") << "\n";
-#else
-    /////////////
-    // Enumerate all existing keys and assign array indexes for
-    // them. Count documents while we are at it.
-    std::map<std::string, int> keyidx {
-        {"url",0},
-        {"mimetype", 1},
-        {"fmtime", 2},
-        {"dmtime", 3},
-        {"fbytes", 4},
-        {"dbytes", 5},
-    };
-    int ndocs = 0;
-    for (;;ndocs++) {
-        Rcl::Doc doc;
-        if (!query.getDoc(ndocs, doc, false)) {
-            break;
-        }
-        for (const auto& entry : doc.meta) {
-            if (testentry(entry)) {
-                auto it = keyidx.find(entry.first);
-                if (it == keyidx.end()) {
-                    int idx = keyidx.size();
-                    keyidx.insert({entry.first, idx});
-                };
-            }
-        }
-    }
-    // The audio db has 49 keys !
-    std::cerr << "Found " << keyidx.size() << " different keys\n";
-
-    ///////
-    // Populate the main array with doc-equivalent structures.
-    
-    // Notes: offsets[0] is always 0, not really useful, simpler this way. Also
-    // could use simple C array instead of c++ vector...
-    struct docoffs {
-        ~docoffs() {
-            free(base);
-        }
-        char *base{nullptr};
-        std::vector<int> offsets;
-    };
-    std::vector<struct docoffs> docs;
-    docs.resize(ndocs);
-    meminfo("After resize");
-    
-    for (int i = 0; i < ndocs; i++) {
-        Rcl::Doc doc;
-        if (!query.getDoc(i, doc, false)) {
-            break;
-        }
-        auto& vdoc = docs[i];
-        vdoc.offsets.resize(keyidx.size());
-        int nbytes = 
-            doc.url.size() + 1 +
-            doc.mimetype.size() + 1 +
-            doc.fmtime.size() + 1 +
-            doc.dmtime.size() + 1 +
-            doc.fbytes.size() + 1 +
-            doc.dbytes.size() + 1;
-        for (const auto& entry : doc.meta) {
-            if (testentry(entry)) {
-                if (keyidx.find(entry.first) == keyidx.end()) {
-                    std::cerr << "Unknown key: " << entry.first << "\n";
-                    abort();
-                }
-                nbytes += entry.second.size() + 1;
-            }
-        }
-
-        char *cp = (char*)malloc(nbytes);
-        if (nullptr == cp) {
-            abort();
-        }
-
-#define STRINGCPCOPY(CHARP, S) do { \
-            memcpy(CHARP, S.c_str(), S.size()+1); \
-            CHARP += S.size()+1; \
-        } while (false);
-
-        vdoc.base = cp;
-        vdoc.offsets[0] = cp - vdoc.base;
-        STRINGCPCOPY(cp, doc.url);
-        vdoc.offsets[1] = cp - vdoc.base;
-        STRINGCPCOPY(cp, doc.mimetype);
-        vdoc.offsets[2] = cp - vdoc.base;
-        STRINGCPCOPY(cp, doc.fmtime);
-        vdoc.offsets[3] = cp - vdoc.base;
-        STRINGCPCOPY(cp, doc.dmtime);
-        vdoc.offsets[4] = cp - vdoc.base;
-        STRINGCPCOPY(cp, doc.fbytes);
-        vdoc.offsets[5] = cp - vdoc.base;
-        STRINGCPCOPY(cp, doc.dbytes);
-        for (const auto& entry : doc.meta) {
-            if (testentry(entry)) {
-                auto it = keyidx.find(entry.first);
-                if (it == keyidx.end()) {
-                    std::cerr << "Unknown key: " << entry.first << "\n";
-                    abort();
-                }
-                if (it->second <= 5) {
-                    // Already done ! Storing another address would be
-                    // wasteful and crash when freeing...
-                    continue;
-                }
-                vdoc.offsets[it->second] = cp - vdoc.base;
-                STRINGCPCOPY(cp, entry.second);
-            }
-        }
-    }
-
-    meminfo("After storing");
-#endif
+    std::cerr << "url 20 " << store.fieldValue(20, "url") << "\n";
 }
 #elif defined(STORE_ALLOBSTACK)
 

@@ -828,19 +828,6 @@ typedef struct recoll_DbObject {
     std::shared_ptr<RclConfig> rclconfig;
 } recoll_DbObject;
 
-typedef struct {
-    PyObject_HEAD
-    /* Type-specific fields go here. */
-    Rcl::Query *query;
-    int         next; // Index of result to be fetched next or -1 if uninit
-    int         rowcount; // Number of records returned by last execute
-    string      *sortfield; // Need to allocate in here, main program is C.
-    int         ascending;
-    int         arraysize; // Default size for fetchmany
-    recoll_DbObject* connection;
-    bool        fetchtext;
-} recoll_QueryObject;
-
 PyDoc_STRVAR(doc_Query_close,
              "close(). Deallocate query. Object is unusable after the call."
     );
@@ -1521,7 +1508,7 @@ PyDoc_STRVAR(doc_QueryObject,
              "Recoll Query objects are used to execute index searches. \n"
              "They must be created by the Db.query() method.\n"
     );
-static PyTypeObject recoll_QueryType = {
+PyTypeObject recoll_QueryType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "_recoll.Query",             /*tp_name*/
     sizeof(recoll_QueryObject), /*tp_basicsize*/
@@ -2195,6 +2182,12 @@ PyInit__recoll(void)
     Py_INCREF(&rclx_ExtractorType);
     PyModule_AddObject(module, "Extractor", (PyObject *)&rclx_ExtractorType);
 
+    if (PyType_Ready(&recoll_QResultStoreType) < 0)
+        INITERROR;
+    Py_INCREF(&recoll_QResultStoreType);
+    PyModule_AddObject(module, "QResultStore", (PyObject *)&recoll_QResultStoreType);
+
+    
 #if PY_MAJOR_VERSION >= 3
     return module;
 #endif

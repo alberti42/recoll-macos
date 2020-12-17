@@ -32,15 +32,17 @@
 #include "rcldoc.h"
 #include "rclquery.h"
 
+namespace Rcl {
+
 class QResultStore::Internal {
 public:
     bool testentry(const std::pair<std::string,std::string>& entry) {
         return !entry.second.empty() &&
-            excludedfields.find(entry.first) == excludedfields.end();
+            (isinc ? fieldspec.find(entry.first) != fieldspec.end() :
+             fieldspec.find(entry.first) == fieldspec.end());
     }
     
     std::map<std::string, int> keyidx;
-    int ndocs{0};
     // Notes: offsets[0] is always 0, not really useful, simpler this
     // way. Also could use simple C array instead of c++ vector...
     struct docoffs {
@@ -51,7 +53,8 @@ public:
         std::vector<int> offsets;
     };
     std::vector<struct docoffs> docs;
-    std::set<std::string> excludedfields;
+    std::set<std::string> fieldspec;
+    bool isinc{false};
 };
 
 QResultStore::QResultStore()
@@ -63,14 +66,17 @@ QResultStore::~QResultStore()
     delete m;
 }
 
-        
-//{"author", "ipath", "rcludi", "relevancyrating", "sig", "abstract", "caption",
-//        "filename",  "origcharset", "sig"};
+// For reference : Fields normally excluded by uprcl:         
+// {"author", "ipath", "rcludi", "relevancyrating", "sig", "abstract", "caption",
+//  "filename",  "origcharset", "sig"};
 
 
-bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> excl)
+bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
+    bool isinc)
 {
-    m->excludedfields = excl;
+    m->fieldspec = fldspec;
+    m->isinc = isinc;
+    
     /////////////
     // Enumerate all existing keys and assign array indexes for
     // them. Count documents while we are at it.
@@ -81,10 +87,11 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> excl)
                  {"fbytes", 4},
                  {"dbytes", 5}
     };
-    m->ndocs = 0;
-    for (;;m->ndocs++) {
+
+    int count = 0;
+    for (;;count++) {
         Rcl::Doc doc;
-        if (!query.getDoc(m->ndocs, doc, false)) {
+        if (!query.getDoc(count, doc, false)) {
             break;
         }
         for (const auto& entry : doc.meta) {
@@ -101,9 +108,9 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> excl)
     ///////
     // Populate the main array with doc-equivalent structures.
     
-    m->docs.resize(m->ndocs);
+    m->docs.resize(count);
     
-    for (int i = 0; i < m->ndocs; i++) {
+    for (int i = 0; i < count; i++) {
         Rcl::Doc doc;
         if (!query.getDoc(i, doc, false)) {
             break;
@@ -168,20 +175,25 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> excl)
     return true;
 }
 
-const char *QResultStore::fieldvalue(int docindex, const std::string& fldname)
+int QResultStore::getCount()
 {
-    if (docindex < 0 || docindex >= m->ndocs) {
+    return int(m->docs.size());
+}
+
+const char *QResultStore::fieldValue(int docindex, const std::string& fldname)
+{
+    if (docindex < 0 || docindex >= int(m->docs.size())) {
         return nullptr;
     }
     auto& vdoc = m->docs[docindex];
 
     auto it = m->keyidx.find(fldname);
-    if (it == m->keyidx.end()) {
-        return nullptr;
-    }
-    if (it->second < 0 || it->second >= int(vdoc.offsets.size())) {
+    if (it == m->keyidx.end() ||
+        it->second < 0 || it->second >= int(vdoc.offsets.size())) {
         //??
         return nullptr;
     }
     return vdoc.base + vdoc.offsets[it->second];
 }
+
+} // namespace Rcl
