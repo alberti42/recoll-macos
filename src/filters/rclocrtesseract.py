@@ -192,13 +192,22 @@ def _pdftesseract(config, path):
             _deb("pdftoppm created empty files. "
                  "Suspecting full file system, failing")
             return False, ""
-        
+
+    nenv = os.environ.copy()
+    cnthreads = config.getConfParam("tesseractnthreads")
+    if cnthreads:
+        try:
+            nthreads = int(cnthreads)
+            nenv['OMP_THREAD_LIMIT'] = cnthreads
+        except:
+            pass
+
     for f in sorted(ppmfiles):
         out = b''
         try:
             out = subprocess.check_output(
                 [tesseractcmd, f, f, "-l", tesseractlang],
-                stderr=subprocess.STDOUT)
+                stderr=subprocess.STDOUT, env=nenv)
         except Exception as e:
             _deb("%s failed: %s" % (tesseractcmd,e))
 
