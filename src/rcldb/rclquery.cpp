@@ -339,7 +339,11 @@ int Query::getFirstMatchPage(const Doc &doc, string& term)
 
 
 // Mset size
-static const int qquantum = 50;
+// Note: times for retrieving (multiple times)all docs from a sample
+// 25k docs db (q: mime:*)
+// qqantum: 10 50  100 150 200 1000
+// Seconds: 21 8.5 6.7 6.4 5.8 6.0
+static const int qquantum = 100;
 
 // Get estimated result count for query. Xapian actually does most of
 // the search job in there, this can be long
