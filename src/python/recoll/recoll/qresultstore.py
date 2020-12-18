@@ -20,4 +20,4 @@
 # now: maybe we'll do something with them in the future).
 
 
-from ._recoll import QResultStore
+from ._recoll import QResultStore, QRSDoc

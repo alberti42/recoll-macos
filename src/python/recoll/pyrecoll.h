@@ -57,5 +57,6 @@ extern PyTypeObject recoll_DocType;
 extern PyTypeObject recoll_QueryType;
 extern PyTypeObject rclx_ExtractorType;
 extern PyTypeObject recoll_QResultStoreType;
+extern PyTypeObject recoll_QRSDocType;
 
 #endif // _PYRECOLL_H_INCLUDED_

@@ -231,91 +231,131 @@ PyTypeObject recoll_QResultStoreType = {
     QResultStore_new,            /* tp_new */
 };
 
+////////////////////////////////////////////////////////////////////////
+// QRSDoc iterator
+typedef struct {
+    PyObject_HEAD
+    /* Type-specific fields go here. */
+    recoll_QResultStoreObject *pystore;
+    int index;
+} recoll_QRSDocObject;
 
-//////////////////////////////////////////////////////////////////////////
-// Module methods
-static PyMethodDef rclrstore_methods[] = {
-    {NULL, NULL, 0, NULL}        /* Sentinel */
-};
-
-
-PyDoc_STRVAR(pyrclrstore_doc_string,
-             "Utility module for efficiently storing many query results.\n");
-
-struct module_state {
-    PyObject *error;
-};
-
-#if PY_MAJOR_VERSION >= 3
-#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
-#else
-#define GETSTATE(m) (&_state)
-static struct module_state _state;
-#endif
-
-#if PY_MAJOR_VERSION >= 3
-static int rclrstore_traverse(PyObject *m, visitproc visit, void *arg) {
-    Py_VISIT(GETSTATE(m)->error);
-    return 0;
-}
-
-static int rclrstore_clear(PyObject *m) {
-    Py_CLEAR(GETSTATE(m)->error);
-    return 0;
-}
-
-static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "_rclrstore",
-    NULL,
-    sizeof(struct module_state),
-    rclrstore_methods,
-    NULL,
-    rclrstore_traverse,
-    rclrstore_clear,
-    NULL
-};
-
-#define INITERROR return NULL
-extern "C" PyObject *
-PyInit__rclrstore(void)
-#else
-#define INITERROR return
-    PyMODINIT_FUNC
-    init__rclrstore(void)
-#endif
+static void 
+QRSDoc_dealloc(recoll_QRSDocObject *self)
 {
-    // Note: we can't call recollinit here, because the confdir is only really
-    // known when the first db object is created (it is an optional parameter).
-    // Using a default here may end up with variables such as stripchars being
-    // wrong
-
-#if PY_MAJOR_VERSION >= 3
-    PyObject *module = PyModule_Create(&moduledef);
-#else
-    PyObject *module = Py_InitModule("_rclrstore", rclrstore_methods);
-#endif
-    if (module == NULL)
-        INITERROR;
-
-    struct module_state *st = GETSTATE(module);
-    // The first parameter is a char *. Hopefully we don't initialize
-    // modules too often...
-    st->error = PyErr_NewException(strdup("_rclrstore.Error"), NULL, NULL);
-    if (st->error == NULL) {
-        Py_DECREF(module);
-        INITERROR;
-    }
-    
-    if (PyType_Ready(&recoll_QResultStoreType) < 0)
-        INITERROR;
-    Py_INCREF((PyObject*)&recoll_QResultStoreType);
-    PyModule_AddObject(module, "QResultStore", 
-                       (PyObject *)&recoll_QResultStoreType);
-
-    PyModule_AddStringConstant(module, "__doc__", pyrclrstore_doc_string);
-
-#if PY_MAJOR_VERSION >= 3
-    return module;
-#endif
+    Py_DECREF(self->pystore);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
+
+static PyObject *
+QRSDoc_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    recoll_QRSDocObject *self = (recoll_QRSDocObject *)type->tp_alloc(type, 0);
+    if (self == 0) 
+        return 0;
+    return (PyObject *)self;
+}
+
+PyDoc_STRVAR(qrs_doc_QRSDocObject,
+             "QRSDoc(resultstore, index)\n"
+             "\n"
+             "A QRSDoc gives access to one result from a qresultstore.\n"
+    );
+
+static int
+QRSDoc_init(
+    recoll_QRSDocObject *self, PyObject *args, PyObject *kwargs)
+{
+    recoll_QResultStoreObject *pystore;
+    int index;
+    if (!PyArg_ParseTuple(args, "O!i",
+                          &recoll_QResultStoreType, &pystore, &index)) {
+        return -1;
+    }
+
+    Py_INCREF(pystore);
+    self->pystore = pystore;
+    self->index = index;
+    return 0;
+}
+
+static PyObject *
+QRSDoc_subscript(recoll_QRSDocObject *self, PyObject *key)
+{
+    if (self->pystore == 0) {
+        PyErr_SetString(PyExc_AttributeError, "store??");
+        return NULL;
+    }
+    string name;
+    if (PyUnicode_Check(key)) {
+        PyObject* utf8o = PyUnicode_AsUTF8String(key);
+        if (utf8o == 0) {
+            PyErr_SetString(PyExc_AttributeError, "name??");
+            Py_RETURN_NONE;
+        }
+        name = PyBytes_AsString(utf8o);
+        Py_DECREF(utf8o);
+    }  else if (PyBytes_Check(key)) {
+        name = PyBytes_AsString(key);
+    } else {
+        PyErr_SetString(PyExc_AttributeError, "key not unicode nor string??");
+        Py_RETURN_NONE;
+    }
+    const char *value = self->pystore->store->fieldValue(self->index, name);
+    if (nullptr == value) {
+        Py_RETURN_NONE;
+    }
+    return PyBytes_FromString(value);
+}
+
+static PyMappingMethods qrsdoc_as_mapping = {
+    (lenfunc)0, /*mp_length*/
+    (binaryfunc)QRSDoc_subscript, /*mp_subscript*/
+    (objobjargproc)0, /*mp_ass_subscript*/
+};
+
+static PyMethodDef QRSDoc_methods[] = {
+    {NULL}  /* Sentinel */
+};
+
+
+PyTypeObject recoll_QRSDocType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "_recoll.QRSDoc",             /*tp_name*/
+    sizeof(recoll_QRSDocObject), /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)QRSDoc_dealloc,    /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    &qrsdoc_as_mapping,         /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,  /*tp_flags*/
+    qrs_doc_QRSDocObject,      /* tp_doc */
+    0,                       /* tp_traverse */
+    0,                       /* tp_clear */
+    0,                       /* tp_richcompare */
+    0,                       /* tp_weaklistoffset */
+    0,                       /* tp_iter */
+    0,                       /* tp_iternext */
+    QRSDoc_methods,        /* tp_methods */
+    0,                         /* tp_members */
+    0,                         /* tp_getset */
+    0,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    (initproc)QRSDoc_init, /* tp_init */
+    0,                         /* tp_alloc */
+    QRSDoc_new,            /* tp_new */
+};
