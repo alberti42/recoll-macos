@@ -171,6 +171,12 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
                 STRINGCPCOPY(cp, entry.second);
             }
         }
+        // Point all empty entries to the final null byte
+        for (unsigned int i = 1; i < vdoc.offsets.size(); i++) {
+            if (vdoc.offsets[i] == 0) {
+                vdoc.offsets[i] = cp - 1 - vdoc.base;
+            }
+        }
     }
     return true;
 }
@@ -190,7 +196,6 @@ const char *QResultStore::fieldValue(int docindex, const std::string& fldname)
     auto it = m->keyidx.find(fldname);
     if (it == m->keyidx.end() ||
         it->second < 0 || it->second >= int(vdoc.offsets.size())) {
-        //??
         return nullptr;
     }
     return vdoc.base + vdoc.offsets[it->second];
