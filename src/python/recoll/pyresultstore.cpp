@@ -27,6 +27,7 @@
 
 #include "pyrecoll.h"
 #include "log.h"
+#include "rclutil.h"
 
 using namespace std;
 
@@ -35,6 +36,8 @@ using namespace std;
 #else
 #define PyLong_FromLong PyInt_FromLong 
 #endif
+
+struct recoll_QRSDocObject;
 
 typedef struct {
     PyObject_HEAD
@@ -45,7 +48,7 @@ typedef struct {
 static void 
 QResultStore_dealloc(recoll_QResultStoreObject *self)
 {
-    LOGDEB("QResultStore_dealloc.\n");
+    LOGDEB1("QResultStore_dealloc.\n");
     delete self->store;
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
@@ -53,10 +56,9 @@ QResultStore_dealloc(recoll_QResultStoreObject *self)
 static PyObject *
 QResultStore_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    LOGDEB("QResultStore_new\n");
-    recoll_QResultStoreObject *self;
-
-    self = (recoll_QResultStoreObject *)type->tp_alloc(type, 0);
+    LOGDEB1("QResultStore_new\n");
+    recoll_QResultStoreObject *self =
+        (recoll_QResultStoreObject *)type->tp_alloc(type, 0);
     if (self == 0) 
         return 0;
     self->store = new Rcl::QResultStore();
@@ -89,6 +91,7 @@ static PyObject *
 QResultStore_storeQuery(recoll_QResultStoreObject* self, PyObject *args, 
                         PyObject *kwargs)
 {
+    LOGDEB0("QResultStore_storeQuery\n");
     static const char* kwlist[] = {"query", "fieldspec", "isinc", NULL};
     PyObject *q{nullptr};
     PyObject *fieldspec{nullptr};
@@ -143,20 +146,6 @@ QResultStore_storeQuery(recoll_QResultStoreObject* self, PyObject *args,
 }
 
 PyDoc_STRVAR(
-    qrs_doc_getCount,
-    "getCount()\n"
-    "\n"
-    "Return the stored results count.\n"
-    );
-
-static PyObject *
-QResultStore_getCount(recoll_QResultStoreObject* self, PyObject *args)
-{
-    return PyLong_FromLong(self->store->getCount());
-}
-
-
-PyDoc_STRVAR(
     qrs_doc_getField,
     "getField(index, fieldname)\n"
     "\n"
@@ -181,8 +170,6 @@ QResultStore_getField(recoll_QResultStoreObject* self, PyObject *args)
 
 static PyMethodDef QResultStore_methods[] = {
     {"storeQuery", (PyCFunction)QResultStore_storeQuery,
-     METH_VARARGS|METH_KEYWORDS, qrs_doc_getCount},
-    {"getCount", (PyCFunction)QResultStore_getCount,
      METH_VARARGS|METH_KEYWORDS, qrs_doc_storeQuery},
     {"getField", (PyCFunction)QResultStore_getField,
      METH_VARARGS, qrs_doc_getField},
@@ -190,6 +177,35 @@ static PyMethodDef QResultStore_methods[] = {
     {NULL}  /* Sentinel */
 };
 
+static Py_ssize_t QResultStore_Size(PyObject *o)
+{
+    return ((recoll_QResultStoreObject*)o)->store->getCount();
+}
+
+static PyObject* QResultStore_GetItem(PyObject *o, Py_ssize_t i)
+{
+    if (i < 0 || i >= ((recoll_QResultStoreObject*)o)->store->getCount()) {
+        return nullptr;
+    }
+    PyObject *args = Py_BuildValue("Oi", o, i);
+    auto res = PyObject_CallObject((PyObject *)&recoll_QRSDocType, args);
+    Py_DECREF(args);
+    return res;
+}
+
+static PySequenceMethods resultstore_as_sequence = {
+    (lenfunc)QResultStore_Size, // sq_length
+    (binaryfunc)0, // sq_concat
+    (ssizeargfunc)0, // sq_repeat
+    (ssizeargfunc)QResultStore_GetItem, // sq_item
+    0, // was sq_slice
+    (ssizeobjargproc)0, // sq_ass_item
+    0, // was sq_ass_slice
+    (objobjproc)0, // sq_contains
+    (binaryfunc)0, // sq_inplace_concat
+    (ssizeargfunc)0, // sq_inplace_repeat
+};
+        
 PyTypeObject recoll_QResultStoreType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "_recoll.QResultStore",             /*tp_name*/
@@ -202,7 +218,7 @@ PyTypeObject recoll_QResultStoreType = {
     0,                         /*tp_compare*/
     0,                         /*tp_repr*/
     0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
+    &resultstore_as_sequence,   /*tp_as_sequence*/
     0,                         /*tp_as_mapping*/
     0,                         /*tp_hash */
     0,                         /*tp_call*/
@@ -233,7 +249,7 @@ PyTypeObject recoll_QResultStoreType = {
 
 ////////////////////////////////////////////////////////////////////////
 // QRSDoc iterator
-typedef struct {
+typedef struct  recoll_QRSDocObject {
     PyObject_HEAD
     /* Type-specific fields go here. */
     recoll_QResultStoreObject *pystore;
@@ -243,6 +259,7 @@ typedef struct {
 static void 
 QRSDoc_dealloc(recoll_QRSDocObject *self)
 {
+    LOGDEB1("QRSDoc_dealloc\n");
     Py_DECREF(self->pystore);
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
@@ -287,25 +304,25 @@ QRSDoc_subscript(recoll_QRSDocObject *self, PyObject *key)
         return NULL;
     }
     string name;
-    if (PyUnicode_Check(key)) {
-        PyObject* utf8o = PyUnicode_AsUTF8String(key);
-        if (utf8o == 0) {
-            PyErr_SetString(PyExc_AttributeError, "name??");
-            Py_RETURN_NONE;
-        }
-        name = PyBytes_AsString(utf8o);
-        Py_DECREF(utf8o);
-    }  else if (PyBytes_Check(key)) {
-        name = PyBytes_AsString(key);
-    } else {
-        PyErr_SetString(PyExc_AttributeError, "key not unicode nor string??");
+    if (pys2cpps(key, name) < 0) {
+        PyErr_SetString(PyExc_AttributeError, "name??");
         Py_RETURN_NONE;
     }
+
     const char *value = self->pystore->store->fieldValue(self->index, name);
-    if (nullptr == value) {
+   if (nullptr == value) {
         Py_RETURN_NONE;
     }
-    return PyBytes_FromString(value);
+    string urlstring;
+    if (name == "url") {
+        printableUrl("UTF-8", value, urlstring);
+        value = urlstring.c_str();
+    }
+    PyObject *bytes = PyBytes_FromString(value);
+    PyObject *u =
+        PyUnicode_FromEncodedObject(bytes, "UTF-8", "backslashreplace");
+    Py_DECREF(bytes);
+    return u;
 }
 
 static PyMappingMethods qrsdoc_as_mapping = {

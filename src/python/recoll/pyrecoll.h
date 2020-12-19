@@ -59,4 +59,6 @@ extern PyTypeObject rclx_ExtractorType;
 extern PyTypeObject recoll_QResultStoreType;
 extern PyTypeObject recoll_QRSDocType;
 
+extern int pys2cpps(PyObject *pyval, std::string& out);
+
 #endif // _PYRECOLL_H_INCLUDED_

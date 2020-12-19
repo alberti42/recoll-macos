@@ -369,6 +369,8 @@ Doc_setbinurl(recoll_DocObject *self, PyObject *value)
 
     self->doc->url = string(PyByteArray_AsString(value),
                             PyByteArray_Size(value));
+    printableUrl(self->rclconfig->getDefCharset(), self->doc->url, 
+                 self->doc->meta[Rcl::Doc::keyurl]);
     Py_RETURN_NONE;
 }
 
@@ -539,7 +541,7 @@ static PyMethodDef Doc_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-static int pys2cpps(PyObject *pyval, std::string& out)
+int pys2cpps(PyObject *pyval, std::string& out)
 {
     if (PyUnicode_Check(pyval)) {
         PyObject* utf8o = PyUnicode_AsUTF8String(pyval);
