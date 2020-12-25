@@ -4,18 +4,27 @@
 
 # Thanks to Recoll user Martin Ziegler
 # This is a modified version of rclzip, with some help from rcltar
-# Python pylzma library required. See http://www.joachim-bauch.de/projects/pylzma/ 
+#
+# Normally using py7zr https://github.com/miurahr/py7zr
+#
+# Else, but it does not work on all archives, may use:
+#   Python pylzma library required. See http://www.joachim-bauch.de/projects/pylzma/ 
 
 import sys
 import os
 import fnmatch
 import rclexecm
 
+usingpy7zr = False
 try:
-    from py7zlib import Archive7z
+    from py7zr import SevenZipFile as Archive7z
+    usingpy7zr = True
 except:
-    print("RECFILTERROR HELPERNOTFOUND python3:pylzma")
-    sys.exit(1);
+    try:
+        from py7zlib import Archive7z
+    except:
+        print("RECFILTERROR HELPERNOTFOUND python3:py7zr or python3:pylzma")
+        sys.exit(1);
 
 try:
     from recoll import rclconfig
@@ -41,14 +50,18 @@ class SevenZipExtractor:
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
         docdata = b''
+        ok = False
         try:
-            docdata = self.sevenzip.getmember(ipath).read()
+            if usingpy7zr:
+                docdata = self.sevenzdic[ipath].read()
+            else:
+                docdata = self.sevenzip.getmember(ipath).read()
             ok = True
         except Exception as err:
             self.em.rclog("extractone: failed: [%s]" % err)
-            ok = False
+
         iseof = rclexecm.RclExecM.noteof
-        if self.currentindex >= len(self.sevenzip.getnames()) -1:
+        if self.currentindex >= len(self.names) -1:
             iseof = rclexecm.RclExecM.eofnext
         return (ok, docdata, rclexecm.makebytes(ipath), iseof)
 
@@ -72,6 +85,11 @@ class SevenZipExtractor:
         try:
             self.fp = open(filename, 'rb')
             self.sevenzip = Archive7z(self.fp)
+            if usingpy7zr:
+                self.sevenzdic = self.sevenzip.readall()
+                self.names = [k[0] for k in self.sevenzdic.items()]
+            else:
+                self.names = self.sevenzip.getnames()
             return True
         except Exception as err:
             self.em.rclog("openfile: failed: [%s]" % err)
@@ -94,40 +112,40 @@ class SevenZipExtractor:
             # Return "self" doc
             self.currentindex = 0
             self.em.setmimetype('text/plain')
-            if len(self.sevenzip.getnames()) == 0:
+            if len(self.names) == 0:
                 self.closefile()
                 eof = rclexecm.RclExecM.eofnext
             else:
                 eof = rclexecm.RclExecM.noteof
             return (True, "", "", eof)
 
-        if self.currentindex >= len(self.sevenzip.getnames()):
+        if self.currentindex >= len(self.names):
             #self.em.rclog("getnext: EOF hit")
             self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            entryname = self.sevenzip.getnames()[self.currentindex]
 
-            if hasrclconfig and len(self.skiplist) != 0:
-                while self.currentindex < len(self.sevenzip.getnames()):
-                    entryname = self.sevenzip.getnames()[self.currentindex]
-                    for pat in self.skiplist:
-                        if fnmatch.fnmatch(entryname, pat):
-                            entryname = None
-                            break
-                    if entryname is not None:
+        entryname = self.names[self.currentindex]
+
+        if hasrclconfig and len(self.skiplist) != 0:
+            while self.currentindex < len(self.names):
+                entryname = self.names[self.currentindex]
+                for pat in self.skiplist:
+                    if fnmatch.fnmatch(entryname, pat):
+                        entryname = None
                         break
-                    self.currentindex += 1
-                if entryname is None:
-                    self.closefile()
-                    return (False, "", "", rclexecm.RclExecM.eofnow)
-                
-            ret = self.extractone(entryname)
-            if ret[3] == rclexecm.RclExecM.eofnext or \
-               ret[3] == rclexecm.RclExecM.eofnow:
+                if entryname is not None:
+                    break
+                self.currentindex += 1
+            if entryname is None:
                 self.closefile()
-            self.currentindex += 1
-            return ret
+                return (False, "", "", rclexecm.RclExecM.eofnow)
+                
+        ret = self.extractone(entryname)
+        if ret[3] == rclexecm.RclExecM.eofnext or \
+           ret[3] == rclexecm.RclExecM.eofnow:
+            self.closefile()
+        self.currentindex += 1
+        return ret
 
 # Main program: create protocol handler and extractor and run them
 proto = rclexecm.RclExecM()
