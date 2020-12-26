@@ -327,11 +327,12 @@ Doc_init(recoll_DocObject *self, PyObject *, PyObject *)
     return 0;
 }
 
-PyDoc_STRVAR(doc_Doc_getbinurl,
-             "getbinurl(none) -> binary url\n"
-             "\n"
-             "Returns an URL with a path part which is a as bit for bit copy of the \n"
-             "file system path, without encoding\n"
+PyDoc_STRVAR(
+    doc_Doc_getbinurl,
+    "getbinurl(none) -> binary url\n"
+    "\n"
+    "Returns an URL with a path part which is a as bit for bit copy of the \n"
+    "file system path, without encoding\n"
     );
 
 static PyObject *
@@ -339,17 +340,18 @@ Doc_getbinurl(recoll_DocObject *self)
 {
     LOGDEB0("Doc_getbinurl\n");
     if (self->doc == 0) {
-        PyErr_SetString(PyExc_AttributeError, "doc");
-        return 0;
+        PyErr_SetString(PyExc_AttributeError, "doc is NULL");
+        Py_RETURN_NONE;
     }
     return PyBytes_FromStringAndSize(self->doc->url.c_str(), 
-                                     self->doc->url.size());
+                                            self->doc->url.size());
 }
 
-PyDoc_STRVAR(doc_Doc_setbinurl,
-             "setbinurl(url) -> binary url\n"
-             "\n"
-             "Set the URL from binary path like file://may/contain/unencodable/bytes\n"
+PyDoc_STRVAR(
+    doc_Doc_setbinurl,
+    "setbinurl(url) -> binary url\n"
+    "\n"
+    "Set the URL from binary path like file://may/contain/unencodable/bytes\n"
     );
 
 static PyObject *
@@ -367,6 +369,8 @@ Doc_setbinurl(recoll_DocObject *self, PyObject *value)
 
     self->doc->url = string(PyByteArray_AsString(value),
                             PyByteArray_Size(value));
+    printableUrl(self->rclconfig->getDefCharset(), self->doc->url, 
+                 self->doc->meta[Rcl::Doc::keyurl]);
     Py_RETURN_NONE;
 }
 
@@ -387,7 +391,7 @@ Doc_keys(recoll_DocObject *self)
         return 0;
     for (const auto& entry : self->doc->meta) {
         PyList_Append(pkeys,
-                      PyUnicode_Decode(entry.first.c_str(),entry.first.size(),
+                      PyUnicode_Decode(entry.first.c_str(), entry.first.size(),
                                        "UTF-8", "replace"));
     }
     return pkeys;
@@ -537,6 +541,23 @@ static PyMethodDef Doc_methods[] = {
     {NULL}  /* Sentinel */
 };
 
+int pys2cpps(PyObject *pyval, std::string& out)
+{
+    if (PyUnicode_Check(pyval)) {
+        PyObject* utf8o = PyUnicode_AsUTF8String(pyval);
+        if (utf8o == 0) {
+            return -1;
+        }
+        out = PyBytes_AsString(utf8o);
+        Py_DECREF(utf8o);
+    }  else if (PyBytes_Check(pyval)) {
+        out = PyBytes_AsString(pyval);
+    } else {
+        return -1;
+    }
+    return 0;
+}
+
 // Note that this returns None if the attribute is not found instead of raising
 // an exception as would be standard. We don't change it to keep existing code
 // working.
@@ -560,18 +581,7 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
     PyErr_Clear();
     
     string name;
-    if (PyUnicode_Check(nameobj)) {
-        PyObject* utf8o = PyUnicode_AsUTF8String(nameobj);
-        if (utf8o == 0) {
-            LOGERR("Doc_getattro: encoding name to utf8 failed\n");
-            PyErr_SetString(PyExc_AttributeError, "name??");
-            Py_RETURN_NONE;
-        }
-        name = PyBytes_AsString(utf8o);
-        Py_DECREF(utf8o);
-    }  else if (PyBytes_Check(nameobj)) {
-        name = PyBytes_AsString(nameobj);
-    } else {
+    if (pys2cpps(nameobj, name) < 0) {
         PyErr_SetString(PyExc_AttributeError, "name not unicode nor string??");
         Py_RETURN_NONE;
     }
@@ -588,7 +598,7 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
 }
 
 static int
-Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
+Doc_setattro(recoll_DocObject *self, PyObject *nameobj, PyObject *value)
 {
     if (self->doc == 0) {
         PyErr_SetString(PyExc_AttributeError, "doc??");
@@ -599,84 +609,78 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
                         "Configuration not initialized");
         return -1;
     }
-    if (name == 0) {
-        PyErr_SetString(PyExc_AttributeError, "name??");
+    string name;
+    if (pys2cpps(nameobj, name) < 0) {
+        PyErr_SetString(PyExc_AttributeError, "name not unicode nor string??");
         return -1;
     }
 
-    if (PyBytes_Check(value)) {
-        value = PyUnicode_FromEncodedObject(value, "UTF-8", "strict");
-        if (value == 0) 
-            return -1;
-    }
-
-    if (!PyUnicode_Check(value)) {
-        PyErr_SetString(PyExc_AttributeError, "value not unicode??");
+    string uvalue;
+    if (pys2cpps(value, uvalue) < 0) {
+        PyErr_SetString(PyExc_AttributeError, "value neither bytes nor str");
         return -1;
     }
 
-    PyObject* putf8 = PyUnicode_AsUTF8String(value);
-    if (putf8 == 0) {
-        LOGERR("Doc_setmeta: encoding to utf8 failed\n");
-        PyErr_SetString(PyExc_AttributeError, "value??");
-        return -1;
-    }
-    string uvalue = PyBytes_AsString(putf8);
-    Py_DECREF(putf8);
     string key = self->rclconfig->fieldQCanon(name);
 
     LOGDEB0("Doc_setattr: doc " << self->doc << " [" << key << "] (" << name <<
             ") -> [" << uvalue << "]\n");
 
-    // We set the value in the meta array in all cases. Good idea ? or do it
-    // only for fields without a dedicated Doc:: entry?
-    self->doc->meta[key] = uvalue;
+    // Note that some attributes are set both as struct fields and
+    // meta members, keep compat with movedocfields() used when
+    // fetching from query.
     switch (key.at(0)) {
     case 't':
-        if (!key.compare("text")) {
+        if (key == "text") {
             self->doc->text.swap(uvalue);
         }
         break;
     case 'u':
-        if (!key.compare(Rcl::Doc::keyurl)) {
+        if (key == Rcl::Doc::keyurl) {
             self->doc->url.swap(uvalue);
+            printableUrl(self->rclconfig->getDefCharset(), self->doc->url, 
+                         self->doc->meta[Rcl::Doc::keyurl]);
         }
         break;
     case 'f':
-        if (!key.compare(Rcl::Doc::keyfs)) {
+        if (key == Rcl::Doc::keyfs) {
             self->doc->fbytes.swap(uvalue);
-        } else if (!key.compare(Rcl::Doc::keyfmt)) {
+            self->doc->meta[Rcl::Doc::keyfs] = self->doc->fbytes;
+        } else if (key == Rcl::Doc::keyfmt) {
             self->doc->fmtime.swap(uvalue);
         }
         break;
     case 'd':
-        if (!key.compare(Rcl::Doc::keyds)) {
+        if (key == Rcl::Doc::keyds) {
             self->doc->dbytes.swap(uvalue);
-        } else if (!key.compare(Rcl::Doc::keydmt)) {
+            self->doc->meta[Rcl::Doc::keyds] = self->doc->dbytes;
+        } else if (key == Rcl::Doc::keydmt) {
             self->doc->dmtime.swap(uvalue);
         }
         break;
     case 'i':
-        if (!key.compare(Rcl::Doc::keyipt)) {
+        if (key == Rcl::Doc::keyipt) {
             self->doc->ipath.swap(uvalue);
+            self->doc->meta[Rcl::Doc::keyipt] = self->doc->ipath;
         }
         break;
     case 'm':
-        if (!key.compare(Rcl::Doc::keytp)) {
+        if (key == Rcl::Doc::keytp) {
             self->doc->mimetype.swap(uvalue);
-        } else if (!key.compare(Rcl::Doc::keymt)) {
+            self->doc->meta[Rcl::Doc::keytp] = self->doc->mimetype;
+        } else if (key == Rcl::Doc::keymt) {
             self->doc->dmtime.swap(uvalue);
         }
         break;
     case 'o':
-        if (!key.compare(Rcl::Doc::keyoc)) {
+        if (key == Rcl::Doc::keyoc) {
             self->doc->origcharset.swap(uvalue);
         }
         break;
     case 's':
-        if (!key.compare(Rcl::Doc::keysig)) {
+        if (key == Rcl::Doc::keysig) {
             self->doc->sig.swap(uvalue);
-        } else     if (!key.compare(Rcl::Doc::keysz)) {
+        } else     if (key == Rcl::Doc::keysz) {
             self->doc->dbytes.swap(uvalue);
         }
         break;
@@ -697,6 +701,7 @@ Doc_length(recoll_DocObject *self)
 static PyObject *
 Doc_subscript(recoll_DocObject *self, PyObject *key)
 {
+    // Can't just return getattro because this first checks for a method name
     if (self->doc == 0) {
         PyErr_SetString(PyExc_AttributeError, "doc??");
         return NULL;
@@ -707,18 +712,7 @@ Doc_subscript(recoll_DocObject *self, PyObject *key)
         return NULL;
     }
     string name;
-    if (PyUnicode_Check(key)) {
-        PyObject* utf8o = PyUnicode_AsUTF8String(key);
-        if (utf8o == 0) {
-            LOGERR("Doc_getitemo: encoding name to utf8 failed\n");
-            PyErr_SetString(PyExc_AttributeError, "name??");
-            Py_RETURN_NONE;
-        }
-        name = PyBytes_AsString(utf8o);
-        Py_DECREF(utf8o);
-    }  else if (PyBytes_Check(key)) {
-        name = PyBytes_AsString(key);
-    } else {
+    if (pys2cpps(key, name) < 0) {
         PyErr_SetString(PyExc_AttributeError, "key not unicode nor string??");
         Py_RETURN_NONE;
     }
@@ -726,54 +720,61 @@ Doc_subscript(recoll_DocObject *self, PyObject *key)
     string skey = self->rclconfig->fieldQCanon(name);
     string value;
     if (idocget(self, skey, value)) {
-        return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8","replace");
+        return PyUnicode_Decode(value.c_str(), value.size(),
+                                "UTF-8", "backslashreplace");
     }
-
     Py_RETURN_NONE;
+}
+
+static int
+Doc_ass_subscript(recoll_DocObject *self, PyObject *key, PyObject *val)
+{
+    return Doc_setattro(self, key, val);
 }
 
 static PyMappingMethods doc_as_mapping = {
     (lenfunc)Doc_length, /*mp_length*/
     (binaryfunc)Doc_subscript, /*mp_subscript*/
-    (objobjargproc)0, /*mp_ass_subscript*/
+    (objobjargproc)Doc_ass_subscript, /*mp_ass_subscript*/
 };
 
 
-PyDoc_STRVAR(doc_DocObject,
-             "Doc()\n"
-             "\n"
-             "A Doc object contains index data for a given document.\n"
-             "The data is extracted from the index when searching, or set by the\n"
-             "indexer program when updating. The Doc object has no useful methods but\n"
-             "many attributes to be read or set by its user. It matches exactly the\n"
-             "Rcl::Doc c++ object. Some of the attributes are predefined, but, \n"
-             "especially when indexing, others can be set, the name of which will be\n"
-             "processed as field names by the indexing configuration.\n"
-             "Inputs can be specified as unicode or strings.\n"
-             "Outputs are unicode objects.\n"
-             "All dates are specified as unix timestamps, printed as strings\n"
-             "Predefined attributes (index/query/both):\n"
-             " text (index): document plain text\n"
-             " url (both)\n"
-             " fbytes (both) optional) file size in bytes\n"
-             " filename (both)\n"
-             " fmtime (both) optional file modification date. Unix time printed \n"
-             "    as string\n"
-             " dbytes (both) document text bytes\n"
-             " dmtime (both) document creation/modification date\n"
-             " ipath (both) value private to the app.: internal access path\n"
-             "    inside file\n"
-             " mtype (both) mime type for original document\n"
-             " mtime (query) dmtime if set else fmtime\n"
-             " origcharset (both) charset the text was converted from\n"
-             " size (query) dbytes if set, else fbytes\n"
-             " sig (both) app-defined file modification signature. \n"
-             "    For up to date checks\n"
-             " relevancyrating (query)\n"
-             " abstract (both)\n"
-             " author (both)\n"
-             " title (both)\n"
-             " keywords (both)\n"
+PyDoc_STRVAR(
+    doc_DocObject,
+    "Doc()\n"
+    "\n"
+    "A Doc object contains index data for a given document.\n"
+    "The data is extracted from the index when searching, or set by the\n"
+    "indexer program when updating. The Doc object has no useful methods but\n"
+    "many attributes to be read or set by its user. It matches exactly the\n"
+    "Rcl::Doc c++ object. Some of the attributes are predefined, but, \n"
+    "especially when indexing, others can be set, the name of which will be\n"
+    "processed as field names by the indexing configuration.\n"
+    "Inputs can be specified as unicode or strings.\n"
+    "Outputs are unicode objects.\n"
+    "All dates are specified as unix timestamps, printed as strings\n"
+    "Predefined attributes (index/query/both):\n"
+    " text (index): document plain text\n"
+    " url (both)\n"
+    " fbytes (both) optional) file size in bytes\n"
+    " filename (both)\n"
+    " fmtime (both) optional file modification date. Unix time printed \n"
+    "    as string\n"
+    " dbytes (both) document text bytes\n"
+    " dmtime (both) document creation/modification date\n"
+    " ipath (both) value private to the app.: internal access path\n"
+    "    inside file\n"
+    " mtype (both) mime type for original document\n"
+    " mtime (query) dmtime if set else fmtime\n"
+    " origcharset (both) charset the text was converted from\n"
+    " size (query) dbytes if set, else fbytes\n"
+    " sig (both) app-defined file modification signature. \n"
+    "    For up to date checks\n"
+    " relevancyrating (query)\n"
+    " abstract (both)\n"
+    " author (both)\n"
+    " title (both)\n"
+    " keywords (both)\n"
     );
 
 PyTypeObject recoll_DocType = {
@@ -784,7 +785,7 @@ PyTypeObject recoll_DocType = {
     (destructor)Doc_dealloc,    /*tp_dealloc*/
     0,                         /*tp_print*/
     0,                         /*tp_getattr*/
-    (setattrfunc)Doc_setattr,  /*tp_setattr*/
+    0,  /*tp_setattr*/
     0,                         /*tp_compare*/
     0,                         /*tp_repr*/
     0,                         /*tp_as_number*/
@@ -794,7 +795,7 @@ PyTypeObject recoll_DocType = {
     0,                         /*tp_call*/
     0,                         /*tp_str*/
     (getattrofunc)Doc_getattro,/*tp_getattro*/
-    0,                         /*tp_setattro*/
+    (setattrofunc)Doc_setattro,/*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     doc_DocObject,             /* tp_doc */
@@ -827,19 +828,6 @@ typedef struct recoll_DbObject {
     Rcl::Db *db;
     std::shared_ptr<RclConfig> rclconfig;
 } recoll_DbObject;
-
-typedef struct {
-    PyObject_HEAD
-    /* Type-specific fields go here. */
-    Rcl::Query *query;
-    int         next; // Index of result to be fetched next or -1 if uninit
-    int         rowcount; // Number of records returned by last execute
-    string      *sortfield; // Need to allocate in here, main program is C.
-    int         ascending;
-    int         arraysize; // Default size for fetchmany
-    recoll_DbObject* connection;
-    bool        fetchtext;
-} recoll_QueryObject;
 
 PyDoc_STRVAR(doc_Query_close,
              "close(). Deallocate query. Object is unusable after the call."
@@ -1521,7 +1509,7 @@ PyDoc_STRVAR(doc_QueryObject,
              "Recoll Query objects are used to execute index searches. \n"
              "They must be created by the Db.query() method.\n"
     );
-static PyTypeObject recoll_QueryType = {
+PyTypeObject recoll_QueryType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "_recoll.Query",             /*tp_name*/
     sizeof(recoll_QueryObject), /*tp_basicsize*/
@@ -2195,6 +2183,17 @@ PyInit__recoll(void)
     Py_INCREF(&rclx_ExtractorType);
     PyModule_AddObject(module, "Extractor", (PyObject *)&rclx_ExtractorType);
 
+    if (PyType_Ready(&recoll_QResultStoreType) < 0)
+        INITERROR;
+    Py_INCREF(&recoll_QResultStoreType);
+    PyModule_AddObject(module, "QResultStore", (PyObject *)&recoll_QResultStoreType);
+
+    if (PyType_Ready(&recoll_QRSDocType) < 0)
+        INITERROR;
+    Py_INCREF((PyObject*)&recoll_QRSDocType);
+    PyModule_AddObject(module, "QRSDoc",
+                       (PyObject *)&recoll_QRSDocType);
+    
 #if PY_MAJOR_VERSION >= 3
     return module;
 #endif

@@ -156,6 +156,8 @@ query/filtseq.cpp \
 query/filtseq.h \
 query/plaintorich.cpp \
 query/plaintorich.h \
+query/qresultstore.cpp \
+query/qresultstore.h \
 query/recollq.cpp \
 query/recollq.h \
 query/reslistpager.cpp \
