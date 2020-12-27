@@ -78,10 +78,10 @@ void RclMain::buildMenus()
     toolsMenu->addAction(showActiveTypes_Action);
     toolsMenu->addAction(actionShow_index_statistics);
 
+    preferencesMenu->addAction(queryPrefsAction);
+    preferencesMenu->addSeparator();
     preferencesMenu->addAction(indexConfigAction);
     preferencesMenu->addAction(indexScheduleAction);
-    preferencesMenu->addSeparator();
-    preferencesMenu->addAction(queryPrefsAction);
 
     queryMenu->addSection(QIcon(), tr("Simple search type"));
     sstypGroup = new QActionGroup(this);
@@ -167,9 +167,9 @@ void RclMain::buildMenus()
 
     MenuBar->addAction(fileMenu->menuAction());
     MenuBar->addAction(queryMenu->menuAction());
+    MenuBar->addAction(resultsMenu->menuAction());
     MenuBar->addAction(viewMenu->menuAction());
     MenuBar->addAction(toolsMenu->menuAction());
-    MenuBar->addAction(resultsMenu->menuAction());
     MenuBar->addAction(preferencesMenu->menuAction());
     MenuBar->addSeparator();
     MenuBar->addAction(helpMenu->menuAction());
