@@ -1,11 +1,18 @@
-recoll (1.28.0pre4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.28.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * Add preferences options to hide most GUI elements except the result
+  * GUI: add preferences options to hide most GUI elements except the result
     area and the simple search entry.
+  * GUI: reorganized menus.
+  * GUI: add preference for separate indexing log file.
   * Fix CJK indexing in specific case of encountering numeric after CJK
     punctuation.
-  
- -- Jean-Francois Dockes <jf@dockes.org>  Wed, 25 Nov 2020 17:57:00 +0100
+  * Use py7zr in preference to pylzma for 7z archive indexing
+  * Increase query slice size from 50 to 100 for better performance.
+  * Process emacs org-mode files.
+  * Fix bug in mail header processing.
+  * Python extension: improve the Python Doc object.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 27 Dec 2020 09:59:00 +0100
 
 recoll (1.27.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 

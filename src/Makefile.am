@@ -543,6 +543,7 @@ python/pychm/setup.py.in \
 python/recoll/pyrclextract.cpp \
 python/recoll/pyrecoll.cpp \
 python/recoll/pyrecoll.h \
+python/recoll/pyresultstore.cpp \
 python/recoll/recoll/__init__.py \
 python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py \
