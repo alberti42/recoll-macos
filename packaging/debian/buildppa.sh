@@ -12,7 +12,7 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.28.0pre4
+RCLVERS=1.28.1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.0
 PPAVERS=1
@@ -25,10 +25,9 @@ RCLDOWNLOAD=/y/home/dockes/projets/lesbonscomptes/recoll
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
-    1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -52,7 +51,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series="xenial bionic focal groovy"
-#series=
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -88,7 +87,7 @@ done
 
 ### KIO.
 series="xenial bionic focal groovy"
-series=
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}

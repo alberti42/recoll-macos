@@ -1,3 +1,9 @@
+kio-recoll (1.28.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix build error caused by wasaStringToRcl interface change.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 28 Dec 2020 14:22:00 +0100
+
 kio-recoll (1.28.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * GUI: add preferences options to hide most GUI elements except the result
@@ -11,6 +17,8 @@ kio-recoll (1.28.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Process emacs org-mode files.
   * Fix bug in mail header processing.
   * Python extension: improve the Python Doc object.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 27 Dec 2020 09:59:00 +0100
 
 kio-recoll (1.27.10-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
