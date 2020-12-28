@@ -117,40 +117,40 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     // asked to access it
     char cnum[30];
     sprintf(cnum, "%04d", num);
-    entry.insert(KIO::UDSEntry::UDS_NAME, resultBaseName + cnum);
+    entry.fastInsert(KIO::UDSEntry::UDS_NAME, resultBaseName + cnum);
 
     // Display the real file name
-    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
+    entry.fastInsert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
 
     /// A local file path if the ioslave display files sitting on the
     /// local filesystem (but in another hierarchy, e.g. settings:/ or
     /// remote:/)
-    entry.insert(KIO::UDSEntry::UDS_LOCAL_PATH, url.path());
+    entry.fastInsert(KIO::UDSEntry::UDS_LOCAL_PATH, url.path());
 
     /// This file is a shortcut or mount, pointing to an
     /// URL in a different hierarchy
     /// @since 4.1
     // We should probably set this only if the scheme is not 'file' (e.g.
     // from the web cache).
-    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
+    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
 
     if (!doc.mimetype.compare("application/x-fsdirectory") ||
             !doc.mimetype.compare("inode/directory")) {
-        entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
-        entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+        entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+        entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
     } else {
-        entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, doc.mimetype.c_str());
-        entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
+        entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, doc.mimetype.c_str());
+        entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
     }
 
     // For local files, supply the usual file stat information
     struct stat info;
     if (lstat(url.path().toUtf8(), &info) >= 0) {
-        entry.insert(KIO::UDSEntry::UDS_SIZE, info.st_size);
-        entry.insert(KIO::UDSEntry::UDS_ACCESS, info.st_mode);
-        entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, info.st_mtime);
-        entry.insert(KIO::UDSEntry::UDS_ACCESS_TIME, info.st_atime);
-        entry.insert(KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
+        entry.fastInsert(KIO::UDSEntry::UDS_SIZE, info.st_size);
+        entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, info.st_mode);
+        entry.fastInsert(KIO::UDSEntry::UDS_MODIFICATION_TIME, info.st_mtime);
+        entry.fastInsert(KIO::UDSEntry::UDS_ACCESS_TIME, info.st_atime);
+        entry.fastInsert(KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
     }
 
     return entry;
@@ -161,23 +161,23 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
 static void createRootEntry(KIO::UDSEntry& entry)
 {
     entry.clear();
-    entry.insert(KIO::UDSEntry::UDS_NAME, ".");
-    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
-    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
-    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+    entry.fastInsert(KIO::UDSEntry::UDS_NAME, ".");
+    entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+    entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, 0700);
+    entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
 }
 
 // Points to html query screen
 static void createGoHomeEntry(KIO::UDSEntry& entry)
 {
     entry.clear();
-    entry.insert(KIO::UDSEntry::UDS_NAME, "search.html");
-    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll search (click me)");
-    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
-    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, "recoll:///search.html");
-    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0500);
-    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
-    entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "recoll");
+    entry.fastInsert(KIO::UDSEntry::UDS_NAME, "search.html");
+    entry.fastInsert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll search (click me)");
+    entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
+    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, "recoll:///search.html");
+    entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, 0500);
+    entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
+    entry.fastInsert(KIO::UDSEntry::UDS_ICON_NAME, "recoll");
 }
 
 // Points to help file
@@ -187,14 +187,14 @@ static void createGoHelpEntry(KIO::UDSEntry& entry)
         QStandardPaths::locate(QStandardPaths::GenericDataLocation,
                                "kio_recoll/help.html");
     entry.clear();
-    entry.insert(KIO::UDSEntry::UDS_NAME, "help");
-    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll help (click me first)");
-    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
-    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, QString("file://") +
+    entry.fastInsert(KIO::UDSEntry::UDS_NAME, "help");
+    entry.fastInsert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll help (click me first)");
+    entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
+    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, QString("file://") +
                  location);
-    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0500);
-    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
-    entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "help");
+    entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, 0500);
+    entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
+    entry.fastInsert(KIO::UDSEntry::UDS_ICON_NAME, "help");
 }
 
 // As far as I can see we only ever get this on '/' so why all the code?
@@ -205,8 +205,8 @@ void RecollProtocol::stat(const QUrl& url)
     UrlIngester ingest(this, url);
 
     KIO::UDSEntry entry;
-//    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
-//    entry.insert(KIO::UDSEntry::UDS_URL, url.url());
+//    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
+//    entry.fastInsert(KIO::UDSEntry::UDS_URL, url.url());
     UrlIngester::RootEntryType rettp;
     QueryDesc qd;
     int num;
@@ -257,12 +257,12 @@ void RecollProtocol::stat(const QUrl& url)
         if (m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
             qDebug() << "RecollProtocol::stat: Directory type:";
             // Need to check no / in there
-            entry.insert(KIO::UDSEntry::UDS_NAME, qd.query);
-            entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
-            entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
-            entry.insert(KIO::UDSEntry::UDS_CREATION_TIME, time(0));
-            entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
-            entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+            entry.fastInsert(KIO::UDSEntry::UDS_NAME, qd.query);
+            entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, 0700);
+            entry.fastInsert(KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
+            entry.fastInsert(KIO::UDSEntry::UDS_CREATION_TIME, time(0));
+            entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+            entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
         }
     } else {
         qDebug() << "RecollProtocol::stat: none of the above ??";

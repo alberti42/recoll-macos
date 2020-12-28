@@ -312,7 +312,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
 
     char opt = qd.opt.isEmpty() ? 'l' : qd.opt.toUtf8().at(0);
     string qs = (const char *)qd.query.toUtf8();
-    Rcl::SearchData *sd = 0;
+    std::shared_ptr<Rcl::SearchData> sdata;
     if (opt != 'l') {
         Rcl::SearchDataClause *clp = 0;
         if (opt == 'f') {
@@ -321,20 +321,19 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
             clp = new Rcl::SearchDataClauseSimple(opt == 'o' ? Rcl::SCLT_OR :
                                                   Rcl::SCLT_AND, qs);
         }
-        sd = new Rcl::SearchData(Rcl::SCLT_OR, m_stemlang);
-        if (sd && clp) {
-            sd->addClause(clp);
+        sdata = std::make_shared<Rcl::SearchData>(Rcl::SCLT_OR, m_stemlang);
+        if (sdata && clp) {
+            sdata->addClause(clp);
         }
     } else {
-        sd = wasaStringToRcl(o_rclconfig, m_stemlang, qs, m_reason);
+        sdata = wasaStringToRcl(o_rclconfig, m_stemlang, qs, m_reason);
     }
-    if (!sd) {
+    if (!sdata) {
         m_reason = "Internal Error: cant build search";
         error(KIO::ERR_SLAVE_DEFINED, u8s2qs(m_reason));
         return false;
     }
 
-    std::shared_ptr<Rcl::SearchData> sdata(sd);
     std::shared_ptr<Rcl::Query>query(new Rcl::Query(m_rcldb.get()));
     query->setCollapseDuplicates(prefs.collapseDuplicates);
     if (!query->setQuery(sdata)) {

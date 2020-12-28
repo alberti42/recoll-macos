@@ -34,7 +34,9 @@ Recoll configuration.
 
 Recipe:
 
- - Make sure the KF5 core and KIO devel packages and cmake are installed.
+ - Make sure the KF5 core and KIO devel packages and cmake are
+   installed. You probably need the kio-devel and extra-cmake-modules
+   packages.
 
  - Extract the Recoll source.
 
