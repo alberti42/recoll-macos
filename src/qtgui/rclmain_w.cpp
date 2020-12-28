@@ -433,6 +433,11 @@ void RclMain::setupCategoryFiltering()
     m_filtFRM->setObjectName(QString::fromUtf8("m_filtFRM"));
     QHBoxLayout *bgrphbox = new QHBoxLayout(m_filtFRM);
     verticalLayout->insertWidget(1, m_filtFRM);
+    QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    sizePolicy2.setHorizontalStretch(0);
+    sizePolicy2.setVerticalStretch(0);
+    sizePolicy2.setHeightForWidth(m_filtFRM->sizePolicy().hasHeightForWidth());
+    m_filtFRM->setSizePolicy(sizePolicy2);
     m_filtBGRP  = new QButtonGroup(m_filtFRM);
     QRadioButton *allRDB = new QRadioButton(m_filtFRM);
     allRDB->setObjectName("allRDB");
