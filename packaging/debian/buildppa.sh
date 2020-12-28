@@ -12,10 +12,10 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.28.1
+RCLVERS=1.28.2
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.0
-PPAVERS=2
+PPAVERS=1
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -51,7 +51,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series="xenial bionic focal groovy"
-series=
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -87,7 +87,7 @@ done
 
 ### KIO.
 series="xenial bionic focal groovy"
-#series=
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}

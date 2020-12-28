@@ -1,3 +1,9 @@
+recoll (1.28.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix category button frame vertically stretching with the main window.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 28 Dec 2020 18:42:00 +0100
+
 recoll (1.28.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix build error caused by wasaStringToRcl interface change.
