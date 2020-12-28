@@ -15,7 +15,7 @@ PPA_KEYID=7808CE96D38B9201
 RCLVERS=1.28.1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.0
-PPAVERS=1
+PPAVERS=2
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src

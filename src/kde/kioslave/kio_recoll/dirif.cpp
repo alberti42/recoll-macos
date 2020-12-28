@@ -35,11 +35,16 @@
 #include <QDebug>
 #include <QUrl>
 #include <QStandardPaths>
+#include <KF5/kio_version.h>
 
 #include "kio_recoll.h"
 #include "pathut.h"
 
 using namespace KIO;
+
+#if KIO_VERSION < ((5<<16)|(49<<8)|(0))
+#define fastInsert insert
+#endif
 
 static const QString resultBaseName("recollResult");
 
