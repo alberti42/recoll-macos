@@ -324,9 +324,9 @@ public:
     virtual ~SearchDataClauseSimple() {}
 
     /** Translate to Xapian query */
-    virtual bool toNativeQuery(Rcl::Db &, void *);
+    virtual bool toNativeQuery(Rcl::Db &, void *) override;
 
-    virtual void getTerms(HighlightData& hldata) const {
+    virtual void getTerms(HighlightData& hldata) const override {
         hldata.append(m_hldata);
     }
     virtual const std::string& gettext() const {
@@ -338,7 +338,7 @@ public:
     virtual void setfield(const string& field) {
         m_field = field;
     }
-    virtual void dump(std::ostream& o) const;
+    virtual void dump(std::ostream& o) const override;
 
 protected:
     std::string  m_text;  // Raw user entry text.
@@ -380,11 +380,11 @@ public:
     }
     virtual ~SearchDataClauseRange() {}
 
-    virtual void dump(std::ostream& o) const;
+    virtual void dump(std::ostream& o) const override;
     virtual const std::string& gettext2() const {
         return m_t2;
     }
-    virtual bool toNativeQuery(Rcl::Db &db, void *);
+    virtual bool toNativeQuery(Rcl::Db &db, void *) override;
 
 protected:
     std::string  m_t2;
@@ -408,8 +408,8 @@ public:
 
     virtual ~SearchDataClauseFilename() {}
 
-    virtual bool toNativeQuery(Rcl::Db &, void *);
-    virtual void dump(std::ostream& o) const;
+    virtual bool toNativeQuery(Rcl::Db &, void *) override;
+    virtual void dump(std::ostream& o) const override;
 };
 
 
@@ -443,8 +443,8 @@ public:
 
     virtual ~SearchDataClausePath() {}
 
-    virtual bool toNativeQuery(Rcl::Db &, void *);
-    virtual void dump(std::ostream& o) const;
+    virtual bool toNativeQuery(Rcl::Db &, void *) override;
+    virtual void dump(std::ostream& o) const override;
 };
 
 /** 
@@ -459,14 +459,14 @@ public:
 
     virtual ~SearchDataClauseDist() {}
 
-    virtual bool toNativeQuery(Rcl::Db &, void *);
+    virtual bool toNativeQuery(Rcl::Db &, void *) override;
     virtual int getslack() const {
         return m_slack;
     }
     virtual void setslack(int slack) {
         m_slack = slack;
     }
-    virtual void dump(std::ostream& o) const;
+    virtual void dump(std::ostream& o) const override;
 private:
     int m_slack;
 };
@@ -476,20 +476,20 @@ class SearchDataClauseSub : public SearchDataClause {
 public:
     SearchDataClauseSub(std::shared_ptr<SearchData> sub) 
         : SearchDataClause(SCLT_SUB), m_sub(sub) {}
-    virtual bool toNativeQuery(Rcl::Db &db, void *p) {
+    virtual bool toNativeQuery(Rcl::Db &db, void *p) override {
         bool ret = m_sub->toNativeQuery(db, p);
         if (!ret) 
             m_reason = m_sub->getReason();
         return ret;
     }
 
-    virtual void getTerms(HighlightData& hldata) const {
+    virtual void getTerms(HighlightData& hldata) const override {
         m_sub.get()->getTerms(hldata);
     }
     virtual std::shared_ptr<SearchData> getSub() {
         return m_sub;
     }
-    virtual void dump(std::ostream& o) const;
+    virtual void dump(std::ostream& o) const override;
 
 protected:
     std::shared_ptr<SearchData> m_sub;
