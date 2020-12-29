@@ -312,15 +312,18 @@ def main(proto, extract):
         
     actAsSingle = False
     debugDumpData = False
+    debugDumpFields = False
     ipath = b""
 
     args = sys.argv[1:]
-    opts, args = getopt.getopt(args, "hdsi:w:")
+    opts, args = getopt.getopt(args, "dfhis:w:")
     for opt, arg in opts:
-        if opt in ['-h']:
+        if opt in ['-d']:
+            debugDumpData = True
+        elif opt in ['-f']:
+            debugDumpFields = True
+        elif opt in ['-h']:
             usage()
-        elif opt in ['-s']:
-            actAsSingle = True
         elif opt in ['-i']:
             ipath = makebytes(arg)
         elif opt in ['-w']:
@@ -330,8 +333,8 @@ def main(proto, extract):
                 sys.exit(0)
             else:
                 sys.exit(1)
-        elif opt in ['-d']:
-            debugDumpData = True
+        elif opt in ['-s']:
+            actAsSingle = True
         else:
             print("unknown option %s\n"%opt, file=sys.stderr)
             usage()
@@ -397,6 +400,10 @@ def main(proto, extract):
             bdata = makebytes(data)
             debprint(ioout, "== Entry %d dlen %d ipath %s (mimetype [%s]):" % \
                   (ecnt, len(data), ipath, proto.mimetype.decode('cp1252')))
+            if debugDumpFields:
+                for k,v in proto.fields.items():
+                    debprint(ioout, "  %s -> %s" % (k,v))
+            proto.fields = {}
             if debugDumpData:
                 proto.breakwrite(ioout, bdata)
                 ioout.write(b'\n')
