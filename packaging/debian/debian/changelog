@@ -1,3 +1,11 @@
+recoll (1.28.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix an issue in Python extension: Doc attribute setting not working.
+    This had very little impact as regular clients like the Webui or the
+    GSSP do not modify the Doc objects.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 30 Dec 2020 08:42:00 +0100
+
 recoll (1.28.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix category button frame vertically stretching with the main window.
