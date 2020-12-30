@@ -629,6 +629,7 @@ Doc_setattro(recoll_DocObject *self, PyObject *nameobj, PyObject *value)
     // Note that some attributes are set both as struct fields and
     // meta members, keep compat with movedocfields() used when
     // fetching from query.
+    self->doc->meta[key] = uvalue;
     switch (key.at(0)) {
     case 't':
         if (key == "text") {
