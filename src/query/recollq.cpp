@@ -137,7 +137,7 @@ static char usage [] =
 " -Q : no result lines, just the processed query and result count.\n"
 " -m : dump the whole document meta[] array for each result.\n"
 " -A : output the document abstracts.\n"
-"    -p : show snippets, with page numbers instead of abstract.\n"
+"    -p <cnt> : show <cnt> snippets, with page numbers instead of the concatenated abstract.\n"
 " -S fld : sort by field <fld>.\n"
 "   -D : sort descending.\n"
 " -s stemlang : set stemming language to use (must exist in index...).\n"
