@@ -21,7 +21,7 @@ except:
     sys.exit(1);
 
 
-re_pairnum = re.compile(b'''[[(]*([0-9]+),\s*([0-9]+)''')
+re_pairnum = re.compile(b'''[([]*([0-9]+),\s*([0-9]+)''')
 
 # The 'Easy' mutagen tags conversions are incomplete. We do it ourselves.
 # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
