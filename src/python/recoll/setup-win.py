@@ -25,37 +25,37 @@ include_dirs = [
         os.path.join(top, 'query'), 
         os.path.join(top, 'internfile'), 
 ]
+
 define_macros = [
         ('RECOLL_DATADIR', RECOLL_DATADIR),
         ('__WIN32__', '1')
 ]
+
 library_dirs = [
-        os.path.join(top, "windows", "build-librecoll-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release"),
+        os.path.join(top, "windows", "build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release"),
         os.path.join(recolldeps, "libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc"),
         os.path.join(recolldeps, "libxslt/libxslt-1.1.29/win32/bin.msvc"),
-        os.path.join(top, "windows", "build-libxapian-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release"),
+        os.path.join(top, "windows", "build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release"),
         os.path.join(recolldeps, "zlib-1.2.11"),
-        os.path.join(recolldeps, "build-libiconv-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release")
+        os.path.join(recolldeps, "build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release")
         ]
+
 libraries =  ["librecoll", "libxml2_a", "libxslt_a",
               "libxapian", "libiconv", "zlib",
               "rpcrt4", "ws2_32", "shlwapi", "shell32",
               "psapi", "user32", "kernel32"
 ]
-module1 = Extension('recoll',
-                    define_macros = define_macros,
-                    include_dirs = include_dirs,
-                    libraries = libraries,
-                    library_dirs = library_dirs,
-                    sources = [os.path.join(pytop, 'pyrecoll.cpp')])
 
-module2 = Extension('rclextract',
+extra_compile_args = ['-std=c++11']
+
+module1 = Extension('_recoll',
                     define_macros = define_macros,
                     include_dirs = include_dirs,
-                    extra_compile_args = extra_compile_args,
                     libraries = libraries,
                     library_dirs = library_dirs,
-                    sources = [os.path.join(pytop, 'pyrclextract.cpp')])
+                    sources = [os.path.join(pytop, 'pyrecoll.cpp'),
+                               os.path.join(pytop, 'pyresultstore.cpp'),
+                               os.path.join(pytop, 'pyrclextract.cpp')])
 
 setup (name = 'Recoll',
        version = VERSION,
@@ -69,4 +69,4 @@ setup (name = 'Recoll',
 ''',
     packages = ['recoll'],
     ext_package = 'recoll',
-       ext_modules = [module1, module2])
+       ext_modules = [module1])
