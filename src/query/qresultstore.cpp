@@ -25,8 +25,6 @@
 #include <map>
 #include <vector>
 
-#include <malloc.h>
-#include <unistd.h>
 #include <string.h>
 
 #include "rcldoc.h"

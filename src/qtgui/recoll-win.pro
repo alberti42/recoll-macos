@@ -63,6 +63,7 @@ SOURCES += \
         rclhelp.cpp \
         rclmain_w.cpp \
         rclm_idx.cpp \
+        rclm_menus.cpp \
         rclm_preview.cpp \
         rclm_saveload.cpp \
         rclm_view.cpp \

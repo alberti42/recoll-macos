@@ -65,6 +65,7 @@ SOURCES += \
 ../../query/dynconf.cpp \
 ../../query/filtseq.cpp \
 ../../query/plaintorich.cpp \
+../../query/qresultstore.cpp \
 ../../query/recollq.cpp \
 ../../query/reslistpager.cpp \
 ../../query/sortseq.cpp \
