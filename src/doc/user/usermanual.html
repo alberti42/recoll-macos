@@ -4053,17 +4053,28 @@ fs.inotify.max_user_watches=32768
                 </div>
               </div>
             </div>
-            <p><b>Phrases and Proximity searches.&nbsp;</b>A phrase
-            can be looked for by enclosing it in double quotes.
+            <p><b>Phrases searches.&nbsp;</b>A phrase can be looked
+            for by enclosing a number of terms in double quotes.
             Example: <code class="literal">"user manual"</code>
             will look only for occurrences of <code class=
             "literal">user</code> immediately followed by
             <code class="literal">manual</code>. You can use the
-            <span class="guilabel">This phrase</span> field of the
+            <span class="guilabel">"Phrase"</span> field of the
             advanced search dialog to the same effect. Phrases can
             be entered along simple terms in all simple or advanced
-            search entry fields (except <span class="guilabel">This
-            exact phrase</span>).</p>
+            search entry fields, except <span class=
+            "guilabel">"Phrase"</span>.</p>
+            <p><b>Proximity searches.&nbsp;</b>A proximity search
+            differs from a phrase search in that it does not impose
+            an order on the terms. Proximity searches can be
+            entered by specifying the <span class=
+            "guilabel">"Proximity"</span> type in the advanced
+            search, or by postfixing a phrase search with a 'p'.
+            Example: "user manual"p would also match "manual user".
+            Also see <a class="link" href=
+            "#RCL.SEARCH.LANG.MODIFIERS" title=
+            "3.5.2.&nbsp;Modifiers">the modifier section</a> from
+            the query language documentation.</p>
             <p><b>AutoPhrases.&nbsp;</b>This option can be set in
             the preferences dialog. If it is set, a phrase will be
             automatically built and added to simple searches when

@@ -2977,30 +2977,40 @@ fs.inotify.max_user_watches=32768
         <sect3 id="RCL.SEARCH.GUI.TIPS.PHRASES">
           <title>Working with phrases and proximity</title>
 
-          <formalpara><title>Phrases and Proximity searches</title>
-          <para>A phrase can be looked for by enclosing it in double
-          quotes. Example: <literal>"user manual"</literal> will look
-          only for occurrences of <literal>user</literal> immediately
-          followed by <literal>manual</literal>. You can use the
-          <guilabel>This phrase</guilabel> field of the advanced
-          search dialog to the same effect. Phrases can be entered along
-          simple terms in all simple or advanced search entry fields
-          (except <guilabel>This exact phrase</guilabel>).</para>
-          </formalpara>
+          <formalpara><title>Phrases searches</title>
+            <para>A phrase can be
+              looked for by enclosing a number of terms in double
+              quotes. Example: <literal>"user manual"</literal> will look only
+              for occurrences of <literal>user</literal> immediately followed
+              by <literal>manual</literal>. You can use
+              the <guilabel>"Phrase"</guilabel> field of the advanced search
+              dialog to the same effect. Phrases can be entered along simple
+              terms in all simple or advanced search entry fields,
+              except <guilabel>"Phrase"</guilabel>. </para></formalpara>
+
+          <formalpara><title>Proximity searches</title>
+          <para>A proximity search differs from a phrase search in that 
+            it does not impose an order on the terms. Proximity searches
+            can be entered by specifying
+            the <guilabel>"Proximity"</guilabel> type in the advanced
+            search, or by postfixing a phrase search with a 'p'. Example:
+            "user manual"p would also match "manual user". Also
+            see <link linkend="RCL.SEARCH.LANG.MODIFIERS">the modifier
+            section</link> from the query language
+            documentation.</para></formalpara>
 
           <formalpara><title>AutoPhrases</title>
-          <para>This option can be set in the preferences dialog. If it is
-          set, a phrase will be automatically built and added to simple
-          searches when looking for <literal>Any terms</literal>. This
-          will not change radically the results, but will give a relevance
-          boost to the results where the search terms appear as a
-          phrase. Ie: searching for <literal>virtual reality</literal>
-          will still find all documents where either
-          <literal>virtual</literal> or <literal>reality</literal> or 
-          both appear, but those which contain
-          <literal>virtual reality</literal> should appear sooner in the
-          list.</para> 
-          </formalpara>
+            <para>This option can be set in the preferences dialog. If it is
+              set, a phrase will be automatically built and added to simple
+              searches when looking for <literal>Any terms</literal>. This
+              will not change radically the results, but will give a relevance
+              boost to the results where the search terms appear as a
+              phrase. Ie: searching for <literal>virtual reality</literal>
+              will still find all documents where either
+              <literal>virtual</literal> or <literal>reality</literal> or 
+              both appear, but those which contain
+              <literal>virtual reality</literal> should appear sooner in the
+              list.</para></formalpara>
 
           <para>Phrase searches can slow down a query if most of the
             terms in the phrase are common. If
