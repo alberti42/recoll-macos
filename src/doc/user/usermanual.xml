@@ -5144,7 +5144,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
         <para>The &RCL; Python programming interface can be used both for
         searching and for creating/updating an index. Bindings exist for
-        Python2 and Python3.</para>
+        Python2 and Python3 (Jan 2021: python2 support will be dropped
+        soon).</para>
 
         <para>The search interface is used in a number of active projects:
         the <ulink 
@@ -5192,18 +5193,18 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         extension more completely, and especially its data extraction
         features.</para>
 
-        <programlisting><![CDATA[
-        #!/usr/bin/env python
+<programlisting><![CDATA[
+#!/usr/bin/python3
 
-        from recoll import recoll
+from recoll import recoll
 
-        db = recoll.connect()
-        query = db.query()
-        nres = query.execute("some query")
-        results = query.fetchmany(20)
-        for doc in results:
-            print("%s %s" % (doc.url, doc.title))
-        ]]></programlisting>
+db = recoll.connect()
+query = db.query()
+nres = query.execute("some query")
+results = query.fetchmany(20)
+for doc in results:
+    print("%s %s" % (doc.url, doc.title))
+]]></programlisting>
 
         <para>You can also take a look at the source for the
         <ulink 
@@ -5670,7 +5671,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           <para>The <literal>rclextract</literal> module can give access to
           the original document and to the document text content (if not
           stored by the index, or to access an HTML version of the text).
-          Acessing the original document is particularly useful if it is
+          Accessing the original document is particularly useful if it is
           embedded (e.g. an email attachment).</para>
 
           <para>You need to import the <literal>recoll</literal> module
@@ -5703,19 +5704,20 @@ qdoc = query.fetchone()
 extractor = recoll.Extractor(qdoc)
 doc = extractor.textextract(qdoc.ipath)
 # use doc.text, e.g. for previewing</programlisting>
-                  <para>Passing <literal>qdoc.ipath</literal> to
+
+                <para>Passing <literal>qdoc.ipath</literal> to
                   <literal>textextract()</literal> is redundant, but
                   reflects the fact that the <literal>Extractor</literal>
                   object actually has the capability to access the other
                   entries in a compound document.</para>
-                  </listitem>
-                </varlistentry>
-                <varlistentry>
-                  <term>Extractor.idoctofile(ipath, targetmtype, outfile='')</term>
-                  <listitem><para>Extracts document into an output file,
-                  which can be given explicitly or will be created as a
-                  temporary file to be deleted by the caller. Typical
-                  use:</para> 
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Extractor.idoctofile(ipath, targetmtype, outfile='')</term>
+                <listitem><para>Extracts document into an output file,
+                    which can be given explicitly or will be created as a
+                    temporary file to be deleted by the caller. Typical
+                    use:</para> 
 <programlisting>
 from recoll import recoll, rclextract
 
@@ -5750,7 +5752,7 @@ not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
           highlighting and data extraction functions.</para>
 
 <programlisting><![CDATA[
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 from recoll import recoll
 
@@ -5759,17 +5761,15 @@ db.setAbstractParams(maxchars=80, contextwords=4)
 
 query = db.query()
 nres = query.execute("some user question")
-print "Result count: ", nres
+print("Result count: %d" % nres)
 if nres > 5:
     nres = 5
 for i in range(nres):
     doc = query.fetchone()
-    print "Result #%d" % (query.rownumber,)
+    print("Result #%d" % (query.rownumber))
     for k in ("title", "size"):
-        print k, ":", getattr(doc, k).encode('utf-8')
-    abs = db.makeDocAbstract(doc, query).encode('utf-8')
-    print abs
-    print
+        print("%s : %s" % (k, getattr(doc, k)))
+    print("%s\n" % db.makeDocAbstract(doc, query))
 ]]></programlisting>
 
         </sect3>
@@ -5911,10 +5911,11 @@ for i in range(nres):
           access data from the specified indexer. Example, for the mbox
           indexing sample found in the Recoll source (which sets
           <literal>rclbes="MBOX"</literal>):</para>
-          <programlisting>[MBOX]
-          fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
-          makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
-          </programlisting>
+<programlisting>[MBOX]
+fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
+makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
+</programlisting>
+
           <para><literal>fetch</literal> and <literal>makesig</literal>
           define two commands to execute to respectively retrieve the
           document text and compute the document signature (the example
@@ -5953,17 +5954,15 @@ for i in range(nres):
         course).</para>
 
         <para>Adapting to the new package structure:</para>
-        <programlisting>
-          <![CDATA[
-                   try:
-                   from recoll import recoll
-                   from recoll import rclextract
-                   hasextract = True
-                   except:
-                   import recoll
-                   hasextract = False
-          ]]>
-        </programlisting>
+<programlisting><![CDATA[
+try:
+from recoll import recoll
+from recoll import rclextract
+hasextract = True
+except:
+import recoll
+hasextract = False
+]]></programlisting>
 
         <para>Adapting to the change of nature of
         the <literal>next</literal> <literal>Query</literal>
@@ -5971,12 +5970,7 @@ for i in range(nres):
         the <literal>scroll()</literal> method (new) or set
         the <literal>next</literal> value (old).</para>
 
-        <programlisting>
-          <![CDATA[
-                   rownum = query.next if type(query.next) == int else \
-                   query.rownumber
-          ]]>
-        </programlisting>
+        <programlisting><![CDATA[rownum = query.next if type(query.next) == int else query.rownumber]]></programlisting>
 
       </sect2> <!-- compat with previous version -->
 

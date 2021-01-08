@@ -6681,7 +6681,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           <p>The <span class="application">Recoll</span> Python
           programming interface can be used both for searching and
           for creating/updating an index. Bindings exist for
-          Python2 and Python3.</p>
+          Python2 and Python3 (Jan 2021: python2 support will be
+          dropped soon).</p>
           <p>The search interface is used in a number of active
           projects: the <a class="ulink" href=
           "https://www.lesbonscomptes.com/recoll/pages/download.html#gssp"
@@ -6739,17 +6740,17 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           exercising the extension more completely, and especially
           its data extraction features.</p>
           <pre class="programlisting">
-        #!/usr/bin/env python
+#!/usr/bin/python3
 
-        from recoll import recoll
+from recoll import recoll
 
-        db = recoll.connect()
-        query = db.query()
-        nres = query.execute("some query")
-        results = query.fetchmany(20)
-        for doc in results:
-            print("%s %s" % (doc.url, doc.title))
-        </pre>
+db = recoll.connect()
+query = db.query()
+nres = query.execute("some query")
+results = query.fetchmany(20)
+for doc in results:
+    print("%s %s" % (doc.url, doc.title))
+</pre>
           <p>You can also take a look at the source for the
           <a class="ulink" href=
           "https://framagit.org/medoc92/recollwebui/-/blob/master/webui.py"
@@ -7345,7 +7346,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             <p>The <code class="literal">rclextract</code> module
             can give access to the original document and to the
             document text content (if not stored by the index, or
-            to access an HTML version of the text). Acessing the
+            to access an HTML version of the text). Accessing the
             original document is particularly useful if it is
             embedded (e.g. an email attachment).</p>
             <p>You need to import the <code class=
@@ -7446,7 +7447,7 @@ not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
             embryonic GUI which demonstrates the highlighting and
             data extraction functions.</p>
             <pre class="programlisting">
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 from recoll import recoll
 
@@ -7455,17 +7456,15 @@ db.setAbstractParams(maxchars=80, contextwords=4)
 
 query = db.query()
 nres = query.execute("some user question")
-print "Result count: ", nres
+print("Result count: %d" % nres)
 if nres &gt; 5:
     nres = 5
 for i in range(nres):
     doc = query.fetchone()
-    print "Result #%d" % (query.rownumber,)
+    print("Result #%d" % (query.rownumber))
     for k in ("title", "size"):
-        print k, ":", getattr(doc, k).encode('utf-8')
-    abs = db.makeDocAbstract(doc, query).encode('utf-8')
-    print abs
-    print
+        print("%s : %s" % (k, getattr(doc, k)))
+    print("%s\n" % db.makeDocAbstract(doc, query))
 </pre>
           </div>
         </div>
@@ -7651,9 +7650,9 @@ for i in range(nres):
             Recoll source (which sets <code class=
             "literal">rclbes="MBOX"</code>):</p>
             <pre class="programlisting">[MBOX]
-          fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
-          makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
-          </pre>
+fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
+makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
+</pre>
             <p><code class="literal">fetch</code> and <code class=
             "literal">makesig</code> define two commands to execute
             to respectively retrieve the document text and compute
@@ -7708,27 +7707,21 @@ for i in range(nres):
           of course).</p>
           <p>Adapting to the new package structure:</p>
           <pre class="programlisting">
-          
-                   try:
-                   from recoll import recoll
-                   from recoll import rclextract
-                   hasextract = True
-                   except:
-                   import recoll
-                   hasextract = False
-          
-        </pre>
+try:
+from recoll import recoll
+from recoll import rclextract
+hasextract = True
+except:
+import recoll
+hasextract = False
+</pre>
           <p>Adapting to the change of nature of the <code class=
           "literal">next</code> <code class="literal">Query</code>
           member. The same test can be used to choose to use the
           <code class="literal">scroll()</code> method (new) or set
           the <code class="literal">next</code> value (old).</p>
-          <pre class="programlisting">
-          
-                   rownum = query.next if type(query.next) == int else \
-                   query.rownumber
-          
-        </pre>
+          <pre class=
+          "programlisting">rownum = query.next if type(query.next) == int else query.rownumber</pre>
         </div>
       </div>
     </div>
