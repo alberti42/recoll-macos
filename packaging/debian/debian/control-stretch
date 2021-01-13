@@ -86,7 +86,7 @@ Description: GUI program and elements for recoll
 Package: python-recoll
 Architecture: any
 Section: python
-Depends: python2,
+Depends: python,
          recollcmd (= ${binary:Version}),
          ${misc:Depends},
          ${python:Depends},
