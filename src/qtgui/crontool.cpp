@@ -51,8 +51,9 @@ void CronToolW::init()
         return;
 
     if (checkCrontabUnmanaged(marker, "recollindex")) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("It seems that manually edited entries exist for recollindex, cannot edit crontab"));
+        QMessageBox::warning(
+            0, "Recoll", tr("It seems that manually edited entries exist for "
+                            "recollindex, cannot edit crontab"));
         QTimer::singleShot(0, this, SLOT(close()));
     }
     
@@ -81,6 +82,15 @@ void CronToolW::changeCron(bool enable)
 
     string id = idstring(theconfig->getConfDir());
     string cmd("recollindex");
+#if defined(MACPORTS) || defined(HOMEBREW)
+    // The MACPORTS and HOMEBREW flags are set by the resp. portfile
+    // and recipee. Adjust the path for finding recollindex accordingly
+#if defined(MACPORTS)
+    cmd = string("PATH=/opt/local/bin/:$PATH ") + cmd;
+#elif defined(HOMEBREW)
+    cmd = string("PATH=/usr/local/bin/:$PATH ") + cmd;
+#endif
+#endif
 
     string reason;
 
@@ -95,8 +105,9 @@ void CronToolW::changeCron(bool enable)
         if (editCrontab(marker, id, sched, cmd, reason)) {
             accept();
         }  else {
-            QMessageBox::warning(0, "Recoll", 
-                                 tr("Error installing cron entry. Bad syntax in fields ?"));
+            QMessageBox::warning(
+                0, "Recoll", tr("Error installing cron entry. "
+                                "Bad syntax in fields ?"));
         }        
     }
 }
