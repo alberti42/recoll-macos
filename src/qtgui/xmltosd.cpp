@@ -33,8 +33,8 @@ class SDHXMLHandler : public PicoXMLParser {
 public:
     SDHXMLHandler(const std::string& in)
         : PicoXMLParser(in) {
-            resetTemps();
-        }
+        resetTemps();
+    }
     void startElement(
         const std::string& nm,
         const std::map<std::string, std::string>& attrs) {
@@ -219,7 +219,7 @@ class SSHXMLHandler : public PicoXMLParser {
 public:
     SSHXMLHandler(const std::string& in)
         : PicoXMLParser(in) {
-            resetTemps();
+        resetTemps();
     }
 
     void startElement(const std::string &nm,

@@ -62,7 +62,6 @@ private:
     std::string m_fn;
     time_t m_reftime; 
     bool m_ok;
- };
-
+};
 
 #endif /* _FRAGBUTS_H_INCLUDED_ */

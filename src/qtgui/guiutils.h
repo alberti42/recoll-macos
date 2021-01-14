@@ -37,7 +37,7 @@ using std::vector;
 
 /** Holder for preferences (gets saved to user Qt prefs) */
 class PrefsPack {
- public:
+public:
     // Simple search entry behaviour
     bool ssearchNoComplete;
     bool ssearchStartOnComplete;
@@ -70,7 +70,7 @@ class PrefsPack {
     int pvwidth; // Preview window geom
     int pvheight;
     bool ssearchTypSav; // Remember last search mode (else always
-            // start with same)
+    // start with same)
     int ssearchTyp{0};
     // Use single app (default: xdg-open), instead of per-mime settings
     bool useDesktopOpen; 

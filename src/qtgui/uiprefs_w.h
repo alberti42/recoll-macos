@@ -31,8 +31,7 @@ class UIPrefsDialog : public QDialog, public Ui::uiPrefsDialogBase
 
 public:
     UIPrefsDialog(RclMain* parent)
-    : QDialog((QWidget*)parent), m_mainWindow(parent)
-    {
+        : QDialog((QWidget*)parent), m_mainWindow(parent) {
         setupUi(this);
         init();
     }
