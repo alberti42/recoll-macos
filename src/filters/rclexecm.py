@@ -316,7 +316,7 @@ def main(proto, extract):
     ipath = b""
 
     args = sys.argv[1:]
-    opts, args = getopt.getopt(args, "dfhis:w:")
+    opts, args = getopt.getopt(args, "dfhi:sw:")
     for opt, arg in opts:
         if opt in ['-d']:
             debugDumpData = True
