@@ -403,6 +403,7 @@ int main(int argc, char **argv)
     QTimer::singleShot(0, mainWindow, SLOT(initDbOpen()));
 
     mainWindow->sSearch->searchTypCMB->setCurrentIndex(prefs.ssearchTyp);
+    mainWindow->sSearch->onSearchTypeChanged(prefs.ssearchTyp);
     if (op_flags & OPT_q) {
         SSearch::SSearchType stype;
         if (op_flags & OPT_o) {
