@@ -224,6 +224,7 @@ public:
           m_maxl(sg.getmultiwordsmaxlength()) {}
     
     virtual bool takeword(const string& term, int pos, int bs, int be) {
+        LOGDEB1("TermProcMulti::takeword[" << term << "] at pos " << pos <<"\n");
         if (m_maxl < 2) {
             // Should not have been pushed??
             return TermProc::takeword(term, pos, bs, be);
@@ -247,10 +248,11 @@ public:
                 // if not gsz in sizes continue;
             }
             if (m_groups.find(comp) != m_groups.end()) {
-                LOGDEB1("Found multiword synonym: [" << comp << "]\n");
+                LOGDEB1("Emitting multiword synonym: [" << comp << "] at pos " <<
+                       pos-gsz+1 << "\n");
                 // TBD bs-be correct computation. Need to store the
                 // values in a parallel list
-                TermProc::takeword(comp, pos-gsz, bs-comp.size(), be);
+                TermProc::takeword(comp, pos-gsz+1, bs-comp.size(), be);
             }
         }
         return TermProc::takeword(term, pos, bs, be);
