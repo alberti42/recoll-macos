@@ -1,6 +1,10 @@
 # @(#$Id: shared.sh,v 1.4 2009-01-06 18:47:33 dockes Exp $  (C) 2006 J.F.Dockes
 # shared code and variables for all tests
 
+# TMPDIR has to be something which belongs to the user because of pdftk
+# issues (see runtests.sh)
+export TMPDIR=$HOME/tmp
+
 RECOLL_TESTDATA=${RECOLL_TESTDATA:-/home/dockes/projets/fulltext/testrecoll}
 
 # All source'rs should set topdir as a relative path from their location to
