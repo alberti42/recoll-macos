@@ -181,6 +181,8 @@
 .mpc = audio/x-musepack
 .oga = application/ogg
 .ogg = application/ogg
+.ogx = audio/ogg
+.opus = audio/ogg
 .wv = audio/x-wavpack
 
 .mkv = video/x-matroska

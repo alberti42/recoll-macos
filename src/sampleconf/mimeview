@@ -119,6 +119,7 @@ audio/mpeg = rhythmbox %f
 audio/aac = rhythmbox %f
 audio/ape = rhythmbox %f
 audio/mp4 = rhythmbox %f
+audio/ogg = rhythmbox %f
 audio/x-musepack = rhythmbox %f
 audio/x-wavpack = rhythmbox %f
 application/ogg = rhythmbox %f
