@@ -114,14 +114,13 @@ public:
 
 class DbStats {
 public:
-    DbStats()
-        :dbdoccount(0), dbavgdoclen(0), mindoclen(0), maxdoclen(0) {}
+    DbStats() {}
     // Index-wide stats
-    unsigned int dbdoccount;
-    double       dbavgdoclen;
-    size_t       mindoclen;
-    size_t       maxdoclen;
-    vector<string> failedurls; /* Only set if requested */
+    unsigned int dbdoccount{0};
+    double       dbavgdoclen{0};
+    size_t       mindoclen{0};
+    size_t       maxdoclen{0};
+    std::vector<std::string> failedurls; /* Only set if requested */
 };
 
 inline bool has_prefix(const string& trm)
@@ -175,6 +174,9 @@ public:
     ~Db();
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
+    bool isWriteMode(OpenMode mode) {
+        return mode == DbUpd || mode == DbTrunc;
+    }
     enum OpenError {DbOpenNoError, DbOpenMainDb, DbOpenExtraDb};
     bool open(OpenMode mode, OpenError *error = 0);
     bool close();
@@ -342,7 +344,7 @@ public:
     bool setExtraQueryDbs(const std::vector<std::string>& dbs);
 
     /** Check if document comes from the main index (this is used to
-       decide if we can update the index for it */
+        decide if we can update the index for it */
     bool fromMainIndex(const Doc& doc);
 
     /** Retrieve the stored doc text. This returns false if the index does not
@@ -499,7 +501,8 @@ public:
 
     // Use empty fn for no synonyms
     bool setSynGroupsFile(const std::string& fn);
-
+    const SynGroups& getSynGroups() {return m_syngroups;}
+    
     // Mark all documents with an UDI having input as prefix as
     // existing.  Only works if the UDIs for the store are
     // hierarchical of course.  Used by FsIndexer to avoid purging
@@ -508,25 +511,26 @@ public:
     bool udiTreeMarkExisting(const string& udi);
 
     /* This has to be public for access by embedded Query::Native */
-    Native *m_ndb; 
+    Native *m_ndb{nullptr};
+    
 private:
     const RclConfig *m_config;
     string     m_reason; // Error explanation
 
     // Xapian directories for additional databases to query
     vector<string> m_extraDbs;
-    OpenMode m_mode;
+    OpenMode m_mode{Db::DbRO};
     // File existence vector: this is filled during the indexing pass. Any
     // document whose bit is not set at the end is purged
     vector<bool> updated;
     // Text bytes indexed since beginning
-    long long    m_curtxtsz;
+    long long    m_curtxtsz{0};
     // Text bytes at last flush
-    long long    m_flushtxtsz;
+    long long    m_flushtxtsz{0};
     // Text bytes at last fsoccup check
-    long long    m_occtxtsz;
+    long long    m_occtxtsz{0};
     // First fs occup check ?
-    int         m_occFirstCheck;
+    int         m_occFirstCheck{1};
 
     // Synonym groups. There is no strict reason that this has to be
     // an Rcl::Db member, as it is only used when building each It
@@ -538,32 +542,31 @@ private:
     SynGroups m_syngroups;
 
     // Aspell object if needed
-    Aspell *m_aspell = nullptr;
-    
+    Aspell *m_aspell{nullptr};
+
     /***************
      * Parameters cached out of the configuration files. Logically const 
      * after init */
     // Stop terms: those don't get indexed.
     StopList m_stops;
-
     // Truncation length for stored meta fields
-    int         m_idxMetaStoredLen;
+    int         m_idxMetaStoredLen{150};
     // This is how long an abstract we keep or build from beginning of
     // text when indexing. It only has an influence on the size of the
     // db as we are free to shorten it again when displaying
-    int          m_idxAbsTruncLen;
+    int          m_idxAbsTruncLen{250};
     // Document text truncation length
     int          m_idxTextTruncateLen{0};
     // This is the size of the abstract that we synthetize out of query
     // term contexts at *query time*
-    int          m_synthAbsLen;
+    int          m_synthAbsLen{250};
     // This is how many words (context size) we keep around query terms
     // when building the abstract
-    int          m_synthAbsWordCtxLen;
+    int          m_synthAbsWordCtxLen{4};
     // Flush threshold. Megabytes of text indexed before we flush.
-    int          m_flushMb;
+    int          m_flushMb{-1};
     // Maximum file system occupation percentage
-    int          m_maxFsOccupPc;
+    int          m_maxFsOccupPc{0};
     // Database directory
     string       m_basedir;
     // When this is set, all documents are considered as needing a reindex.

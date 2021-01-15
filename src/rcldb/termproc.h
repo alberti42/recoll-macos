@@ -19,12 +19,15 @@
 
 #include <vector>
 #include <string>
+#include <set>
+#include <list>
 
 #include "textsplit.h"
 #include "stoplist.h"
 #include "smallut.h"
 #include "utf8iter.h"
 #include "unacpp.h"
+#include "syngroups.h"
 
 namespace Rcl {
 
@@ -52,11 +55,13 @@ class TermProc {
 public:
     TermProc(TermProc* next) : m_next(next) {}
     virtual ~TermProc() {}
+    /* Copyconst and assignment forbidden */
+    TermProc(const TermProc &) = delete;
+    TermProc& operator=(const TermProc &) = delete;
     virtual bool takeword(const string &term, int pos, int bs, int be) {
         if (m_next)
             return m_next->takeword(term, pos, bs, be);
-        else
-            return true;
+        return true;
     }
     // newpage() is like takeword(), but for page breaks.
     virtual void newpage(int pos) {
@@ -66,16 +71,10 @@ public:
     virtual bool flush() {
         if (m_next)
             return m_next->flush();
-        else
-            return true;
+        return true;
     }
 private:
     TermProc *m_next;
-    /* Copyconst and assignment private and forbidden */
-    TermProc(const TermProc &) {}
-    TermProc& operator=(const TermProc &) {
-        return *this;
-    };
 };
 
 /**
@@ -100,8 +99,7 @@ public:
     virtual bool takeword(const string& term, int pos, int bs, int be) {
         if (m_prc)
             return m_prc->takeword(term, pos, bs, be);
-        else
-            return true;
+        return true;
     }
 
     virtual void newpage(int pos) {
@@ -119,12 +117,9 @@ private:
 class TermProcPrep : public TermProc {
 public:
     TermProcPrep(TermProc *nxt)
-        : TermProc(nxt), m_totalterms(0), m_unacerrors(0)
-    {
-    }
+        : TermProc(nxt) {}
 
-    virtual bool takeword(const string& itrm, int pos, int bs, int be)
-    {
+    virtual bool takeword(const string& itrm, int pos, int bs, int be) {
         m_totalterms++;
         string otrm;
 
@@ -179,49 +174,37 @@ public:
         // change in here. This means that phrase searches and
         // snippets will be wrong, but at least searching for the
         // terms will work.
-        bool hasspace = false;
-        for (string::const_iterator it = otrm.begin();it < otrm.end();it++) {
-            if (*it == ' ') {
-                hasspace=true;
-                break;
-            }
-        }
+        bool hasspace = otrm.find(' ') != std::string::npos;
         if (hasspace) {
             std::vector<std::string> terms;
             stringToTokens(otrm, terms, " ", true);
-            for (std::vector<std::string>::const_iterator it = terms.begin(); 
-                 it < terms.end(); it++) {
-                if (!TermProc::takeword(*it, pos, bs, be)) {
+            for (const auto& term : terms) {
+                if (!TermProc::takeword(term, pos, bs, be)) {
                     return false;
                 }
             }
             return true;
-        } else {
-            return TermProc::takeword(otrm, pos, bs, be);
         }
+        return TermProc::takeword(otrm, pos, bs, be);
     }
 
-    virtual bool flush()
-    {
+    virtual bool flush() {
         m_totalterms = m_unacerrors = 0;
         return TermProc::flush();
     }
 
 private:
-    int m_totalterms;
-    int m_unacerrors;
+    int m_totalterms{0};
+    int m_unacerrors{0};
 };
 
 /** Compare to stop words list and discard if match found */
 class TermProcStop : public TermProc {
 public:
     TermProcStop(TermProc *nxt, const Rcl::StopList& stops)
-        : TermProc(nxt), m_stops(stops)
-    {
-    }
+        : TermProc(nxt), m_stops(stops) {}
 
-    virtual bool takeword(const string& term, int pos, int bs, int be)
-    {
+    virtual bool takeword(const string& term, int pos, int bs, int be) {
         if (m_stops.isStop(term)) {
             return true;
         }
@@ -230,6 +213,53 @@ public:
 
 private:
     const Rcl::StopList& m_stops;
+};
+
+/** Generate multiword terms for multiword synonyms. This allows
+ * NEAR/PHRASE searches for multiword synonyms. */
+class TermProcMulti : public TermProc {
+public:
+    TermProcMulti(TermProc *nxt, const SynGroups& sg)
+        : TermProc(nxt), m_groups(sg.getmultiwords()), 
+          m_maxl(sg.getmultiwordsmaxlength()) {}
+    
+    virtual bool takeword(const string& term, int pos, int bs, int be) {
+        if (m_maxl < 2) {
+            // Should not have been pushed??
+            return TermProc::takeword(term, pos, bs, be);
+        }
+        m_terms.push_back(term);
+        if (m_terms.size() > m_maxl) {
+            m_terms.pop_front();
+        }
+        string comp;
+        int gsz{1};
+        for (const auto& gterm : m_terms) {
+            if (comp.empty()) {
+                comp = gterm;
+                continue;
+            } else {
+                comp += " ";
+                comp += gterm;
+                gsz++;
+                // We could optimize by not testing m_groups for sizes
+                // which do not exist.
+                // if not gsz in sizes continue;
+            }
+            if (m_groups.find(comp) != m_groups.end()) {
+                LOGDEB1("Found multiword synonym: [" << comp << "]\n");
+                // TBD bs-be correct computation. Need to store the
+                // values in a parallel list
+                TermProc::takeword(comp, pos-gsz, bs-comp.size(), be);
+            }
+        }
+        return TermProc::takeword(term, pos, bs, be);
+    }
+
+private:
+    const std::set<std::string>& m_groups;
+    size_t m_maxl{0};
+    std::list<std::string> m_terms;
 };
 
 /** Handle common-gram generation: combine frequent terms with neighbours to
@@ -241,13 +271,11 @@ private:
 class TermProcCommongrams : public TermProc {
 public:
     TermProcCommongrams(TermProc *nxt, const Rcl::StopList& stops)
-        : TermProc(nxt), m_stops(stops), m_onlygrams(false)
-    {
-    }
+        : TermProc(nxt), m_stops(stops), m_onlygrams(false) {}
 
-    virtual bool takeword(const string& term, int pos, int bs, int be)
-    {
-        LOGDEB1("TermProcCom::takeword: pos "  << (pos) << " "  << (bs) << " "  << (be) << " ["  << (term) << "]\n" );
+    virtual bool takeword(const string& term, int pos, int bs, int be) {
+        LOGDEB1("TermProcCom::takeword: pos " << pos << " " << bs << " " <<
+                be << " [" << term << "]\n");
         bool isstop = m_stops.isStop(term);
         bool twogramemit = false;
 
@@ -287,8 +315,7 @@ public:
         return true;
     }
 
-    virtual bool flush()
-    {
+    virtual bool flush() {
         if (!m_prevsent && !m_prevterm.empty())
             if (!TermProc::takeword(m_prevterm, m_prevpos, m_prevbs, m_prevbe))
                 return false;
@@ -297,8 +324,7 @@ public:
         m_prevsent = true;
         return TermProc::flush();
     }
-    void onlygrams(bool on)
-    {
+    void onlygrams(bool on) {
         m_onlygrams = on;
     }
 private:

@@ -283,7 +283,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
                         LOGDEB("Db::TermMatch: syngroups out: " <<
                                term << " -> " << stringsToString(sg) << "\n");
                         for (const auto& synonym : sg) {
-                            if (synonym.find_first_of(" ") != string::npos) {
+                            if (synonym.find(' ') != string::npos) {
                                 if (multiwords) {
                                     multiwords->push_back(synonym);
                                 }

@@ -1374,9 +1374,9 @@ string RclConfig::getStopfile() const
     return getConfdirPath("stoplistfile", "stoplist.txt");
 }
 
-string RclConfig::getSynGroupsFile() const
+string RclConfig::getIdxSynGroupsFile() const
 {
-    return getConfdirPath("syngroupsfile", "syngroups.txt");
+    return getConfdirPath("idxsynonyms", "thereisnodefaultidxsynonyms");
 }
 
 // The index status file is fast changing, so it's possible to put it outside

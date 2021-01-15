@@ -867,12 +867,12 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
 bool Db::o_inPlaceReset;
 
 Db::Db(const RclConfig *cfp)
-    : m_ndb(0),  m_mode(Db::DbRO), m_curtxtsz(0), m_flushtxtsz(0),
-      m_occtxtsz(0), m_occFirstCheck(1), m_idxMetaStoredLen(150),
-      m_idxAbsTruncLen(250), m_synthAbsLen(250), m_synthAbsWordCtxLen(4), 
-      m_flushMb(-1), m_maxFsOccupPc(0)
 {
     m_config = new RclConfig(*cfp);
+    m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
+    m_config->getConfParam("idxflushmb", &m_flushMb);
+    m_config->getConfParam("idxmetastoredlen", &m_idxMetaStoredLen);
+    m_config->getConfParam("idxtexttruncatelen", &m_idxTextTruncateLen);
     if (start_of_field_term.empty()) {
         if (o_index_stripchars) {
             start_of_field_term = "XXST";
@@ -882,20 +882,13 @@ Db::Db(const RclConfig *cfp)
             end_of_field_term = "XXND/";
         }
     }
-
     m_ndb = new Native(this);
-    if (m_config) {
-        m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
-        m_config->getConfParam("idxflushmb", &m_flushMb);
-        m_config->getConfParam("idxmetastoredlen", &m_idxMetaStoredLen);
-        m_config->getConfParam("idxtexttruncatelen", &m_idxTextTruncateLen);
-    }
 }
 
 Db::~Db()
 {
     LOGDEB2("Db::~Db\n");
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return;
     LOGDEB("Db::~Db: isopen " << m_ndb->m_isopen << " m_iswritable " <<
            m_ndb->m_iswritable << "\n");
@@ -912,7 +905,6 @@ vector<string> Db::getStemmerNames()
     stringToStrings(Xapian::Stem::get_available_languages(), res);
     return res;
 }
-
 
 bool Db::open(OpenMode mode, OpenError *error)
 {
@@ -934,12 +926,19 @@ bool Db::open(OpenMode mode, OpenError *error)
     if (!m_config->getStopfile().empty())
         m_stops.setFile(m_config->getStopfile());
 
+    if (isWriteMode(mode)) {
+        // Check for an index-time synonyms file. We use this to
+        // generate multiword terms for multiword synonyms
+        string synfile = m_config->getIdxSynGroupsFile();
+        if (path_exists(synfile)) {
+            setSynGroupsFile(synfile);
+        }
+    }
+    
     string dir = m_config->getDbDir();
     string ermsg;
     try {
-        switch (mode) {
-        case DbUpd:
-        case DbTrunc: 
+        if (isWriteMode(mode)) {
             m_ndb->openWrite(dir, mode);
             updated = vector<bool>(m_ndb->xwdb.get_lastdocid() + 1, false);
             // We used to open a readonly object in addition to the
@@ -951,9 +950,7 @@ bool Db::open(OpenMode mode, OpenError *error)
             // so the query db is now a clone of the update one.
             m_ndb->xrdb = m_ndb->xwdb;
             LOGDEB("Db::open: lastdocid: " <<m_ndb->xwdb.get_lastdocid()<<"\n");
-            break;
-        case DbRO:
-        default:
+        } else {
             m_ndb->openRead(dir);
             for (auto& db : m_extraDbs) {
                 if (error)
@@ -963,7 +960,6 @@ bool Db::open(OpenMode mode, OpenError *error)
                 // but I can't see why
                 m_ndb->xrdb.add_database(Xapian::Database(db));
             }
-            break;
         }
         if (error)
             *error = DbOpenMainDb;
@@ -1531,10 +1527,15 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     TermProcStop tpstop(nxt, m_stops);nxt = &tpstop;
     //TermProcCommongrams tpcommon(nxt, m_stops); nxt = &tpcommon;
 
+    TermProcMulti tpmulti(nxt, m_syngroups);
+    if (m_syngroups.getmultiwordsmaxlength() > 1) {
+        nxt = &tpmulti;
+    }
+
     TermProcPrep tpprep(nxt);
     if (o_index_stripchars)
         nxt = &tpprep;
-
+    
     TextSplitDb splitter(m_ndb->xwdb, newdocument, nxt);
     tpidx.setTSD(&splitter);
 

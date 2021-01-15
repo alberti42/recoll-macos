@@ -602,13 +602,12 @@ void SearchDataClauseSimple::processSimpleSpan(
     }
 
     // Push phrases for the multi-word expansions
-    for (vector<string>::const_iterator mwp = multiwords.begin();
-         mwp != multiwords.end(); mwp++) {
+    for (const auto& mw : multiwords) {
         vector<string> phr;
         // We just do a basic split to keep things a bit simpler here
         // (no textsplit). This means though that no punctuation is
         // allowed in multi-word synonyms.
-        stringToTokens(*mwp, phr);
+        stringToTokens(mw, phr);
         if (!prefix.empty())
             prefix_vector(phr, prefix);
         xq = Xapian::Query(Xapian::Query::OP_OR, xq, 
@@ -624,20 +623,19 @@ void SearchDataClauseSimple::processSimpleSpan(
 // NEAR xapian query, the elements of which can themselves be OR
 // queries if the terms get expanded by stemming or wildcards (we
 // don't do stemming for PHRASE though)
-void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg, 
-                                                 TermProcQ *splitData, 
-                                                 int mods, void *pq,
-                                                 bool useNear, int slack)
+void SearchDataClauseSimple::processPhraseOrNear(
+    Rcl::Db &db, string& ermsg, TermProcQ *splitData, int mods, void *pq,
+    bool useNear, int slack)
 {
     vector<Xapian::Query> &pqueries(*(vector<Xapian::Query>*)pq);
     Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
         Xapian::Query::OP_PHRASE;
     vector<Xapian::Query> orqueries;
-#ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
-    bool hadmultiple = false;
-#endif
     vector<vector<string> >groups;
 
+    bool useidxsynonyms =
+        db.getSynGroups().getpath() == db.getConf()->getIdxSynGroupsFile();
+    
     string prefix;
     const FieldTraits *ftp;
     if (!m_field.empty() && db.fieldToTraits(m_field, &ftp, true)) {
@@ -650,32 +648,38 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
     }
 
     // Go through the list and perform stem/wildcard expansion for each element
-    vector<bool>::const_iterator nxit = splitData->nostemexps().begin();
-    for (vector<string>::const_iterator it = splitData->terms().begin();
+    auto nxit = splitData->nostemexps().begin();
+    for (auto it = splitData->terms().begin();
          it != splitData->terms().end(); it++, nxit++) {
         LOGDEB0("ProcessPhrase: processing [" << *it << "]\n");
         // Adjust when we do stem expansion. Not if disabled by
         // caller, not inside phrases, and some versions of xapian
         // will accept only one OR clause inside NEAR.
-        bool nostemexp = *nxit || (op == Xapian::Query::OP_PHRASE) 
-#ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
-            || hadmultiple
-#endif // single OR inside NEAR
-            ;
+        bool nostemexp = *nxit || (op == Xapian::Query::OP_PHRASE);
         int lmods = mods;
         if (nostemexp)
             lmods |= SearchDataClause::SDCM_NOSTEMMING;
         string sterm;
         vector<string> exp;
-        if (!expandTerm(db, ermsg, lmods, *it, exp, sterm, prefix))
+        vector<string> multiwords;
+        if (!expandTerm(db, ermsg, lmods, *it, exp, sterm, prefix, &multiwords))
             return;
+
+        // Note: because of how expandTerm works, the multiwords can
+        // only come from the synonyms expansion, which means that, if
+        // idxsynonyms is set, they have each been indexed as a single
+        // term. So, if idxsynonyms is set, and is the current active
+        // synonyms file, we just add them to the expansion.
+        if (!multiwords.empty() && useidxsynonyms) {
+            exp.insert(exp.end(), multiwords.begin(), multiwords.end());
+        }
+
         LOGDEB0("ProcessPhraseOrNear: exp size " << exp.size() << ", exp: " <<
                 stringsToString(exp) << "\n");
         // groups is used for highlighting, we don't want prefixes in there.
         vector<string> noprefs;
-        for (vector<string>::const_iterator it = exp.begin(); 
-             it != exp.end(); it++) {
-            noprefs.push_back(it->substr(prefix.size()));
+        for (const auto& prefterm : exp) {
+            noprefs.push_back(prefterm.substr(prefix.size()));
         }
         groups.push_back(noprefs);
         orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
@@ -683,10 +687,6 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
         m_curcl += exp.size();
         if (m_curcl >= getMaxCl())
             return;
-#ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
-        if (exp.size() > 1) 
-            hadmultiple = true;
-#endif
     }
 
     if (mods & Rcl::SearchDataClause::SDCM_ANCHOREND) {
