@@ -120,6 +120,7 @@ tagdict = {
     'TRACKTOTAL' : 'TOTALTRACKS', 
     'TRC' : 'ISRC',
     'TRCK' : 'TRACKNUMBER',
+    'TRDA' : 'RECORDINGDATE',
     'TRK' : 'TRACKNUMBER',
     'TS2' : 'ALBUMARTISTSORT',
     'TSA' : 'ALBUMSORT',
@@ -140,7 +141,7 @@ tagdict = {
     'TXXX:ORCHESTRA' : 'ORCHESTRA',
     'TXX:ORCHESTRA' : 'ORCHESTRA',
     'TYE' : 'DATE',
-    'TYER' : 'DATE',
+    'TYER' : 'DATE', # wikipedia id3: YEAR
     'ULT' : 'LYRICS',
     'USLT' : 'LYRICS',
     'YEAR' : 'DATE',
@@ -244,10 +245,11 @@ class AudioTagExtractor(RclBaseHandler):
     # which means possible trouble for pre-1970 recordings (negative time).
     # Oldest possible date with 32 bits time stamp is 1901, which is ok though.
     #
-    # This is not used as we don't try to set dmtime (which would not
-    # be used by the current indexer anyway). We instead set a 'date'
-    # metadata entry.
+    # Previous recoll versions had an alias from date to dmtime, which
+    # was wrong, because dmtime is the unix integer time. We have
+    # removed the alias, and set dmtime from the parsed date value.
     def parsedate(self, dt):
+        dt = dt.decode('utf-8', errors='ignore')
         if len(dt) > 10:
             dt = dt[0:10]
         l = dt.split('-')
@@ -398,7 +400,12 @@ class AudioTagExtractor(RclBaseHandler):
         self.em.setfield("charset", 'utf-8')
         if self.tagfix:
             self.tagfix(minf)
-            
+
+        if 'date' in minf:
+            uxtime = self.parsedate(minf['date'])
+            if uxtime:
+                minf['dmtime'] = uxtime
+                
         for tag,val in minf.items():
             #self.em.rclog("%s -> %s" % (tag, val))
             self.em.setfield(tag, val)

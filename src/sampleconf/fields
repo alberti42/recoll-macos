@@ -124,7 +124,7 @@ author = creator dc:creator xesam:author xesam:creator from
 title = caption title dc:title subject
 # catg = dc:type contentCategory
 dbytes = size xesam:size
-dmtime = date dc:date dc:datemodified datemodified contentmodified \
+dmtime = dc:date dc:datemodified datemodified contentmodified \
        xesam:contentmodified
 ext = fileextension xesam:fileextension
 # Don't add subject to keywords aliases, it's better to keep it for email
