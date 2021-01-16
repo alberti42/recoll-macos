@@ -60,6 +60,18 @@ public:
         }
         return st.st_mtime == st1.st_mtime && st.st_size == st1.st_size;
     }
+
+    void clear() {
+        ok = false;
+        terms.clear();
+        groups.clear();
+        multiwords.clear();
+        multiwords_maxlen = 0;
+        path.clear();
+        st.st_mtime = 0;
+        st.st_size = 0;
+    }
+    
     bool ok{false};
     // Term to group num 
     std::unordered_map<string, unsigned int> terms;
@@ -94,16 +106,11 @@ bool SynGroups::setfile(const string& fn)
 {
     LOGDEB("SynGroups::setfile(" << fn << ")\n");
     if (!m) {
-        m = new Internal;
-        if (!m) {
-            LOGERR("SynGroups:setfile:: new Internal failed: no mem ?\n");
-            return false;
-        }
+        return false;
     }
 
     if (fn.empty()) {
-        delete m;
-        m = 0;
+        m->clear();
         return true;
     }
 
@@ -125,10 +132,7 @@ bool SynGroups::setfile(const string& fn)
     string line;
     bool eof = false;
     int lnum = 0;
-    m->groups.clear();
-    m->terms.clear();
-    m->multiwords.clear();
-    m->multiwords_maxlen = 0;
+    m->clear();
     for (;;) {
         cline.clear();
         getline(input, cline);
@@ -256,5 +260,6 @@ size_t SynGroups::getmultiwordsmaxlength() const
 
 const std::string& SynGroups::getpath() const
 {
-    return m->path;
+    static string empty;
+    return m ? m->path : empty;
 }
