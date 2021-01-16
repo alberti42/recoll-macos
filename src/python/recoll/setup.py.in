@@ -38,8 +38,7 @@ module1 = Extension('_recoll',
                                     os.path.join(top, 'internfile'), 
                                     os.path.join(top, 'rcldb'), 
                                     os.path.join(top, 'query'), 
-                                    os.path.join(top, 'unac'),
-                                    os.path.join(top, 'testmains')
+                                    os.path.join(top, 'unac')
                                     ],
                     extra_compile_args = extra_compile_args,
                     libraries = libraries,
