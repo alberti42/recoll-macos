@@ -55,9 +55,11 @@
 #include "multisave.h"
 #include "appformime.h"
 #include "transcode.h"
+#include "scbase.h"
 
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
+static const QString scbctxt("Result Table");
 
 // Compensate for the default and somewhat bizarre vertical placement
 // of text in cells
@@ -588,10 +590,8 @@ void ResTable::init()
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableView->setItemDelegate(new ResTableDelegate(this));
     tableView->setContextMenuPolicy(Qt::CustomContextMenu);
-    new QShortcut(QKeySequence("Ctrl+o"), this, SLOT(menuEdit()));
-    new QShortcut(QKeySequence("Ctrl+Shift+o"), this, SLOT(menuEditAndQuit()));
-    new QShortcut(QKeySequence("Ctrl+d"), this, SLOT(menuPreview()));
-    new QShortcut(QKeySequence("Ctrl+e"), this, SLOT(menuShowSnippets()));
+    
+    onNewShortcuts();
 
     connect(tableView, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
@@ -658,6 +658,27 @@ void ResTable::init()
         splitter->setSizes(sizes);
     }
     installEventFilter(this);
+}
+
+void ResTable::onNewShortcuts()
+{
+    SCBase& scb = SCBase::scBase();
+    QKeySequence ks;
+    ks = scb.get(scbctxt,  "Open", "Ctrl+o");
+    if (!ks.isEmpty())
+        new QShortcut(ks, this, SLOT(menuEdit()));
+
+    ks = scb.get(scbctxt, "Open and Quit", "Ctrl+Shift+o");
+    if (!ks.isEmpty())
+        new QShortcut(ks, this, SLOT(menuEditAndQuit()));
+    
+    ks = scb.get(scbctxt, "Preview", "Ctrl+d");
+    if (!ks.isEmpty())
+        new QShortcut(ks, this, SLOT(menuPreview()));
+    
+    ks = scb.get(scbctxt, "Show Snippets", "Ctrl+e");
+    if (!ks.isEmpty())
+        new QShortcut(ks, this, SLOT(menuShowSnippets()));
 }
 
 bool ResTable::eventFilter(QObject* obj, QEvent* event)

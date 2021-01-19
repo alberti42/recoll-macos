@@ -43,6 +43,8 @@
 #include <QTimer>
 #include <QListWidget>
 #include <QSettings>
+#include <QKeySequenceEdit>
+#include <QKeySequence>
 
 #include "recoll.h"
 #include "guiutils.h"
@@ -54,6 +56,7 @@
 #include "editdialog.h"
 #include "rclmain_w.h"
 #include "ptrans_w.h"
+#include "scbase.h"
 
 void UIPrefsDialog::init()
 {
@@ -269,6 +272,57 @@ void UIPrefsDialog::setFromPrefs()
         }
     }
     idxLV->sortItems();
+    readShortcuts();
+}
+
+void UIPrefsDialog::readShortcuts()
+{
+    SCBase& scbase = SCBase::scBase();
+    shortcutsTB->setColumnCount(3);
+    shortcutsTB->setHorizontalHeaderItem(
+        0, new QTableWidgetItem(tr("Context")));
+    shortcutsTB->setHorizontalHeaderItem(
+        1, new QTableWidgetItem(tr("Description")));
+    shortcutsTB->setHorizontalHeaderItem(
+        2, new QTableWidgetItem(tr("Shortcut")));
+    QStringList sl = scbase.getAll();
+    int row = 0;
+    for (int i = 0; i < sl.size();) {
+        std::cerr << "Inserting row " << qs2utf8s(sl.at(i)) << " " <<
+            qs2utf8s(sl.at(i+1)) << " " <<
+            qs2utf8s(sl.at(i+2)) << "\n";
+        shortcutsTB->insertRow(row);
+        shortcutsTB->setItem(row, 0, new QTableWidgetItem(sl.at(i++)));
+        shortcutsTB->setItem(row, 1, new QTableWidgetItem(sl.at(i++)));
+        auto ed = new QKeySequenceEdit(QKeySequence(sl.at(i++)));
+        shortcutsTB->setCellWidget(row, 2, ed);
+        i++; // Skip dlft, not needed here.
+        row++;
+    }
+    shortcutsTB->resizeColumnsToContents();
+    shortcutsTB->horizontalHeader()->setStretchLastSection(true);
+}
+
+void UIPrefsDialog::storeShortcuts()
+{
+    SCBase& scbase = SCBase::scBase();
+    QStringList sl = scbase.getAll();
+    QStringList slout;
+    for (int row = 0; row < shortcutsTB->rowCount(); row++) {
+        auto qsce = (QKeySequenceEdit*)(shortcutsTB->cellWidget(row, 2));
+        QString val = qsce->keySequence().toString();
+        QString dflt = sl[4 *row + 3];
+        if (dflt != val) {
+            std::cerr << "Storing changed " << qs2utf8s(dflt) << " -> " <<
+                qs2utf8s(val) << " at row " << row << "\n";
+            std::string e = stringsToString(
+                std::vector<std::string>{qs2utf8s(sl[4*row]),
+                        qs2utf8s(sl[4*row+1]), qs2utf8s(val)});
+            slout.append(u8s2qs(e));
+        }
+    }
+    QSettings settings;
+    settings.setValue(SCBase::scBaseSettingsKey(), slout);
 }
 
 void UIPrefsDialog::setupReslistFontPB()
@@ -401,6 +455,8 @@ void UIPrefsDialog::accept()
     }
 
     rwSettings(true);
+    storeShortcuts();
+    
     string reason;
     maybeOpenDb(reason, true);
     emit uiprefsDone();

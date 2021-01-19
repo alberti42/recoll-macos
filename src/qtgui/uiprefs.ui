@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>542</width>
-    <height>641</height>
+    <height>810</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -463,9 +463,6 @@
          </item>
         </layout>
        </item>
-
-
-
        <item>
         <spacer name="spacer4">
          <property name="orientation">
@@ -482,16 +479,16 @@
          </property>
         </spacer>
        </item>
-
-
-
-
-
-
-
-
-
-
+      </layout>
+     </widget>
+     <widget class="QWidget" name="sctab">
+      <attribute name="title">
+       <string>Shortcuts</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QTableWidget" name="shortcutsTB"/>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_2">
@@ -1264,7 +1261,7 @@ May be slow for big documents.</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

@@ -167,6 +167,7 @@ public slots:
     virtual void makeRowVisible(int row);
     virtual void takeFocus();
     virtual void onUiPrefsChanged();
+    virtual void onNewShortcuts();
     
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);

@@ -69,10 +69,13 @@
 #include "rclhelp.h"
 #include "readfile.h"
 #include "moc_rclmain_w.cpp"
+#include "scbase.h"
 
 QString g_stringAllStem, g_stringNoStem;
 static const char *settingskey_toolarea="/Recoll/geometry/toolArea";
 static const char *settingskey_resarea="/Recoll/geometry/resArea";
+static const QString scbctxt("Main Window");
+
 static Qt::ToolBarArea int2area(int in)
 {
     switch (in) {
@@ -125,10 +128,6 @@ void RclMain::init()
 
     buildMenus();
 
-    // A shortcut to get the focus back to the search entry, in table
-    // mode only.
-    m_tablefocseq = new QShortcut(QKeySequence("Ctrl+r"), this);
-
     periodictimer = new QTimer(this);
 
     // idxstatus file. Make sure it exists before trying to watch it
@@ -165,12 +164,10 @@ void RclMain::init()
     actionShowResultsAsTable->setChecked(prefs.showResultsAsTable);
     on_actionShowResultsAsTable_toggled(prefs.showResultsAsTable);
 
-    QKeySequence seq("Ctrl+Shift+s");
-    QShortcut *sc = new QShortcut(seq, this);
-    connect(sc, SIGNAL (activated()), sSearch, SLOT (takeFocus()));
-    QKeySequence seql("Ctrl+l");
-    sc = new QShortcut(seql, this);
-    connect(sc, SIGNAL (activated()), sSearch, SLOT (takeFocus()));
+    onNewShortcuts();
+
+    // Compat with old versions
+    new QShortcut(QKeySequence("Ctrl+Shift+s"), sSearch, SLOT(takeFocus()));
 
     connect(&m_watcher, SIGNAL(fileChanged(QString)),
             this, SLOT(updateIdxStatus()));
@@ -338,6 +335,22 @@ void RclMain::init()
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
+}
+
+void RclMain::onNewShortcuts()
+{
+    SCBase& scb = SCBase::scBase();
+    QKeySequence ks;
+
+    ks = scb.get(scbctxt, "Focus to Search Entry", "Ctrl+l");
+    if (!ks.isEmpty())
+        new QShortcut(ks, sSearch, SLOT(takeFocus()));
+
+    ks = scb.get(scbctxt, "Focus to Result Table", "Ctrl+r");
+    if (!ks.isEmpty()) {
+        delete m_tablefocseq;
+        m_tablefocseq = new QShortcut(ks, this);
+    }
 }
 
 void RclMain::setupToolbars()
@@ -993,8 +1006,9 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
         if (docnum >= 0) {
             reslist->resultPageFor(docnum);
         }
-        disconnect(m_tablefocseq, SIGNAL(activated()),
-                   restable, SLOT(takeFocus()));
+        if (m_tablefocseq)
+            disconnect(m_tablefocseq, SIGNAL(activated()),
+                       restable, SLOT(takeFocus()));
         sSearch->takeFocus();
     } else {
         int docnum = reslist->pageFirstDocNum();
@@ -1004,8 +1018,9 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
         nextPageAction->setEnabled(false);
         prevPageAction->setEnabled(false);
         firstPageAction->setEnabled(false);
-        connect(m_tablefocseq, SIGNAL(activated()), 
-                restable, SLOT(takeFocus()));
+        if (m_tablefocseq)
+            connect(m_tablefocseq, SIGNAL(activated()), 
+                    restable, SLOT(takeFocus()));
     }
 }
 

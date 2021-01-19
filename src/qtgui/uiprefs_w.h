@@ -45,7 +45,7 @@ public:
 
     virtual void init();
     void setFromPrefs();
-
+                           
 public slots:
     virtual void showFontDialog();
     virtual void resetReslistFont();
@@ -76,6 +76,8 @@ protected slots:
     virtual void reject();
 private:
     void setupReslistFontPB();
+    void readShortcuts();
+    void storeShortcuts();
     // Locally stored data (pending ok/cancel)
     QString paraFormat;
     QString headerText;

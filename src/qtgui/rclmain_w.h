@@ -167,7 +167,8 @@ public slots:
     virtual void setFilterCtlStyle(int stl);
     virtual void showTrayMessage(const QString& text);
     virtual void onSetDescription(QString);
-                                          
+    virtual void onNewShortcuts();
+
 private slots:
     virtual void updateIdxStatus();
     virtual void onWebcacheDestroyed(QObject *);

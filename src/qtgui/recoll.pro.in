@@ -83,6 +83,7 @@ SOURCES += \
         respopup.cpp \
         restable.cpp \
         rtitool.cpp \
+        scbase.cpp \
         searchclause_w.cpp \
         snippets_w.cpp \
         spell_w.cpp \
