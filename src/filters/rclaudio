@@ -120,7 +120,7 @@ tagdict = {
     'TRACKTOTAL' : 'TOTALTRACKS', 
     'TRC' : 'ISRC',
     'TRCK' : 'TRACKNUMBER',
-    'TRDA' : 'RECORDINGDATE',
+    'TRDA' : 'DATE',
     'TRK' : 'TRACKNUMBER',
     'TS2' : 'ALBUMARTISTSORT',
     'TSA' : 'ALBUMSORT',
