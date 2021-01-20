@@ -489,6 +489,8 @@ qtgui/restable.ui \
 qtgui/rtitool.cpp \
 qtgui/rtitool.h \
 qtgui/rtitool.ui \
+qtgui/scbase.cpp \
+qtgui/scbase.h \
 qtgui/searchclause_w.cpp \
 qtgui/searchclause_w.h \
 qtgui/snippets.ui \
