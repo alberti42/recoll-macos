@@ -216,7 +216,10 @@ private:
     QComboBox      *m_filtCMB{0};
     QButtonGroup   *m_filtBGRP{0};
     QMenu          *m_filtMN{0};
-    QShortcut      *m_tablefocseq{0};
+    QShortcut      *m_focustotablesc{0};
+    QShortcut      *m_focustosearchsc{0};
+    QShortcut      *m_focustosearcholdsc{0};
+    QShortcut      *m_clearsearchsc{0};
     QFileSystemWatcher m_watcher;
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc{0}; // Indexing process

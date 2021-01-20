@@ -43,6 +43,7 @@ HEADERS += \
         reslist.h \
         restable.h \
         rtitool.h \
+        scbase.h \
         searchclause_w.h \
         snippets_w.h \
         specialindex.h \

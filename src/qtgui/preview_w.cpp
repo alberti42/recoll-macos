@@ -60,12 +60,9 @@
 #include "preview_load.h"
 #include "preview_plaintorich.h"
 #include "rclmain_w.h"
+#include "scbase.h"
 
-static const QKeySequence closeKS(Qt::Key_Escape);
-static const QKeySequence nextDocInTabKS(Qt::ShiftModifier+Qt::Key_Down);
-static const QKeySequence prevDocInTabKS(Qt::ShiftModifier+Qt::Key_Up);
-static const QKeySequence closeTabKS(Qt::ControlModifier+Qt::Key_W);
-static const QKeySequence printTabKS(Qt::ControlModifier+Qt::Key_P);
+static const QString scbctxt("Preview Window");
 
 // Make an attempt at trimming wildcard exprs at both ends of string
 static void trimwildcards(string& elt)
@@ -142,20 +139,36 @@ void Preview::init()
     connect(pvTab, SIGNAL(currentChanged(int)), this, SLOT(currentChanged(int)));
     connect(pvTab, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
-    connect(new QShortcut(closeKS, this), SIGNAL (activated()), 
-            this, SLOT (close()));
-    connect(new QShortcut(nextDocInTabKS, this), SIGNAL (activated()), 
-            this, SLOT (emitShowNext()));
-    connect(nextInTabPB, SIGNAL (clicked()), this, SLOT (emitShowNext()));
-    connect(new QShortcut(prevDocInTabKS, this), SIGNAL (activated()), 
-            this, SLOT (emitShowPrev()));
-    connect(prevInTabPB, SIGNAL (clicked()), this, SLOT (emitShowPrev()));
-    connect(new QShortcut(closeTabKS, this), SIGNAL (activated()), 
-            this, SLOT (closeCurrentTab()));
-    connect(new QShortcut(printTabKS, this), SIGNAL (activated()), 
-            this, SIGNAL (printCurrentPreviewRequest()));
+    onNewShortcuts();
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
+            this, SLOT(onNewShortcuts()));
 
+    connect(nextInTabPB, SIGNAL (clicked()), this, SLOT (emitShowNext()));
+    connect(prevInTabPB, SIGNAL (clicked()), this, SLOT (emitShowPrev()));
     currentChanged(pvTab->currentIndex());
+}
+
+void Preview::onNewShortcuts()
+{
+    SETSHORTCUT("Close Window", "Esc",  m_closewinsc, close);
+    SETSHORTCUT("Next doc in tab", "Shift+Down", m_nextdocsc, emitShowNext);
+    SETSHORTCUT("Previous doc in tab", "Shift+Up", m_prevdocsc,emitShowPrev);
+    SETSHORTCUT("Close tab", "Ctrl+W", m_closetabsc, closeCurrentTab);
+    QKeySequence ks = SCBase::scBase().get(scbctxt, "Print tab", "Ctrl+P");
+    if (!ks.isEmpty()) {
+        delete m_printtabsc;
+        m_printtabsc = new QShortcut(ks, this,
+                                     SIGNAL(printCurrentPreviewRequest()));
+    }
+}
+
+void Preview::listShortcuts()
+{
+    LISTSHORTCUT("Close Window", "Esc",  m_closewinsc, close);
+    LISTSHORTCUT("Next doc in tab", "Shift+Down", m_nextdocsc, emitShowNext);
+    LISTSHORTCUT("Previous doc in tab", "Shift+Up", m_prevdocsc,emitShowPrev);
+    LISTSHORTCUT("Close tab", "Ctrl+W", m_closetabsc, closeCurrentTab);
+    LISTSHORTCUT("Print tab", "Ctrl+P", m_printtabsc, print);
 }
 
 void Preview::emitShowNext()

@@ -52,6 +52,7 @@
 #include "rcldb.h"
 #include "rclhelp.h"
 #include "plaintorich.h"
+#include "scbase.h"
 
 using namespace std;
 
@@ -62,6 +63,9 @@ using namespace std;
 #else
 #define browser ((QTextBrowser*)browserw)
 #endif
+
+static const QString scbctxt("Snippets Window");
+
 
 class PlainToRichQtSnippets : public PlainToRich {
 public:
@@ -84,15 +88,9 @@ void SnippetsW::init()
 //    setWindowFlags(Qt::WindowStaysOnTopHint);
     searchFM->hide();
 
-    new QShortcut(QKeySequence::Find, this, SLOT(slotEditFind()));
-    new QShortcut(QKeySequence(Qt::Key_Slash), this, SLOT(slotEditFind()));
-    new QShortcut(QKeySequence(Qt::Key_Escape), searchFM, SLOT(hide()));
-    new QShortcut(QKeySequence::FindNext, this, SLOT(slotEditFindNext()));
-    new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(slotEditFindNext()));
-    new QShortcut(QKeySequence::FindPrevious, this, 
-                  SLOT(slotEditFindPrevious()));
-    new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F3), 
-                  this, SLOT(slotEditFindPrevious()));
+    onNewShortcuts();
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
+            this, SLOT(onNewShortcuts()));
 
     QPushButton *closeButton = buttonBox->button(QDialogButtonBox::Close);
     if (closeButton)
@@ -154,6 +152,24 @@ void SnippetsW::init()
         browser->setFont(QFont());
     }
 #endif
+}
+
+void SnippetsW::onNewShortcuts()
+{
+    SETSHORTCUT("Find", "Ctrl+F", m_find1sc, slotEditFind);
+    SETSHORTCUT("Find (alt)", "/", m_find2sc, slotEditFind);
+    SETSHORTCUT("Find Next", "F3", m_findnextsc, slotEditFindNext);
+    SETSHORTCUT("Find Previous", "Shift+F3", m_findprevsc, slotEditFindPrevious);
+    SETSHORTCUT("Hide", "Esc", m_hidesc, hide);
+}
+
+void SnippetsW::listShortcuts()
+{
+    LISTSHORTCUT("Find", "Ctrl+F", m_find1sc, slotEditFind);
+    LISTSHORTCUT("Find (alt)", "/", m_find2sc, slotEditFind);
+    LISTSHORTCUT("Find Next", "F3", m_find2sc, slotEditFindNext);
+    LISTSHORTCUT("Find Previous", "Shift+F3", m_find2sc, slotEditFindPrevious);
+    LISTSHORTCUT("Hide", "Esc", m_hidesc, hide);
 }
 
 void SnippetsW::createPopupMenu(const QPoint& pos)

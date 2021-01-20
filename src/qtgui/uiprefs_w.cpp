@@ -277,26 +277,29 @@ void UIPrefsDialog::setFromPrefs()
 
 void UIPrefsDialog::readShortcuts()
 {
+    shortcutsTB->setRowCount(0);
     SCBase& scbase = SCBase::scBase();
-    shortcutsTB->setColumnCount(3);
+    shortcutsTB->setColumnCount(4);
     shortcutsTB->setHorizontalHeaderItem(
         0, new QTableWidgetItem(tr("Context")));
     shortcutsTB->setHorizontalHeaderItem(
         1, new QTableWidgetItem(tr("Description")));
     shortcutsTB->setHorizontalHeaderItem(
         2, new QTableWidgetItem(tr("Shortcut")));
+    shortcutsTB->setHorizontalHeaderItem(
+        3, new QTableWidgetItem(tr("Default")));
     QStringList sl = scbase.getAll();
     int row = 0;
     for (int i = 0; i < sl.size();) {
-        std::cerr << "Inserting row " << qs2utf8s(sl.at(i)) << " " <<
-            qs2utf8s(sl.at(i+1)) << " " <<
-            qs2utf8s(sl.at(i+2)) << "\n";
+        LOGDEB0("UIPrefsDialog::readShortcuts: inserting row " <<
+                qs2utf8s(sl.at(i)) << " " << qs2utf8s(sl.at(i+1)) << " " <<
+                qs2utf8s(sl.at(i+2)) << " " << qs2utf8s(sl.at(i+3)) << "\n");
         shortcutsTB->insertRow(row);
         shortcutsTB->setItem(row, 0, new QTableWidgetItem(sl.at(i++)));
         shortcutsTB->setItem(row, 1, new QTableWidgetItem(sl.at(i++)));
         auto ed = new QKeySequenceEdit(QKeySequence(sl.at(i++)));
         shortcutsTB->setCellWidget(row, 2, ed);
-        i++; // Skip dlft, not needed here.
+        shortcutsTB->setItem(row, 3, new QTableWidgetItem(sl.at(i++)));
         row++;
     }
     shortcutsTB->resizeColumnsToContents();
@@ -306,23 +309,15 @@ void UIPrefsDialog::readShortcuts()
 void UIPrefsDialog::storeShortcuts()
 {
     SCBase& scbase = SCBase::scBase();
-    QStringList sl = scbase.getAll();
     QStringList slout;
     for (int row = 0; row < shortcutsTB->rowCount(); row++) {
+        QString dflt = shortcutsTB->item(row, 0)->text();
+        QString ctxt = shortcutsTB->item(row, 1)->text();
         auto qsce = (QKeySequenceEdit*)(shortcutsTB->cellWidget(row, 2));
         QString val = qsce->keySequence().toString();
-        QString dflt = sl[4 *row + 3];
-        if (dflt != val) {
-            std::cerr << "Storing changed " << qs2utf8s(dflt) << " -> " <<
-                qs2utf8s(val) << " at row " << row << "\n";
-            std::string e = stringsToString(
-                std::vector<std::string>{qs2utf8s(sl[4*row]),
-                        qs2utf8s(sl[4*row+1]), qs2utf8s(val)});
-            slout.append(u8s2qs(e));
-        }
+        scbase.set(dflt, ctxt, val);
     }
-    QSettings settings;
-    settings.setValue(SCBase::scBaseSettingsKey(), slout);
+    scbase.store();
 }
 
 void UIPrefsDialog::setupReslistFontPB()

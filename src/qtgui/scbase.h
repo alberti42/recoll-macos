@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2019 J.F.Dockes
+/* Copyright (C) 2021 J.F.Dockes
  *
  * License: GPL 2.1
  *
@@ -24,8 +24,10 @@
 #include <QString>
 #include <QKeySequence>
 #include <QStringList>
+#include <QObject>
 
-class SCBase {
+class SCBase : public QObject {
+    Q_OBJECT;
 public:
     ~SCBase();
 
@@ -34,12 +36,33 @@ public:
     QKeySequence get(const QString& context, const QString& description,
                      const QString& defkeyseq);
     QStringList getAll();
-    static QString scBaseSettingsKey();
-    
+    void set(const QString& context, const QString& description,
+             const QString& keyseq);
+    void store();
+
     class Internal;
+
+signals:
+    void shortcutsChanged();
+    
 private:
     Internal *m{nullptr};
     SCBase();
 };
+
+#define SETSHORTCUT(DESCR, SEQ, FLD, SLTFUNC)                       \
+    do {                                                            \
+        QKeySequence ks = SCBase::scBase().get(scbctxt, DESCR, SEQ);\
+        if (!ks.isEmpty()) {                                        \
+            delete FLD;                                             \
+            FLD = new QShortcut(ks, this, SLOT(SLTFUNC()));         \
+        }                                                           \
+    } while (false);
+
+#define LISTSHORTCUT(DESCR, SEQ, FLD, SLTFUNC)                      \
+    do {                                                            \
+        SCBase::scBase().get(scbctxt, DESCR, SEQ);                  \
+    } while (false);
+
 
 #endif /* _SCBASE_H_INCLUDED_ */

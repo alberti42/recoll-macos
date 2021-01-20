@@ -41,11 +41,16 @@ public:
         onSetDoc(doc, source);
     }
 
+    /** List shortcuts so that the prefs can be edited before any preview 
+        is created */
+    static void listShortcuts();
+
 public slots:
     virtual void onLinkClicked(const QUrl &);
     virtual void onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source);
     virtual void createPopupMenu(const QPoint& pos);
-
+    virtual void onNewShortcuts();
+                                 
 protected slots:
     virtual void slotEditFind();
     virtual void slotEditFindNext();
@@ -62,6 +67,11 @@ private:
     std::shared_ptr<DocSequence> m_source;
     Rcl::Doc m_doc;
     bool m_sortingByPage;
+    QShortcut *m_find1sc{nullptr};
+    QShortcut *m_find2sc{nullptr};
+    QShortcut *m_findnextsc{nullptr};
+    QShortcut *m_findprevsc{nullptr};
+    QShortcut *m_hidesc{nullptr};
 };
 
 #ifdef USING_WEBENGINE

@@ -113,6 +113,7 @@ private:
     DspType m_curdsp;
 };
 
+class QShortcut;
 
 class Preview : public QDialog, public Ui::Preview {
     Q_OBJECT
@@ -140,6 +141,10 @@ public:
     void emitWordSelect(QString);
     friend class PreviewTextEdit;
 
+    /** List shortcuts so that the prefs can be edited before any preview 
+        is created */
+    static void listShortcuts();
+
 public slots:
     // Search stuff
     virtual void searchTextChanged(const QString& text);
@@ -158,7 +163,8 @@ public slots:
     virtual void emitSaveDocToFile();
     virtual void emitEditRequested();
     virtual void togglePlainPre();
-
+    virtual void onNewShortcuts();
+    
 signals:
     void previewClosed(Preview *);
     void wordSelect(QString);
@@ -184,7 +190,12 @@ private:
     bool          m_loading{false};
     HighlightData m_hData;
     bool          m_justCreated{true}; // First tab create is different
-
+    QShortcut *m_closewinsc{nullptr};
+    QShortcut *m_nextdocsc{nullptr};
+    QShortcut *m_prevdocsc{nullptr};
+    QShortcut *m_closetabsc{nullptr};
+    QShortcut *m_printtabsc{nullptr};
+    
     void init();
     virtual void setCurTabProps(const Rcl::Doc& doc, int docnum);
     virtual PreviewTextEdit *editor(int);

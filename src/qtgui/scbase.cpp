@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2019 J.F.Dockes
+/* Copyright (C) 2021 J.F.Dockes
  *
  * License: GPL 2.1
  *
@@ -39,29 +39,22 @@ struct SCDef {
 class SCBase::Internal {
 public:
     std::map<QString, SCDef> scdefs;
+    QString scBaseSettingsKey() {
+        return "/Recoll/prefs/sckeys";
+    }
 };
 
 static QString mapkey(const QString& ctxt, const QString& desc)
 {
     return ctxt + "/" + desc;
 }
-#if 0
-static QString mapkey(const std::string& ctxt, const std::string& desc)
-{
-    return u8s2qs(ctxt) + "/" + u8s2qs(desc);
-}
-#endif
 
-QString SCBase::scBaseSettingsKey()
-{
-    return "/Recoll/prefs/sckeys";
-}
 SCBase::SCBase()
 {
     m = new Internal();
 
     QSettings settings;
-    auto sl = settings.value(scBaseSettingsKey()).toStringList();
+    auto sl = settings.value(m->scBaseSettingsKey()).toStringList();
 
     for (int i = 0; i < sl.size(); ++i) {
         auto ssc = qs2utf8s(sl.at(i));
@@ -92,7 +85,8 @@ SCBase::~SCBase()
 QKeySequence SCBase::get(const QString& ctxt, const QString& desc,
                          const QString& defks)
 {
-    std::cerr << "SCBase::get\n";
+    LOGDEB0("SCBase::get: [" << qs2utf8s(ctxt) << "]/[" <<
+            qs2utf8s(desc) << "], [" << qs2utf8s(defks) << "]\n");
     QString key = mapkey(ctxt, desc);
     auto it = m->scdefs.find(key);
     if (it == m->scdefs.end()) {
@@ -101,15 +95,30 @@ QKeySequence SCBase::get(const QString& ctxt, const QString& desc,
         }
         QKeySequence qks(defks);
         m->scdefs[key] = SCDef{ctxt, desc, qks, qks};
-        std::cerr << "get(" << qs2utf8s(ctxt) << ", " << qs2utf8s(desc) <<
+        LOGDEB0("get(" << qs2utf8s(ctxt) << ", " << qs2utf8s(desc) <<
             ", " << qs2utf8s(defks) << ") -> " <<
-            qs2utf8s(qks.toString()) << "\n";
+                qs2utf8s(qks.toString()) << "\n");
         return qks;
     }
-    std::cerr << "get(" << qs2utf8s(ctxt) << ", " << qs2utf8s(desc) <<
+    LOGDEB0("SCBase::get(" << qs2utf8s(ctxt) << ", " << qs2utf8s(desc) <<
         ", " << qs2utf8s(defks) << ") -> " <<
-        qs2utf8s(it->second.val.toString()) << "\n";
+            qs2utf8s(it->second.val.toString()) << "\n");
+    it->second.dflt = QKeySequence(defks);
     return it->second.val;
+}
+
+void SCBase::set(const QString& ctxt, const QString& desc, const QString& newks)
+{
+    LOGDEB0("SCBase::set: [" << qs2utf8s(ctxt) << "]/[" <<
+            qs2utf8s(desc) << "], [" << qs2utf8s(newks) << "]\n");
+    QString key = mapkey(ctxt, desc);
+    auto it = m->scdefs.find(key);
+    if (it == m->scdefs.end()) {
+        QKeySequence qks(newks);
+        m->scdefs[key] = SCDef{ctxt, desc, qks, QKeySequence()};
+        return;
+    }
+    it->second.val = newks;
 }
 
 QStringList SCBase::getAll()
@@ -124,15 +133,33 @@ QStringList SCBase::getAll()
     return result;
 }
 
+void SCBase::store()
+{
+    QStringList slout;
+    for (const auto& entry : m->scdefs) {
+        const SCDef& def = entry.second;
+        if (def.val != def.dflt) {
+            std::string e = 
+                stringsToString(std::vector<std::string>{
+                        qs2utf8s(def.ctxt), qs2utf8s(def.desc),
+                            qs2utf8s(def.val.toString())});
+            LOGDEB0("SCBase::store: storing: [" << e << "]\n");
+            slout.append(u8s2qs(e));
+        }
+    }
+    // Note: we emit even if the non-default values are not really
+    // changed, just not worth the trouble doing otherwise.
+    emit shortcutsChanged();
+    QSettings settings;
+    settings.setValue(m->scBaseSettingsKey(), slout);
+}
+
 static SCBase *theBase;
 
 SCBase& SCBase::scBase()
 {
-    std::cerr << "SCBase::scBase()\n";
     if (nullptr == theBase) {
-        std::cerr << "SCBase::scBase() creating class\n";
         theBase = new SCBase();
     }
-    std::cerr << "SCBase::scBase() returning " << theBase << "\n";
     return *theBase;
 }

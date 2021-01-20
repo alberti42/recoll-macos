@@ -111,6 +111,7 @@ private:
 class ResTablePager;
 class QUrl;
 class RclMain;
+class QShortcut;
 
 class ResTable : public QWidget, public Ui::ResTable 
 {
@@ -187,14 +188,18 @@ protected:
     bool eventFilter(QObject* obj, QEvent* event);
 private:
     void init();
-    RecollModel   *m_model;
-    ResTablePager *m_pager;
-    ResTableDetailArea *m_detail;
+    RecollModel   *m_model{nullptr};
+    ResTablePager *m_pager{nullptr};
+    ResTableDetailArea *m_detail{nullptr};
     int            m_detaildocnum;
     Rcl::Doc       m_detaildoc;
     int            m_popcolumn;
-    RclMain *m_rclmain;
+    RclMain *m_rclmain{nullptr};
     bool     m_ismainres;
+    QShortcut *m_opensc{nullptr};
+    QShortcut *m_openquitsc{nullptr};
+    QShortcut *m_previewsc{nullptr};
+    QShortcut *m_showsnipssc{nullptr};
 };
 
 

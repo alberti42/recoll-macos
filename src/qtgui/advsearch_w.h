@@ -30,6 +30,7 @@
 #include "advshist.h"
 
 class QDialog;
+class QShortcut;
 
 #include "ui_advsearch.h"
 
@@ -43,6 +44,7 @@ public:
         setupUi(this);
         init();
     }
+    static void listShortcuts();
 
 public slots:
     virtual void delFiltypPB_clicked();
@@ -63,7 +65,8 @@ public slots:
     virtual void addClause(int, bool updsaved=true);
     virtual void slotHistoryNext();
     virtual void slotHistoryPrev();
-
+    virtual void onNewShortcuts();
+    
 signals:
     void startSearch(std::shared_ptr<Rcl::SearchData>, bool);
     void setDescription(QString);
@@ -73,6 +76,9 @@ private:
     std::vector<SearchClauseW *> m_clauseWins;
     QStringList                m_ignTypes;
     bool                       m_ignByCats;
+    QShortcut *m_histnextsc{nullptr};
+    QShortcut *m_histprevsc{nullptr};
+
     void saveCnf();
     void fillFileTypes();
     size_t stringToSize(QString);

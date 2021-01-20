@@ -34,7 +34,6 @@
 #include <string>
 #include <map>
 #include <algorithm>
-using namespace std;
 
 #include "recoll.h"
 #include "rclconfig.h"
@@ -42,11 +41,15 @@ using namespace std;
 #include "searchdata.h"
 #include "guiutils.h"
 #include "rclhelp.h"
+#include "scbase.h"
+
+using namespace std;
 
 static const int initclausetypes[] = {1, 3, 0, 2, 5};
 static const unsigned int iclausescnt = sizeof(initclausetypes) / sizeof(int);
 static map<QString,QString> cat_translations;
 static map<QString,QString> cat_rtranslations;
+static const QString scbctxt("Advanced Search");
 
 void AdvSearch::init()
 {
@@ -78,8 +81,9 @@ void AdvSearch::init()
     connect(addClausePB, SIGNAL(clicked()), this, SLOT(addClause()));
     connect(delClausePB, SIGNAL(clicked()), this, SLOT(delClause()));
 
-    new QShortcut(QKeySequence(Qt::Key_Up), this, SLOT(slotHistoryNext()));;
-    new QShortcut(QKeySequence(Qt::Key_Down), this, SLOT(slotHistoryPrev()));
+    onNewShortcuts();
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
+            this, SLOT(onNewShortcuts()));
 
     conjunctCMB->insertItem(1, tr("All clauses"));
     conjunctCMB->insertItem(2, tr("Any clause"));
@@ -161,6 +165,18 @@ void AdvSearch::saveCnf()
     for (const auto& clause : m_clauseWins) {
         prefs.advSearchClauses.push_back(clause->sTpCMB->currentIndex());
     }
+}
+
+void AdvSearch::onNewShortcuts()
+{
+    SETSHORTCUT("History Next", "Up", m_histnextsc, slotHistoryNext);
+    SETSHORTCUT("History Prev", "Down", m_histprevsc, slotHistoryPrev);
+}
+
+void AdvSearch::listShortcuts()
+{
+    LISTSHORTCUT("History Next", "Up", m_histnextsc, slotHistoryNext);
+    LISTSHORTCUT("History Prev", "Down", m_histprevsc, slotHistoryPrev);
 }
 
 void AdvSearch::addClause(bool updsaved)

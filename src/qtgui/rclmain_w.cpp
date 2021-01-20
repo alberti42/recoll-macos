@@ -165,9 +165,12 @@ void RclMain::init()
     on_actionShowResultsAsTable_toggled(prefs.showResultsAsTable);
 
     onNewShortcuts();
-
-    // Compat with old versions
-    new QShortcut(QKeySequence("Ctrl+Shift+s"), sSearch, SLOT(takeFocus()));
+    Preview::listShortcuts();
+    SnippetsW::listShortcuts();
+    AdvSearch::listShortcuts();
+    
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
+            this, SLOT(onNewShortcuts()));
 
     connect(&m_watcher, SIGNAL(fileChanged(QString)),
             this, SLOT(updateIdxStatus()));
@@ -342,14 +345,35 @@ void RclMain::onNewShortcuts()
     SCBase& scb = SCBase::scBase();
     QKeySequence ks;
 
-    ks = scb.get(scbctxt, "Focus to Search Entry", "Ctrl+l");
-    if (!ks.isEmpty())
-        new QShortcut(ks, sSearch, SLOT(takeFocus()));
-
-    ks = scb.get(scbctxt, "Focus to Result Table", "Ctrl+r");
+    ks = scb.get(scbctxt, "Focus to Search", "Ctrl+L");
     if (!ks.isEmpty()) {
-        delete m_tablefocseq;
-        m_tablefocseq = new QShortcut(ks, this);
+        delete m_focustosearchsc;
+        m_focustosearchsc = new QShortcut(ks, sSearch, SLOT(takeFocus()));
+    }
+
+    ks = scb.get(scbctxt, "Focus to Search, alt.", "Ctrl+Shift+S");
+    if (!ks.isEmpty()) {
+        delete m_focustosearcholdsc;
+        m_focustosearcholdsc = new QShortcut(ks, sSearch, SLOT(takeFocus()));
+    }
+
+    ks = scb.get(scbctxt, "Clear Search", "Ctrl+S");
+    if (!ks.isEmpty()) {
+        delete m_clearsearchsc;
+        m_clearsearchsc = new QShortcut(ks, sSearch, SLOT(clearAll()));
+    }
+
+    ks = scb.get(scbctxt, "Focus to Result Table", "Ctrl+R");
+    if (!ks.isEmpty()) {
+        delete m_focustotablesc;
+        m_focustotablesc = new QShortcut(ks, this);
+        if (displayingTable) {
+            connect(m_focustotablesc, SIGNAL(activated()), 
+                    restable, SLOT(takeFocus()));
+        } else {
+            disconnect(m_focustotablesc, SIGNAL(activated()),
+                       restable, SLOT(takeFocus()));
+        }
     }
 }
 
@@ -1006,8 +1030,8 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
         if (docnum >= 0) {
             reslist->resultPageFor(docnum);
         }
-        if (m_tablefocseq)
-            disconnect(m_tablefocseq, SIGNAL(activated()),
+        if (m_focustotablesc)
+            disconnect(m_focustotablesc, SIGNAL(activated()),
                        restable, SLOT(takeFocus()));
         sSearch->takeFocus();
     } else {
@@ -1018,8 +1042,8 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
         nextPageAction->setEnabled(false);
         prevPageAction->setEnabled(false);
         firstPageAction->setEnabled(false);
-        if (m_tablefocseq)
-            connect(m_tablefocseq, SIGNAL(activated()), 
+        if (m_focustotablesc)
+            connect(m_focustotablesc, SIGNAL(activated()), 
                     restable, SLOT(takeFocus()));
     }
 }

@@ -46,7 +46,7 @@
         <string>Clear</string>
        </property>
        <property name="shortcut">
-        <string>Ctrl+S</string>
+        <string/>
        </property>
       </widget>
      </item>

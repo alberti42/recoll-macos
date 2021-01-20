@@ -592,6 +592,8 @@ void ResTable::init()
     tableView->setContextMenuPolicy(Qt::CustomContextMenu);
     
     onNewShortcuts();
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
+            this, SLOT(onNewShortcuts()));
 
     connect(tableView, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
@@ -662,23 +664,10 @@ void ResTable::init()
 
 void ResTable::onNewShortcuts()
 {
-    SCBase& scb = SCBase::scBase();
-    QKeySequence ks;
-    ks = scb.get(scbctxt,  "Open", "Ctrl+o");
-    if (!ks.isEmpty())
-        new QShortcut(ks, this, SLOT(menuEdit()));
-
-    ks = scb.get(scbctxt, "Open and Quit", "Ctrl+Shift+o");
-    if (!ks.isEmpty())
-        new QShortcut(ks, this, SLOT(menuEditAndQuit()));
-    
-    ks = scb.get(scbctxt, "Preview", "Ctrl+d");
-    if (!ks.isEmpty())
-        new QShortcut(ks, this, SLOT(menuPreview()));
-    
-    ks = scb.get(scbctxt, "Show Snippets", "Ctrl+e");
-    if (!ks.isEmpty())
-        new QShortcut(ks, this, SLOT(menuShowSnippets()));
+    SETSHORTCUT("Open", "Ctrl+O", m_opensc, menuEdit);
+    SETSHORTCUT("Open and Quit", "Ctrl+Shift+O", m_openquitsc, menuEditAndQuit);
+    SETSHORTCUT("Preview", "Ctrl+D", m_previewsc, menuPreview);
+    SETSHORTCUT("Show Snippets", "Ctrl+E", m_showsnipssc, menuShowSnippets);
 }
 
 bool ResTable::eventFilter(QObject* obj, QEvent* event)
