@@ -55,6 +55,18 @@
         <source>message</source>
         <translation>Zpráva</translation>
     </message>
+    <message>
+        <source>Advanced Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History Prev</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AdvSearchBase</name>
@@ -822,6 +834,30 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Next result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next doc in tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous doc in tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print tab</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1716,6 +1752,26 @@ Prověřte soubor pracovní plochy</translation>
         <source>Stemming language</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Main Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Focus to Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Focus to Search, alt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Focus to Result Table</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2319,6 +2375,26 @@ Prověřte soubor pracovní plochy</translation>
         <source>Add &quot;%1&quot; column</source>
         <translation>Přidat sloupec &quot;%1&quot;</translation>
     </message>
+    <message>
+        <source>Result Table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">Otevřít</translation>
+    </message>
+    <message>
+        <source>Open and Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation type="unfinished">Náhled</translation>
+    </message>
+    <message>
+        <source>Show Snippets</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2689,7 +2765,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation type="vanished">Ctrl+S</translation>
     </message>
     <message>
         <source>Erase search entry</source>
@@ -2830,6 +2906,30 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Sort By Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snippets Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation type="unfinished">Najít</translation>
+    </message>
+    <message>
+        <source>Find (alt)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find Previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3169,6 +3269,22 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <message>
         <source>Value from previous program exit</source>
         <translation>Hodnota obdržená z posledního ukončení programu</translation>
+    </message>
+    <message>
+        <source>Context</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4239,6 +4355,10 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Hide simple search type (show in menu only).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

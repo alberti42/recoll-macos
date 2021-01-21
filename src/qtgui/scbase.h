@@ -88,16 +88,14 @@ private:
 };
 
 /** This can be used in the client class init method, to actually
- * create and connect the shortcuts. To keep the arg list reasonably
- * short, it assumes that the context string is stored in a variable
- * named 'scbctxt', and that the connections are done to "this". */
-#define SETSHORTCUT(DESCR, SEQ, FLD, SLTFUNC)                       \
-    do {                                                            \
-        QKeySequence ks = SCBase::scBase().get(scbctxt, DESCR, SEQ);\
-        if (!ks.isEmpty()) {                                        \
-            delete FLD;                                             \
-            FLD = new QShortcut(ks, this, SLOT(SLTFUNC()));         \
-        }                                                           \
+ * create and connect the shortcuts. */
+#define SETSHORTCUT(OBJ, CTXT, DESCR, SEQ, FLD, SLTFUNC)                \
+    do {                                                                \
+        QKeySequence ks = SCBase::scBase().get(CTXT, DESCR, SEQ);       \
+        if (!ks.isEmpty()) {                                            \
+            delete FLD;                                                 \
+            FLD = new QShortcut(ks, OBJ, SLOT(SLTFUNC()));              \
+        }                                                               \
     } while (false);
 
 /** This can be used from a static method, to be called by the program
@@ -106,9 +104,9 @@ private:
  * customisation screen. Same param list as SETSHORTCUT to make it
  * easy to duplicate a list of ones into the other, even if some
  * parameters are not used here. */
-#define LISTSHORTCUT(DESCR, SEQ, FLD, SLTFUNC)                      \
+#define LISTSHORTCUT(OBJ, CTXT, DESCR, SEQ, FLD, SLTFUNC)           \
     do {                                                            \
-        SCBase::scBase().get(scbctxt, DESCR, SEQ);                  \
+        SCBase::scBase().get(CTXT, DESCR, SEQ);                     \
     } while (false);
 
 

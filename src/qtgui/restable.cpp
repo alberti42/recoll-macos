@@ -59,7 +59,6 @@
 
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
-static const QString scbctxt("Result Table");
 
 // Compensate for the default and somewhat bizarre vertical placement
 // of text in cells
@@ -664,10 +663,14 @@ void ResTable::init()
 
 void ResTable::onNewShortcuts()
 {
-    SETSHORTCUT("Open", "Ctrl+O", m_opensc, menuEdit);
-    SETSHORTCUT("Open and Quit", "Ctrl+Shift+O", m_openquitsc, menuEditAndQuit);
-    SETSHORTCUT("Preview", "Ctrl+D", m_previewsc, menuPreview);
-    SETSHORTCUT("Show Snippets", "Ctrl+E", m_showsnipssc, menuShowSnippets);
+    SETSHORTCUT(this, tr("Result Table"), tr("Open"),
+                "Ctrl+O", m_opensc, menuEdit);
+    SETSHORTCUT(this, tr("Result Table"), tr("Open and Quit"),
+                "Ctrl+Shift+O", m_openquitsc, menuEditAndQuit);
+    SETSHORTCUT(this, tr("Result Table"), tr("Preview"),
+                "Ctrl+D", m_previewsc, menuPreview);
+    SETSHORTCUT(this, tr("Result Table"), tr("Show Snippets"),
+                "Ctrl+E", m_showsnipssc, menuShowSnippets);
 }
 
 bool ResTable::eventFilter(QObject* obj, QEvent* event)

@@ -55,6 +55,18 @@
         <source>message</source>
         <translation>message</translation>
     </message>
+    <message>
+        <source>Advanced Search</source>
+        <translation>Recherche avancée</translation>
+    </message>
+    <message>
+        <source>History Next</source>
+        <translation>Historique, suivant</translation>
+    </message>
+    <message>
+        <source>History Prev</source>
+        <translation>Historique, Precedent</translation>
+    </message>
 </context>
 <context>
     <name>AdvSearchBase</name>
@@ -825,6 +837,30 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Next result document</source>
         <translation>Résultat suivant</translation>
+    </message>
+    <message>
+        <source>Preview Window</source>
+        <translation>Fenêtre d&apos;aperçu</translation>
+    </message>
+    <message>
+        <source>Close Window</source>
+        <translation>Fermer la fenêtre</translation>
+    </message>
+    <message>
+        <source>Next doc in tab</source>
+        <translation>Résultat suivant</translation>
+    </message>
+    <message>
+        <source>Previous doc in tab</source>
+        <translation>Résultat précédent</translation>
+    </message>
+    <message>
+        <source>Close tab</source>
+        <translation>Fermer l&apos;onglet</translation>
+    </message>
+    <message>
+        <source>Print tab</source>
+        <translation>Imprimer l&apos;onglet</translation>
     </message>
 </context>
 <context>
@@ -1737,6 +1773,26 @@ Merci de vérifier le fichier desktop </translation>
         <source>Stemming language</source>
         <translation>Langue pour l&apos;expansion des termes</translation>
     </message>
+    <message>
+        <source>Main Window</source>
+        <translation>Fenêtre principale</translation>
+    </message>
+    <message>
+        <source>Focus to Search</source>
+        <translation>Retourner à la zone du texte de recherche</translation>
+    </message>
+    <message>
+        <source>Focus to Search, alt.</source>
+        <translation>Retourner à la zone du texte de recherche, alt.</translation>
+    </message>
+    <message>
+        <source>Clear Search</source>
+        <translation>Effacer la recherche</translation>
+    </message>
+    <message>
+        <source>Focus to Result Table</source>
+        <translation>Activer la table</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2348,6 +2404,26 @@ Merci de vérifier le fichier desktop </translation>
         <source>Add &quot;%1&quot; column</source>
         <translation>Ajouter une colonne &quot;%1&quot;</translation>
     </message>
+    <message>
+        <source>Result Table</source>
+        <translation>Tableau de résultats</translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation>Ouvrir</translation>
+    </message>
+    <message>
+        <source>Open and Quit</source>
+        <translation>Ouvrir et quitter</translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation>Prévisualisation</translation>
+    </message>
+    <message>
+        <source>Show Snippets</source>
+        <translation>Afficher les extraits</translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2726,7 +2802,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation type="vanished">Ctrl+S</translation>
     </message>
     <message>
         <source>Erase search entry</source>
@@ -2872,6 +2948,30 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Sort By Page</source>
         <translation>Trier Par Page</translation>
+    </message>
+    <message>
+        <source>Snippets Window</source>
+        <translation>Fenêtre des extraits</translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation>Trouver</translation>
+    </message>
+    <message>
+        <source>Find (alt)</source>
+        <translation>Trouver (alt)</translation>
+    </message>
+    <message>
+        <source>Find Next</source>
+        <translation>Trouver le suivant</translation>
+    </message>
+    <message>
+        <source>Find Previous</source>
+        <translation>Trouver le précédent</translation>
+    </message>
+    <message>
+        <source>Hide</source>
+        <translation>Fermer</translation>
     </message>
 </context>
 <context>
@@ -3222,6 +3322,22 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Value from previous program exit</source>
         <translation>Valeur obtenue de la dernière exécution</translation>
+    </message>
+    <message>
+        <source>Context</source>
+        <translation>Contexte</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation>Description</translation>
+    </message>
+    <message>
+        <source>Shortcut</source>
+        <translation>Raccourci</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>Défaut</translation>
     </message>
 </context>
 <context>
@@ -4383,6 +4499,10 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Hide simple search type (show in menu only).</source>
         <translation>Cacher le type de recherche simple (afficher uniquement dans le menu).</translation>
+    </message>
+    <message>
+        <source>Shortcuts</source>
+        <translation>Raccourcis</translation>
     </message>
 </context>
 </TS>

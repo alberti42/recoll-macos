@@ -64,9 +64,6 @@ using namespace std;
 #define browser ((QTextBrowser*)browserw)
 #endif
 
-static const QString scbctxt("Snippets Window");
-
-
 class PlainToRichQtSnippets : public PlainToRich {
 public:
     virtual string startMatch(unsigned int) {
@@ -156,20 +153,30 @@ void SnippetsW::init()
 
 void SnippetsW::onNewShortcuts()
 {
-    SETSHORTCUT("Find", "Ctrl+F", m_find1sc, slotEditFind);
-    SETSHORTCUT("Find (alt)", "/", m_find2sc, slotEditFind);
-    SETSHORTCUT("Find Next", "F3", m_findnextsc, slotEditFindNext);
-    SETSHORTCUT("Find Previous", "Shift+F3", m_findprevsc, slotEditFindPrevious);
-    SETSHORTCUT("Hide", "Esc", m_hidesc, hide);
+    SETSHORTCUT(this, tr("Snippets Window"), tr("Find"),
+                "Ctrl+F", m_find1sc, slotEditFind);
+    SETSHORTCUT(this, tr("Snippets Window"), tr("Find (alt)"),
+                "/", m_find2sc, slotEditFind);
+    SETSHORTCUT(this, tr("Snippets Window"), tr("Find Next"),
+                "F3", m_findnextsc, slotEditFindNext);
+    SETSHORTCUT(this, tr("Snippets Window"), tr("Find Previous"),
+                "Shift+F3", m_findprevsc, slotEditFindPrevious);
+    SETSHORTCUT(this, tr("Snippets Window"), tr("Hide"),
+                "Esc", m_hidesc, hide);
 }
 
 void SnippetsW::listShortcuts()
 {
-    LISTSHORTCUT("Find", "Ctrl+F", m_find1sc, slotEditFind);
-    LISTSHORTCUT("Find (alt)", "/", m_find2sc, slotEditFind);
-    LISTSHORTCUT("Find Next", "F3", m_find2sc, slotEditFindNext);
-    LISTSHORTCUT("Find Previous", "Shift+F3", m_find2sc, slotEditFindPrevious);
-    LISTSHORTCUT("Hide", "Esc", m_hidesc, hide);
+    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find"), "Ctrl+F", 
+                 m_find1sc, slotEditFind);
+    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find (alt)"), "/",
+                 m_find2sc, slotEditFind);
+    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find Next"), "F3",
+                 m_find2sc, slotEditFindNext);
+    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find Previous"),
+                 "Shift+F3", m_find2sc, slotEditFindPrevious);
+    LISTSHORTCUT(this, tr("Snippets Window"), tr("Hide"),
+                 "Esc", m_hidesc, hide);
 }
 
 void SnippetsW::createPopupMenu(const QPoint& pos)

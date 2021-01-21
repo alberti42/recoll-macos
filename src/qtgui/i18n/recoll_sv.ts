@@ -47,6 +47,18 @@
         <source>spreadsheets</source>
         <translation>kalkylblad</translation>
     </message>
+    <message>
+        <source>Advanced Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History Prev</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AdvSearchBase</name>
@@ -769,6 +781,30 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Next result document</source>
         <translation>Nästa resultatdokument</translation>
+    </message>
+    <message>
+        <source>Preview Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next doc in tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous doc in tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print tab</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1532,6 +1568,26 @@ Kolla desktop-filen.</translation>
         <source>Stemming language</source>
         <translation type="unfinished">Igenkänt språk</translation>
     </message>
+    <message>
+        <source>Main Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Focus to Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Focus to Search, alt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Focus to Result Table</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1995,6 +2051,26 @@ Kolla desktop-filen.</translation>
         <source>Add &quot;%1&quot; column</source>
         <translation>Lägg till kolumn &quot;%1&quot;</translation>
     </message>
+    <message>
+        <source>Result Table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">Öppna</translation>
+    </message>
+    <message>
+        <source>Open and Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation type="unfinished">Förhandsgranska</translation>
+    </message>
+    <message>
+        <source>Show Snippets</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearch</name>
@@ -2207,7 +2283,7 @@ Kolla desktop-filen.</translation>
     </message>
     <message>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation type="vanished">Ctrl+S</translation>
     </message>
     <message>
         <source>Erase search entry</source>
@@ -2309,6 +2385,30 @@ Kolla desktop-filen.</translation>
     <message>
         <source>Sort By Page</source>
         <translation>Sortera efter sida</translation>
+    </message>
+    <message>
+        <source>Snippets Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation type="unfinished">Hitta</translation>
+    </message>
+    <message>
+        <source>Find (alt)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find Previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2573,6 +2673,22 @@ Kolla desktop-filen.</translation>
     <message>
         <source>Value from previous program exit</source>
         <translation>Värde från föregående programavslut</translation>
+    </message>
+    <message>
+        <source>Context</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3106,6 +3222,10 @@ Standardvärdet är 2 (procent). </translation>
     </message>
     <message>
         <source>Hide simple search type (show in menu only).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

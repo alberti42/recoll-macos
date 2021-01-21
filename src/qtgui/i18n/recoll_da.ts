@@ -47,6 +47,18 @@
         <source>spreadsheets</source>
         <translation type="unfinished">regneark</translation>
     </message>
+    <message>
+        <source>Advanced Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History Prev</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AdvSearchBase</name>
@@ -791,6 +803,30 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Next result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next doc in tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous doc in tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print tab</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1623,6 +1659,26 @@ Tjek venligst desktopfilen</translation>
         <source>Stemming language</source>
         <translation type="unfinished">Ordstammer for sprog</translation>
     </message>
+    <message>
+        <source>Main Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Focus to Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Focus to Search, alt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Focus to Result Table</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2098,6 +2154,26 @@ Tjek venligst desktopfilen</translation>
         <source>Add &quot;%1&quot; column</source>
         <translation>Tilføj &quot;%1&quot; kolonne</translation>
     </message>
+    <message>
+        <source>Result Table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">Åbn</translation>
+    </message>
+    <message>
+        <source>Open and Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation type="unfinished">Forhåndsvisning</translation>
+    </message>
+    <message>
+        <source>Show Snippets</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResultPopup</name>
@@ -2427,7 +2503,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation type="vanished">Ctrl+S</translation>
     </message>
     <message>
         <source>Erase search entry</source>
@@ -2532,6 +2608,30 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Sort By Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snippets Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation type="unfinished">Find</translation>
+    </message>
+    <message>
+        <source>Find (alt)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find Previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2821,6 +2921,22 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>Value from previous program exit</source>
         <translation>Værdi fra tidligere programafslutning</translation>
+    </message>
+    <message>
+        <source>Context</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3613,6 +3729,10 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Hide simple search type (show in menu only).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

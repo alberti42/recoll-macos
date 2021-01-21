@@ -49,7 +49,6 @@ static const int initclausetypes[] = {1, 3, 0, 2, 5};
 static const unsigned int iclausescnt = sizeof(initclausetypes) / sizeof(int);
 static map<QString,QString> cat_translations;
 static map<QString,QString> cat_rtranslations;
-static const QString scbctxt("Advanced Search");
 
 void AdvSearch::init()
 {
@@ -169,14 +168,18 @@ void AdvSearch::saveCnf()
 
 void AdvSearch::onNewShortcuts()
 {
-    SETSHORTCUT("History Next", "Up", m_histnextsc, slotHistoryNext);
-    SETSHORTCUT("History Prev", "Down", m_histprevsc, slotHistoryPrev);
+    SETSHORTCUT(this, tr("Advanced Search"), tr("History Next"),
+                "Up", m_histnextsc, slotHistoryNext);
+    SETSHORTCUT(this, tr("Advanced Search"), tr("History Prev"),
+                "Down", m_histprevsc, slotHistoryPrev);
 }
 
 void AdvSearch::listShortcuts()
 {
-    LISTSHORTCUT("History Next", "Up", m_histnextsc, slotHistoryNext);
-    LISTSHORTCUT("History Prev", "Down", m_histprevsc, slotHistoryPrev);
+    LISTSHORTCUT(this, tr("Advanced Search"), tr("History Next"),
+                 "Up", m_histnextsc, slotHistoryNext);
+    LISTSHORTCUT(this, tr("Advanced Search"), tr("History Prev"),
+                 "Down", m_histprevsc, slotHistoryPrev);
 }
 
 void AdvSearch::addClause(bool updsaved)

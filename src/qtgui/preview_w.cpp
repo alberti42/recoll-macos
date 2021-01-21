@@ -62,8 +62,6 @@
 #include "rclmain_w.h"
 #include "scbase.h"
 
-static const QString scbctxt("Preview Window");
-
 // Make an attempt at trimming wildcard exprs at both ends of string
 static void trimwildcards(string& elt)
 {
@@ -150,25 +148,35 @@ void Preview::init()
 
 void Preview::onNewShortcuts()
 {
-    SETSHORTCUT("Close Window", "Esc",  m_closewinsc, close);
-    SETSHORTCUT("Next doc in tab", "Shift+Down", m_nextdocsc, emitShowNext);
-    SETSHORTCUT("Previous doc in tab", "Shift+Up", m_prevdocsc,emitShowPrev);
-    SETSHORTCUT("Close tab", "Ctrl+W", m_closetabsc, closeCurrentTab);
-    QKeySequence ks = SCBase::scBase().get(scbctxt, "Print tab", "Ctrl+P");
+    SETSHORTCUT(this, tr("Preview Window"), tr("Close Window"),
+                "Esc",  m_closewinsc, close);
+    SETSHORTCUT(this, tr("Preview Window"), tr("Next doc in tab"),
+                "Shift+Down", m_nextdocsc, emitShowNext);
+    SETSHORTCUT(this, tr("Preview Window"), tr("Previous doc in tab"),
+                "Shift+Up", m_prevdocsc, emitShowPrev);
+    SETSHORTCUT(this, tr("Preview Window"), tr("Close tab"),
+                "Ctrl+W", m_closetabsc, closeCurrentTab);
+    QKeySequence ks =
+        SCBase::scBase().get(tr("Preview Window"),tr("Print tab"), "Ctrl+P");
     if (!ks.isEmpty()) {
         delete m_printtabsc;
-        m_printtabsc = new QShortcut(ks, this,
-                                     SIGNAL(printCurrentPreviewRequest()));
+        m_printtabsc = new QShortcut(
+            ks, this, SIGNAL(printCurrentPreviewRequest()));
     }
 }
 
 void Preview::listShortcuts()
 {
-    LISTSHORTCUT("Close Window", "Esc",  m_closewinsc, close);
-    LISTSHORTCUT("Next doc in tab", "Shift+Down", m_nextdocsc, emitShowNext);
-    LISTSHORTCUT("Previous doc in tab", "Shift+Up", m_prevdocsc,emitShowPrev);
-    LISTSHORTCUT("Close tab", "Ctrl+W", m_closetabsc, closeCurrentTab);
-    LISTSHORTCUT("Print tab", "Ctrl+P", m_printtabsc, print);
+    LISTSHORTCUT(null, tr("Preview Window"), tr("Close Window"),
+                 "Esc",  m_closewinsc, close);
+    LISTSHORTCUT(null, tr("Preview Window"), tr("Next doc in tab"),
+                 "Shift+Down", m_nextdocsc, emitShowNext);
+    LISTSHORTCUT(null, tr("Preview Window"), tr("Previous doc in tab"),
+                 "Shift+Up",m_prevdocsc, emitShowPrev);
+    LISTSHORTCUT(null, tr("Preview Window"), tr("Close tab"), "Ctrl+W",
+                 m_closetabsc, closeCurrentTab);
+    LISTSHORTCUT(null, tr("Preview Window"), tr("Print tab"), "Ctrl+P",
+                 m_printtabsc, print);
 }
 
 void Preview::emitShowNext()

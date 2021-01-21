@@ -74,7 +74,6 @@
 QString g_stringAllStem, g_stringNoStem;
 static const char *settingskey_toolarea="/Recoll/geometry/toolArea";
 static const char *settingskey_resarea="/Recoll/geometry/resArea";
-static const QString scbctxt("Main Window");
 
 static Qt::ToolBarArea int2area(int in)
 {
@@ -345,25 +344,13 @@ void RclMain::onNewShortcuts()
     SCBase& scb = SCBase::scBase();
     QKeySequence ks;
 
-    ks = scb.get(scbctxt, "Focus to Search", "Ctrl+L");
-    if (!ks.isEmpty()) {
-        delete m_focustosearchsc;
-        m_focustosearchsc = new QShortcut(ks, sSearch, SLOT(takeFocus()));
-    }
-
-    ks = scb.get(scbctxt, "Focus to Search, alt.", "Ctrl+Shift+S");
-    if (!ks.isEmpty()) {
-        delete m_focustosearcholdsc;
-        m_focustosearcholdsc = new QShortcut(ks, sSearch, SLOT(takeFocus()));
-    }
-
-    ks = scb.get(scbctxt, "Clear Search", "Ctrl+S");
-    if (!ks.isEmpty()) {
-        delete m_clearsearchsc;
-        m_clearsearchsc = new QShortcut(ks, sSearch, SLOT(clearAll()));
-    }
-
-    ks = scb.get(scbctxt, "Focus to Result Table", "Ctrl+R");
+    SETSHORTCUT(sSearch, tr("Main Window"), tr("Focus to Search"),
+                "Ctrl+L", m_focustosearchsc, takeFocus);
+    SETSHORTCUT(sSearch, tr("Main Window"), tr("Focus to Search, alt."),
+                "Ctrl+Shift+S", m_focustosearcholdsc, takeFocus);
+    SETSHORTCUT(sSearch, tr("Main Window"), tr("Clear Search"),
+                "Ctrl+S", m_clearsearchsc, clearAll);
+    ks = scb.get(tr("Main Window"), tr("Focus to Result Table"), "Ctrl+R");
     if (!ks.isEmpty()) {
         delete m_focustotablesc;
         m_focustotablesc = new QShortcut(ks, this);

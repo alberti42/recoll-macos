@@ -116,7 +116,7 @@ private:
 class QShortcut;
 
 class Preview : public QDialog, public Ui::Preview {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
 
