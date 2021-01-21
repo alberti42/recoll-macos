@@ -17,7 +17,6 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 #ifndef _SCBASE_H_INCLUDED_
 #define _SCBASE_H_INCLUDED_
 
@@ -26,23 +25,61 @@
 #include <QStringList>
 #include <QObject>
 
+/** Shortcuts storage classe. Singleton. 
+ *
+ * Manage settings storage for key sequences shortcuts.
+ * Each shortcut is defined by 4 strings: 
+ *  - Context  (e.g. "Main Window").
+ *  - Description (e.g. "Move focus to search entry").
+ *  - Current value, possibly changed by user, e.g. "Ctrl+l".
+ *  - Default value.
+ *
+ * The customised values are read from the stored settings by the SCBase 
+ * constructor.
+ * The entries with default values are created from the init() method
+ * of each class responsible for a context (e.g. RclMain, SnippetsW),
+ * or from a static method for classes which are not instantiated when
+ * the program starts up. 
+ *
+ * Macros are provided for actually creating the shortcuts in the
+ * init() routines, or for just creating the default entries (for use
+ * in the preferences screen).
+ */
 class SCBase : public QObject {
     Q_OBJECT;
 public:
     ~SCBase();
 
+    /* Return a reference to the instantiated singleton */
     static SCBase& scBase();
 
+    /** Get the current keysequence for the shortcut. If the entry was not
+     * created from the settings, create it with the default
+     * sequence. This is called from the context classes and returns
+     * either the default or the customised sequence. */
     QKeySequence get(const QString& context, const QString& description,
                      const QString& defkeyseq);
-    QStringList getAll();
+
+    /** Set a customised value for the designated shortcut. Called
+     * from the preference code. */
     void set(const QString& context, const QString& description,
              const QString& keyseq);
+
+    /** Return a list of all shortcuts. This is used to create the
+     *  preferences table. Each entry in the list is a string
+     * quadruplet: context, description, value, default */
+    QStringList getAll();
+
+    /** Store the customised values to the settings storage. Called
+     * from the preferences accept() method. */
     void store();
 
     class Internal;
 
 signals:
+
+    /** Preference change has been accepted and client classes should
+     * update their shortcuts */
     void shortcutsChanged();
     
 private:
@@ -50,6 +87,10 @@ private:
     SCBase();
 };
 
+/** This can be used in the client class init method, to actually
+ * create and connect the shortcuts. To keep the arg list reasonably
+ * short, it assumes that the context string is stored in a variable
+ * named 'scbctxt', and that the connections are done to "this". */
 #define SETSHORTCUT(DESCR, SEQ, FLD, SLTFUNC)                       \
     do {                                                            \
         QKeySequence ks = SCBase::scBase().get(scbctxt, DESCR, SEQ);\
@@ -59,6 +100,12 @@ private:
         }                                                           \
     } while (false);
 
+/** This can be used from a static method, to be called by the program
+ * initialisation, for classes which are not instantiated at startup,
+ * and so that the shortcuts are available for the preferences
+ * customisation screen. Same param list as SETSHORTCUT to make it
+ * easy to duplicate a list of ones into the other, even if some
+ * parameters are not used here. */
 #define LISTSHORTCUT(DESCR, SEQ, FLD, SLTFUNC)                      \
     do {                                                            \
         SCBase::scBase().get(scbctxt, DESCR, SEQ);                  \
