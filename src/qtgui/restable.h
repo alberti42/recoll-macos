@@ -32,11 +32,12 @@
 
 class ResTable;
 
-typedef std::string (FieldGetter)(const std::string& fldname, const Rcl::Doc& doc);
+typedef std::string (FieldGetter)(
+    const std::string& fldname, const Rcl::Doc& doc);
 
 class RecollModel : public QAbstractTableModel {
 
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
     RecollModel(const QStringList fields, ResTable *tb, QObject *parent = 0);
@@ -45,9 +46,9 @@ public:
     virtual int rowCount (const QModelIndex& = QModelIndex()) const;
     virtual int columnCount(const QModelIndex& = QModelIndex()) const;
     virtual QVariant headerData (int col, Qt::Orientation orientation, 
-                 int role = Qt::DisplayRole ) const;
+                                 int role = Qt::DisplayRole ) const;
     virtual QVariant data(const QModelIndex& index, 
-               int role = Qt::DisplayRole ) const;
+                          int role = Qt::DisplayRole ) const;
     virtual void saveAsCSV(std::fstream& fp);
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
     // Specific methods
@@ -95,10 +96,10 @@ class ResTable;
 class ResTableDetailArea : public QTextBrowser {
     Q_OBJECT;
 
- public:
+public:
     ResTableDetailArea(ResTable* parent = 0);
     
- public slots:
+public slots:
     virtual void createPopupMenu(const QPoint& pos);
     virtual void setFont();
     virtual void init();
@@ -115,17 +116,14 @@ class QShortcut;
 
 class ResTable : public QWidget, public Ui::ResTable 
 {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
     ResTable(QWidget* parent = 0) 
-    : QWidget(parent),
-      m_model(0), m_pager(0), m_detail(0), m_detaildocnum(-1),
-      m_rclmain(0), m_ismainres(true)
-    {
-    setupUi(this);
-    init();
-    }
+        : QWidget(parent) {
+            setupUi(this);
+            init();
+        }
     
     virtual ~ResTable() {}
     virtual RecollModel *getModel() {return m_model;}
@@ -169,6 +167,16 @@ public slots:
     virtual void takeFocus();
     virtual void onUiPrefsChanged();
     virtual void onNewShortcuts();
+    virtual void setCurrentRow0();
+    virtual void setCurrentRow1();
+    virtual void setCurrentRow2();
+    virtual void setCurrentRow3();
+    virtual void setCurrentRow4();
+    virtual void setCurrentRow5();
+    virtual void setCurrentRow6();
+    virtual void setCurrentRow7();
+    virtual void setCurrentRow8();
+    virtual void setCurrentRow9();
     
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);
@@ -184,18 +192,21 @@ signals:
     
     friend class ResTablePager;
     friend class ResTableDetailArea;
+
 protected:
     bool eventFilter(QObject* obj, QEvent* event);
+
 private:
     void init();
+
     RecollModel   *m_model{nullptr};
     ResTablePager *m_pager{nullptr};
     ResTableDetailArea *m_detail{nullptr};
-    int            m_detaildocnum;
+    int            m_detaildocnum{-1};
     Rcl::Doc       m_detaildoc;
-    int            m_popcolumn;
+    int            m_popcolumn{0};
     RclMain *m_rclmain{nullptr};
-    bool     m_ismainres;
+    bool     m_ismainres{true};
     QShortcut *m_opensc{nullptr};
     QShortcut *m_openquitsc{nullptr};
     QShortcut *m_previewsc{nullptr};

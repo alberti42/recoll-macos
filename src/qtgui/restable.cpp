@@ -594,6 +594,17 @@ void ResTable::init()
     connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
             this, SLOT(onNewShortcuts()));
 
+    new QShortcut(QKeySequence("Ctrl+0"), this, SLOT(setCurrentRow0()));
+    new QShortcut(QKeySequence("Ctrl+1"), this, SLOT(setCurrentRow1()));
+    new QShortcut(QKeySequence("Ctrl+2"), this, SLOT(setCurrentRow2()));
+    new QShortcut(QKeySequence("Ctrl+3"), this, SLOT(setCurrentRow3()));
+    new QShortcut(QKeySequence("Ctrl+4"), this, SLOT(setCurrentRow4()));
+    new QShortcut(QKeySequence("Ctrl+5"), this, SLOT(setCurrentRow5()));
+    new QShortcut(QKeySequence("Ctrl+6"), this, SLOT(setCurrentRow6()));
+    new QShortcut(QKeySequence("Ctrl+7"), this, SLOT(setCurrentRow7()));
+    new QShortcut(QKeySequence("Ctrl+8"), this, SLOT(setCurrentRow8()));
+    new QShortcut(QKeySequence("Ctrl+9"), this, SLOT(setCurrentRow9()));
+    
     connect(tableView, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
 
@@ -726,6 +737,25 @@ void ResTable::onUiPrefsChanged()
         m_detail->init();
     }        
 }
+
+#define SETCURRENTROW(INDEX)                                            \
+    void ResTable::setCurrentRow##INDEX()                               \
+    {                                                                   \
+        tableView->setFocus(Qt::ShortcutFocusReason);                   \
+        tableView->selectionModel()->setCurrentIndex(                   \
+            m_model->index(INDEX, 0),                                   \
+            QItemSelectionModel::ClearAndSelect|QItemSelectionModel::Rows); \
+    }
+SETCURRENTROW(0)
+SETCURRENTROW(1)
+SETCURRENTROW(2)
+SETCURRENTROW(3)
+SETCURRENTROW(4)
+SETCURRENTROW(5)
+SETCURRENTROW(6)
+SETCURRENTROW(7)
+SETCURRENTROW(8)
+SETCURRENTROW(9)
 
 int ResTable::getDetailDocNumOrTopRow()
 {
