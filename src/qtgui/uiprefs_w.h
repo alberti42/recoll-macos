@@ -67,6 +67,7 @@ public slots:
     virtual void editHeaderText();
     virtual void extradDbSelectChanged();
     virtual void extraDbEditPtrans();
+    virtual void resetShortcuts();
     
 signals:
     void uiprefsDone();
@@ -78,6 +79,8 @@ private:
     void setupReslistFontPB();
     void readShortcuts();
     void storeShortcuts();
+    void readShortcutsInternal(const QStringList&);
+    
     // Locally stored data (pending ok/cancel)
     QString paraFormat;
     QString headerText;

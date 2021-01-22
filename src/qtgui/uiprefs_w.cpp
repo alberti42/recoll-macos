@@ -101,6 +101,8 @@ void UIPrefsDialog::init()
             replAbsCB, SLOT(setEnabled(bool)));
     connect(ssNoCompleteCB, SIGNAL(toggled(bool)), 
             ssSearchOnCompleteCB, SLOT(setDisabled(bool)));
+    connect(resetscPB, SIGNAL(clicked()), this, SLOT(resetShortcuts()));
+    
     setFromPrefs();
 }
 
@@ -276,10 +278,9 @@ void UIPrefsDialog::setFromPrefs()
     readShortcuts();
 }
 
-void UIPrefsDialog::readShortcuts()
+void UIPrefsDialog::readShortcutsInternal(const QStringList& sl)
 {
     shortcutsTB->setRowCount(0);
-    SCBase& scbase = SCBase::scBase();
     shortcutsTB->setColumnCount(4);
     shortcutsTB->setHorizontalHeaderItem(
         0, new QTableWidgetItem(tr("Context")));
@@ -289,7 +290,6 @@ void UIPrefsDialog::readShortcuts()
         2, new QTableWidgetItem(tr("Shortcut")));
     shortcutsTB->setHorizontalHeaderItem(
         3, new QTableWidgetItem(tr("Default")));
-    QStringList sl = scbase.getAll();
     int row = 0;
     for (int i = 0; i < sl.size();) {
         LOGDEB0("UIPrefsDialog::readShortcuts: inserting row " <<
@@ -305,6 +305,16 @@ void UIPrefsDialog::readShortcuts()
     }
     shortcutsTB->resizeColumnsToContents();
     shortcutsTB->horizontalHeader()->setStretchLastSection(true);
+}
+
+void UIPrefsDialog::readShortcuts()
+{
+    readShortcutsInternal(SCBase::scBase().getAll());
+}
+
+void UIPrefsDialog::resetShortcuts()
+{
+    readShortcutsInternal(SCBase::scBase().getAllDefaults());
 }
 
 void UIPrefsDialog::storeShortcuts()

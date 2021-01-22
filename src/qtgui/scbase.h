@@ -70,6 +70,11 @@ public:
      * quadruplet: context, description, value, default */
     QStringList getAll();
 
+    /** Return a list of all shortcuts, with only default values (no settings).
+     * Used for resetting the defaults, especially if a lang changed
+     * has messed up the keys */
+    QStringList getAllDefaults();
+
     /** Store the customised values to the settings storage. Called
      * from the preferences accept() method. */
     void store();

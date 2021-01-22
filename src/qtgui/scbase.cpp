@@ -38,7 +38,9 @@ struct SCDef {
 
 class SCBase::Internal {
 public:
+    QStringList getAll(const std::map<QString, SCDef>&);
     std::map<QString, SCDef> scdefs;
+    std::map<QString, SCDef> scvalues;
     QString scBaseSettingsKey() {
         return "/Recoll/prefs/sckeys";
     }
@@ -68,9 +70,10 @@ SCBase::SCBase()
         QString desc = u8s2qs(co_des_val[1]);
         QString val = u8s2qs(co_des_val[2]);
         QString key = mapkey(ctxt, desc);
-        auto it = m->scdefs.find(key);
-        if (it == m->scdefs.end()) {
-            m->scdefs[key] = SCDef{ctxt, desc,QKeySequence(val), QKeySequence()};
+        auto it = m->scvalues.find(key);
+        if (it == m->scvalues.end()) {
+            m->scvalues[key] =
+                SCDef{ctxt, desc, QKeySequence(val), QKeySequence()};
         } else {
             it->second.val = QKeySequence(val);
         }
@@ -88,13 +91,14 @@ QKeySequence SCBase::get(const QString& ctxt, const QString& desc,
     LOGDEB0("SCBase::get: [" << qs2utf8s(ctxt) << "]/[" <<
             qs2utf8s(desc) << "], [" << qs2utf8s(defks) << "]\n");
     QString key = mapkey(ctxt, desc);
-    auto it = m->scdefs.find(key);
-    if (it == m->scdefs.end()) {
+    m->scdefs[key] = SCDef{ctxt, desc, QKeySequence(defks),QKeySequence(defks)};
+    auto it = m->scvalues.find(key);
+    if (it == m->scvalues.end()) {
         if (defks.isEmpty()) {
             return QKeySequence();
         }
         QKeySequence qks(defks);
-        m->scdefs[key] = SCDef{ctxt, desc, qks, qks};
+        m->scvalues[key] = SCDef{ctxt, desc, qks, qks};
         LOGDEB0("get(" << qs2utf8s(ctxt) << ", " << qs2utf8s(desc) <<
             ", " << qs2utf8s(defks) << ") -> " <<
                 qs2utf8s(qks.toString()) << "\n");
@@ -112,19 +116,19 @@ void SCBase::set(const QString& ctxt, const QString& desc, const QString& newks)
     LOGDEB0("SCBase::set: [" << qs2utf8s(ctxt) << "]/[" <<
             qs2utf8s(desc) << "], [" << qs2utf8s(newks) << "]\n");
     QString key = mapkey(ctxt, desc);
-    auto it = m->scdefs.find(key);
-    if (it == m->scdefs.end()) {
+    auto it = m->scvalues.find(key);
+    if (it == m->scvalues.end()) {
         QKeySequence qks(newks);
-        m->scdefs[key] = SCDef{ctxt, desc, qks, QKeySequence()};
+        m->scvalues[key] = SCDef{ctxt, desc, qks, QKeySequence()};
         return;
     }
     it->second.val = newks;
 }
 
-QStringList SCBase::getAll()
+QStringList SCBase::Internal::getAll(const std::map<QString, SCDef>& mp)
 {
     QStringList result;
-    for (const auto& entry : m->scdefs) {
+    for (const auto& entry : mp) {
         result.push_back(entry.second.ctxt);
         result.push_back(entry.second.desc);
         result.push_back(entry.second.val.toString());
@@ -133,10 +137,20 @@ QStringList SCBase::getAll()
     return result;
 }
 
+QStringList SCBase::getAll()
+{
+    return m->getAll(m->scvalues);
+}
+
+QStringList SCBase::getAllDefaults()
+{
+    return m->getAll(m->scdefs);
+}
+
 void SCBase::store()
 {
     QStringList slout;
-    for (const auto& entry : m->scdefs) {
+    for (const auto& entry : m->scvalues) {
         const SCDef& def = entry.second;
         if (def.val != def.dflt) {
             std::string e = 
