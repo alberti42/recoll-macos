@@ -604,6 +604,10 @@ void ResTable::init()
     new QShortcut(QKeySequence("Ctrl+7"), this, SLOT(setCurrentRow7()));
     new QShortcut(QKeySequence("Ctrl+8"), this, SLOT(setCurrentRow8()));
     new QShortcut(QKeySequence("Ctrl+9"), this, SLOT(setCurrentRow9()));
+
+    QShortcut *sc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+    connect(sc, SIGNAL(activated()),
+            tableView->selectionModel(), SLOT(clear()));
     
     connect(tableView, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
@@ -636,11 +640,11 @@ void ResTable::init()
 #else
     header->setMovable(true);
 #endif
-
+    if (prefs.noResTableHeader) {
+        header->hide();
+    }
     setDefRowHeight();
 
-    QShortcut *sc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
-    connect(sc, SIGNAL(activated()), tableView->selectionModel(), SLOT(clear()));
     connect(tableView->selectionModel(), 
             SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)),
             this, SLOT(onTableView_currentChanged(const QModelIndex&)));
@@ -682,6 +686,8 @@ void ResTable::onNewShortcuts()
                 "Ctrl+D", m_previewsc, menuPreview);
     SETSHORTCUT(this, tr("Result Table"), tr("Show Snippets"),
                 "Ctrl+E", m_showsnipssc, menuShowSnippets);
+    SETSHORTCUT(this, tr("Result Table"), tr("Show Header"),
+                "Ctrl+H", m_showheadersc, toggleHeader);
 }
 
 bool ResTable::eventFilter(QObject* obj, QEvent* event)
@@ -731,11 +737,25 @@ void ResTable::setRclMain(RclMain *m, bool ismain)
             m_rclmain, SLOT(showSnippets(Rcl::Doc)));
 }
 
+void ResTable::toggleHeader()
+{
+    if (tableView->horizontalHeader()->isVisible()) {
+        tableView->horizontalHeader()->hide();
+    } else {
+        tableView->horizontalHeader()->show();
+    }
+}
+
 void ResTable::onUiPrefsChanged()
 {
     if (m_detail) {
         m_detail->init();
     }        
+    if (prefs.noResTableHeader) {
+        tableView->horizontalHeader()->hide();
+    } else {
+        tableView->horizontalHeader()->show();
+    }
 }
 
 #define SETCURRENTROW(INDEX)                                            \

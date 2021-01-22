@@ -177,6 +177,7 @@ public slots:
     virtual void setCurrentRow7();
     virtual void setCurrentRow8();
     virtual void setCurrentRow9();
+    virtual void toggleHeader();
     
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);
@@ -211,6 +212,7 @@ private:
     QShortcut *m_openquitsc{nullptr};
     QShortcut *m_previewsc{nullptr};
     QShortcut *m_showsnipssc{nullptr};
+    QShortcut *m_showheadersc{nullptr};
 };
 
 
