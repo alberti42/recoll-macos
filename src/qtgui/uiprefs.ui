@@ -56,10 +56,23 @@
          <item>
           <widget class="QComboBox" name="ssearchTypCMB"/>
          </item>
+         <item>
+          <spacer name="horizontalSpacer_12">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" stretch="0,0,1">
          <item>
           <widget class="QLabel" name="hsLBL">
            <property name="sizePolicy">
@@ -88,6 +101,19 @@
             <number>0</number>
            </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
@@ -300,7 +326,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" stretch="0,0,1">
          <item>
           <widget class="QLabel" name="textLabelHL">
            <property name="sizePolicy">
@@ -335,6 +361,19 @@
             <number>3000</number>
            </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
@@ -471,6 +510,19 @@
            </property>
           </widget>
          </item>
+         <item>
+          <spacer name="horizontalSpacer_16">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </item>
        <item>
@@ -537,7 +589,7 @@
        <item>
         <layout class="QVBoxLayout">
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QHBoxLayout" stretch="0,0,1">
            <item>
             <widget class="QLabel" name="textLabel1">
              <property name="sizePolicy">
@@ -566,6 +618,19 @@
               <number>8</number>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -600,6 +665,19 @@
               <string>Reset</string>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_13">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -667,6 +745,19 @@
              </property>
             </widget>
            </item>
+           <item>
+            <spacer name="horizontalSpacer_14">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </item>
          <item>
@@ -704,10 +795,23 @@
              </property>
             </widget>
            </item>
+           <item>
+            <spacer name="horizontalSpacer_15">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QHBoxLayout" stretch="0,0,1">
            <item>
             <widget class="QLabel" name="snipwMaxLenLBL">
              <property name="sizePolicy">
@@ -739,6 +843,19 @@
               <number>1000</number>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -800,7 +917,7 @@
        <item>
         <layout class="QVBoxLayout">
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QHBoxLayout" stretch="0,0,1">
            <item>
             <widget class="QLabel" name="textLabel1_2">
              <property name="text">
@@ -813,6 +930,19 @@
            </item>
            <item>
             <widget class="QComboBox" name="stemLangCMB"/>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -838,7 +968,7 @@ This should give higher precedence to the results where the search terms appear 
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QHBoxLayout" stretch="0,0,1">
            <item>
             <widget class="QLabel" name="textLabel33">
              <property name="sizePolicy">
@@ -870,6 +1000,19 @@ The default value is 2 (percent). </string>
               <double>2.000000000000000</double>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -905,7 +1048,7 @@ May be slow for big documents.</string>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QHBoxLayout" stretch="0,0,1">
            <item>
             <widget class="QLabel" name="textLabel2">
              <property name="sizePolicy">
@@ -944,10 +1087,23 @@ May be slow for big documents.</string>
              </property>
             </widget>
            </item>
+           <item>
+            <spacer name="horizontalSpacer_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QHBoxLayout" stretch="0,0,1">
            <item>
             <widget class="QLabel" name="textLabel3">
              <property name="sizePolicy">
@@ -977,6 +1133,19 @@ May be slow for big documents.</string>
              </property>
             </widget>
            </item>
+           <item>
+            <spacer name="horizontalSpacer_8">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </item>
          <item>
@@ -990,7 +1159,7 @@ May be slow for big documents.</string>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QHBoxLayout" stretch="0,0,0,1">
            <item>
             <widget class="QLabel" name="textLabel14">
              <property name="sizePolicy">
@@ -1027,6 +1196,19 @@ May be slow for big documents.</string>
              </property>
             </widget>
            </item>
+           <item>
+            <spacer name="horizontalSpacer_9">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </item>
          <item>
@@ -1040,7 +1222,7 @@ May be slow for big documents.</string>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QHBoxLayout" stretch="0,0,0,1">
            <item>
             <widget class="QLabel" name="textLabelSG">
              <property name="sizePolicy">
@@ -1076,6 +1258,19 @@ May be slow for big documents.</string>
               <string>Choose</string>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_10">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
