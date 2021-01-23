@@ -183,7 +183,14 @@ void UIPrefsDialog::setFromPrefs()
         break;
     }
     // Query terms color
-    qtermStyleLE->setText(prefs.qtermstyle);
+    qtermStyleCMB->setCurrentText(prefs.qtermstyle);
+    if (qtermStyleCMB->count() <=1) {
+        qtermStyleCMB->addItem(prefs.qtermstyle);
+        qtermStyleCMB->addItem("color: blue");
+        qtermStyleCMB->addItem("color: red;background: yellow");
+        qtermStyleCMB->addItem(
+            "color: #dddddd; background: black; font-weight: bold");
+    }    
     // Abstract snippet separator string
     abssepLE->setText(prefs.abssep);
     dateformatLE->setText(prefs.reslistdateformat);
@@ -374,7 +381,7 @@ void UIPrefsDialog::accept()
     prefs.collapseDuplicates = collapseDupsCB->isChecked();
     prefs.maxhltextkbs = maxHLTSB->value();
 
-    prefs.qtermstyle = qtermStyleLE->text();
+    prefs.qtermstyle = qtermStyleCMB->currentText();
     prefs.abssep = abssepLE->text();
     prefs.reslistdateformat = dateformatLE->text();
     prefs.creslistdateformat = (const char*)prefs.reslistdateformat.toUtf8();
