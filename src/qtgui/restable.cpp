@@ -40,6 +40,7 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QKeyEvent>
+#include <QClipboard>
 
 #include "recoll.h"
 #include "docseq.h"
@@ -360,7 +361,11 @@ QVariant RecollModel::headerData(int idx, Qt::Orientation orientation,
             (orientation == Qt::Vertical ? "vertical":"horizontal") <<
             " role " << role << "\n");
     if (orientation == Qt::Vertical && role == Qt::DisplayRole) {
-        return idx;
+        if (idx < 26) {
+            return QString("%1/%2").arg(idx).arg(char('a'+idx)); 
+        } else {
+            return idx;
+        }
     }
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole &&
         idx < int(m_fields.size())) {
@@ -568,6 +573,7 @@ void ResTable::setDefRowHeight()
             font.setPointSize(fs);
         QFontMetrics fm(font);
         header->setDefaultSectionSize(fm.height() + ROWHEIGHTPAD);
+        header->setSectionResizeMode(QHeaderView::Fixed);
     }
 }
 
@@ -594,18 +600,24 @@ void ResTable::init()
     connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
             this, SLOT(onNewShortcuts()));
 
-    new QShortcut(QKeySequence("Ctrl+0"), this, SLOT(setCurrentRow0()));
-    new QShortcut(QKeySequence("Ctrl+1"), this, SLOT(setCurrentRow1()));
-    new QShortcut(QKeySequence("Ctrl+2"), this, SLOT(setCurrentRow2()));
-    new QShortcut(QKeySequence("Ctrl+3"), this, SLOT(setCurrentRow3()));
-    new QShortcut(QKeySequence("Ctrl+4"), this, SLOT(setCurrentRow4()));
-    new QShortcut(QKeySequence("Ctrl+5"), this, SLOT(setCurrentRow5()));
-    new QShortcut(QKeySequence("Ctrl+6"), this, SLOT(setCurrentRow6()));
-    new QShortcut(QKeySequence("Ctrl+7"), this, SLOT(setCurrentRow7()));
-    new QShortcut(QKeySequence("Ctrl+8"), this, SLOT(setCurrentRow8()));
-    new QShortcut(QKeySequence("Ctrl+9"), this, SLOT(setCurrentRow9()));
+    // Set "go to row" accelerator shortcuts. letter or digit for 0-9,
+    // then letter up to 25
+    std::function<void(int)> setrow =
+        std::bind(&ResTable::setCurrentRow, this, std::placeholders::_1);
+    for (int i = 0; i <= 25; i++) {
+        if (i <= 9) {
+            auto qs = QString("Ctrl+%1").arg(i);
+            auto sc = new QShortcut(QKeySequence(qs2utf8s(qs).c_str()), this);
+            auto lnk = new SCData(this, setrow, i);
+            connect(sc, SIGNAL(activated()), lnk, SLOT(activate()));
+        }
+        auto qs = QString("Ctrl+Shift+%1").arg(char('a'+i));
+        auto sc = new QShortcut(QKeySequence(qs2utf8s(qs).c_str()), this);
+        auto lnk = new SCData(this, setrow, i);
+        connect(sc, SIGNAL(activated()), lnk, SLOT(activate()));
+    }
 
-    QShortcut *sc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+    auto sc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
     connect(sc, SIGNAL(activated()),
             tableView->selectionModel(), SLOT(clear()));
     
@@ -640,9 +652,6 @@ void ResTable::init()
 #else
     header->setMovable(true);
 #endif
-    if (prefs.noResTableHeader) {
-        header->hide();
-    }
     setDefRowHeight();
 
     connect(tableView->selectionModel(), 
@@ -674,6 +683,7 @@ void ResTable::init()
         splitter->setSizes(sizes);
     }
     installEventFilter(this);
+    onUiPrefsChanged();
 }
 
 void ResTable::onNewShortcuts()
@@ -688,6 +698,16 @@ void ResTable::onNewShortcuts()
                 "Ctrl+E", m_showsnipssc, menuShowSnippets);
     SETSHORTCUT(this, tr("Result Table"), tr("Show Header"),
                 "Ctrl+H", m_showheadersc, toggleHeader);
+    SETSHORTCUT(this, tr("Result Table"), tr("Show Vertical Header"),
+                "Ctrl+V", m_showvheadersc, toggleVHeader);
+    SETSHORTCUT(this, tr("Result Table"), tr("Copy current document text"),
+                "Ctrl+Shift+[", m_copycurtextsc, copyCurrentRowText);
+    std::vector<QShortcut*> scps={
+        m_opensc, m_openquitsc, m_previewsc, m_showsnipssc, m_showheadersc,
+        m_showvheadersc, m_copycurtextsc};
+    for (auto& scp : scps) {
+        scp->setContext(Qt::WidgetWithChildrenShortcut);
+    }
 }
 
 bool ResTable::eventFilter(QObject* obj, QEvent* event)
@@ -746,6 +766,15 @@ void ResTable::toggleHeader()
     }
 }
 
+void ResTable::toggleVHeader()
+{
+    if (tableView->verticalHeader()->isVisible()) {
+        tableView->verticalHeader()->hide();
+    } else {
+        tableView->verticalHeader()->show();
+    }
+}
+
 void ResTable::onUiPrefsChanged()
 {
     if (m_detail) {
@@ -756,26 +785,37 @@ void ResTable::onUiPrefsChanged()
     } else {
         tableView->horizontalHeader()->show();
     }
+    if (prefs.showResTableVHeader) {
+        tableView->verticalHeader()->show();
+    } else {
+        tableView->verticalHeader()->hide();
+    }
 }
 
-#define SETCURRENTROW(INDEX)                                            \
-    void ResTable::setCurrentRow##INDEX()                               \
-    {                                                                   \
-        tableView->setFocus(Qt::ShortcutFocusReason);                   \
-        tableView->selectionModel()->setCurrentIndex(                   \
-            m_model->index(INDEX, 0),                                   \
-            QItemSelectionModel::ClearAndSelect|QItemSelectionModel::Rows); \
+void ResTable::copyCurrentRowText()
+{
+    auto index = tableView->selectionModel()->currentIndex();
+    if (!index.isValid()) {
+        LOGINF("ResTable::copyCurrentRowText: invalid current index\n");
+        return;
     }
-SETCURRENTROW(0)
-SETCURRENTROW(1)
-SETCURRENTROW(2)
-SETCURRENTROW(3)
-SETCURRENTROW(4)
-SETCURRENTROW(5)
-SETCURRENTROW(6)
-SETCURRENTROW(7)
-SETCURRENTROW(8)
-SETCURRENTROW(9)
+    int row = index.row();
+    LOGDEB("copyCurrentRowText: row " << row << "\n");
+    Rcl::Doc doc;
+    auto source = m_model->getDocSource();
+    if (source && source->getDoc(row, doc) && rcldb &&
+        rcldb->getDocRawText(doc)) {
+        QApplication::clipboard()->setText(u8s2qs(doc.text));
+    };
+}
+
+void ResTable::setCurrentRow(int row)
+{                                                                     
+    tableView->setFocus(Qt::ShortcutFocusReason);                     
+    tableView->selectionModel()->setCurrentIndex(                     
+        m_model->index(row, 0),                                       
+        QItemSelectionModel::ClearAndSelect|QItemSelectionModel::Rows);
+}
 
 int ResTable::getDetailDocNumOrTopRow()
 {

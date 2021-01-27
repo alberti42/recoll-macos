@@ -25,6 +25,7 @@
 #include <vector>
 #include <memory>
 #include <fstream>
+#include <functional>
 
 #include "ui_restable.h"
 #include "docseq.h"
@@ -167,17 +168,10 @@ public slots:
     virtual void takeFocus();
     virtual void onUiPrefsChanged();
     virtual void onNewShortcuts();
-    virtual void setCurrentRow0();
-    virtual void setCurrentRow1();
-    virtual void setCurrentRow2();
-    virtual void setCurrentRow3();
-    virtual void setCurrentRow4();
-    virtual void setCurrentRow5();
-    virtual void setCurrentRow6();
-    virtual void setCurrentRow7();
-    virtual void setCurrentRow8();
-    virtual void setCurrentRow9();
+    virtual void setCurrentRow(int row);
     virtual void toggleHeader();
+    virtual void toggleVHeader();
+    virtual void copyCurrentRowText();
     
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);
@@ -213,7 +207,25 @@ private:
     QShortcut *m_previewsc{nullptr};
     QShortcut *m_showsnipssc{nullptr};
     QShortcut *m_showheadersc{nullptr};
+    QShortcut *m_showvheadersc{nullptr};
+    QShortcut *m_copycurtextsc{nullptr};
 };
 
-
+// This is an intermediary object to help setting up multiple similar
+// shortcuts with different data (e.g. Ctrl+1, Ctrl+2 etc.). Maybe
+// there is another way, but this one works.
+class SCData : public QObject {
+    Q_OBJECT;
+public:
+    SCData(QObject* parent, std::function<void (int)> cb, int row)
+        : QObject(parent), m_cb(cb), m_row(row) {}
+public slots:
+    virtual void activate() {
+        m_cb(m_row);
+    }
+private:
+    std::function<void (int)>  m_cb;
+    int m_row;
+};
+        
 #endif /* _RESTABLE_H_INCLUDED_ */
