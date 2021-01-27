@@ -239,6 +239,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="showResTableVHeaderCB">
+         <property name="text">
+          <string>Show result table row headers.</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="noClearSearchCB">
          <property name="text">
           <string>Hide Clear and Search buttons.</string>

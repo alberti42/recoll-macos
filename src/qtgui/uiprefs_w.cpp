@@ -155,6 +155,7 @@ void UIPrefsDialog::setFromPrefs()
     noMenuBarCB->setChecked(prefs.noMenuBar);
     noSSTypCMBCB->setChecked(prefs.noSSTypCMB);
     noResTableHeaderCB->setChecked(prefs.noResTableHeader);
+    showResTableVHeaderCB->setChecked(prefs.showResTableVHeader);
     showTrayIconCB->setChecked(prefs.showTrayIcon);
     if (!prefs.showTrayIcon) {
         prefs.closeToTray = false;
@@ -425,6 +426,7 @@ void UIPrefsDialog::accept()
     m_mainWindow->setupMenus();
     prefs.noSSTypCMB = noSSTypCMBCB->isChecked();
     prefs.noResTableHeader = noResTableHeaderCB->isChecked();
+    prefs.showResTableVHeader = showResTableVHeaderCB->isChecked();
     prefs.noStatusBar = noStatusBarCB->isChecked();
     m_mainWindow->setupStatusBar();
     prefs.noClearSearch = noClearSearchCB->isChecked();

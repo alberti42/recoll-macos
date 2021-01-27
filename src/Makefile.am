@@ -506,7 +506,6 @@ qtgui/ssearch_w.h \
 qtgui/ssearchb.ui \
 qtgui/systray.cpp \
 qtgui/systray.h \
-qtgui/ui_rclmain.h-4.5 \
 qtgui/uiprefs.ui \
 qtgui/uiprefs_w.cpp \
 qtgui/uiprefs_w.h \
