@@ -350,6 +350,11 @@ void RclMain::onNewShortcuts()
                 "Ctrl+Shift+S", m_focustosearcholdsc, takeFocus);
     SETSHORTCUT(sSearch, tr("Main Window"), tr("Clear Search"),
                 "Ctrl+S", m_clearsearchsc, clearAll);
+    // We could set this as an action shortcut, but then, it would not
+    // be editable
+    SETSHORTCUT(this, tr("Main Window"), tr("Toggle table display"),
+                "Ctrl+T", m_toggletablesc, toggleTable);
+
     ks = scb.get(tr("Main Window"), tr("Focus to Result Table"), "Ctrl+R");
     if (!ks.isEmpty()) {
         delete m_focustotablesc;
@@ -1002,6 +1007,13 @@ void RclMain::onSortDataChanged(DocSeqSortSpec spec)
         (m_sortspec.desc?" &darr;":" &uarr;"),
         qs2utf8s(tr("filtered")));
     initiateQuery();
+}
+
+// Needed only because an action is not a widget, so can't be used
+// with SETSHORTCUT
+void RclMain::toggleTable()
+{
+    actionShowResultsAsTable->toggle();
 }
 
 void RclMain::on_actionShowResultsAsTable_toggled(bool on)

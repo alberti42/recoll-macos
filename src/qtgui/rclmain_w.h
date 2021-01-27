@@ -168,6 +168,7 @@ public slots:
     virtual void showTrayMessage(const QString& text);
     virtual void onSetDescription(QString);
     virtual void onNewShortcuts();
+    virtual void toggleTable();
 
 private slots:
     virtual void updateIdxStatus();
@@ -220,6 +221,7 @@ private:
     QShortcut      *m_focustosearchsc{0};
     QShortcut      *m_focustosearcholdsc{0};
     QShortcut      *m_clearsearchsc{0};
+    QShortcut      *m_toggletablesc{0};
     QFileSystemWatcher m_watcher;
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc{0}; // Indexing process
