@@ -10,14 +10,9 @@ TARGET = librecoll
 TEMPLATE = lib
 
 DEFINES += LIBRECOLL_LIBRARY BUILDING_RECOLL
-DEFINES += PSAPI_VERSION=1
 DEFINES += READFILE_ENABLE_MINIZ
 DEFINES += READFILE_ENABLE_MD5
 DEFINES += READFILE_ENABLE_ZLIB
-# VC only defines __WIN32, not __WIN32__ . For some reason xapian uses
-#  __WIN32__ which it actually defines in conf_post.h if __WIN32 is
-#  set. Reason: mystery.
-DEFINES += __WIN32__
 
 SOURCES += \
 ../../aspell/rclaspell.cpp \
@@ -104,9 +99,6 @@ SOURCES += \
 ../../utils/utf8iter.cpp \
 ../../utils/zlibut.cpp \
 ../../utils/zlibut.h \
-../../windows/execmd_w.cpp \
-../../windows/fnmatch.c \
-../../windows/wincodepages.cpp \
 ../../utils/fileudi.cpp \
 ../../utils/fstreewalk.cpp \
 ../../utils/hldata.cpp \
@@ -123,15 +115,26 @@ SOURCES += \
 ../../utils/smallut.cpp \
 ../../utils/strmatcher.cpp \
 ../../utils/transcode.cpp \
-../../utils/wipedir.cpp \
-../../windows/strptime.cpp
+../../utils/wipedir.cpp
 
 INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
             ../../unac ../../utils ../../aspell ../../rcldb ../../qtgui \
             ../../xaposix ../../confgui ../../bincimapmime 
 
 windows {
+  # VC only defines __WIN32, not __WIN32__ . For some reason xapian uses
+  #  __WIN32__ which it actually defines in conf_post.h if __WIN32 is
+  #  set. Reason: mystery.
+  DEFINES += __WIN32__
+  DEFINES += PSAPI_VERSION=1
   defines += UNICODE
+
+  SOURCES += \
+  ../../windows/execmd_w.cpp \
+  ../../windows/fnmatch.c \
+  ../../windows/wincodepages.cpp \
+  ../../windows/strptime.cpp
+
   contains(QMAKE_CC, gcc){
     # MingW
     # This is necessary to avoid an undefined impl__xmlFree.
@@ -166,7 +169,18 @@ windows {
 
 }
 
-unix {
+unix:!mac {
     target.path = /usr/lib
     INSTALLS += target
+}
+
+mac {
+    CONFIG += staticlib
+    # This is necessary to avoid an undefined impl__xmlFree.
+    # See comment in libxml/xmlexports.h
+    DEFINES += LIBXML_STATIC
+    RECOLLDEPS = /Users/dockes/Recoll
+    QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
+    INCLUDEPATH += \
+      $$RECOLLDEPS/xapian-core-1.4.18/include 
 }

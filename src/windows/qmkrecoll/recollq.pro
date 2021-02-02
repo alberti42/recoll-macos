@@ -7,9 +7,6 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 DEFINES += BUILDING_RECOLL
-DEFINES += UNICODE
-DEFINES += PSAPI_VERSION=1
-DEFINES += __WIN32__
 
 SOURCES += \
 ../../query/recollqmain.cpp
@@ -19,6 +16,9 @@ INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
             ../../xaposix ../../confgui ../../bincimapmime 
 
 windows {
+  DEFINES += UNICODE
+  DEFINES += PSAPI_VERSION=1
+  DEFINES += __WIN32__
   contains(QMAKE_CC, gcc){
      MingW
     QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
@@ -44,4 +44,17 @@ windows {
   }
 
   INCLUDEPATH += ../../windows
+}
+
+mac {
+  QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
+  SOURCES += \
+    ../../utils/closefrom.cpp \
+    ../../utils/execmd.cpp \
+    ../../utils/netcon.cpp \
+    ../../utils/rclionice.cpp
+  LIBS += \
+     ../build-librecoll-Desktop_Qt_5_14_2_clang_64bit-Release/liblibrecoll.a \
+     ../../../../xapian-core-1.4.18/.libs/libxapian.a \
+     -lxslt -lxml2 -liconv -lz
 }

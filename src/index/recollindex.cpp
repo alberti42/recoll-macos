@@ -553,7 +553,9 @@ static void flushIdxReasons()
 // enable wmain.  Another workaround is to use main, then call
 // GetCommandLineW and CommandLineToArgvW, to then call wmain(). If
 // ever we need to build with mingw again.
-#define USE_WMAIN (defined(_WIN32) && defined(_MSC_VER))
+#if defined(_WIN32) && defined(_MSC_VER)
+#define USE_WMAIN 1
+#endif
 
 #if USE_WMAIN
 #define WARGTOSTRING(w) wchartoutf8(w)

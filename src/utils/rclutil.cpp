@@ -31,6 +31,9 @@
 #include <pwd.h>
 #include <sys/file.h>
 #endif
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
 #include <math.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -256,7 +259,7 @@ const string& path_pkgdatadir()
         return datadir;
     }
     
-#ifdef _WIN32
+#if defined(_WIN32)
     // Try a path relative with the exec. This works if we are
     // recoll/recollindex etc.
     // But maybe we are the python module, and execpath is the python
@@ -276,6 +279,12 @@ const string& path_pkgdatadir()
         "a subfolder of the installation directory. \n"
         "Please set the RECOLL_DATADIR environment variable to point to it\n"
         "(e.g. setx RECOLL_DATADIR \"C:/Program Files (X86)/Recoll/Share)\"\n";
+#elif defined(__APPLE__) && !defined(MACPORTS) && !defined(HOMEBREW)
+    uint32_t size = 0;
+    _NSGetExecutablePath(nullptr, &size);
+    char *path= (char*)malloc(size+1);
+    _NSGetExecutablePath(path, &size);
+    datadir = path_cat(path_getfather(path_getfather(path)), "Resources");
 #else
     // If not in environment, use the compiled-in constant.
     datadir = RECOLL_DATADIR;

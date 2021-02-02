@@ -273,7 +273,7 @@ RclConfig *recollinit(int flags,
     if (cleanup)
         atexit(cleanup);
 
-#if defined(MACPORTS) || defined(HOMEBREW)
+#ifdef __APPLE__
     // The MACPORTS and HOMEBREW flags are set by the resp. portfile
     // and recipee
     
@@ -288,9 +288,15 @@ RclConfig *recollinit(int flags,
     PATH = string("/opt/local/bin/") + ":" + PATH;
 #elif defined(HOMEBREW)
     PATH = string("/usr/local/bin/") + ":" + PATH;
+#else
+    // Native qt build. Add our own directory to the path so that
+    // recoll finds recollindex
+    // pkgdatadir: /Applications/recoll.app/Contents/Resources
+    std::string exedir = path_cat(path_getfather(path_pkgdatadir()), "MacOS");
+    PATH = exedir + ":" + PATH;
 #endif
     setenv("PATH", PATH.c_str(), 1);
-#endif
+#endif /* __APPLE__ */
     
     // Make sure the locale is set. This is only for converting file names 
     // to utf8 for indexing.

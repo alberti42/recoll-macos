@@ -13,15 +13,12 @@ DEFINES += USING_WEBENGINE
 QT += xml printsupport
 
 DEFINES += BUILDING_RECOLL
-DEFINES += PSAPI_VERSION=1
-DEFINES += __WIN32__
 
 HEADERS += \
         advsearch_w.h \
         advshist.h \
         confgui/confgui.h \
         confgui/confguiindex.h \
-        winschedtool.h \
         widgets/editdialog.h \
         firstidx.h \
         fragbuts.h \
@@ -36,6 +33,7 @@ HEADERS += \
         rclmain_w.h \
         reslist.h \
         restable.h \
+        scbase.h \
         searchclause_w.h \
         snippets_w.h \
         specialindex.h \
@@ -51,7 +49,6 @@ SOURCES += \
         advshist.cpp \
         confgui/confgui.cpp \
         confgui/confguiindex.cpp \
-        winschedtool.cpp \
         fragbuts.cpp \
         guiutils.cpp \
         main.cpp \
@@ -72,6 +69,7 @@ SOURCES += \
         respopup.cpp \
         reslist.cpp \
         restable.cpp \
+        scbase.cpp \
         searchclause_w.cpp \
         snippets_w.cpp \
         spell_w.cpp \
@@ -85,7 +83,6 @@ SOURCES += \
 
 FORMS   = \
         advsearch.ui \
-        winschedtool.ui \
         widgets/editdialog.ui \
         firstidx.ui \
         idxsched.ui \
@@ -108,8 +105,18 @@ INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
               ../utils ../aspell ../rcldb ../qtgui ../xaposix \
               confgui widgets
 windows {
+    DEFINES += PSAPI_VERSION=1
+    DEFINES += __WIN32__
     DEFINES += UNICODE
     RC_FILE = recoll.rc
+
+    HEADERS += \
+      winschedtool.h
+    SOURCES += \
+    winschedtool.cpp
+    FORMS += \
+    winschedtool.ui
+    
     contains(QMAKE_CC, gcc){
         # MingW
         QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
@@ -133,6 +140,178 @@ windows {
       -lrpcrt4 -lws2_32 -luser32 \
       -lshell32 -lshlwapi -lpsapi -lkernel32
   }
+}
+
+mac {
+  QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
+
+  HEADERS += \
+    crontool.h \
+    rtitool.h
+    
+  SOURCES += \
+    ../utils/closefrom.cpp \
+    ../utils/execmd.cpp \
+    ../utils/netcon.cpp \
+    ../utils/rclionice.cpp \
+    crontool.cpp \
+    rtitool.cpp
+
+  FORMS += \
+  crontool.ui \
+  rtitool.ui
+
+  LIBS += \
+../windows/build-librecoll-Desktop_Qt_5_14_2_clang_64bit-Release/liblibrecoll.a \
+  ../../../xapian-core-1.4.18/.libs/libxapian.a \
+  -lxslt -lxml2 -liconv -lz
+
+  ICON = images/recoll.icns
+  
+  APP_EXAMPLES.files = \
+  ../sampleconf/fragbuts.xml \
+  ../sampleconf/fields \
+  ../sampleconf/recoll.conf \
+  ../sampleconf/mimeconf \
+  ../sampleconf/recoll.qss \
+  ../sampleconf/recoll-dark.qss \
+  ../sampleconf/recoll-dark.css \
+  ../sampleconf/mimemap \
+  ../sampleconf/mimeview 
+  APP_EXAMPLES.path = Contents/Resources/examples
+
+  APP_FILTERS.files = \
+  ../filters/abiword.xsl \
+  ../filters/cmdtalk.py \
+  ../filters/fb2.xsl \
+  ../filters/gnumeric.xsl \
+  ../filters/kosplitter.py \
+  ../filters/msodump.zip \
+  ../filters/okular-note.xsl \
+  ../filters/opendoc-body.xsl \
+  ../filters/opendoc-flat.xsl \
+  ../filters/opendoc-meta.xsl \
+  ../filters/openxml-xls-body.xsl \
+  ../filters/openxml-word-body.xsl \
+  ../filters/openxml-meta.xsl \
+  ../filters/ppt-dump.py \
+  ../filters/rcl7z \
+  ../filters/rclaptosidman \
+  ../filters/rclaudio \
+  ../filters/rclbasehandler.py \
+  ../filters/rclbibtex.sh \
+  ../filters/rclcheckneedretry.sh \
+  ../filters/rclchm \
+  ../filters/rcldia \
+  ../filters/rcldjvu.py \
+  ../filters/rcldoc.py \
+  ../filters/rcldvi \
+  ../filters/rclepub \
+  ../filters/rclepub1 \
+  ../filters/rclexec1.py \
+  ../filters/rclexecm.py \
+  ../filters/rclfb2.py \
+  ../filters/rclgaim \
+  ../filters/rclgenxslt.py \
+  ../filters/rclhwp.py \
+  ../filters/rclics \
+  ../filters/rclimg \
+  ../filters/rclimg.py \
+  ../filters/rclinfo \
+  ../filters/rclkar \
+  ../filters/rclkwd \
+  ../filters/rcllatinclass.py \
+  ../filters/rcllatinstops.zip \
+  ../filters/rcllyx \
+  ../filters/rclman \
+  ../filters/rclmidi.py \
+  ../filters/rclocrcache.py \
+  ../filters/rclocr.py \
+  ../filters/rclocrabbyy.py \
+  ../filters/rclocrtesseract.py \
+  ../filters/rclopxml.py \
+  ../filters/rclpdf.py \
+  ../filters/rclppt.py \
+  ../filters/rclps \
+  ../filters/rclpst.py \
+  ../filters/rclpurple \
+  ../filters/rclpython.py \
+  ../filters/rclrar \
+  ../filters/rclrtf.py \
+  ../filters/rclscribus \
+  ../filters/rclshowinfo \
+  ../filters/rcltar \
+  ../filters/rcltex \
+  ../filters/rcltext.py \
+  ../filters/rcluncomp \
+  ../filters/rcluncomp.py \
+  ../filters/rclwar \
+  ../filters/rclxls.py \
+  ../filters/rclxml.py \
+  ../filters/rclxmp.py \
+  ../filters/rclxslt.py \
+  ../filters/rclzip \
+  ../filters/recoll-we-move-files.py \
+  ../filters/recollepub.zip \
+  ../filters/svg.xsl \
+  ../filters/xls-dump.py \
+  ../filters/xlsxmltocsv.py \
+  ../filters/xml.xsl \
+  ../python/recoll/recoll/conftree.py \
+  ../python/recoll/recoll/rclconfig.py
+  APP_FILTERS.path = Contents/Resources/filters
+
+  APP_IMAGES.files = \
+  images/asearch.png \
+  images/cancel.png \
+  images/close.png \
+  images/clock.png \
+  images/menu.png \
+  images/code-block.png \
+  images/down.png \
+  images/firstpage.png \
+  images/history.png \
+  images/interro.png \
+  images/nextpage.png \
+  images/prevpage.png \
+  images/recoll.icns \
+  images/recoll.png \
+  images/sortparms.png \
+  images/spell.png \
+  images/table.png \
+  images/up.png \
+  mtpics/License_sidux.txt \
+  mtpics/README \
+  mtpics/aptosid-book.png \
+  mtpics/aptosid-manual-copyright.txt \
+  mtpics/aptosid-manual.png \
+  mtpics/archive.png \
+  mtpics/book.png \
+  mtpics/bookchap.png \
+  mtpics/document.png \
+  mtpics/drawing.png \
+  mtpics/emblem-symbolic-link.png \
+  mtpics/folder.png \
+  mtpics/html.png \
+  mtpics/image.png \
+  mtpics/message.png \
+  mtpics/mozilla_doc.png \
+  mtpics/pdf.png \
+  mtpics/pidgin.png \
+  mtpics/postscript.png \
+  mtpics/presentation.png \
+  mtpics/sidux-book.png \
+  mtpics/soffice.png \
+  mtpics/source.png \
+  mtpics/sownd.png \
+  mtpics/spreadsheet.png \
+  mtpics/text-x-python.png \
+  mtpics/txt.png \
+  mtpics/video.png \
+  mtpics/wordprocessing.png
+  APP_IMAGES.path = Contents/Resources/images
+
+  QMAKE_BUNDLE_DATA = APP_EXAMPLES APP_FILTERS APP_IMAGES
 }
 
 TRANSLATIONS = \
