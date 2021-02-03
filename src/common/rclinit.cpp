@@ -329,7 +329,7 @@ RclConfig *recollinit(int flags,
     PATH = exedir + ":" + PATH;
 #endif
 
-    std::string rhpp
+    std::string rhpp;
     if (config->getConfParam("recollhelperpath", rhpp) && !rhpp.empty()) {
       PATH = rhpp + ":" + PATH;
     }
