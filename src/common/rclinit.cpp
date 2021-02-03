@@ -273,35 +273,6 @@ RclConfig *recollinit(int flags,
     if (cleanup)
         atexit(cleanup);
 
-#ifdef __APPLE__
-    // The MACPORTS and HOMEBREW flags are set by the resp. portfile
-    // and recipee
-    
-    // Apple keeps changing the way to set the environment (PATH) for
-    // a desktop app (started by launchd or whatever). Life is too
-    // short.
-    const char *cp = getenv("PATH");
-    if (!cp) //??
-        cp = "";
-    string PATH(cp);
-#if defined(MACPORTS)
-    PATH = string("/opt/local/bin/") + ":" + PATH;
-#elif defined(HOMEBREW)
-    PATH = string("/usr/local/bin/") + ":" + PATH;
-#else
-    // Native qt build. Add our own directory to the path so that
-    // recoll finds recollindex pkgdatadir:
-    // /Applications/recoll.app/Contents/Resources
-    //
-    // NOTE: This does not work when running from a mounted dmg
-    // because the location contains colons:/Volumes/:Users:dockes:Recoll:...
-    // which messes with the PATH colon separators of course.
-    std::string exedir = path_cat(path_getfather(path_pkgdatadir()), "MacOS");
-    PATH = exedir + ":" + PATH;
-#endif
-    setenv("PATH", PATH.c_str(), 1);
-#endif /* __APPLE__ */
-    
     // Make sure the locale is set. This is only for converting file names 
     // to utf8 for indexing.
     setlocale(LC_CTYPE, "");
@@ -320,6 +291,52 @@ RclConfig *recollinit(int flags,
             reason += "Out of memory ?";
         return 0;
     }
+
+#ifdef __APPLE__
+    // Setting the PATH for a desktop app
+    //
+    // Apple keeps changing the way to set the environment (PATH) for
+    // a desktop app (started by launchd or whatever). Life is too
+    // short.
+    //
+    // The MACPORTS and HOMEBREW flags are set by the resp. portfile
+    // and recipee. The hard-coded values of paths added for MACPORTS
+    // and HOMEBREW could be replaced with recollhelperpath use. Kept
+    // to minimize disturbance.
+
+    const char *cp = getenv("PATH");
+    if (!cp) //??
+        cp = "";
+    string PATH(cp);
+
+#if defined(MACPORTS)
+    PATH = string("/opt/local/bin/") + ":" + PATH;
+#elif defined(HOMEBREW)
+    PATH = string("/usr/local/bin/") + ":" + PATH;
+#else
+    // Native qt build. Add our own directory to the path so that
+    // recoll finds recollindex pkgdatadir:
+    // /Applications/recoll.app/Contents/Resources
+    //
+    // NOTE: This does not work when running from a mounted dmg
+    // because the location contains colons:/Volumes/:Users:dockes:Recoll:...
+    // which messes with the PATH colon separators of course.
+    // 
+    // Also, as far as I can see launchd actually includes the
+    // directory in the PATH, so this is redundant. Otoh, launchd
+    // changes a lot...
+    std::string exedir = path_cat(path_getfather(path_pkgdatadir()), "MacOS");
+    PATH = exedir + ":" + PATH;
+#endif
+
+    std::string rhpp
+    if (config->getConfParam("recollhelperpath", rhpp) && !rhpp.empty()) {
+      PATH = rhpp + ":" + PATH;
+    }
+
+    setenv("PATH", PATH.c_str(), 1);
+    LOGDEB("Rclinit: PATH [" << getenv("PATH") << "]\n");
+#endif /* __APPLE__ */
 
     TextSplit::staticConfInit(config);
     
