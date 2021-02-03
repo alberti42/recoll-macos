@@ -290,8 +290,12 @@ RclConfig *recollinit(int flags,
     PATH = string("/usr/local/bin/") + ":" + PATH;
 #else
     // Native qt build. Add our own directory to the path so that
-    // recoll finds recollindex
-    // pkgdatadir: /Applications/recoll.app/Contents/Resources
+    // recoll finds recollindex pkgdatadir:
+    // /Applications/recoll.app/Contents/Resources
+    //
+    // NOTE: This does not work when running from a mounted dmg
+    // because the location contains colons:/Volumes/:Users:dockes:Recoll:...
+    // which messes with the PATH colon separators of course.
     std::string exedir = path_cat(path_getfather(path_pkgdatadir()), "MacOS");
     PATH = exedir + ":" + PATH;
 #endif

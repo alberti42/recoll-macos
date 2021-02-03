@@ -167,6 +167,8 @@ mac {
   -lxslt -lxml2 -liconv -lz
 
   ICON = images/recoll.icns
+
+  system(cp ../sampleconf/mimeview.mac ../mimeview)
   
   APP_EXAMPLES.files = \
   ../sampleconf/fragbuts.xml \
@@ -177,7 +179,7 @@ mac {
   ../sampleconf/recoll-dark.qss \
   ../sampleconf/recoll-dark.css \
   ../sampleconf/mimemap \
-  ../sampleconf/mimeview 
+  ../mimeview 
   APP_EXAMPLES.path = Contents/Resources/examples
 
   APP_FILTERS.files = \

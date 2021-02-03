@@ -285,6 +285,7 @@ const string& path_pkgdatadir()
     char *path= (char*)malloc(size+1);
     _NSGetExecutablePath(path, &size);
     datadir = path_cat(path_getfather(path_getfather(path)), "Resources");
+    free(path);
 #else
     // If not in environment, use the compiled-in constant.
     datadir = RECOLL_DATADIR;
