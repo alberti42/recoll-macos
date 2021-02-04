@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="unfinished">Texte</translation>
+        <translation>Texte</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="unfinished">Tabellen</translation>
+        <translation>Tabellen</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -57,15 +57,15 @@
     </message>
     <message>
         <source>Advanced Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Erweiterte Suche</translation>
     </message>
     <message>
         <source>History Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Historie Nächste</translation>
     </message>
     <message>
         <source>History Prev</source>
-        <translation type="unfinished"></translation>
+        <translation>Historie Zurück</translation>
     </message>
 </context>
 <context>
@@ -108,7 +108,7 @@
     </message>
     <message>
         <source>Enter top directory for search</source>
-        <translation>Geben Sie das Basisverzeichnis für die Suche ein.</translation>
+        <translation>Geben Sie das Startverzeichnis für die Suche ein</translation>
     </message>
     <message>
         <source>Browse</source>
@@ -160,19 +160,19 @@
     </message>
     <message>
         <source>Minimum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation>Minimale Größe. Sie können k/K, m/M, g/G als Multiplikatoren verwenden.</translation>
+        <translation>Minimale Größe. Sie können k/K, m/M, g/G als Multiplikatoren verwenden</translation>
     </message>
     <message>
         <source>Min. Size</source>
-        <translation>Min. Größe:</translation>
+        <translation>Min. Größe</translation>
     </message>
     <message>
         <source>Maximum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation>Maximale Größe. Sie können k/K, m/M, g/G als Multiplikatoren verwenden.</translation>
+        <translation>Maximale Größe. Sie können k/K, m/M, g/G als Multiplikatoren verwenden</translation>
     </message>
     <message>
         <source>Max. Size</source>
-        <translation>Max. Größe:</translation>
+        <translation>Max. Größe</translation>
     </message>
     <message>
         <source>Filter</source>
@@ -180,11 +180,11 @@
     </message>
     <message>
         <source>From</source>
-        <translation>von</translation>
+        <translation>Von</translation>
     </message>
     <message>
         <source>To</source>
-        <translation>bis</translation>
+        <translation>Bis</translation>
     </message>
     <message>
         <source>Check this to enable filtering on dates</source>
@@ -211,39 +211,39 @@
     <name>ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation type="unfinished">Fehler beim Schreiben der Konfigurationsdatei</translation>
+        <translation>Fehler beim Schreiben der Konfigurationsdatei</translation>
     </message>
     <message>
         <source>Global parameters</source>
-        <translation type="unfinished">Globale Parameter</translation>
+        <translation>Globale Parameter</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation type="unfinished">Lokale Parameter</translation>
+        <translation>Lokale Parameter</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="unfinished">Suchparameter</translation>
+        <translation>Suchparameter</translation>
     </message>
     <message>
         <source>Top directories</source>
-        <translation type="unfinished">Start-Verzeichnisse</translation>
+        <translation>Start-Verzeichnisse</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation type="unfinished">Die Liste der Verzeichnisse, in denen die rekursive Indizierung startet. Standard: Home-Verzeichnis.</translation>
+        <translation>Die Liste der Verzeichnisse, in denen die rekursive Indizierung startet. Standard: Home-Verzeichnis.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation type="unfinished">Auszulassende Pfade</translation>
+        <translation>Auszulassende Pfade</translation>
     </message>
     <message>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation>Dies sind Pfadnamen von Verzeichnissen, welche die Indizierung nicht betritt.&lt;br&gt;Pfad-Elemente können Wildcards enthalten. Die Einträge müssen den Pfaden des Indexers entsprechen (z.B.: wenn das Startverzeichnis &apos;/home/me&apos; beinhaltet und &apos;/home&apos; tatsächlich ein Link zu &apos;/usr/home&apos; ist, würde ein korrekt ausgelassener Pfadeintrag &apos;/home/me/tmp*&apos; und nicht &apos;/usr/home/me/tmp*&apos; sein)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation type="unfinished">Stemming-Sprachen</translation>
+        <translation>Stemming-Sprachen</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
@@ -251,43 +251,43 @@
     </message>
     <message>
         <source>Log file name</source>
-        <translation type="unfinished">Log-Datei</translation>
+        <translation>Log-Dateiname</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation type="unfinished">Die Datei, in die Ausgaben geschrieben werden.&lt;br&gt;Für Ausgaben auf dem Terminal &apos;stderr&apos; benutzen.</translation>
+        <translation>Die Datei, in die Ausgaben geschrieben werden.&lt;br&gt;Für Ausgaben auf dem Terminal &apos;stderr&apos; benutzen.</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation type="unfinished">Ausführlichkeit des Logs</translation>
+        <translation>Ausführlichkeitsstufe des Logs</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation type="unfinished">Dieser Wert steuert die Menge der Meldungen&lt;br&gt;(nur Fehler oder viele Debugging Ausgaben).</translation>
+        <translation>Dieser Wert steuert die Menge der Meldungen&lt;br&gt;(nur Fehler oder viele Debugging Ausgaben).</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation type="unfinished">Interval (MB) für Speicherleerung</translation>
+        <translation>Interval (MB) für Speicherleerung</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation type="unfinished">Dieser Wert steuert, wieviel Daten indiziert werden bevor die Indexinformationen auf Festplatte geschrieben werden.&lt;br&gt;Hierdurch kann der Speicherverbrauch des Indizierers gesteuert werden. Standardwert: 10MB</translation>
+        <translation>Dieser Wert steuert, wieviel Daten indiziert werden bevor die Indexinformationen auf die Festplatte geschrieben werden.&lt;br&gt;Hierdurch kann der Speicherverbrauch des Indizierers gesteuert werden. Standardwert: 10MB </translation>
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dies ist der Prozentsatz der Festplattennutzung - Gesamtfestplattennutzung, nicht Indexgröße - bei dem die Indexierung ausfällt und stoppt.&lt;br&gt; Der Standardwert von 0 entfernt jede Grenze.</translation>
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation type="unfinished">Aspell nicht benutzen</translation>
+        <translation>Aspell nicht benutzen</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation type="unfinished">Deaktiviert die Verwendung von Aspell für die Erzeugung von Schreibweisen-Näherungen im Ausdruck-Explorer-Werkzeug. &lt;br&gt;Nützlich, wenn Aspell nicht vorhanden ist oder nicht funktioniert.</translation>
+        <translation>Deaktiviert die Verwendung von Aspell für die Erzeugung von Schreibweisen-Näherungen im Ausdruck-Explorer-Werkzeug. &lt;br&gt;Nützlich, wenn Aspell nicht vorhanden ist oder nicht funktioniert. </translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation type="unfinished">Sprache für Aspell</translation>
+        <translation>Sprache für Aspell</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
@@ -295,75 +295,75 @@
     </message>
     <message>
         <source>Database directory name</source>
-        <translation type="unfinished">Verzeichnis für Index-Datenbank</translation>
+        <translation>Verzeichnisname für die Datenbank</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished">Der Name eines Verzeichnisses, in dem der Index gespeichert werden soll.&lt;br&gt;Ein nicht-absoluter Pfad ist dabei relativ zum Konfigurationsverzeichnis. Der Standard ist &apos;xapiandb&apos;.</translation>
+        <translation>Der Name eines Verzeichnisses, in dem der Index gespeichert werden soll.&lt;br&gt;Ein nicht-absoluter Pfad ist dabei relativ zum Konfigurationsverzeichnis. Der Standard ist &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation type="unfinished">Unac Ausnahmen</translation>
+        <translation>Unac Ausnahmen</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished">&lt;p&gt;Dies sind Ausnahmen für den unac Mechanismus, der standardmäßig alle diakritischen Zeichen entfernt und sie durch kanonische Entsprechungen ersetzt. Sie können (abhängig von Ihrer Sprache) dieses Entfernen von Akzenten für einige Zeichen übersteuern und zusätzliche Ersetzungen angeben, z.B. für Ligaturen. Bei jedem durch Leerzeichen getrennten Eintrag ist das erste Zeichen das Ausgangszeichen und der Rest die Ersetzung.</translation>
+        <translation>&lt;p&gt;Dies sind Ausnahmen für den unac Mechanismus, der standardmäßig alle diakritischen Zeichen entfernt und sie durch kanonische Entsprechungen ersetzt. Sie können (abhängig von Ihrer Sprache) dieses Entfernen von Akzenten für einige Zeichen übersteuern und zusätzliche Ersetzungen angeben, z.B. für Ligaturen. Bei jedem durch Leerzeichen getrennten Eintrag ist das erste Zeichen das Ausgangszeichen und der Rest die Ersetzung.</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation type="unfinished">Web-Chronik</translation>
+        <translation>Verarbeite die Web-Chronik-Warteschlange</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ermöglicht die Indexierung der von Firefox besuchten Seiten.&lt;br&gt;(Sie müssen auch das Firefox-Recoll-Plugin installieren)</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
-        <translation type="unfinished">Verzeichnis zur Ablage von Webseiten</translation>
+        <translation>Verzeichnisname zur Ablage von Webseiten</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="unfinished">Der Name eines Verzeichnisses, in dem Kopien der besuchten Webseiten gespeichert werden sollen.&lt;br&gt;Ein nicht-absoluter Pfad ist dabei relativ zum Konfigurationsverzeichnis.</translation>
+        <translation>Der Name eines Verzeichnisses, in dem Kopien der besuchten Webseiten gespeichert werden sollen.&lt;br&gt;Ein nicht-absoluter Pfad ist dabei relativ zum Konfigurationsverzeichnis.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation type="unfinished">Maximale Größe für Ablage von Webseiten (MB)</translation>
+        <translation>Maximale Größe für Ablage von Webseiten (MB)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Einträge werden nach dem Erreichen der Größe wiederverwertet.&lt;br&gt;Nur die Größe zu erhöhen macht wirklich Sinn, weil die Verringerung des Wertes nicht eine bestehende Datei verkürzt (nur verschwendeten Platz am Ende).</translation>
     </message>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation type="unfinished">Automatisch diakritische Zeichen beachten</translation>
+        <translation>Automatisch diakritische Zeichen beachten</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation type="unfinished">&lt;p&gt; Automatisch die Beachtung von diakritischen Zeichen einschalten, wenn der Suchbegriff Zeichen mit Akzenten enthält (nicht in unac_except_trans). Ansonsten müssen Sie dafür die Abfrageprache und den &lt;i&gt;D&lt;/i&gt; Modifikator verwenden.</translation>
+        <translation>&lt;p&gt; Automatisch die Beachtung von diakritischen Zeichen einschalten, wenn der Suchbegriff Zeichen mit Akzenten enthält (nicht in unac_except_trans). Ansonsten müssen Sie dafür die Abfrageprache und den &lt;i&gt;D&lt;/i&gt; Modifikator verwenden um die Beachtung von diakritischen Zeichen anzugeben.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation type="unfinished">Automatisch Groß-/Kleinschreibung beachten</translation>
+        <translation>Automatisch Groß-/Kleinschreibung beachten</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation type="unfinished">&lt;p&gt; Automatisch die Beachtung von Groß-/Kleinschreibung einschalten, wenn der Eintrag Großbuchstaben enthält (außer an erster Stelle). Ansonsten müssen Sie dafür die Abfragesprache und den &lt;i&gt;C&lt;/i&gt; Modifikator verwenden.</translation>
+        <translation>&lt;p&gt; Automatisch die Beachtung von Groß-/Kleinschreibung einschalten, wenn der Eintrag Großbuchstaben enthält (außer an erster Stelle). Ansonsten müssen Sie dafür die Abfragesprache und den &lt;i&gt;C&lt;/i&gt; Modifikator verwenden um die Groß- und Kleinschreibung der Zeichen anzugeben.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation type="unfinished">Maximale Anzahl von Ausdruck-Erweiterungen</translation>
+        <translation>Maximale Anzahl von Ausdruck-Erweiterungen</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation type="unfinished">&lt;p&gt;Maximale Anzahl von Erweiterungen für einen einzelnen Ausdruck (z.B. bei der Verwendung von Wildcards). Der Standardwert 10 000 ist vernünftig und verhindert, dass Suchanfragen scheinbar einfrieren, während die Liste der Begriffe durchlaufen wird.</translation>
+        <translation>&lt;p&gt;Maximale Anzahl von Erweiterungen für einen einzelnen Ausdruck (z.B. bei der Verwendung von Wildcards). Der Standardwert 10 000 ist vernünftig und verhindert, dass Suchanfragen scheinbar einfrieren, während die Liste der Begriffe durchlaufen wird.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation type="unfinished">Maximale Anzahl von Xapian-Ausdrücken</translation>
+        <translation>Maximale Anzahl von Xapian-Ausdrücken</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation type="unfinished">&lt;p&gt;Maximale Anzahl von elementaren Ausdrücken, die wir zu einer einzelnen Xapian Abfrage hinzufügen. In manchen Fällen können die Ergebnisse von Ausdruck-Erweiterungen sich ausmultiplizieren, und wir wollen übermäßigen Speicherverbrauch vermeiden. Der Standardwert 100 000 sollte in den meisten Fällen hoch genug sein und zugleich zu typischen derzeitigen Hardware-Ausstattungen passen.</translation>
+        <translation>&lt;p&gt;Maximale Anzahl von elementaren Ausdrücken, die wir zu einer einzelnen Xapian Abfrage hinzufügen. In manchen Fällen können die Ergebnisse von Ausdruck-Erweiterungen sich ausmultiplizieren, und wir wollen übermäßigen Speicherverbrauch vermeiden. Der Standardwert 100 000 sollte in den meisten Fällen hoch genug sein und zugleich zu typischen derzeitigen Hardware-Ausstattungen passen.</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
@@ -371,87 +371,88 @@
     </message>
     <message>
         <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Sprache für das Aspells-Wörterbuch. Die Werte sind 2-Buchstaben-Sprachcodes, z.B. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;Wenn dieser Wert nicht festgelegt ist, wird die NLS-Umgebung verwendet, um sie zu berechnen, was in der Regel funktioniert. Um eine Vorstellung davon zu erhalten, was auf Ihrem System installiert ist, geben Sie &apos;aspell config&apos; ein und suchen Sie nach .dat-Dateien im &apos;data-dir&apos;-Verzeichnis.</translation>
     </message>
     <message>
         <source>Indexer log file name</source>
-        <translation type="unfinished"></translation>
+        <translation>Name der Indexer-Protokolldatei</translation>
     </message>
     <message>
         <source>If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn leer, wird der obige Log-Dateinamen-Wert verwendet. Es kann nützlich sein, ein separates Protokoll für diagnostische Zwecke zu haben, da das gemeinsame Protokoll gelöscht wird, wenn &lt;br&gt;die GUI hochfährt.</translation>
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation type="unfinished"></translation>
+        <translation>Prozentsatz des vollen Schwellenwerts für die Festplatte, bei dem die Indizierung beendet wird&lt;br&gt;z.B. 90% um bei 90% voll zu stoppen, 0 oder 100 bedeutet keine Begrenzung)</translation>
     </message>
     <message>
         <source>Web history</source>
-        <translation type="unfinished">Web-Chronik</translation>
+        <translation>Web-Chronik</translation>
     </message>
 </context>
 <context>
     <name>ConfSubPanelW</name>
     <message>
         <source>Only mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Nur Mime-Typen</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine exklusive Liste der indizierten Mimetypen.&lt;br&gt;Sonst wird nichts indiziert. Normalerweise leer und inaktiv</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Auszuschließende Mime-Typen</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
-        <translation type="unfinished"></translation>
+        <translation>Mime-Typen, die nicht indiziert werden</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation type="unfinished">Max. Größe kompr. Dateien (kB)</translation>
+        <translation>Max. Größe kompr. Dateien (kB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation type="unfinished">Dies ist eine Obergrenze; komprimierte Dateien jenseits dieser Größe werden nicht verarbeitet.
+        <translation>Dies ist eine Obergrenze; komprimierte Dateien jenseits dieser Größe werden nicht verarbeitet.
 Auf -1 setzen, um keine Obergrenze zu haben, auf 0, um nie zu dekomprimieren.</translation>
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation type="unfinished">Max. Größe Textdateien (MB)</translation>
+        <translation>Max. Größe Textdateien (MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation type="unfinished">Dies ist eine Obergrenze; Textdateien jenseits dieser Größe werden nicht verarbeitet
+        <translation>Dies ist eine Obergrenze; Textdateien jenseits dieser Größe werden nicht verarbeitet
  Auf -1 setzen, um keine Obergrenze zu haben.
 Dies dient dazu, riesige Log-Dateien vom Index auszuschließen.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation type="unfinished">Seitengröße Textdateien (kB)</translation>
+        <translation>Seitengröße Textdateien (kB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation type="unfinished">Wenn dieser Wert gesetzt ist (ungleich -1), werden Textdateien zur Indizierung in Stücke dieser Größe aufgeteilt.
+        <translation>Wenn dieser Wert gesetzt ist (ungleich -1), werden Textdateien zur Indizierung in Stücke dieser Größe aufgeteilt.
 Das hilft bei der Suche in sehr großen Textdateien (z.B. Log-Dateien).</translation>
     </message>
     <message>
         <source>Max. filter exec. time (s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Max. Ausführungszeit der Filter (s)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation type="unfinished">Externe Filter, die länger als diese Zeit laufen, werden abgebrochen.
+        <translation>Externe Filter, die länger als diese Zeit laufen, werden abgebrochen.
 Das ist für den seltenen Fall (Postscript), in dem ein Dokument eine unendliche Schleife auslöst.
-Auf -1 setzen, um keine Obergrenze zu haben.</translation>
+Auf -1 setzen, um keine Obergrenze zu haben.
+</translation>
     </message>
     <message>
         <source>Global</source>
-        <translation type="unfinished">Global</translation>
+        <translation>Global</translation>
     </message>
 </context>
 <context>
@@ -558,7 +559,7 @@ Falsche Syntax in Feldern?</translation>
     </message>
     <message>
         <source>Setting path translations for </source>
-        <translation>Setze Pfadumwandlungen für</translation>
+        <translation>Setze Pfadumwandlungen für </translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
@@ -621,7 +622,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This will let you chose between batch and real-time indexing, and set up an automatic  schedule for batch indexing (using cron).</source>
-        <translation>Hier können Sie zwischen regelmäßiger Indizierung und Echtzeit-Indizierung wählen und einen automatischen Zeitplan für die regelmäßige Indizierung einrichten (mit cron). </translation>
+        <translation>Hier können Sie zwischen Batch-Indizierung und Echtzeit-Indizierung wählen und einen automatischen Zeitplan für die Batch-Indizierung einrichten (mit cron).</translation>
     </message>
     <message>
         <source>Start indexing now</source>
@@ -632,16 +633,17 @@ p, li { white-space: pre-wrap; }
     <name>FragButs</name>
     <message>
         <source>%1 not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 nicht gefunden.</translation>
     </message>
     <message>
         <source>%1:
  %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1:
+ %2</translation>
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished"></translation>
+        <translation>Abfrage Fragmente</translation>
     </message>
 </context>
 <context>
@@ -722,7 +724,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
-        <translation type="unfinished"></translation>
+        <translation>Die &quot;History&quot;-Datei ist beschädigt, bitte überprüfe oder entferne sie: </translation>
     </message>
 </context>
 <context>
@@ -793,71 +795,71 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">Öffnen</translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <source>Canceled</source>
-        <translation type="unfinished"></translation>
+        <translation>Abgebrochen</translation>
     </message>
     <message>
         <source>Error loading the document: file missing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Laden des Dokumentes: Datei fehlt.</translation>
     </message>
     <message>
         <source>Error loading the document: no permission.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Laden des Dokumentes: Keine Berechtigung.</translation>
     </message>
     <message>
         <source>Error loading: backend not configured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Laden: Backend nicht konfiguriert.</translation>
     </message>
     <message>
         <source>Error loading the document: other handler error&lt;br&gt;Maybe the application is locking the file ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Laden des Dokumentes: Anderer Bedienprogrammfehler&lt;br&gt;Vielleicht sperrt die Anwendung die Datei ?</translation>
     </message>
     <message>
         <source>Error loading the document: other handler error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Laden des Dokumentes: Anderer Bedienprogrammfehler.</translation>
     </message>
     <message>
         <source>&lt;br&gt;Attempting to display from stored text.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt; Versuche aus gespeichertem Text anzuzeigen.</translation>
     </message>
     <message>
         <source>Could not fetch stored text</source>
-        <translation type="unfinished"></translation>
+        <translation>Gespeicherter Text konnte nicht abgerufen werden</translation>
     </message>
     <message>
         <source>Previous result document</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorheriges Ergebnisdokument</translation>
     </message>
     <message>
         <source>Next result document</source>
-        <translation type="unfinished"></translation>
+        <translation>Nächste Ergebnisdokument</translation>
     </message>
     <message>
         <source>Preview Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorschaufenster</translation>
     </message>
     <message>
         <source>Close Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Fenster schließen</translation>
     </message>
     <message>
         <source>Next doc in tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Nächstes Dokument im Tab</translation>
     </message>
     <message>
         <source>Previous doc in tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorheriges Dokument im Tab</translation>
     </message>
     <message>
         <source>Close tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Tab schließen</translation>
     </message>
     <message>
         <source>Print tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Drucke Tab</translation>
     </message>
 </context>
 <context>
@@ -904,7 +906,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Open document</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokument öffnen</translation>
     </message>
 </context>
 <context>
@@ -981,7 +983,7 @@ Der Standardwert ist &quot;Nein&quot;, um doppelte Indizierung zu vermeiden.</tr
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard-&lt;br&gt;Zeichensatz</translation>
     </message>
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
@@ -989,75 +991,76 @@ Der Standardwert ist &quot;Nein&quot;, um doppelte Indizierung zu vermeiden.</tr
     </message>
     <message>
         <source>Ignored endings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorierte Endungen</translation>
     </message>
     <message>
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
-        <translation type="unfinished"></translation>
+        <translation>Dies sind Dateinamen-Endungen für Dateien, die nur nach Namen indexiert werden
+(keine MIME-Typ-Identifikationsversuch, keine Dekompression, keine Inhaltsindizierung).</translation>
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;Die folgenden Parameter werden entweder global gesetzt (wenn nichts oder eine leere Zeile in der Liste oben ausgewählt ist) oder für das ausgewählte Unterverzeichnis. Sie können Verzeichnisse durch Anklicken von +/- hinzufügen oder entfernen.</translation>
     </message>
 </context>
 <context>
     <name>QWidget</name>
     <message>
         <source>Create or choose save directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Speicherverzeichnis erstellen oder auswählen</translation>
     </message>
     <message>
         <source>Choose exactly one directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Wähle genau ein Verzeichnis aus</translation>
     </message>
     <message>
         <source>Could not read directory: </source>
-        <translation type="unfinished"></translation>
+        <translation>Kann das Verzeichnis nicht lesen: </translation>
     </message>
     <message>
         <source>Unexpected file name collision, cancelling.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unerwartete Dateinamenkollision, Stornierung, es wird abgebrochen.</translation>
     </message>
     <message>
         <source>Cannot extract document: </source>
-        <translation type="unfinished"></translation>
+        <translation>Das Dokument kann nicht extrahiert werden: </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Vorschau</translation>
+        <translation>&amp;Vorschau</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished">&amp;Öffnen</translation>
+        <translation>&amp;Öffnen</translation>
     </message>
     <message>
         <source>Open With</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffnen mit</translation>
     </message>
     <message>
         <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation>Skripte ausführen</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">&amp;Dateinamen kopieren</translation>
+        <translation>&amp;Dateinamen kopieren</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">&amp;URL kopieren</translation>
+        <translation>&amp;URL kopieren</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">&amp;Schreibe in Datei</translation>
+        <translation>&amp;Schreibe in Datei</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation type="unfinished">Auswahl in Dateien sichern</translation>
+        <translation>Auswahl in Dateien sichern</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished">Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
+        <translation>Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
@@ -1065,30 +1068,30 @@ Der Standardwert ist &quot;Nein&quot;, um doppelte Indizierung zu vermeiden.</tr
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">&amp;Ähnliche Dokumente finden</translation>
+        <translation>&amp;Ähnliche Dokumente finden</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="unfinished">Öffne &amp;Schnipsel-Fenster</translation>
+        <translation>Öffne &amp;Schnipsel-Fenster</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation type="unfinished">Untergeordnete Dokumente / Anhänge anzeigen</translation>
+        <translation>Untergeordnete Dokumente / Anhänge anzeigen</translation>
     </message>
     <message>
         <source>&amp;Open Parent document</source>
-        <translation type="unfinished"></translation>
+        <translation>Ö&amp;ffnen des übergeordneten Dokuments</translation>
     </message>
     <message>
         <source>&amp;Open Parent Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Ö&amp;ffnen des übergeordneten Ordners</translation>
     </message>
 </context>
 <context>
     <name>QxtConfirmationMessage</name>
     <message>
         <source>Do not show again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nicht erneut zeigen.</translation>
     </message>
 </context>
 <context>
@@ -1234,7 +1237,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>(no stemming)</source>
-        <translation>(kein Stemming)</translation>
+        <translation>(keine Stammformreduktion/ Stemming)</translation>
     </message>
     <message>
         <source>(all languages)</source>
@@ -1451,19 +1454,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Document filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokumentenfilter</translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
-        <translation type="unfinished"></translation>
+        <translation>Der Indexer läuft, daher sollten sich die Dinge verbessern, wenn er fertig ist. </translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation type="unfinished">Doppelte Dokumente</translation>
+        <translation>Doppelte Dokumente</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished">Diese URLs ( | ipath) sind inhaltsgleich:</translation>
+        <translation>Diese URLs ( | ipath) sind inhaltsgleich:</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1472,7 +1475,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="unfinished"></translation>
+        <translation>Indizierung unterbrochen</translation>
     </message>
     <message>
         <source>Bad paths</source>
@@ -1484,11 +1487,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Selection patterns can only be used with a start directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Auswahlmuster können nur mit einem Startverzeichnis verwendet werden</translation>
     </message>
     <message>
         <source>No search</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Suche</translation>
     </message>
     <message>
         <source>No preserved previous search</source>
@@ -1496,35 +1499,35 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Choose file to save</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählen Sie eine Dateie zum Speichern</translation>
     </message>
     <message>
         <source>Saved Queries (*.rclq)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gespeicherte Abfragen (*.rclq)</translation>
     </message>
     <message>
         <source>Write failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Schreiben gescheitert</translation>
     </message>
     <message>
         <source>Could not write to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann nicht in Datei schreiben</translation>
     </message>
     <message>
         <source>Read failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Lesen fehlgeschlagen</translation>
     </message>
     <message>
         <source>Could not open file: </source>
-        <translation type="unfinished"></translation>
+        <translation>Kann Datei nicht Öffnen: </translation>
     </message>
     <message>
         <source>Load error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ladefehler</translation>
     </message>
     <message>
         <source>Could not load saved query</source>
-        <translation type="unfinished"></translation>
+        <translation>Die gespeicherte Abfrage kann nicht geladen werden</translation>
     </message>
     <message>
         <source>Disabled because the real time indexer was not compiled in.</source>
@@ -1532,7 +1535,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>This configuration tool only works for the main index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dieses Konfigurationstool funktioniert nur für den Hauptindex.</translation>
     </message>
     <message>
         <source>Can&apos;t set synonyms file (parse error?)</source>
@@ -1540,35 +1543,35 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>The document belongs to an external index which I can&apos;t update. </source>
-        <translation type="unfinished"></translation>
+        <translation>Das Dokument gehört zu einem externen Index, den ich nicht aktualisieren kann. </translation>
     </message>
     <message>
         <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffnen einer temporären Kopie. Änderungen werden verloren gehen, wenn du sie nicht &lt;&lt;br/&gt; an einen dauerhaften Ort speicherst.</translation>
     </message>
     <message>
         <source>Do not show this warning next time (use GUI preferences to restore).</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Warnung beim nächsten Mal nicht mehr anzeigen (Die GUI-Einstellungen zum Wiederherzustellen verwenden).</translation>
     </message>
     <message>
         <source>Index locked</source>
-        <translation type="unfinished"></translation>
+        <translation>Index gesperrt</translation>
     </message>
     <message>
         <source>Unknown indexer state. Can&apos;t access webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unbekannter Indexer Zustand. Kann nicht auf die Webcache-Datei zugreifen.</translation>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexer läuft. Kann nicht auf Webcache-Datei zugreifen.</translation>
     </message>
     <message>
         <source> with additional message: </source>
-        <translation type="unfinished"></translation>
+        <translation> mit zusätzlicher Nachricht: </translation>
     </message>
     <message>
         <source>Non-fatal indexing message: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nicht schwerwiegende Indexierungsnachricht:</translation>
     </message>
     <message>
         <source>Types list empty: maybe wait for indexing to progress?</source>
@@ -1584,72 +1587,73 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Results</source>
-        <translation type="unfinished"></translation>
+        <translation>Ergebnisse</translation>
     </message>
     <message>
         <source>Content has been indexed for these MIME types:</source>
-        <translation type="unfinished"></translation>
+        <translation>Für diese MIME-Typen wurde der Inhalte indiziert:</translation>
     </message>
     <message>
         <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Leere oder nicht vorhandene Pfade in der Konfigurationsdatei. Klicken Sie auf Ok, um die Indexierung trotzdem zu starten (abwesende Daten werden nicht aus dem Index gelöscht):
+</translation>
     </message>
     <message>
         <source>Indexing done</source>
-        <translation type="unfinished"></translation>
+        <translation>Indizierung erledigt</translation>
     </message>
     <message>
         <source>Can&apos;t update index: internal error</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Index kann nicht aktualisiert werden: interner Fehler</translation>
     </message>
     <message>
         <source>Index not up to date for this file.&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Index ist für diese Datei nicht aktuell.&lt;br&gt;</translation>
     </message>
     <message>
         <source>&lt;em&gt;Also, it seems that the last index update for the file failed.&lt;/em&gt;&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;em&gt;Ebenso scheint es, dass das letzte Index-Update für die Datei fehlgeschlagen ist.&lt;/em&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <source>Click Ok to try to update the index for this file. You will need to run the query again when indexing is done.&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Klicken Sie auf Ok, um den Index für diese Datei zu aktualisieren. Sie müssen die Abfrage erneut ausführen, wenn die Indexierung erfolgt ist.&lt;br&gt;</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Klicken Sie auf Abbrechen, um zur Liste zurückzukehren.&lt;br&gt;Klick Ignorieren, um die Vorschau trotzdem anzuzeigen (und sich für diese Sitzung einzuprägen). Es besteht die Gefahr, den falschen Eintrag anzuzeigen.&lt;br/&gt;</translation>
     </message>
     <message>
         <source>documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokumente</translation>
     </message>
     <message>
         <source>document</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokument</translation>
     </message>
     <message>
         <source>files</source>
-        <translation type="unfinished"></translation>
+        <translation>Dateien</translation>
     </message>
     <message>
         <source>file</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei</translation>
     </message>
     <message>
         <source>errors</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler</translation>
     </message>
     <message>
         <source>error</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler</translation>
     </message>
     <message>
         <source>total files)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gesamte Dateien)</translation>
     </message>
     <message>
         <source>No information: initial indexing not yet performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Informationen: Die Erstindizierung wurde noch nicht durchgeführt.</translation>
     </message>
     <message>
         <source>Batch scheduling</source>
@@ -1657,31 +1661,31 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mit dem Tool können Sie entscheiden, wann die Indexierung laufen soll. Es verwendet den Windows-Taskplaner.</translation>
     </message>
     <message>
         <source>Confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Bestätigen</translation>
     </message>
     <message>
         <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Einfache und erweiterte Suchhistorielisten löschen, zum Bestätigen bitte auf Ok klicken</translation>
     </message>
     <message>
         <source>Could not open/create file</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann Datei nicht Öffnen/Erzeugen</translation>
     </message>
     <message>
         <source>F&amp;ilter</source>
-        <translation type="unfinished"></translation>
+        <translation>F&amp;ilter</translation>
     </message>
     <message>
         <source>Could not start recollindex (temp file error)</source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte den Recollindex nicht starten (temporäre Datei Fehler)</translation>
     </message>
     <message>
         <source>Could not read: </source>
-        <translation type="unfinished"></translation>
+        <translation>Kann nicht gelesen werden: </translation>
     </message>
     <message>
         <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
@@ -1689,27 +1693,27 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>You will need to run a query to complete the display change.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie müssen eine Abfrage ausführen, um die Anzeigeänderung abzuschließen.</translation>
     </message>
     <message>
         <source>Simple search type</source>
-        <translation type="unfinished"></translation>
+        <translation>Einfache Suchart</translation>
     </message>
     <message>
         <source>Any term</source>
-        <translation type="unfinished">Irgendein Ausdruck</translation>
+        <translation>Irgendein Ausdruck</translation>
     </message>
     <message>
         <source>All terms</source>
-        <translation type="unfinished">Alle Ausdrücke</translation>
+        <translation>Alle Ausdrücke</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation type="unfinished">Dateiname</translation>
+        <translation>Dateiname</translation>
     </message>
     <message>
         <source>Query language</source>
-        <translation type="unfinished">Abfragesprache</translation>
+        <translation>Abfragesprache</translation>
     </message>
     <message>
         <source>Stemming language</source>
@@ -1717,23 +1721,23 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Main Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Hauptfenster</translation>
     </message>
     <message>
         <source>Focus to Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Fokus auf Suche</translation>
     </message>
     <message>
         <source>Focus to Search, alt.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fokus auf Suche, alternativ</translation>
     </message>
     <message>
         <source>Clear Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Suche säubern</translation>
     </message>
     <message>
         <source>Focus to Result Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Fokus auf Ergebnistabelle</translation>
     </message>
 </context>
 <context>
@@ -1764,7 +1768,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Preferences</source>
-        <translation>&amp;Einstellungen</translation>
+        <translation>Ein&amp;stellungen</translation>
     </message>
     <message>
         <source>Search tools</source>
@@ -1984,55 +1988,55 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished"></translation>
+        <translation>Abfrage-Fragmente</translation>
     </message>
     <message>
         <source>    With failed files retrying</source>
-        <translation type="unfinished"></translation>
+        <translation>    Bei fehlgeschlagenen Dateien erneut versuchen</translation>
     </message>
     <message>
         <source>Next update will retry previously failed files</source>
-        <translation type="unfinished"></translation>
+        <translation>Beim nächsten Update werden zuvor fehlgeschlagene Dateien erneut versucht</translation>
     </message>
     <message>
         <source>Indexing &amp;schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Indizierungs&amp;plan</translation>
     </message>
     <message>
         <source>Enable synonyms</source>
-        <translation type="unfinished"></translation>
+        <translation>Synonyme aktivieren</translation>
     </message>
     <message>
         <source>Save last query</source>
-        <translation type="unfinished"></translation>
+        <translation>Letzte Abfrage speichern</translation>
     </message>
     <message>
         <source>Load saved query</source>
-        <translation type="unfinished"></translation>
+        <translation>Gespeicherte Abfrage laden</translation>
     </message>
     <message>
         <source>Special Indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Spezielle Indizierung</translation>
     </message>
     <message>
         <source>Indexing with special options</source>
-        <translation type="unfinished"></translation>
+        <translation>Indizierung mit speziellen Optionen</translation>
     </message>
     <message>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ansicht</translation>
     </message>
     <message>
         <source>Missing &amp;helpers</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehlende &amp;Hilfsprogramme</translation>
     </message>
     <message>
         <source>Indexed &amp;MIME types</source>
-        <translation type="unfinished"></translation>
+        <translation>Indizierte &amp;MIME-Typen</translation>
     </message>
     <message>
         <source>Index &amp;statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Index-&amp;Statistiken</translation>
     </message>
     <message>
         <source>Webcache Editor</source>
@@ -2044,30 +2048,30 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>E&amp;xport simple search history</source>
-        <translation type="unfinished"></translation>
+        <translation>E&amp;xportiere einfache Suchhistorie</translation>
     </message>
     <message>
         <source>Use default dark mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwende den Standard-Dunkelmodus</translation>
     </message>
     <message>
         <source>Dark mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Dunkler Modus</translation>
     </message>
     <message>
         <source>&amp;Query</source>
-        <translation type="unfinished"></translation>
+        <translation>Ab&amp;fragen</translation>
     </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiederherstellen</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Verlassen</translation>
     </message>
 </context>
 <context>
@@ -2142,11 +2146,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>MIME type</source>
-        <translation>Mime-Typ</translation>
+        <translation>MIME-Typ</translation>
     </message>
     <message>
         <source>Can&apos;t sort by inverse relevance</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann nicht nach inverser Relevanz sortieren</translation>
     </message>
 </context>
 <context>
@@ -2262,7 +2266,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Snippets</source>
-        <translation type="unfinished">Schnipsel</translation>
+        <translation>Schnipsel</translation>
     </message>
 </context>
 <context>
@@ -2325,23 +2329,23 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Result Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Ergebnistabelle</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">Öffnen</translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <source>Open and Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffnen und Verlassen</translation>
     </message>
     <message>
         <source>Preview</source>
-        <translation type="unfinished">Vorschau</translation>
+        <translation>Vorschau</translation>
     </message>
     <message>
         <source>Show Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Schnipsel anzeigen</translation>
     </message>
 </context>
 <context>
@@ -2454,7 +2458,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Query language</source>
-        <translation type="unfinished">Abfragesprache</translation>
+        <translation>Abfragesprache</translation>
     </message>
     <message>
         <source>Bad query string</source>
@@ -2523,7 +2527,7 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Enter search terms here.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hier den Suchbegriffe eingeben.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
@@ -2563,7 +2567,7 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie sollten sich wirklich das Handbuch ansehen (F1)&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
@@ -2655,11 +2659,11 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Can&apos;t open index</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann den Index nicht öffnen</translation>
     </message>
     <message>
         <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte die externen Indizes für die gespeicherte Abfrage nicht wiederherstellen:&lt;br&gt; </translation>
     </message>
     <message>
         <source>???</source>
@@ -2667,7 +2671,7 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Using current preferences.</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutze die aktuellen Einstellungen.</translation>
     </message>
 </context>
 <context>
@@ -2707,11 +2711,11 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Show query history</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige Suchanfragen-Chronik</translation>
     </message>
     <message>
         <source>Main menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Hauptmenü</translation>
     </message>
 </context>
 <context>
@@ -2774,7 +2778,7 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Proximity</source>
-        <translation>Nähe</translation>
+        <translation>Nähe (proximity)</translation>
     </message>
     <message>
         <source>File name</source>
@@ -2816,39 +2820,39 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Entschuldigung,es wurde keine genaue Übereinstimmung innerhalb der Grenzen gefunden. Wahrscheinlich ist das Dokument sehr groß und der Schnipsel-Generator hat sich in einem Labyrinth verirrt...&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Sort By Relevance</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortieren nach Relevanz</translation>
     </message>
     <message>
         <source>Sort By Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortieren nach Seite</translation>
     </message>
     <message>
         <source>Snippets Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Schnipselfenster</translation>
     </message>
     <message>
         <source>Find</source>
-        <translation type="unfinished">Finden</translation>
+        <translation>Finden</translation>
     </message>
     <message>
         <source>Find (alt)</source>
-        <translation type="unfinished"></translation>
+        <translation>Finden (alternativ)</translation>
     </message>
     <message>
         <source>Find Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Finde Nächste</translation>
     </message>
     <message>
         <source>Find Previous</source>
-        <translation type="unfinished"></translation>
+        <translation>Finde Vorherige</translation>
     </message>
     <message>
         <source>Hide</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstecken</translation>
     </message>
 </context>
 <context>
@@ -2893,15 +2897,15 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     <name>SpecIdxW</name>
     <message>
         <source>Special Indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Spezielle Indexierung</translation>
     </message>
     <message>
         <source>Else only modified or failed files will be processed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Andernfalls werden nur modifizierte oder fehlgeschlagene Dateien verarbeitet.</translation>
     </message>
     <message>
         <source>Erase selected files data before indexing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Löschen der Daten der ausgewählte Dateien vor der Indexierung.</translation>
     </message>
     <message>
         <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
@@ -2909,15 +2913,15 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>Durchblättern</translation>
     </message>
     <message>
         <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
-        <translation type="unfinished"></translation>
+        <translation>Leer lassen, um alle Dateien auszuwählen. Sie können mehrere Leerzeichen getrennte Shell-Typ Muster verwenden.&lt;br&gt;Muster mit eingebetteten Leerzeichen sollten mit doppelten Zitaten zitiert werden.&lt;br&gt; Kann nur verwendet werden, wenn das Startziel eingestellt ist.</translation>
     </message>
     <message>
         <source>Selection patterns:</source>
-        <translation type="unfinished"></translation>
+        <translation>Auswahlmuster:</translation>
     </message>
     <message>
         <source>Top indexed entity</source>
@@ -2925,11 +2929,11 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Retry previously failed files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zuvor gescheitert Dateien nochmal versuchen.</translation>
     </message>
     <message>
         <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Startverzeichnis. Muss Teil des indexierten Baumes sein. Benutzen Sie den vollen Indexbereich, wenn es leer ist.</translation>
     </message>
 </context>
 <context>
@@ -3063,7 +3067,7 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>MIME types:</source>
-        <translation>Mime-Typen:</translation>
+        <translation>MIME-Typen:</translation>
     </message>
     <message>
         <source>Item</source>
@@ -3083,23 +3087,23 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Results from last indexing:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ergebnisse der letzten Indexierung:</translation>
     </message>
     <message>
         <source>  Documents created/updated</source>
-        <translation type="unfinished"></translation>
+        <translation>  Dokumente wurden erstellt/aktualisiert</translation>
     </message>
     <message>
         <source>  Files tested</source>
-        <translation type="unfinished"></translation>
+        <translation>  Dateien getestet</translation>
     </message>
     <message>
         <source>  Unindexed files</source>
-        <translation type="unfinished"></translation>
+        <translation>  Unindexierte Dateien</translation>
     </message>
     <message>
         <source>List files which could not be indexed (slow)</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste Dateien auf, die nicht indexiert werden konnten (langsam)</translation>
     </message>
     <message>
         <source>Spell expansion error. </source>
@@ -3158,27 +3162,27 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Default QtWebkit font</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard QtWebkit Schriftart</translation>
     </message>
     <message>
         <source>Any term</source>
-        <translation type="unfinished">Irgendein Ausdruck</translation>
+        <translation>Irgendein Ausdruck</translation>
     </message>
     <message>
         <source>All terms</source>
-        <translation type="unfinished">Alle Ausdrücke</translation>
+        <translation>Alle Ausdrücke</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation type="unfinished">Dateiname</translation>
+        <translation>Dateiname</translation>
     </message>
     <message>
         <source>Query language</source>
-        <translation type="unfinished">Abfragesprache</translation>
+        <translation>Abfragesprache</translation>
     </message>
     <message>
         <source>Value from previous program exit</source>
-        <translation type="unfinished"></translation>
+        <translation>Wert vom vorherigem Programmausgang</translation>
     </message>
     <message>
         <source>Context</source>
@@ -3186,7 +3190,7 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Beschreibung</translation>
     </message>
     <message>
         <source>Shortcut</source>
@@ -3194,7 +3198,7 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard</translation>
     </message>
 </context>
 <context>
@@ -3372,7 +3376,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>MIME type</source>
-        <translation>Mime-Typ</translation>
+        <translation>MIME-Typ</translation>
     </message>
     <message>
         <source>Desktop Default</source>
@@ -3470,23 +3474,23 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <name>WebcacheEdit</name>
     <message>
         <source>Copy URL</source>
-        <translation type="unfinished"></translation>
+        <translation>URL kopieren</translation>
     </message>
     <message>
         <source>Unknown indexer state. Can&apos;t edit webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unbekannter Indexer Zustand. Kann die Webcache-Datei nicht bearbeiten.</translation>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t edit webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexer läuft. Kann die Webcache-Datei nicht bearbeiten.</translation>
     </message>
     <message>
         <source>Delete selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Auswahl löschen</translation>
     </message>
     <message>
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Webcache wurde geändert, Sie müssen den Indexer nach dem Schließen dieses Fensters ausführen.</translation>
     </message>
 </context>
 <context>
@@ -3564,11 +3568,11 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Add entry</source>
-        <translation type="unfinished"></translation>
+        <translation>Eintrag hinzufügen</translation>
     </message>
     <message>
         <source>Delete selected entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgewählte Einträge löschen</translation>
     </message>
     <message>
         <source>~</source>
@@ -3576,7 +3580,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Edit selected entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgewählte Eiinträge bearbeiten</translation>
     </message>
 </context>
 <context>
@@ -3913,7 +3917,7 @@ Dies kann bei großen Dokumenten langsam sein.</translation>
     </message>
     <message>
         <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
-        <translation type="unfinished">Die Worte in dieser Liste werden automatisch zu ext:xxx Ausdrücken im Abfragesprachen-Eintrag umgewandelt.</translation>
+        <translation>Die Worte in dieser Liste werden automatisch zu ext:xxx Ausdrücken im Abfragesprachen-Eintrag umgewandelt.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
@@ -4087,11 +4091,11 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
-        <translation type="unfinished"></translation>
+        <translation>Entscheide ob die Dokumentfilter als Optionsfeld, Auswahllisten-Kombinationsfeld oder Menü angezeigt werden.</translation>
     </message>
     <message>
         <source>Document filter choice style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Stil der Dokumentfilterauswahl:</translation>
     </message>
     <message>
         <source>Buttons Panel</source>
@@ -4099,19 +4103,19 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Toolbar Combobox</source>
-        <translation type="unfinished"></translation>
+        <translation>Auswahllisten-Kombinationsfeld</translation>
     </message>
     <message>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menü</translation>
     </message>
     <message>
         <source>Show system tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige das Icon im Benachrichtigungsbereich.</translation>
     </message>
     <message>
         <source>Close to tray instead of exiting.</source>
-        <translation type="unfinished"></translation>
+        <translation>Schieße es in den Benachrichtigungsbereich, anstatt es zu verlassen.</translation>
     </message>
     <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
@@ -4119,35 +4123,35 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Synonyms file</source>
-        <translation type="unfinished"></translation>
+        <translation>Symonyme-Datei (bedeutungsgleiche Wörter-Datei)</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine Warnung anzeigen, wenn eine temporäre Datei geöffnet wird.</translation>
     </message>
     <message>
         <source>Highlight CSS style for query terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Hervorheben von Abfragebegriffe im CSS-Stil</translation>
     </message>
     <message>
         <source>Recoll - User Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Recoll - Benutzereinstellungen</translation>
     </message>
     <message>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lege die Pfadübersetzungen für den ausgewählten Index oder für den Hauptindex fest, wenn keine Auswahl vorhanden ist.</translation>
     </message>
     <message>
         <source>Activate links in preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Links in der Vorschau aktivieren.</translation>
     </message>
     <message>
         <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mache Links innerhalb des Vorschaufensters anklickbar und starte einen externen Browser, wenn sie angeklickt werden.</translation>
     </message>
     <message>
         <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
-        <translation type="unfinished"></translation>
+        <translation>Abfragebedingungen in den Ergebnissen hervorheben. &lt;br&gt;Versuchen vielleicht etwas wie &quot;color:red;background:yellow&quot; für etwas lebendigeres als das Standard-Blau...</translation>
     </message>
     <message>
         <source>Start search on completer popup activation.</source>
@@ -4155,11 +4159,11 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Maximum number of snippets displayed in the snippets window</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximale Anzahl von Schnipsel die im Schnipselfenster angezeigt werden</translation>
     </message>
     <message>
         <source>Suppress all beeps.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unterdrücke alles Piepen.</translation>
     </message>
     <message>
         <source>Application Qt style sheet</source>
@@ -4167,59 +4171,59 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Größe der Suchhistorie beschränken. Verwenden 0 zum deaktivieren, -1 für unbegrenzt.</translation>
     </message>
     <message>
         <source>Maximum size of search history (0: disable, -1: unlimited):</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximale Größe der Suchhistorie (0: deaktivieren, -1: unbegrenzt):</translation>
     </message>
     <message>
         <source>Generate desktop notifications.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erzeuge Desktop-Benachrichtigungen.</translation>
     </message>
     <message>
         <source>Sort snippets by page number (default: by weight).</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortiere die Schnipsel nach der Seitennummer (Standard: nach Wichtigkeit).</translation>
     </message>
     <message>
         <source>Misc</source>
-        <translation type="unfinished"></translation>
+        <translation>Sonstiges</translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="unfinished"></translation>
+        <translation>Umgehen Sie QTBUG-78923, indem Sie vor dem Ankertext ein Leerzeichen einfügen</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige einen Snippets-Link an, auch wenn das Dokument keine Seiten hat (Restart erforderlich).</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximale Textgröße der hervorgehoben Vorschau (Kilobytes)</translation>
     </message>
     <message>
         <source>Start with simple search mode: </source>
-        <translation type="unfinished"></translation>
+        <translation>Starten mit einfachem Suchmodus: </translation>
     </message>
     <message>
         <source>Hide toolbars.</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstecke Werkzeugleisten.</translation>
     </message>
     <message>
         <source>Hide status bar.</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstecke Statusleiste.</translation>
     </message>
     <message>
         <source>Hide Clear and Search buttons.</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstecke Löschen- und Suchtaste.</translation>
     </message>
     <message>
         <source>Hide menu bar (show button instead).</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstecke Menüleiste (zeige stattdessen Buttons).</translation>
     </message>
     <message>
         <source>Hide simple search type (show in menu only).</source>
-        <translation type="unfinished"></translation>
+        <translation>Verstecke einfache Suchart (nur im Menü anzeigen).</translation>
     </message>
     <message>
         <source>Shortcuts</source>
