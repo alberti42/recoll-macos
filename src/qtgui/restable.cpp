@@ -701,7 +701,7 @@ void ResTable::onNewShortcuts()
     SETSHORTCUT(this, tr("Result Table"), tr("Show Vertical Header"),
                 "Ctrl+V", m_showvheadersc, toggleVHeader);
     SETSHORTCUT(this, tr("Result Table"), tr("Copy current document text"),
-                "Ctrl+Shift+[", m_copycurtextsc, copyCurrentRowText);
+                "Ctrl+G", m_copycurtextsc, copyCurrentRowText);
     std::vector<QShortcut*> scps={
         m_opensc, m_openquitsc, m_previewsc, m_showsnipssc, m_showheadersc,
         m_showvheadersc, m_copycurtextsc};
