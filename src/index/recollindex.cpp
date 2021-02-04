@@ -288,7 +288,7 @@ public:
 
 // Build a list of things to index, then call purgefiles and/or
 // indexfiles.  This is basically the same as find xxx | recollindex
-// -i [-e] without the find (so, simpler but less powerfull)
+// -i [-e] without the find (so, simpler but less powerful)
 bool recursive_index(RclConfig *config, const string& top, 
                      const vector<string>& selpats)
 {
@@ -363,7 +363,7 @@ static bool createstemdb(RclConfig *config, const string &lang)
     return confindexer->createStemDb(lang);
 }
 
-// Check that topdir entries are valid (successfull tilde exp + abs
+// Check that topdir entries are valid (successful tilde exp + abs
 // path) or fail.
 // In addition, topdirs, skippedPaths, daemSkippedPaths entries should
 // match existing files or directories. Warn if they don't

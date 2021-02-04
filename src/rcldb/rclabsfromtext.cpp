@@ -135,7 +135,7 @@ public:
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
         LOGDEB1("takeword: [" << term << "] bytepos: "<<bts<<":"<<bte<<endl);
         // Limit time taken with monster documents. The resulting
-        // abstract will be incorrect or inexistant, but this is
+        // abstract will be incorrect or inexistent, but this is
         // better than taking forever (the default cutoff value comes
         // from the snippetMaxPosWalk configuration parameter, and is
         // 10E6)

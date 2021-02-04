@@ -131,7 +131,7 @@ void Query::Native::setDbWideQTermsFreqs()
 // retrieving the Within Document Frequencies and multiplying by
 // overal term frequency, then using log-based thresholds.
 // 2012: it's not too clear to me why exactly we do the log thresholds thing.
-//  Preferring terms wich are rare either or both in the db and the document 
+//  Preferring terms which are rare either or both in the db and the document 
 //  seems reasonable though
 // To avoid setting a high quality for a low frequency expansion of a
 // common stem, which seems wrong, we group the terms by
@@ -395,7 +395,7 @@ void Query::Native::abstractPopulateQTerm(
 // the neighboring positions marked, populate the neighbours: for each
 // term in the document, walk its position list and populate slots
 // around the query terms. We arbitrarily truncate the list to avoid
-// taking forever. If we do cutoff, the abstract may be inconsistant
+// taking forever. If we do cutoff, the abstract may be inconsistent
 // (missing words, potentially altering meaning), which is bad.
 void Query::Native::abstractPopulateContextTerms(
     Xapian::Database& xrdb,
@@ -524,7 +524,7 @@ int Query::Native::abstractFromIndex(
     // populating the adjacent slots.
     unsigned int maxpos = 0;
 
-    // Total number of occurences for all terms. We stop when we have too much
+    // Total number of occurrences for all terms. We stop when we have too much
     unsigned int totaloccs = 0;
 
     // First pass to populate the sparse document: we walk the term
@@ -585,7 +585,7 @@ int Query::Native::abstractFromIndex(
     LOGABS("makeAbstract:" << chron.millis() <<
            "mS:chosen number of positions " << totaloccs << "\n");
 
-    // This can happen if there are term occurences in the keywords
+    // This can happen if there are term occurrences in the keywords
     // etc. but not elsewhere ?
     if (totaloccs == 0) {
         LOGDEB("makeAbstract: no occurrences\n");
@@ -615,7 +615,7 @@ int Query::Native::abstractFromIndex(
 // query terms.  This can either uses the index position lists, or the
 // stored document text, with very different implementations.
 //
-// DatabaseModified and other general exceptions are catched and
+// DatabaseModified and other general exceptions are caught and
 // possibly retried by our caller.
 //
 // @param[out] vabs the abstract is returned as a vector of snippets.

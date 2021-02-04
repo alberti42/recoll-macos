@@ -34,9 +34,9 @@ using namespace std;
 /// Identification of file from contents. This is called for files with
 /// unrecognized extensions.
 ///
-/// The system 'file' utility does not always work for us. For exemple
+/// The system 'file' utility does not always work for us. For example
 /// it will mistake mail folders for simple text files if there is no
-/// 'Received' header, which would be the case, for exemple in a
+/// 'Received' header, which would be the case, for example in a
 /// 'Sent' folder. Also "file -i" does not exist on all systems, and
 /// is quite costly to execute.
 /// So we first call the internal file identifier, which currently
@@ -99,7 +99,7 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
         // when 'file' believes that the file name is binary
         // xdg-mime only outputs the MIME type.
 
-        // If there is no colon and there is a slash, this is hopefuly
+        // If there is no colon and there is a slash, this is hopefully
         // the mime type
         if (result.find_first_of(":") == string::npos && 
             result.find_first_of("/") != string::npos) {

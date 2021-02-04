@@ -488,7 +488,7 @@ recoll (1.21.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * New special indexing dialog in GUI
   * Fix advanced search dialog "Any Clause" mode
-  * Fixed a few bounds issues catched by Windows VC++
+  * Fixed a few bounds issues caught by Windows VC++
   * Miscellaneous other minor fixes
 
  -- Jean-Francois Dockes <jf@dockes.org>  Tue, 01 Oct 2015 09:40:00 +0200
@@ -589,7 +589,7 @@ recoll (1.19.12p1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 recoll (1.19.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Minor fixes to 1.19.11. Make metadata stored length a parameter. 
-  * New xls dumper based on mso-dumper removes catdoc dependancy
+  * New xls dumper based on mso-dumper removes catdoc dependency
   * Move out the code for the Ubuntu Unity lens and scope
 
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 02 Apr 2014 15:12:00 +0200
@@ -926,7 +926,7 @@ recoll (1.11.0-1) unstable; urgency=low
     + Remembers missing filters in first run (Closes: #500690)
   * debian/control:
     + Added libimage-exiftool-perl as Suggests (Closes: #502427)
-    + Added Python as recommaded due to filters/rclpython script
+    + Added Python as recommended due to filters/rclpython script
       although, its not necessary as it will be installed only
       when Python is present
   * debian/patches:

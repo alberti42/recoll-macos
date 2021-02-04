@@ -17,7 +17,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ########################################################
 
-# Running OCR programs for Recoll. This is excecuted from,
+# Running OCR programs for Recoll. This is executed from,
 # e.g. rclpdf.py if pdftotext returns no data.
 #
 # The script tries to retrieve the data from the ocr cache, else it

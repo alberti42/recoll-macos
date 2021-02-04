@@ -434,7 +434,7 @@ void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
         lcmd.push_back(ncmd);
     }
 
-    // Also substitute inside the unsplitted command line and display
+    // Also substitute inside the unsplit command line and display
     // in status bar
     pcSubst(cmd, ncmd, subs);
 #ifndef _WIN32

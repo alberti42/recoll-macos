@@ -142,7 +142,7 @@ public:
             // It may happen in some weird cases that the output from
             // unac is empty (if the word actually consisted entirely
             // of diacritics ...)  The consequence is that a phrase
-            // search won't work without addional slack.
+            // search won't work without additional slack.
             return true;
         }
 

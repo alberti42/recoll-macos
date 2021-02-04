@@ -1010,7 +1010,7 @@ alink="#0000FF">
           list in the configuration file (1.20 and later). This can
           be redefined for subdirectories.</p>
           <p>You can also define an exclusive list of MIME types to
-          be indexed (no others will be indexed), by settting the
+          be indexed (no others will be indexed), by setting the
           <a class="link" href=
           "#RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES">indexedmimetypes</a>
           configuration variable. Example:</p>
@@ -1384,7 +1384,7 @@ alink="#0000FF">
           "command"><strong>recollindex</strong></span> program,
           used for creating or updating indexes, always works on a
           single index. The different configurations are entirely
-          independant (no parameters are ever shared between
+          independent (no parameters are ever shared between
           configurations when indexing).</p>
           <p>All the search interfaces (<span class=
           "command"><strong>recoll</strong></span>, <span class=
@@ -2247,7 +2247,7 @@ metadatacmds = ; <em class=
           installed, and if the the <a class="link" href=
           "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</a>
           configuration variable is set, the PDF input handler will
-          try to extract PDF attachements for indexing as
+          try to extract PDF attachments for indexing as
           sub-documents of the PDF file. This is disabled by
           default, because it slows down PDF indexing a bit even if
           not one attachment is ever found (PDF attachments are
@@ -2381,7 +2381,7 @@ metadatacmds = ; <em class=
           inconsistent because some operations which are normally
           performed at the end of the indexing pass will have been
           skipped (for example, the stemming and spelling databases
-          will be inexistant or out of date). You just need to
+          will be inexistent or out of date). You just need to
           restart indexing at a later time to restore consistency.
           The indexing will restart at the interruption point (the
           full file tree will be traversed, but files that were
@@ -3429,7 +3429,7 @@ fs.inotify.max_user_watches=32768
                   "guilabel">Next</span> or <span class=
                   "guilabel">Previous</span>, the match list for
                   this group will be walked. This is not the same
-                  as a text search, because the occurences will
+                  as a text search, because the occurrences will
                   include non-exact matches (as caused by stemming
                   or wildcards). The search will revert to the text
                   mode as soon as you edit the entry area.</p>
@@ -3540,7 +3540,7 @@ fs.inotify.max_user_watches=32768
           <p><span class="application">Recoll</span> keeps a
           history of searches. See <a class="link" href=
           "#RCL.SEARCH.GUI.COMPLEX.HISTORY" title=
-          "Avanced search history">Advanced search history</a>.</p>
+          "Advanced search history">Advanced search history</a>.</p>
           <p>The dialog has two tabs:</p>
           <div class="orderedlist">
             <ol class="orderedlist" type="1">
@@ -3570,7 +3570,7 @@ fs.inotify.max_user_watches=32768
                 <div>
                   <h4 class="title"><a name=
                   "RCL.SEARCH.GUI.COMPLEX.TERMS" id=
-                  "RCL.SEARCH.GUI.COMPLEX.TERMS"></a>Avanced
+                  "RCL.SEARCH.GUI.COMPLEX.TERMS"></a>Advanced
                   search: the "find" tab</h4>
                 </div>
               </div>
@@ -3642,7 +3642,7 @@ fs.inotify.max_user_watches=32768
                 <div>
                   <h4 class="title"><a name=
                   "RCL.SEARCH.GUI.COMPLEX.FILTER" id=
-                  "RCL.SEARCH.GUI.COMPLEX.FILTER"></a>Avanced
+                  "RCL.SEARCH.GUI.COMPLEX.FILTER"></a>Advanced
                   search: the "filter" tab</h4>
                 </div>
               </div>
@@ -3710,7 +3710,7 @@ fs.inotify.max_user_watches=32768
                 <div>
                   <h4 class="title"><a name=
                   "RCL.SEARCH.GUI.COMPLEX.HISTORY" id=
-                  "RCL.SEARCH.GUI.COMPLEX.HISTORY"></a>Avanced
+                  "RCL.SEARCH.GUI.COMPLEX.HISTORY"></a>Advanced
                   search history</h4>
                 </div>
               </div>
@@ -3771,7 +3771,7 @@ fs.inotify.max_user_watches=32768
                 <p>This mode will accept a regular expression as
                 input. Example: <em class=
                 "replaceable"><code>word[0-9]+</code></em>. The
-                expression is implicitely anchored at the
+                expression is implicitly anchored at the
                 beginning. Ie: <em class=
                 "replaceable"><code>press</code></em> will match
                 <em class="replaceable"><code>pression</code></em>
@@ -4103,7 +4103,7 @@ fs.inotify.max_user_watches=32768
             dotted abrreviation if you increase the phrase slack
             (using the advanced search panel control, or the
             <code class="literal">o</code> query language
-            modifier). Literal occurences of the word will be
+            modifier). Literal occurrences of the word will be
             matched normally.</p>
           </div>
           <div class="sect3">
@@ -4124,7 +4124,7 @@ fs.inotify.max_user_watches=32768
             for example only searching emails from a specific
             originator: <code class="literal">search tips
             from:helpfulgui</code></p>
-            <p><b>Ajusting the result table columns.&nbsp;</b>When
+            <p><b>Adjusting the result table columns.&nbsp;</b>When
             displaying results in table mode, you can use a right
             click on the table headers to activate a pop-up menu
             which will let you adjust what columns are displayed.
@@ -4578,7 +4578,7 @@ fs.inotify.max_user_watches=32768
             QTextBrowser widget to display the HTML, which may be
             necessary if the ones above are not ported on the
             system, or to reduce the application size and
-            dependancies. There are limits to what you can do in
+            dependencies. There are limits to what you can do in
             this case, but it is still possible to decide what data
             each result will contain, and how it will be
             displayed.</p>
@@ -5563,7 +5563,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             "application">Recoll</span> processes wildcards inside
             <code class="literal">dir</code> path filtering
             clauses, they will have a multiplicative effect on the
-            query size. A clause containg wildcards in several
+            query size. A clause containing wildcards in several
             paths elements, like, for example, <code class=
             "literal">dir:</code><em class=
             "replaceable"><code>/home/me/*/*/docdir</code></em>,
@@ -5733,7 +5733,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             <li class="listitem">
               <p>When using multiple indexes it is a relatively
               common occurrence that some will actually reside on a
-              remote volume, for exemple mounted via NFS. In this
+              remote volume, for example mounted via NFS. In this
               case, the paths used to access the documents on the
               local machine are not necessarily the same than the
               ones used while indexing on the remote machine. For
@@ -5753,7 +5753,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               invalid.</p>
             </li>
             <li class="listitem">
-              <p>As a last exemple, one could imagine that a big
+              <p>As a last example, one could imagine that a big
               directory has been moved, but that it is currently
               inconvenient to run the indexer.</p>
             </li>
@@ -5883,7 +5883,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             </div>
           </div>
         </div>
-        <p>Being independant of the desktop type has its drawbacks:
+        <p>Being independent of the desktop type has its drawbacks:
         <span class="application">Recoll</span> desktop integration
         is minimal. However there are a few tools available:</p>
         <div class="itemizedlist">
@@ -6398,7 +6398,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               </li>
               <li class="listitem">
                 <p><code class="literal">application/x-chm</code>
-                is processed by a persistant handler. This is
+                is processed by a persistent handler. This is
                 determined by the <code class=
                 "literal">execm</code> keyword.</p>
               </li>
@@ -6640,7 +6640,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               "The result list format">result list paragraph
               format</a>. All fields are displayed on the fields
               screen of the preview window (which you can reach
-              through the right-click menu). This is independant of
+              through the right-click menu). This is independent of
               the fact that the search which produced the results
               used the field or not.</p>
             </li>
@@ -7765,11 +7765,11 @@ hasextract = False
         nothing else to install.</p>
         <p>On <span class="application">Unix</span>-like systems,
         the package management tools will automatically install
-        hard dependancies for packages obtained from a proper
+        hard dependencies for packages obtained from a proper
         package repository. You will have to deal with them by hand
         for downloaded packages (for example, when <span class=
         "command"><strong>dpkg</strong></span> complains about
-        missing dependancies).</p>
+        missing dependencies).</p>
         <p>In all cases, you will have to check or install
         <a class="link" href="#RCL.INSTALL.EXTERNAL" title=
         "5.2.&nbsp;Supporting packages">supporting applications</a>
@@ -7902,12 +7902,12 @@ hasextract = False
           </div>
           <p>The following prerequisites are described in broad
           terms and not as specific package names (which will
-          depend on the exact platform). The dependancies should be
+          depend on the exact platform). The dependencies should be
           available as packages on most common Unix derivatives,
           and it should be quite uncommon that you would have to
           build one of them.</p>
           <p>If you do not need the GUI, you can avoid all GUI
-          dependancies by disabling its build. (See the configure
+          dependencies by disabling its build. (See the configure
           section further).</p>
           <p>The shopping list:</p>
           <div class="itemizedlist">
@@ -7938,7 +7938,7 @@ hasextract = False
                 <p>For building the documentation: the <span class=
                 "command"><strong>xsltproc</strong></span> command,
                 and the Docbook XML and style sheet files. You can
-                avoid this dependancy by disabling documentation
+                avoid this dependency by disabling documentation
                 building with the <code class=
                 "literal">--disable-userdoc</code> <span class=
                 "command"><strong>configure</strong></span>
@@ -7963,7 +7963,7 @@ hasextract = False
                 <p>Development files for <a class="ulink" href=
                 "http://qt-project.org/downloads" target=
                 "_top"><span class="application">Qt 5</span></a> .
-                and its own dependancies (X11 etc.)</p>
+                and its own dependencies (X11 etc.)</p>
               </li>
               <li class="listitem">
                 <p>Development files for libxslt</p>
@@ -8296,7 +8296,7 @@ hasextract = False
         from configuration files inside the top directory will
         override user ones, values from configuration files inside
         the middle directory will override system ones and be
-        overriden by user ones. These two variables may be of use
+        overridden by user ones. These two variables may be of use
         to applications which augment <span class=
         "application">Recoll</span> functionality, and need to add
         configuration data without disturbing the user's files.
@@ -10164,7 +10164,7 @@ hasextract = False
           "literal">[guifilters]</code> section, where each control
           is defined by a variable naming a query language
           fragment.</p>
-          <p>A simple exemple will hopefully make things
+          <p>A simple example will hopefully make things
           clearer.</p>
           <pre class="programlisting">[guifilters]
 
@@ -10184,7 +10184,7 @@ System Docs = dir:/usr/share/doc
           <p>Any name text before a colon character will be erased
           in the display, but used for sorting. You can use this to
           display the checkboxes in any order you like. For
-          exemple, the following would do exactly the same as
+          example, the following would do exactly the same as
           above, but ordering the checkboxes in the reverse
           order.</p>
           <pre class="programlisting">[guifilters]
@@ -10345,7 +10345,7 @@ other = rclcat:other
           indexes. The sections are named with the <span class=
           "application">Xapian</span> index directory names. No
           slash character should exist at the end of the paths (all
-          comparisons are textual). An exemple should make things
+          comparisons are textual). An example should make things
           sufficiently clear</p>
           <pre class="programlisting">
           [/home/me/.recoll/xapiandb]

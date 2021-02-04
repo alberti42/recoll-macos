@@ -222,7 +222,7 @@ bool RecollProtocol::syncSearch(const QueryDesc &qd)
 }
 
 // This is used by the html interface, but also by the directory one
-// when doing file copies for exemple. This is the central dispatcher
+// when doing file copies for example. This is the central dispatcher
 // for requests, it has to know a little about both models.
 void RecollProtocol::get(const KUrl& url)
 {
