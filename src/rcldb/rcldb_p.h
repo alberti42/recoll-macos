@@ -37,7 +37,7 @@ class Query;
 
 #ifdef IDX_THREADS
 // Task for the index update thread. This can be 
-//  - add/update for a new / update documment
+//  - add/update for a new / update document
 //  - delete for a deleted document
 //  - purgeOrphans when a multidoc file is updated during a partial pass (no 
 //    general purge). We want to remove subDocs that possibly don't

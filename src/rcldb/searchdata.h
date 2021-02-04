@@ -62,7 +62,7 @@ class SearchDataClauseDist;
 
     The content of each clause when added may not be fully parsed yet
     (may come directly from a gui field). It will be parsed and may be
-    translated to several queries in the Xapian sense, for exemple
+    translated to several queries in the Xapian sense, for example
     several terms and phrases as would result from 
     ["this is a phrase"  term1 term2] . 
 

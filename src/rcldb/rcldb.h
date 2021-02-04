@@ -596,7 +596,7 @@ private:
 
     bool getDoc(const std::string& udi, int idxi, Doc& doc);
 
-    /* Copyconst and assignement private and forbidden */
+    /* Copyconst and assignment private and forbidden */
     Db(const Db &) {}
     Db& operator=(const Db &) {return *this;};
 };

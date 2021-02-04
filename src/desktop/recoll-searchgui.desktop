@@ -2,7 +2,7 @@
 Categories=Qt;Utility;Filesystem;Database;
 Comment=Find documents by specifying search terms
 Comment[ru]=Поиск документов по заданным условиям
-Comment[de]=Finde Dokumente durch angeben von Suchbegriffen
+Comment[de]=Finde Dokumente durch Angeben von Suchbegriffen
 Exec=recoll
 GenericName=Local Text Search
 GenericName[ru]=Локальный текстовый поиск

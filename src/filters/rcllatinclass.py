@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Try to guess a text's language and character set by checking how it matches lists of
 common words. This is not a primary method of detection because it's slow and unreliable, but it
-may be a help in discrimating, for exemple, before european languages using relatively close
+may be a help in discrimating, for example, before european languages using relatively close
 variations of iso-8859.
 This is used in association with a zip file containing a number of stopwords list: rcllatinstops.zip
 
 As a note, I am looking for a good iso-8859-7 stop words list for greek, the only ones I found
 were utf-8 and there are errors when transcoding to iso-8859-7. I guess that there is something
 about Greek accents that I don't know and would enable fixing this (some kind of simplification
-allowing transliteration from utf-8 to iso-8859-7). An exemple of difficulty is the small letter
+allowing transliteration from utf-8 to iso-8859-7). An example of difficulty is the small letter
 epsilon with dasia (in unicode but not iso). Can this be replaced by either epsilon or epsilon
 with acute accent ?
 """
