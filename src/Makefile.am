@@ -710,6 +710,7 @@ filters/rclocr.py \
 filters/rclocrabbyy.py \
 filters/rclocrtesseract.py \
 filters/rclopxml.py \
+filters/rclorgmode.py \
 filters/rclpdf.py \
 filters/rclppt.py \
 filters/rclps \
