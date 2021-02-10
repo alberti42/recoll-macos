@@ -326,7 +326,7 @@ void RclMain::showUIPrefs()
 void RclMain::showExtIdxDialog()
 {
     showUIPrefs();
-    uiprefs->tabWidget->setCurrentIndex(3);
+    uiprefs->tabWidget->setCurrentIndex(4);
 }
 
 void RclMain::showAboutDialog()
