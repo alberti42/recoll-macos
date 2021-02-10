@@ -24,11 +24,23 @@
         <translation>таблицы</translation>
     </message>
     <message>
+        <location line="+26"/>
+        <location line="+8"/>
+        <source>Load next stored search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <location line="+8"/>
+        <source>Load previous stored search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>presentations</source>
         <translation type="obsolete">презентации</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-31"/>
         <location line="+1"/>
         <source>media</source>
         <translation>медиа</translation>
@@ -49,18 +61,6 @@
         <location line="+6"/>
         <location line="+2"/>
         <source>Advanced Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-10"/>
-        <location line="+8"/>
-        <source>History Next</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-6"/>
-        <location line="+8"/>
-        <source>History Prev</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -951,8 +951,8 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <location line="+2"/>
         <location line="+2"/>
         <location line="+2"/>
-        <location line="+2"/>
-        <location line="+11"/>
+        <location line="+3"/>
+        <location line="+10"/>
         <location line="+2"/>
         <location line="+2"/>
         <location line="+2"/>
@@ -961,34 +961,34 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-27"/>
-        <location line="+19"/>
-        <source>Close Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-17"/>
-        <location line="+19"/>
-        <source>Next doc in tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-17"/>
-        <location line="+19"/>
-        <source>Previous doc in tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-17"/>
+        <location line="-21"/>
         <location line="+19"/>
         <source>Close tab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="-25"/>
+        <location line="+19"/>
+        <source>Close preview window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="-17"/>
         <location line="+19"/>
-        <source>Print tab</source>
+        <source>Show next result</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-17"/>
+        <location line="+19"/>
+        <source>Show previous result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <location line="+18"/>
+        <source>Print</source>
+        <translation type="unfinished">Печать</translation>
     </message>
     <message>
         <location line="+433"/>
@@ -1417,7 +1417,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>RclMain</name>
     <message>
-        <location filename="../rclmain_w.cpp" line="+846"/>
+        <location filename="../rclmain_w.cpp" line="+853"/>
         <source>Query results</source>
         <translation>Результаты запроса</translation>
     </message>
@@ -1473,7 +1473,7 @@ p, li { white-space: pre-wrap; }
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+308"/>
+        <location filename="../rclmain_w.cpp" line="+315"/>
         <source>Document history</source>
         <translation>Просмотренные документы</translation>
     </message>
@@ -1630,31 +1630,37 @@ Please check the mimeconf file</source>
         <translation type="obsolete">Ошибка старта запроса:</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="-725"/>
+        <location filename="../rclmain_w.cpp" line="-739"/>
         <location line="+2"/>
-        <location line="+2"/>
-        <location line="+2"/>
+        <location line="+3"/>
+        <location line="+5"/>
+        <location line="+3"/>
         <source>Main Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-6"/>
-        <source>Focus to Search</source>
+        <location line="-13"/>
+        <source>Clear search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Focus to Search, alt.</source>
+        <location line="+3"/>
+        <source>Move keyboard focus to search entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Clear Search</source>
+        <location line="+3"/>
+        <source>Move keyboard focus to search, alt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Focus to Result Table</source>
+        <location line="+4"/>
+        <source>Toggle tabular display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Move keyboard focus to table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1729,7 +1735,7 @@ Please check the mimeconf file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+604"/>
+        <location line="+611"/>
         <source>Confirm</source>
         <translation>Подтвердить</translation>
     </message>
@@ -1802,7 +1808,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Сохранение файл</translation>
     </message>
     <message>
-        <location line="-145"/>
+        <location line="-152"/>
         <source>Result count (est.)</source>
         <translation>Кол-во результатов (расчётное)</translation>
     </message>
@@ -1963,13 +1969,13 @@ Please check the mimeview file</source>
         <translation type="obsolete">Индексация выполняется, так что по завершении положение должно улучшиться</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+202"/>
+        <location filename="../rclmain_w.cpp" line="+209"/>
         <location line="+1"/>
         <source>Sub-documents and attachments</source>
         <translation>Вложенные документы</translation>
     </message>
     <message>
-        <location line="-641"/>
+        <location line="-648"/>
         <source>Document filter</source>
         <translation>Фильтр документов</translation>
     </message>
@@ -2599,7 +2605,7 @@ Please check the desktop file</source>
 <context>
     <name>RecollModel</name>
     <message>
-        <location filename="../restable.cpp" line="+250"/>
+        <location filename="../restable.cpp" line="+251"/>
         <source>File name</source>
         <translation>Имя файла</translation>
     </message>
@@ -2678,12 +2684,12 @@ Please check the desktop file</source>
         <translation>Дата и время</translation>
     </message>
     <message>
-        <location line="+212"/>
+        <location line="+216"/>
         <source>Can&apos;t sort by inverse relevance</source>
         <translation>Сортировка по обратной релевантности невозможна</translation>
     </message>
     <message>
-        <location line="-221"/>
+        <location line="-225"/>
         <source>Ipath</source>
         <translation>Ipath</translation>
     </message>
@@ -2833,7 +2839,10 @@ Please check the desktop file</source>
 <context>
     <name>ResTable</name>
     <message>
-        <location filename="../restable.cpp" line="+412"/>
+        <location filename="../restable.cpp" line="+436"/>
+        <location line="+2"/>
+        <location line="+2"/>
+        <location line="+2"/>
         <location line="+2"/>
         <location line="+2"/>
         <location line="+2"/>
@@ -2841,27 +2850,46 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-6"/>
         <source>Open</source>
-        <translation type="unfinished">Открыть</translation>
+        <translation type="obsolete">Открыть</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Open and Quit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="-8"/>
         <source>Preview</source>
         <translation type="unfinished">Просмотр</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Show Snippets</source>
+        <location line="-4"/>
+        <source>Open current result document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+493"/>
+        <location line="+2"/>
+        <source>Open current result and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Show snippets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Show header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Show vertical header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Copy current result text to clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+552"/>
         <source>&amp;Reset sort</source>
         <translation>&amp;Сбросить сортировку</translation>
     </message>
@@ -3525,19 +3553,19 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <location line="-12"/>
         <location line="+14"/>
-        <source>Find Next</source>
+        <source>Find next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-12"/>
         <location line="+14"/>
-        <source>Find Previous</source>
+        <source>Find previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-12"/>
         <location line="+14"/>
-        <source>Hide</source>
+        <source>Close window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3868,7 +3896,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 <context>
     <name>UIPrefsDialog</name>
     <message>
-        <location filename="../uiprefs_w.cpp" line="+711"/>
+        <location filename="../uiprefs_w.cpp" line="+733"/>
         <source>The selected directory does not appear to be a Xapian index</source>
         <translation>Выбранный каталог не является каталогом индексов Xapian</translation>
     </message>
@@ -3887,7 +3915,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="obsolete">Выберите каталог индекса Xapian (например, /home/приятель/.recoll/xapiandb)</translation>
     </message>
     <message>
-        <location line="-509"/>
+        <location line="-520"/>
         <source>error retrieving stemming languages</source>
         <translation>ошибка получения списка языков</translation>
     </message>
@@ -3895,7 +3923,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <location line="-26"/>
         <location line="+8"/>
         <location line="+46"/>
-        <location line="+286"/>
+        <location line="+297"/>
         <location line="+8"/>
         <location line="+14"/>
         <location line="+9"/>
@@ -3903,7 +3931,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Выбрать</translation>
     </message>
     <message>
-        <location line="-283"/>
+        <location line="-295"/>
         <source>Context</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3923,7 +3951,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+186"/>
         <source>Result list paragraph format (erase all to reset to default)</source>
         <translation>Формат абзаца в списке результатов (очистите для сброса к значениям по умолчанию)</translation>
     </message>
@@ -3953,12 +3981,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Невозможно добавить индекс с другими настройками учёта регистра и диакритических знаков</translation>
     </message>
     <message>
-        <location line="-390"/>
+        <location line="-392"/>
         <source>Default QtWebkit font</source>
         <translation>Шрифт QtWebkit по умолчанию</translation>
     </message>
     <message>
-        <location line="-261"/>
+        <location line="-281"/>
         <source>Any term</source>
         <translation>Любое слово</translation>
     </message>
@@ -4708,17 +4736,17 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Интерфейс пользователя</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+257"/>
         <source>Generate desktop notifications.</source>
         <translation>Генерировать уведомления на рабочем столе.</translation>
     </message>
     <message>
-        <location line="+274"/>
+        <location line="+334"/>
         <source>Number of entries in a result page</source>
         <translation>Количество записей на странице результатов</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+305"/>
         <source>If checked, results with the same content under different names will only be shown once.</source>
         <translation>Показывать результаты с одинаковым содержанием под разными именами не более одного раза.</translation>
     </message>
@@ -4732,7 +4760,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="vanished">Цвет выделения ключевых слов</translation>
     </message>
     <message>
-        <location line="-216"/>
+        <location line="-268"/>
         <source>Result list font</source>
         <translation>Шрифт списка результатов</translation>
     </message>
@@ -4752,9 +4780,9 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Установка используемого по умолчанию системного шрифта для списка результатов</translation>
     </message>
     <message>
-        <location line="-99"/>
-        <location line="+102"/>
-        <location line="+103"/>
+        <location line="-153"/>
+        <location line="+156"/>
+        <location line="+129"/>
         <source>Reset</source>
         <translation>Сброс</translation>
     </message>
@@ -4767,7 +4795,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="obsolete">Строка форматирования&lt;br&gt;блока результатов</translation>
     </message>
     <message>
-        <location line="-362"/>
+        <location line="-461"/>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
         <translation>Тексты большего размера не будут подсвечиваться при просмотре (медленно).</translation>
     </message>
@@ -4780,7 +4808,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="obsolete">Использовать десктопные настройки для выбора редактора документов.</translation>
     </message>
     <message>
-        <location line="-270"/>
+        <location line="-316"/>
         <source>Choose editor applications</source>
         <translation>Выбор приложений-редакторов</translation>
     </message>
@@ -4793,7 +4821,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="vanished">Начинать простой поиск по вводу пробела.</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+90"/>
         <source>Start with advanced search dialog open.</source>
         <translation>Открывать диалог сложного поиска при запуске.</translation>
     </message>
@@ -4807,7 +4835,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Запомнить порядок сортировки результатов.</translation>
     </message>
     <message>
-        <location line="+227"/>
+        <location line="+260"/>
         <source>Prefer Html to plain text for preview.</source>
         <translation>Просмотр простого текста в формате HTML.</translation>
     </message>
@@ -4817,17 +4845,17 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Подсветка поисковых запросов в результатах поиска. &lt;br&gt;Можно, например, задать параметры «color:red;background:yellow», чтобы сделать подсветку поярче (по умолчанию задан синий цвет)...</translation>
     </message>
     <message>
-        <location line="-178"/>
+        <location line="-191"/>
         <source>Suppress all beeps.</source>
         <translation>Подавлять все звуковые сигналы.</translation>
     </message>
     <message>
-        <location line="-199"/>
+        <location line="-245"/>
         <source>Start with simple search mode: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+119"/>
+        <location line="+145"/>
         <source>Hide toolbars.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4848,6 +4876,16 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <location line="+10"/>
+        <source>Hide result table header.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Show result table row headers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Hide Clear and Search buttons.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4862,17 +4900,22 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Максимальный размер текста, подсвечиваемого для предварительного просмотра (Кб)</translation>
     </message>
     <message>
-        <location line="+180"/>
+        <location line="+212"/>
         <source>Shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+196"/>
+        <location line="+26"/>
+        <source>Reset shortcuts defaults</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+250"/>
         <source>Maximum number of snippets displayed in the snippets window</source>
         <translation>Максимальное количество фрагментов, отображаемых в окне фрагментов</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+51"/>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
         <translation>Отображать ссылку на фрагменты даже в том случае, когда документ не имеет страниц (требуется перезапуск).</translation>
     </message>
@@ -4887,7 +4930,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Язык со словоформами</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+38"/>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
         <translation>Поиск [rolling stones] (два слова) будет изменён на [rolling или stones или (rolling phrase 2 stones)].
@@ -4899,7 +4942,7 @@ This should give higher precedence to the results where the search terms appear 
         <translation>Автоматически объединять слова во фразу при простом поиске</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+66"/>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
         <translation>Создавать фрагменты для результатов поиска с использованием контекста слов запроса?
@@ -4926,12 +4969,12 @@ May be slow for big documents.</source>
         <translation>Размер создаваемого фрагмента (кол-во символов)</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+55"/>
         <source>Synthetic abstract context words</source>
         <translation>Кол-во слов вокруг слов поиска во фрагментах</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+56"/>
         <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
         <translation>Список слов, которые будут автоматически преобразованы в расширение файла вида ext:xxx в запросе.</translation>
     </message>
@@ -4942,12 +4985,12 @@ May be slow for big documents.</source>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+47"/>
+        <location line="+60"/>
         <source>Enable</source>
         <translation>Включить</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+54"/>
         <source>External Indexes</source>
         <translation>Внешние индексы</translation>
     </message>
@@ -5016,7 +5059,7 @@ May be slow for big documents.</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location line="-631"/>
+        <location line="-748"/>
         <source>Abstract snippet separator</source>
         <translation>Разделитель фрагментов в результатах</translation>
     </message>
@@ -5033,19 +5076,19 @@ May be slow for big documents.</source>
         <translation type="vanished">Таблица стилей</translation>
     </message>
     <message>
-        <location line="-168"/>
+        <location line="-235"/>
         <source>Opens a dialog to select the style sheet file</source>
         <translation>Открыть диалог выбора файла стилей</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+205"/>
-        <location line="+383"/>
+        <location line="+285"/>
+        <location line="+474"/>
         <source>Choose</source>
         <translation>Выбрать</translation>
     </message>
     <message>
-        <location line="-581"/>
+        <location line="-752"/>
         <source>Resets the style sheet to default</source>
         <translation>Сброс таблицы стилей к значению по умолчанию</translation>
     </message>
@@ -5058,12 +5101,12 @@ May be slow for big documents.</source>
         <translation type="obsolete">Использовать теги &lt;PRE&gt; вместо &lt;BR&gt; для отображения обычного текста как HTML при предварительном просмотре.</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+80"/>
         <source>Result List</source>
         <translation>Список результатов</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+103"/>
         <source>Edit result paragraph format string</source>
         <translation>Редактировать строку формата абзаца результатов</translation>
     </message>
@@ -5078,12 +5121,12 @@ May be slow for big documents.</source>
         <translation>Формат даты (по strftime(3))</translation>
     </message>
     <message>
-        <location line="+119"/>
+        <location line="+158"/>
         <source>Sort snippets by page number (default: by weight).</source>
         <translation>Сортировать фрагменты по номеру страницы (по умолчанию: по весу).</translation>
     </message>
     <message>
-        <location line="+103"/>
+        <location line="+116"/>
         <source>Frequency percentage threshold over which we do not use terms inside autophrase. 
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
@@ -5099,7 +5142,7 @@ The default value is 2 (percent). </source>
         <translation>Порог частоты появления слов в автофразе в процентах</translation>
     </message>
     <message>
-        <location line="-457"/>
+        <location line="-582"/>
         <source>Plain text to HTML line style</source>
         <translation>Стиль отображения простого текста в HTML</translation>
     </message>
@@ -5124,7 +5167,7 @@ The default value is 2 (percent). </source>
         <translation>&lt;PRE&gt; + wrap</translation>
     </message>
     <message>
-        <location line="-121"/>
+        <location line="-134"/>
         <source>Disable Qt autocompletion in search entry.</source>
         <translation>Отключить Qt-автозавершение при заполнении строки поиска.</translation>
     </message>
@@ -5133,7 +5176,7 @@ The default value is 2 (percent). </source>
         <translation type="vanished">Искать по мере ввода.</translation>
     </message>
     <message>
-        <location line="+839"/>
+        <location line="+1042"/>
         <source>Paths translations</source>
         <translation>Корректировка путей</translation>
     </message>
@@ -5143,7 +5186,7 @@ The default value is 2 (percent). </source>
         <translation>Щёлкните, чтобы добавить другой каталог индекса в список. Можно выбрать каталог конфигурации Recoll или индекс Xapian.</translation>
     </message>
     <message>
-        <location line="-515"/>
+        <location line="-619"/>
         <source>Snippets window CSS file</source>
         <translation>CSS-файл для окна «Фрагменты»</translation>
     </message>
@@ -5158,17 +5201,17 @@ The default value is 2 (percent). </source>
         <translation>Сброс стиля окна «Фрагменты»</translation>
     </message>
     <message>
-        <location line="-536"/>
+        <location line="-655"/>
         <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
         <translation>Стиль отображения фильтров: в виде кнопок-переключателей, поле со списком на панели инструментов или меню.</translation>
     </message>
     <message>
-        <location line="+311"/>
+        <location line="+350"/>
         <source>Application Qt style sheet</source>
         <translation>Таблица стилей Qt приложения</translation>
     </message>
     <message>
-        <location line="-308"/>
+        <location line="-347"/>
         <source>Document filter choice style:</source>
         <translation>Стиль отображения фильтров:</translation>
     </message>
@@ -5188,7 +5231,7 @@ The default value is 2 (percent). </source>
         <translation>Меню</translation>
     </message>
     <message>
-        <location line="-84"/>
+        <location line="-97"/>
         <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
         <translation>Ограничить размер истории поиска. Значение «0» отключает хранение истории, «-1» означает отсутствие ограничения.</translation>
     </message>
@@ -5198,7 +5241,7 @@ The default value is 2 (percent). </source>
         <translation>Максимальный размер истории поиска (0: отключить, -1: без ограничения):</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+176"/>
         <source>Show system tray icon.</source>
         <translation>Показывать значок в системном лотке.</translation>
     </message>
@@ -5212,37 +5255,37 @@ The default value is 2 (percent). </source>
         <translation type="vanished">Открывать диалог простого поиска при запуске</translation>
     </message>
     <message>
-        <location line="+411"/>
+        <location line="+510"/>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
         <translation>Применить пользовательский стиль окна фрагментов.&lt;br&gt; Примечание: вставка заголовка страницы результатов также включена в заголовок окна фрагментов.</translation>
     </message>
     <message>
-        <location line="+376"/>
+        <location line="+467"/>
         <source>Synonyms file</source>
         <translation>Файл синонимов</translation>
     </message>
     <message>
-        <location line="-757"/>
+        <location line="-947"/>
         <source>Show warning when opening temporary file.</source>
         <translation>Показывать предупреждение при открытии временного файла.</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+165"/>
         <source>Highlight CSS style for query terms</source>
         <translation>CSS-стиль подсветки слов запроса</translation>
     </message>
     <message>
-        <location line="-396"/>
+        <location line="-455"/>
         <source>Recoll - User Preferences</source>
         <translation>Recoll — Пользовательская настройка</translation>
     </message>
     <message>
-        <location line="+1090"/>
+        <location line="+1339"/>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation>Задать корректировку путей для выбранного или главного индекса, если ничего не выбрано.</translation>
     </message>
     <message>
-        <location line="-757"/>
+        <location line="-947"/>
         <source>Activate links in preview.</source>
         <translation>Активировать ссылки в просмотре.</translation>
     </message>

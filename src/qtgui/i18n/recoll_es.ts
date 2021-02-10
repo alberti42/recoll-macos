@@ -60,11 +60,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>History Next</source>
+        <source>Load next stored search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>History Prev</source>
+        <source>Load previous stored search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -829,24 +829,24 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Close Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Next doc in tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Previous doc in tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Close tab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Print tab</source>
+        <source>Close preview window</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show next result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show previous result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print</source>
+        <translation type="unfinished">Imprimir</translation>
     </message>
 </context>
 <context>
@@ -1705,19 +1705,23 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Focus to Search</source>
+        <source>Clear search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Focus to Search, alt.</source>
+        <source>Move keyboard focus to search entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Clear Search</source>
+        <source>Move keyboard focus to search, alt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Focus to Result Table</source>
+        <source>Toggle tabular display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to table</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2325,18 +2329,34 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">Abrir</translation>
-    </message>
-    <message>
-        <source>Open and Quit</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Abrir</translation>
     </message>
     <message>
         <source>Preview</source>
         <translation type="unfinished">Vista previa</translation>
     </message>
     <message>
-        <source>Show Snippets</source>
+        <source>Open current result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open current result and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show snippets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show vertical header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy current result text to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2826,15 +2846,15 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Find Next</source>
+        <source>Find next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Find Previous</source>
+        <source>Find previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hide</source>
+        <source>Close window</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3996,6 +4016,18 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Shortcuts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide result table header.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show result table row headers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset shortcuts defaults</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

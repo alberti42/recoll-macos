@@ -61,11 +61,19 @@
     </message>
     <message>
         <source>History Next</source>
-        <translation>Historique, suivant</translation>
+        <translation type="vanished">Historique, suivant</translation>
     </message>
     <message>
         <source>History Prev</source>
-        <translation>Historique, Precedent</translation>
+        <translation type="vanished">Historique, Precedent</translation>
+    </message>
+    <message>
+        <source>Load next stored search</source>
+        <translation>Afficher la recherche sauvegardée suivante</translation>
+    </message>
+    <message>
+        <source>Load previous stored search</source>
+        <translation>Afficher la recherche sauvegardée précédente</translation>
     </message>
 </context>
 <context>
@@ -844,15 +852,15 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Close Window</source>
-        <translation>Fermer la fenêtre</translation>
+        <translation type="vanished">Fermer la fenêtre</translation>
     </message>
     <message>
         <source>Next doc in tab</source>
-        <translation>Résultat suivant</translation>
+        <translation type="vanished">Résultat suivant</translation>
     </message>
     <message>
         <source>Previous doc in tab</source>
-        <translation>Résultat précédent</translation>
+        <translation type="vanished">Résultat précédent</translation>
     </message>
     <message>
         <source>Close tab</source>
@@ -860,7 +868,23 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Print tab</source>
-        <translation>Imprimer l&apos;onglet</translation>
+        <translation type="vanished">Imprimer l&apos;onglet</translation>
+    </message>
+    <message>
+        <source>Close preview window</source>
+        <translation>Fermer la fenêtre</translation>
+    </message>
+    <message>
+        <source>Show next result</source>
+        <translation>Afficher le résultat suivant</translation>
+    </message>
+    <message>
+        <source>Show previous result</source>
+        <translation>Afficher le résultat précédent</translation>
+    </message>
+    <message>
+        <source>Print</source>
+        <translation>Imprimer</translation>
     </message>
 </context>
 <context>
@@ -1779,19 +1803,39 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Focus to Search</source>
-        <translation>Retourner à la zone du texte de recherche</translation>
+        <translation type="vanished">Retourner à la zone du texte de recherche</translation>
     </message>
     <message>
         <source>Focus to Search, alt.</source>
-        <translation>Retourner à la zone du texte de recherche, alt.</translation>
+        <translation type="vanished">Retourner à la zone du texte de recherche, alt.</translation>
     </message>
     <message>
         <source>Clear Search</source>
-        <translation>Effacer la recherche</translation>
+        <translation type="vanished">Effacer la recherche</translation>
     </message>
     <message>
         <source>Focus to Result Table</source>
-        <translation>Activer la table</translation>
+        <translation type="vanished">Activer la table</translation>
+    </message>
+    <message>
+        <source>Clear search</source>
+        <translation>Effacer la recherche</translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to search entry</source>
+        <translation>Cibler l&apos;entrée clavier sur la zone de recherche</translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to search, alt.</source>
+        <translation>Cibler l&apos;entrée clavier vers la zone de recherche, autre.</translation>
+    </message>
+    <message>
+        <source>Toggle tabular display</source>
+        <translation>Basculer l&apos;affichage en mode table</translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to table</source>
+        <translation>Cibler l&apos;entrée clavier vers la table</translation>
     </message>
 </context>
 <context>
@@ -2410,11 +2454,11 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Open</source>
-        <translation>Ouvrir</translation>
+        <translation type="vanished">Ouvrir</translation>
     </message>
     <message>
         <source>Open and Quit</source>
-        <translation>Ouvrir et quitter</translation>
+        <translation type="vanished">Ouvrir et quitter</translation>
     </message>
     <message>
         <source>Preview</source>
@@ -2422,7 +2466,31 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Show Snippets</source>
+        <translation type="vanished">Afficher les extraits</translation>
+    </message>
+    <message>
+        <source>Open current result document</source>
+        <translation>Ouvrir le document résultat courant</translation>
+    </message>
+    <message>
+        <source>Open current result and quit</source>
+        <translation>Ouvrir le document résultat courant puis quitter le programme</translation>
+    </message>
+    <message>
+        <source>Show snippets</source>
         <translation>Afficher les extraits</translation>
+    </message>
+    <message>
+        <source>Show header</source>
+        <translation>Afficher l&apos;en tête de table</translation>
+    </message>
+    <message>
+        <source>Show vertical header</source>
+        <translation>Afficher les en-têtes de ligne</translation>
+    </message>
+    <message>
+        <source>Copy current result text to clipboard</source>
+        <translation>Copier le texte du résultat courant vers le presse-papier</translation>
     </message>
 </context>
 <context>
@@ -2963,15 +3031,27 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Find Next</source>
-        <translation>Trouver le suivant</translation>
+        <translation type="vanished">Trouver le suivant</translation>
     </message>
     <message>
         <source>Find Previous</source>
-        <translation>Trouver le précédent</translation>
+        <translation type="vanished">Trouver le précédent</translation>
     </message>
     <message>
         <source>Hide</source>
-        <translation>Fermer</translation>
+        <translation type="vanished">Fermer</translation>
+    </message>
+    <message>
+        <source>Find next</source>
+        <translation>Trouver le suivant</translation>
+    </message>
+    <message>
+        <source>Find previous</source>
+        <translation>Trouver le précédent</translation>
+    </message>
+    <message>
+        <source>Close window</source>
+        <translation>Fermer la fenêtre</translation>
     </message>
 </context>
 <context>
@@ -4503,6 +4583,18 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Shortcuts</source>
         <translation>Raccourcis</translation>
+    </message>
+    <message>
+        <source>Hide result table header.</source>
+        <translation>Cacher l&apos;en-tête de table de résultats</translation>
+    </message>
+    <message>
+        <source>Show result table row headers.</source>
+        <translation>Afficher les en-têtes de ligne.</translation>
+    </message>
+    <message>
+        <source>Reset shortcuts defaults</source>
+        <translation>Rétablir la configuration par défaut des raccourcis</translation>
     </message>
 </context>
 </TS>

@@ -61,11 +61,19 @@
     </message>
     <message>
         <source>History Next</source>
-        <translation>Historie Nächste</translation>
+        <translation type="vanished">Historie Nächste</translation>
     </message>
     <message>
         <source>History Prev</source>
-        <translation>Historie Zurück</translation>
+        <translation type="vanished">Historie Zurück</translation>
+    </message>
+    <message>
+        <source>Load next stored search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load previous stored search</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -843,15 +851,15 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Close Window</source>
-        <translation>Fenster schließen</translation>
+        <translation type="vanished">Fenster schließen</translation>
     </message>
     <message>
         <source>Next doc in tab</source>
-        <translation>Nächstes Dokument im Tab</translation>
+        <translation type="vanished">Nächstes Dokument im Tab</translation>
     </message>
     <message>
         <source>Previous doc in tab</source>
-        <translation>Vorheriges Dokument im Tab</translation>
+        <translation type="vanished">Vorheriges Dokument im Tab</translation>
     </message>
     <message>
         <source>Close tab</source>
@@ -859,7 +867,23 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Print tab</source>
-        <translation>Drucke Tab</translation>
+        <translation type="vanished">Drucke Tab</translation>
+    </message>
+    <message>
+        <source>Close preview window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show next result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show previous result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print</source>
+        <translation type="unfinished">Drucken</translation>
     </message>
 </context>
 <context>
@@ -1725,19 +1749,39 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Focus to Search</source>
-        <translation>Fokus auf Suche</translation>
+        <translation type="vanished">Fokus auf Suche</translation>
     </message>
     <message>
         <source>Focus to Search, alt.</source>
-        <translation>Fokus auf Suche, alternativ</translation>
+        <translation type="vanished">Fokus auf Suche, alternativ</translation>
     </message>
     <message>
         <source>Clear Search</source>
-        <translation>Suche säubern</translation>
+        <translation type="vanished">Suche säubern</translation>
     </message>
     <message>
         <source>Focus to Result Table</source>
-        <translation>Fokus auf Ergebnistabelle</translation>
+        <translation type="vanished">Fokus auf Ergebnistabelle</translation>
+    </message>
+    <message>
+        <source>Clear search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to search entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to search, alt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle tabular display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to table</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2333,11 +2377,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Open</source>
-        <translation>Öffnen</translation>
+        <translation type="vanished">Öffnen</translation>
     </message>
     <message>
         <source>Open and Quit</source>
-        <translation>Öffnen und Verlassen</translation>
+        <translation type="vanished">Öffnen und Verlassen</translation>
     </message>
     <message>
         <source>Preview</source>
@@ -2345,7 +2389,31 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Show Snippets</source>
-        <translation>Schnipsel anzeigen</translation>
+        <translation type="vanished">Schnipsel anzeigen</translation>
+    </message>
+    <message>
+        <source>Open current result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open current result and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show snippets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show vertical header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy current result text to clipboard</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2844,15 +2912,27 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Find Next</source>
-        <translation>Finde Nächste</translation>
+        <translation type="vanished">Finde Nächste</translation>
     </message>
     <message>
         <source>Find Previous</source>
-        <translation>Finde Vorherige</translation>
+        <translation type="vanished">Finde Vorherige</translation>
     </message>
     <message>
         <source>Hide</source>
-        <translation>Verstecken</translation>
+        <translation type="vanished">Verstecken</translation>
+    </message>
+    <message>
+        <source>Find next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4227,6 +4307,18 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Shortcuts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide result table header.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show result table row headers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset shortcuts defaults</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
