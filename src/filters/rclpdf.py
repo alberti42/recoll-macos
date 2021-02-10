@@ -39,11 +39,16 @@ import rclconfig
 
 _mswindows = (sys.platform == "win32")
 
-# Can we access the poppler-glib python3 bindings ? This would allow extracting
-# text from annotations.
+# Test access to the poppler-glib python3 bindings ? This allows
+# extracting text from annotations.
 # - On Ubuntu, this comes with package gir1.2-poppler-0.18
 # - On opensuse the package is named typelib-1_0-Poppler-0_18
 # (actual versions may differ of course).
+# 
+# NOTE: we are using the glib introspection bindings for the Poppler C
+# API, which is not the same as the Python bindings of the Poppler C++
+# API (poppler-cpp). The interface is quite different
+# (e.g. attachments are named "embeddedfiles" in the C++ interface.
 havepopplerglib = False
 try:
     import gi
