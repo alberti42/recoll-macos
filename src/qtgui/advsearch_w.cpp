@@ -168,18 +168,18 @@ void AdvSearch::saveCnf()
 
 void AdvSearch::onNewShortcuts()
 {
-    SETSHORTCUT(this, tr("Advanced Search"), tr("History Next"),
+    SETSHORTCUT(this, tr("Advanced Search"), tr("Load next stored search"),
                 "Up", m_histnextsc, slotHistoryNext);
-    SETSHORTCUT(this, tr("Advanced Search"), tr("History Prev"),
+    SETSHORTCUT(this, tr("Advanced Search"), tr("Load previous stored search"),
                 "Down", m_histprevsc, slotHistoryPrev);
 }
 
 void AdvSearch::listShortcuts()
 {
-    LISTSHORTCUT(this, tr("Advanced Search"), tr("History Next"),
-                 "Up", m_histnextsc, slotHistoryNext);
-    LISTSHORTCUT(this, tr("Advanced Search"), tr("History Prev"),
-                 "Down", m_histprevsc, slotHistoryPrev);
+    LISTSHORTCUT(this, tr("Advanced Search"), tr("Load next stored search"),
+                "Up", m_histnextsc, slotHistoryNext);
+    LISTSHORTCUT(this, tr("Advanced Search"), tr("Load previous stored search"),
+                "Down", m_histprevsc, slotHistoryPrev);
 }
 
 void AdvSearch::addClause(bool updsaved)

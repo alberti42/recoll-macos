@@ -148,16 +148,16 @@ void Preview::init()
 
 void Preview::onNewShortcuts()
 {
-    SETSHORTCUT(this, tr("Preview Window"), tr("Close Window"),
+    SETSHORTCUT(this, tr("Preview Window"), tr("Close preview window"),
                 "Esc",  m_closewinsc, close);
-    SETSHORTCUT(this, tr("Preview Window"), tr("Next doc in tab"),
+    SETSHORTCUT(this, tr("Preview Window"), tr("Show next result"),
                 "Shift+Down", m_nextdocsc, emitShowNext);
-    SETSHORTCUT(this, tr("Preview Window"), tr("Previous doc in tab"),
+    SETSHORTCUT(this, tr("Preview Window"), tr("Show previous result"),
                 "Shift+Up", m_prevdocsc, emitShowPrev);
     SETSHORTCUT(this, tr("Preview Window"), tr("Close tab"),
                 "Ctrl+W", m_closetabsc, closeCurrentTab);
     QKeySequence ks =
-        SCBase::scBase().get(tr("Preview Window"),tr("Print tab"), "Ctrl+P");
+        SCBase::scBase().get(tr("Preview Window"),tr("Print"), "Ctrl+P");
     if (!ks.isEmpty()) {
         delete m_printtabsc;
         m_printtabsc = new QShortcut(
@@ -167,15 +167,15 @@ void Preview::onNewShortcuts()
 
 void Preview::listShortcuts()
 {
-    LISTSHORTCUT(null, tr("Preview Window"), tr("Close Window"),
+    LISTSHORTCUT(null, tr("Preview Window"), tr("Close preview window"),
                  "Esc",  m_closewinsc, close);
-    LISTSHORTCUT(null, tr("Preview Window"), tr("Next doc in tab"),
+    LISTSHORTCUT(null, tr("Preview Window"), tr("Show next result"),
                  "Shift+Down", m_nextdocsc, emitShowNext);
-    LISTSHORTCUT(null, tr("Preview Window"), tr("Previous doc in tab"),
+    LISTSHORTCUT(null, tr("Preview Window"), tr("Show previous result"),
                  "Shift+Up",m_prevdocsc, emitShowPrev);
     LISTSHORTCUT(null, tr("Preview Window"), tr("Close tab"), "Ctrl+W",
                  m_closetabsc, closeCurrentTab);
-    LISTSHORTCUT(null, tr("Preview Window"), tr("Print tab"), "Ctrl+P",
+    LISTSHORTCUT(null, tr("Preview Window"), tr("Print"), "Ctrl+P",
                  m_printtabsc, print);
 }
 

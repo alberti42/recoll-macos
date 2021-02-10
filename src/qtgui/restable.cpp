@@ -688,19 +688,20 @@ void ResTable::init()
 
 void ResTable::onNewShortcuts()
 {
-    SETSHORTCUT(this, tr("Result Table"), tr("Open"),
+    SETSHORTCUT(this, tr("Result Table"), tr("Open current result document"),
                 "Ctrl+O", m_opensc, menuEdit);
-    SETSHORTCUT(this, tr("Result Table"), tr("Open and Quit"),
+    SETSHORTCUT(this, tr("Result Table"), tr("Open current result and quit"),
                 "Ctrl+Shift+O", m_openquitsc, menuEditAndQuit);
     SETSHORTCUT(this, tr("Result Table"), tr("Preview"),
                 "Ctrl+D", m_previewsc, menuPreview);
-    SETSHORTCUT(this, tr("Result Table"), tr("Show Snippets"),
+    SETSHORTCUT(this, tr("Result Table"), tr("Show snippets"),
                 "Ctrl+E", m_showsnipssc, menuShowSnippets);
-    SETSHORTCUT(this, tr("Result Table"), tr("Show Header"),
+    SETSHORTCUT(this, tr("Result Table"), tr("Show header"),
                 "Ctrl+H", m_showheadersc, toggleHeader);
-    SETSHORTCUT(this, tr("Result Table"), tr("Show Vertical Header"),
+    SETSHORTCUT(this, tr("Result Table"), tr("Show vertical header"),
                 "Ctrl+V", m_showvheadersc, toggleVHeader);
-    SETSHORTCUT(this, tr("Result Table"), tr("Copy current document text"),
+    SETSHORTCUT(this, tr("Result Table"),
+                tr("Copy current result text to clipboard"),
                 "Ctrl+G", m_copycurtextsc, copyCurrentRowText);
     std::vector<QShortcut*> scps={
         m_opensc, m_openquitsc, m_previewsc, m_showsnipssc, m_showheadersc,

@@ -157,11 +157,11 @@ void SnippetsW::onNewShortcuts()
                 "Ctrl+F", m_find1sc, slotEditFind);
     SETSHORTCUT(this, tr("Snippets Window"), tr("Find (alt)"),
                 "/", m_find2sc, slotEditFind);
-    SETSHORTCUT(this, tr("Snippets Window"), tr("Find Next"),
+    SETSHORTCUT(this, tr("Snippets Window"), tr("Find next"),
                 "F3", m_findnextsc, slotEditFindNext);
-    SETSHORTCUT(this, tr("Snippets Window"), tr("Find Previous"),
+    SETSHORTCUT(this, tr("Snippets Window"), tr("Find previous"),
                 "Shift+F3", m_findprevsc, slotEditFindPrevious);
-    SETSHORTCUT(this, tr("Snippets Window"), tr("Hide"),
+    SETSHORTCUT(this, tr("Snippets Window"), tr("Close window"),
                 "Esc", m_hidesc, hide);
 }
 
@@ -171,11 +171,11 @@ void SnippetsW::listShortcuts()
                  m_find1sc, slotEditFind);
     LISTSHORTCUT(this, tr("Snippets Window"), tr("Find (alt)"), "/",
                  m_find2sc, slotEditFind);
-    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find Next"), "F3",
+    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find next"), "F3",
                  m_find2sc, slotEditFindNext);
-    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find Previous"),
+    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find previous"),
                  "Shift+F3", m_find2sc, slotEditFindPrevious);
-    LISTSHORTCUT(this, tr("Snippets Window"), tr("Hide"),
+    LISTSHORTCUT(this, tr("Snippets Window"), tr("Close window"),
                  "Esc", m_hidesc, hide);
 }
 
