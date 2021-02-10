@@ -2907,18 +2907,177 @@ fs.inotify.max_user_watches=32768
 
       </sect2>
 
+      <sect2 id="RCL.SEARCH.GUI.SHORTCUTS">
+        <title>Keyboard shortcuts</title>
+
+        <para>A number of common actions within the graphical interface can
+          be triggered through keyboard shortcuts. As of &RCL; 1.29, many
+          of the shortcut values can be customised from a screen in the GUI
+          preferences. Most shortcuts are specific to a given context
+          (e.g. within a preview window, within the result table).</para>
+
+        <table frame='all'>
+          <title>Keyboard shortcuts</title>
+          <tgroup cols='2' align='left' colsep='1' rowsep='1'>
+            <colspec colname='c1'/>
+            <colspec colname='c2'/>
+            <thead>
+              <row><entry>Description</entry><entry>Default value</entry></row>
+            </thead>
+
+            <tbody>
+
+              <row><entry namest="c1" nameend="c2">
+                  <command>Context: almost everywhere</command></entry></row> 
+              <row>
+                <entry>Program exit</entry>
+                <entry>Ctrl+Q</entry>
+              </row>
+
+              <row><entry namest="c1" nameend="c2">
+                  <command>Context: advanced search</command></entry></row> 
+              <row>
+                <entry>Load next stored search</entry>
+                <entry>Up</entry>
+              </row>
+              <row>
+                <entry>Load previous stored search</entry>
+                <entry>Down</entry>
+              </row>
+
+              <row><entry namest="c1" nameend="c2">
+                  <command>Context: main window</command></entry>
+              </row>
+              <row>
+                <entry>Clear search</entry>
+                <entry>Ctrl+S</entry>
+              </row>
+              <row>
+                <entry>Move keyboard focus to the search entry area</entry>
+                <entry>Ctrl+L</entry>
+              </row>
+              <row>
+                <entry>Move keyboard focus to the search entry area</entry>
+                <entry>Ctrl+Shift+S</entry>
+              </row>
+              <row>
+                <entry>Toggle displaying results as table or list</entry>
+                <entry>Ctrl+T</entry>
+              </row>
+
+              <row><entry namest="c1" nameend="c2">
+                  <command>Context: main window, when showing the results
+                  as a table</command></entry>
+              </row>
+              <row>
+                <entry>Move the keyboard focus to the result table</entry>
+                <entry>Ctrl+R</entry>
+              </row>
+              <row>
+                <entry>Jump to row 0-9 or a-z</entry>
+                <entry>Ctrl+[0-9] or [a-z]</entry>
+              </row>
+              <row>
+                <entry>Cancel current selection</entry><entry>Esc</entry>
+              </row>
+
+
+              <row><entry namest="c1" nameend="c2">
+                  <command>Context: preview window</command></entry> 
+              </row>
+              <row>
+                <entry>Close the preview window</entry>
+                <entry>Esc</entry>
+              </row>
+              <row>
+                <entry>Close the current tab</entry>
+                <entry>Ctrl+W</entry>
+              </row>
+              <row>
+                <entry>Print current tab contents</entry>
+                <entry>Ctrl+P</entry>
+              </row>
+              <row>
+                <entry>Load the next result in the current tab</entry>
+                <entry>Shift+Down</entry>
+              </row>
+              <row>
+                <entry>Load the previous result in the current tab</entry>
+                <entry>Shift+Up</entry>
+              </row>
+
+              <row><entry namest="c1" nameend="c2">
+                  <command>Context: result table</command></entry></row>
+              <row>
+                <entry>Copy the current result document text contents to
+                the clipboard</entry> <entry>Ctrl+G</entry>
+              </row>
+              <row>
+                <entry>Open the current result document and quit</entry>
+                <entry>Ctrl+Shift+O</entry>
+              </row>
+              <row>
+                <entry>Open the current result document</entry>
+                <entry>Ctrl+O</entry>
+              </row>
+              <row>
+                <entry>Preview the current result</entry>
+                <entry>Ctrl+D</entry>
+              </row>
+              <row>
+                <entry>Toggle showing the table header</entry>
+                <entry>Ctrl+H</entry>
+              </row>
+              <row>
+                <entry>Open snippets window for the current result</entry>
+                <entry>Ctrl+E</entry>
+              </row>
+              <row>
+                <entry>Toggle showing row numbers</entry>
+                <entry>Ctrl+V</entry>
+              </row>
+
+              <row><entry namest="c1" nameend="c2">
+                  <command>Context: snippets window</command></entry></row>
+              <row>
+                <entry>Close the snippets window</entry>
+                <entry>Esc</entry>
+              </row>
+              <row>
+                <entry>Find in snippets</entry>
+                <entry>Ctrl+F</entry>
+              </row>
+              <row>
+                <entry>Find (alt)</entry>
+                <entry>/</entry>
+              </row>
+              <row>
+                <entry>Find next</entry>
+                <entry>F3</entry>
+              </row>
+              <row>
+                <entry>Find previous</entry>
+                <entry>Shift+F3</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+
+      </sect2>
+
       <sect2 id="RCL.SEARCH.GUI.TIPS">
-        <title>Search tips, shortcuts</title>
+        <title>Search tips</title>
 
         <sect3 id="RCL.SEARCH.GUI.TIPS.TERMS">
           <title>Terms and search expansion</title>
 
           <formalpara><title>Term completion</title>
-          <para>Typing <keycap>Esc</keycap> <keycap>Space</keycap> in
-          the simple search entry field while entering a word will
-          either complete the current word if its beginning matches a
-          unique term in the index, or open a window to propose a list
-          of completions.</para>
+          <para>While typing into the
+          simple search entry, a popup menu will appear and show
+          completions for the current string. Values preceded by a clock
+          icon come from the history, those preceded by a magnifier icon
+          come from the index terms. This can be disabled in the
+          preferences.</para> 
           </formalpara>
 
           <formalpara><title>Picking up new terms from result or preview 
@@ -3037,14 +3196,13 @@ fs.inotify.max_user_watches=32768
           <title>Others</title>
 
           <formalpara><title>Using fields</title>
-          <para>You can use the <link linkend="RCL.SEARCH.LANG">query language </link>
-          and field specifications
-          to only search certain parts of documents. This can be
-          especially helpful with email, for example only searching
-          emails from a specific originator:
-          <literal>search tips from:helpfulgui</literal>
-          </para>
-          </formalpara>
+          <para>You can use the <link linkend="RCL.SEARCH.LANG">query
+              language </link> and field specifications
+            to only search certain parts of documents. This can be
+            especially helpful with email, for example only searching
+            emails from a specific originator:
+            <literal>search tips from:helpfulgui</literal>
+          </para></formalpara>
 
           <formalpara><title>Adjusting the result table columns</title>
           <para>When displaying results in table mode, you can use a
@@ -3074,50 +3232,10 @@ fs.inotify.max_user_watches=32768
           used, by clicking on the result list header.</para>
           </formalpara>
 
-          <formalpara><title>Advanced search history</title>
-          <para>As of &RCL; 1.18, you can display any of the last 100 complex
-          searches performed by using the up and down arrow keys while the
-          advanced search panel is active.</para>
-          </formalpara>
-          
-          <formalpara><title>Browsing the result list inside a preview 
-          window</title>
-          <para>Entering <keycap>Shift-Down</keycap> or <keycap>Shift-Up</keycap>
-          (<keycap>Shift</keycap> + an arrow key) in a preview window will
-          display the next or the previous document from the result
-          list. Any secondary search currently active will be executed on
-          the new document.</para>
-          </formalpara>
-
-          <formalpara><title>Scrolling the result list from the keyboard</title>
-          <para>You can use <keycap>PageUp</keycap> and <keycap>PageDown</keycap>
-          to scroll the result list, <keycap>Shift+Home</keycap> to go back
-          to the first page. These work even while the focus is in the
-          search entry.</para>
-          </formalpara>
-          
-          <formalpara><title>Result table: moving the focus to the table</title>
-          <para>You can use <keycap>Ctrl-r</keycap> to move the focus
-          from the search entry to the table, and then use the arrow keys
-          to change the current row. <keycap>Ctrl-Shift-s</keycap> returns to 
-          the search.</para>
-          </formalpara>
-
-          <formalpara><title>Result table: open / preview</title>
-          <para>With the focus in the result table, you can use
-          <keycap>Ctrl-o</keycap> to open the document from the current
-          row, <keycap>Ctrl-Shift-o</keycap> to open the document and close
-          <command>recoll</command>, <keycap>Ctrl-d</keycap> to preview
-          the document, and <keycap>Ctrl-e</keycap> to open the document
-          snippets window.</para> 
-          </formalpara>
-
-          <formalpara><title>Editing a new search while the focus is not
-          in the search entry</title>
-          <para>You can use the <keycap>Ctrl-Shift-S</keycap> shortcut to
-          return the cursor to the search entry (and select the current
-          search text), while the focus is anywhere in the main
-          window.</para>
+          <formalpara><title>Advanced search history</title> <para>You can
+              display any of the last 100 complex searches performed by
+              using the up and down arrow keys while the advanced search
+              panel is active.</para>
           </formalpara>
           
           <formalpara><title>Forced opening of a preview window</title>
@@ -3126,22 +3244,6 @@ fs.inotify.max_user_watches=32768
           preview window instead of a new tab in the existing one.</para>
           </formalpara>
 
-          <formalpara><title>Closing previews</title> 
-          <para>Entering <keycap>Ctrl-W</keycap> in a tab will
-          close it (and, for the last tab, close the preview
-          window). Entering <keycap>Esc</keycap> will close the preview
-          window and all its tabs.</para>
-          </formalpara>
-
-          <formalpara><title>Printing previews</title> 
-          <para>Entering <keycap>Ctrl-P</keycap> in a preview window will print 
-          the currently displayed text.</para>
-          </formalpara>
-
-          <formalpara><title>Quitting</title>
-          <para>Entering <keycap>Ctrl-Q</keycap> almost anywhere will
-          close the application.</para>
-          </formalpara>
         </sect3>
       </sect2>
 

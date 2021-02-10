@@ -225,12 +225,14 @@ alink="#0000FF">
                 "#RCL.SEARCH.GUI.SORT">Sorting search results and
                 collapsing duplicates</a></span></dt>
                 <dt><span class="sect2">3.2.13. <a href=
-                "#RCL.SEARCH.GUI.TIPS">Search tips,
+                "#RCL.SEARCH.GUI.SHORTCUTS">Keyboard
                 shortcuts</a></span></dt>
                 <dt><span class="sect2">3.2.14. <a href=
+                "#RCL.SEARCH.GUI.TIPS">Search tips</a></span></dt>
+                <dt><span class="sect2">3.2.15. <a href=
                 "#RCL.SEARCH.SAVING">Saving and restoring queries
                 (1.21 and later)</a></span></dt>
-                <dt><span class="sect2">3.2.15. <a href=
+                <dt><span class="sect2">3.2.16. <a href=
                 "#RCL.SEARCH.GUI.CUSTOM">Customizing the search
                 interface</a></span></dt>
               </dl>
@@ -416,6 +418,12 @@ alink="#0000FF">
             </dd>
           </dl>
         </dd>
+      </dl>
+    </div>
+    <div class="list-of-tables">
+      <p><b>List of Tables</b></p>
+      <dl>
+        <dt>3.1. <a href="#idm1437">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -2778,7 +2786,7 @@ fs.inotify.max_user_watches=32768
         re-use them later, perhaps with some tweaking. <span class=
         "application">Recoll</span> can save and restore searches.
         See <a class="link" href="#RCL.SEARCH.SAVING" title=
-        "3.2.14.&nbsp;Saving and restoring queries (1.21 and later)">
+        "3.2.15.&nbsp;Saving and restoring queries (1.21 and later)">
         Saving and restoring queries</a>.</p>
         <div class="sect2">
           <div class="titlepage">
@@ -3973,9 +3981,209 @@ fs.inotify.max_user_watches=32768
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="RCL.SEARCH.GUI.TIPS" id=
-                "RCL.SEARCH.GUI.TIPS"></a>3.2.13.&nbsp;Search tips,
+                <h3 class="title"><a name=
+                "RCL.SEARCH.GUI.SHORTCUTS" id=
+                "RCL.SEARCH.GUI.SHORTCUTS"></a>3.2.13.&nbsp;Keyboard
                 shortcuts</h3>
+              </div>
+            </div>
+          </div>
+          <p>A number of common actions within the graphical
+          interface can be triggered through keyboard shortcuts. As
+          of <span class="application">Recoll</span> 1.29, many of
+          the shortcut values can be customised from a screen in
+          the GUI preferences. Most shortcuts are specific to a
+          given context (e.g. within a preview window, within the
+          result table).</p>
+          <div class="table">
+            <a name="idm1437" id="idm1437"></a>
+            <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
+            shortcuts</b></p>
+            <div class="table-contents">
+              <table class="table" summary="Keyboard shortcuts"
+              border="1">
+                <colgroup>
+                  <col align="left" class="c1">
+                  <col align="left" class="c2">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th align="left">Description</th>
+                    <th align="left">Default value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="2" align="left"><span class=
+                    "command"><strong>Context: almost
+                    everywhere</strong></span></td>
+                  </tr>
+                  <tr>
+                    <td align="left">Program exit</td>
+                    <td align="left">Ctrl+Q</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="left"><span class=
+                    "command"><strong>Context: advanced
+                    search</strong></span></td>
+                  </tr>
+                  <tr>
+                    <td align="left">Load next stored search</td>
+                    <td align="left">Up</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Load previous stored
+                    search</td>
+                    <td align="left">Down</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="left"><span class=
+                    "command"><strong>Context: main
+                    window</strong></span></td>
+                  </tr>
+                  <tr>
+                    <td align="left">Clear search</td>
+                    <td align="left">Ctrl+S</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Move keyboard focus to the
+                    search entry area</td>
+                    <td align="left">Ctrl+L</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Move keyboard focus to the
+                    search entry area</td>
+                    <td align="left">Ctrl+Shift+S</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Toggle displaying results as
+                    table or list</td>
+                    <td align="left">Ctrl+T</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="left"><span class=
+                    "command"><strong>Context: main window, when
+                    showing the results as a
+                    table</strong></span></td>
+                  </tr>
+                  <tr>
+                    <td align="left">Move the keyboard focus to the
+                    result table</td>
+                    <td align="left">Ctrl+R</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Jump to row 0-9 or a-z</td>
+                    <td align="left">Ctrl+[0-9] or [a-z]</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Cancel current selection</td>
+                    <td align="left">Esc</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="left"><span class=
+                    "command"><strong>Context: preview
+                    window</strong></span></td>
+                  </tr>
+                  <tr>
+                    <td align="left">Close the preview window</td>
+                    <td align="left">Esc</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Close the current tab</td>
+                    <td align="left">Ctrl+W</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Print current tab
+                    contents</td>
+                    <td align="left">Ctrl+P</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Load the next result in the
+                    current tab</td>
+                    <td align="left">Shift+Down</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Load the previous result in
+                    the current tab</td>
+                    <td align="left">Shift+Up</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="left"><span class=
+                    "command"><strong>Context: result
+                    table</strong></span></td>
+                  </tr>
+                  <tr>
+                    <td align="left">Copy the current result
+                    document text contents to the clipboard</td>
+                    <td align="left">Ctrl+G</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Open the current result
+                    document and quit</td>
+                    <td align="left">Ctrl+Shift+O</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Open the current result
+                    document</td>
+                    <td align="left">Ctrl+O</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Preview the current
+                    result</td>
+                    <td align="left">Ctrl+D</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Toggle showing the table
+                    header</td>
+                    <td align="left">Ctrl+H</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Open snippets window for the
+                    current result</td>
+                    <td align="left">Ctrl+E</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Toggle showing row
+                    numbers</td>
+                    <td align="left">Ctrl+V</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="left"><span class=
+                    "command"><strong>Context: snippets
+                    window</strong></span></td>
+                  </tr>
+                  <tr>
+                    <td align="left">Close the snippets window</td>
+                    <td align="left">Esc</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Find in snippets</td>
+                    <td align="left">Ctrl+F</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Find (alt)</td>
+                    <td align="left">/</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Find next</td>
+                    <td align="left">F3</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Find previous</td>
+                    <td align="left">Shift+F3</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div><br class="table-break">
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.SEARCH.GUI.TIPS" id=
+                "RCL.SEARCH.GUI.TIPS"></a>3.2.14.&nbsp;Search
+                tips</h3>
               </div>
             </div>
           </div>
@@ -3990,13 +4198,12 @@ fs.inotify.max_user_watches=32768
                 </div>
               </div>
             </div>
-            <p><b>Term completion.&nbsp;</b>Typing <span class=
-            "keycap"><strong>Esc</strong></span> <span class=
-            "keycap"><strong>Space</strong></span> in the simple
-            search entry field while entering a word will either
-            complete the current word if its beginning matches a
-            unique term in the index, or open a window to propose a
-            list of completions.</p>
+            <p><b>Term completion.&nbsp;</b>While typing into the
+            simple search entry, a popup menu will appear and show
+            completions for the current string. Values preceded by
+            a clock icon come from the history, those preceded by a
+            magnifier icon come from the index terms. This can be
+            disabled in the preferences.</p>
             <p><b>Picking up new terms from result or preview
             text.&nbsp;</b>Double-clicking on a word in the result
             list or in a preview window will copy it to the simple
@@ -4145,70 +4352,16 @@ fs.inotify.max_user_watches=32768
             description of what the query looked for, including
             stem expansion, and Boolean operators used, by clicking
             on the result list header.</p>
-            <p><b>Advanced search history.&nbsp;</b>As of
-            <span class="application">Recoll</span> 1.18, you can
-            display any of the last 100 complex searches performed
-            by using the up and down arrow keys while the advanced
-            search panel is active.</p>
-            <p><b>Browsing the result list inside a preview
-            window.&nbsp;</b>Entering <span class=
-            "keycap"><strong>Shift-Down</strong></span> or
-            <span class="keycap"><strong>Shift-Up</strong></span>
-            (<span class="keycap"><strong>Shift</strong></span> +
-            an arrow key) in a preview window will display the next
-            or the previous document from the result list. Any
-            secondary search currently active will be executed on
-            the new document.</p>
-            <p><b>Scrolling the result list from the
-            keyboard.&nbsp;</b>You can use <span class=
-            "keycap"><strong>PageUp</strong></span> and
-            <span class="keycap"><strong>PageDown</strong></span>
-            to scroll the result list, <span class=
-            "keycap"><strong>Shift+Home</strong></span> to go back
-            to the first page. These work even while the focus is
-            in the search entry.</p>
-            <p><b>Result table: moving the focus to the
-            table.&nbsp;</b>You can use <span class=
-            "keycap"><strong>Ctrl-r</strong></span> to move the
-            focus from the search entry to the table, and then use
-            the arrow keys to change the current row. <span class=
-            "keycap"><strong>Ctrl-Shift-s</strong></span> returns
-            to the search.</p>
-            <p><b>Result table: open / preview.&nbsp;</b>With the
-            focus in the result table, you can use <span class=
-            "keycap"><strong>Ctrl-o</strong></span> to open the
-            document from the current row, <span class=
-            "keycap"><strong>Ctrl-Shift-o</strong></span> to open
-            the document and close <span class=
-            "command"><strong>recoll</strong></span>, <span class=
-            "keycap"><strong>Ctrl-d</strong></span> to preview the
-            document, and <span class=
-            "keycap"><strong>Ctrl-e</strong></span> to open the
-            document snippets window.</p>
-            <p><b>Editing a new search while the focus is not in
-            the search entry.&nbsp;</b>You can use the <span class=
-            "keycap"><strong>Ctrl-Shift-S</strong></span> shortcut
-            to return the cursor to the search entry (and select
-            the current search text), while the focus is anywhere
-            in the main window.</p>
+            <p><b>Advanced search history.&nbsp;</b>You can display
+            any of the last 100 complex searches performed by using
+            the up and down arrow keys while the advanced search
+            panel is active.</p>
             <p><b>Forced opening of a preview window.&nbsp;</b>You
             can use <span class=
             "keycap"><strong>Shift</strong></span>+Click on a
             result list <code class="literal">Preview</code> link
             to force the creation of a preview window instead of a
             new tab in the existing one.</p>
-            <p><b>Closing previews.&nbsp;</b>Entering <span class=
-            "keycap"><strong>Ctrl-W</strong></span> in a tab will
-            close it (and, for the last tab, close the preview
-            window). Entering <span class=
-            "keycap"><strong>Esc</strong></span> will close the
-            preview window and all its tabs.</p>
-            <p><b>Printing previews.&nbsp;</b>Entering <span class=
-            "keycap"><strong>Ctrl-P</strong></span> in a preview
-            window will print the currently displayed text.</p>
-            <p><b>Quitting.&nbsp;</b>Entering <span class=
-            "keycap"><strong>Ctrl-Q</strong></span> almost anywhere
-            will close the application.</p>
           </div>
         </div>
         <div class="sect2">
@@ -4216,7 +4369,7 @@ fs.inotify.max_user_watches=32768
             <div>
               <div>
                 <h3 class="title"><a name="RCL.SEARCH.SAVING" id=
-                "RCL.SEARCH.SAVING"></a>3.2.14.&nbsp;Saving and
+                "RCL.SEARCH.SAVING"></a>3.2.15.&nbsp;Saving and
                 restoring queries (1.21 and later)</h3>
               </div>
             </div>
@@ -4247,7 +4400,7 @@ fs.inotify.max_user_watches=32768
               <div>
                 <h3 class="title"><a name="RCL.SEARCH.GUI.CUSTOM"
                 id=
-                "RCL.SEARCH.GUI.CUSTOM"></a>3.2.15.&nbsp;Customizing
+                "RCL.SEARCH.GUI.CUSTOM"></a>3.2.16.&nbsp;Customizing
                 the search interface</h3>
               </div>
             </div>
