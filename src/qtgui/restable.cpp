@@ -761,8 +761,10 @@ void ResTable::setRclMain(RclMain *m, bool ismain)
 void ResTable::toggleHeader()
 {
     if (tableView->horizontalHeader()->isVisible()) {
+        prefs.noResTableHeader = true;
         tableView->horizontalHeader()->hide();
     } else {
+        prefs.noResTableHeader = false;
         tableView->horizontalHeader()->show();
     }
 }
@@ -770,8 +772,10 @@ void ResTable::toggleHeader()
 void ResTable::toggleVHeader()
 {
     if (tableView->verticalHeader()->isVisible()) {
+        prefs.showResTableVHeader = false;
         tableView->verticalHeader()->hide();
     } else {
+        prefs.showResTableVHeader = true;
         tableView->verticalHeader()->show();
     }
 }
