@@ -47,6 +47,10 @@
 #include "rclinit.h"
 #include "extrameta.h"
 #include "utf8fn.h"
+#if defined(NOCACHE_INDEXED) && !defined(_WIN32)
+#include <unistd.h>
+#include <fcntl.h>
+#endif
 
 using namespace std;
 
@@ -862,6 +866,20 @@ FsIndexer::processonefile(RclConfig *config,
                 m_purgeCandidates.record(parent_udi);
             }
         }
+#if defined(NOCACHE_INDEXED) && !defined(_WIN32) && defined(POSIX_FADV_DONTNEED)
+        // See framagit issue 26. If this appears to be a good idea
+        // after all (not sure), we'll need a command line switch to
+        // control it. For now it's compile-time only.
+        if (nullptr == getenv("NO_NOCACHE_INDEXED")) {
+            int fd = open(fn.c_str(), O_RDONLY);
+            if (fd >= 0) {
+                if (posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED)) {
+                    LOGSYSERR("processonefile", "posix_fadvise", fn);
+                }
+                close(fd);
+            }
+        }
+#endif
     }
 
     // If we had no instance with a null ipath, we create an empty

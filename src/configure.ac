@@ -483,6 +483,11 @@ if test X$enableQT = Xyes ; then
   ##################### End QT stuff
 fi
 
+AC_ARG_ENABLE([nocache],
+    AS_HELP_STRING([--enable-nocache], [Evict indexed files from page cache]))
+AS_IF([test "x$enable_nocache" = "xyes"], [
+    AC_DEFINE(NOCACHE_INDEXED, 1, [Evict indexed files from page cache])
+])
 
 ### X11: this is needed for the session monitoring code (in recollindex -m)
 AC_ARG_ENABLE(x11mon, 
