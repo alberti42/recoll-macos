@@ -62,6 +62,10 @@ class RclConfig:
                     if os.path.exists(os.path.join(dir, "Share")):
                         self.datadir = os.path.join(dir, "Share")
                         break
+            elif platsys == "Darwin":
+                # Actually, I'm not sure why we don't do this on all platforms
+                self.datadir = os.path.join(os.path.dirname(sys.argv[0]), "..")
+                #print("Mac datadir: [%s]" % self.datadir, file=sys.stderr)
             else:
                 dirs = ("/opt/local", "/opt", "/usr", "/usr/local")
                 for dir in dirs:
