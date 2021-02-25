@@ -574,19 +574,6 @@ static vector<string> argstovector(int argc, wchar_t **argv)
     return args;
 }
 
-static vector<string> fileToArgs(const string& fn)
-{
-    string reason, data;
-    if (!file_to_string(fn, data, &reason)) {
-        std::cerr << "Failed reading args file " << fn << " reason " <<
-            reason << "\n";
-        exit(1);
-    }
-    vector<string> args;
-    stringToStrings(data, args);
-    return args;
-}
-
 
 // Working directory before we change: it's simpler to change early
 // but some options need the original for computing absolute paths.
@@ -614,13 +601,6 @@ int main(int argc, char *argv[])
 #endif
 
     vector<string> args = argstovector(argc, argv);
-
-    // Passing args through a temp file: this is used on Windows to
-    // avoid issues with charsets in args (thought to avoid using
-    // wmain, which proved false, but the args file was kept)
-    if (args.size() == 1 && args[0][0] != '-') {
-        args = fileToArgs(args[0]);
-    }
 
     vector<string> selpatterns;
     int sleepsecs{60};

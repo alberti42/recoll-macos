@@ -227,7 +227,6 @@ private:
     ExecCmd          *m_idxproc{0}; // Indexing process
     bool             m_idxkilled{false}; // Killed my process
     TempFile        *m_idxreasontmp{nullptr};
-    TempFile        *m_idxargstmp{nullptr};
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
     int               m_catgbutvecidx{0};
@@ -283,7 +282,6 @@ private:
     virtual bool containerUpToDate(Rcl::Doc& doc);
     virtual void setFiltSpec();
     virtual bool checkIdxPaths();
-    bool maybeArgsToFile(std::vector<std::string>& args);
 };
 
 #endif // RCLMAIN_W_H
