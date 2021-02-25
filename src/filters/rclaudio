@@ -255,18 +255,21 @@ class AudioTagExtractor(RclBaseHandler):
     # was wrong, because dmtime is the unix integer time. We have
     # removed the alias, and set dmtime from the parsed date value.
     def parsedate(self, dt):
-        dt = dt.decode('utf-8', errors='ignore')
-        if len(dt) > 10:
-            dt = dt[0:10]
-        l = dt.split('-')
-        if len(l) > 3 or len(l) == 2 or len(l[0]) != 4 or l[0] == '0000':
-            return ''
-        if len(l) == 1:
-            pdt = datetime.datetime.strptime(dt, "%Y")
-        elif len(l) == 3:
-            pdt = datetime.datetime.strptime(dt, "%Y-%m-%d")
-        val = time.mktime(pdt.timetuple())
-        return "%d" % val
+        try:
+            dt = dt.decode('utf-8', errors='ignore')
+            if len(dt) > 10:
+                dt = dt[0:10]
+            l = dt.split('-')
+            if len(l) > 3 or len(l) == 2 or len(l[0]) != 4 or l[0] == '0000':
+                return ''
+            if len(l) == 1:
+                pdt = datetime.datetime.strptime(dt, "%Y")
+            elif len(l) == 3:
+                pdt = datetime.datetime.strptime(dt, "%Y-%m-%d")
+            val = time.mktime(pdt.timetuple())
+            return "%d" % val
+        except:
+            return 0
 
 
     def html_text(self, filename):
