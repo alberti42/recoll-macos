@@ -67,7 +67,7 @@ AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h malloc.h mall
 #endif
 ])
 
-AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf malloc_trim])
+AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf malloc_trim posix_fadvise])
 
 # Use specific 'file' command ? (Useful on solaris to specify
 # /usr/local/bin/file instead of the system's which doesn't understand '-i'
@@ -482,12 +482,6 @@ if test X$enableQT = Xyes ; then
 
   ##################### End QT stuff
 fi
-
-AC_ARG_ENABLE([nocache],
-    AS_HELP_STRING([--enable-nocache], [Evict indexed files from page cache]))
-AS_IF([test "x$enable_nocache" = "xyes"], [
-    AC_DEFINE(NOCACHE_INDEXED, 1, [Evict indexed files from page cache])
-])
 
 ### X11: this is needed for the session monitoring code (in recollindex -m)
 AC_ARG_ENABLE(x11mon, 

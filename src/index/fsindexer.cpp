@@ -47,7 +47,7 @@
 #include "rclinit.h"
 #include "extrameta.h"
 #include "utf8fn.h"
-#if defined(NOCACHE_INDEXED) && !defined(_WIN32)
+#if defined(HAVE_POSIX_FADVISE)
 #include <unistd.h>
 #include <fcntl.h>
 #endif
@@ -180,6 +180,7 @@ bool FsIndexer::index(int flags)
 {
     bool quickshallow = (flags & ConfIndexer::IxFQuickShallow) != 0;
     m_noretryfailed = (flags & ConfIndexer::IxFNoRetryFailed) != 0;
+    m_cleancache = (flags & ConfIndexer::IxFCleanCache) != 0;
     Chrono chron;
     if (!init())
         return false;
@@ -345,6 +346,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
 {
     LOGDEB("FsIndexer::indexFiles\n");
     m_noretryfailed = (flags & ConfIndexer::IxFNoRetryFailed) != 0;
+    m_cleancache = (flags & ConfIndexer::IxFCleanCache) != 0;
     bool ret = false;
 
     if (!init())
@@ -866,11 +868,11 @@ FsIndexer::processonefile(RclConfig *config,
                 m_purgeCandidates.record(parent_udi);
             }
         }
-#if defined(NOCACHE_INDEXED) && !defined(_WIN32) && defined(POSIX_FADV_DONTNEED)
+#if defined(HAVE_POSIX_FADVISE) && defined(POSIX_FADV_DONTNEED)
         // See framagit issue 26. If this appears to be a good idea
         // after all (not sure), we'll need a command line switch to
         // control it. For now it's compile-time only.
-        if (nullptr == getenv("NO_NOCACHE_INDEXED")) {
+        if (m_cleancache) {
             int fd = open(fn.c_str(), O_RDONLY);
             if (fd >= 0) {
                 if (posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED)) {

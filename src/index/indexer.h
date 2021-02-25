@@ -82,6 +82,8 @@ public:
                  // Do perform purge pass even if we can't be sure we saw
                  // all files
                  IxFDoPurge = 16,
+                 // Evict each indexed file from the page cache.
+                 IxFCleanCache = 32,
     };
 
     /** Run indexers */

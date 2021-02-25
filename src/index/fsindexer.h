@@ -143,7 +143,9 @@ private:
 
     // No retry of previously failed files
     bool         m_noretryfailed;
-
+    // use FADV_DONTNEED if available
+    bool         m_cleancache{false};
+    
 #ifdef IDX_THREADS
     friend void *FsIndexerDbUpdWorker(void*);
     friend void *FsIndexerInternfileWorker(void*);

@@ -62,30 +62,30 @@ using namespace std;
 
 // Command line options
 static int     op_flags;
-#define OPT_MOINS 0x1
 #define OPT_C 0x1     
-#define OPT_D 0x2     
-#define OPT_E 0x4     
-#define OPT_K 0x8     
-#define OPT_P 0x10    
-#define OPT_R 0x20    
-#define OPT_S 0x40    
-#define OPT_Z 0x80    
-#define OPT_c 0x200   
-#define OPT_e 0x400   
-#define OPT_f 0x800   
-#define OPT_h 0x1000  
-#define OPT_i 0x2000  
-#define OPT_k 0x4000  
-#define OPT_l 0x8000  
-#define OPT_m 0x10000 
-#define OPT_n 0x20000
-#define OPT_p 0x40000
-#define OPT_r 0x80000 
+#define OPT_c 0x2
+#define OPT_d 0x4     
+#define OPT_D 0x8     
+#define OPT_E 0x10    
+#define OPT_e 0x20    
+#define OPT_f 0x40    
+#define OPT_h 0x80    
+#define OPT_i 0x200   
+#define OPT_K 0x400   
+#define OPT_k 0x800   
+#define OPT_l 0x1000  
+#define OPT_m 0x2000  
+#define OPT_n 0x4000  
+#define OPT_P 0x8000  
+#define OPT_p 0x10000 
+#define OPT_R 0x20000 
+#define OPT_r 0x40000 
+#define OPT_S 0x80000 
 #define OPT_s 0x100000
 #define OPT_w 0x200000
 #define OPT_x 0x400000
-#define OPT_z 0x800000
+#define OPT_Z 0x800000
+#define OPT_z 0x1000000
 
 ReExec *o_reexec;
 
@@ -475,7 +475,11 @@ static const char usage [] =
 #endif
 "Common options:\n"
 "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
-                                                           ;
+#if defined(HAVE_POSIX_FADVISE)
+"    -d : call fadvise() with the POSIX_FADV_DONTNEED flag on indexed files\n"
+"          (avoids trashing the page cache)\n";
+#endif
+;
 
 static void Usage()
 {
@@ -584,8 +588,8 @@ static std::string orig_cwd;
 // Unicode. It was first thought possible to use a temporary file to
 // hold the args, and make sure that the path for this would be ASCII,
 // based on using shortpath(). Unfortunately, this does not work in
-// all cases, so the second change was to use wmain(), but the
-// now largely redundant args-in-file passing trick was kept anyway.
+// all cases, so the second change was to use wmain(). The
+// args-in-file was removed quite a long time after.
 #if USE_WMAIN
 int wmain(int argc, wchar_t *argv[])
 #else
@@ -600,6 +604,8 @@ int main(int argc, char *argv[])
     o_reexec->init(argc, argv);
 #endif
 
+    // The bizarre conversion to vector stayed from the time when we
+    // used a file for passing options.
     vector<string> args = argstovector(argc, argv);
 
     vector<string> selpatterns;
@@ -620,6 +626,9 @@ int main(int argc, char *argv[])
 #ifdef RCL_MONITOR
             case 'C': op_flags |= OPT_C; break;
             case 'D': op_flags |= OPT_D; break;
+#endif
+#if defined(HAVE_POSIX_FADVISE)
+            case 'd': op_flags |= OPT_d; break;
 #endif
             case 'E': op_flags |= OPT_E; break;
             case 'e': op_flags |= OPT_e; break;
@@ -762,6 +771,12 @@ int main(int argc, char *argv[])
         LOGDEB("recollindex: files in error will be retried\n");
     }
 
+#if defined(HAVE_POSIX_FADVISE)
+    if (op_flags & OPT_d) {
+        indexerFlags |= ConfIndexer::IxFCleanCache;
+    }
+#endif
+    
     Pidfile pidfile(config->getPidfile());
     updater = new MyUpdater(config);
     lockorexit(&pidfile, config);
