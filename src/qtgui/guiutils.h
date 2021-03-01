@@ -147,6 +147,7 @@ public:
     bool noSSTypCMB{false};
     bool noResTableHeader{false};
     bool showResTableVHeader{false};
+    bool noResTableRowJumpSC{false};
     bool showTrayIcon{false};
     bool closeToTray{false};
     bool trayMessages{false};

@@ -249,6 +249,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="noRowJumpShortcutsCB">
+         <property name="text">
+          <string>Disable the Ctrl+[0-9]/[a-z] shortcuts for jumping to table rows.</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="noClearSearchCB">
          <property name="text">
           <string>Hide Clear and Search buttons.</string>

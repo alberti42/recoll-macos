@@ -115,6 +115,23 @@ class QUrl;
 class RclMain;
 class QShortcut;
 
+// This is an intermediary object to help setting up multiple similar
+// shortcuts with different data (e.g. Ctrl+1, Ctrl+2 etc.). Maybe
+// there is another way, but this one works.
+class SCData : public QObject {
+    Q_OBJECT;
+public:
+    SCData(QObject* parent, std::function<void (int)> cb, int row)
+        : QObject(parent), m_cb(cb), m_row(row) {}
+public slots:
+    virtual void activate() {
+        m_cb(m_row);
+    }
+private:
+    std::function<void (int)>  m_cb;
+    int m_row;
+};
+
 class ResTable : public QWidget, public Ui::ResTable 
 {
     Q_OBJECT;
@@ -209,23 +226,9 @@ private:
     QShortcut *m_showheadersc{nullptr};
     QShortcut *m_showvheadersc{nullptr};
     QShortcut *m_copycurtextsc{nullptr};
+    std::vector<SCData*> m_rowlinks;
+    std::vector<QShortcut *> m_rowsc;
 };
 
-// This is an intermediary object to help setting up multiple similar
-// shortcuts with different data (e.g. Ctrl+1, Ctrl+2 etc.). Maybe
-// there is another way, but this one works.
-class SCData : public QObject {
-    Q_OBJECT;
-public:
-    SCData(QObject* parent, std::function<void (int)> cb, int row)
-        : QObject(parent), m_cb(cb), m_row(row) {}
-public slots:
-    virtual void activate() {
-        m_cb(m_row);
-    }
-private:
-    std::function<void (int)>  m_cb;
-    int m_row;
-};
-        
+       
 #endif /* _RESTABLE_H_INCLUDED_ */

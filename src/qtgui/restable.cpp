@@ -595,27 +595,11 @@ void ResTable::init()
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableView->setItemDelegate(new ResTableDelegate(this));
     tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    tableView->setAlternatingRowColors(true);
     
     onNewShortcuts();
     connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
             this, SLOT(onNewShortcuts()));
-
-    // Set "go to row" accelerator shortcuts. letter or digit for 0-9,
-    // then letter up to 25
-    std::function<void(int)> setrow =
-        std::bind(&ResTable::setCurrentRow, this, std::placeholders::_1);
-    for (int i = 0; i <= 25; i++) {
-        if (i <= 9) {
-            auto qs = QString("Ctrl+%1").arg(i);
-            auto sc = new QShortcut(QKeySequence(qs2utf8s(qs).c_str()), this);
-            auto lnk = new SCData(this, setrow, i);
-            connect(sc, SIGNAL(activated()), lnk, SLOT(activate()));
-        }
-        auto qs = QString("Ctrl+Shift+%1").arg(char('a'+i));
-        auto sc = new QShortcut(QKeySequence(qs2utf8s(qs).c_str()), this);
-        auto lnk = new SCData(this, setrow, i);
-        connect(sc, SIGNAL(activated()), lnk, SLOT(activate()));
-    }
 
     auto sc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
     connect(sc, SIGNAL(activated()),
@@ -688,6 +672,35 @@ void ResTable::init()
 
 void ResTable::onNewShortcuts()
 {
+    if (prefs.noResTableRowJumpSC) {
+        for (auto& lnk : m_rowlinks) {
+            delete lnk;
+        }
+        m_rowlinks.clear();
+        for (auto& sc : m_rowsc) {
+            delete sc;
+        }
+        m_rowsc.clear();
+    } else if (m_rowlinks.empty()) {
+        // Set "go to row" accelerator shortcuts. letter or digit for 0-9,
+        // then letter up to 25
+        std::function<void(int)> setrow =
+            std::bind(&ResTable::setCurrentRow, this, std::placeholders::_1);
+        for (int i = 0; i <= 25; i++) {
+            auto qs = QString("Ctrl+Shift+%1").arg(char('a'+i));
+            auto sc = new QShortcut(QKeySequence(qs2utf8s(qs).c_str()), this);
+            m_rowlinks.push_back(new SCData(this, setrow, i));
+            m_rowsc.push_back(sc);
+            connect(sc, SIGNAL(activated()),m_rowlinks.back(),SLOT(activate()));
+            if (i > 9)
+                continue;
+            qs = QString("Ctrl+%1").arg(i);
+            sc = new QShortcut(QKeySequence(qs2utf8s(qs).c_str()), this);
+            m_rowsc.push_back(sc);
+            m_rowlinks.push_back(new SCData(this, setrow, i));
+            connect(sc, SIGNAL(activated()),m_rowlinks.back(),SLOT(activate()));
+        }
+    }
     SETSHORTCUT(this, tr("Result Table"), tr("Open current result document"),
                 "Ctrl+O", m_opensc, menuEdit);
     SETSHORTCUT(this, tr("Result Table"), tr("Open current result and quit"),

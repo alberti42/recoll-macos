@@ -302,6 +302,8 @@ void rwSettings(bool writing)
                Bool, false);
     SETTING_RW(prefs.showResTableVHeader, "/Recoll/prefs/showResTableVHeader",
                Bool, false);
+    SETTING_RW(prefs.noResTableRowJumpSC, "/Recoll/prefs/noResTableRowJumpSC",
+               Bool, false);
     SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);
     SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);
     SETTING_RW(prefs.trayMessages, "/Recoll/prefs/trayMessages", Bool, false);
