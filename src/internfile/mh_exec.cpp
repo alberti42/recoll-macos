@@ -35,7 +35,7 @@
 using namespace std;
 
 MEAdv::MEAdv(int maxsecs) 
-  : m_filtermaxseconds(maxsecs) 
+    : m_filtermaxseconds(maxsecs) 
 {
     m_start = time(0L);
 }
@@ -129,18 +129,18 @@ bool MimeHandlerExec::skip_to_document(const string& ipath)
 bool MimeHandlerExec::next_document()
 {
     if (m_havedoc == false)
-    return false;
+        return false;
     m_havedoc = false;
     if (missingHelper) {
-    LOGDEB("MimeHandlerExec::next_document(): helper known missing\n");
-    return false;
+        LOGDEB("MimeHandlerExec::next_document(): helper known missing\n");
+        return false;
     }
 
     if (params.empty()) {
-    // Hu ho
-    LOGERR("MimeHandlerExec::next_document: empty params\n");
-    m_reason = "RECFILTERROR BADCONFIG";
-    return false;
+        // Hu ho
+        LOGERR("MimeHandlerExec::next_document: empty params\n");
+        m_reason = "RECFILTERROR BADCONFIG";
+        return false;
     }
 
     // Command name
@@ -150,7 +150,7 @@ bool MimeHandlerExec::next_document()
     vector<string>myparams(params.begin() + 1, params.end());
     myparams.push_back(m_fn);
     if (!m_ipath.empty())
-    myparams.push_back(m_ipath);
+        myparams.push_back(m_ipath);
 
     // Execute command, store the output
     string& output = m_metaData[cstr_dj_keycontent];
@@ -162,45 +162,49 @@ bool MimeHandlerExec::next_document()
     mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
                  "RECOLL_FILTER_FORPREVIEW=no");
     mexec.setrlimit_as(m_filtermaxmbytes);
-
+    std::string errfile;
+    m_config->getConfParam("helperlogfilename", errfile);
+    if (!errfile.empty()) {
+        mexec.setStderr(errfile);
+    }
     int status;
     try {
         status = mexec.doexec(cmd, myparams, 0, &output);
     } catch (HandlerTimeout) {
-    LOGERR("MimeHandlerExec: handler timeout\n" );
+        LOGERR("MimeHandlerExec: handler timeout\n" );
         status = 0x110f;
     } catch (CancelExcept) {
-    LOGERR("MimeHandlerExec: cancelled\n" );
+        LOGERR("MimeHandlerExec: cancelled\n" );
         status = 0x110f;
     }
 
     if (status) {
-    LOGERR("MimeHandlerExec: command status 0x" <<
+        LOGERR("MimeHandlerExec: command status 0x" <<
                std::hex << status << std::dec << " for " << cmd << "\n");
-    if (WIFEXITED(status) && WEXITSTATUS(status) == 127) {
-        // That's how execmd signals a failed exec (most probably
-        // a missing command). Let'hope no filter uses the same value as
-        // an exit status... Disable myself permanently and signal the 
-        // missing cmd.
-        missingHelper = true;
-        m_reason = string("RECFILTERROR HELPERNOTFOUND ") + cmd;
-    } else if (output.find("RECFILTERROR") == 0) {
-        // If the output string begins with RECFILTERROR, then it's 
-        // interpretable error information out from a recoll script
-        m_reason = output;
-        list<string> lerr;
-        stringToStrings(output, lerr);
-        if (lerr.size() > 2) {
-        list<string>::iterator it = lerr.begin();
-        it++;
-        if (*it == "HELPERNOTFOUND") {
-            // No use trying again and again to execute this filter, 
-            // it won't work.
+        if (WIFEXITED(status) && WEXITSTATUS(status) == 127) {
+            // That's how execmd signals a failed exec (most probably
+            // a missing command). Let'hope no filter uses the same value as
+            // an exit status... Disable myself permanently and signal the 
+            // missing cmd.
             missingHelper = true;
+            m_reason = string("RECFILTERROR HELPERNOTFOUND ") + cmd;
+        } else if (output.find("RECFILTERROR") == 0) {
+            // If the output string begins with RECFILTERROR, then it's 
+            // interpretable error information out from a recoll script
+            m_reason = output;
+            list<string> lerr;
+            stringToStrings(output, lerr);
+            if (lerr.size() > 2) {
+                list<string>::iterator it = lerr.begin();
+                it++;
+                if (*it == "HELPERNOTFOUND") {
+                    // No use trying again and again to execute this filter, 
+                    // it won't work.
+                    missingHelper = true;
+                }
+            }            
         }
-        }            
-    }
-    return false;
+        return false;
     }
 
     finaldetails();
@@ -216,19 +220,19 @@ void MimeHandlerExec::handle_cs(const string& mt, const string& icharset)
     // "default", we use the default input charset value defined in
     // recoll.conf (which may vary depending on directory)
     if (charset.empty()) {
-    charset = cfgFilterOutputCharset.empty() ? cstr_utf8 : 
-        cfgFilterOutputCharset;
-    if (!stringlowercmp("default", charset)) {
-        charset = m_dfltInputCharset;
-    }
+        charset = cfgFilterOutputCharset.empty() ? cstr_utf8 : 
+            cfgFilterOutputCharset;
+        if (!stringlowercmp("default", charset)) {
+            charset = m_dfltInputCharset;
+        }
     }
     m_metaData[cstr_dj_keyorigcharset] = charset;
 
     // If this is text/plain transcode_to/check utf-8
     if (!mt.compare(cstr_textplain)) {
-    (void)txtdcode("mh_exec/m");
+        (void)txtdcode("mh_exec/m");
     } else {
-    m_metaData[cstr_dj_keycharset] = charset;
+        m_metaData[cstr_dj_keycharset] = charset;
     }
 }
 
@@ -237,16 +241,16 @@ void MimeHandlerExec::finaldetails()
     // The default output mime type is html, but it may be defined
     // otherwise in the filter definition.
     m_metaData[cstr_dj_keymt] = cfgFilterOutputMtype.empty() ? cstr_texthtml : 
-    cfgFilterOutputMtype;
+        cfgFilterOutputMtype;
 
     if (!m_forPreview && !m_nomd5) {
-    string md5, xmd5, reason;
-    if (MD5File(m_fn, md5, &reason)) {
-        m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
-    } else {
-        LOGERR("MimeHandlerExec: cant compute md5 for [" << m_fn << "]: " <<
+        string md5, xmd5, reason;
+        if (MD5File(m_fn, md5, &reason)) {
+            m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+        } else {
+            LOGERR("MimeHandlerExec: cant compute md5 for [" << m_fn << "]: " <<
                    reason << "\n");
-    }
+        }
     }
 
     handle_cs(m_metaData[cstr_dj_keymt]);

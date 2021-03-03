@@ -63,6 +63,11 @@ bool MimeHandlerExecMultiple::startCmd()
     m_cmd.setrlimit_as(m_filtermaxmbytes);
     m_adv.setmaxsecs(m_filtermaxseconds);
     m_cmd.setAdvise(&m_adv);
+    std::string errfile;
+    m_config->getConfParam("helperlogfilename", errfile);
+    if (!errfile.empty()) {
+        m_cmd.setStderr(errfile);
+    }
 
     // Build parameter list: delete cmd name
     vector<string>myparams(params.begin() + 1, params.end());
