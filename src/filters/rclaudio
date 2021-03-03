@@ -15,7 +15,7 @@ import rclconfig
 try:
     import mutagen
     from mutagen import File
-    from mutagen.id3 import ID3TimeStamp
+    from mutagen.id3 import ID3, ID3TimeStamp
 except:
     print("RECFILTERROR HELPERNOTFOUND python3:mutagen")
     sys.exit(1);
@@ -227,15 +227,21 @@ class AudioTagExtractor(RclBaseHandler):
 
     def _embeddedImageFormat(self, mutf):
         #self.em.rclog("_embeddedImage: MIME: %s"%mutf.mime)
-        if 'audio/mp3' in mutf.mime:
+        try:
+            # This fails if we're passed a mutagen.ID3 instead of File
+            mime = mutf.mime
+        except:
+            return ''
+
+        if 'audio/mp3' in mime:
             for tagname in mutf.keys():
                 if tagname.startswith('APIC:'):
                     #self.em.rclog("mp3 img: %s" % mutf[tagname].mime)
                     return 'jpg' if mutf[tagname].mime == 'image/jpeg' else 'png'
-        elif 'audio/x-flac' in mutf.mime:
+        elif 'audio/x-flac' in mime:
             if mutf.pictures:
                 return 'jpg' if mutf.pictures[0].mime == 'image/jpeg' else 'png'
-        elif 'audio/mp4' in mutf.mime:
+        elif 'audio/mp4' in mime:
             if 'covr' in mutf.keys():
                 format = mutf['covr'][0].imageformat 
                 if format == mutagen.mp4.AtomDataType.JPEG:
@@ -287,6 +293,11 @@ class AudioTagExtractor(RclBaseHandler):
             mutf = File(filename)
         except Exception as ex:
             strex = str(ex)
+            try:
+                mutf = ID3(filename)
+            except Exception as ex:
+                strex += str(ex)
+
         if not mutf:
             # Note: mutagen will fail the open (and raise) for a valid
             # file with no tags. Maybe we should just return an empty
