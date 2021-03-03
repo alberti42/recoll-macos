@@ -5,7 +5,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/pages/features.html#doctypes'>http://www.recoll.org/pages/features.html</ulink>">
-<!ENTITY RCLVERSION "1.26">
+<!ENTITY RCLVERSION "1.29">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
@@ -2937,11 +2937,11 @@ fs.inotify.max_user_watches=32768
               <row><entry namest="c1" nameend="c2">
                   <command>Context: advanced search</command></entry></row> 
               <row>
-                <entry>Load next stored search</entry>
+                <entry>Load the next entry from the search history</entry>
                 <entry>Up</entry>
               </row>
               <row>
-                <entry>Load previous stored search</entry>
+                <entry>Load the previous entry from the search history</entry>
                 <entry>Down</entry>
               </row>
 
@@ -2949,36 +2949,41 @@ fs.inotify.max_user_watches=32768
                   <command>Context: main window</command></entry>
               </row>
               <row>
-                <entry>Clear search</entry>
+                <entry>Clear search. This will move the keyboard cursor to
+                the simple search entry and erase the current text</entry>
                 <entry>Ctrl+S</entry>
               </row>
               <row>
-                <entry>Move keyboard focus to the search entry area</entry>
+                <entry>Move the keyboard cursor to the search entry area
+                without erasing the current text</entry>
                 <entry>Ctrl+L</entry>
               </row>
               <row>
-                <entry>Move keyboard focus to the search entry area</entry>
+                <entry>Move the keyboard cursor to the search entry area
+                without erasing the current text</entry>
                 <entry>Ctrl+Shift+S</entry>
               </row>
               <row>
-                <entry>Toggle displaying results as table or list</entry>
+                <entry>Toggle displaying the current results as a table or
+                as a list</entry>
                 <entry>Ctrl+T</entry>
               </row>
 
               <row><entry namest="c1" nameend="c2">
                   <command>Context: main window, when showing the results
-                  as a table</command></entry>
+                    as a table</command></entry>
               </row>
               <row>
-                <entry>Move the keyboard focus to the result table</entry>
+                <entry>Move the keyboard cursor to currently the selected row
+                in the table, or to the first one if none is selected</entry>
                 <entry>Ctrl+R</entry>
               </row>
               <row>
-                <entry>Jump to row 0-9 or a-z</entry>
+                <entry>Jump to row 0-9 or a-z in the table</entry>
                 <entry>Ctrl+[0-9] or [a-z]</entry>
               </row>
               <row>
-                <entry>Cancel current selection</entry><entry>Esc</entry>
+                <entry>Cancel the current selection</entry><entry>Esc</entry>
               </row>
 
 
@@ -2994,46 +2999,46 @@ fs.inotify.max_user_watches=32768
                 <entry>Ctrl+W</entry>
               </row>
               <row>
-                <entry>Print current tab contents</entry>
+                <entry>Open a print dialog for the current tab contents</entry>
                 <entry>Ctrl+P</entry>
               </row>
               <row>
-                <entry>Load the next result in the current tab</entry>
+                <entry>Load the next result from the list to the current tab</entry>
                 <entry>Shift+Down</entry>
               </row>
               <row>
-                <entry>Load the previous result in the current tab</entry>
+                <entry>Load the previous result from the list to the current tab</entry>
                 <entry>Shift+Up</entry>
               </row>
 
               <row><entry namest="c1" nameend="c2">
                   <command>Context: result table</command></entry></row>
               <row>
-                <entry>Copy the current result document text contents to
-                the clipboard</entry> <entry>Ctrl+G</entry>
+                <entry>Copy the text contained in the selected
+                  document to the clipboard</entry> <entry>Ctrl+G</entry>
               </row>
               <row>
-                <entry>Open the current result document and quit</entry>
+                <entry>Open the current document and exit Recoll</entry>
                 <entry>Ctrl+Shift+O</entry>
               </row>
               <row>
-                <entry>Open the current result document</entry>
+                <entry>Open the current document</entry>
                 <entry>Ctrl+O</entry>
               </row>
               <row>
-                <entry>Preview the current result</entry>
+                <entry>Show a full preview for the current document</entry>
                 <entry>Ctrl+D</entry>
               </row>
               <row>
-                <entry>Toggle showing the table header</entry>
+                <entry>Toggle showing the column names</entry>
                 <entry>Ctrl+H</entry>
               </row>
               <row>
-                <entry>Open snippets window for the current result</entry>
+                <entry>Show a snippets (keyword in context) list for the current document</entry>
                 <entry>Ctrl+E</entry>
               </row>
               <row>
-                <entry>Toggle showing row numbers</entry>
+                <entry>Toggle showing the row letters/numbers</entry>
                 <entry>Ctrl+V</entry>
               </row>
 
@@ -3044,19 +3049,19 @@ fs.inotify.max_user_watches=32768
                 <entry>Esc</entry>
               </row>
               <row>
-                <entry>Find in snippets</entry>
+                <entry>Find in the snippets list (method #1)</entry>
                 <entry>Ctrl+F</entry>
               </row>
               <row>
-                <entry>Find (alt)</entry>
+                <entry>Find in the snippets list (method #2)</entry>
                 <entry>/</entry>
               </row>
               <row>
-                <entry>Find next</entry>
+                <entry>Find the next instance of the search term</entry>
                 <entry>F3</entry>
               </row>
               <row>
-                <entry>Find previous</entry>
+                <entry>Find the previous instance of the search term</entry>
                 <entry>Shift+F3</entry>
               </row>
             </tbody>

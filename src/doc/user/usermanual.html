@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="docbook-xsl.css">
   <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
   <meta name="description" content=
-  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.26.">
+  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.29.">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084"
 alink="#0000FF">
@@ -53,7 +53,7 @@ alink="#0000FF">
             and describes the installation and use of the
             <span class="application">Recoll</span> application.
             This version describes <span class=
-            "application">Recoll</span> 1.26.</p>
+            "application">Recoll</span> 1.29.</p>
           </div>
         </div>
       </div>
@@ -438,7 +438,7 @@ alink="#0000FF">
       <p>This document introduces full text search notions and
       describes the installation and use of the <span class=
       "application">Recoll</span> application. It is updated for
-      <span class="application">Recoll</span> 1.26.</p>
+      <span class="application">Recoll</span> 1.29.</p>
       <p><span class="application">Recoll</span> was for a long
       time dedicated to Unix-like systems. It was only lately
       (2015) ported to <span class="application">MS-Windows</span>.
@@ -4028,12 +4028,13 @@ fs.inotify.max_user_watches=32768
                     search</strong></span></td>
                   </tr>
                   <tr>
-                    <td align="left">Load next stored search</td>
+                    <td align="left">Load the next entry from the
+                    search history</td>
                     <td align="left">Up</td>
                   </tr>
                   <tr>
-                    <td align="left">Load previous stored
-                    search</td>
+                    <td align="left">Load the previous entry from
+                    the search history</td>
                     <td align="left">Down</td>
                   </tr>
                   <tr>
@@ -4042,22 +4043,26 @@ fs.inotify.max_user_watches=32768
                     window</strong></span></td>
                   </tr>
                   <tr>
-                    <td align="left">Clear search</td>
+                    <td align="left">Clear search. This will move
+                    the keyboard cursor to the simple search entry
+                    and erase the current text</td>
                     <td align="left">Ctrl+S</td>
                   </tr>
                   <tr>
-                    <td align="left">Move keyboard focus to the
-                    search entry area</td>
+                    <td align="left">Move the keyboard cursor to
+                    the search entry area without erasing the
+                    current text</td>
                     <td align="left">Ctrl+L</td>
                   </tr>
                   <tr>
-                    <td align="left">Move keyboard focus to the
-                    search entry area</td>
+                    <td align="left">Move the keyboard cursor to
+                    the search entry area without erasing the
+                    current text</td>
                     <td align="left">Ctrl+Shift+S</td>
                   </tr>
                   <tr>
-                    <td align="left">Toggle displaying results as
-                    table or list</td>
+                    <td align="left">Toggle displaying the current
+                    results as a table or as a list</td>
                     <td align="left">Ctrl+T</td>
                   </tr>
                   <tr>
@@ -4067,16 +4072,19 @@ fs.inotify.max_user_watches=32768
                     table</strong></span></td>
                   </tr>
                   <tr>
-                    <td align="left">Move the keyboard focus to the
-                    result table</td>
+                    <td align="left">Move the keyboard cursor to
+                    currently the selected row in the table, or to
+                    the first one if none is selected</td>
                     <td align="left">Ctrl+R</td>
                   </tr>
                   <tr>
-                    <td align="left">Jump to row 0-9 or a-z</td>
+                    <td align="left">Jump to row 0-9 or a-z in the
+                    table</td>
                     <td align="left">Ctrl+[0-9] or [a-z]</td>
                   </tr>
                   <tr>
-                    <td align="left">Cancel current selection</td>
+                    <td align="left">Cancel the current
+                    selection</td>
                     <td align="left">Esc</td>
                   </tr>
                   <tr>
@@ -4093,18 +4101,18 @@ fs.inotify.max_user_watches=32768
                     <td align="left">Ctrl+W</td>
                   </tr>
                   <tr>
-                    <td align="left">Print current tab
-                    contents</td>
+                    <td align="left">Open a print dialog for the
+                    current tab contents</td>
                     <td align="left">Ctrl+P</td>
                   </tr>
                   <tr>
-                    <td align="left">Load the next result in the
-                    current tab</td>
+                    <td align="left">Load the next result from the
+                    list to the current tab</td>
                     <td align="left">Shift+Down</td>
                   </tr>
                   <tr>
-                    <td align="left">Load the previous result in
-                    the current tab</td>
+                    <td align="left">Load the previous result from
+                    the list to the current tab</td>
                     <td align="left">Shift+Up</td>
                   </tr>
                   <tr>
@@ -4113,38 +4121,37 @@ fs.inotify.max_user_watches=32768
                     table</strong></span></td>
                   </tr>
                   <tr>
-                    <td align="left">Copy the current result
-                    document text contents to the clipboard</td>
+                    <td align="left">Copy the text contained in the
+                    selected document to the clipboard</td>
                     <td align="left">Ctrl+G</td>
                   </tr>
                   <tr>
-                    <td align="left">Open the current result
-                    document and quit</td>
+                    <td align="left">Open the current document and
+                    exit Recoll</td>
                     <td align="left">Ctrl+Shift+O</td>
                   </tr>
                   <tr>
-                    <td align="left">Open the current result
-                    document</td>
+                    <td align="left">Open the current document</td>
                     <td align="left">Ctrl+O</td>
                   </tr>
                   <tr>
-                    <td align="left">Preview the current
-                    result</td>
+                    <td align="left">Show a full preview for the
+                    current document</td>
                     <td align="left">Ctrl+D</td>
                   </tr>
                   <tr>
-                    <td align="left">Toggle showing the table
-                    header</td>
+                    <td align="left">Toggle showing the column
+                    names</td>
                     <td align="left">Ctrl+H</td>
                   </tr>
                   <tr>
-                    <td align="left">Open snippets window for the
-                    current result</td>
+                    <td align="left">Show a snippets (keyword in
+                    context) list for the current document</td>
                     <td align="left">Ctrl+E</td>
                   </tr>
                   <tr>
-                    <td align="left">Toggle showing row
-                    numbers</td>
+                    <td align="left">Toggle showing the row
+                    letters/numbers</td>
                     <td align="left">Ctrl+V</td>
                   </tr>
                   <tr>
@@ -4157,19 +4164,23 @@ fs.inotify.max_user_watches=32768
                     <td align="left">Esc</td>
                   </tr>
                   <tr>
-                    <td align="left">Find in snippets</td>
+                    <td align="left">Find in the snippets list
+                    (method #1)</td>
                     <td align="left">Ctrl+F</td>
                   </tr>
                   <tr>
-                    <td align="left">Find (alt)</td>
+                    <td align="left">Find in the snippets list
+                    (method #2)</td>
                     <td align="left">/</td>
                   </tr>
                   <tr>
-                    <td align="left">Find next</td>
+                    <td align="left">Find the next instance of the
+                    search term</td>
                     <td align="left">F3</td>
                   </tr>
                   <tr>
-                    <td align="left">Find previous</td>
+                    <td align="left">Find the previous instance of
+                    the search term</td>
                     <td align="left">Shift+F3</td>
                   </tr>
                 </tbody>
