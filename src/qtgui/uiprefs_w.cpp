@@ -57,6 +57,7 @@
 #include "rclmain_w.h"
 #include "ptrans_w.h"
 #include "scbase.h"
+#include "rclhelp.h"
 
 void UIPrefsDialog::init()
 {
@@ -102,6 +103,9 @@ void UIPrefsDialog::init()
     connect(ssNoCompleteCB, SIGNAL(toggled(bool)), 
             ssSearchOnCompleteCB, SLOT(setDisabled(bool)));
     connect(resetscPB, SIGNAL(clicked()), this, SLOT(resetShortcuts()));
+
+    (void)new HelpClient(this);
+    HelpClient::installMap("sctab", "RCL.SEARCH.GUI.SHORTCUTS");
     
     setFromPrefs();
 }
