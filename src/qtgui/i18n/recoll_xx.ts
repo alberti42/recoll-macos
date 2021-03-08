@@ -1483,10 +1483,6 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Could not start recollindex (temp file error)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Could not read: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -3195,6 +3191,14 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Reset shortcuts defaults</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable the Ctrl+[0-9]/[a-z] shortcuts for jumping to table rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use F1 to  access the manual</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
