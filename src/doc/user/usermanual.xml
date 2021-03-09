@@ -2980,7 +2980,7 @@ fs.inotify.max_user_watches=32768
               </row>
               <row>
                 <entry>Jump to row 0-9 or a-z in the table</entry>
-                <entry>Ctrl+[0-9] or [a-z]</entry>
+                <entry>Ctrl+[0-9] or Ctrl+Shift+[a-z]</entry>
               </row>
               <row>
                 <entry>Cancel the current selection</entry><entry>Esc</entry>
