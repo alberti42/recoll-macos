@@ -30,6 +30,7 @@
 #include "log.h"
 
 struct SCDef {
+    QString id;
     QString ctxt;
     QString desc;
     QKeySequence val;
@@ -46,11 +47,6 @@ public:
     }
 };
 
-static QString mapkey(const QString& ctxt, const QString& desc)
-{
-    return ctxt + "/" + desc;
-}
-
 SCBase::SCBase()
 {
     m = new Internal();
@@ -66,14 +62,14 @@ SCBase::SCBase()
             LOGERR("Bad shortcut def in prefs: [" << ssc << "]\n");
             continue;
         }
-        QString ctxt = u8s2qs(co_des_val[0]);
-        QString desc = u8s2qs(co_des_val[1]);
-        QString val = u8s2qs(co_des_val[2]);
-        QString key = mapkey(ctxt, desc);
-        auto it = m->scvalues.find(key);
+        QString id = u8s2qs(co_des_val[0]);
+        QString ctxt = u8s2qs(co_des_val[1]);
+        QString desc = u8s2qs(co_des_val[2]);
+        QString val = u8s2qs(co_des_val[3]);
+        auto it = m->scvalues.find(id);
         if (it == m->scvalues.end()) {
-            m->scvalues[key] =
-                SCDef{ctxt, desc, QKeySequence(val), QKeySequence()};
+            m->scvalues[id] =
+                SCDef{id, ctxt, desc, QKeySequence(val), QKeySequence()};
         } else {
             it->second.val = QKeySequence(val);
         }
@@ -85,20 +81,20 @@ SCBase::~SCBase()
     delete m;
 }
 
-QKeySequence SCBase::get(const QString& ctxt, const QString& desc,
-                         const QString& defks)
+QKeySequence SCBase::get(const QString& id, const QString& ctxt,
+                         const QString& desc, const QString& defks)
 {
-    LOGDEB0("SCBase::get: [" << qs2utf8s(ctxt) << "]/[" <<
+    LOGDEB0("SCBase::get: id "<< qs2utf8s(id) << " ["<<qs2utf8s(ctxt) << "]/[" <<
             qs2utf8s(desc) << "], [" << qs2utf8s(defks) << "]\n");
-    QString key = mapkey(ctxt, desc);
-    m->scdefs[key] = SCDef{ctxt, desc, QKeySequence(defks),QKeySequence(defks)};
-    auto it = m->scvalues.find(key);
+    m->scdefs[id] = SCDef{id, ctxt, desc, QKeySequence(defks),
+                          QKeySequence(defks)};
+    auto it = m->scvalues.find(id);
     if (it == m->scvalues.end()) {
         if (defks.isEmpty()) {
             return QKeySequence();
         }
         QKeySequence qks(defks);
-        m->scvalues[key] = SCDef{ctxt, desc, qks, qks};
+        m->scvalues[id] = SCDef{id, ctxt, desc, qks, qks};
         LOGDEB0("get(" << qs2utf8s(ctxt) << ", " << qs2utf8s(desc) <<
             ", " << qs2utf8s(defks) << ") -> " <<
                 qs2utf8s(qks.toString()) << "\n");
@@ -111,15 +107,15 @@ QKeySequence SCBase::get(const QString& ctxt, const QString& desc,
     return it->second.val;
 }
 
-void SCBase::set(const QString& ctxt, const QString& desc, const QString& newks)
+void SCBase::set(const QString& id, const QString& ctxt, const QString& desc,
+                 const QString& newks)
 {
-    LOGDEB0("SCBase::set: [" << qs2utf8s(ctxt) << "]/[" <<
+    LOGDEB0("SCBase::set: id "<< qs2utf8s(id) << "["<< qs2utf8s(ctxt) << "]/[" <<
             qs2utf8s(desc) << "], [" << qs2utf8s(newks) << "]\n");
-    QString key = mapkey(ctxt, desc);
-    auto it = m->scvalues.find(key);
+    auto it = m->scvalues.find(id);
     if (it == m->scvalues.end()) {
         QKeySequence qks(newks);
-        m->scvalues[key] = SCDef{ctxt, desc, qks, QKeySequence()};
+        m->scvalues[id] = SCDef{id, ctxt, desc, qks, QKeySequence()};
         return;
     }
     it->second.val = newks;
@@ -129,6 +125,7 @@ QStringList SCBase::Internal::getAll(const std::map<QString, SCDef>& mp)
 {
     QStringList result;
     for (const auto& entry : mp) {
+        result.push_back(entry.second.id);
         result.push_back(entry.second.ctxt);
         result.push_back(entry.second.desc);
         result.push_back(entry.second.val.toString());
@@ -155,7 +152,7 @@ void SCBase::store()
         if (def.val != def.dflt) {
             std::string e = 
                 stringsToString(std::vector<std::string>{
-                        qs2utf8s(def.ctxt), qs2utf8s(def.desc),
+                        qs2utf8s(def.id), qs2utf8s(def.ctxt), qs2utf8s(def.desc),
                             qs2utf8s(def.val.toString())});
             LOGDEB0("SCBase::store: storing: [" << e << "]\n");
             slout.append(u8s2qs(e));

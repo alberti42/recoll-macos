@@ -304,11 +304,13 @@ void UIPrefsDialog::readShortcutsInternal(const QStringList& sl)
     shortcutsTB->setHorizontalHeaderItem(
         3, new QTableWidgetItem(tr("Default")));
     int row = 0;
+    m_scids.clear();
     for (int i = 0; i < sl.size();) {
         LOGDEB0("UIPrefsDialog::readShortcuts: inserting row " <<
                 qs2utf8s(sl.at(i)) << " " << qs2utf8s(sl.at(i+1)) << " " <<
                 qs2utf8s(sl.at(i+2)) << " " << qs2utf8s(sl.at(i+3)) << "\n");
         shortcutsTB->insertRow(row);
+        m_scids.push_back(sl.at(i++));
         shortcutsTB->setItem(row, 0, new QTableWidgetItem(sl.at(i++)));
         shortcutsTB->setItem(row, 1, new QTableWidgetItem(sl.at(i++)));
         auto ed = new QKeySequenceEdit(QKeySequence(sl.at(i++)));
@@ -339,7 +341,7 @@ void UIPrefsDialog::storeShortcuts()
         QString ctxt = shortcutsTB->item(row, 1)->text();
         auto qsce = (QKeySequenceEdit*)(shortcutsTB->cellWidget(row, 2));
         QString val = qsce->keySequence().toString();
-        scbase.set(dflt, ctxt, val);
+        scbase.set(m_scids[row], dflt, ctxt, val);
     }
     scbase.store();
 }

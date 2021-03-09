@@ -57,17 +57,17 @@ public:
      * created from the settings, create it with the default
      * sequence. This is called from the context classes and returns
      * either the default or the customised sequence. */
-    QKeySequence get(const QString& context, const QString& description,
-                     const QString& defkeyseq);
+    QKeySequence get(const QString& id, const QString& context,
+                     const QString& description, const QString& defkeyseq);
 
     /** Set a customised value for the designated shortcut. Called
      * from the preference code. */
-    void set(const QString& context, const QString& description,
-             const QString& keyseq);
+    void set(const QString& id, const QString& context,
+             const QString& description, const QString& keyseq);
 
     /** Return a list of all shortcuts. This is used to create the
      *  preferences table. Each entry in the list is a string
-     * quadruplet: context, description, value, default */
+     *  tuple: id, context, description, value, default */
     QStringList getAll();
 
     /** Return a list of all shortcuts, with only default values (no settings).
@@ -94,9 +94,9 @@ private:
 
 /** This can be used in the client class init method, to actually
  * create and connect the shortcuts. */
-#define SETSHORTCUT(OBJ, CTXT, DESCR, SEQ, FLD, SLTFUNC)                \
+#define SETSHORTCUT(OBJ, ID, CTXT, DESCR, SEQ, FLD, SLTFUNC)            \
     do {                                                                \
-        QKeySequence ks = SCBase::scBase().get(CTXT, DESCR, SEQ);       \
+        QKeySequence ks = SCBase::scBase().get(ID, CTXT, DESCR, SEQ);   \
         if (!ks.isEmpty()) {                                            \
             delete FLD;                                                 \
             FLD = new QShortcut(ks, OBJ, SLOT(SLTFUNC()));              \
@@ -109,9 +109,9 @@ private:
  * customisation screen. Same param list as SETSHORTCUT to make it
  * easy to duplicate a list of ones into the other, even if some
  * parameters are not used here. */
-#define LISTSHORTCUT(OBJ, CTXT, DESCR, SEQ, FLD, SLTFUNC)           \
+#define LISTSHORTCUT(OBJ, ID, CTXT, DESCR, SEQ, FLD, SLTFUNC)       \
     do {                                                            \
-        SCBase::scBase().get(CTXT, DESCR, SEQ);                     \
+        SCBase::scBase().get(ID, CTXT, DESCR, SEQ);                 \
     } while (false);
 
 

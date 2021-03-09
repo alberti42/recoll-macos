@@ -701,19 +701,21 @@ void ResTable::onNewShortcuts()
             connect(sc, SIGNAL(activated()),m_rowlinks.back(),SLOT(activate()));
         }
     }
-    SETSHORTCUT(this, tr("Result Table"), tr("Open current result document"),
-                "Ctrl+O", m_opensc, menuEdit);
-    SETSHORTCUT(this, tr("Result Table"), tr("Open current result and quit"),
+    SETSHORTCUT(this, "restable:704", tr("Result Table"),
+                tr("Open current result document"),"Ctrl+O", m_opensc, menuEdit);
+    SETSHORTCUT(this, "restable:706", tr("Result Table"),
+                tr("Open current result and quit"),
                 "Ctrl+Shift+O", m_openquitsc, menuEditAndQuit);
-    SETSHORTCUT(this, tr("Result Table"), tr("Preview"),
+    SETSHORTCUT(this, "restable:709", tr("Result Table"), tr("Preview"),
                 "Ctrl+D", m_previewsc, menuPreview);
-    SETSHORTCUT(this, tr("Result Table"), tr("Show snippets"),
+    SETSHORTCUT(this, "restable:711", tr("Result Table"), tr("Show snippets"),
                 "Ctrl+E", m_showsnipssc, menuShowSnippets);
-    SETSHORTCUT(this, tr("Result Table"), tr("Show header"),
+    SETSHORTCUT(this, "restable:713", tr("Result Table"), tr("Show header"),
                 "Ctrl+H", m_showheadersc, toggleHeader);
-    SETSHORTCUT(this, tr("Result Table"), tr("Show vertical header"),
+    SETSHORTCUT(this, "restable:715", tr("Result Table"),
+                tr("Show vertical header"),
                 "Ctrl+V", m_showvheadersc, toggleVHeader);
-    SETSHORTCUT(this, tr("Result Table"),
+    SETSHORTCUT(this, "restable:718", tr("Result Table"),
                 tr("Copy current result text to clipboard"),
                 "Ctrl+G", m_copycurtextsc, copyCurrentRowText);
     std::vector<QShortcut*> scps={

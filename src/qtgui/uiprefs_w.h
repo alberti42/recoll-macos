@@ -21,6 +21,9 @@
 
 #include "ui_uiprefs.h"
 
+#include <vector>
+#include <QString>
+
 class QDialog;
 class ViewAction;
 class RclMain;
@@ -86,6 +89,7 @@ private:
     QString headerText;
     ViewAction *m_viewAction;
     RclMain *m_mainWindow;
+    std::vector<QString> m_scids;
 };
 
 #endif /* _UIPREFS_W_H_INCLUDED_ */

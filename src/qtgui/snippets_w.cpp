@@ -153,29 +153,29 @@ void SnippetsW::init()
 
 void SnippetsW::onNewShortcuts()
 {
-    SETSHORTCUT(this, tr("Snippets Window"), tr("Find"),
+    SETSHORTCUT(this, "snippets:156", tr("Snippets Window"), tr("Find"),
                 "Ctrl+F", m_find1sc, slotEditFind);
-    SETSHORTCUT(this, tr("Snippets Window"), tr("Find (alt)"),
+    SETSHORTCUT(this, "snippets:158", tr("Snippets Window"), tr("Find (alt)"),
                 "/", m_find2sc, slotEditFind);
-    SETSHORTCUT(this, tr("Snippets Window"), tr("Find next"),
+    SETSHORTCUT(this, "snippets:160", tr("Snippets Window"), tr("Find next"),
                 "F3", m_findnextsc, slotEditFindNext);
-    SETSHORTCUT(this, tr("Snippets Window"), tr("Find previous"),
+    SETSHORTCUT(this, "snippets:162", tr("Snippets Window"), tr("Find previous"),
                 "Shift+F3", m_findprevsc, slotEditFindPrevious);
-    SETSHORTCUT(this, tr("Snippets Window"), tr("Close window"),
+    SETSHORTCUT(this, "snippets:164", tr("Snippets Window"), tr("Close window"),
                 "Esc", m_hidesc, hide);
 }
 
 void SnippetsW::listShortcuts()
 {
-    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find"), "Ctrl+F", 
-                 m_find1sc, slotEditFind);
-    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find (alt)"), "/",
-                 m_find2sc, slotEditFind);
-    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find next"), "F3",
-                 m_find2sc, slotEditFindNext);
-    LISTSHORTCUT(this, tr("Snippets Window"), tr("Find previous"),
+    LISTSHORTCUT(this, "snippets:156", tr("Snippets Window"), tr("Find"),
+                 "Ctrl+F", m_find1sc, slotEditFind);
+    LISTSHORTCUT(this, "snippets:158", tr("Snippets Window"), tr("Find (alt)"),
+                 "/", m_find2sc, slotEditFind);
+    LISTSHORTCUT(this, "snippets:160",tr("Snippets Window"), tr("Find next"),
+                 "F3", m_find2sc, slotEditFindNext);
+    LISTSHORTCUT(this, "snippets:162",tr("Snippets Window"), tr("Find previous"),
                  "Shift+F3", m_find2sc, slotEditFindPrevious);
-    LISTSHORTCUT(this, tr("Snippets Window"), tr("Close window"),
+    LISTSHORTCUT(this, "snippets:164", tr("Snippets Window"), tr("Close window"),
                  "Esc", m_hidesc, hide);
 }
 

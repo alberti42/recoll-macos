@@ -148,16 +148,19 @@ void Preview::init()
 
 void Preview::onNewShortcuts()
 {
-    SETSHORTCUT(this, tr("Preview Window"), tr("Close preview window"),
+    SETSHORTCUT(this, "preview:151", tr("Preview Window"),
+                tr("Close preview window"),
                 "Esc",  m_closewinsc, close);
-    SETSHORTCUT(this, tr("Preview Window"), tr("Show next result"),
+    SETSHORTCUT(this, "preview:153",tr("Preview Window"), tr("Show next result"),
                 "Shift+Down", m_nextdocsc, emitShowNext);
-    SETSHORTCUT(this, tr("Preview Window"), tr("Show previous result"),
+    SETSHORTCUT(this, "preview:155", tr("Preview Window"),
+                tr("Show previous result"),
                 "Shift+Up", m_prevdocsc, emitShowPrev);
-    SETSHORTCUT(this, tr("Preview Window"), tr("Close tab"),
+    SETSHORTCUT(this, "preview:159", tr("Preview Window"), tr("Close tab"),
                 "Ctrl+W", m_closetabsc, closeCurrentTab);
     QKeySequence ks =
-        SCBase::scBase().get(tr("Preview Window"),tr("Print"), "Ctrl+P");
+        SCBase::scBase().get("preview:162", tr("Preview Window"),
+                             tr("Print"), "Ctrl+P");
     if (!ks.isEmpty()) {
         delete m_printtabsc;
         m_printtabsc = new QShortcut(
@@ -167,16 +170,20 @@ void Preview::onNewShortcuts()
 
 void Preview::listShortcuts()
 {
-    LISTSHORTCUT(null, tr("Preview Window"), tr("Close preview window"),
+    LISTSHORTCUT(null, "preview:151", tr("Preview Window"),
+                 tr("Close preview window"),
                  "Esc",  m_closewinsc, close);
-    LISTSHORTCUT(null, tr("Preview Window"), tr("Show next result"),
+    LISTSHORTCUT(null, "preview:153", tr("Preview Window"),
+                 tr("Show next result"),
                  "Shift+Down", m_nextdocsc, emitShowNext);
-    LISTSHORTCUT(null, tr("Preview Window"), tr("Show previous result"),
+    LISTSHORTCUT(null, "preview:155", tr("Preview Window"),
+                 tr("Show previous result"),
                  "Shift+Up",m_prevdocsc, emitShowPrev);
-    LISTSHORTCUT(null, tr("Preview Window"), tr("Close tab"), "Ctrl+W",
-                 m_closetabsc, closeCurrentTab);
-    LISTSHORTCUT(null, tr("Preview Window"), tr("Print"), "Ctrl+P",
-                 m_printtabsc, print);
+    LISTSHORTCUT(null, "preview:159",
+                 tr("Preview Window"), tr("Close tab"),
+                 "Ctrl+W", m_closetabsc, closeCurrentTab);
+    LISTSHORTCUT(null, "preview:162", tr("Preview Window"),
+                 tr("Print"), "Ctrl+P", m_printtabsc, print);
 }
 
 void Preview::emitShowNext()
