@@ -1,3 +1,9 @@
+kio-recoll (1.29.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Shortcuts editor
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 09 Mar 2021 10:00:00 +0100
+
 kio-recoll (1.28.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix error in 1.28.3 which broke indexing RTF files with a .doc extension.

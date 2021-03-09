@@ -9,10 +9,11 @@
 # 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
 # 20.10    groovy 2021-07
+# 21.04    hirsute 2022-01
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.29.0
+RCLVERS=1.29.1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.0
 PPAVERS=1
@@ -46,12 +47,10 @@ check_recoll_orig()
     fi
 }
 
-# Note: recoll 1.22+ builds on precise fail. precise stays at 1.21
-
 ####### QT
 debdir=debian
-series="xenial bionic focal groovy"
-series=focal
+series="bionic focal groovy hirsute"
+#series=focal
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -86,7 +85,7 @@ done
 
 
 ### KIO.
-series="xenial bionic focal groovy"
+series="bionic focal groovy hirsute"
 series=
 
 debdir=debiankio
@@ -126,7 +125,7 @@ for svers in $series ; do
 done
 
 ### GSSP
-series="xenial bionic focal groovy"
+series="bionic focal groovy hirsute"
 series=
 
 debdir=debiangssp
@@ -171,7 +170,7 @@ done
 
 
 ### Unity Scope
-series="trusty xenial  zesty artful bionic"
+series="bionic"
 series=
 
 debdir=debianunityscope
