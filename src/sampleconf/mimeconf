@@ -222,7 +222,7 @@ text/x-ini = internal text/plain
 text/x-java = internal text/plain
 text/x-lua = internal
 text/x-mail = internal
-text/x-man = exec rclman
+text/x-man = exec rclman;maxseconds=30
 text/x-orgmode = execm rclorgmode.py
 text/x-perl = internal text/plain
 text/x-purple-html-log = internal text/html

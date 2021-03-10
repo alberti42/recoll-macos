@@ -63,9 +63,7 @@ void MEAdv::newData(int n)
 
 
 MimeHandlerExec::MimeHandlerExec(RclConfig *cnf, const std::string& id)
-    : RecollFilter(cnf, id), missingHelper(false), m_filtermaxseconds(900),
-      m_filtermaxmbytes(0), m_handlernomd5(false), m_hnomd5init(false),
-      m_nomd5(false)
+    : RecollFilter(cnf, id)
 {
     m_config->getConfParam("filtermaxseconds", &m_filtermaxseconds);
     m_config->getConfParam("filtermaxmbytes", &m_filtermaxmbytes);

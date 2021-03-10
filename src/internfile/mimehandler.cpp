@@ -202,6 +202,7 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mimeOrParams,
 }
 
 static const string cstr_mh_charset("charset");
+static const string cstr_mh_maxseconds("maxseconds");
 /**
  * Create a filter that executes an external program or script
  * A filter def can look like:
@@ -245,7 +246,9 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
         h->cfgFilterOutputCharset = stringtolower((const string&)value);
     if (attrs.get(cstr_dj_keymt, value))
         h->cfgFilterOutputMtype = stringtolower((const string&)value);
-
+    if (attrs.get(cstr_mh_maxseconds, value)) {
+        h->setmaxseconds(atoi(value.c_str()));
+    }
     LOGDEB2("mhExecFactory:mt [" << mtype << "] cfgmt [" <<
             h->cfgFilterOutputMtype << "] cfgcs ["<<h->cfgFilterOutputCharset <<
             "] cmd: [" << stringsToString(h->params) << "]\n");
