@@ -1210,42 +1210,38 @@ PyDoc_STRVAR(doc_Query_highlight,
 
 class PyPlainToRich: public PlainToRich {
 public:
+    PyPlainToRich() {}
     PyPlainToRich(PyObject *methods, bool eolbr = false)
-        : m_methods(methods)
-        {
-            m_eolbr = eolbr;
-        }
-    virtual ~PyPlainToRich()
-        {
-        }
-    virtual string startMatch(unsigned int idx)
-        {
-            PyObject *res =  0;
-            if (m_methods)
-                res = PyObject_CallMethod(m_methods, (char *)"startMatch", 
-                                          (char *)"(i)", idx);
-            if (res == 0)
-                return "<span class=\"rclmatch\">";
-            PyObject *res1 = res;
-            if (PyUnicode_Check(res))
-                res1 = PyUnicode_AsUTF8String(res);
-            return PyBytes_AsString(res1);
-        } 
+        : m_methods(methods) {
+        m_eolbr = eolbr;
+    }
+    virtual ~PyPlainToRich() {}
+    virtual string startMatch(unsigned int idx) {
+        PyObject *res =  0;
+        if (m_methods)
+            res = PyObject_CallMethod(m_methods, (char *)"startMatch", 
+                                      (char *)"(i)", idx);
+        if (res == 0)
+            return "<span class=\"rclmatch\">";
+        PyObject *res1 = res;
+        if (PyUnicode_Check(res))
+            res1 = PyUnicode_AsUTF8String(res);
+        return PyBytes_AsString(res1);
+    } 
 
-    virtual string endMatch() 
-        {
-            PyObject *res =  0;
-            if (m_methods)
-                res = PyObject_CallMethod(m_methods, (char *)"endMatch", 0);
-            if (res == 0)
-                return "</span>";
-            PyObject *res1 = res;
-            if (PyUnicode_Check(res))
-                res1 = PyUnicode_AsUTF8String(res);
-            return PyBytes_AsString(res1);
-        }
+    virtual string endMatch() {
+        PyObject *res =  0;
+        if (m_methods)
+            res = PyObject_CallMethod(m_methods, (char *)"endMatch", 0);
+        if (res == 0)
+            return "</span>";
+        PyObject *res1 = res;
+        if (PyUnicode_Check(res))
+            res1 = PyUnicode_AsUTF8String(res);
+        return PyBytes_AsString(res1);
+    }
 
-    PyObject *m_methods;
+    PyObject *m_methods{nullptr};
 };
 
 static PyObject *
@@ -1373,6 +1369,78 @@ Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
                             "UTF-8", "replace");
 }
 
+PyDoc_STRVAR(doc_Query_getsnippets,
+             "getsnippets(doc, maxoccs = -1, ctxwords = -1, sortbypage=False, methods = object))\n"
+             "Will return a list of snippets for doc by selecting text around the match terms\n"
+             "If methods is set, will also perform highlighting. See the highlight method\n"
+    );
+
+static PyObject *
+Query_getsnippets(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
+{
+    LOGDEB0("Query_getSnippets\n");
+    static const char *kwlist[] = {"doc", "methods", "maxoccs", "ctxwords", "sortbypage", NULL};
+    recoll_DocObject *pydoc = 0;
+    PyObject *hlmethods = 0;
+    int maxoccs = -1;
+    int ctxwords = -1;
+    PyObject *osortbp = 0;
+    bool sortbypage = false;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|OiiO:Query_getSnippets",
+                                     (char **)kwlist,
+                                     &recoll_DocType, &pydoc,
+                                     &hlmethods,
+                                     &maxoccs,
+                                     &ctxwords,
+                                     &osortbp)) {
+        return 0;
+    }
+    if (osortbp && PyObject_IsTrue(osortbp))
+        sortbypage = true;
+
+    if (pydoc->doc == 0) {
+        LOGERR("Query_makeDocAbstract: doc not found " << pydoc->doc << "\n");
+        PyErr_SetString(PyExc_AttributeError, "doc");
+        return 0;
+    }
+    if (self->query == 0) {
+        LOGERR("Query_makeDocAbstract: query not found " << self->query<< "\n");
+        PyErr_SetString(PyExc_AttributeError, "query");
+        return 0;
+    }
+    std::shared_ptr<Rcl::SearchData> sd = self->query->getSD();
+    if (!sd) {
+        PyErr_SetString(PyExc_ValueError, "Query not initialized");
+        return 0;
+    }
+    std::vector<Rcl::Snippet> snippets;
+    self->query->makeDocAbstract(*(pydoc->doc), snippets, maxoccs, ctxwords, sortbypage);
+    PyObject *sniplist = PyList_New(snippets.size());
+    int i = 0;
+    HighlightData hldata;
+    PyPlainToRich hler;
+    if (hlmethods) {
+        sd->getTerms(hldata);
+        hler = PyPlainToRich(hlmethods);
+        hler.set_inputhtml(0);
+    }
+    for (const auto& snip : snippets) {
+        const std::string *textp = &snip.snippet;
+        list<string> lr;
+        if (hlmethods) {
+            hler.plaintorich(snip.snippet, lr, hldata);
+            textp = &lr.front();
+        }
+        PyList_SetItem(
+            sniplist, i++,
+            Py_BuildValue(
+                "(iOO)", snip.page,
+                PyUnicode_Decode(snip.term.c_str(), snip.term.size(), "UTF-8", "replace"),
+                PyUnicode_Decode(textp->c_str(), textp->size(), "UTF-8", "replace")));
+    }
+    return sniplist;
+}
+
 PyDoc_STRVAR(doc_Query_getxquery,
              "getxquery(None) -> Unicode string\n"
              "\n"
@@ -1483,6 +1551,8 @@ static PyMethodDef Query_methods[] = {
      doc_Query_getgroups},
     {"makedocabstract", (PyCFunction)Query_makedocabstract, 
      METH_VARARGS|METH_KEYWORDS, doc_Query_makedocabstract},
+    {"getsnippets", (PyCFunction)Query_getsnippets, 
+     METH_VARARGS|METH_KEYWORDS, doc_Query_getsnippets},
     {"scroll", (PyCFunction)Query_scroll, 
      METH_VARARGS|METH_KEYWORDS, doc_Query_scroll},
     {NULL}  /* Sentinel */

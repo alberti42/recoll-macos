@@ -5602,6 +5602,22 @@ for doc in results:
             </varlistentry>
             
             <varlistentry>
+             <term>Query.getsnippets(doc, maxoccs = -1, ctxwords = -1,
+               sortbypage=False, methods = object)</term>
+             <listitem><para>Will return a list of extracts from the result
+                 document by selecting text around the match terms.  Each
+                 entry in the result list is a triple: page number, term,
+                 text. By default, the most relevants snippets appear first
+                 in the list. Set <literal>sortbypage</literal> to sort by
+                 page number instead. If <literal>methods</literal> is set,
+                 the fragments will be highlighted (see the highlight
+                 method). If <literal>maxoccs</literal> is set, it defines
+                 the maximum result list
+                 length. <literal>ctxwords</literal> allows adjusting the
+                 individual snippet context size. </para></listitem>
+            </varlistentry>
+            
+            <varlistentry>
               <term>Query.__iter__() and Query.next()</term>
               <listitem><para>So that things like
               <literal>for doc in query:</literal>

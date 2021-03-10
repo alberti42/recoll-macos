@@ -297,15 +297,14 @@ bool Query::makeDocAbstract(const Doc &doc, vector<string>& abstract)
     vector<Snippet> vpabs;
     if (!makeDocAbstract(doc, vpabs))
         return false;
-    for (vector<Snippet>::const_iterator it = vpabs.begin();
-         it != vpabs.end(); it++) {
+    for (const auto& snippet : vpabs) {
         string chunk;
-        if (it->page > 0) {
+        if (snippet.page > 0) {
             ostringstream ss;
-            ss << it->page;
+            ss << snippet.page;
             chunk += string(" [p ") + ss.str() + "] ";
         }
-        chunk += it->snippet;
+        chunk += snippet.snippet;
         abstract.push_back(chunk);
     }
     return true;
@@ -316,9 +315,8 @@ bool Query::makeDocAbstract(const Doc &doc, string& abstract)
     vector<Snippet> vpabs;
     if (!makeDocAbstract(doc, vpabs))
         return false;
-    for (vector<Snippet>::const_iterator it = vpabs.begin(); 
-         it != vpabs.end(); it++) {
-        abstract.append(it->snippet);
+    for (const auto& snippet : vpabs) {
+        abstract.append(snippet.snippet);
         abstract.append(cstr_ellipsis);
     }
     return m_reason.empty() ? true : false;

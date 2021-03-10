@@ -7307,6 +7307,26 @@ for doc in results:
                     also perform highlighting. See the highlight
                     method.</p>
                   </dd>
+                  <dt><span class="term">Query.getsnippets(doc,
+                  maxoccs = -1, ctxwords = -1, sortbypage=False,
+                  methods = object)</span></dt>
+                  <dd>
+                    <p>Will return a list of extracts from the
+                    result document by selecting text around the
+                    match terms. Each entry in the result list is a
+                    triple: page number, term, text. By default,
+                    the most relevants snippets appear first in the
+                    list. Set <code class=
+                    "literal">sortbypage</code> to sort by page
+                    number instead. If <code class=
+                    "literal">methods</code> is set, the fragments
+                    will be highlighted (see the highlight method).
+                    If <code class="literal">maxoccs</code> is set,
+                    it defines the maximum result list length.
+                    <code class="literal">ctxwords</code> allows
+                    adjusting the individual snippet context
+                    size.</p>
+                  </dd>
                   <dt><span class="term">Query.__iter__() and
                   Query.next()</span></dt>
                   <dd>
