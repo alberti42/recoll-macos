@@ -557,12 +557,10 @@ void UIPrefsDialog::showFontDialog()
 
 void UIPrefsDialog::showStylesheetDialog()
 {
-    qssFile = myGetFileName(false, "Select stylesheet file", true);
-    string nm = path_getsimple(qs2path(qssFile));
-    if (!nm.empty()) {
-        stylesheetPB->setText(path2qs(nm));
-    } else {
-        stylesheetPB->setText(tr("Choose"));
+    auto newfn = myGetFileName(false, "Select stylesheet file", true);
+    if (!newfn.isEmpty()) {
+        qssFile = newfn;
+        stylesheetPB->setText(path2qs(path_getsimple(qs2path(qssFile))));
     }
 }
 
