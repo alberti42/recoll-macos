@@ -282,7 +282,7 @@
         <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Search Provider</ulink>.
         </para></listitem>
         <listitem><para>A
-        <ulink url="https://framagit.org/medoc92/recollwebui">WEB interface</ulink>.
+        <ulink url="https://framagit.org/medoc92/recollwebui">Web interface</ulink>.
         </para></listitem>
       </itemizedlist>
       </para>
@@ -1257,56 +1257,51 @@ recollindex -c "$confdir"
   </simplesect>
   </sect1>
 
-    <sect1 id="RCL.INDEXING.WEBQUEUE">
-      <title>&LIN;: indexing visited WEB pages</title>
+    <sect1 id="RCL.INDEXING.WebQUEUE">
+      <title>&LIN;: indexing visited Web pages</title>
 
       <para>With the help of a <application>Firefox</application>
-      extension, &RCL; can index the Internet pages that you visit. The
-      extension has a long history: it was initially designed for the
-      <application>Beagle</application> indexer, then adapted to &RCL; and
-      the <application>Firefox</application> <application>XUL</application>
-      API. A new version of the addon has been written to work with the
-      <application>WebExtensions</application> API, which is the only one
-      supported after <application>Firefox</application> version 57.</para>
+        extension, &RCL; can index the Internet pages that you visit. The
+        extension has a long history: it was initially designed for
+        the <application>Beagle</application> indexer, then adapted to
+        &RCL; and
+        the <application>Firefox</application> <application>XUL</application>
+        API. The current version of the extension is located in
+        the <ulink url="https://addons.mozilla.org/en-US/firefox/addon/recoll-we/">Mozilla
+        add-ons repository</ulink> uses
+        the <application>WebExtensions</application> API, and works with
+        current <application>Firefox</application> versions.</para>
 
-      <para>The extension works by copying visited WEB pages to an indexing
-      queue directory, which &RCL; then processes, indexing the data,
-      storing it into a local cache, then removing the file from the
-      queue.</para>
-
-      <para>Because the WebExtensions API introduces more constraints to
-      what extensions can do, the new version works with one
-      more step: the files are first created in the browser default
-      downloads location (typically <filename>$HOME/Downloads</filename> ),
-      then moved by a script in the old queue location. The script is
-      automatically executed by the &RCL; indexer versions 1.23.5 and
-      newer. It could conceivably be executed independently to make the new
-      browser extension compatible with an older &RCL; version (the script
-      is named <command>recoll-we-move-files.py</command>).</para>
-
-      <note><para>For the WebExtensions-based version to work, it is
-      necessary to set the <literal>webdownloadsdir</literal> value in the
-      configuration if it was changed from the default
-      <filename>$HOME/Downloads</filename> in the browser
-      preferences.</para></note>
+      <para>The extension works by copying visited Web pages to an indexing
+        queue directory, which &RCL; then processes, storing the data into a
+        local cache, then indexing it, then removing the file from the
+        queue.</para>
       
-      <para>The visited WEB pages indexing feature can be enabled on the
-      &RCL; side from the GUI <guilabel>Index configuration</guilabel>
-      panel, or by editing the configuration file (set
-      <varname>processwebqueue</varname> to 1).</para>
+      <para>The visited Web pages indexing feature can be enabled on the
+        &RCL; side from the GUI <guilabel>Index configuration</guilabel>
+        panel, or by editing the configuration file (set
+        <varname>processwebqueue</varname> to 1).</para>
 
-      <para>A current pointer to the extension can be found, along with
-      up-to-date instructions, on the
-      <ulink url="&FAQS;IndexWebHistory">Recoll wiki</ulink>.</para>
+      <para>The &RCL; GUI has a tool to list and edit the contents of the
+        Web
+        cache. (<menuchoice><guimenu>Tools</guimenu><guimenuitem>Webcache
+        editor</guimenuitem></menuchoice>)</para>
 
-      <para>A copy of the indexed WEB pages is retained by Recoll in a
-      local cache (from which previews can be fetched). The cache size can
-      be adjusted from the <guilabel>Index configuration</guilabel> /
-      <guilabel>Web history</guilabel> panel. Once the maximum size
-      is reached, old pages are purged - both from the cache and the index
-      - to make room for new ones, so you need to explicitly archive in
-      some other place the pages that you want to keep
-      indefinitely.</para> 
+      <para>You can find more details on Web indexing, its usage and configuration
+        in a <ulink url="&FAQS;IndexWebHistory">Recoll 'Howto' entry</ulink>.</para>
+
+      <note><title>The cache is not an archive</title><para>A copy of
+          the indexed Web pages is retained by Recoll in a local cache
+          (from which data is fetched for previews, or when resetting the
+          index). The cache has a maximum size, which can be adjusted from
+          the <guilabel>Index configuration</guilabel> / <guilabel>Web
+          history</guilabel> panel (<literal>webcachemaxmbs</literal>
+          parameter in <filename>recoll.conf</filename>). Once the maximum
+          size is reached, old pages are erased to make room for new ones.
+          The pages which you want to keep indefinitely need to be
+          explicitly archived elsewhere. Using a very high value for
+          the cache size can avoid data erasure, but see the above 'Howto'
+          page for more details and gotchas.</para></note>
 
     </sect1>
 
@@ -2475,7 +2470,7 @@ fs.inotify.max_user_watches=32768
         file inside the configuration directory. The sample file
         distributed with &RCL; (which you should be able to find under
         <filename>/usr/share/recoll/examples/fragbuts.xml</filename>),
-        contains an example which filters the results from the WEB
+        contains an example which filters the results from the Web
         history.</para>
 
 
@@ -2485,7 +2480,7 @@ fs.inotify.max_user_watches=32768
 <fragbuts version="1.0">
 
   <radiobuttons>
-    <!-- Actually useful: toggle WEB queue results inclusion -->
+    <!-- Actually useful: toggle Web queue results inclusion -->
     <fragbut>
       <label>Include Web Results</label>
       <frag></frag>
@@ -6115,11 +6110,11 @@ hasextract = False
       <application>Debian/Ubuntu apt</application>,
       <application>FreeBSD</application> ports, etc.), or from some type
       of "backports" repository providing versions newer than the standard
-      ones, or found on the &RCL; WEB site in some
+      ones, or found on the &RCL; Web site in some
       cases. The most up-to-date information about Recoll packages can
       usually be found on the
       <ulink url="http://www.recoll.org/pages/download.html">
-        <application>Recoll</application> WEB site downloads
+        <application>Recoll</application> Web site downloads
       page</ulink></para> 
 
       <para>The &WIN; version of Recoll comes in a self-contained setup

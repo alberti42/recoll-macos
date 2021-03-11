@@ -331,7 +331,7 @@ bool ConfIndexW::setupWebHistoryPanel(int idx)
 {
     ConfParamW *bparam = m_w->addParam(
         idx, ConfTabsW::CFPT_BOOL, "processwebqueue",
-        tr("Process the WEB history queue"),
+        tr("Process the Web history queue"),
         tr("Enables indexing Firefox visited pages.<br>"
            "(you need also install the Firefox Recoll plugin)"));
     ConfParamW *cparam = m_w->addParam(
@@ -353,6 +353,8 @@ bool ConfIndexW::setupWebHistoryPanel(int idx)
            "file (only waste space at the end)."
             ), -1, 1000*1000); // Max 1TB...
     m_w->enableLink(bparam, cparam);
+    m_w->addBlurb(idx, tr("Note: old pages will be erased to make space for "
+                          "new ones when the maximum size is reached"));
     m_w->endOfList(idx);
     return true;
 }

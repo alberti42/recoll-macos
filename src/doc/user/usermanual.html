@@ -140,9 +140,9 @@ alink="#0000FF">
             "#RCL.INDEXING.REMOVABLE">Removable
             volumes</a></span></dt>
             <dt><span class="sect1">2.5. <a href=
-            "#RCL.INDEXING.WEBQUEUE"><span class=
+            "#RCL.INDEXING.WebQUEUE"><span class=
             "application">Unix</span>-like systems: indexing
-            visited WEB pages</a></span></dt>
+            visited Web pages</a></span></dt>
             <dt><span class="sect1">2.6. <a href=
             "#RCL.INDEXING.EXTATTR"><span class=
             "application">Unix</span>-like systems: using extended
@@ -423,7 +423,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1437">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1438">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -720,7 +720,7 @@ alink="#0000FF">
             <li class="listitem">
               <p>A <a class="ulink" href=
               "https://framagit.org/medoc92/recollwebui" target=
-              "_top">WEB interface</a>.</p>
+              "_top">Web interface</a>.</p>
             </li>
           </ul>
         </div>
@@ -1949,10 +1949,10 @@ recollindex -c "$confdir"
           <div>
             <div>
               <h2 class="title" style="clear: both"><a name=
-              "RCL.INDEXING.WEBQUEUE" id=
-              "RCL.INDEXING.WEBQUEUE"></a>2.5.&nbsp;<span class=
+              "RCL.INDEXING.WebQUEUE" id=
+              "RCL.INDEXING.WebQUEUE"></a>2.5.&nbsp;<span class=
               "application">Unix</span>-like systems: indexing
-              visited WEB pages</h2>
+              visited Web pages</h2>
             </div>
           </div>
         </div>
@@ -1964,57 +1964,48 @@ recollindex -c "$confdir"
         "application">Beagle</span> indexer, then adapted to
         <span class="application">Recoll</span> and the
         <span class="application">Firefox</span> <span class=
-        "application">XUL</span> API. A new version of the addon
-        has been written to work with the <span class=
-        "application">WebExtensions</span> API, which is the only
-        one supported after <span class=
-        "application">Firefox</span> version 57.</p>
-        <p>The extension works by copying visited WEB pages to an
+        "application">XUL</span> API. The current version of the
+        extension is located in the <a class="ulink" href=
+        "https://addons.mozilla.org/en-US/firefox/addon/recoll-we/"
+        target="_top">Mozilla add-ons repository</a> uses the
+        <span class="application">WebExtensions</span> API, and
+        works with current <span class="application">Firefox</span>
+        versions.</p>
+        <p>The extension works by copying visited Web pages to an
         indexing queue directory, which <span class=
-        "application">Recoll</span> then processes, indexing the
-        data, storing it into a local cache, then removing the file
-        from the queue.</p>
-        <p>Because the WebExtensions API introduces more
-        constraints to what extensions can do, the new version
-        works with one more step: the files are first created in
-        the browser default downloads location (typically
-        <code class="filename">$HOME/Downloads</code> ), then moved
-        by a script in the old queue location. The script is
-        automatically executed by the <span class=
-        "application">Recoll</span> indexer versions 1.23.5 and
-        newer. It could conceivably be executed independently to
-        make the new browser extension compatible with an older
-        <span class="application">Recoll</span> version (the script
-        is named <span class=
-        "command"><strong>recoll-we-move-files.py</strong></span>).</p>
-        <div class="note" style=
-        "margin-left: 0.5in; margin-right: 0.5in;">
-          <h3 class="title">Note</h3>
-          <p>For the WebExtensions-based version to work, it is
-          necessary to set the <code class=
-          "literal">webdownloadsdir</code> value in the
-          configuration if it was changed from the default
-          <code class="filename">$HOME/Downloads</code> in the
-          browser preferences.</p>
-        </div>
-        <p>The visited WEB pages indexing feature can be enabled on
+        "application">Recoll</span> then processes, storing the
+        data into a local cache, then indexing it, then removing
+        the file from the queue.</p>
+        <p>The visited Web pages indexing feature can be enabled on
         the <span class="application">Recoll</span> side from the
         GUI <span class="guilabel">Index configuration</span>
         panel, or by editing the configuration file (set
         <code class="varname">processwebqueue</code> to 1).</p>
-        <p>A current pointer to the extension can be found, along
-        with up-to-date instructions, on the <a class="ulink" href=
+        <p>The <span class="application">Recoll</span> GUI has a
+        tool to list and edit the contents of the Web cache.
+        (<span class="guimenu">Tools</span> → <span class=
+        "guimenuitem">Webcache editor</span>)</p>
+        <p>You can find more details on Web indexing, its usage and
+        configuration in a <a class="ulink" href=
         "https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexWebHistory"
-        target="_top">Recoll wiki</a>.</p>
-        <p>A copy of the indexed WEB pages is retained by Recoll in
-        a local cache (from which previews can be fetched). The
-        cache size can be adjusted from the <span class=
-        "guilabel">Index configuration</span> / <span class=
-        "guilabel">Web history</span> panel. Once the maximum size
-        is reached, old pages are purged - both from the cache and
-        the index - to make room for new ones, so you need to
-        explicitly archive in some other place the pages that you
-        want to keep indefinitely.</p>
+        target="_top">Recoll 'Howto' entry</a>.</p>
+        <div class="note" style=
+        "margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">The cache is not an archive</h3>
+          <p>A copy of the indexed Web pages is retained by Recoll
+          in a local cache (from which data is fetched for
+          previews, or when resetting the index). The cache has a
+          maximum size, which can be adjusted from the <span class=
+          "guilabel">Index configuration</span> / <span class=
+          "guilabel">Web history</span> panel (<code class=
+          "literal">webcachemaxmbs</code> parameter in <code class=
+          "filename">recoll.conf</code>). Once the maximum size is
+          reached, old pages are erased to make room for new ones.
+          The pages which you want to keep indefinitely need to be
+          explicitly archived elsewhere. Using a very high value
+          for the cache size can avoid data erasure, but see the
+          above 'Howto' page for more details and gotchas.</p>
+        </div>
       </div>
       <div class="sect1">
         <div class="titlepage">
@@ -3473,14 +3464,14 @@ fs.inotify.max_user_watches=32768
           be able to find under <code class=
           "filename">/usr/share/recoll/examples/fragbuts.xml</code>),
           contains an example which filters the results from the
-          WEB history.</p>
+          Web history.</p>
           <p>Here follows an example:</p>
           <pre class="programlisting">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;fragbuts version="1.0"&gt;
 
   &lt;radiobuttons&gt;
-    &lt;!-- Actually useful: toggle WEB queue results inclusion --&gt;
+    &lt;!-- Actually useful: toggle Web queue results inclusion --&gt;
     &lt;fragbut&gt;
       &lt;label&gt;Include Web Results&lt;/label&gt;
       &lt;frag&gt;&lt;/frag&gt;
@@ -3996,7 +3987,7 @@ fs.inotify.max_user_watches=32768
           given context (e.g. within a preview window, within the
           result table).</p>
           <div class="table">
-            <a name="idm1437" id="idm1437"></a>
+            <a name="idm1438" id="idm1438"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -7940,11 +7931,11 @@ hasextract = False
         "application">FreeBSD</span> ports, etc.), or from some
         type of "backports" repository providing versions newer
         than the standard ones, or found on the <span class=
-        "application">Recoll</span> WEB site in some cases. The
+        "application">Recoll</span> Web site in some cases. The
         most up-to-date information about Recoll packages can
         usually be found on the <a class="ulink" href=
         "http://www.recoll.org/pages/download.html" target=
-        "_top"><span class="application">Recoll</span> WEB site
+        "_top"><span class="application">Recoll</span> Web site
         downloads page</a></p>
         <p>The <span class="application">Windows</span> version of
         Recoll comes in a self-contained setup file, there is

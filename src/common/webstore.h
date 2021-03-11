@@ -21,8 +21,8 @@
 
 class RclConfig;
 namespace Rcl {
-    class Db;
-    class Doc;
+class Db;
+class Doc;
 }
 class CirCache;
 
