@@ -251,7 +251,7 @@
        <item>
         <widget class="QCheckBox" name="noRowJumpShortcutsCB">
          <property name="text">
-          <string>Disable the Ctrl+[0-9]/[a-z] shortcuts for jumping to table rows.</string>
+          <string>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</string>
          </property>
          <property name="checked">
           <bool>false</bool>

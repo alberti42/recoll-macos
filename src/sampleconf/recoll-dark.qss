@@ -26,6 +26,11 @@
     selection-color: #ffffff;
 }
 
+QTableView {
+    alternate-background-color: #474747;
+    background-color: #373737;
+}
+
 QToolTip {
     background-color: yellow;
     color: black;
