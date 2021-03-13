@@ -1,3 +1,14 @@
+kio-recoll (1.29.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * GUI: fix bad background in result table dark mode.
+  * ms openxml: process a variety of derived/aux formats as the base ones
+    (.pptm etc.)
+  * Python module: add method to retrieve the full snippets list.
+  * Allow setting a per-handler-type indexing timeout.
+  * Small bug fixes.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 13 Mar 2021 11:00:00 +0100
+
 kio-recoll (1.29.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Shortcuts editor
