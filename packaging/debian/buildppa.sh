@@ -13,7 +13,7 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.29.2
+RCLVERS=1.29.3pre1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.0
 PPAVERS=1
@@ -50,7 +50,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series="bionic focal groovy hirsute"
-#series=focal
+series=focal
 
 if test "X$series" != X ; then
     check_recoll_orig
