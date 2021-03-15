@@ -160,6 +160,7 @@ public slots:
     virtual void readDocSource(bool resetPos = true);
     virtual void onSortDataChanged(DocSeqSortSpec);
     virtual void createPopupMenu(const QPoint& pos);
+    virtual void onClicked(const QModelIndex&);
     virtual void onDoubleClick(const QModelIndex&);
     virtual void menuPreview();
     virtual void menuSaveToFile();

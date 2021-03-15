@@ -643,6 +643,8 @@ void ResTable::init()
             this, SLOT(onTableView_currentChanged(const QModelIndex&)));
     connect(tableView, SIGNAL(doubleClicked(const QModelIndex&)), 
             this, SLOT(onDoubleClick(const QModelIndex&)));
+    connect(tableView, SIGNAL(clicked(const QModelIndex&)), 
+            this, SLOT(onClicked(const QModelIndex&)));
 
     m_pager = new ResTablePager(this);
     m_pager->setHighLighter(&g_hiliter);
@@ -726,18 +728,14 @@ void ResTable::onNewShortcuts()
     }
 }
 
-bool ResTable::eventFilter(QObject* obj, QEvent* event)
+bool ResTable::eventFilter(QObject*, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* key = static_cast<QKeyEvent*>(event);
         if ((key->key() == Qt::Key_Enter) || (key->key() == Qt::Key_Return)) {
             menuEdit();
             return true;
-        } else {
-            return QObject::eventFilter(obj, event);
         }
-    } else {
-        return QObject::eventFilter(obj, event);
     }
     return false;
 }
@@ -882,8 +880,16 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
         m_detail->init();
         m_detaildocnum = index.row();
         m_detaildoc = doc;
-        m_pager->displaySingleDoc(theconfig, m_detaildocnum, m_detaildoc, 
-                                  m_model->m_hdata);
+        Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
+        if (tableView->selectionModel()->hasSelection() && (mods &= Qt::ShiftModifier)) {
+            bool loadok = rcldb->getDocRawText(m_detaildoc);
+            if (loadok) {
+                m_detail->setText(u8s2qs(m_detaildoc.text));
+            }
+        }  else {
+            m_pager->displaySingleDoc(theconfig, m_detaildocnum, m_detaildoc, 
+                                      m_model->m_hdata);
+        }
         emit(detailDocChanged(doc, m_model->getDocSource()));
     } else {
         m_detaildocnum = -1;
@@ -1073,6 +1079,16 @@ void ResTable::linkWasClicked(const QUrl &url)
     }
 }
 
+void ResTable::onClicked(const QModelIndex& index)
+{
+    // If the current row is the one clicked, currentChanged is not
+    // called so that we would not do the text display if we did not
+    // call it from here
+    if (index.row() == m_detaildocnum) {
+        onTableView_currentChanged(index);
+    }
+}
+    
 void ResTable::onDoubleClick(const QModelIndex& index)
 {
     if (!m_model || !m_model->getDocSource())
