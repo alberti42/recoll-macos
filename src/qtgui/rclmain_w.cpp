@@ -42,6 +42,7 @@
 #include <QProgressDialog>
 #include <QToolBar>
 #include <QSettings>
+#include <QToolTip>
 
 #include "recoll.h"
 #include "log.h"
@@ -752,7 +753,7 @@ void RclMain::showTrayMessage(const QString& text)
 {
     if (m_trayicon && prefs.trayMessages)
         m_trayicon->showMessage("Recoll", text, 
-                                QSystemTrayIcon::Information, 1000);
+                                QSystemTrayIcon::Information, 2000);
 }
 
 void RclMain::closeEvent(QCloseEvent *ev)
@@ -886,6 +887,11 @@ public:
     }
     int cnt;
 };
+
+void RclMain::hideToolTip()
+{
+    QToolTip::hideText();
+}
 
 void RclMain::initiateQuery()
 {

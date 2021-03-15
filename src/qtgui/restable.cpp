@@ -717,7 +717,7 @@ void ResTable::onNewShortcuts()
                 "Ctrl+V", m_showvheadersc, toggleVHeader);
     SETSHORTCUT(this, "restable:718", tr("Result Table"),
                 tr("Copy current result text to clipboard"),
-                "Ctrl+G", m_copycurtextsc, copyCurrentRowText);
+                "Ctrl+G", m_copycurtextsc, menuCopyText);
     std::vector<QShortcut*> scps={
         m_opensc, m_openquitsc, m_previewsc, m_showsnipssc, m_showheadersc,
         m_showvheadersc, m_copycurtextsc};
@@ -810,23 +810,6 @@ void ResTable::onUiPrefsChanged()
     } else {
         tableView->verticalHeader()->hide();
     }
-}
-
-void ResTable::copyCurrentRowText()
-{
-    auto index = tableView->selectionModel()->currentIndex();
-    if (!index.isValid()) {
-        LOGINF("ResTable::copyCurrentRowText: invalid current index\n");
-        return;
-    }
-    int row = index.row();
-    LOGDEB("copyCurrentRowText: row " << row << "\n");
-    Rcl::Doc doc;
-    auto source = m_model->getDocSource();
-    if (source && source->getDoc(row, doc) && rcldb &&
-        rcldb->getDocRawText(doc)) {
-        QApplication::clipboard()->setText(u8s2qs(doc.text));
-    };
 }
 
 void ResTable::setCurrentRow(int row)
@@ -1236,6 +1219,12 @@ void ResTable::menuCopyURL()
 {
     if (m_detaildocnum >= 0) 
         ResultPopup::copyURL(m_detaildoc);
+}
+
+void ResTable::menuCopyText()
+{
+    if (m_detaildocnum >= 0 && rcldb)
+        ResultPopup::copyText(m_detaildoc, m_rclmain);
 }
 
 void ResTable::menuExpand()

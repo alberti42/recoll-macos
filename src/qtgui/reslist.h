@@ -82,6 +82,7 @@ public slots:
     virtual void menuOpenWith(QAction *);
     virtual void menuCopyFN();
     virtual void menuCopyURL();
+    virtual void menuCopyText();
     virtual void menuExpand();
     virtual void menuPreviewParent();
     virtual void menuOpenParent();

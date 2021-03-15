@@ -169,6 +169,7 @@ public slots:
     virtual void menuOpenWith(QAction *);
     virtual void menuCopyFN();
     virtual void menuCopyURL();
+    virtual void menuCopyText();
     virtual void menuExpand();
     virtual void menuPreviewParent();
     virtual void menuOpenParent();
@@ -188,7 +189,6 @@ public slots:
     virtual void setCurrentRow(int row);
     virtual void toggleHeader();
     virtual void toggleVHeader();
-    virtual void copyCurrentRowText();
     
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);

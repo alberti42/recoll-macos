@@ -18,6 +18,7 @@
 #define _RESPOPUP_H_INCLUDED_
 #include "autoconfig.h"
 
+class RclMain;
 namespace ResultPopup {
 enum Options {showExpand = 0x1, showSubs = 0x2, isMain = 0x3,
               showSaveOne = 0x4, showSaveSel = 0x8};
@@ -29,6 +30,7 @@ extern Rcl::Doc getParent(std::shared_ptr<DocSequence> source,
 extern Rcl::Doc getFolder(Rcl::Doc& doc);
 extern void copyFN(const Rcl::Doc &doc);
 extern void copyURL(const Rcl::Doc &doc);
+extern void copyText(Rcl::Doc &doc, RclMain *rclmain=nullptr);
 };
 
 #endif /* _RESPOPUP_H_INCLUDED_ */
