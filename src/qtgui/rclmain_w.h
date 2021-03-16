@@ -120,7 +120,6 @@ public slots:
     virtual void showDocHistory();
     virtual void showExtIdxDialog();
     virtual void setSynEnabled(bool);
-    virtual void setDarkModeEnabled(bool);
     virtual void showUIPrefs();
     virtual void showIndexConfig();
     virtual void execIndexConfig();

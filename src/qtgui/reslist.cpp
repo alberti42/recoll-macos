@@ -250,6 +250,7 @@ string QtGuiResListPager::headerContent()
     out += locdetailscript;
     out += "</script>\n";
 #endif
+    out += qs2utf8s(prefs.darkreslistheadertext);
     out += qs2utf8s(prefs.reslistheadertext);
     return out;
 }

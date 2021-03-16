@@ -61,8 +61,6 @@
 
 void UIPrefsDialog::init()
 {
-    m_viewAction = 0;
-
     // See enum above and keep in order !
     ssearchTypCMB->addItem(tr("Any term"));
     ssearchTypCMB->addItem(tr("All terms"));
@@ -76,6 +74,7 @@ void UIPrefsDialog::init()
 
     connect(stylesheetPB, SIGNAL(clicked()),this, SLOT(showStylesheetDialog()));
     connect(resetSSPB, SIGNAL(clicked()), this, SLOT(resetStylesheet()));
+    connect(darkSSPB, SIGNAL(clicked()), this, SLOT(setDarkMode()));
     connect(snipCssPB, SIGNAL(clicked()),this, SLOT(showSnipCssDialog()));
     connect(synFilePB, SIGNAL(clicked()),this, SLOT(showSynFileDialog()));
     connect(resetSnipCssPB, SIGNAL(clicked()), this, SLOT(resetSnipCss()));
@@ -215,6 +214,7 @@ void UIPrefsDialog::setFromPrefs()
         string nm = path_getsimple(qs2path(qssFile));
         stylesheetPB->setText(path2qs(nm));
     }
+    darkMode = prefs.darkMode;
 
     snipCssFile = prefs.snipCssFile;
     if (snipCssFile.isEmpty()) {
@@ -290,6 +290,7 @@ void UIPrefsDialog::setFromPrefs()
     }
     idxLV->sortItems();
     readShortcuts();
+    setSSButState();
 }
 
 void UIPrefsDialog::readShortcutsInternal(const QStringList& sl)
@@ -397,6 +398,12 @@ void UIPrefsDialog::accept()
 
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
+    prefs.darkMode = darkMode;
+    if (darkMode) {
+        prefs.darkreslistheadertext = m_mainWindow->readDarkCSS();
+    } else {
+        prefs.darkreslistheadertext.clear();
+    }
     prefs.qssFile = qssFile;
     QTimer::singleShot(0, m_mainWindow, SLOT(applyStyleSheet()));
     prefs.snipCssFile = snipCssFile;
@@ -557,24 +564,40 @@ void UIPrefsDialog::showFontDialog()
     }
 }
 
+void UIPrefsDialog::setSSButState()
+{
+    darkSSPB->setEnabled(!darkMode);
+    resetSSPB->setEnabled(darkMode || !qssFile.isEmpty());
+    if (darkMode || qssFile.isEmpty()) {
+        stylesheetPB->setText(tr("Choose QSS File"));
+    } else {
+        stylesheetPB->setText(path2qs(path_getsimple(qs2path(qssFile))));
+    }
+}
+
 void UIPrefsDialog::showStylesheetDialog()
 {
     auto newfn = myGetFileName(false, "Select stylesheet file", true);
     if (!newfn.isEmpty()) {
         qssFile = newfn;
-        stylesheetPB->setText(path2qs(path_getsimple(qs2path(qssFile))));
+        darkMode = false;
     }
+    setSSButState();
+}
+void UIPrefsDialog::setDarkMode()
+{
+    auto fn = path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-dark.qss");
+    qssFile = u8s2qs(fn);
+    darkMode = true;
+    setSSButState();
+}
+void UIPrefsDialog::resetStylesheet()
+{
+    qssFile.clear();
+    darkMode = false;
+    setSSButState();
 }
 
-void UIPrefsDialog::resetStylesheet(QString fn)
-{
-    qssFile = fn;
-    if (fn.isEmpty()) {
-        stylesheetPB->setText(tr("Choose"));
-    } else {
-        stylesheetPB->setText(fn);
-    }
-}
 void UIPrefsDialog::showSnipCssDialog()
 {
     snipCssFile = myGetFileName(false, "Select snippets window CSS file", true);
@@ -614,7 +637,7 @@ void UIPrefsDialog::resetReslistFont()
 
 void UIPrefsDialog::showViewAction()
 {
-    if (m_viewAction== 0) {
+    if (m_viewAction == 0) {
         m_viewAction = new ViewAction(0);
     } else {
         // Close and reopen, in hope that makes us visible...

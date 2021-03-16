@@ -67,7 +67,6 @@ void RclMain::buildMenus()
 
     viewMenu->addSeparator();
     viewMenu->addAction(toggleFullScreenAction);
-    viewMenu->addAction(enbDarkModeAction);
 
     toolsMenu->addAction(toolsDoc_HistoryAction);
     toolsMenu->addAction(toolsAdvanced_SearchAction);

@@ -40,12 +40,6 @@ public:
     }
     ~UIPrefsDialog(){};
 
-    QString reslistFontFamily;
-    int reslistFontSize;
-    QString qssFile;
-    QString snipCssFile;
-    QString synFile;
-
     virtual void init();
     void setFromPrefs();
                            
@@ -53,9 +47,10 @@ public slots:
     virtual void showFontDialog();
     virtual void resetReslistFont();
     virtual void showStylesheetDialog();
+    virtual void resetStylesheet();
+    virtual void setDarkMode();
     virtual void showSynFileDialog();
     virtual void showSnipCssDialog();
-    virtual void resetStylesheet(QString fn = QString());
     virtual void resetSnipCss();
     virtual void showViewAction();
     virtual void showViewAction(const QString& mt);
@@ -83,13 +78,22 @@ private:
     void readShortcuts();
     void storeShortcuts();
     void readShortcutsInternal(const QStringList&);
+    void setSSButState();
     
-    // Locally stored data (pending ok/cancel)
+    ViewAction *m_viewAction{nullptr};
+    RclMain *m_mainWindow;
+
+    // Locally stored data (pending ok/cancel), for the parameters for
+    // which our UI state is not enough.
     QString paraFormat;
     QString headerText;
-    ViewAction *m_viewAction;
-    RclMain *m_mainWindow;
     std::vector<QString> m_scids;
+    QString reslistFontFamily;
+    int reslistFontSize;
+    QString qssFile;
+    bool darkMode{false};
+    QString snipCssFile;
+    QString synFile;
 };
 
 #endif /* _UIPREFS_W_H_INCLUDED_ */

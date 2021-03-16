@@ -551,22 +551,32 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="stylesheetPB">
-           <property name="toolTip">
-            <string>Opens a dialog to select the style sheet file</string>
-           </property>
-           <property name="text">
-            <string>Choose</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="resetSSPB">
            <property name="toolTip">
             <string>Resets the style sheet to default</string>
            </property>
            <property name="text">
-            <string>Reset</string>
+            <string>None (default)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="darkSSPB">
+           <property name="toolTip">
+            <string>Uses the default dark mode style sheet</string>
+           </property>
+           <property name="text">
+            <string>Dark mode</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="stylesheetPB">
+           <property name="toolTip">
+            <string>Opens a dialog to select the style sheet file</string>
+           </property>
+           <property name="text">
+            <string>Choose QSS File</string>
            </property>
           </widget>
          </item>

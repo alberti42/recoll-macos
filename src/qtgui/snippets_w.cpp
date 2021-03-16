@@ -238,7 +238,7 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
     oss << "<style type=\"text/css\">\nbody,table,select,input {\n";
     oss << "color: " + qs2utf8s(prefs.fontcolor) + ";\n";
     oss << "}\n</style>\n";
-    oss << qs2utf8s(prefs.reslistheadertext);
+    oss << qs2utf8s(prefs.darkreslistheadertext) << qs2utf8s(prefs.reslistheadertext);
 
     oss << 
         "</head>"

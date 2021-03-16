@@ -59,10 +59,20 @@ public:
     QString reslistformat;
     string  creslistformat;
     QString reslistheadertext;
+    // This is either empty or the contents of the recoll-dark.css
+    // file if we are in dark mode. It is set in the header before the
+    // possible user string above. Not saved/restored to prefs as it
+    // is controled by darkMode
+    QString darkreslistheadertext;
     // Date strftime format
     QString reslistdateformat;
     string creslistdateformat;
+
+    //  General Qt style sheet.
     QString qssFile;
+    // Dark mode set-> style sheet is the default dark one. + special reslist header
+    bool darkMode;
+    
     QString snipCssFile;
     QString queryStemLang;
     enum ShowMode {SHOW_NORMAL, SHOW_MAX, SHOW_FULL};
@@ -129,8 +139,6 @@ public:
     QString synFile;
     bool    synFileEnable;
 
-    bool darkMode;
-    
     // Remembered term match mode
     int termMatchType{0};
 

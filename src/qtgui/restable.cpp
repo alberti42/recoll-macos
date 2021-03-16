@@ -92,7 +92,8 @@ public:
     virtual string absSep() override {
         return (const char *)(prefs.abssep.toUtf8());}
     virtual string headerContent() override {
-        return qs2utf8s(prefs.reslistheadertext);}
+        return qs2utf8s(prefs.darkreslistheadertext) + qs2utf8s(prefs.reslistheadertext);
+    }
 private:
     ResTable *m_parent;
     string m_data;

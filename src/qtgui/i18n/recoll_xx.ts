@@ -294,10 +294,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Process the WEB history queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -371,6 +367,14 @@
     </message>
     <message>
         <source>Web history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Process the Web history queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -956,6 +960,10 @@ p, li { white-space: pre-wrap; }
         <source>&amp;Open Parent Folder</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Copy Text</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QxtConfirmationMessage</name>
@@ -1487,14 +1495,6 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You will need to run a query to complete the display change.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Simple search type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1810,15 +1810,15 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Use default dark mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dark mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not extract or copy text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2031,6 +2031,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Copy current result text to clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Shift+click to display the text instead.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2648,6 +2652,10 @@ Please check the desktop file</source>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -3158,26 +3166,6 @@ The default value is 2 (percent). </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hide toolbars.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide status bar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide Clear and Search buttons.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide menu bar (show button instead).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide simple search type (show in menu only).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3194,11 +3182,67 @@ The default value is 2 (percent). </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disable the Ctrl+[0-9]/[a-z] shortcuts for jumping to table rows.</source>
+        <source>Use F1 to  access the manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Use F1 to  access the manual</source>
+        <source>Hide some user interface elements.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toolbars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Status bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show button instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Menu bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show choice in menu only.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear/Search buttons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show text contents when clicking result table row (else use Shift+click).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Uses the default dark mode style sheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dark mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose QSS File</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
