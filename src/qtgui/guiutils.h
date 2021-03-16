@@ -145,6 +145,7 @@ public:
     bool noStatusBar{false};
     bool noMenuBar{false};
     bool noSSTypCMB{false};
+    bool resTableTextNoShift{false};
     bool noResTableHeader{false};
     bool showResTableVHeader{false};
     bool noResTableRowJumpSC{false};

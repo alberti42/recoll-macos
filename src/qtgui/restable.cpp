@@ -103,8 +103,16 @@ bool ResTablePager::append(const string& data)
     m_data += data;
     return true;
 }
+
 bool ResTablePager::flush()
 {
+#ifdef helps_discoverability_of_shiftclick_but_is_ennoying
+    QString msg = QApplication::translate(
+        "ResTable", "Use Shift+click to display the text instead.");
+    if (!prefs.resTableTextNoShift) {
+        m_data += std::string("<p>") + qs2utf8s(msg) + "</p>";
+    }
+#endif
     m_parent->m_detail->setHtml(u8s2qs(m_data));
     m_data = "";
     return true;
@@ -881,7 +889,9 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
         m_detaildocnum = index.row();
         m_detaildoc = doc;
         Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
-        if (tableView->selectionModel()->hasSelection() && (mods &= Qt::ShiftModifier)) {
+        bool showtext = (mods &= Qt::ShiftModifier);
+        showtext ^= prefs.resTableTextNoShift;
+        if (tableView->selectionModel()->hasSelection() && showtext) {
             bool loadok = rcldb->getDocRawText(m_detaildoc);
             if (loadok) {
                 m_detail->setText(u8s2qs(m_detaildoc.text));

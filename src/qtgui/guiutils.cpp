@@ -291,25 +291,21 @@ void rwSettings(bool writing)
             "/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
     }
 
-    SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat",
-               Bool, false);
+    SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat", Bool, false);
     SETTING_RW(prefs.noClearSearch, "/Recoll/prefs/noClearSearch", Bool, false);
     SETTING_RW(prefs.noToolbars, "/Recoll/prefs/noToolbars", Bool, false);
     SETTING_RW(prefs.noStatusBar, "/Recoll/prefs/noStatusBar", Bool, false);
     SETTING_RW(prefs.noMenuBar, "/Recoll/prefs/noMenuBar", Bool, false);
     SETTING_RW(prefs.noSSTypCMB, "/Recoll/prefs/noSSTypCMB", Bool, false);
-    SETTING_RW(prefs.noResTableHeader, "/Recoll/prefs/noResTableHeader",
-               Bool, false);
-    SETTING_RW(prefs.showResTableVHeader, "/Recoll/prefs/showResTableVHeader",
-               Bool, false);
-    SETTING_RW(prefs.noResTableRowJumpSC, "/Recoll/prefs/noResTableRowJumpSC",
-               Bool, false);
+    SETTING_RW(prefs.resTableTextNoShift, "/Recoll/prefs/resTableTextNoShift", Bool, false);
+    SETTING_RW(prefs.noResTableHeader, "/Recoll/prefs/noResTableHeader", Bool, false);
+    SETTING_RW(prefs.showResTableVHeader, "/Recoll/prefs/showResTableVHeader", Bool, false);
+    SETTING_RW(prefs.noResTableRowJumpSC, "/Recoll/prefs/noResTableRowJumpSC", Bool, false);
     SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);
     SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);
     SETTING_RW(prefs.trayMessages, "/Recoll/prefs/trayMessages", Bool, false);
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
-    SETTING_RW(prefs.showTempFileWarning, "Recoll/prefs/showTempFileWarning",
-               Int, -1);
+    SETTING_RW(prefs.showTempFileWarning, "Recoll/prefs/showTempFileWarning", Int, -1);
 
     if (g_dynconf == 0) {
         // Happens

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>700</width>
-    <height>850</height>
+    <height>760</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -189,39 +189,79 @@
         </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="noToolbarsCB">
-         <property name="text">
-          <string>Hide toolbars.</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QLabel" name="labeltb">
+           <property name="toolTip">
+            <string>Hide some user interface elements.</string>
+           </property>
+           <property name="text">
+            <string>Hide:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="noToolbarsCB">
+           <property name="text">
+            <string>Toolbars</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="noStatusBarCB">
+           <property name="text">
+            <string>Status bar</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="noMenuBarCB">
+           <property name="toolTip">
+            <string>Show button instead.</string>
+           </property>
+           <property name="text">
+            <string>Menu bar</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="noSSTypCMBCB">
+           <property name="toolTip">
+            <string>Show choice in menu only.</string>
+           </property>
+           <property name="text">
+            <string>Simple search type</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="noClearSearchCB">
+           <property name="text">
+            <string>Clear/Search buttons</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="noStatusBarCB">
+        <widget class="QCheckBox" name="restabShowTxtNoShiftCB">
          <property name="text">
-          <string>Hide status bar.</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="noMenuBarCB">
-         <property name="text">
-          <string>Hide menu bar (show button instead).</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="noSSTypCMBCB">
-         <property name="text">
-          <string>Hide simple search type (show in menu only).</string>
+          <string>Show text contents when clicking result table row (else use Shift+click).</string>
          </property>
          <property name="checked">
           <bool>false</bool>
@@ -259,44 +299,38 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="noClearSearchCB">
-         <property name="text">
-          <string>Hide Clear and Search buttons.</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showTrayIconCB">
-         <property name="text">
-          <string>Show system tray icon.</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="closeToTrayCB">
-         <property name="text">
-          <string>Close to tray instead of exiting.</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="trayMessagesCB">
-         <property name="text">
-          <string>Generate desktop notifications.</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QCheckBox" name="showTrayIconCB">
+           <property name="text">
+            <string>Show system tray icon.</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="closeToTrayCB">
+           <property name="text">
+            <string>Close to tray instead of exiting.</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="trayMessagesCB">
+           <property name="text">
+            <string>Generate desktop notifications.</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QCheckBox" name="noBeepsCB">
@@ -1527,7 +1561,7 @@ May be slow for big documents.</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
