@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>760</height>
+    <width>731</width>
+    <height>762</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -259,14 +259,29 @@
         </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="restabShowTxtNoShiftCB">
-         <property name="text">
-          <string>Show text contents when clicking result table row (else use Shift+click).</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="restabShowTxtLBL">
+           <property name="text">
+            <string>To display document text instead of metadata in result table detail area, use:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="restabShowTxtNoShiftRB">
+           <property name="text">
+            <string>left mouse click</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="restabShowTxtShiftRB">
+           <property name="text">
+            <string>Shift+click</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QCheckBox" name="noResTableHeaderCB">
@@ -573,7 +588,7 @@
          <item>
           <widget class="QPushButton" name="stylesheetPB">
            <property name="toolTip">
-            <string>Opens a dialog to select the style sheet file</string>
+            <string>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</string>
            </property>
            <property name="text">
             <string>Choose QSS File</string>
