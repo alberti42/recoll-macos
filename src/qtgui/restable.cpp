@@ -41,6 +41,7 @@
 #include <QTimer>
 #include <QKeyEvent>
 #include <QClipboard>
+#include <QToolTip>
 
 #include "recoll.h"
 #include "docseq.h"
@@ -1255,8 +1256,30 @@ void ResTable::menuCopyURL()
 
 void ResTable::menuCopyText()
 {
-    if (m_detaildocnum >= 0 && rcldb)
+    if (m_detaildocnum >= 0 && rcldb) {
         ResultPopup::copyText(m_detaildoc, m_rclmain);
+        if (m_rclmain) {
+            auto msg = tr("%1 bytes copied to clipboard").arg(m_detaildoc.text.size());
+            // Feedback was requested: tray messages are too ennoying, not
+            // everybody displays the status bar, and the tool tip only
+            // works when the copy is triggered through a shortcut (else,
+            // it appears that the mouse event cancels it and it's not
+            // shown). So let's do status bar if visible else tooltip.
+            //  Menu trigger with no status bar -> no feedback...
+        
+            // rclmain->showTrayMessage(msg);
+            if (m_rclmain->statusBar()->isVisible()) {
+                m_rclmain->statusBar()->showMessage(msg, 1000);
+            } else {
+                int x = tableView->columnViewportPosition(0) + tableView->width() / 2 ;
+                int y = tableView->rowViewportPosition(m_detaildocnum);
+                QPoint pos = tableView->mapToGlobal(QPoint(x,y));
+                QToolTip::showText(pos, msg);
+                QTimer::singleShot(1500, m_rclmain, SLOT(hideToolTip()));
+            }
+        }
+        
+    }
 }
 
 void ResTable::menuExpand()

@@ -20,7 +20,6 @@
 #include <qapplication.h>
 #include <qmenu.h>
 #include <qclipboard.h>
-#include <QToolTip>
 #include <QCursor>
 #include <QTimer>
 
@@ -182,30 +181,10 @@ void copyURL(const Rcl::Doc &doc)
 }
 
 
-void copyText(Rcl::Doc &doc, RclMain *rclmain)
+void copyText(Rcl::Doc &doc, RclMain *)
 {
-    QString msg(QApplication::translate("RclMainBase", "Could not extract or copy text"));
     if (rcldb->getDocRawText(doc)) {
         QApplication::clipboard()->setText(u8s2qs(doc.text));
-        msg = QApplication::translate("RclMainBase",
-                                      "%1 bytes copied to clipboard").arg(doc.text.size());
-    }
-    
-    if (rclmain) {
-        // Feedback was requested: tray messages are too ennoying, not
-        // everybody displays the status bar, and the tool tip only
-        // works when the copy is triggered through a shortcut (else,
-        // it appears that the mouse event cancels it and it's not
-        // shown). So let's do status bar if visible else tooltip.
-        //  Menu trigger with no status bar -> no feedback...
-        
-        // rclmain->showTrayMessage(msg);
-        if (rclmain->statusBar()->isVisible()) {
-            rclmain->statusBar()->showMessage(msg, 1000);
-        } else {
-            QToolTip::showText(QCursor::pos(), msg);
-            QTimer::singleShot(1000, rclmain, SLOT(hideToolTip()));
-        }
     }
 }
 
