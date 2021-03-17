@@ -696,7 +696,7 @@ void ResTable::onNewShortcuts()
         // Set "go to row" accelerator shortcuts. letter or digit for 0-9,
         // then letter up to 25
         std::function<void(int)> setrow =
-            std::bind(&ResTable::setCurrentRow, this, std::placeholders::_1);
+            std::bind(&ResTable::setCurrentRowFromKbd, this, std::placeholders::_1);
         for (int i = 0; i <= 25; i++) {
             auto qs = QString("Ctrl+Shift+%1").arg(char('a'+i));
             auto sc = new QShortcut(QKeySequence(qs2utf8s(qs).c_str()), this);
@@ -819,8 +819,10 @@ void ResTable::onUiPrefsChanged()
     }
 }
 
-void ResTable::setCurrentRow(int row)
-{                                                                     
+void ResTable::setCurrentRowFromKbd(int row)
+{
+    LOGDEB1("setCurrentRowFromKbd: " << row << "\n");
+    m_rowchangefromkbd = true;
     tableView->setFocus(Qt::ShortcutFocusReason);                     
     tableView->selectionModel()->setCurrentIndex(                     
         m_model->index(row, 0),                                       
@@ -880,7 +882,7 @@ void ResTable::saveColState()
 void ResTable::onTableView_currentChanged(const QModelIndex& index)
 {
     LOGDEB2("ResTable::onTableView_currentChanged(" << index.row() << ", " <<
-            index.column() << ")\n");
+            index.column() << ") from kbd " << m_rowchangefromkbd  << "\n");
 
     if (!m_model || !m_model->getDocSource())
         return;
@@ -889,10 +891,11 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
         m_detail->init();
         m_detaildocnum = index.row();
         m_detaildoc = doc;
-        Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
-        bool showtext = (mods &= Qt::ShiftModifier);
-        showtext ^= prefs.resTableTextNoShift;
+        bool isShift = (QApplication::keyboardModifiers() & Qt::ShiftModifier) && 
+            !m_rowchangefromkbd;
+        bool showtext = isShift ^ prefs.resTableTextNoShift;
         if (tableView->selectionModel()->hasSelection() && showtext) {
+            m_rowchangefromkbd = false;
             bool loadok = rcldb->getDocRawText(m_detaildoc);
             if (loadok) {
                 m_detail->setText(u8s2qs(m_detaildoc.text));
@@ -1095,6 +1098,7 @@ void ResTable::onClicked(const QModelIndex& index)
     // If the current row is the one clicked, currentChanged is not
     // called so that we would not do the text display if we did not
     // call it from here
+    m_rowchangefromkbd = false;
     if (index.row() == m_detaildocnum) {
         onTableView_currentChanged(index);
     }
@@ -1102,6 +1106,7 @@ void ResTable::onClicked(const QModelIndex& index)
     
 void ResTable::onDoubleClick(const QModelIndex& index)
 {
+    m_rowchangefromkbd = false;
     if (!m_model || !m_model->getDocSource())
         return;
     Rcl::Doc doc;

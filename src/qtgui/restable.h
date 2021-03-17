@@ -187,7 +187,7 @@ public slots:
     virtual void takeFocus();
     virtual void onUiPrefsChanged();
     virtual void onNewShortcuts();
-    virtual void setCurrentRow(int row);
+    virtual void setCurrentRowFromKbd(int row);
     virtual void toggleHeader();
     virtual void toggleVHeader();
     
@@ -220,6 +220,7 @@ private:
     int            m_popcolumn{0};
     RclMain *m_rclmain{nullptr};
     bool     m_ismainres{true};
+    bool m_rowchangefromkbd{false};
     QShortcut *m_opensc{nullptr};
     QShortcut *m_openquitsc{nullptr};
     QShortcut *m_previewsc{nullptr};
