@@ -60,6 +60,9 @@ QPlainTextEdit {
     color: #ffffff;
 }
 
+QPushButton:!enabled {
+    background-color: #505050;
+}
 QToolButton:on {
     background-color: #505050;
 }
