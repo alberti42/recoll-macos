@@ -89,7 +89,6 @@ public:
         return m_indexerState;
     }
     void enableTrayIcon(bool onoff);
-    QString readDarkCSS();
     void setupToolbars();
     void setupStatusBar();
     void buildMenus();

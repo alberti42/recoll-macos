@@ -400,11 +400,7 @@ void UIPrefsDialog::accept()
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
     prefs.darkMode = darkMode;
-    if (darkMode) {
-        prefs.darkreslistheadertext = m_mainWindow->readDarkCSS();
-    } else {
-        prefs.darkreslistheadertext.clear();
-    }
+    prefs.setupDarkCSS();
     prefs.qssFile = qssFile;
     QTimer::singleShot(0, m_mainWindow, SLOT(applyStyleSheet()));
     prefs.snipCssFile = snipCssFile;

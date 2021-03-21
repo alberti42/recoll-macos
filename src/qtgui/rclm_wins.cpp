@@ -331,11 +331,7 @@ void RclMain::showExtIdxDialog()
 
 void RclMain::showAboutDialog()
 {
-    QString darkcss;
-    if (prefs.darkMode) {
-        darkcss = readDarkCSS();
-    }
-    QString vstring = QString("<html><head>") + darkcss + "</head><body>" +
+    QString vstring = QString("<html><head>") + prefs.darkreslistheadertext + "</head><body>" +
         u8s2qs(Rcl::version_string()) +
         "<br><a href='https://www.recoll.org'>www.recoll.org</a>" +
         "<br><a href='https://www.xapian.org'>www.xapian.org</a>";

@@ -26,6 +26,7 @@
 #include "pathut.h"
 #include "base64.h"
 #include "advshist.h"
+#include "readfile.h"
 
 #include <QSettings>
 #include <QStringList>
@@ -421,8 +422,30 @@ void rwSettings(bool writing)
             prefs.asearchSubdirHist.push_back(u8s2qs(dbd.c_str()));
         }
     }
+    if (!writing) {
+        prefs.setupDarkCSS();
+    }
     if (!writing)
         havereadsettings = true;
+}
+
+void PrefsPack::setupDarkCSS()
+{
+    if (!darkMode) {
+        darkreslistheadertext.clear();
+        return;
+    }
+    if (nullptr == theconfig) {
+        return;
+    }
+    string fn = path_cat(
+        path_cat(theconfig->getDatadir(), "examples"), "recoll-dark.css");
+    string data;
+    string reason;
+    if (!file_to_string(fn, data, &reason)) {
+        std::cerr << "Recoll: Could not read: " << fn << "\n";
+    }
+    darkreslistheadertext = u8s2qs(data);
 }
 
 string PrefsPack::stemlang()

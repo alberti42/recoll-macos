@@ -173,6 +173,8 @@ public:
 
     std::string stemlang();
 
+    void setupDarkCSS();
+    
     // MIME types for which we prefer to use stored text from preview
     // rather than extracting the possibly nicer HTML because the
     // extractor is very slow. This is compiled in and there is no UI

@@ -530,22 +530,6 @@ void RclMain::setSynEnabled(bool on)
         uiprefs->synFileCB->setChecked(prefs.synFileEnable);
 }
 
-QString RclMain::readDarkCSS()
-{
-    if (nullptr == theconfig) {
-        return QString();
-    }
-    string fn = path_cat(
-        path_cat(theconfig->getDatadir(), "examples"), "recoll-dark.css");
-    string data;
-    string reason;
-    if (!file_to_string(fn, data, &reason)) {
-        QMessageBox::warning(0, "Recoll", tr("Could not read: ") + u8s2qs(fn));
-        return QString();
-    }
-    return u8s2qs(data);
-}
-
 void RclMain::resultCount(int n)
 {
     actionSortByDateAsc->setEnabled(n>0);
