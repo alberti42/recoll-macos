@@ -44,6 +44,7 @@ static int     op_flags;
 #define OPT_k     0x1000
 #define OPT_y     0x2000
 #define OPT_s     0x4000
+#define OPT_S     0x8000
 
 class myCB : public FsTreeWalkerCB {
 public:
@@ -64,6 +65,8 @@ public:
             }
         } else if (flg == FsTreeWalker::FtwRegular) {
             cout << path << endl;
+        } else if (flg == FsTreeWalker::FtwSkipped) {
+            cout << "SKIPPED: " << path << endl;
         }
         return FsTreeWalker::FtwOk;
     }
@@ -105,6 +108,7 @@ static char usage [] =
                     " -s : don't print dir change info\n"
                     " -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
                     " -y <pattern> : add onlyNames entry\n"
+                    " -S : only print skipped files and directories\n";
                     ;
 static void
 Usage(void)
@@ -150,6 +154,7 @@ int main(int argc, const char **argv)
                 goto b1;
             case 'r':   op_flags |= OPT_r; break;
             case 's':   op_flags |= OPT_s; break;
+            case 'S':   op_flags |= OPT_S; break;
             case 'w':   op_flags |= OPT_w; break;
             case 'y':   op_flags |= OPT_y; if (argc < 2)  Usage();
                 onlynames.push_back(*(++argv));
@@ -184,6 +189,8 @@ int main(int argc, const char **argv)
         opt |= FsTreeWalker::FtwFollow;
     if (op_flags & OPT_D)
         opt |= FsTreeWalker::FtwSkipDotFiles;
+    if (op_flags & OPT_S)
+        opt |= FsTreeWalker::FtwOnlySkipped;
 
     if (op_flags & OPT_b)
         opt |= FsTreeWalker::FtwTravBreadth;
@@ -192,6 +199,7 @@ int main(int argc, const char **argv)
     else if (op_flags & OPT_m)
         opt |= FsTreeWalker::FtwTravBreadthThenDepth;
 
+    
     string reason;
     if (!recollinit(0, 0, 0, reason)) {
         fprintf(stderr, "Init failed: %s\n", reason.c_str());

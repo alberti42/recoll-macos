@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -25,7 +25,7 @@ struct PathStat;
 class FsTreeWalkerCB;
 
 /**
- * Class implementing a unix directory recursive walk.
+ * Class implementing a Unix directory recursive walk.
  *
  * A user-defined function object is called for every file or
  * directory. Patterns to be ignored can be set before starting the
@@ -33,7 +33,7 @@ class FsTreeWalkerCB;
  * on subdirectories.
  */
 class FsTreeWalker {
- public:
+public:
     // Global option to use FNM_PATHNAME when matching paths (for
     // skippedPaths).  
     // We initially used FNM_PATHNAME, and we can't change it now
@@ -42,7 +42,7 @@ class FsTreeWalker {
     // a value to the config file (skippedPathsNoFnmPathname)
     static bool o_useFnmPathname;
     static void setNoFnmPathname() {
-    o_useFnmPathname = false;
+        o_useFnmPathname = false;
     }
 
     // Global option to observe a "nowalk" file, which makes us treat
@@ -56,22 +56,27 @@ class FsTreeWalker {
     // Flags for call to processone(). FtwDirEnter is used when
     // entering a directory. FtwDirReturn is used when returning to it
     // after processing a subdirectory.
-    enum CbFlag {FtwRegular, FtwDirEnter, FtwDirReturn};
+    enum CbFlag {FtwRegular, FtwDirEnter, FtwDirReturn, FtwSkipped};
     enum Status {FtwOk=0, FtwError=1, FtwStop=2, 
-         FtwStatAll = FtwError|FtwStop};
+                 FtwStatAll = FtwError|FtwStop};
     enum Options {FtwOptNone = 0, FtwNoRecurse = 1, FtwFollow = 2,
                   FtwNoCanon = 4, FtwSkipDotFiles = 8,
-    // Tree walking options.  Natural is close to depth first: process
-    //   directory entries as we see them, recursing into subdirectories at 
-    //   once 
-    // Breadth means we process all files and dirs at a given directory level
-    // before going deeper.
-    //
-    // FilesThenDirs is close to Natural, except that we process all files in a 
-    //   given directory before going deeper: allows keeping only a single 
-    //   directory open
-    // We don't do pure depth first (process subdirs before files), this does 
-    // not appear to make any sense.
+                  // Only callback for skipped files and directories,
+                  // for getting a list of skipped stuff. We don't
+                  // descend into skipped directories.
+                  // ** The callback will receive a null struct stat pointer.**
+                  FtwOnlySkipped = 0x10, 
+                  // Tree walking options.  Natural is close to depth first: process
+                  //   directory entries as we see them, recursing into subdirectories at 
+                  //   once 
+                  // Breadth means we process all files and dirs at a given directory level
+                  // before going deeper.
+                  //
+                  // FilesThenDirs is close to Natural, except that we process all files in a 
+                  //   given directory before going deeper: allows keeping only a single 
+                  //   directory open
+                  // We don't do pure depth first (process subdirs before files), this does 
+                  // not appear to make any sense.
                   FtwTravNatural = 0x10000, FtwTravBreadth = 0x20000, 
                   FtwTravFilesThenDirs = 0x40000, 
                   FtwTravBreadthThenDepth = 0x80000
@@ -107,26 +112,26 @@ class FsTreeWalker {
     bool setOnlyNames(const std::vector<std::string> &patterns);
 
     /** Same for skipped paths: this are paths, not names, under which we
-    do not descend (ie: /home/me/.recoll) */
+        do not descend (ie: /home/me/.recoll) */
     bool addSkippedPath(const std::string &path); 
     /** Set the ignored paths list */
     bool setSkippedPaths(const std::vector<std::string> &patterns);
 
     /** Test if path/name should be skipped. This can be used independently of
-      * an actual tree walk */
+     * an actual tree walk */
     bool inSkippedPaths(const std::string& path, bool ckparents = false);
     bool inSkippedNames(const std::string& name);
     bool inOnlyNames(const std::string& name);
 
- private:
+private:
     Status iwalk(const std::string &dir, struct PathStat *stp,
                  FsTreeWalkerCB& cb);
     class Internal; 
-   Internal *data;
+    Internal *data;
 };
 
 class FsTreeWalkerCB {
- public:
+public:
     virtual ~FsTreeWalkerCB() {}
     // Only st_mtime, st_ctime, st_size, st_mode (filetype bits: dir/reg/lnk),
     virtual FsTreeWalker::Status 

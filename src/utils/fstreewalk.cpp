@@ -218,11 +218,7 @@ bool FsTreeWalker::inSkippedPaths(const string& path, bool ckparents)
 
 static inline int slashcount(const string& p)
 {
-    int n = 0;
-    for (unsigned int i = 0; i < p.size(); i++)
-        if (p[i] == '/')
-            n++;
-    return n;
+    return std::count(p.begin(), p.end(), '/');
 }
 
 FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)
@@ -302,9 +298,11 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)
                 data->logsyserr("stat", nfather);
                 return errno == ENOENT ? FtwOk : FtwError;
             }
-            if ((status = cb.processone(nfather, &st, FtwDirReturn)) & 
-                (FtwStop|FtwError)) {
-                return status;
+            if (!(data->options & FtwOnlySkipped)) {
+                if ((status = cb.processone(nfather, &st, FtwDirReturn)) & 
+                    (FtwStop|FtwError)) {
+                    return status;
+                }
             }
         }
 
@@ -333,12 +331,18 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
     // Tell user to process the top entry itself
     if (stp->pst_type == PathStat::PST_DIR) {
-        if ((status = cb.processone(top, stp, FtwDirEnter)) & 
-            (FtwStop|FtwError)) {
-            return status;
+        if (!(data->options & FtwOnlySkipped)) {
+            if ((status = cb.processone(top, stp, FtwDirEnter)) & 
+                (FtwStop|FtwError)) {
+                return status;
+            }
         }
     } else if (stp->pst_type == PathStat::PST_REGULAR) {
-        return cb.processone(top, stp, FtwRegular);
+        if (!(data->options & FtwOnlySkipped)) {
+            return cb.processone(top, stp, FtwRegular);
+        } else {
+            return status;
+        }
     } else {
         return status;
     }
@@ -406,10 +410,31 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
         // Skipped file names match ?
         if (!data->skippedNames.empty()) {
-            if (inSkippedNames(dname))
+            if (inSkippedNames(dname)) {
+                if (data->options & FtwOnlySkipped) {
+                    cb.processone(path_cat(top, dname), nullptr, FtwSkipped);
+                }
                 continue;
+            }
         }
+
         fn = path_cat(top, dname);
+
+        // Skipped file paths match ?
+        if (!data->skippedPaths.empty()) {
+            // We do not check the ancestors. This means that you can have
+            // a topdirs member under a skippedPath, to index a portion of
+            // an ignored area. This is the way it had always worked, but
+            // this was broken by 1.13.00 and the systematic use of 
+            // FNM_LEADING_DIR
+            if (inSkippedPaths(fn, false)) {
+                if (data->options & FtwOnlySkipped) {
+                    cb.processone(fn, nullptr, FtwSkipped);
+                }
+                continue;
+            }
+        }
+
         int statret =  path_fileprops(fn.c_str(), &st, data->options&FtwFollow);
         if (statret == -1) {
             data->logsyserr("stat", fn);
@@ -424,22 +449,17 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
             continue;
         }
 
-        if (!data->skippedPaths.empty()) {
-            // We do not check the ancestors. This means that you can have
-            // a topdirs member under a skippedPath, to index a portion of
-            // an ignored area. This is the way it had always worked, but
-            // this was broken by 1.13.00 and the systematic use of 
-            // FNM_LEADING_DIR
-            if (inSkippedPaths(fn, false))
-                continue;
-        }
 
         if (st.pst_type == PathStat::PST_DIR) {
             if (!o_nowalkfn.empty() && path_exists(path_cat(fn, o_nowalkfn))) {
                 continue;
             }
             if (data->options & FtwNoRecurse) {
-                status = cb.processone(fn, &st, FtwDirEnter);
+                if (!(data->options & FtwOnlySkipped)) {
+                    status = cb.processone(fn, &st, FtwDirEnter);
+                } else {
+                    status = FtwOk;
+                }
             } else {
                 if (data->options & FtwTravNatural) {
                     status = iwalk(fn, &st, cb);
@@ -461,9 +481,11 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
             if (status & (FtwStop|FtwError))
                 goto out;
             if (!(data->options & FtwNoRecurse)) 
-                if ((status = cb.processone(top, &st, FtwDirReturn)) 
-                    & (FtwStop|FtwError))
-                    goto out;
+                if (!(data->options & FtwOnlySkipped)) {
+                    if ((status = cb.processone(top, &st, FtwDirReturn)) 
+                        & (FtwStop|FtwError))
+                        goto out;
+                }
         } else if (st.pst_type == PathStat::PST_REGULAR ||
                    st.pst_type == PathStat::PST_SYMLINK) {
             // Filtering patterns match ?
@@ -471,9 +493,11 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
                 if (!inOnlyNames(dname))
                     continue;
             }
-            if ((status = cb.processone(fn, &st, FtwRegular)) & 
-                (FtwStop|FtwError)) {
-                goto out;
+            if (!(data->options & FtwOnlySkipped)) {
+                if ((status = cb.processone(fn, &st, FtwRegular)) & 
+                    (FtwStop|FtwError)) {
+                    goto out;
+                }
             }
         }
         // We ignore other file types (devices etc...)
