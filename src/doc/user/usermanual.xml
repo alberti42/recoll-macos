@@ -1277,31 +1277,34 @@ recollindex -c "$confdir"
         local cache, then indexing it, then removing the file from the
         queue.</para>
       
+      <note><title>The local cache is not an archive</title><para>As
+          mentioned above, a copy of the indexed Web pages is retained by
+          Recoll in a local cache (from which data is fetched for previews,
+          or when resetting the index). The cache is not changed by an
+          index reset, just read for indexing. The cache has a maximum
+          size, which can be adjusted from the <guilabel>Index
+          configuration</guilabel> / <guilabel>Web history</guilabel> panel
+          (<literal>webcachemaxmbs</literal> parameter
+          in <filename>recoll.conf</filename>). Once the maximum size is
+          reached, old pages are erased to make room for new ones.  The
+          pages which you want to keep indefinitely need to be explicitly
+          archived elsewhere. Using a very high value for the cache size
+          can avoid data erasure, but see the above 'Howto' page for more
+          details and gotchas.</para></note>
+
       <para>The visited Web pages indexing feature can be enabled on the
         &RCL; side from the GUI <guilabel>Index configuration</guilabel>
         panel, or by editing the configuration file (set
         <varname>processwebqueue</varname> to 1).</para>
 
       <para>The &RCL; GUI has a tool to list and edit the contents of the
-        Web
-        cache. (<menuchoice><guimenu>Tools</guimenu><guimenuitem>Webcache
+        Web cache. (<menuchoice><guimenu>Tools</guimenu><guimenuitem>Webcache
         editor</guimenuitem></menuchoice>)</para>
 
       <para>You can find more details on Web indexing, its usage and configuration
-        in a <ulink url="&FAQS;IndexWebHistory">Recoll 'Howto' entry</ulink>.</para>
+        in a <ulink url="&FAQS;IndexWebHistory">Recoll 'Howto'
+        entry</ulink>.</para> 
 
-      <note><title>The cache is not an archive</title><para>A copy of
-          the indexed Web pages is retained by Recoll in a local cache
-          (from which data is fetched for previews, or when resetting the
-          index). The cache has a maximum size, which can be adjusted from
-          the <guilabel>Index configuration</guilabel> / <guilabel>Web
-          history</guilabel> panel (<literal>webcachemaxmbs</literal>
-          parameter in <filename>recoll.conf</filename>). Once the maximum
-          size is reached, old pages are erased to make room for new ones.
-          The pages which you want to keep indefinitely need to be
-          explicitly archived elsewhere. Using a very high value for
-          the cache size can avoid data erasure, but see the above 'Howto'
-          page for more details and gotchas.</para></note>
 
     </sect1>
 
@@ -1576,9 +1579,11 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
         <para>The GUI <menuchoice><guimenu>File</guimenu> </menuchoice>
         menu has entries to start or stop the current indexing
         operation. When indexing is not currently running, you have a
-        choice of updating the index or rebuilding it (the first choice
-        only processes changed files, the second one zeroes the index
-        before starting so that all files are processed).</para>
+        choice between <guimenuitem>Update
+            Index</guimenuitem> or <guimenuitem>Rebuild Index</guimenuitem>.
+          The first choice only processes changed files, the second one
+          erases the index before starting so that all files are
+          processed.</para>
 
         <para>On Linux and Windows, the GUI can be used to manage the indexing
         operation. Stopping the indexer can be done
@@ -1721,10 +1726,19 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
       from the terminal and become a daemon, permanently monitoring
       file changes and updating the index.</para>
 
-      <para>In this situation, the <command>recoll</command> GUI
-      <menuchoice><guimenu>File</guimenu></menuchoice> menu
-      makes two operations available: 'Stop' and 'Trigger incremental pass'.
+      <para>In this situation, the <command>recoll</command>
+      GUI <menuchoice><guimenu>File</guimenu></menuchoice> menu makes two
+      operations available: <guimenuitem>Stop</guimenuitem>
+      and <guimenuitem>Trigger incremental pass</guimenuitem>.
       </para>
+
+      <para><guimenuitem>Trigger incremental pass</guimenuitem> has the
+        same effect as restarting the indexer, and will cause a complete
+        walk of the indexed area, processing the changed files, then switch
+        to monitoring. This is only marginally useful, maybe in cases where
+        the indexer is configured to delay updates, or to force an
+        immediate rebuild of the stemming and phonetic data, which are only
+        processed at intervals by the real time indexer.</para>
 
       <para>While it is convenient that data is indexed in real time,
       repeated indexing can generate a significant load on the

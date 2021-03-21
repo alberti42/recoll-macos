@@ -423,7 +423,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1438">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1444">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -1976,6 +1976,25 @@ recollindex -c "$confdir"
         "application">Recoll</span> then processes, storing the
         data into a local cache, then indexing it, then removing
         the file from the queue.</p>
+        <div class="note" style=
+        "margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">The local cache is not an archive</h3>
+          <p>As mentioned above, a copy of the indexed Web pages is
+          retained by Recoll in a local cache (from which data is
+          fetched for previews, or when resetting the index). The
+          cache is not changed by an index reset, just read for
+          indexing. The cache has a maximum size, which can be
+          adjusted from the <span class="guilabel">Index
+          configuration</span> / <span class="guilabel">Web
+          history</span> panel (<code class=
+          "literal">webcachemaxmbs</code> parameter in <code class=
+          "filename">recoll.conf</code>). Once the maximum size is
+          reached, old pages are erased to make room for new ones.
+          The pages which you want to keep indefinitely need to be
+          explicitly archived elsewhere. Using a very high value
+          for the cache size can avoid data erasure, but see the
+          above 'Howto' page for more details and gotchas.</p>
+        </div>
         <p>The visited Web pages indexing feature can be enabled on
         the <span class="application">Recoll</span> side from the
         GUI <span class="guilabel">Index configuration</span>
@@ -1989,23 +2008,6 @@ recollindex -c "$confdir"
         configuration in a <a class="ulink" href=
         "https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexWebHistory"
         target="_top">Recoll 'Howto' entry</a>.</p>
-        <div class="note" style=
-        "margin-left: 0.5in; margin-right: 0.5in;">
-          <h3 class="title">The cache is not an archive</h3>
-          <p>A copy of the indexed Web pages is retained by Recoll
-          in a local cache (from which data is fetched for
-          previews, or when resetting the index). The cache has a
-          maximum size, which can be adjusted from the <span class=
-          "guilabel">Index configuration</span> / <span class=
-          "guilabel">Web history</span> panel (<code class=
-          "literal">webcachemaxmbs</code> parameter in <code class=
-          "filename">recoll.conf</code>). Once the maximum size is
-          reached, old pages are erased to make room for new ones.
-          The pages which you want to keep indefinitely need to be
-          explicitly archived elsewhere. Using a very high value
-          for the cache size can avoid data erasure, but see the
-          above 'Howto' page for more details and gotchas.</p>
-        </div>
       </div>
       <div class="sect1">
         <div class="titlepage">
@@ -2357,10 +2359,11 @@ metadatacmds = ; <em class=
           <p>The GUI <span class="guimenu">File</span> menu has
           entries to start or stop the current indexing operation.
           When indexing is not currently running, you have a choice
-          of updating the index or rebuilding it (the first choice
-          only processes changed files, the second one zeroes the
-          index before starting so that all files are
-          processed).</p>
+          between <span class="guimenuitem">Update Index</span> or
+          <span class="guimenuitem">Rebuild Index</span>. The first
+          choice only processes changed files, the second one
+          erases the index before starting so that all files are
+          processed.</p>
           <p>On Linux and Windows, the GUI can be used to manage
           the indexing operation. Stopping the indexer can be done
           from the <span class=
@@ -2526,7 +2529,17 @@ metadatacmds = ; <em class=
         <p>In this situation, the <span class=
         "command"><strong>recoll</strong></span> GUI <span class=
         "guimenu">File</span> menu makes two operations available:
-        'Stop' and 'Trigger incremental pass'.</p>
+        <span class="guimenuitem">Stop</span> and <span class=
+        "guimenuitem">Trigger incremental pass</span>.</p>
+        <p><span class="guimenuitem">Trigger incremental
+        pass</span> has the same effect as restarting the indexer,
+        and will cause a complete walk of the indexed area,
+        processing the changed files, then switch to monitoring.
+        This is only marginally useful, maybe in cases where the
+        indexer is configured to delay updates, or to force an
+        immediate rebuild of the stemming and phonetic data, which
+        are only processed at intervals by the real time
+        indexer.</p>
         <p>While it is convenient that data is indexed in real
         time, repeated indexing can generate a significant load on
         the system when files such as email folders change. Also,
@@ -3987,7 +4000,7 @@ fs.inotify.max_user_watches=32768
           given context (e.g. within a preview window, within the
           result table).</p>
           <div class="table">
-            <a name="idm1438" id="idm1438"></a>
+            <a name="idm1444" id="idm1444"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
