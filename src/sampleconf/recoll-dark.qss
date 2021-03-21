@@ -71,3 +71,6 @@ QToolButton:on {
 QMenu::item:checked {
     background: #505050;
 }
+QMenu::item:!enabled {
+    color: #808080;
+}
