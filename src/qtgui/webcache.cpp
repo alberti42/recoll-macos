@@ -49,6 +49,8 @@ public:
     string udi;
     string url;
     string mimetype;
+    string date;
+    string size;
 };
 
 class WebcacheModelInternal {
@@ -71,8 +73,7 @@ WebcacheModel::~WebcacheModel()
 
 void WebcacheModel::reload()
 {
-    m->cache =
-        std::shared_ptr<WebStore>(new WebStore(theconfig));
+    m->cache = std::shared_ptr<WebStore>(new WebStore(theconfig));
     m->all.clear();
     m->disp.clear();
     
@@ -83,12 +84,22 @@ void WebcacheModel::reload()
             string udi, sdic;
             m->cache->cc()->getCurrent(udi, sdic);
             ConfSimple dic(sdic);
-            string mime, url;
+            string mime, url, mtime, fbytes;
             dic.get("mimetype", mime);
             dic.get("url", url);
+            dic.get("fmtime", mtime);
+            dic.get("fbytes", fbytes);
             if (!udi.empty()) {
-                m->all.push_back(CEnt(udi, url, mime));
-                m->disp.push_back(CEnt(udi, url, mime));
+                CEnt entry(udi, url, mime);
+                if (!mtime.empty()) {
+                    time_t clck = atoll(mtime.c_str());
+                    entry.date = utf8datestring("%c", localtime(&clck));
+                }
+                if (!fbytes.empty()) {
+                    entry.size = displayableBytes(atoll(fbytes.c_str()));
+                }
+                m->all.push_back(entry);
+                m->disp.push_back(entry);
             }
             if (!m->cache->cc()->next(eof))
                 break;
@@ -120,7 +131,7 @@ int WebcacheModel::rowCount(const QModelIndex&) const
 int WebcacheModel::columnCount(const QModelIndex&) const
 {
     //qDebug() << "WebcacheModel::columnCount()";
-    return 2;
+    return 4;
 }
 
 QVariant WebcacheModel::headerData (int col, Qt::Orientation orientation, 
@@ -132,7 +143,9 @@ QVariant WebcacheModel::headerData (int col, Qt::Orientation orientation,
     }
     switch (col) {
     case 0: return QVariant(tr("MIME"));
-    case 1: return QVariant(tr("Url"));
+    case 1: return QVariant(tr("Date"));
+    case 2: return QVariant(tr("Size"));
+    case 3: return QVariant(tr("Url"));
     default: return QVariant();
     }
 }
@@ -148,13 +161,11 @@ QVariant WebcacheModel::data(const QModelIndex& index, int role) const
     if (row < 0 || row >= int(m->disp.size())) {
         return QVariant();
     }
-
-    const string& mime = m->disp[row].mimetype;
-    const string& url = m->disp[row].url;
-    
     switch (index.column()) {
-    case 0: return QVariant(QString::fromUtf8(mime.c_str()));
-    case 1: return QVariant(QString::fromUtf8(url.c_str()));
+    case 0: return QVariant(u8s2qs(m->disp[row].mimetype));
+    case 1: return QVariant(u8s2qs(m->disp[row].date));
+    case 2: return QVariant(u8s2qs(m->disp[row].size));
+    case 3: return QVariant(u8s2qs(m->disp[row].url));
     default: return QVariant();
     }
 }

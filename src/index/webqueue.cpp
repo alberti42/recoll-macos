@@ -438,7 +438,7 @@ WebQueueIndexer::processone(const string &path,
             doc.fmtime = ascdate;
         dotdoc.fmtime = doc.fmtime;
 
-        doc.pcbytes = lltodecstr(stp->pst_size);
+	dotdoc.pcbytes = doc.pcbytes = lltodecstr(stp->pst_size);
         // Document signature for up to date checks: none. 
         doc.sig.clear();
         doc.url = dotdoc.url;
