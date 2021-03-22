@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2020 J.F.Dockes
+/* Copyright (C) 2016-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -38,6 +38,7 @@
 #include "rclmain_w.h"
 #include "smallut.h"
 #include "log.h"
+#include "copyfile.h"
 
 using namespace std;
 
@@ -51,19 +52,23 @@ public:
     string mimetype;
     string date;
     string size;
+    // Only useful in the filtered list. Corresponding index in the
+    // complete one
+    int allidx{-1};
 };
 
 class WebcacheModelInternal {
 public:
-    std::shared_ptr<WebStore> cache;
+    std::unique_ptr<WebStore> cache;
+    // The complete list
     vector<CEnt> all;
+    // The entries matching the current filter (displayed)
     vector<CEnt> disp;
 };
 
 WebcacheModel::WebcacheModel(QObject *parent)
     : QAbstractTableModel(parent), m(new WebcacheModelInternal())
 {
-    //qDebug() << "WebcacheModel::WebcacheModel()";
     reload();
 }
 WebcacheModel::~WebcacheModel()
@@ -73,38 +78,42 @@ WebcacheModel::~WebcacheModel()
 
 void WebcacheModel::reload()
 {
-    m->cache = std::shared_ptr<WebStore>(new WebStore(theconfig));
+    int idx = 0;
     m->all.clear();
     m->disp.clear();
+    if (!(m->cache = std::unique_ptr<WebStore>(new WebStore(theconfig)))) {
+        goto out;
+    }
     
-    if (m->cache) {
-        bool eof;
-        m->cache->cc()->rewind(eof);
-        while (!eof) {
-            string udi, sdic;
-            m->cache->cc()->getCurrent(udi, sdic);
+    bool eof;
+    m->cache->cc()->rewind(eof);
+    while (!eof) {
+        string udi, sdic;
+        m->cache->cc()->getCurrent(udi, sdic);
+        if (!udi.empty()) {
             ConfSimple dic(sdic);
             string mime, url, mtime, fbytes;
             dic.get("mimetype", mime);
             dic.get("url", url);
             dic.get("fmtime", mtime);
             dic.get("fbytes", fbytes);
-            if (!udi.empty()) {
-                CEnt entry(udi, url, mime);
-                if (!mtime.empty()) {
-                    time_t clck = atoll(mtime.c_str());
-                    entry.date = utf8datestring("%c", localtime(&clck));
-                }
-                if (!fbytes.empty()) {
-                    entry.size = displayableBytes(atoll(fbytes.c_str()));
-                }
-                m->all.push_back(entry);
-                m->disp.push_back(entry);
+            CEnt entry(udi, url, mime);
+            entry.allidx = idx++;
+            if (!mtime.empty()) {
+                time_t clck = atoll(mtime.c_str());
+                entry.date = utf8datestring("%c", localtime(&clck));
             }
-            if (!m->cache->cc()->next(eof))
-                break;
+            if (!fbytes.empty()) {
+                entry.size = displayableBytes(atoll(fbytes.c_str()));
+            }
+            m->all.push_back(entry);
+            m->disp.push_back(entry);
         }
+        if (!m->cache->cc()->next(eof))
+            break;
     }
+
+out:
     emit dataChanged(createIndex(0,0), createIndex(1, m->all.size()));
 }
 
@@ -120,6 +129,34 @@ string WebcacheModel::getURL(unsigned int idx)
     if (idx > m->disp.size() || !m->cache)
         return string();
     return m->disp[idx].url;
+}
+
+string WebcacheModel::getData(unsigned int idx)
+{
+    LOGDEB0("WebcacheModel::getData: idx " << idx << "\n");
+    if (idx > m->disp.size() || !m->cache) {
+        LOGERR("WebcacheModel::getData: idx > m->disp.size()" << m->disp.size() << "\n");
+        return string();
+    }
+    // Get index in the "all" list
+    auto allidx = m->disp[idx].allidx;
+    LOGDEB0("WebcacheModel::getData: allidx " << allidx << "\n");
+    if (allidx < 0 || allidx >= int(m->all.size())) {
+        LOGERR("WebcacheModel::getData: allidx > m->all.size()" << m->all.size() << "\n");
+        return string();
+    }
+    string udi = m->all[allidx].udi;
+    // Compute the instance for this udi (in case we are not erasing older instances).
+    int instance = 0;
+    for (int i = 0; i < allidx; i++) {
+        if (m->all[i].udi == udi) {
+            instance++;
+        }
+    }
+    string dic, data;
+    m->cache->cc()->get(udi, dic, &data, instance);
+    LOGDEB0("WebcacheModel::getData: got " << data.size() << " bytes of data\n");
+    return data;
 }
 
 int WebcacheModel::rowCount(const QModelIndex&) const
@@ -172,15 +209,15 @@ QVariant WebcacheModel::data(const QModelIndex& index, int role) const
 
 void WebcacheModel::setSearchFilter(const QString& _txt)
 {
-    SimpleRegexp re(
-        qs2utf8s(_txt), SimpleRegexp::SRE_NOSUB|SimpleRegexp::SRE_ICASE);
+    SimpleRegexp re(qs2utf8s(_txt), SimpleRegexp::SRE_NOSUB|SimpleRegexp::SRE_ICASE);
     
     m->disp.clear();
     for (unsigned int i = 0; i < m->all.size(); i++) {
         if (re(m->all[i].url)) {
             m->disp.push_back(m->all[i]);
+            m->disp.back().allidx = i;
         } else {
-            LOGDEB1(" WebcacheMOdel::filter: match failed. exp" <<
+            LOGDEB1("WebcacheModel::filter: match failed. exp" <<
                     qs2utf8s(_txt) << "data" << m->all[i].url);
         }
     }
@@ -249,6 +286,7 @@ void WebcacheEdit::createPopupMenu(const QPoint& pos)
     QMenu *popup = new QMenu(this);
     if (selsz == 1) {
         popup->addAction(tr("Copy URL"), this, SLOT(copyURL()));
+        popup->addAction(tr("Save to File"), this, SLOT(saveToFile()));
     }
     if (m_recoll) {
         RclMain::IndexerState ixstate = m_recoll->indexerState();
@@ -297,6 +335,19 @@ void WebcacheEdit::copyURL()
         QString qurl =  path2qs(url);
         QApplication::clipboard()->setText(qurl, QClipboard::Selection);
         QApplication::clipboard()->setText(qurl, QClipboard::Clipboard);
+    }
+}
+
+void WebcacheEdit::saveToFile()
+{
+    QModelIndexList selection = tableview->selectionModel()->selectedRows();
+    if (selection.size() != 1)
+        return;
+    string data = m_model->getData(selection[0].row());
+    QString qfn  = myGetFileName(false, "Saving webcache data");
+    string reason;
+    if (!stringtofile(data, qs2utf8s(qfn).c_str(), reason)) {
+        QMessageBox::warning(0, "Recoll", tr("File creation failed: ") + u8s2qs(reason));
     }
 }
 
