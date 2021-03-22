@@ -65,8 +65,7 @@ public:
     // is controled by darkMode
     QString darkreslistheadertext;
     // Date strftime format
-    QString reslistdateformat;
-    string creslistdateformat;
+    string reslistdateformat;
 
     //  General Qt style sheet.
     QString qssFile;

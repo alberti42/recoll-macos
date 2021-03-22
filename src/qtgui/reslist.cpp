@@ -218,7 +218,7 @@ const string& QtGuiResListPager::parFormat()
 }
 const string& QtGuiResListPager::dateFormat()
 {
-    return prefs.creslistdateformat;
+    return prefs.reslistdateformat;
 }
 
 string QtGuiResListPager::nextUrl()

@@ -220,7 +220,7 @@ static string datetimegetter(const string&, const Rcl::Doc& doc)
         time_t mtime = doc.dmtime.empty() ?
             atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
         struct tm *tm = localtime(&mtime);
-        datebuf = utf8datestring(prefs.creslistdateformat.c_str(), tm);
+        datebuf = utf8datestring(prefs.reslistdateformat.c_str(), tm);
     }
     return datebuf;
 }

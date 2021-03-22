@@ -200,7 +200,7 @@ void UIPrefsDialog::setFromPrefs()
     }    
     // Abstract snippet separator string
     abssepLE->setText(prefs.abssep);
-    dateformatLE->setText(prefs.reslistdateformat);
+    dateformatLE->setText(u8s2qs(prefs.reslistdateformat));
 
     // Result list font family and size
     reslistFontFamily = prefs.reslistfontfamily;
@@ -394,8 +394,7 @@ void UIPrefsDialog::accept()
 
     prefs.qtermstyle = qtermStyleCMB->currentText();
     prefs.abssep = abssepLE->text();
-    prefs.reslistdateformat = dateformatLE->text();
-    prefs.creslistdateformat = (const char*)prefs.reslistdateformat.toUtf8();
+    prefs.reslistdateformat = qs2utf8s(dateformatLE->text());
 
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
