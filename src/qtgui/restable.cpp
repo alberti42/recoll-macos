@@ -220,7 +220,8 @@ static string datetimegetter(const string&, const Rcl::Doc& doc)
         time_t mtime = doc.dmtime.empty() ?
             atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
         struct tm *tm = localtime(&mtime);
-        datebuf = utf8datestring(prefs.reslistdateformat.c_str(), tm);
+        // Can't use reslistdateformat because it's html (&nbsp; etc.)
+        datebuf = utf8datestring("%Y-%m-%d %H:%M:%S", tm);
     }
     return datebuf;
 }
@@ -899,7 +900,7 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
             m_rowchangefromkbd = false;
             bool loadok = rcldb->getDocRawText(m_detaildoc);
             if (loadok) {
-                m_detail->setText(u8s2qs(m_detaildoc.text));
+                m_detail->setPlainText(u8s2qs(m_detaildoc.text));
             }
         }  else {
             m_pager->displaySingleDoc(theconfig, m_detaildocnum, m_detaildoc, 
