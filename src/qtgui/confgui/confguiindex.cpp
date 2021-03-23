@@ -32,6 +32,7 @@
 #include <set>
 #include <string>
 #include <functional>
+#include <memory>
 using std::vector;
 using std::set;
 using std::string;
@@ -43,6 +44,8 @@ using std::string;
 #include "rcldb.h"
 #include "execmd.h"
 #include "rclconfig.h"
+#include "webstore.h"
+#include "circache.h"
 
 static const int spacing = 3;
 static const int margin = 3;
@@ -353,8 +356,12 @@ bool ConfIndexW::setupWebHistoryPanel(int idx)
            "file (only waste space at the end)."
             ), -1, 1000*1000); // Max 1TB...
     m_w->enableLink(bparam, cparam);
+    int64_t sz = -1;
+    auto ws = std::unique_ptr<WebStore>(new WebStore(m_rclconf));
+    sz = ws->cc()->size();
     m_w->addBlurb(idx, tr("Note: old pages will be erased to make space for "
-                          "new ones when the maximum size is reached"));
+                          "new ones when the maximum size is reached. "
+                          "Current size: %1").arg(u8s2qs(displayableBytes(sz))));
     m_w->endOfList(idx);
     return true;
 }

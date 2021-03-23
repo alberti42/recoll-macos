@@ -787,6 +787,29 @@ bool CirCache::open(OpMode mode)
     return m_d->readfirstblock();
 }
 
+int64_t CirCache::size()
+{
+    if (m_d == 0) {
+        LOGERR("CirCache::open: null data\n");
+        return -1;
+    }
+    struct stat st;
+    if (m_d->m_fd < 0) {
+        if (stat(m_d->datafn(m_dir).c_str(), &st) < 0) {
+            m_d->m_reason << "CirCache::size: stat(" << m_d->datafn(m_dir) <<
+                ") failed " << "errno " << errno;
+            return -1;
+        }
+    } else {
+        if (fstat(m_d->m_fd, &st) < 0) {
+            m_d->m_reason << "CirCache::open: fstat(" << m_d->datafn(m_dir) <<
+                ") failed " << "errno " << errno;
+            return -1;
+        }
+    }
+    return st.st_size;
+}
+
 class CCScanHookDump : public  CCScanHook {
 public:
     virtual status takeone(int64_t offs, const string& udi,

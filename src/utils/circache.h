@@ -37,8 +37,7 @@
  */
 
 #include <sys/types.h>
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
 class ConfSimple;
@@ -63,6 +62,8 @@ public:
     enum OpMode {CC_OPREAD, CC_OPWRITE};
     virtual bool open(OpMode mode);
 
+    virtual int64_t size();
+    
     virtual std::string getpath();
 
     // Set data to 0 if you just want the header
