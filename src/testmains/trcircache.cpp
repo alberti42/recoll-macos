@@ -34,6 +34,8 @@ static char usage [] =
     " -a <targetdir> <dir> [<dir> ...]: append content from existing cache(s) to target\n"
     "  The target should be first resized to hold all the data, else only\n"
     "  as many entries as capacity permit will be retained\n"
+    " -C <dir> : recover space from erased entries. May temporarily need twice the current "
+    "    space used by the cache\n";
     ;
 
 static void
@@ -54,6 +56,7 @@ static int     op_flags;
 #define OPT_u     0x100
 #define OPT_e     0x200
 #define OPT_a     0x800
+#define OPT_C     0x1000
 
 bool storeFile(CirCache& cc, const std::string fn);
 
@@ -74,24 +77,13 @@ int main(int argc, char **argv)
         }
         while (**argv)
             switch (*(*argv)++) {
-            case 'a':
-                op_flags |= OPT_a;
-                break;
-            case 'c':
-                op_flags |= OPT_c;
-                break;
-            case 'D':
-                op_flags |= OPT_D;
-                break;
-            case 'd':
-                op_flags |= OPT_d;
-                break;
-            case 'e':
-                op_flags |= OPT_e;
-                break;
-            case 'g':
-                op_flags |= OPT_g;
-                break;
+            case 'a': op_flags |= OPT_a; break;
+            case 'C': op_flags |= OPT_C; break;
+            case 'c': op_flags |= OPT_c; break;
+            case 'D': op_flags |= OPT_D; break;
+            case 'd': op_flags |= OPT_d; break;
+            case 'e': op_flags |= OPT_e; break;
+            case 'g': op_flags |= OPT_g; break;
             case 'i':
                 op_flags |= OPT_i;
                 if (argc < 2) {
@@ -102,15 +94,9 @@ int main(int argc, char **argv)
                 }
                 argc--;
                 goto b1;
-            case 'p':
-                op_flags |= OPT_p;
-                break;
-            case 'u':
-                op_flags |= OPT_u;
-                break;
-            default:
-                Usage();
-                break;
+            case 'p': op_flags |= OPT_p; break;
+            case 'u': op_flags |= OPT_u; break;
+            default: Usage(); break;
             }
 b1:
         argc--;
@@ -141,6 +127,16 @@ b1:
             cerr << "Create failed:" << cc.getReason() << endl;
             exit(1);
         }
+    } else if (op_flags & OPT_C) {
+        if (argc) {
+            Usage();
+        }
+        std::string reason;
+        if (!CirCache::compact(dir, &reason)) {
+            std::cerr << "Compact failed: " << reason << "\n";
+            return 1;
+        }
+        return 0;
     } else if (op_flags & OPT_a) {
         if (argc < 1) {
             Usage();

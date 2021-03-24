@@ -63,6 +63,9 @@ public:
     virtual bool open(OpMode mode);
 
     virtual int64_t size();
+    virtual int64_t maxsize();
+    virtual int64_t writepos();
+    virtual bool    uniquentries();
     
     virtual std::string getpath();
 
@@ -114,16 +117,22 @@ public:
      * current file size (current erased+active entries, with
      * available space corresponding to the old erased entries).
      *
-     * This method does not need to be a member at all, just using the
-     * namespace here.
-     *
      * @param ddir destination circache (must exist)
      * @param sdir source circache
      * @ret number of entries copied or -a
      */
-    static int appendCC(const std::string ddir, const std::string& sdir,
+    static int appendCC(const std::string& ddir, const std::string& sdir,
                         std::string *reason = 0);
 
+    /* Rewrite the cache so that the space wasted to erased
+     * entries is recovered. This may need to use temporarily twice
+     * the current cache disk space.
+     */
+    static bool compact(const std::string& dir, std::string *reason = 0);
+
+    /* Extract all entries as metadata/data file pairs */
+    static bool burst(const std::string& ccdir, const std::string destdir, std::string *reason = 0);
+    
 protected:
     CirCacheInternal *m_d;
     std::string m_dir;

@@ -36,6 +36,9 @@
 #include "chrono.h"
 #include "zlibut.h"
 #include "smallut.h"
+#include "pathut.h"
+#include "wipedir.h"
+#include "copyfile.h"
 
 #ifndef _WIN32
 #include <sys/uio.h>
@@ -497,8 +500,7 @@ public:
         return CCScanHook::Continue;
     }
 
-    CCScanHook::status scan(int64_t startoffset, CCScanHook *user,
-                            bool fold = false) {
+    CCScanHook::status scan(int64_t startoffset, CCScanHook *user, bool fold = false) {
         if (m_fd < 0) {
             m_reason << "scan: not open ";
             return CCScanHook::Error;
@@ -805,6 +807,34 @@ int64_t CirCache::size()
     }
     return st.st_size;
 }
+
+int64_t CirCache::maxsize()
+{
+    if (m_d == 0) {
+        LOGERR("CirCache::open: null data\n");
+        return -1;
+    }
+    return m_d->m_maxsize;
+}
+
+int64_t CirCache::writepos()
+{
+    if (m_d == 0) {
+        LOGERR("CirCache::open: null data\n");
+        return -1;
+    }
+    return m_d->m_nheadoffs;
+}
+
+bool CirCache::uniquentries()
+{
+    if (m_d == 0) {
+        LOGERR("CirCache::open: null data\n");
+        return -1;
+    }
+    return m_d->m_uniquentries;
+}
+
 
 class CCScanHookDump : public  CCScanHook {
 public:
@@ -1337,7 +1367,7 @@ static bool copyall(std::shared_ptr<CirCache> occ,
     return true;
 }
 
-int CirCache::appendCC(const string ddir, const string& sdir, string *reason)
+int CirCache::appendCC(const string& ddir, const string& sdir, string *reason)
 {
     ostringstream msg;
     // Open source file
@@ -1406,3 +1436,110 @@ int CirCache::appendCC(const string ddir, const string& sdir, string *reason)
 
     return nentries;
 }
+
+bool CirCache::compact(const std::string& dir, std::string *reason)
+{
+    ostringstream msg;
+    // Open source file
+    std::shared_ptr<CirCache> occ(new CirCache(dir));
+    if (!occ->open(CirCache::CC_OPREAD)) {
+        msg << "CirCache::compact: open failed in " << dir << " : " << occ->getReason() << "\n";
+        LOGERR(msg.str());
+        if (reason) {
+            *reason = msg.str();
+        }
+        return -1;
+    }
+    long long avmbs;
+    if (fsocc(dir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
+        msg << "CirCache::compact: not enough space on file system";
+        LOGERR(msg.str() <<"\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    std::string ndir = path_cat(dir, "tmpcopy");
+    if (!path_makepath(dir, 0700)) {
+        msg << "CirCache::compact: path_makepath failed with errno " << errno;
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+        
+    std::shared_ptr<CirCache> ncc(new CirCache(ndir));
+    if (!ncc->create(occ->size(), occ->uniquentries() ? CC_CRUNIQUE : CC_CRNONE)) {
+        msg << "CirCache::compact: Open failed in " << ndir << " : " << ncc->getReason();
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    int nentries;
+    if (!copyall(occ, ncc, nentries, msg)) {
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+
+    // Close both
+    occ.reset();
+    ncc.reset();
+    // Rename new to old
+    std::string r;
+    std::string nfile = path_cat(ndir, "circache.crch").c_str();
+    std::string ofile = path_cat(dir, "circache.crch").c_str();
+    if (!renameormove(nfile.c_str(), ofile.c_str(), r)) {
+        msg << "CirCache::compact: rename: " << r;
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+
+    // Cleanup
+    wipedir(ndir, true);
+    return true;
+}
+
+bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::string *reason)
+{
+    ostringstream msg;
+    // Open source file
+    std::shared_ptr<CirCache> occ(new CirCache(ccdir));
+    if (!occ->open(CirCache::CC_OPREAD)) {
+        msg << "CirCache::burst: open failed in " << dir << " : " << occ->getReason() << "\n";
+        LOGERR(msg.str());
+        if (reason) {
+            *reason = msg.str();
+        }
+        return -1;
+    }
+    long long avmbs;
+    if (fsocc(dir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
+        msg << "CirCache::burst: not enough space on file system";
+        LOGERR(msg.str() <<"\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    if (!path_makepath(destdir, 0700)) {
+        msg << "CirCache::burst: path_makepath failed with errno " << errno;
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+
+                m_d->scan(CIRCACHE_FIRSTBLOCK_SIZE, &rec, false);
+    
+}
+
