@@ -14,8 +14,6 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#define LOGGER_LOCAL_LOGINC 4
-
 #include "autoconfig.h"
 
 #include "circache.h"
@@ -30,15 +28,12 @@
 #include <assert.h>
 #include <memory.h>
 #include <inttypes.h>
-
 #include <memory>
-
-#include "chrono.h"
-#include "zlibut.h"
-#include "smallut.h"
-#include "pathut.h"
-#include "wipedir.h"
-#include "copyfile.h"
+#include <functional>
+#include <utility>
+#include <sstream>
+#include <iostream>
+#include <map>
 
 #ifndef _WIN32
 #include <sys/uio.h>
@@ -64,41 +59,19 @@ static ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 }
 #endif
 
-
-#include <sstream>
-#include <iostream>
-#include <map>
-
-#include "cstr.h"
-#include "circache.h"
+#include "chrono.h"
 #include "conftree.h"
+#include "copyfile.h"
+#include "cstr.h"
 #include "log.h"
-#include "smallut.h"
 #include "md5.h"
+#include "pathut.h"
+#include "smallut.h"
+#include "wipedir.h"
+#include "zlibut.h"
 
 using namespace std;
-
-/** Temp buffer with automatic deallocation */
-struct TempBuf {
-    TempBuf()
-        : m_buf(0) {
-    }
-    TempBuf(int n) {
-        m_buf = (char *)malloc(n);
-    }
-    ~TempBuf() {
-        if (m_buf) {
-            free(m_buf);
-        }
-    }
-    char *setsize(int n) {
-        return (m_buf = (char *)realloc(m_buf, n));
-    }
-    char *buf() {
-        return m_buf;
-    }
-    char *m_buf;
-};
+using namespace std::placeholders;
 
 /*
  * File structure:
@@ -1325,10 +1298,10 @@ bool CirCache::getCurrent(string& udi, string& dic, string *data)
     return true;
 }
 
-// Copy all entries from occ to ncc. Both are already open.
+// Send all entries from occ to callback. occ is already open.
 static bool copyall(std::shared_ptr<CirCache> occ,
-                    std::shared_ptr<CirCache> ncc, int& nentries,
-                    ostringstream& msg)
+                    std::function<bool(const std::string, ConfSimple*, const std::string&)> cb,
+                    int& nentries, ostringstream& msg)
 {
     bool eof = false;
     if (!occ->rewind(eof)) {
@@ -1356,9 +1329,10 @@ static bool copyall(std::shared_ptr<CirCache> occ,
             return false;
         }
         //cerr << "UDI: " << udi << endl;
-        if (!ncc->put(udi, &dic, data)) {
-            msg << "put failed: " << ncc->getReason() << " sdic [" << sdic <<
-                "]" << endl;
+        if (!cb(udi, &dic, data)) {
+            string err;
+            catstrerror(&err, "", errno);
+            msg << "put failed: errno " << err << " for [" << sdic << "]" << endl;
             return false;
         }
         nentries++;
@@ -1427,7 +1401,11 @@ int CirCache::appendCC(const string& ddir, const string& sdir, string *reason)
     }
 
     int nentries;
-    if (!copyall(occ, ncc, nentries, msg)) {
+    std::function<bool(const std::string, ConfSimple*, const std::string&)> cb =
+        std::bind(&CirCache::put, ncc, _1, _2, _3, 0);
+    if (!copyall(occ, cb, nentries, msg)) {
+        msg << " " << ncc->getReason() << "\n";
+        LOGERR(msg.str());
         if (reason) {
             *reason = msg.str();
         }
@@ -1440,10 +1418,11 @@ int CirCache::appendCC(const string& ddir, const string& sdir, string *reason)
 bool CirCache::compact(const std::string& dir, std::string *reason)
 {
     ostringstream msg;
+    msg << "CirCache::compact: ";
     // Open source file
     std::shared_ptr<CirCache> occ(new CirCache(dir));
     if (!occ->open(CirCache::CC_OPREAD)) {
-        msg << "CirCache::compact: open failed in " << dir << " : " << occ->getReason() << "\n";
+        msg << "open failed in " << dir << " : " << occ->getReason() << "\n";
         LOGERR(msg.str());
         if (reason) {
             *reason = msg.str();
@@ -1452,7 +1431,7 @@ bool CirCache::compact(const std::string& dir, std::string *reason)
     }
     long long avmbs;
     if (fsocc(dir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
-        msg << "CirCache::compact: not enough space on file system";
+        msg << "not enough space on file system";
         LOGERR(msg.str() <<"\n");
         if (reason) {
             *reason = msg.str();
@@ -1461,7 +1440,7 @@ bool CirCache::compact(const std::string& dir, std::string *reason)
     }
     std::string ndir = path_cat(dir, "tmpcopy");
     if (!path_makepath(dir, 0700)) {
-        msg << "CirCache::compact: path_makepath failed with errno " << errno;
+        msg << "path_makepath failed with errno " << errno;
         LOGERR(msg.str() << "\n");
         if (reason) {
             *reason = msg.str();
@@ -1471,7 +1450,7 @@ bool CirCache::compact(const std::string& dir, std::string *reason)
         
     std::shared_ptr<CirCache> ncc(new CirCache(ndir));
     if (!ncc->create(occ->size(), occ->uniquentries() ? CC_CRUNIQUE : CC_CRNONE)) {
-        msg << "CirCache::compact: Open failed in " << ndir << " : " << ncc->getReason();
+        msg << "open failed in " << ndir << " : " << ncc->getReason();
         LOGERR(msg.str() << "\n");
         if (reason) {
             *reason = msg.str();
@@ -1479,7 +1458,10 @@ bool CirCache::compact(const std::string& dir, std::string *reason)
         return false;
     }
     int nentries;
-    if (!copyall(occ, ncc, nentries, msg)) {
+    std::function<bool(const std::string, ConfSimple*, const std::string&)> cb =
+        std::bind(&CirCache::put, ncc, _1, _2, _3, 0);
+    if (!copyall(occ, cb, nentries, msg)) {
+        msg << " " << ncc->getReason();
         LOGERR(msg.str() << "\n");
         if (reason) {
             *reason = msg.str();
@@ -1495,7 +1477,7 @@ bool CirCache::compact(const std::string& dir, std::string *reason)
     std::string nfile = path_cat(ndir, "circache.crch").c_str();
     std::string ofile = path_cat(dir, "circache.crch").c_str();
     if (!renameormove(nfile.c_str(), ofile.c_str(), r)) {
-        msg << "CirCache::compact: rename: " << r;
+        msg << "rename: " << r;
         LOGERR(msg.str() << "\n");
         if (reason) {
             *reason = msg.str();
@@ -1508,13 +1490,58 @@ bool CirCache::compact(const std::string& dir, std::string *reason)
     return true;
 }
 
+class CCDataToFile {
+public:
+    CCDataToFile(const std::string dd)
+        : m_dir(dd) {}
+    bool putFile(const std::string& udi, const ConfSimple *dicp, const std::string& data);
+    std::string& getReason() {return m_reason;}
+private:
+    std::string m_dir;
+    std::string m_reason;
+};
+
+bool CCDataToFile::putFile(const std::string& udi, const ConfSimple *dicp, const std::string& data)
+{
+#if 0
+    std::ostringstream deb;
+    dicp->write(deb);
+    LOGDEB("CCDataToFile::putFile: udi " << udi << " dic " << deb.str() <<
+           " datasize " << data.size() << "\n");
+#endif
+    std::string hash = MD5Hex(udi);
+    std::string dsuff;
+    std::string mt;
+    dicp->get("mimetype", mt);
+    if (mt == "text/html") {
+        dsuff = ".html";
+    } else if (mt == "application/pdf") {
+        dsuff = ".pdf";
+    } else {
+        dsuff = ".xxx";
+    }
+
+    std::string fn = path_cat(m_dir, "circache-" + hash + dsuff);
+    if (!stringtofile(data, fn.c_str(), m_reason)) {
+        return false;
+    }
+    fn = path_cat(m_dir, "circache-" + hash + ".dic");
+    std::ostringstream str;
+    dicp->write(str);
+    if (!stringtofile(str.str(), fn.c_str(), m_reason)) {
+        return false;
+    }
+    return true;
+}
+
 bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::string *reason)
 {
     ostringstream msg;
+    msg << "CirCache::burst: ";
     // Open source file
     std::shared_ptr<CirCache> occ(new CirCache(ccdir));
     if (!occ->open(CirCache::CC_OPREAD)) {
-        msg << "CirCache::burst: open failed in " << dir << " : " << occ->getReason() << "\n";
+        msg << "open failed in " << ccdir << " : " << occ->getReason() << "\n";
         LOGERR(msg.str());
         if (reason) {
             *reason = msg.str();
@@ -1522,8 +1549,8 @@ bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::s
         return -1;
     }
     long long avmbs;
-    if (fsocc(dir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
-        msg << "CirCache::burst: not enough space on file system";
+    if (fsocc(destdir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
+        msg << "not enough space on file system";
         LOGERR(msg.str() <<"\n");
         if (reason) {
             *reason = msg.str();
@@ -1531,7 +1558,19 @@ bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::s
         return false;
     }
     if (!path_makepath(destdir, 0700)) {
-        msg << "CirCache::burst: path_makepath failed with errno " << errno;
+        msg << "path_makepath failed with errno " << errno;
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    int nentries;
+    CCDataToFile copier(destdir);
+    std::function<bool(const std::string, ConfSimple*, const std::string&)> cb =
+        std::bind(&CCDataToFile::putFile, copier, _1, _2, _3);
+    if (!copyall(occ, cb, nentries, msg)) {
+        msg << " " << copier.getReason();
         LOGERR(msg.str() << "\n");
         if (reason) {
             *reason = msg.str();
@@ -1539,7 +1578,6 @@ bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::s
         return false;
     }
 
-                m_d->scan(CIRCACHE_FIRSTBLOCK_SIZE, &rec, false);
-    
+    return true;
 }
 

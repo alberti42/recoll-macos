@@ -46,17 +46,17 @@ Usage(FILE *fp = stderr)
 }
 
 static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_c     0x2
-#define OPT_p     0x8
-#define OPT_g     0x10
-#define OPT_d     0x20
-#define OPT_i     0x40
-#define OPT_D     0x80
-#define OPT_u     0x100
-#define OPT_e     0x200
-#define OPT_a     0x800
-#define OPT_C     0x1000
+#define OPT_a     0x1
+#define OPT_b     0x2  
+#define OPT_C     0x4  
+#define OPT_c     0x8  
+#define OPT_D     0x10 
+#define OPT_d     0x20 
+#define OPT_e     0x40 
+#define OPT_g     0x80 
+#define OPT_i     0x100
+#define OPT_p     0x200
+#define OPT_u     0x400
 
 bool storeFile(CirCache& cc, const std::string fn);
 
@@ -78,6 +78,7 @@ int main(int argc, char **argv)
         while (**argv)
             switch (*(*argv)++) {
             case 'a': op_flags |= OPT_a; break;
+            case 'b': op_flags |= OPT_b; break;
             case 'C': op_flags |= OPT_C; break;
             case 'c': op_flags |= OPT_c; break;
             case 'D': op_flags |= OPT_D; break;
@@ -148,6 +149,16 @@ b1:
                 return 1;
             }
             argc--;
+        }
+    } else if (op_flags & OPT_b) {
+        if (argc < 1) {
+            Usage();
+        }
+        std::string ddir = *argv++; argc--;
+        string reason;
+        if (!CirCache::burst(dir, ddir, &reason)) {
+            cerr << reason << endl;
+            return 1;
         }
     } else if (op_flags & OPT_p) {
         if (argc < 1) {

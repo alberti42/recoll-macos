@@ -32,11 +32,10 @@
  * Inside the file. the UDIs are stored inside the entry dictionary
  * under the key "udi".
  *
- * It is assumed that the dictionary are small (they are routinely read/parsed)
- *
+ * It is assumed that the dictionaries are small (they are routinely
+ * read/parsed)
  */
 
-#include <sys/types.h>
 #include <cstdint>
 #include <string>
 
