@@ -1289,7 +1289,6 @@ void RclMain::applyStyleSheet()
 {
     ::applyStyleSheet(prefs.qssFile);
     if (m_source) {
-        std::cerr << "applyStyleSheet emit docSourceChanged\n";
         emit docSourceChanged(m_source);
         emit sortDataChanged(m_sortspec);
     } else {

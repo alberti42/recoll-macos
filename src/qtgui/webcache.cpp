@@ -146,9 +146,10 @@ string WebcacheModel::getData(unsigned int idx)
         return string();
     }
     string udi = m->all[allidx].udi;
-    // Compute the instance for this udi (in case we are not erasing older instances).
+    // Compute the instance for this udi (in case we are configured to
+    // not erase older instances).  Valid instance values begin at 1
     int instance = 0;
-    for (int i = 0; i < allidx; i++) {
+    for (unsigned int i = 0; i <= idx; i++) {
         if (m->all[i].udi == udi) {
             instance++;
         }
@@ -345,6 +346,8 @@ void WebcacheEdit::saveToFile()
         return;
     string data = m_model->getData(selection[0].row());
     QString qfn  = myGetFileName(false, "Saving webcache data");
+    if (qfn.isEmpty())
+        return;
     string reason;
     if (!stringtofile(data, qs2utf8s(qfn).c_str(), reason)) {
         QMessageBox::warning(0, "Recoll", tr("File creation failed: ") + u8s2qs(reason));

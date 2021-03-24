@@ -67,11 +67,14 @@ public:
     virtual std::string getpath();
 
     // Set data to 0 if you just want the header
+    // instance == -1 means get latest. Otherwise specify from 1+
     virtual bool get(const std::string& udi, std::string& dic,
                      std::string *data = 0, int instance = -1);
 
     // Note: the dicp MUST have an udi entry
-    enum PutFlags {NoCompHint = 1};
+    enum PutFlags {
+        NoCompHint = 1, // Do not attempt compression.
+    };
     virtual bool put(const std::string& udi, const ConfSimple *dicp,
                      const std::string& data, unsigned int flags = 0);
 
@@ -99,15 +102,27 @@ public:
 
     /* Utility: append all entries from sdir to ddir. 
      * 
-     * This does not need to be a member at all, just using the namespace here.
+     * ddir must already exist. It will be appropriately resized if
+     * needed to avoid recycling while writing the new entries. 
+     * ** Note that if dest is not currently growing, this action
+     *   will recycle old dest entries between the current write
+     *   point and EOF (or up to wherever we need to write to store
+     *   the source data) **
+     * Also note that if the objective is just to compact (reuse the erased
+     * entries space) you should first create the new circache with the
+     * same maxsize as the old one, else the new maxsize will be the
+     * current file size (current erased+active entries, with
+     * available space corresponding to the old erased entries).
      *
-     * @param ddir destination circache (must be previously created
-     *     with appropriate size)
+     * This method does not need to be a member at all, just using the
+     * namespace here.
+     *
+     * @param ddir destination circache (must exist)
      * @param sdir source circache
      * @ret number of entries copied or -a
      */
-    static int append(const std::string ddir, const std::string& sdir,
-                      std::string *reason = 0);
+    static int appendCC(const std::string ddir, const std::string& sdir,
+                        std::string *reason = 0);
 
 protected:
     CirCacheInternal *m_d;
