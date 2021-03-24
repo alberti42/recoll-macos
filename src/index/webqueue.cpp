@@ -173,14 +173,25 @@ public:
 
 // Initialize. Compute paths and create a temporary directory that will be
 // used by internfile()
-WebQueueIndexer::WebQueueIndexer(RclConfig *cnf, Rcl::Db *db,
-                                 DbIxStatusUpdater *updfunc)
-    : m_config(cnf), m_db(db), m_cache(0), m_updater(updfunc), 
-      m_nocacheindex(false)
+WebQueueIndexer::WebQueueIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
+    : m_config(cnf), m_db(db), m_updater(updfunc)
 {
     m_queuedir = m_config->getWebQueueDir();
     path_catslash(m_queuedir);
     m_cache = new WebStore(cnf);
+    string keepinterval;
+    m_config->getConfParam("webcachekeepinterval", keepinterval);
+    if (keepinterval == "day") {
+        m_keepinterval = WQKI_DAY;
+    } else if (keepinterval == "week") {
+        m_keepinterval = WQKI_WEEK;
+    } else if (keepinterval == "month") {
+        m_keepinterval = WQKI_MONTH;
+    } else if (keepinterval == "year") {
+        m_keepinterval = WQKI_YEAR;
+    } else if (!keepinterval.empty()) {
+        LOGERR("WebQueueIndexer: bad value for keepinterval: " << keepinterval << "\n");
+    }
 }
 
 WebQueueIndexer::~WebQueueIndexer()
@@ -361,10 +372,35 @@ bool WebQueueIndexer::indexFiles(list<string>& files)
     return true;
 }
 
+static std::string date_string(const char *fmt)
+{
+    time_t now = time(0);
+    struct tm tmb;
+    localtime_r(&now, &tmb);
+    char buf[200];
+    strftime(buf, sizeof(buf)-1, fmt, &tmb);
+    return buf;
+}
+static std::string yearday()
+{
+    return date_string("%Y%j");
+}
+static std::string yearweek()
+{
+    return date_string("%Y%V");
+}
+static std::string yearmonth()
+{
+    return date_string("%Y%m");
+}
+static std::string yearyear()
+{
+    return date_string("%Y");
+}
+
 FsTreeWalker::Status 
-WebQueueIndexer::processone(const string &path,
-                            const struct PathStat *stp,
-                            FsTreeWalker::CbFlag flg)
+WebQueueIndexer::processone(
+    const string &path, const struct PathStat *stp, FsTreeWalker::CbFlag flg)
 {
     if (!m_db) //??
         return FsTreeWalker::FtwError;
@@ -389,6 +425,17 @@ WebQueueIndexer::processone(const string &path,
     // Have to use the hit type for the udi, because the same url can exist
     // as a bookmark or a page.
     udipath = path_cat(dotdoc.meta[Rcl::Doc::keybght], url_gpath(dotdoc.url));
+    // !! is an arbitrary separator rather unlikely to be found in urls.
+    switch (m_keepinterval) {
+    case WQKI_DAY: udipath  = udipath + "!!" + yearday(); break;
+    case WQKI_WEEK: udipath = udipath + "!!" + yearweek(); break;
+    case WQKI_MONTH: udipath= udipath + "!!" + yearmonth(); break;
+    case WQKI_YEAR: udipath = udipath + "!!" + yearyear(); break;
+    default: break;
+    }
+
+    // Also append the current date (year+day): we store one page copy per day
+    std::cerr << "UDI: " << udipath << "\n";
     make_udi(udipath, cstr_null, udi);
 
     LOGDEB("WebQueueIndexer: prc1: udi [" << udi << "]\n");

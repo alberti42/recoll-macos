@@ -347,8 +347,7 @@ bool ConfIndexW::setupWebHistoryPanel(int idx)
     m_w->enableLink(bparam, cparam);
 
     cparam = m_w->addParam(
-        idx, ConfTabsW::CFPT_INT, "webcachemaxmbs",
-        tr("Max. size for the web store (MB)"),
+        idx, ConfTabsW::CFPT_INT, "webcachemaxmbs", tr("Max. size for the web store (MB)"),
         tr("Entries will be recycled once the size is reached."
            "<br>"
            "Only increasing the size really makes sense because "
@@ -356,6 +355,18 @@ bool ConfIndexW::setupWebHistoryPanel(int idx)
            "file (only waste space at the end)."
             ), -1, 1000*1000); // Max 1TB...
     m_w->enableLink(bparam, cparam);
+
+    QStringList intervals{"", "day", "week", "month", "year"};
+    cparam = m_w->addParam(
+        idx, ConfTabsW::CFPT_CSTR, "webcachekeepinterval", tr("Page recycle interval"),
+        tr("<p>By default, only one instance of an URL is kept in the cache. This "
+           "can be changed by setting this to a value determining at what frequency "
+           "we keep multiple instances ('day', 'week', 'month', 'year'). "
+           "Note that increasing the interval will not erase existing entries."),
+        0, 0, &intervals);
+    m_w->enableLink(bparam, cparam);
+
+
     int64_t sz = -1;
     auto ws = std::unique_ptr<WebStore>(new WebStore(m_rclconf));
     sz = ws->cc()->size();
