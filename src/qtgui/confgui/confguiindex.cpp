@@ -293,7 +293,8 @@ bool ConfIndexW::setupTopPanel(int idx)
                      "The default value of 0 removes any limit."), 0, 100);
 
     ConfParamW *bparam = m_w->addParam(
-        idx, ConfTabsW::CFPT_BOOL, "noaspell", tr("No aspell usage"),
+        idx, ConfTabsW::CFPT_BOOL, "noaspell", tr("No aspell usage") +
+        tr(" (by default, aspell suggests mispellings when a query has no results)."),
         tr("Disables use of aspell to generate spelling "
            "approximation in the term explorer tool.<br> "
            "Useful if aspell is absent or does not work. "));
