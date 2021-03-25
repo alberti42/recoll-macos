@@ -28,6 +28,7 @@
 #endif
 #include "safefcntl.h"
 #include "safeunistd.h"
+#include <getopt.h>
 
 #include <iostream>
 #include <list>
@@ -59,6 +60,7 @@ using namespace std;
 #include "execmd.h"
 #include "checkretryfailed.h"
 #include "idxstatus.h"
+#include "circache.h"
 
 // Command line options
 static int     op_flags;
@@ -86,6 +88,15 @@ static int     op_flags;
 #define OPT_x 0x400000
 #define OPT_Z 0x800000
 #define OPT_z 0x1000000
+
+#define OPTVAL_WEBCACHE_COMPACT 1000
+#define OPTVAL_WEBCACHE_BURST 1001
+
+static struct option long_options[] = {
+    {"webcache-compact", 0, 0, OPTVAL_WEBCACHE_COMPACT},
+    {"webcache-burst", required_argument, 0, OPTVAL_WEBCACHE_BURST},
+    {0, 0, 0, 0}
+};
 
 ReExec *o_reexec;
 
@@ -547,8 +558,8 @@ static void flushIdxReasons()
             out.open(reasonsfile, ofstream::out|ofstream::trunc);
             idxreasons.write(out);
         } catch (...) {
-            cerr << "Could not write reasons file " << reasonsfile << endl;
-            idxreasons.write(cerr);
+            std::cerr << "Could not write reasons file " << reasonsfile << endl;
+            idxreasons.write(std::cerr);
         }
     }
 }
@@ -563,17 +574,18 @@ static void flushIdxReasons()
 
 #if USE_WMAIN
 #define WARGTOSTRING(w) wchartoutf8(w)
-static vector<string> argstovector(int argc, wchar_t **argv)
+static vector<const char*> argstovector(int argc, wchar_t **argv, vector<string>& storage)
 #else
 #define WARGTOSTRING(w) (w)
-    static vector<string> argstovector(int argc, char **argv)
+    static vector<const char*> argstovector(int argc, char **argv, vector<string>& storage)
 #endif
 {
+    vector<const char *> args(argc+1);
+    storage.resize(argc+1);
     thisprog = path_absolute(WARGTOSTRING(argv[0]));
-    argc--; argv++;
-    vector<string> args;
     for (int i = 0; i < argc; i++) {
-        args.push_back(WARGTOSTRING(argv[i]));
+        storage[i] = WARGTOSTRING(argv[i]);
+        args[i] = storage[i].c_str();
     }
     return args;
 }
@@ -604,73 +616,68 @@ int main(int argc, char *argv[])
     o_reexec->init(argc, argv);
 #endif
 
-    // The bizarre conversion to vector stayed from the time when we
-    // used a file for passing options.
-    vector<string> args = argstovector(argc, argv);
+    // Only actually useful on Windows: convert wargs to utf-8 chars
+    vector<string> astore;
+    vector<const char*> args = argstovector(argc, argv, astore);
 
     vector<string> selpatterns;
     int sleepsecs{60};
     string a_config;
-    unsigned int aremain = args.size();
-    unsigned int argidx = 0;
-    for (; argidx < args.size(); argidx++) {
-        const string& arg{args[argidx]};
-        aremain = args.size() - argidx;
-        if (arg[0] != '-') {
-            break;
-        }
-        for (unsigned int cidx = 1; cidx < arg.size(); cidx++) {
-            switch (arg[cidx]) {
-            case 'c':   op_flags |= OPT_c; if (aremain < 2)  Usage();
-                a_config = args[argidx+1]; argidx++; goto b1;
+    int ret;
+    bool webcache_compact{false};
+    bool webcache_burst{false};
+    std::string burstdir;
+    while ((ret = getopt_long(argc, (char *const*)&args[0], "c:CDdEefhikKlmnPp:rR:sS:w:xZz",
+                              long_options, NULL)) != -1) {
+        switch (ret) {
+        case 'c':  op_flags |= OPT_c; a_config = optarg; break;
 #ifdef RCL_MONITOR
-            case 'C': op_flags |= OPT_C; break;
-            case 'D': op_flags |= OPT_D; break;
+        case 'C': op_flags |= OPT_C; break;
+        case 'D': op_flags |= OPT_D; break;
 #endif
 #if defined(HAVE_POSIX_FADVISE)
-            case 'd': op_flags |= OPT_d; break;
+        case 'd': op_flags |= OPT_d; break;
 #endif
-            case 'E': op_flags |= OPT_E; break;
-            case 'e': op_flags |= OPT_e; break;
-            case 'f': op_flags |= OPT_f; break;
-            case 'h': op_flags |= OPT_h; break;
-            case 'i': op_flags |= OPT_i; break;
-            case 'k': op_flags |= OPT_k; break;
-            case 'K': op_flags |= OPT_K; break;
-            case 'l': op_flags |= OPT_l; break;
-            case 'm': op_flags |= OPT_m; break;
-            case 'n': op_flags |= OPT_n; break;
-            case 'P': op_flags |= OPT_P; break;
-            case 'p': op_flags |= OPT_p; if (aremain < 2)  Usage();
-                selpatterns.push_back(args[argidx+1]); argidx++; goto b1;
-            case 'r': op_flags |= OPT_r; break;
-            case 'R':   op_flags |= OPT_R; if (aremain < 2)  Usage();
-                reasonsfile = args[argidx+1]; argidx++; goto b1;
-            case 's': op_flags |= OPT_s; break;
+        case 'E': op_flags |= OPT_E; break;
+        case 'e': op_flags |= OPT_e; break;
+        case 'f': op_flags |= OPT_f; break;
+        case 'h': op_flags |= OPT_h; break;
+        case 'i': op_flags |= OPT_i; break;
+        case 'k': op_flags |= OPT_k; break;
+        case 'K': op_flags |= OPT_K; break;
+        case 'l': op_flags |= OPT_l; break;
+        case 'm': op_flags |= OPT_m; break;
+        case 'n': op_flags |= OPT_n; break;
+        case 'P': op_flags |= OPT_P; break;
+        case 'p': op_flags |= OPT_p; selpatterns.push_back(optarg); break;
+        case 'r': op_flags |= OPT_r; break;
+        case 'R':   op_flags |= OPT_R; reasonsfile = optarg; break;
+        case 's': op_flags |= OPT_s; break;
 #ifdef RCL_USE_ASPELL
-            case 'S': op_flags |= OPT_S; break;
+        case 'S': op_flags |= OPT_S; break;
 #endif
-            case 'w':   op_flags |= OPT_w; if (aremain < 2)  Usage();
-                if ((sscanf(args[argidx+1].c_str(), "%d", &sleepsecs)) != 1) 
-                    Usage(); 
-                argidx++; goto b1;
-            case 'x': op_flags |= OPT_x; break;
-            case 'Z': op_flags |= OPT_Z; break;
-            case 'z': op_flags |= OPT_z; break;
-            default: Usage(); break;
-            }
+        case 'w':   op_flags |= OPT_w;
+            if ((sscanf(optarg, "%d", &sleepsecs)) != 1) 
+                Usage(); 
+            break;
+        case 'x': op_flags |= OPT_x; break;
+        case 'Z': op_flags |= OPT_Z; break;
+        case 'z': op_flags |= OPT_z; break;
+
+        case OPTVAL_WEBCACHE_COMPACT: webcache_compact = true; break;
+        case OPTVAL_WEBCACHE_BURST: burstdir = optarg; webcache_burst = true;break;
+
+        default: Usage(); break;
         }
-    b1:
-        ;
     }
-    aremain = args.size() - argidx;
+    int aremain = argc - optind;
 
     if (op_flags & OPT_h)
         Usage();
 
 #ifndef RCL_MONITOR
     if (op_flags & (OPT_m | OPT_w|OPT_x)) {
-        cerr << "-m not available: real-time monitoring was not "
+        std::cerr << "-m not available: real-time monitoring was not "
             "configured in this build\n";
         exit(1);
     }
@@ -693,9 +700,28 @@ int main(int argc, char *argv[])
     if (config == 0 || !config->ok()) {
         addIdxReason("init", reason);
         flushIdxReasons();
-        cerr << "Configuration problem: " << reason << endl;
+        std::cerr << "Configuration problem: " << reason << endl;
         exit(1);
     }
+
+    // Auxiliary, non-index-related things. Avoids having a separate binary.
+    if (webcache_compact || webcache_burst) {
+        std::string ccdir = config->getWebcacheDir();
+        std::string reason;
+        if (webcache_compact) {
+            if (!CirCache::compact(ccdir, &reason)) {
+                std::cerr << "Web cache compact failed: " << reason << "\n";
+                exit(1);
+            }
+        } else if (webcache_burst) {
+            if (!CirCache::burst(ccdir, burstdir, &reason)) {
+                std::cerr << "Web cache burst failed: " << reason << "\n";
+                exit(1);
+            }
+        }
+        exit(0);
+    }
+
 #ifndef _WIN32
     o_reexec->atexit(cleanup);
 #endif
@@ -789,7 +815,7 @@ int main(int argc, char *argv[])
     if (op_flags & OPT_r) {
         if (aremain != 1) 
             Usage();
-        string top = args[argidx++]; aremain--;
+        string top = args[optind++]; aremain--;
         top = path_canon(top, &orig_cwd);
         bool status = recursive_index(config, top, selpatterns);
         if (confindexer && !confindexer->getReason().empty()) {
@@ -810,7 +836,7 @@ int main(int argc, char *argv[])
             }
         } else {
             while (aremain--) {
-                filenames.push_back(args[argidx++]);
+                filenames.push_back(args[optind++]);
             }
         }
 
@@ -833,7 +859,7 @@ int main(int argc, char *argv[])
     } else if (op_flags & OPT_s) {
         if (aremain != 1) 
             Usage();
-        string lang = args[argidx++]; aremain--;
+        string lang = args[optind++]; aremain--;
         exit(!createstemdb(config, lang));
 
 #ifdef RCL_USE_ASPELL

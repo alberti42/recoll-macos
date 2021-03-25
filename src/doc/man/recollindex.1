@@ -8,8 +8,7 @@ recollindex \- indexing command for the Recoll full text search system
 .B recollindex
 [
 .B \-c
-<configdir>
-]
+<cfdir>]
 [
 .B \-z|\-Z
 ]
@@ -20,13 +19,11 @@ recollindex \- indexing command for the Recoll full text search system
 .B recollindex
 [
 .B \-c
-<cd>
-]
+<cfd>]
 .B \-m
 [
 .B \-w
-<secs>
-]
+<secs>]
 [
 .B \-D
 ]
@@ -43,8 +40,7 @@ recollindex \- indexing command for the Recoll full text search system
 .B recollindex
 [
 .B \-c
-<cd>
-]
+<cfdir>]
 .B \-i
 [
 .B \-Z \-k \-f \-P
@@ -54,8 +50,7 @@ recollindex \- indexing command for the Recoll full text search system
 .B recollindex 
 [
 .B \-c
-<cd>
-]
+<cfdir>]
 .B \-r
 [
 .B \-Z \-K \-e \-f
@@ -69,39 +64,35 @@ pattern
 .B recollindex 
 [
 .B \-c
-<configdir>
-]
+<cfdir>]
 .B \-e 
 [<path [path ...]>]
 .br
 .B recollindex
 [
 .B \-c
-<configdir>
-]
-.B \-l
+<cfdir>]
+.B \-l|-S|-E
 .br
 .B recollindex
 [
 .B \-c
-<configdir>
-]
+<cfdir>]
 .B \-s 
 <lang>
 .br
 .B recollindex
 [
 .B \-c
-<configdir>
-]
-.B \-S
+<cfdir>]
+.B \--webcache-compact
 .br
 .B recollindex
 [
 .B \-c
-<configdir>
-]
-.B \-E
+<cfdir>]
+.B \--webcache-burst
+<destdir>
 
 .SH DESCRIPTION
 The
@@ -297,6 +288,16 @@ package, which must be installed on the system.
 .B recollindex \-E
 will check the configuration file for topdirs and other relevant paths
 existence (to help catch typos).
+.PP
+.B recollindex \--webcache-compact
+will recover the space wasted by erased page instances inside the Web
+cache. It may temporarily need to use twice the disk space used by the Web
+cache.
+.PP
+.B recollindex \--webcache-burst <destdir>
+will extract all entries from the Web cache to files created inside
+<destdir>. Each cache entry is extracted as two files, for the data and metadata.
+
 
 .SH SEE ALSO
 .PP 

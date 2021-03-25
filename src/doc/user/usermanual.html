@@ -423,7 +423,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1444">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1453">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -2004,6 +2004,23 @@ recollindex -c "$confdir"
         tool to list and edit the contents of the Web cache.
         (<span class="guimenu">Tools</span> → <span class=
         "guimenuitem">Webcache editor</span>)</p>
+        <p>The <span class=
+        "command"><strong>recollindex</strong></span> command has
+        two options to help manage the Web cache:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem"><code class=
+            "option">--webcache-compact</code> will recover the
+            space from erased entries. It may need to use twice the
+            disk space currently needed for the Web cache.</li>
+            <li class="listitem"><code class=
+            "option">--webcache-burst <em class=
+            "replaceable"><code>destdir</code></em></code> will
+            extract all current entries into pairs of metadata and
+            data files created inside <em class=
+            "replaceable"><code>destdir</code></em></li>
+          </ul>
+        </div>
         <p>You can find more details on Web indexing, its usage and
         configuration in a <a class="ulink" href=
         "https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexWebHistory"
@@ -4000,7 +4017,7 @@ fs.inotify.max_user_watches=32768
           given context (e.g. within a preview window, within the
           result table).</p>
           <div class="table">
-            <a name="idm1444" id="idm1444"></a>
+            <a name="idm1453" id="idm1453"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">

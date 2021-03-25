@@ -1300,6 +1300,17 @@ recollindex -c "$confdir"
       <para>The &RCL; GUI has a tool to list and edit the contents of the
         Web cache. (<menuchoice><guimenu>Tools</guimenu><guimenuitem>Webcache
         editor</guimenuitem></menuchoice>)</para>
+      <para>The <command>recollindex</command> command has two options to
+        help manage the Web cache:</para>
+      <itemizedlist>
+        <listitem><option>--webcache-compact</option> will recover
+            the space from erased entries. It may need to use twice the disk space
+            currently needed for the Web cache.</listitem>
+        <listitem><option>--webcache-burst <replaceable>destdir</replaceable></option>
+            will extract all current entries into pairs of metadata and data
+            files created
+            inside <replaceable>destdir</replaceable></listitem>
+      </itemizedlist>
 
       <para>You can find more details on Web indexing, its usage and configuration
         in a <ulink url="&FAQS;IndexWebHistory">Recoll 'Howto'
