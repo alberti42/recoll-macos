@@ -27,6 +27,9 @@
 # mimeview). You can in general use rcltext to wrap them in html for
 # indexing the contents (and rough preview). You could also just set them
 # as text/plain (index as text, use text viewer)
+
+# It seems that basic source files have no specific MIME?
+.bas = text/plain 
 .cpp = text/x-c
 .h   = text/x-c
 .c   = text/x-c
