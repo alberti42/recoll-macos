@@ -29,8 +29,9 @@
 #include <memory>
 
 #include <QComboBox>
-#include <qvariant.h>
-#include <qwidget.h>
+#include <QVariant>
+#include <QWidget>
+#include <QFont>
 
 #ifdef PREVIEW_TEXTBROWSER
 #include <QTextBrowser>
@@ -68,7 +69,7 @@ public:
     PreviewTextEdit(QWidget* parent, const char* name, Preview *pv);
     void moveToAnchor(const QString& name);
     enum DspType {PTE_DSPTXT, PTE_DSPFLDS, PTE_DSPIMG};
-
+    
 public slots:
     virtual void displayFields();
     virtual void displayText();
@@ -164,6 +165,9 @@ public slots:
     virtual void emitEditRequested();
     virtual void togglePlainPre();
     virtual void onNewShortcuts();
+    // Other
+    virtual void zoomIn();
+    virtual void zoomOut();
     
 signals:
     void previewClosed(Preview *);
@@ -190,6 +194,7 @@ private:
     bool          m_loading{false};
     HighlightData m_hData;
     bool          m_justCreated{true}; // First tab create is different
+    QFont         m_font;
     QShortcut *m_closewinsc{nullptr};
     QShortcut *m_nextdocsc{nullptr};
     QShortcut *m_prevdocsc{nullptr};

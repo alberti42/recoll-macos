@@ -30,6 +30,7 @@
 
 #include <QSettings>
 #include <QStringList>
+#include <QFont>
 
 RclDynConf *g_dynconf;
 AdvSearchHist *g_advshistory;
@@ -200,7 +201,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", 
                String, "");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 
-               10);
+               QFont().pointSize());
 
     QString rlfDflt = QString::fromUtf8(prefs.dfltResListFormat);
     if (writing) {

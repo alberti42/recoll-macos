@@ -168,7 +168,9 @@ public slots:
     virtual void onNewShortcuts();
     virtual void toggleTable();
     virtual void hideToolTip();
-        
+    virtual void zoomIn();
+    virtual void zoomOut();
+
 private slots:
     virtual void updateIdxStatus();
     virtual void onWebcacheDestroyed(QObject *);

@@ -288,6 +288,8 @@ void RclMain::init()
     connect(this, SIGNAL(resultsReady()), 
             reslist, SLOT(readDocSource()));
     connect(this, SIGNAL(uiPrefsChanged()), reslist, SLOT(onUiPrefsChanged()));
+    connect(new QShortcut(QKeySequence::ZoomIn,this), SIGNAL (activated()), this, SLOT (zoomIn()));
+    connect(new QShortcut(QKeySequence::ZoomOut,this),SIGNAL (activated()), this, SLOT (zoomOut()));
     
     connect(reslist, SIGNAL(hasResults(int)), 
             this, SLOT(resultCount(int)));
@@ -335,6 +337,17 @@ void RclMain::init()
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
+}
+
+void RclMain::zoomIn()
+{
+    prefs.reslistfontsize++;
+    emit uiPrefsChanged();
+}
+void RclMain::zoomOut()
+{
+    prefs.reslistfontsize--;
+    emit uiPrefsChanged();
 }
 
 void RclMain::onNewShortcuts()

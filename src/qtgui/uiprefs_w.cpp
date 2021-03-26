@@ -627,7 +627,7 @@ void UIPrefsDialog::showSynFileDialog()
 void UIPrefsDialog::resetReslistFont()
 {
     reslistFontFamily = "";
-    reslistFontSize = 0;
+    reslistFontSize = QFont().pointSize();
     setupReslistFontPB();
 }
 

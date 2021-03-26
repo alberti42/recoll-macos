@@ -142,7 +142,7 @@ void SnippetsW::init()
     browser->setUndoRedoEnabled(false);
     browser->setOpenLinks(false);
     browser->setTabChangesFocus(true);
-    if (prefs.reslistfontfamily.length()) {
+    if (prefs.reslistfontfamily != "") {
         QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
         browser->setFont(nfont);
     } else {

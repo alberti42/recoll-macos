@@ -156,16 +156,18 @@ void ResTableDetailArea::createPopupMenu(const QPoint& pos)
 
 void ResTableDetailArea::setFont()
 {
-    if (prefs.reslistfontsize) {
-        // fs shows slightly bigger in qtextbrowser? adjust.
-        int fs = prefs.reslistfontsize;
-        if (prefs.reslistfontsize > fsadjustdetail) {
-            fs -= fsadjustdetail;
-        }
+    int fs = prefs.reslistfontsize;
+    // fs shows slightly bigger in qtextbrowser? adjust.
+    if (prefs.reslistfontsize > fsadjustdetail) {
+        fs -= fsadjustdetail;
+    }
+    if (prefs.reslistfontfamily != "") {
         QFont nfont(prefs.reslistfontfamily, fs);
         QTextBrowser::setFont(nfont);
     } else {
-        QTextBrowser::setFont(QFont());
+        QFont font;
+        font.setPointSize(fs);
+        QTextBrowser::setFont(font);
     }
 }
 
@@ -807,8 +809,12 @@ void ResTable::toggleVHeader()
 void ResTable::onUiPrefsChanged()
 {
     if (m_detail) {
-        m_detail->init();
+        m_detail->setFont();
     }        
+    // Not sure that this is the right way, but something is needed to
+    // repaint with a possible new font. Toggling alternaterowcolors
+    // works too
+    tableView->update(tableView->indexAt(QPoint(0, 0)));
     if (prefs.noResTableHeader) {
         tableView->horizontalHeader()->hide();
     } else {

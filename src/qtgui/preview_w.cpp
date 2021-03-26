@@ -123,11 +123,20 @@ void Preview::init()
         resize(QSize(640, 480).expandedTo(minimumSizeHint()));
     }
 
+    if (prefs.reslistfontfamily != "") {
+        m_font = QFont(prefs.reslistfontfamily, prefs.reslistfontsize);
+    } else {
+        m_font = QFont();
+        m_font.setPointSize(prefs.reslistfontsize);
+    }
+
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)objectName().toUtf8(), 
                            "RCL.SEARCH.GUI.PREVIEW");
 
     // signals and slots connections
+    connect(new QShortcut(QKeySequence::ZoomIn,this), SIGNAL (activated()), this, SLOT (zoomIn()));
+    connect(new QShortcut(QKeySequence::ZoomOut,this),SIGNAL (activated()), this, SLOT (zoomOut()));
     connect(searchTextCMB, SIGNAL(editTextChanged(const QString&)), 
             this, SLOT(searchTextChanged(const QString&)));
     connect(nextPB, SIGNAL(clicked()), this, SLOT(nextPressed()));
@@ -165,6 +174,24 @@ void Preview::onNewShortcuts()
         delete m_printtabsc;
         m_printtabsc = new QShortcut(
             ks, this, SIGNAL(printCurrentPreviewRequest()));
+    }
+}
+
+void Preview::zoomIn()
+{
+    m_font.setPointSize(m_font.pointSize()+1);
+    PreviewTextEdit *edit = currentEditor();
+    if (edit) {
+        edit->displayText();
+    }
+}
+
+void Preview::zoomOut()
+{
+    m_font.setPointSize(m_font.pointSize()-1);
+    PreviewTextEdit *edit = currentEditor();
+    if (edit) {
+        edit->displayText();
     }
 }
 
@@ -806,6 +833,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     }
 #endif
 
+    editor->setFont(m_font);
     editor->setHtml("");
     editor->m_format = Qt::RichText;
     bool inputishtml = !lthr.fdoc.mimetype.compare("text/html");
@@ -1048,10 +1076,27 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
 void PreviewTextEdit::displayText()
 {
     LOGDEB1("PreviewTextEdit::displayText()\n");
+    // Ensuring that the view does not move when changing the font
+    // size and redisplaying the text: can't find a good way to do
+    // it. The only imperfect way I found was to get the position for
+    // the last line (approximately), and make the position visible
+    // after the change.
+    auto c = cursorForPosition(QPoint(0,height()-20));
+    int pos = c.position();
+    // static int lastpos;
+    // std::cerr << "POSITION: " << pos << " DELTA " << pos -lastpos << "\n";
+    // lastpos = pos;
+    setFont(m_preview->m_font);
     if (m_format == Qt::PlainText)
         setPlainText(m_richtxt);
     else
         setHtml(m_richtxt);
+    if (m_curdsp == PTE_DSPTXT) {
+        auto cursor = textCursor();
+        cursor.setPosition(pos);
+        setTextCursor(cursor);
+        ensureCursorVisible();
+    }
     m_curdsp = PTE_DSPTXT;
 }
 
@@ -1060,6 +1105,7 @@ void PreviewTextEdit::displayFields()
 {
     LOGDEB1("PreviewTextEdit::displayFields()\n");
 
+    setFont(m_preview->m_font);
     QString txt = "<html><head></head><body>\n";
     txt += "<b>" + path2qs(m_url);
     if (!m_ipath.empty())
@@ -1080,6 +1126,7 @@ void PreviewTextEdit::displayFields()
 void PreviewTextEdit::displayImage()
 {
     LOGDEB1("PreviewTextEdit::displayImage()\n");
+    setFont(m_preview->m_font);
     if (m_image.isNull())
         displayText();
 

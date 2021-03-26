@@ -49,12 +49,12 @@ public:
     int historysize{0};
     int maxhltextkbs;
     QString reslistfontfamily;
+    int reslistfontsize;
     // Not saved in prefs for now. Computed from qt defaults and used to
     // set main character color for webkit/textbrowser reslist and
     // snippets window.
     QString fontcolor; 
     QString qtermstyle; // CSS style for query terms in reslist and other places
-    int reslistfontsize;
     // Result list format string
     QString reslistformat;
     string  creslistformat;
