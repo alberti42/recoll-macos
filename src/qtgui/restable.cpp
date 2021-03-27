@@ -811,10 +811,12 @@ void ResTable::onUiPrefsChanged()
     if (m_detail) {
         m_detail->setFont();
     }        
-    // Not sure that this is the right way, but something is needed to
-    // repaint with a possible new font. Toggling alternaterowcolors
-    // works too
-    tableView->update(tableView->indexAt(QPoint(0, 0)));
+    auto index = tableView->indexAt(QPoint(0, 0));
+    // There may be a better way to force repainting all visible rows
+    // with the possibly new font, but this works...
+    tableView->setAlternatingRowColors(false);
+    tableView->setAlternatingRowColors(true);
+    makeRowVisible(index.row());
     if (prefs.noResTableHeader) {
         tableView->horizontalHeader()->hide();
     } else {

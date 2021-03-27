@@ -67,7 +67,9 @@ void RclMain::buildMenus()
 
     viewMenu->addSeparator();
     viewMenu->addAction(toggleFullScreenAction);
-
+    viewMenu->addAction(zoomInAction);
+    viewMenu->addAction(zoomOutAction);
+    
     toolsMenu->addAction(toolsDoc_HistoryAction);
     toolsMenu->addAction(toolsAdvanced_SearchAction);
     toolsMenu->addAction(toolsSpellAction);

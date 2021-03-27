@@ -65,7 +65,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
    <addaction name="separator"/>
@@ -344,6 +344,28 @@
    </property>
    <property name="name" stdset="0">
     <cstring>toggleFullScreenAction</cstring>
+   </property>
+  </action>
+  <action name="zoomInAction">
+   <property name="text">
+    <string>Increase results text font size</string>
+   </property>
+   <property name="iconText">
+    <string>Increase Font Size</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>zoomInAction</cstring>
+   </property>
+  </action>
+  <action name="zoomOutAction">
+   <property name="text">
+    <string>Decrease results text font size</string>
+   </property>
+   <property name="iconText">
+    <string>Decrease Font Size</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>zoomOutAction</cstring>
    </property>
   </action>
   <action name="actionSortByDateAsc">

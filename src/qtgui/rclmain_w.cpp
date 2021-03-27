@@ -240,8 +240,12 @@ void RclMain::init()
     connect(enbSynAction, SIGNAL(toggled(bool)),
             this, SLOT(setSynEnabled(bool)));
 
-    connect(toggleFullScreenAction, SIGNAL(triggered()), 
-            this, SLOT(toggleFullScreen()));
+    connect(toggleFullScreenAction, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
+    zoomInAction->setShortcut(QKeySequence::ZoomIn);
+    connect(zoomInAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
+    zoomOutAction->setShortcut(QKeySequence::ZoomOut);
+    connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
+
     connect(actionShowQueryDetails, SIGNAL(triggered()),
             reslist, SLOT(showQueryDetails()));
     connect(periodictimer, SIGNAL(timeout()), 
@@ -288,8 +292,6 @@ void RclMain::init()
     connect(this, SIGNAL(resultsReady()), 
             reslist, SLOT(readDocSource()));
     connect(this, SIGNAL(uiPrefsChanged()), reslist, SLOT(onUiPrefsChanged()));
-    connect(new QShortcut(QKeySequence::ZoomIn,this), SIGNAL (activated()), this, SLOT (zoomIn()));
-    connect(new QShortcut(QKeySequence::ZoomOut,this),SIGNAL (activated()), this, SLOT (zoomOut()));
     
     connect(reslist, SIGNAL(hasResults(int)), 
             this, SLOT(resultCount(int)));
