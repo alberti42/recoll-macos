@@ -29,6 +29,7 @@ extern Rcl::Doc getParent(std::shared_ptr<DocSequence> source,
                           Rcl::Doc& doc);
 extern Rcl::Doc getFolder(Rcl::Doc& doc);
 extern void copyFN(const Rcl::Doc &doc);
+extern void copyPath(const Rcl::Doc &doc);
 extern void copyURL(const Rcl::Doc &doc);
 extern void copyText(Rcl::Doc &doc, RclMain *rclmain=nullptr);
 };

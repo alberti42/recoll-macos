@@ -121,7 +121,7 @@ bool RecollFilter::txtdcode(const string& who)
     // utf-8. We check if the text is actually utf-8. This is worth
     // it, else the conversion from 8-bit is going to succeed if the
     // text is already utf-8, and produce bogus data.
-    if (utf8check(itext, otext) >= 0) {
+    if (utf8check(itext) >= 0) {
         m_metaData[cstr_dj_keycharset] = cstr_utf8;
         return true;
     }

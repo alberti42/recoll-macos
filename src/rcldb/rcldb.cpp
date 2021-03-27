@@ -1845,10 +1845,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         // purposes.
         const string *fnp = 0;
         if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty()) {
-            if (doc.peekmeta(Rcl::Doc::keytcfn, &fnp) && !fnp->empty()) {
-                string value = 
-                    neutchars(truncate_to_word(*fnp, 
-                                               m_idxMetaStoredLen), cstr_nc);
+            if (doc.peekmeta(Rcl::Doc::keyctfn, &fnp) && !fnp->empty()) {
+                string value = neutchars(truncate_to_word(*fnp, m_idxMetaStoredLen), cstr_nc);
                 RECORD_APPEND(record, Rcl::Doc::keyfn, value);
             }
         }

@@ -1255,6 +1255,12 @@ void ResTable::menuCopyFN()
         ResultPopup::copyFN(m_detaildoc);
 }
 
+void ResTable::menuCopyPath()
+{
+    if (m_detaildocnum >= 0) 
+        ResultPopup::copyPath(m_detaildoc);
+}
+
 void ResTable::menuCopyURL()
 {
     if (m_detaildocnum >= 0) 

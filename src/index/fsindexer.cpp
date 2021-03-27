@@ -800,7 +800,7 @@ FsIndexer::processonefile(RclConfig *config,
                     doc.meta[Rcl::Doc::keyfn] = utf8fn;
             } 
             // Set container file name for all docs, top or subdoc
-            doc.meta[Rcl::Doc::keytcfn] = utf8fn;
+            doc.meta[Rcl::Doc::keyctfn] = utf8fn;
 
             doc.pcbytes = lltodecstr(stp->pst_size);
             // Document signature for up to date checks. All subdocs inherit the
@@ -900,8 +900,7 @@ FsIndexer::processonefile(RclConfig *config,
             fileDoc.onlyxattr = true;
         } else {
             fileDoc.fmtime = ascdate;
-            fileDoc.meta[Rcl::Doc::keyfn] = 
-                fileDoc.meta[Rcl::Doc::keytcfn] = utf8fn;
+            fileDoc.meta[Rcl::Doc::keyfn] = fileDoc.meta[Rcl::Doc::keyctfn] = utf8fn;
             fileDoc.haschildren = true;
             fileDoc.mimetype = mimetype;
             fileDoc.url = path_pathtofileurl(fn);

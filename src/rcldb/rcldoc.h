@@ -233,7 +233,7 @@ public:
     // given top level container. It is not indexed by default but
     // stored in the document record keyfn field if this is still
     // empty when we create it, for display purposes.
-    static const std::string keytcfn;
+    static const std::string keyctfn;
     static const std::string keyipt; // ipath
     static const std::string keytp;  // mime type
     static const std::string keyfmt; // file mtime

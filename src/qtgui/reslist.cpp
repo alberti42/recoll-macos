@@ -1270,6 +1270,13 @@ void ResList::menuCopyFN()
         ResultPopup::copyFN(doc);
 }
 
+void ResList::menuCopyPath()
+{
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc))
+        ResultPopup::copyPath(doc);
+}
+
 void ResList::menuCopyText()
 {
     Rcl::Doc doc;

@@ -13,6 +13,7 @@ static std::map<std::string, int> options {
     {"path_home", 0},
     {"path_tildexpand", 0},
     {"listdir", 0},
+    {"url_encode", 0},
         };
 
 static const char *thisprog;
@@ -55,19 +56,34 @@ int main(int argc, char **argv)
             return 1;
         }
         string s = argv[optind];
-        argc--;
+        optind++;
         if (optind != argc) {
             return 1;
         }
-        cout << "path_tildexpand(" << s << ") -> [" << path_tildexpand(s) <<
-            "]\n";
+        cout << "path_tildexpand(" << s << ") -> [" << path_tildexpand(s) << "]\n";
+    } else if (options["url_encode"]) {
+        if (optind >= argc) {
+            cerr << "Usage: trsmallut --url_encode <arg> [offs=0]\n";
+            return 1;
+        }
+        string s = argv[optind];
+        optind++;
+        int offs = 0;
+        if (optind != argc) {
+            offs = atoi(argv[optind]);
+            optind++;
+        }
+        if (optind != argc) {
+            return 1;
+        }
+        cout << "url_encode(" << s << ", " << offs << ") -> [" << url_encode(s, offs) << "]\n";
     } else if (options["listdir"]) {
         if (optind >= argc) {
             cerr << "Usage: trsmallut --listdir <arg>\n";
             return 1;
         }
         std::string path = argv[optind];
-        argc--;
+        optind++;
         if (optind != argc) {
             cerr << "Usage: trsmallut --listdir <arg>\n";
             return 1;

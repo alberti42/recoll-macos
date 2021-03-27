@@ -30,6 +30,7 @@
 #include "respopup.h"
 #include "appformime.h"
 #include "rclmain_w.h"
+#include "utf8iter.h"
 
 namespace ResultPopup {
 
@@ -95,9 +96,10 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
     }
 
     if (doc.isFsFile()) {
-        popup->addAction(QWidget::tr("Copy &File Path"), me, SLOT(menuCopyFN()));
+        popup->addAction(QWidget::tr("Copy &File Path"), me, SLOT(menuCopyPath()));
     }
     popup->addAction(QWidget::tr("Copy &URL"), me, SLOT(menuCopyURL()));
+    popup->addAction(QWidget::tr("Copy File Name"), me, SLOT(menuCopyFN()));
     popup->addAction(QWidget::tr("Copy Text"), me, SLOT(menuCopyText()));
 
     if ((opts&showSaveOne) && !(isFsTop))
@@ -158,24 +160,52 @@ Rcl::Doc getFolder(Rcl::Doc& doc)
     return pdoc;
 }
 
+static const std::string twoslash{"//"};
+void copyPath(const Rcl::Doc &doc)
+{
+    auto pos = doc.url.find(twoslash);
+    std::string path;
+    if (pos == std::string::npos) {
+        path = doc.url; // ??
+    } else {
+        path = doc.url.substr(pos+2);
+    }
+    // Problem: setText expects a QString. Passing a (const char*) as
+    // we used to do causes an implicit conversion from latin1. File
+    // are binary and the right approach would be no conversion, but
+    // it's probably better (less worse...) to make a "best effort"
+    // tentative and try to convert from the locale's charset than
+    // accept the default conversion.  This is unlikely to yield a
+    // usable path for binary paths in non-utf8 locales though.
+    QString qpath = path2qs(path);
+    QApplication::clipboard()->setText(qpath, QClipboard::Selection);
+    QApplication::clipboard()->setText(qpath, QClipboard::Clipboard);
+}
+
+// This is typically used to add the file name to the query string, so
+// we want the values as search terms here, not the binary from the
+// url.
 void copyFN(const Rcl::Doc &doc)
 {
-    // Our urls currently always begin with "file://" 
-    //
-    // Problem: setText expects a QString. Passing a (const char*)
-    // as we used to do causes an implicit conversion from
-    // latin1. File are binary and the right approach would be no
-    // conversion, but it's probably better (less worse...) to
-    // make a "best effort" tentative and try to convert from the
-    // locale's charset than accept the default conversion.
-    QString qfn = path2qs(doc.url.c_str()+7);
-    QApplication::clipboard()->setText(qfn, QClipboard::Selection);
-    QApplication::clipboard()->setText(qfn, QClipboard::Clipboard);
+    std::string fn;
+    doc.getmeta(Rcl::Doc::keyfn, &fn);
+    QString qpath = u8s2qs(fn);
+    QApplication::clipboard()->setText(qpath, QClipboard::Selection);
+    QApplication::clipboard()->setText(qpath, QClipboard::Clipboard);
 }
 
 void copyURL(const Rcl::Doc &doc)
 {
-    QString url =  path2qs(doc.url);
+    QString url;
+#ifdef _WIN32
+    url = u8s2qs(doc.url);
+#else
+    if (utf8check(doc.url)) {
+        url = u8s2qs(doc.url);
+    } else {
+        url = u8s2qs(url_encode(doc.url));
+    }
+#endif
     QApplication::clipboard()->setText(url, QClipboard::Selection);
     QApplication::clipboard()->setText(url, QClipboard::Clipboard);
 }
