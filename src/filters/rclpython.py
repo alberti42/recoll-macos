@@ -137,14 +137,6 @@ class Parser:
         try:
             for a,b,c,d,e in tokenize.tokenize(text.readline):
                 self(a,b,c,d,e)
-        except tokenize.TokenError as ex:
-            msg = ex[0]
-            line = ex[1][0]
-            self.out.write(("<h3>ERROR: %s</h3>%s\n" % (
-                msg, self.raw[self.lines[line]:])).encode('utf-8'))
-        except IndentationError as ex:
-            msg = ex[0]
-            self.out.write(("<h3>ERROR: %s</h3>\n" % (msg)).encode('utf-8'))
         except Exception as ex:
             # There are other possible exceptions, for example for a
             # bad encoding line (->SyntaxError). e.g. # -*- coding: lala -*-
