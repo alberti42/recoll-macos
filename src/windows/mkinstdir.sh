@@ -24,6 +24,8 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 
 BUILD=MSVC
 #BUILD=MINGW
+WEB=WEBKIT
+#WEB=WEBENGINE
 
 if test $BUILD = MSVC ; then
     # Recoll src tree
@@ -127,6 +129,12 @@ copyqt()
         done
         chkcp $QTBIN/libwinpthread-1.dll $DESTDIR
         chkcp $QTBIN/libstdc++-6.dll $DESTDIR
+    elif test $WEB = WEBKIT ; then
+        addlibs="icudt65.dll icuin65.dll icuuc65.dll libxml2.dll libxslt.dll \
+          Qt5WebKit.dll Qt5WebKitWidgets.dll"
+        for i in $addlibs;do
+            chkcp $QTBIN/$i $DESTDIR
+        done
     fi
 }
 
