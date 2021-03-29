@@ -803,7 +803,7 @@ bool CirCache::uniquentries()
 {
     if (m_d == 0) {
         LOGERR("CirCache::open: null data\n");
-        return -1;
+        return false;
     }
     return m_d->m_uniquentries;
 }
@@ -1427,7 +1427,7 @@ bool CirCache::compact(const std::string& dir, std::string *reason)
         if (reason) {
             *reason = msg.str();
         }
-        return -1;
+        return false;
     }
     long long avmbs;
     if (fsocc(dir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
@@ -1546,7 +1546,7 @@ bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::s
         if (reason) {
             *reason = msg.str();
         }
-        return -1;
+        return false;
     }
     long long avmbs;
     if (fsocc(destdir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
