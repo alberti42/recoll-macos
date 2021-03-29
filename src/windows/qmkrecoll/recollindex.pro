@@ -50,6 +50,7 @@ windows {
     }
 
   INCLUDEPATH += ../../windows
+  SOURCES += ../../windows/getopt.cc
 }
 
 mac {
