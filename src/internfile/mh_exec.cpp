@@ -20,8 +20,6 @@
 #include <time.h>
 #include "safesyswait.h"
 
-#include <list>
-
 #include "cstr.h"
 #include "execmd.h"
 #include "mh_exec.h"
@@ -131,6 +129,7 @@ bool MimeHandlerExec::next_document()
     m_havedoc = false;
     if (missingHelper) {
         LOGDEB("MimeHandlerExec::next_document(): helper known missing\n");
+        m_reason = whatHelper;
         return false;
     }
 
@@ -186,21 +185,18 @@ bool MimeHandlerExec::next_document()
             // missing cmd.
             missingHelper = true;
             m_reason = string("RECFILTERROR HELPERNOTFOUND ") + cmd;
+            whatHelper = m_reason;
         } else if (output.find("RECFILTERROR") == 0) {
             // If the output string begins with RECFILTERROR, then it's 
             // interpretable error information out from a recoll script
             m_reason = output;
-            list<string> lerr;
-            stringToStrings(output, lerr);
-            if (lerr.size() > 2) {
-                list<string>::iterator it = lerr.begin();
-                it++;
-                if (*it == "HELPERNOTFOUND") {
-                    // No use trying again and again to execute this filter, 
-                    // it won't work.
+            std::string::size_type pos;
+            if ((pos = output.find("RECFILTERROR ")) == 0) {
+                if (output.find("HELPERNOTFOUND") != string::npos) {
                     missingHelper = true;
+                    whatHelper = output.substr(pos);
                 }
-            }            
+            }
         }
         return false;
     }

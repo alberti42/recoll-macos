@@ -17,10 +17,10 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-
+#include <sys/types.h>
+#include "safesyswait.h"
 #include <iostream>
 #include <sstream>
-using namespace std;
 
 #include "cstr.h"
 #include "mh_execm.h"
@@ -34,8 +34,7 @@ using namespace std;
 #include "idfile.h"
 #include "rclutil.h"
 
-#include <sys/types.h>
-#include "safesyswait.h"
+using namespace std;
 
 bool MimeHandlerExecMultiple::startCmd()
 {
@@ -75,6 +74,7 @@ bool MimeHandlerExecMultiple::startCmd()
     if (m_cmd.startExec(cmd, myparams, 1, 1) < 0) {
         m_reason = string("RECFILTERROR HELPERNOTFOUND ") + cmd;
         missingHelper = true;
+        whatHelper = cmd;
         return false;
     }
     return true;
@@ -109,10 +109,13 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
 
     // Filters will sometimes abort before entering the real protocol, ie if
     // a module can't be loaded. Check the special filter error first word:
-    if (ibuf.find("RECFILTERROR ") == 0) {
+    std::string::size_type pos;
+    if ((pos = ibuf.find("RECFILTERROR ")) == 0) {
         m_reason = ibuf;
-        if (ibuf.find("HELPERNOTFOUND") != string::npos)
+        if (ibuf.find("HELPERNOTFOUND") != string::npos) {
             missingHelper = true;
+            whatHelper = ibuf.substr(pos);
+        }
         return false;
     }
 
@@ -168,6 +171,7 @@ bool MimeHandlerExecMultiple::next_document()
 
     if (missingHelper) {
         LOGDEB("MHExecMultiple::next_document(): helper known missing\n");
+        m_reason = whatHelper;
         return false;
     }
 

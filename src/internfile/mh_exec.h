@@ -63,6 +63,7 @@ public:
     // line option.
     std::string cfgFilterOutputCharset; 
     bool missingHelper{false};
+    std::string whatHelper;
     // Resource management values
 
     // The filtermaxseconds default is set in the constructor by
