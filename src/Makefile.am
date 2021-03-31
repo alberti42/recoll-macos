@@ -93,6 +93,8 @@ index/webqueue.cpp \
 index/webqueue.h \
 index/webqueuefetcher.cpp \
 index/webqueuefetcher.h \
+index/checkindexed.cpp \
+index/checkindexed.h \
 index/checkretryfailed.cpp \
 index/checkretryfailed.h \
 index/exefetcher.cpp \

@@ -47,6 +47,7 @@ using namespace std;
 #include "rclmon.h"
 #include "x11mon.h"
 #include "cancelcheck.h"
+#include "checkindexed.h"
 #include "rcldb.h"
 #include "readfile.h"
 #ifndef DISABLE_WEB_INDEXER
@@ -91,10 +92,12 @@ static int     op_flags;
 
 #define OPTVAL_WEBCACHE_COMPACT 1000
 #define OPTVAL_WEBCACHE_BURST 1001
+#define OPTVAL_DIAGS_NOTINDEXED 1002
 
 static struct option long_options[] = {
     {"webcache-compact", 0, 0, OPTVAL_WEBCACHE_COMPACT},
     {"webcache-burst", required_argument, 0, OPTVAL_WEBCACHE_BURST},
+    {"notindexed", 0, 0, OPTVAL_DIAGS_NOTINDEXED},
     {0, 0, 0, 0}
 };
 
@@ -476,6 +479,10 @@ static const char usage [] =
 "    Build stem database for additional language <lang>\n"
 "recollindex -E\n"
 "    Check configuration file for topdirs and other paths existence\n"
+"recollindex --webcache-compact : recover wasted space from the Web cache\n"
+"recollindex --webcache-burst <targetdir> : extract entries from the Web cache to the target\n"
+"recollindex --notindexed [filepath [filepath ...]] : check if the file arguments are indexed\n"
+"   will read file paths from stdin if there are no arguments\n"
 #ifdef FUTURE_IMPROVEMENT
 "recollindex -W\n"
 "    Process the Web queue\n"
@@ -626,6 +633,8 @@ int main(int argc, char *argv[])
     int ret;
     bool webcache_compact{false};
     bool webcache_burst{false};
+    bool diags_notindexed{false};
+    
     std::string burstdir;
     while ((ret = getopt_long(argc, (char *const*)&args[0], "c:CDdEefhikKlmnPp:rR:sS:w:xZz",
                               long_options, NULL)) != -1) {
@@ -666,7 +675,8 @@ int main(int argc, char *argv[])
 
         case OPTVAL_WEBCACHE_COMPACT: webcache_compact = true; break;
         case OPTVAL_WEBCACHE_BURST: burstdir = optarg; webcache_burst = true;break;
-
+        case OPTVAL_DIAGS_NOTINDEXED: diags_notindexed = true;break;
+            
         default: Usage(); break;
         }
     }
@@ -705,7 +715,7 @@ int main(int argc, char *argv[])
     }
 
     // Auxiliary, non-index-related things. Avoids having a separate binary.
-    if (webcache_compact || webcache_burst) {
+    if (webcache_compact || webcache_burst || diags_notindexed) {
         std::string ccdir = config->getWebcacheDir();
         std::string reason;
         if (webcache_compact) {
@@ -718,7 +728,16 @@ int main(int argc, char *argv[])
                 std::cerr << "Web cache burst failed: " << reason << "\n";
                 exit(1);
             }
+        } else if (diags_notindexed) {
+            std::vector<std::string> filepaths;
+            while (aremain--) {
+                filepaths.push_back(args[optind++]);
+            }
+            if (!checkindexed(config, filepaths)) {
+                exit(1);
+            }
         }
+            
         exit(0);
     }
 
