@@ -32,10 +32,14 @@ mkdir -p $datadir/antiword || exit 1
 cp $top/antiword/Resources/* $datadir/antiword || exit 1
 
 
-rm -f $dmg ~/Documents/recoll-$version.dmg
+rm -f $dmg ~/Documents/recoll-$version-*.dmg
 
 $deploy $appdir -dmg || exit 1
 
-mv $dmg ~/Documents/recoll-$version.dmg || exit 1
-ls -l ~/Documents/recoll-$version.dmg
+
+
+hash=`(cd recoll;git log -n 1  | head -1  | awk '{print $2}' |cut -b 1-8)`
+
+mv $dmg ~/Documents/recoll-$version-$hash.dmg || exit 1
+ls -l ~/Documents/recoll-$version-*.dmg
 
