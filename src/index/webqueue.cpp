@@ -421,8 +421,10 @@ WebQueueIndexer::processone(
         goto out;
     //dotdoc.dump(1);
 
-    // Have to use the hit type for the udi, because the same url can exist
-    // as a bookmark or a page.
+    // Have to use the hit type for the udi, because the same url can
+    // exist as a bookmark or a page. Also add a date with the
+    // specified granularity so that multiple versions can be in the
+    // index.
     udipath = path_cat(dotdoc.meta[Rcl::Doc::keybght], url_gpath(dotdoc.url));
     // !! is an arbitrary separator rather unlikely to be found in urls.
     switch (m_keepinterval) {
@@ -433,7 +435,6 @@ WebQueueIndexer::processone(
     default: break;
     }
 
-    // Also append the current date (year+day): we store one page copy per day
     std::cerr << "UDI: " << udipath << "\n";
     make_udi(udipath, cstr_null, udi);
 

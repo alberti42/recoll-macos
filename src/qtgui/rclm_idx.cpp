@@ -497,7 +497,7 @@ void RclMain::specialIndex()
 
     string diagsfile = specidx->diagsfile();
     if (!diagsfile.empty()) {
-        args.push_back("--diagfile");
+        args.push_back("--diagsfile");
         args.push_back(diagsfile);
     }
 

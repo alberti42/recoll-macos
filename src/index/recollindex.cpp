@@ -94,13 +94,13 @@ static int     op_flags;
 #define OPTVAL_WEBCACHE_COMPACT 1000
 #define OPTVAL_WEBCACHE_BURST 1001
 #define OPTVAL_DIAGS_NOTINDEXED 1002
-#define OPTVAL_DIAGS_DIAGFILE 1003
+#define OPTVAL_DIAGS_DIAGSFILE 1003
 
 static struct option long_options[] = {
     {"webcache-compact", 0, 0, OPTVAL_WEBCACHE_COMPACT},
     {"webcache-burst", required_argument, 0, OPTVAL_WEBCACHE_BURST},
     {"notindexed", 0, 0, OPTVAL_DIAGS_NOTINDEXED},
-    {"diagfile", required_argument, 0, OPTVAL_DIAGS_DIAGFILE},
+    {"diagsfile", required_argument, 0, OPTVAL_DIAGS_DIAGSFILE},
     {0, 0, 0, 0}
 };
 
@@ -450,7 +450,7 @@ static const char usage [] =
 "    -Z : in place reset: consider all documents as changed. Can also\n"
 "         be combined with -i or -r but not -m\n"
 "    -k : retry files on which we previously failed\n"
-"    --diagfile <outputpath> : list skipped or otherwise not indexed documents to <outputpath>\n"
+"    --diagsfile <outputpath> : list skipped or otherwise not indexed documents to <outputpath>\n"
 "       <outputpath> will be truncated\n"
 #ifdef RCL_MONITOR
 "recollindex -m [-w <secs>] -x [-D] [-C]\n"
@@ -637,7 +637,7 @@ int main(int argc, char *argv[])
     bool diags_notindexed{false};
     
     std::string burstdir;
-    std::string diagfile;
+    std::string diagsfile;
     while ((ret = getopt_long(argc, (char *const*)&args[0], "c:CDdEefhikKlmnPp:rR:sS:w:xZz",
                               long_options, NULL)) != -1) {
         switch (ret) {
@@ -678,7 +678,7 @@ int main(int argc, char *argv[])
         case OPTVAL_WEBCACHE_COMPACT: webcache_compact = true; break;
         case OPTVAL_WEBCACHE_BURST: burstdir = optarg; webcache_burst = true;break;
         case OPTVAL_DIAGS_NOTINDEXED: diags_notindexed = true;break;
-        case OPTVAL_DIAGS_DIAGFILE: diagfile = optarg;break;
+        case OPTVAL_DIAGS_DIAGSFILE: diagsfile = optarg;break;
         default: Usage(); break;
         }
     }
@@ -792,10 +792,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (!diagfile.empty()) {
-        if (!IdxDiags::theDiags().init(diagfile)) {
-            std::cerr << "Could not initialize diags file " << diagfile << "\n";
-            LOGERR("recollindex: Could not initialize diags file " << diagfile << "\n");
+    if (!diagsfile.empty()) {
+        if (!IdxDiags::theDiags().init(diagsfile)) {
+            std::cerr << "Could not initialize diags file " << diagsfile << "\n";
+            LOGERR("recollindex: Could not initialize diags file " << diagsfile << "\n");
         }
     }
     bool rezero((op_flags & OPT_z) != 0);

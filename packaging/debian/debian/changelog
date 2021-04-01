@@ -1,8 +1,30 @@
-recoll (1.29.3pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.30.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * UI experiments
-  
- -- Jean-Francois Dockes <jf@dockes.org>  Tue, 16 Mar 2021 14:00:00 +0100
+  * Add a recollindex command line option to write diagnostics about not
+    indexed documents to a text file, and make it accessible from the
+    "special indexing" GUI menu.
+  * Add a recollindex command line option to print the indexing status for
+    a list of paths, e.g.:   find /mydir | recollindex --notindexed 
+  * Add recollindex command line options to compact the webcache, or
+    extract all entries to a target directory.
+  * Web indexing: allow multiple versions of a page to exist in the index,
+    and add a parameter to specify the page erase period.
+  * GUI: add View menu options to adjust the font size, with 
+    Ctrl+Plus/Ctrl+Minus shortcuts.
+  * GUI: add popup menu option to copy the simple file name.
+  * GUI: add menu entry to save a webcache entry to a file.
+  * GUI: automate redisplaying the search results when switchin between
+    dark and regular display modes.
+  * GUI result table: fix the date format.
+  * GUI result table: shortcuts for jumping to a specific row.
+  * GUI result table: allow showing document text instead of metadata in
+    the detail area.
+  * GUI: add menu entries to copy a result document text to the clipboard.
+  * GUI: add shortcuts editor.
+  * GUI: move the dark/regular choice out of the View menu into the
+    preferences.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 01 Apr 2021 14:00:00 +0100
 
 recoll (1.29.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
