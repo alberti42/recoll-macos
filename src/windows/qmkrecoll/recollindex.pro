@@ -10,6 +10,8 @@ DEFINES += BUILDING_RECOLL
 
 SOURCES += \
 ../../index/recollindex.cpp \
+../../index/checkindexed.cpp \
+../../index/checkindexed.h \
 ../../index/checkretryfailed.cpp \
 ../../index/rclmonprc.cpp \
 ../../index/rclmonrcv.cpp 

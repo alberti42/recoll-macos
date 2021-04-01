@@ -93,8 +93,6 @@ index/webqueue.cpp \
 index/webqueue.h \
 index/webqueuefetcher.cpp \
 index/webqueuefetcher.h \
-index/checkindexed.cpp \
-index/checkindexed.h \
 index/checkretryfailed.cpp \
 index/checkretryfailed.h \
 index/exefetcher.cpp \
@@ -105,10 +103,10 @@ index/fsfetcher.cpp \
 index/fsfetcher.h \
 index/fsindexer.cpp \
 index/fsindexer.h \
-index/idxstatus.h \
-index/idxstatus.cpp \
 index/idxdiags.h \
 index/idxdiags.cpp \
+index/idxstatus.h \
+index/idxstatus.cpp \
 index/mimetype.cpp \
 index/mimetype.h \
 index/rclmon.h \
@@ -322,6 +320,8 @@ endif
 
 recollindex_SOURCES = \
                     index/recollindex.cpp \
+                    index/checkindexed.cpp \
+                    index/checkindexed.h \
                     index/indexer.cpp \
                     index/indexer.h \
                     index/rclmonprc.cpp \

@@ -36,6 +36,7 @@ SOURCES += \
 ../../index/exefetcher.cpp \
 ../../index/fsfetcher.cpp \
 ../../index/fsindexer.cpp \
+../../index/idxdiags.cpp \
 ../../index/idxstatus.cpp \
 ../../index/indexer.cpp \
 ../../index/mimetype.cpp \
