@@ -133,18 +133,18 @@ public:
     QtGuiResListPager(ResList *p, int ps, bool alwayssnip) 
         : ResListPager(ps, alwayssnip), m_reslist(p) 
         {}
-    virtual bool append(const string& data);
-    virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
-    virtual string trans(const string& in);
-    virtual string detailsLink();
-    virtual const string &parFormat();
-    virtual const string &dateFormat();
-    virtual string nextUrl();
-    virtual string prevUrl();
-    virtual string headerContent();
+    virtual bool append(const string& data) override;
+    virtual bool append(const string& data, int idx, const Rcl::Doc& doc) override;
+    virtual string trans(const string& in) override;
+    virtual string detailsLink() override;
+    virtual const string &parFormat() override;
+    virtual const string &dateFormat() override;
+    virtual string nextUrl() override;
+    virtual string prevUrl() override;
+    virtual string headerContent() override;
     virtual void suggest(const vector<string>uterms, 
-                         map<string, vector<string> >& sugg);
-    virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
+                         map<string, vector<string> >& sugg) override;
+    virtual string absSep() override {return (const char *)(prefs.abssep.toUtf8());}
 
 #if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
     // We used to use http://localhost/. Now use file:/// as this is

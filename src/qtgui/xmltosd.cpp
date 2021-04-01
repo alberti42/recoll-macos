@@ -223,7 +223,7 @@ public:
     }
 
     void startElement(const std::string &nm,
-                      const std::map<std::string, std::string>& attrs) {
+                      const std::map<std::string, std::string>& attrs) override {
         LOGDEB2("SSHXMLHandler::startElement: name [" << nm << "]\n");
         if (nm == "SD") {
             // Simple search saved data has a type='ssearch' attribute.
@@ -277,7 +277,7 @@ public:
         return ;
     }
 
-    void characterData(const std::string &str) {
+    void characterData(const std::string &str) override {
         currentText += str;
     }
 

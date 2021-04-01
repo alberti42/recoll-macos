@@ -169,6 +169,7 @@ public:
         }
 
         if (m_terms.find(dumb) != m_terms.end()) {
+            PRETEND_USE(m_rawtext);
             // This word is a search term. Extend or create fragment
             LOGDEB1("match: [" << dumb << "] pos " << pos << " bpos " << bts <<
                    ":" << bte << " remainingWords " << m_remainingWords << endl);

@@ -128,7 +128,6 @@ class RclDynConf {
         getStringEntries(const std::string& sk);
     
  private:
-    unsigned int m_mlen;
     ConfSimple   m_data;
 };
 

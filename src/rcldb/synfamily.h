@@ -49,11 +49,11 @@ public:
      * Construct from readable xapian database and family name (ie: Stm)
      */
     XapSynFamily(Xapian::Database xdb, const std::string& familyname)
-    : m_rdb(xdb)
-    {
-    m_prefix1 = std::string(":") + familyname;
+        : m_rdb(xdb) {
+        m_prefix1 = std::string(":") + familyname;
     }
-
+    virtual ~XapSynFamily() {}
+    
     /** Retrieve all members of this family (e.g: french english german...) */
     virtual bool getMembers(std::vector<std::string>&);
 
@@ -62,23 +62,20 @@ public:
 
     /** Expand term to list of synonyms for given member */
     bool synExpand(const std::string& membername, 
-           const std::string& term, std::vector<std::string>& result);
+                   const std::string& term, std::vector<std::string>& result);
 
     // The prefix shared by all synonym entries inside a family member
-    virtual std::string entryprefix(const std::string& member)
-    {
-    return m_prefix1 + ":" + member + ":";
+    virtual std::string entryprefix(const std::string& member) {
+        return m_prefix1 + ":" + member + ":";
     }
 
     // The key for the "list of members" entry
-    virtual std::string memberskey()
-    {
-    return m_prefix1 + ";" + "members";
+    virtual std::string memberskey() {
+        return m_prefix1 + ";" + "members";
     }
 
-    Xapian::Database& getdb() 
-    {
-    return m_rdb;
+    Xapian::Database& getdb() {
+        return m_rdb;
     }
 
 protected:
@@ -95,12 +92,11 @@ protected:
 class XapWritableSynFamily : public XapSynFamily {
 public:
     /** Construct with Xapian db open for r/w */
-    XapWritableSynFamily(Xapian::WritableDatabase db, 
-             const std::string& familyname)
-    : XapSynFamily(db, familyname),  m_wdb(db)
-    {
-    }
+    XapWritableSynFamily(Xapian::WritableDatabase db, const std::string& familyname)
+        : XapSynFamily(db, familyname),  m_wdb(db) {}
 
+    virtual ~XapWritableSynFamily() {}
+    
     /** Delete all entries for one member (e.g. french), and remove from list
      * of members */
     virtual bool deleteMember(const std::string& membername);
@@ -117,6 +113,7 @@ protected:
 /** A functor which transforms a string */
 class SynTermTrans {
 public:
+    virtual ~SynTermTrans() {}
     virtual std::string operator()(const std::string&) = 0;
     virtual std::string name() { return "SynTermTrans: unknown";}
 };
@@ -129,11 +126,11 @@ public:
 class XapComputableSynFamMember {
 public:
     XapComputableSynFamMember(Xapian::Database xdb, std::string familyname, 
-                  std::string membername, SynTermTrans* trans)
-    : m_family(xdb, familyname), m_membername(membername), 
-      m_trans(trans), m_prefix(m_family.entryprefix(m_membername))
-    {
-    }
+                              std::string membername, SynTermTrans* trans)
+        : m_family(xdb, familyname), m_membername(membername), 
+          m_trans(trans), m_prefix(m_family.entryprefix(m_membername)) {}
+
+    virtual ~XapComputableSynFamMember() {}
 
     /** Expand a term to its list of synonyms. If filtertrans is set we 
      * keep only the results which transform to the same value as the input 
@@ -141,12 +138,12 @@ public:
      * expansion when only either case or diac expansion is desired.
      */
     bool synExpand(const std::string& term, std::vector<std::string>& result,
-           SynTermTrans *filtertrans = 0);
+                   SynTermTrans *filtertrans = 0);
     
     /** Same with also wildcard/regexp expansion of entry against the keys.
      * The input matcher will be modified to fit our key format. */
     bool synKeyExpand(StrMatcher* in, std::vector<std::string>& result,
-              SynTermTrans *filtertrans = 0);
+                      SynTermTrans *filtertrans = 0);
 
 private:
     XapSynFamily m_family;
@@ -159,41 +156,38 @@ private:
 class XapWritableComputableSynFamMember {
 public:
     XapWritableComputableSynFamMember(
-    Xapian::WritableDatabase xdb, std::string familyname, 
-    std::string membername, SynTermTrans* trans)
-    : m_family(xdb, familyname), m_membername(membername), 
-      m_trans(trans), m_prefix(m_family.entryprefix(m_membername))
-    {
-    }
+        Xapian::WritableDatabase xdb, std::string familyname, 
+        std::string membername, SynTermTrans* trans)
+        : m_family(xdb, familyname), m_membername(membername), 
+          m_trans(trans), m_prefix(m_family.entryprefix(m_membername)) {}
 
-    virtual bool addSynonym(const std::string& term)
-    {
-    LOGDEB2("addSynonym:me "  << (this) << " term ["  << (term) << "] m_trans "  << (m_trans) << "\n" );
-    std::string transformed = (*m_trans)(term);
-    LOGDEB2("addSynonym: transformed ["  << (transformed) << "]\n" );
-    if (transformed == term)
+    virtual ~XapWritableComputableSynFamMember() {}
+
+    virtual bool addSynonym(const std::string& term) {
+        LOGDEB2("addSynonym:me " << this << " term [" << term << "] m_trans " << m_trans << "\n");
+        std::string transformed = (*m_trans)(term);
+        LOGDEB2("addSynonym: transformed [" << transformed << "]\n");
+        if (transformed == term)
+            return true;
+
+        std::string ermsg;
+        try {
+            m_family.getdb().add_synonym(m_prefix + transformed, term);
+        } XCATCHERROR(ermsg);
+        if (!ermsg.empty()) {
+            LOGERR("XapWritableComputableSynFamMember::addSynonym: xapian error " << ermsg << "\n");
+            return false;
+        }
         return true;
-
-    std::string ermsg;
-    try {
-        m_family.getdb().add_synonym(m_prefix + transformed, term);
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-        LOGERR("XapWritableComputableSynFamMember::addSynonym: xapian error "  << (ermsg) << "\n" );
-        return false;
-    }
-    return true;
     }
 
-    void clear()
-    {
-    m_family.deleteMember(m_membername);
+    void clear() {
+        m_family.deleteMember(m_membername);
     }
 
-    void recreate()
-    {
-    clear();
-    m_family.createMember(m_membername);
+    void recreate() {
+        clear();
+        m_family.createMember(m_membername);
     }
 
 private:
@@ -222,4 +216,3 @@ static const std::string synFamDiCa("DCa");
 } // end namespace Rcl
 
 #endif /* _SYNFAMILY_H_INCLUDED_ */
-

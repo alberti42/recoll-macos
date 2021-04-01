@@ -247,7 +247,7 @@ void SSearch::onCompleterShown()
     }
     // Test if the completer text begins with the current input.
     QString text = data.toString();
-    if (!text.lastIndexOf(queryText->text()) == 0) {
+    if (text.lastIndexOf(queryText->text()) != 0) {
         return;
     }
     
