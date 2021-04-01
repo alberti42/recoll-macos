@@ -399,10 +399,16 @@ void RclMain::rebuildIndex()
     }
 }
 
-void SpecIdxW::onBrowsePB_clicked()
+void SpecIdxW::onTargBrowsePB_clicked()
 {
     QString dir = myGetFileName(true, tr("Top indexed entity"), true);
     targLE->setText(dir);
+}
+
+void SpecIdxW::onDiagsBrowsePB_clicked()
+{
+    QString fn = myGetFileName(false, tr("Diagnostics file"));
+    diagsLE->setText(fn);
 }
 
 bool SpecIdxW::noRetryFailed()
@@ -428,6 +434,11 @@ std::vector<std::string> SpecIdxW::selpatterns()
 std::string SpecIdxW::toptarg()
 {
     return qs2utf8s(targLE->text());
+}
+
+std::string SpecIdxW::diagsfile()
+{
+    return qs2utf8s(diagsLE->text());
 }
 
 void SpecIdxW::onTargLE_textChanged(const QString& text)
@@ -482,6 +493,12 @@ void RclMain::specialIndex()
     string top = specidx->toptarg();
     if (!top.empty()) {
         args.push_back("-r");
+    }
+
+    string diagsfile = specidx->diagsfile();
+    if (!diagsfile.empty()) {
+        args.push_back("--diagfile");
+        args.push_back(diagsfile);
     }
 
     if (specidx->eraseFirst()) {

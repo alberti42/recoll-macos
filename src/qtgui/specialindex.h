@@ -33,19 +33,22 @@ public:
         : QDialog(parent) {
         setupUi(this);
         selPatsLE->setEnabled(false);
-        connect(browsePB, SIGNAL(clicked()), this, SLOT(onBrowsePB_clicked()));
+        connect(targBrowsePB, SIGNAL(clicked()), this, SLOT(onTargBrowsePB_clicked()));
         connect(targLE, SIGNAL(textChanged(const QString&)), 
                 this, SLOT(onTargLE_textChanged(const QString&)));
+        connect(diagsBrowsePB, SIGNAL(clicked()), this, SLOT(onDiagsBrowsePB_clicked()));
     }
     bool noRetryFailed();
     bool eraseFirst();
     std::vector<std::string> selpatterns();
     std::string toptarg();
+    std::string diagsfile();
 
 public slots:
 
     void onTargLE_textChanged(const QString&);
-    void onBrowsePB_clicked();
+    void onTargBrowsePB_clicked();
+    void onDiagsBrowsePB_clicked();
 };
 
 
