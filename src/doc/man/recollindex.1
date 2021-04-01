@@ -15,6 +15,9 @@ recollindex \- indexing command for the Recoll full text search system
 [
 .B \-k
 ]
+[
+.B \--diagfile
+<diagpath> ]
 .br
 .B recollindex
 [
@@ -93,6 +96,12 @@ pattern
 <cfdir>]
 .B \--webcache-burst
 <destdir>
+.B recollindex
+[
+.B \-c
+<cfdir>]
+.B \--notindexed
+[path [path ...]]
 
 .SH DESCRIPTION
 The
@@ -142,7 +151,44 @@ will try again to process all failed files. Please note that
 .B recollindex
 may also decide to retry failed files if the auxiliary checking script
 defined by the "checkneedretryindexscript" configuration variable indicates
-that this should happen. 
+that this should happen.
+.PP
+If option
+.B \--diagfile
+is given, the path given as parameter will be truncated and indexing
+diagnostics will be written to it. Each line in the file will have a
+diagnostic type (reason for the file not to be indexed), the file path, and
+a possible additional piece of information, which can be the MIME type or
+the archive internal path depending on the issue. The following diagnostic
+types are currently defined:
+.IP
+.B Skipped
+: the path matches an element of
+.B skippedPaths or
+.B skippedNames.
+.IP
+.B NoContentSuffix
+: the file name suffix is found in the
+.B noContentSuffixes
+list.
+.IP
+.B MissingHelper
+: a helper program is missing.
+.IP
+.B Error
+: general error (see the log).
+.IP
+.B NoHandler: no handler is defined for the MIME type.
+.IP
+.B ExcludedMime
+: the MIME type is part of the
+.B excludedmimetypes
+list.
+.IP
+.B NotIncludedMime
+: the
+.B onlymimetypes
+list is not empty and the the MIME type is not in it.
 .PP
 If option 
 .B
@@ -297,7 +343,12 @@ cache.
 .B recollindex \--webcache-burst <destdir>
 will extract all entries from the Web cache to files created inside
 <destdir>. Each cache entry is extracted as two files, for the data and metadata.
-
+.PP
+.B recollindex \--notindexed [path [path ...]]
+will check each path and print out those which are absent from the index
+(with an "ABSENT" prefix), or caused an indexing error (with an "ERROR"
+prefix). If no paths are given on the command line, the command will read
+them, one per line, from stdin.
 
 .SH SEE ALSO
 .PP 

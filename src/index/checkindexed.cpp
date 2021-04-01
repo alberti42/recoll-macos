@@ -19,6 +19,8 @@
  */
 #include "autoconfig.h"
 
+#include "checkindexed.h"
+
 #include <stdio.h>
 #include <iostream>
 

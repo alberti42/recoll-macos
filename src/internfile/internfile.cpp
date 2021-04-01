@@ -240,17 +240,15 @@ void FileInterner::init(const string &f, const struct PathStat *stp,
     m_mimetype = l_mime;
 
     // Look for appropriate handler (might still return empty)
-    RecollFilter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview);
+    RecollFilter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview, f);
 
     if (!df || df->is_unknown()) {
         // No real handler for this type, for now :( 
-        LOGDEB("FileInterner:: unprocessed mime: [" << l_mime << "] [" << f <<
-               "]\n");
+        LOGDEB("FileInterner:: unprocessed mime: [" << l_mime << "] [" << f << "]\n");
         if (!df)
             return;
     }
-    df->set_property(Dijon::Filter::OPERATING_MODE, 
-                     m_forPreview ? "view" : "index");
+    df->set_property(Dijon::Filter::OPERATING_MODE, m_forPreview ? "view" : "index");
     df->set_property(Dijon::Filter::DJF_UDI, udi);
 
     df->set_docsize(docsize);
@@ -271,8 +269,7 @@ FileInterner::FileInterner(const string &data, RclConfig *cnf,
     init(data, cnf, flags, imime);
 }
 
-void FileInterner::init(const string &data, RclConfig *,
-                        int, const string& imime)
+void FileInterner::init(const string &data, RclConfig *, int, const string& imime)
 {
     if (imime.empty()) {
         LOGERR("FileInterner: inmemory constructor needs input mime type\n");
@@ -281,7 +278,7 @@ void FileInterner::init(const string &data, RclConfig *,
     m_mimetype = imime;
 
     // Look for appropriate handler (might still return empty)
-    RecollFilter *df = getMimeHandler(m_mimetype, m_cfg, !m_forPreview);
+    RecollFilter *df = getMimeHandler(m_mimetype, m_cfg, !m_forPreview, m_fn);
 
     if (!df) {
         // No handler for this type, for now :( if indexallfilenames
@@ -289,8 +286,7 @@ void FileInterner::init(const string &data, RclConfig *,
         LOGDEB("FileInterner:: unprocessed mime [" << m_mimetype << "]\n");
         return;
     }
-    df->set_property(Dijon::Filter::OPERATING_MODE, 
-                     m_forPreview ? "view" : "index");
+    df->set_property(Dijon::Filter::OPERATING_MODE, m_forPreview ? "view" : "index");
 
     df->set_docsize(data.length());
     if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
@@ -741,12 +737,11 @@ int FileInterner::addHandler()
     getKeyValue(docdata, cstr_dj_keyipath, ipathel);
     bool dofilter = !m_forPreview &&
         (mimetype.compare(cstr_texthtml) || !ipathel.empty());
-    RecollFilter *newflt = getMimeHandler(mimetype, m_cfg, dofilter);
+    RecollFilter *newflt = getMimeHandler(mimetype, m_cfg, dofilter, m_fn);
     if (!newflt) {
         // If we can't find a handler, this doc can't be handled
         // but there can be other ones so we go on
-        LOGINFO("FileInterner::addHandler: no filter for [" << mimetype <<
-                "]\n");
+        LOGINFO("FileInterner::addHandler: no filter for [" << mimetype << "]\n");
         return ADD_CONTINUE;
     }
     newflt->set_property(Dijon::Filter::OPERATING_MODE, 

@@ -54,6 +54,7 @@
 #include "cpuconf.h"
 #include "execmd.h"
 #include "md5.h"
+#include "idxdiags.h"
 
 using namespace std;
 
@@ -754,6 +755,7 @@ bool RclConfig::inStopSuffixes(const string& fni)
     if (it != STOPSUFFIXES->end()) {
         LOGDEB2("RclConfig::inStopSuffixes: Found (" << fni << ") ["  <<
                 ((*it).m_str) << "]\n");
+        IdxDiags::theDiags().record(IdxDiags::NoContentSuffix, fni);
         return true;
     } else {
         LOGDEB2("RclConfig::inStopSuffixes: not found [" << fni << "]\n");
@@ -822,35 +824,38 @@ bool RclConfig::getMimeCatTypes(const string& cat, vector<string>& tps) const
     return true;
 }
 
-string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes)
+string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes, const std::string& fn)
 {
     string hs;
 
     if (filtertypes) {
         if(m_rmtstate.needrecompute()) {
             m_restrictMTypes.clear();
-            stringToStrings(stringtolower((const string&)m_rmtstate.getvalue()),
-                            m_restrictMTypes);
+            stringToStrings(stringtolower((const string&)m_rmtstate.getvalue()), m_restrictMTypes);
         }
         if (m_xmtstate.needrecompute()) {
             m_excludeMTypes.clear();
-            stringToStrings(stringtolower((const string&)m_xmtstate.getvalue()),
-                            m_excludeMTypes);
+            stringToStrings(stringtolower((const string&)m_xmtstate.getvalue()), m_excludeMTypes);
         }
-        if (!m_restrictMTypes.empty() && 
-            !m_restrictMTypes.count(stringtolower(mtype))) {
-            LOGDEB2("RclConfig::getMimeHandlerDef: not in mime type list\n");
+        if (!m_restrictMTypes.empty() && !m_restrictMTypes.count(stringtolower(mtype))) {
+            IdxDiags::theDiags().record(IdxDiags::NotIncludedMime, fn, mtype);
+            LOGDEB1("RclConfig::getMimeHandlerDef: " << mtype << " not in mime type list\n");
             return hs;
         }
-        if (!m_excludeMTypes.empty() && 
-            m_excludeMTypes.count(stringtolower(mtype))) {
-            LOGDEB2("RclConfig::getMimeHandlerDef: in excluded mime list\n");
+        if (!m_excludeMTypes.empty() && m_excludeMTypes.count(stringtolower(mtype))) {
+            IdxDiags::theDiags().record(IdxDiags::ExcludedMime, fn, mtype);
+            LOGDEB1("RclConfig::getMimeHandlerDef: " << mtype << " in excluded mime list (fn " <<
+                   fn << ")\n");
             return hs;
         }
     }
 
     if (!mimeconf->get(mtype, hs, "index")) {
-        LOGDEB1("getMimeHandlerDef: no handler for '" << mtype << "'\n");
+        if (mtype != "inode/directory") {
+            IdxDiags::theDiags().record(IdxDiags::NoHandler, fn, mtype);
+            LOGDEB1("getMimeHandlerDef: no handler for '" << mtype << "' (fn " <<
+                    fn << ")\n");
+        }
     }
     return hs;
 }

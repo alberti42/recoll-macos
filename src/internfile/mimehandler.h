@@ -169,7 +169,7 @@ protected:
  *     indexedmimetypes (if this is set at all).
  */
 extern RecollFilter *getMimeHandler(const std::string &mtyp, RclConfig *cfg,
-                                    bool filtertypes);
+                                    bool filtertypes, const std::string& fn = std::string());
 
 /// Free up filter for reuse (you can also delete it)
 extern void returnMimeHandler(RecollFilter *);

@@ -47,6 +47,7 @@
 #include "rclinit.h"
 #include "extrameta.h"
 #include "utf8fn.h"
+#include "idxdiags.h"
 #if defined(HAVE_POSIX_FADVISE)
 #include <unistd.h>
 #include <fcntl.h>
@@ -397,8 +398,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
                 continue;
             }
         }
-        if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
-            FsTreeWalker::FtwOk) {
+        if (processone(*it, &stb, FsTreeWalker::FtwRegular) != FsTreeWalker::FtwOk) {
             LOGERR("FsIndexer::indexFiles: processone failed\n");
             goto out;
         }
@@ -560,9 +560,8 @@ void *FsIndexerInternfileWorker(void * fsp)
             return (void*)1;
         }
         LOGDEB0("FsIndexerInternfileWorker: task fn " << tsk->fn << "\n");
-        if (fip->processonefile(&myconf, tsk->fn, &tsk->statbuf,
-                                tsk->localfields) !=
-            FsTreeWalker::FtwOk) {
+        if (fip->processonefile(
+                &myconf, tsk->fn, &tsk->statbuf, tsk->localfields) != FsTreeWalker::FtwOk) {
             LOGERR("FsIndexerInternfileWorker: processone failed\n");
             tqp->workerExit();
             return (void*)0;
@@ -584,9 +583,8 @@ void *FsIndexerInternfileWorker(void * fsp)
 /// Accent and majuscule handling are performed by the db module when doing
 /// the actual indexing work. The Rcl::Doc created by internfile()
 /// mostly contains pretty raw utf8 data.
-FsTreeWalker::Status 
-FsIndexer::processone(const std::string &fn, const struct PathStat *stp, 
-                      FsTreeWalker::CbFlag flg)
+FsTreeWalker::Status FsIndexer::processone(
+    const std::string &fn, const struct PathStat *stp, FsTreeWalker::CbFlag flg)
 {
     if (m_updater) {
 #ifdef IDX_THREADS
@@ -610,7 +608,10 @@ FsIndexer::processone(const std::string &fn, const struct PathStat *stp,
         if (flg == FsTreeWalker::FtwDirReturn)
             return FsTreeWalker::FtwOk;
     }
-
+    if (flg == FsTreeWalker::FtwSkipped) {
+        IdxDiags::theDiags().record(IdxDiags::Skipped, fn);
+        return FsTreeWalker::FtwOk;
+    }
 #ifdef IDX_THREADS
     if (m_haveInternQ) {
         InternfileTask *tp = new InternfileTask(fn, stp, m_localfields);
@@ -644,10 +645,9 @@ bool FsIndexer::launchAddOrUpdate(const string& udi, const string& parent_udi,
     return m_db->addOrUpdate(udi, parent_udi, doc);
 }
 
-FsTreeWalker::Status 
-FsIndexer::processonefile(RclConfig *config, 
-                          const std::string &fn, const struct PathStat *stp,
-                          const map<string, string>& localfields)
+FsTreeWalker::Status FsIndexer::processonefile(
+    RclConfig *config, const std::string &fn, const struct PathStat *stp,
+    const map<string, string>& localfields)
 {
     ////////////////////
     // Check db up to date ? Doing this before file type
@@ -693,7 +693,7 @@ FsIndexer::processonefile(RclConfig *config,
     // If noretryfailed is set, check for a file which previously
     // failed to index, and avoid re-processing it
     if (needupdate && m_noretryfailed && existingDoc && 
-        !oldsig.empty() && *oldsig.rbegin() == '+') {
+        !oldsig.empty() && oldsig.back() == '+') {
         // Check that the sigs are the same except for the '+'. If the file
         // actually changed, we always retry (maybe it was fixed)
         string nold = oldsig.substr(0, oldsig.size()-1);
@@ -720,8 +720,7 @@ FsIndexer::processonefile(RclConfig *config,
         return FsTreeWalker::FtwOk;
     }
 
-    LOGDEB0("processone: processing: [" <<
-            displayableBytes(stp->pst_size) << "] " << fn << "\n");
+    LOGDEB0("processone: processing: [" << displayableBytes(stp->pst_size) << "] " << fn << "\n");
 
     // Note that we used to do the full path here, but I ended up
     // believing that it made more sense to use only the file name
@@ -813,6 +812,7 @@ FsIndexer::processonefile(RclConfig *config,
             // myriads of such files, the ext script is executed for them
             // and fails every time)
             if (fis == FileInterner::FIError) {
+                IdxDiags::theDiags().record(IdxDiags::Error, fn, doc.ipath);
                 doc.sig += cstr_plus;
             }
 
@@ -822,8 +822,7 @@ FsIndexer::processonefile(RclConfig *config,
 
             // Add document to database. If there is an ipath, add it
             // as a child of the file document.
-            if (!launchAddOrUpdate(udi, doc.ipath.empty() ? 
-                                   cstr_null : parent_udi, doc)) {
+            if (!launchAddOrUpdate(udi, doc.ipath.empty() ? cstr_null : parent_udi, doc)) {
                 return FsTreeWalker::FtwError;
             } 
 

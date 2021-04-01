@@ -107,6 +107,8 @@ index/fsindexer.cpp \
 index/fsindexer.h \
 index/idxstatus.h \
 index/idxstatus.cpp \
+index/idxdiags.h \
+index/idxdiags.cpp \
 index/mimetype.cpp \
 index/mimetype.h \
 index/rclmon.h \

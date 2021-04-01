@@ -256,8 +256,8 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
 }
 
 /* Get handler/filter object for given mime type: */
-RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg, 
-                             bool filtertypes)
+RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
+                             bool filtertypes, const std::string& fn)
 {
     LOGDEB("getMimeHandler: mtype [" << mtype << "] filtertypes " <<
            filtertypes << "\n");
@@ -270,7 +270,7 @@ RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
     // indexedmimetypes but an html handler could still be in the
     // cache because it was needed by some other interning stack).
     string hs;
-    hs = cfg->getMimeHandlerDef(mtype, filtertypes);
+    hs = cfg->getMimeHandlerDef(mtype, filtertypes, fn);
     string id;
 
     if (!hs.empty()) { 

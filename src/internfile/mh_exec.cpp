@@ -29,6 +29,7 @@
 #include "smallut.h"
 #include "md5ut.h"
 #include "rclconfig.h"
+#include "idxdiags.h"
 
 using namespace std;
 
@@ -186,6 +187,7 @@ bool MimeHandlerExec::next_document()
             missingHelper = true;
             m_reason = string("RECFILTERROR HELPERNOTFOUND ") + cmd;
             whatHelper = m_reason;
+            IdxDiags::theDiags().record(IdxDiags::MissingHelper, m_fn);
         } else if (output.find("RECFILTERROR") == 0) {
             // If the output string begins with RECFILTERROR, then it's 
             // interpretable error information out from a recoll script
@@ -193,6 +195,7 @@ bool MimeHandlerExec::next_document()
             std::string::size_type pos;
             if ((pos = output.find("RECFILTERROR ")) == 0) {
                 if (output.find("HELPERNOTFOUND") != string::npos) {
+                    IdxDiags::theDiags().record(IdxDiags::MissingHelper, m_fn);
                     missingHelper = true;
                     whatHelper = output.substr(pos);
                 }

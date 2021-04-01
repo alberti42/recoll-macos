@@ -248,7 +248,8 @@ public:
     string getSuffixFromMimeType(const string &mt) const;
 
     /** mimeconf: get input filter for mimetype */
-    string getMimeHandlerDef(const string &mimetype, bool filtertypes=false);
+    string getMimeHandlerDef(const string &mimetype, bool filtertypes=false,
+                             const std::string& fn = std::string());
 
     /** For lines like: "name = some value; attr1 = value1; attr2 = val2"
      * Separate the value and store the attributes in a ConfSimple 

@@ -33,6 +33,7 @@
 #include "mimetype.h"
 #include "idfile.h"
 #include "rclutil.h"
+#include "idxdiags.h"
 
 using namespace std;
 
@@ -72,6 +73,7 @@ bool MimeHandlerExecMultiple::startCmd()
     vector<string>myparams(params.begin() + 1, params.end());
 
     if (m_cmd.startExec(cmd, myparams, 1, 1) < 0) {
+        IdxDiags::theDiags().record(IdxDiags::MissingHelper, m_fn);
         m_reason = string("RECFILTERROR HELPERNOTFOUND ") + cmd;
         missingHelper = true;
         whatHelper = cmd;
@@ -113,6 +115,7 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     if ((pos = ibuf.find("RECFILTERROR ")) == 0) {
         m_reason = ibuf;
         if (ibuf.find("HELPERNOTFOUND") != string::npos) {
+            IdxDiags::theDiags().record(IdxDiags::MissingHelper, m_fn);
             missingHelper = true;
             whatHelper = ibuf.substr(pos);
         }

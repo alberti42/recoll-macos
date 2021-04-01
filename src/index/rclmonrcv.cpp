@@ -66,20 +66,16 @@ static RclMonitor *makeMonitor();
  */
 class WalkCB : public FsTreeWalkerCB {
 public:
-    WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue,
-           FsTreeWalker& walker)
-        : m_config(conf), m_mon(mon), m_queue(queue), m_walker(walker)
-        {}
+    WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue, FsTreeWalker& walker)
+        : m_config(conf), m_mon(mon), m_queue(queue), m_walker(walker) {}
     virtual ~WalkCB() {}
 
-    virtual FsTreeWalker::Status 
-    processone(const string &fn, const struct PathStat *st, 
-               FsTreeWalker::CbFlag flg) {
+    virtual FsTreeWalker::Status processone(
+        const string &fn, const struct PathStat *st, FsTreeWalker::CbFlag flg) {
         MONDEB("rclMonRcvRun: processone " << fn <<  " m_mon " << m_mon <<
                " m_mon->ok " << (m_mon ? m_mon->ok() : false) << std::endl);
 
-        if (flg == FsTreeWalker::FtwDirEnter || 
-            flg == FsTreeWalker::FtwDirReturn) {
+        if (flg == FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwDirReturn) {
             m_config->setKeyDir(fn);
             // Set up skipped patterns for this subtree. 
             m_walker.setSkippedNames(m_config->getSkippedNames());
@@ -106,8 +102,7 @@ public:
                     m_mon->saved_errno != ENOENT)
                     return FsTreeWalker::FtwError;
             }
-        } else if (!m_mon->generatesExist() && 
-                   flg == FsTreeWalker::FtwRegular) {
+        } else if (!m_mon->generatesExist() && flg == FsTreeWalker::FtwRegular) {
             // Have to synthetize events for regular files existence
             // at startup because the monitor does not do it
             // Note 2011-09-29: no sure this is actually needed. We just ran

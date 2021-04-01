@@ -2401,7 +2401,7 @@ bool Db::dbStats(DbStats& res, bool listfailed)
             try {
                 Xapian::Document doc = xdb.get_document(docid);
                 string sig = doc.get_value(VALUE_SIG);
-                if (sig.empty() || sig[sig.size()-1] != '+') {
+                if (sig.empty() || sig.back() != '+') {
                     continue;
                 }
                 string data = doc.get_data();

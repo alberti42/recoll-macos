@@ -411,8 +411,7 @@ WebQueueIndexer::processone(
     if (flg != FsTreeWalker::FtwRegular) 
         return FsTreeWalker::FtwOk;
 
-    string dotpath = path_cat(path_getfather(path), 
-                              string(DOTFILEPREFIX) + path_getsimple(path));
+    string dotpath = path_cat(path_getfather(path), string(DOTFILEPREFIX) + path_getsimple(path));
     LOGDEB("WebQueueIndexer: prc1: [" << path << "]\n");
 
     WebQueueDotFile dotfile(m_config, dotpath);

@@ -62,6 +62,7 @@ using namespace std;
 #include "checkretryfailed.h"
 #include "idxstatus.h"
 #include "circache.h"
+#include "idxdiags.h"
 
 // Command line options
 static int     op_flags;
@@ -93,11 +94,13 @@ static int     op_flags;
 #define OPTVAL_WEBCACHE_COMPACT 1000
 #define OPTVAL_WEBCACHE_BURST 1001
 #define OPTVAL_DIAGS_NOTINDEXED 1002
+#define OPTVAL_DIAGS_DIAGFILE 1003
 
 static struct option long_options[] = {
     {"webcache-compact", 0, 0, OPTVAL_WEBCACHE_COMPACT},
     {"webcache-burst", required_argument, 0, OPTVAL_WEBCACHE_BURST},
     {"notindexed", 0, 0, OPTVAL_DIAGS_NOTINDEXED},
+    {"diagfile", required_argument, 0, OPTVAL_DIAGS_DIAGFILE},
     {0, 0, 0, 0}
 };
 
@@ -110,6 +113,7 @@ static ConfIndexer *confindexer;
 static void cleanup()
 {
     deleteZ(confindexer);
+    IdxDiags::theDiags().flush();
     recoll_exitready();
 }
 
@@ -274,20 +278,15 @@ static void setMyPriority(const RclConfig *config)
 class MakeListWalkerCB : public FsTreeWalkerCB {
 public:
     MakeListWalkerCB(list<string>& files, const vector<string>& selpats)
-        : m_files(files), m_pats(selpats)
-        {
-        }
-    virtual FsTreeWalker::Status 
-    processone(const string& fn, const struct PathStat *,
-               FsTreeWalker::CbFlag flg) {
+        : m_files(files), m_pats(selpats) {}
+    virtual FsTreeWalker::Status processone(
+        const string& fn, const struct PathStat *, FsTreeWalker::CbFlag flg) {
         if (flg== FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwRegular){
             if (m_pats.empty()) {
-                cerr << "Selecting " << fn << endl;
                 m_files.push_back(fn);
             } else {
-                for (vector<string>::const_iterator it = m_pats.begin();
-                     it != m_pats.end(); it++) {
-                    if (fnmatch(it->c_str(), fn.c_str(), 0) == 0) {
+                for (const auto& pat : m_pats) {
+                    if (fnmatch(pat.c_str(), fn.c_str(), 0) == 0) {
                         m_files.push_back(fn);
                         break;
                     }
@@ -451,6 +450,8 @@ static const char usage [] =
 "    -Z : in place reset: consider all documents as changed. Can also\n"
 "         be combined with -i or -r but not -m\n"
 "    -k : retry files on which we previously failed\n"
+"    --diagfile <outputpath> : list skipped or otherwise not indexed documents to <outputpath>\n"
+"       <outputpath> will be truncated\n"
 #ifdef RCL_MONITOR
 "recollindex -m [-w <secs>] -x [-D] [-C]\n"
 "    Perform real time indexing. Don't become a daemon if -D is set.\n"
@@ -636,6 +637,7 @@ int main(int argc, char *argv[])
     bool diags_notindexed{false};
     
     std::string burstdir;
+    std::string diagfile;
     while ((ret = getopt_long(argc, (char *const*)&args[0], "c:CDdEefhikKlmnPp:rR:sS:w:xZz",
                               long_options, NULL)) != -1) {
         switch (ret) {
@@ -676,7 +678,7 @@ int main(int argc, char *argv[])
         case OPTVAL_WEBCACHE_COMPACT: webcache_compact = true; break;
         case OPTVAL_WEBCACHE_BURST: burstdir = optarg; webcache_burst = true;break;
         case OPTVAL_DIAGS_NOTINDEXED: diags_notindexed = true;break;
-            
+        case OPTVAL_DIAGS_DIAGFILE: diagfile = optarg;break;
         default: Usage(); break;
         }
     }
@@ -790,6 +792,12 @@ int main(int argc, char *argv[])
         }
     }
 
+    if (!diagfile.empty()) {
+        if (!IdxDiags::theDiags().init(diagfile)) {
+            std::cerr << "Could not initialize diags file " << diagfile << "\n";
+            LOGERR("recollindex: Could not initialize diags file " << diagfile << "\n");
+        }
+    }
     bool rezero((op_flags & OPT_z) != 0);
     bool inPlaceReset((op_flags & OPT_Z) != 0);
 

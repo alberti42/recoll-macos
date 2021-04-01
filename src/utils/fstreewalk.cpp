@@ -411,9 +411,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
         // Skipped file names match ?
         if (!data->skippedNames.empty()) {
             if (inSkippedNames(dname)) {
-                if (data->options & FtwOnlySkipped) {
-                    cb.processone(path_cat(top, dname), nullptr, FtwSkipped);
-                }
+                cb.processone(path_cat(top, dname), nullptr, FtwSkipped);
                 continue;
             }
         }
@@ -428,9 +426,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
             // this was broken by 1.13.00 and the systematic use of 
             // FNM_LEADING_DIR
             if (inSkippedPaths(fn, false)) {
-                if (data->options & FtwOnlySkipped) {
-                    cb.processone(fn, nullptr, FtwSkipped);
-                }
+                cb.processone(fn, nullptr, FtwSkipped);
                 continue;
             }
         }
