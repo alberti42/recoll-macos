@@ -406,7 +406,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached</source>
+        <source> (by default, aspell suggests mispellings when a query has no results).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Page recycle interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1076,7 +1088,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Copiar nombre de &amp;fichero</translation>
+        <translation type="vanished">Copiar nombre de &amp;fichero</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
@@ -1120,6 +1132,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Copy Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy File Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1775,7 +1795,7 @@ Por favor, compruebe el archivo de escritorio</translation>
     </message>
     <message>
         <source>Could not read: </source>
-        <translation>No se pudo leer: </translation>
+        <translation type="vanished">No se pudo leer: </translation>
     </message>
     <message>
         <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
@@ -2177,11 +2197,19 @@ Por favor, compruebe el archivo de escritorio</translation>
         <translation>&amp;Consulta</translation>
     </message>
     <message>
-        <source>Could not extract or copy text</source>
+        <source>Increase results text font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%1 bytes copied to clipboard</source>
+        <source>Increase Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease results text font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease Font Size</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2514,6 +2542,10 @@ Por favor, compruebe el archivo de escritorio</translation>
     </message>
     <message>
         <source>Use Shift+click to display the text instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3175,6 +3207,14 @@ Usar &lt;b&gt;Mostrar consulta&lt;/b&gt; enlace cuando haya dudas sobre el resul
         <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
         <translation>Directorio de inicio. Debe ser parte del árbol índice. Utilice el área índice completa si está vacía.</translation>
     </message>
+    <message>
+        <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diagnostics file</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpellBase</name>
@@ -3787,6 +3827,14 @@ Esto dará mayor precedencia a los resultados en los cuales los términos de bú
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
         <translation>La caché web fue modificada, necesitarás ejecutar el indexador después de cerrar esta ventana.</translation>
     </message>
+    <message>
+        <source>Save to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File creation failed: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3797,6 +3845,14 @@ Esto dará mayor precedencia a los resultados en los cuales los términos de bú
     <message>
         <source>Url</source>
         <translation>Url</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished">Fecha</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4364,7 +4420,7 @@ Puede ser lento para documentos grandes.</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation>Abre una ventana de diálogo para seleccionar la hoja de estilos</translation>
+        <translation type="vanished">Abre una ventana de diálogo para seleccionar la hoja de estilos</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -4669,10 +4725,6 @@ El valor por defecto es 2 (por ciento).</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show text contents when clicking result table row (else use Shift+click).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4690,6 +4742,22 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To display document text instead of metadata in result table detail area, use:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>left mouse click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

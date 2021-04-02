@@ -406,7 +406,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached</source>
+        <source> (by default, aspell suggests mispellings when a query has no results).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Page recycle interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1078,7 +1090,7 @@ Klik på Annullér, hvis du ønsker at redigere konfigurationsfilen før indekse
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Kopier &amp;Filnavn</translation>
+        <translation type="vanished">Kopier &amp;Filnavn</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
@@ -1122,6 +1134,14 @@ Klik på Annullér, hvis du ønsker at redigere konfigurationsfilen før indekse
     </message>
     <message>
         <source>Copy Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy File Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1776,7 +1796,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Could not read: </source>
-        <translation>Kunne ikke læse: </translation>
+        <translation type="vanished">Kunne ikke læse: </translation>
     </message>
     <message>
         <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
@@ -2178,11 +2198,19 @@ Tjek venligst desktopfilen</translation>
         <translation>&amp;Forespørgsel</translation>
     </message>
     <message>
-        <source>Could not extract or copy text</source>
+        <source>Increase results text font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%1 bytes copied to clipboard</source>
+        <source>Increase Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease results text font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease Font Size</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2515,6 +2543,10 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Use Shift+click to display the text instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3173,6 +3205,14 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
         <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
         <translation>Start mappe. Skal være en del af det indekserede træ. Brug hele indekseret område hvis tomt.</translation>
     </message>
+    <message>
+        <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diagnostics file</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpellBase</name>
@@ -3785,6 +3825,14 @@ Dette skulle give højere forrang til resultaterne, hvor søgeordene vises nøja
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
         <translation>WebCache blev ændret, du er nød til at køre indeksering efter lukning af dette vindue.</translation>
     </message>
+    <message>
+        <source>Save to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File creation failed: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3795,6 +3843,14 @@ Dette skulle give højere forrang til resultaterne, hvor søgeordene vises nøja
     <message>
         <source>Url</source>
         <translation>URL</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished">Dato</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4364,7 +4420,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation>Åbn et vindue for at vælge stilark-filen</translation>
+        <translation type="vanished">Åbn et vindue for at vælge stilark-filen</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -4669,10 +4725,6 @@ Standardværdien er 2 (procent).</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show text contents when clicking result table row (else use Shift+click).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4690,6 +4742,22 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To display document text instead of metadata in result table detail area, use:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>left mouse click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -406,7 +406,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached</source>
+        <source> (by default, aspell suggests mispellings when a query has no results).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Page recycle interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1079,7 +1091,7 @@ Klicka på Avbryt om du vill redigera konfigurationsfilen innan indexering start
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Kopiera &amp;filnamn</translation>
+        <translation type="vanished">Kopiera &amp;filnamn</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
@@ -1123,6 +1135,14 @@ Klicka på Avbryt om du vill redigera konfigurationsfilen innan indexering start
     </message>
     <message>
         <source>Copy Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy File Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1778,7 +1798,7 @@ Kolla desktop-filen.</translation>
     </message>
     <message>
         <source>Could not read: </source>
-        <translation>Kunde inte läsa: </translation>
+        <translation type="vanished">Kunde inte läsa: </translation>
     </message>
     <message>
         <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
@@ -2180,11 +2200,19 @@ Kolla desktop-filen.</translation>
         <translation>&amp;Fråga</translation>
     </message>
     <message>
-        <source>Could not extract or copy text</source>
+        <source>Increase results text font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%1 bytes copied to clipboard</source>
+        <source>Increase Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease results text font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease Font Size</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2517,6 +2545,10 @@ Kolla desktop-filen.</translation>
     </message>
     <message>
         <source>Use Shift+click to display the text instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3177,6 +3209,14 @@ Använd &lt;b&gt;Visa fråga&lt;/b&gt; länk när du är osäker på resultatet 
         <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
         <translation>Startmapp. Måste vara en del av det indexerade trädet. Använder hela det indexerade området om den lämnas tom.</translation>
     </message>
+    <message>
+        <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diagnostics file</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpellBase</name>
@@ -3789,6 +3829,14 @@ Detta bör ge högre företräde till de träffar där söktermerna visas exakt 
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
         <translation>Webbcachen har ändrats, du måste indexera efter att detta fönster stängts.</translation>
     </message>
+    <message>
+        <source>Save to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File creation failed: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3799,6 +3847,14 @@ Detta bör ge högre företräde till de träffar där söktermerna visas exakt 
     <message>
         <source>Url</source>
         <translation>URL</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished">Datum</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4369,7 +4425,7 @@ Kan vara långsamt med stora dokument.</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation>Öppnar en dialog för att välja formatmallsfil</translation>
+        <translation type="vanished">Öppnar en dialog för att välja formatmallsfil</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -4674,10 +4730,6 @@ Standardvärdet är 2 (procent). </translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show text contents when clicking result table row (else use Shift+click).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4695,6 +4747,22 @@ Standardvärdet är 2 (procent). </translation>
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To display document text instead of metadata in result table detail area, use:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>left mouse click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

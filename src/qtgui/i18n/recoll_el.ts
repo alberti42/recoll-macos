@@ -406,7 +406,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached</source>
+        <source> (by default, aspell suggests mispellings when a query has no results).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Page recycle interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1077,7 +1089,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Αντιγραφή του ονόματος του α&amp;ρχείου</translation>
+        <translation type="vanished">Αντιγραφή του ονόματος του α&amp;ρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
@@ -1121,6 +1133,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Copy Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy File Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1776,7 +1796,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Could not read: </source>
-        <translation>Αδυναμία ανάγνωσης: </translation>
+        <translation type="vanished">Αδυναμία ανάγνωσης: </translation>
     </message>
     <message>
         <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
@@ -2178,11 +2198,19 @@ Please check the desktop file</source>
         <translation>&amp;Ερώτημα</translation>
     </message>
     <message>
-        <source>Could not extract or copy text</source>
+        <source>Increase results text font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%1 bytes copied to clipboard</source>
+        <source>Increase Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease results text font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease Font Size</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2515,6 +2543,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Use Shift+click to display the text instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3175,6 +3207,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
         <translation>Κατάλογος έναρξης. Πρέπει να είναι μέρος του δέντρου με δείκτη . Χρησιμοποιήστε την πλήρη ευρετήριο περιοχής αν είναι κενή.</translation>
     </message>
+    <message>
+        <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diagnostics file</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpellBase</name>
@@ -3787,6 +3827,14 @@ This should give higher precedence to the results where the search terms appear 
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
         <translation>Η Webcache τροποποιήθηκε, θα πρέπει να εκτελέσετε το ευρετήριο μετά το κλείσιμο αυτού του παραθύρου.</translation>
     </message>
+    <message>
+        <source>Save to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File creation failed: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3797,6 +3845,14 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Url</source>
         <translation>URL</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished">Ημερομηνία</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4365,7 +4421,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation>Ανοίγει έναν διάλογο για την επιλογή ενός αρχείου φύλλου στυλ</translation>
+        <translation type="vanished">Ανοίγει έναν διάλογο για την επιλογή ενός αρχείου φύλλου στυλ</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -4670,10 +4726,6 @@ The default value is 2 (percent). </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show text contents when clicking result table row (else use Shift+click).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4691,6 +4743,22 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To display document text instead of metadata in result table detail area, use:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>left mouse click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
