@@ -30,7 +30,9 @@
 
 #include <QSettings>
 #include <QStringList>
+#ifdef BUILDING_RECOLLGUI
 #include <QFont>
+#endif
 
 RclDynConf *g_dynconf;
 AdvSearchHist *g_advshistory;
@@ -200,9 +202,15 @@ void rwSettings(bool writing)
 
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", 
                String, "");
-    SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 
-               QFont().pointSize());
 
+    // While building the kio, we don't really care about QT Gui
+    // defaults and referencing QFont introduces a useless dependency
+#ifdef BUILDING_RECOLLGUI
+    SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, QFont().pointSize());
+#else
+    SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 12);
+#endif
+    
     QString rlfDflt = QString::fromUtf8(prefs.dfltResListFormat);
     if (writing) {
         if (prefs.reslistformat.compare(rlfDflt)) {
