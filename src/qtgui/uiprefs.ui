@@ -22,7 +22,7 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tab_ui">
       <attribute name="title">
        <string>User interface</string>
       </attribute>
@@ -257,61 +257,6 @@
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QLabel" name="restabShowTxtLBL">
-           <property name="text">
-            <string>To display document text instead of metadata in result table detail area, use:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="restabShowTxtNoShiftRB">
-           <property name="text">
-            <string>left mouse click</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="restabShowTxtShiftRB">
-           <property name="text">
-            <string>Shift+click</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="noResTableHeaderCB">
-         <property name="text">
-          <string>Hide result table header.</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showResTableVHeaderCB">
-         <property name="text">
-          <string>Show result table row headers.</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="noRowJumpShortcutsCB">
-         <property name="text">
-          <string>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
        </item>
        <item>
         <layout class="QHBoxLayout">
@@ -628,7 +573,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="sctab">
+     <widget class="QWidget" name="tab_shortcuts">
       <attribute name="title">
        <string>Shortcuts</string>
       </attribute>
@@ -673,7 +618,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tab_reslist">
       <attribute name="title">
        <string>Result List</string>
       </attribute>
@@ -988,7 +933,92 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab1">
+     <widget class="QWidget" name="tab_restable">
+      <attribute name="title">
+       <string>Result Table</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_rst3">
+       <item>
+        <widget class="QCheckBox" name="noResTableHeaderCB">
+         <property name="text">
+          <string>Hide result table header.</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="showResTableVHeaderCB">
+         <property name="text">
+          <string>Show result table row headers.</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="noRowJumpShortcutsCB">
+         <property name="text">
+          <string>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="restabShowTxtLBL">
+           <property name="text">
+            <string>To display document text instead of metadata in result table detail area, use:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="restabShowTxtNoShiftRB">
+           <property name="text">
+            <string>left mouse click</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="restabShowTxtShiftRB">
+           <property name="text">
+            <string>Shift+click</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="resTableNoHoverMetaCB">
+         <property name="text">
+          <string>Do not display metadata when hovering over rows.</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_rst2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_search">
       <attribute name="title">
        <string>Search parameters</string>
       </attribute>
@@ -1386,7 +1416,7 @@ May be slow for big documents.</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="ExtraDb">
+     <widget class="QWidget" name="tab_extradbs">
       <attribute name="title">
        <string>External Indexes</string>
       </attribute>
@@ -1492,7 +1522,7 @@ May be slow for big documents.</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="tab_misc">
       <attribute name="title">
        <string>Misc</string>
       </attribute>

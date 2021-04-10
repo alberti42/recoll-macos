@@ -153,6 +153,7 @@ public:
     bool noMenuBar{false};
     bool noSSTypCMB{false};
     bool resTableTextNoShift{false};
+    bool resTableNoHoverMeta{false};
     bool noResTableHeader{false};
     bool showResTableVHeader{false};
     bool noResTableRowJumpSC{false};

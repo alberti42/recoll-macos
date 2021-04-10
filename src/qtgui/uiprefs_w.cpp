@@ -159,6 +159,7 @@ void UIPrefsDialog::setFromPrefs()
     noSSTypCMBCB->setChecked(prefs.noSSTypCMB);
     restabShowTxtNoShiftRB->setChecked(prefs.resTableTextNoShift);
     restabShowTxtShiftRB->setChecked(!prefs.resTableTextNoShift);
+    resTableNoHoverMetaCB->setChecked(prefs.resTableNoHoverMeta);
     noResTableHeaderCB->setChecked(prefs.noResTableHeader);
     showResTableVHeaderCB->setChecked(prefs.showResTableVHeader);
     noRowJumpShortcutsCB->setChecked(prefs.noResTableRowJumpSC);
@@ -437,6 +438,7 @@ void UIPrefsDialog::accept()
     m_mainWindow->setupMenus();
     prefs.noSSTypCMB = noSSTypCMBCB->isChecked();
     prefs.resTableTextNoShift = restabShowTxtNoShiftRB->isChecked();
+    prefs.resTableNoHoverMeta = resTableNoHoverMetaCB->isChecked();
     prefs.noResTableHeader = noResTableHeaderCB->isChecked();
     prefs.showResTableVHeader = showResTableVHeaderCB->isChecked();
     prefs.noResTableRowJumpSC = noRowJumpShortcutsCB->isChecked();

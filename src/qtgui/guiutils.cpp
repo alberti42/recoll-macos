@@ -307,6 +307,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.noMenuBar, "/Recoll/prefs/noMenuBar", Bool, false);
     SETTING_RW(prefs.noSSTypCMB, "/Recoll/prefs/noSSTypCMB", Bool, false);
     SETTING_RW(prefs.resTableTextNoShift, "/Recoll/prefs/resTableTextNoShift", Bool, false);
+    SETTING_RW(prefs.resTableNoHoverMeta, "/Recoll/prefs/resTableNoHoverMeta", Bool, false);
     SETTING_RW(prefs.noResTableHeader, "/Recoll/prefs/noResTableHeader", Bool, false);
     SETTING_RW(prefs.showResTableVHeader, "/Recoll/prefs/showResTableVHeader", Bool, false);
     SETTING_RW(prefs.noResTableRowJumpSC, "/Recoll/prefs/noResTableRowJumpSC", Bool, false);

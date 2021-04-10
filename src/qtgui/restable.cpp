@@ -706,14 +706,14 @@ void ResTable::onNewShortcuts()
             auto sc = new QShortcut(QKeySequence(qs2utf8s(qs).c_str()), this);
             m_rowlinks.push_back(new SCData(this, setrow, i));
             m_rowsc.push_back(sc);
-            connect(sc, SIGNAL(activated()),m_rowlinks.back(),SLOT(activate()));
+            connect(sc, SIGNAL(activated()), m_rowlinks.back(), SLOT(activate()));
             if (i > 9)
                 continue;
             qs = QString("Ctrl+%1").arg(i);
             sc = new QShortcut(QKeySequence(qs2utf8s(qs).c_str()), this);
             m_rowsc.push_back(sc);
             m_rowlinks.push_back(new SCData(this, setrow, i));
-            connect(sc, SIGNAL(activated()),m_rowlinks.back(),SLOT(activate()));
+            connect(sc, SIGNAL(activated()), m_rowlinks.back(), SLOT(activate()));
         }
     }
     SETSHORTCUT(this, "restable:704", tr("Result Table"),
@@ -891,8 +891,10 @@ void ResTable::saveColState()
 
 void ResTable::onTableView_currentChanged(const QModelIndex& index)
 {
+    bool hasselection = tableView->selectionModel()->hasSelection();
     LOGDEB2("ResTable::onTableView_currentChanged(" << index.row() << ", " <<
-            index.column() << ") from kbd " << m_rowchangefromkbd  << "\n");
+        index.column() << ") from kbd " << m_rowchangefromkbd  << " hasselection " <<
+            hasselection << "\n");
 
     if (!m_model || !m_model->getDocSource())
         return;
@@ -901,18 +903,30 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
         m_detail->init();
         m_detaildocnum = index.row();
         m_detaildoc = doc;
-        bool isShift = (QApplication::keyboardModifiers() & Qt::ShiftModifier) && 
-            !m_rowchangefromkbd;
-        bool showtext = isShift ^ prefs.resTableTextNoShift;
-        if (tableView->selectionModel()->hasSelection() && showtext) {
-            m_rowchangefromkbd = false;
-            bool loadok = rcldb->getDocRawText(m_detaildoc);
-            if (loadok) {
-                m_detail->setPlainText(u8s2qs(m_detaildoc.text));
+        bool isShift = (QApplication::keyboardModifiers() & Qt::ShiftModifier);
+        bool showtext{false};
+        bool showmeta{false};
+        if (m_rowchangefromkbd) {
+            // Ctrl+... jump to row. Show text/meta as for simple click
+            if (hasselection) {
+                // When getting here from ctrl+... we get called twice, once with row 0
+                // and no selection, once with the actual row and selection. Only
+                // reset fromkbd and set showtext in the second case.
+                m_rowchangefromkbd = false;
+                showtext = prefs.resTableTextNoShift;
             }
-        }  else {
-            m_pager->displaySingleDoc(theconfig, m_detaildocnum, m_detaildoc, 
-                                      m_model->m_hdata);
+        } else {
+            // Mouse click. Show text or meta depending on shift key. Never show text when hovering
+            // (no selection).
+            showtext = hasselection && (isShift ^ prefs.resTableTextNoShift);
+        }
+        if (!showtext) {
+            showmeta = hasselection || !prefs.resTableNoHoverMeta;
+        }
+        if (showtext && rcldb->getDocRawText(m_detaildoc)) {
+            m_detail->setPlainText(u8s2qs(m_detaildoc.text));
+        }  else if (showmeta) {
+            m_pager->displaySingleDoc(theconfig, m_detaildocnum, m_detaildoc, m_model->m_hdata);
         }
         emit(detailDocChanged(doc, m_model->getDocSource()));
     } else {
