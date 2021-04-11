@@ -28,6 +28,8 @@
 #include "smallut.h"
 #include "rclutil.h"
 #include "md5ut.h"
+#include "pathut.h"
+#include "rclconfig.h"
 
 #include <iostream>
 
@@ -35,19 +37,36 @@ using namespace std;
 
 bool MimeHandlerHtml::set_document_file_impl(const string& mt, const string &fn)
 {
-    LOGDEB0("textHtmlToDoc: " << fn << "\n");
-    string otext;
-    string reason;
-    if (!file_to_string(fn, otext, &reason)) {
-        LOGERR("textHtmlToDoc: cant read: " << fn << ": " << reason << "\n");
+    LOGDEB0("MimeHandlerHtml::set_document_file_impl: " << fn << "\n");
+
+    // Check file size against limit. We use the same value as for
+    // text/plain.  xdg-mime sometimes wrongly returns text/html for
+    // gigantic files (had a case with multi-GB xxx.enex evernote
+    // export files).
+    int maxmbs = -1;
+    m_config->getConfParam("textfilemaxmbs", &maxmbs);
+    auto totlen = path_filesize(fn);
+    if (totlen < 0) {
+        LOGSYSERR("MimeHandlerHtml::set_document_file", "stat", fn);
         return false;
+    }
+
+    string otext;
+    if (maxmbs != -1 && totlen / (1024*1024) > maxmbs) {
+        LOGINF("MimeHandlerHtml: file too big (textfilemaxmbs=" << maxmbs <<
+               "), contents will not be indexed: " << fn << "\n");
+    } else {
+        string reason;
+        if (!file_to_string(fn, otext, &reason)) {
+            LOGERR("textHtmlToDoc: cant read: " << fn << ": " << reason << "\n");
+            return false;
+        }
     }
     m_filename = fn;
     return set_document_string(mt, otext);
 }
 
-bool MimeHandlerHtml::set_document_string_impl(const string&,
-                                               const string& htext) 
+bool MimeHandlerHtml::set_document_string_impl(const string&, const string& htext) 
 {
     m_html = htext;
     m_havedoc = true;
@@ -71,14 +90,12 @@ bool MimeHandlerHtml::next_document()
     m_filename.erase();
 
     string charset = m_dfltInputCharset;
-    LOGDEB("MHHtml::next_doc.: default supposed input charset: [" << charset
-           << "]\n");
+    LOGDEB("MHHtml::next_doc.: default supposed input charset: [" << charset << "]\n");
     // Override default input charset if someone took care to set one:
     const auto it = m_metaData.find(cstr_dj_keycharset);
     if (it != m_metaData.end() && !it->second.empty()) {
         charset = it->second;
-        LOGDEB("MHHtml: next_doc.: input charset from ext. metadata: [" <<
-               charset << "]\n");
+        LOGDEB("MHHtml: next_doc.: input charset from ext. metadata: [" << charset << "]\n");
     }
 
     // - We first try to convert from the supposed charset
@@ -98,8 +115,7 @@ bool MimeHandlerHtml::next_document()
         int ecnt;
         if (!transcode(m_html, transcoded, charset, "UTF-8", &ecnt)) {
             LOGDEB("textHtmlToDoc: transcode failed from cs '" <<
-                   charset << "' to UTF-8 for[" << (fn.empty()?"unknown":fn) <<
-                   "]");
+                   charset << "' to UTF-8 for[" << (fn.empty()?"unknown":fn) << "]");
             transcoded = m_html;
             // We don't know the charset, at all
             p.reset_charsets();
@@ -149,7 +165,7 @@ bool MimeHandlerHtml::next_document()
                 break;
             }
 
-            LOGDEB("textHtmlToDoc: charset [" << charset << "] doc charset ["<<
+            LOGDEB("textHtmlToDoc: charset [" << charset << "] doc charset [" <<
                    result.get_charset() << "]\n");
             if (!result.get_charset().empty() && 
                 !samecharset(result.get_charset(), result.fromcharset)) {
