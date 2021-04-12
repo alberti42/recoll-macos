@@ -4765,5 +4765,13 @@ Domyślna wartość to 2 (%).</translation>
         <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Result Table</source>
+        <translation type="unfinished">Tabela wyników</translation>
+    </message>
+    <message>
+        <source>Do not display metadata when hovering over rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>
