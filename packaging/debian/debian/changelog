@@ -1,3 +1,19 @@
+recoll (1.30.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * GUI: fix the table header background color for the dark mode on
+    Windows, it was too clear and the text was unreadable.
+  * Use the textfilemaxbs value to limit the size of indexed HTML
+    size. Some gigantic files are sometimes wrongly identified as HTML by
+    xdg-mime, causing out of memory errors.
+  * New Japanese translation by Shin-ichi Abe (JW).
+  * GUI preferences: move the result table choices to a separate tab.
+  * GUI: add an option to disable showing metadata while hovering. Show the
+    document text when jumping with Ctrl+xxx if this is the default for a
+    mouse click.
+  * Fix dependency issue for building the KDE KIO slave
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 12 Apr 2021 15:05:00 +0100
+
 recoll (1.30.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Add a recollindex command line option to write diagnostics about not

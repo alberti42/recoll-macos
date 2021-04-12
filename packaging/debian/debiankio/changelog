@@ -1,3 +1,9 @@
+kio-recoll (1.30.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Follow recoll version
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 12 Apr 2021 15:10:00 +0100
+
 kio-recoll (1.29.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * GUI: fix bad background in result table dark mode.
