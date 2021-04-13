@@ -78,13 +78,13 @@ static const char *settingskey_fieldwiths="/Recoll/prefs/query/restableWidths";
 static const char *settingskey_splittersizes="resTableSplitterSizes";
 
 //////////////////////////////////////////////////////////////////////////
-// Restable "pager". We use it to print details for a document in the 
+// Restable "pager". We use it to print details for a document in the
 // detail area
 ///
 class ResTablePager : public ResListPager {
 public:
     ResTablePager(ResTable *p)
-        : ResListPager(1, prefs.alwaysSnippets), m_parent(p) 
+        : ResListPager(1, prefs.alwaysSnippets), m_parent(p)
         {}
     virtual bool append(const string& data) override;
     virtual bool flush() override;
@@ -147,7 +147,7 @@ void ResTableDetailArea::createPopupMenu(const QPoint& pos)
     if (m_table && m_table->m_model && m_table->m_detaildocnum >= 0) {
         int opts = m_table->m_ismainres ? ResultPopup::showExpand : 0;
         opts |= ResultPopup::showSaveOne;
-        QMenu *popup = ResultPopup::create(m_table, opts, 
+        QMenu *popup = ResultPopup::create(m_table, opts,
                                            m_table->m_model->getDocSource(),
                                            m_table->m_detaildoc);
         popup->popup(mapToGlobal(pos));
@@ -287,7 +287,7 @@ RecollModel::RecollModel(const QStringList fields, ResTable *tb,
     }
 
     // Construct the actual list of column names
-    for (QStringList::const_iterator it = fields.begin(); 
+    for (QStringList::const_iterator it = fields.begin();
          it != fields.end(); it++) {
         m_fields.push_back((const char *)(it->toUtf8()));
         m_getters.push_back(chooseGetter(m_fields.back()));
@@ -367,7 +367,7 @@ QString RecollModel::displayableField(const std::string& in)
     return (it == o_displayableFields.end()) ? u8s2qs(in) : it->second;
 }
 
-QVariant RecollModel::headerData(int idx, Qt::Orientation orientation, 
+QVariant RecollModel::headerData(int idx, Qt::Orientation orientation,
                                  int role) const
 {
     LOGDEB2("RecollModel::headerData: idx " << idx << " orientation " <<
@@ -375,7 +375,7 @@ QVariant RecollModel::headerData(int idx, Qt::Orientation orientation,
             " role " << role << "\n");
     if (orientation == Qt::Vertical && role == Qt::DisplayRole) {
         if (idx < 26) {
-            return QString("%1/%2").arg(idx).arg(char('a'+idx)); 
+            return QString("%1/%2").arg(idx).arg(char('a'+idx));
         } else {
             return idx;
         }
@@ -402,11 +402,11 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
             m_cachedfont = m_table->font();
             int fs = prefs.reslistfontsize <= fsadjusttable ?
                 prefs.reslistfontsize: prefs.reslistfontsize - fsadjusttable;
-            if (fs > 0) 
+            if (fs > 0)
                 m_cachedfont.setPointSize(fs);
         }
         return m_cachedfont;
-    }    
+    }
 
     if (!m_source || role != Qt::DisplayRole || !index.isValid() ||
         index.column() >= int(m_fields.size())) {
@@ -481,18 +481,18 @@ void RecollModel::sort(int column, Qt::SortOrder order)
         return;
     }
     LOGDEB("RecollModel::sort(" << column << ", " << order << ")\n");
-    
+
     DocSeqSortSpec spec;
     if (column >= 0 && column < int(m_fields.size())) {
         spec.field = m_fields[column];
         if (!stringlowercmp("relevancyrating", spec.field) &&
             order != Qt::AscendingOrder) {
-            QMessageBox::warning(0, "Recoll", 
+            QMessageBox::warning(0, "Recoll",
                                  tr("Can't sort by inverse relevance"));
             QTimer::singleShot(0, m_table, SLOT(resetSort()));
             return;
         }
-        if (!stringlowercmp("date", spec.field) || 
+        if (!stringlowercmp("date", spec.field) ||
             !stringlowercmp("datetime", spec.field))
             spec.field = "mtime";
         spec.desc = order == Qt::AscendingOrder ? false : true;
@@ -500,7 +500,7 @@ void RecollModel::sort(int column, Qt::SortOrder order)
     emit sortDataChanged(spec);
 }
 
-/////////////////////////// 
+///////////////////////////
 // ResTable panel methods
 
 // We use a custom delegate to display the cells because the base
@@ -514,7 +514,7 @@ public:
     // need a modif to plaintorich to return the match count (easy),
     // and a way to pass an indicator from data(), a bit more
     // difficult. Anyway, the display seems fast enough as is.
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, 
+    void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index) const {
 
         QVariant value = index.data(Qt::DisplayRole);
@@ -651,12 +651,12 @@ void ResTable::init()
 #endif
     setDefRowHeight();
 
-    connect(tableView->selectionModel(), 
+    connect(tableView->selectionModel(),
             SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)),
             this, SLOT(onTableView_currentChanged(const QModelIndex&)));
-    connect(tableView, SIGNAL(doubleClicked(const QModelIndex&)), 
+    connect(tableView, SIGNAL(doubleClicked(const QModelIndex&)),
             this, SLOT(onDoubleClick(const QModelIndex&)));
-    connect(tableView, SIGNAL(clicked(const QModelIndex&)), 
+    connect(tableView, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(onClicked(const QModelIndex&)));
 
     m_pager = new ResTablePager(this);
@@ -669,7 +669,7 @@ void ResTable::init()
     m_detail->setOpenLinks(false);
     m_detail->init();
     // signals and slots connections
-    connect(m_detail, SIGNAL(anchorClicked(const QUrl &)), 
+    connect(m_detail, SIGNAL(anchorClicked(const QUrl &)),
             this, SLOT(linkWasClicked(const QUrl &)));
     splitter->addWidget(m_detail);
     splitter->setOrientation(Qt::Vertical);
@@ -753,7 +753,7 @@ bool ResTable::eventFilter(QObject*, QEvent *event)
     return false;
 }
 
-void ResTable::setRclMain(RclMain *m, bool ismain) 
+void ResTable::setRclMain(RclMain *m, bool ismain)
 {
     m_rclmain = m;
     m_ismainres = ismain;
@@ -774,13 +774,13 @@ void ResTable::setRclMain(RclMain *m, bool ismain)
     }
 
     new QShortcut(closeKeySeq, this, SLOT (close()));
-    connect(this, SIGNAL(previewRequested(Rcl::Doc)), 
+    connect(this, SIGNAL(previewRequested(Rcl::Doc)),
             m_rclmain, SLOT(startPreview(Rcl::Doc)));
-    connect(this, SIGNAL(editRequested(Rcl::Doc)), 
+    connect(this, SIGNAL(editRequested(Rcl::Doc)),
             m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
-    connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
+    connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)),
             m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
-    connect(this, SIGNAL(showSnippets(Rcl::Doc)), 
+    connect(this, SIGNAL(showSnippets(Rcl::Doc)),
             m_rclmain, SLOT(showSnippets(Rcl::Doc)));
 }
 
@@ -833,9 +833,21 @@ void ResTable::setCurrentRowFromKbd(int row)
 {
     LOGDEB1("setCurrentRowFromKbd: " << row << "\n");
     m_rowchangefromkbd = true;
-    tableView->setFocus(Qt::ShortcutFocusReason);                     
-    tableView->selectionModel()->setCurrentIndex(                     
-        m_model->index(row, 0),                                       
+    tableView->setFocus(Qt::ShortcutFocusReason);
+
+    // After calling setCurrentIndex(), currentChanged() gets called
+    // twice, once with row 0 and no selection, once with the actual
+    // target row and selection set. It uses this fact to discriminate
+    // this from hovering. For some reason, when row is zero, there is
+    // only one call. So, in this case, we first select row 1, and
+    // this so pretty hack gets things working
+    if (row == 0) {
+        tableView->selectionModel()->setCurrentIndex(
+            m_model->index(1, 0),
+            QItemSelectionModel::ClearAndSelect|QItemSelectionModel::Rows);
+    }
+    tableView->selectionModel()->setCurrentIndex(
+        m_model->index(row, 0),
         QItemSelectionModel::ClearAndSelect|QItemSelectionModel::Rows);
 }
 
@@ -979,7 +991,7 @@ void ResTable::saveAsCSV()
     std::string tofile = qs2path(s);
     std::fstream fp;
     if (!path_streamopen(tofile, std::ios::out|std::ios::trunc,fp)) {
-        QMessageBox::warning(0, "Recoll", 
+        QMessageBox::warning(0, "Recoll",
                              tr("Can't open/create file: ") + s);
         return;
     }
@@ -1003,7 +1015,7 @@ void ResTable::onSortDataChanged(DocSeqSortSpec spec)
     const vector<string> fields = m_model->getFields();
     for (unsigned int i = 0; i < fields.size(); i++) {
         if (!spec.field.compare(m_model->baseField(fields[i]))) {
-            header->setSortIndicator(i, spec.desc ? 
+            header->setSortIndicator(i, spec.desc ?
                                      Qt::DescendingOrder : Qt::AscendingOrder);
             matched = true;
         }
@@ -1018,7 +1030,7 @@ void ResTable::resetSort()
     LOGDEB("ResTable::resetSort()\n");
     QHeaderView *header = tableView->horizontalHeader();
     if (header)
-        header->setSortIndicator(-1, Qt::AscendingOrder); 
+        header->setSortIndicator(-1, Qt::AscendingOrder);
     // the model's sort slot is not called by qt in this case (qt 4.7)
     if (m_model)
         m_model->sort(-1, Qt::AscendingOrder);
@@ -1078,8 +1090,8 @@ void ResTable::linkWasClicked(const QUrl &url)
     }
     break;
 
-    case 'P': 
-    case 'E': 
+    case 'P':
+    case 'E':
     {
         if (what == 'P') {
             if (m_ismainres) {
@@ -1111,9 +1123,9 @@ void ResTable::linkWasClicked(const QUrl &url)
     }
     break;
 
-    default: 
+    default:
         LOGERR("ResTable::linkWasClicked: bad link [" << ascurl << "]\n");
-        break;// ?? 
+        break;// ??
     }
 }
 
@@ -1127,7 +1139,7 @@ void ResTable::onClicked(const QModelIndex& index)
         onTableView_currentChanged(index);
     }
 }
-    
+
 void ResTable::onDoubleClick(const QModelIndex& index)
 {
     m_rowchangefromkbd = false;
@@ -1138,11 +1150,11 @@ void ResTable::onDoubleClick(const QModelIndex& index)
         if (m_detaildocnum != index.row()) {
             m_detail->init();
             m_detaildocnum = index.row();
-            m_pager->displayDoc(theconfig, index.row(), m_detaildoc, 
+            m_pager->displayDoc(theconfig, index.row(), m_detaildoc,
                                 m_model->m_hdata);
         }
         m_detaildoc = doc;
-        if (m_detaildocnum >= 0) 
+        if (m_detaildocnum >= 0)
             emit editRequested(m_detaildoc);
     } else {
         m_detaildocnum = -1;
@@ -1161,7 +1173,7 @@ void ResTable::createPopupMenu(const QPoint& pos)
         if (selsz == 1) {
             opts |= ResultPopup::showSaveOne;
         } else if (selsz > 1 && !m_ismainres) {
-            // We don't show save multiple for the main list because not all 
+            // We don't show save multiple for the main list because not all
             // docs are necessary subdocs and multisave only works with those.
             opts |= ResultPopup::showSaveSel;
         }
@@ -1184,7 +1196,7 @@ void ResTable::menuPreview()
 
 void ResTable::menuSaveToFile()
 {
-    if (m_detaildocnum >= 0) 
+    if (m_detaildocnum >= 0)
         emit docSaveToFileClicked(m_detaildoc);
 }
 
@@ -1211,9 +1223,9 @@ void ResTable::menuSaveSelection()
 
 void ResTable::menuPreviewParent()
 {
-    if (m_detaildocnum >= 0 && m_model &&  
+    if (m_detaildocnum >= 0 && m_model &&
         m_model->getDocSource()) {
-        Rcl::Doc pdoc = ResultPopup::getParent(m_model->getDocSource(), 
+        Rcl::Doc pdoc = ResultPopup::getParent(m_model->getDocSource(),
                                                m_detaildoc);
         if (pdoc.mimetype == "inode/directory") {
             emit editRequested(pdoc);
@@ -1246,7 +1258,7 @@ void ResTable::menuOpenFolder()
 
 void ResTable::menuEdit()
 {
-    if (m_detaildocnum >= 0) 
+    if (m_detaildocnum >= 0)
         emit editRequested(m_detaildoc);
 }
 void ResTable::menuEditAndQuit()
@@ -1261,25 +1273,25 @@ void ResTable::menuOpenWith(QAction *act)
     if (act == 0)
         return;
     string cmd = qs2utf8s(act->data().toString());
-    if (m_detaildocnum >= 0) 
+    if (m_detaildocnum >= 0)
         emit openWithRequested(m_detaildoc, cmd);
 }
 
 void ResTable::menuCopyFN()
 {
-    if (m_detaildocnum >= 0) 
+    if (m_detaildocnum >= 0)
         ResultPopup::copyFN(m_detaildoc);
 }
 
 void ResTable::menuCopyPath()
 {
-    if (m_detaildocnum >= 0) 
+    if (m_detaildocnum >= 0)
         ResultPopup::copyPath(m_detaildoc);
 }
 
 void ResTable::menuCopyURL()
 {
-    if (m_detaildocnum >= 0) 
+    if (m_detaildocnum >= 0)
         ResultPopup::copyURL(m_detaildoc);
 }
 
@@ -1295,7 +1307,7 @@ void ResTable::menuCopyText()
             // it appears that the mouse event cancels it and it's not
             // shown). So let's do status bar if visible else tooltip.
             //  Menu trigger with no status bar -> no feedback...
-        
+
             // rclmain->showTrayMessage(msg);
             if (m_rclmain->statusBar()->isVisible()) {
                 m_rclmain->statusBar()->showMessage(msg, 1000);
@@ -1307,13 +1319,13 @@ void ResTable::menuCopyText()
                 QTimer::singleShot(1500, m_rclmain, SLOT(hideToolTip()));
             }
         }
-        
+
     }
 }
 
 void ResTable::menuExpand()
 {
-    if (m_detaildocnum >= 0) 
+    if (m_detaildocnum >= 0)
         emit docExpand(m_detaildoc);
 }
 
