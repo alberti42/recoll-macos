@@ -36,7 +36,7 @@
 
 using namespace std;
 
-// #define DEBUGABSTRACT  
+#undef DEBUGABSTRACT  
 #ifdef DEBUGABSTRACT
 #define LOGABS LOGDEB
 #else
@@ -221,8 +221,7 @@ public:
                 // Term group (phrase/near) handling
                 m_plists[dumb].push_back(pos);
                 m_gpostobytes[pos] = pair<int,int>(bts, bte);
-                LOGDEB1("Recorded bpos for pos " << pos << ": " << bts << " " <<
-                        bte << "\n");
+                LOGDEB1("Recorded bpos for pos " << pos << ": " << bts << " " << bte << "\n");
             }
         }
 #ifdef COMPUTE_HLZONES
@@ -278,6 +277,20 @@ public:
     // After the text is split: use the group terms positions lists to
     // find the group matches.
     void updgroups() {
+        // Possibly store current incomplete fragment (if match was
+        // close to the end of the text, so we did not close it):
+        if (m_curtermcoef != 0.0) {
+            m_fragments.push_back(
+                MatchFragment(m_curfrag.first, m_curfrag.second, m_curfragcoef,
+#ifdef COMPUTE_HLZONES
+                              m_curhlzones,
+#endif
+                              m_curhitpos, m_curterm));
+                m_totalcoef += m_curfragcoef;
+                m_curfragcoef = 0.0;
+                m_curtermcoef = 0.0;
+        }
+
         LOGDEB("TextSplitABS: stored total " << m_fragments.size() <<
                " fragments" << endl);
         vector<GroupMatchEntry> tboffs;
