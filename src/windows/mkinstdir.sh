@@ -310,7 +310,7 @@ copyaspell()
     chkcp $MINGWBIN/libstdc++-6.dll $DEST
     chkcp $MINGWBIN/libwinpthread-1.dll $DEST
     if test $BUILD = MSVC ; then
-        chkcp $RCLDEPS/mingw/build-libaspell-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release/aspell.dll $DESTDIR/libaspell-15.dll
+        chkcp $RCLDEPS/mingw/build-libaspell-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release/aspell.dll $DESTDIR/libaspell-15.dll
     fi
 }
 
