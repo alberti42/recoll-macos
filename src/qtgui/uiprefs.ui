@@ -1532,8 +1532,11 @@ May be slow for big documents.</string>
          <item>
           <widget class="QCheckBox" name="anchorTamilHackCB">
            <property name="text">
-            <string>Work around QTBUG-78923 by inserting space before anchor text</string>
+            <string>Work around Tamil QTBUG-78923 by inserting space before anchor text</string>
            </property>
+             <property name="toolTip">
+              <string>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</string>
+             </property>
           </widget>
          </item>
          <item>

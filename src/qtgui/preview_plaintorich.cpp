@@ -89,11 +89,15 @@ string PlainToRichQtPreview::startMatch(unsigned int grpidx)
     // highlighting the spurious space. The space hack only work in a
     // <pre> section. Also: having <a name=xxx></a> before the match
     // term causes the same problem (so not a possible fix).
-    string hackspace = m_spacehack? " " : "";
+    // Space does not seem to work any more (2021-04) ?
+    //   Zero Width Non Joiner works but is displayed as ? sometimes on windows.
+    //  nbsp seems to now work !
+    string hackspace = m_spacehack? "&nbsp;" : "";
     string startmarker{
-        "<a name='" + termAnchorName(m_lastanchor) + "'>" + hackspace +
-            "<span style='" + qs2utf8s(prefs.qtermstyle) + "'>"
-            };
+        "<a name='" + termAnchorName(m_lastanchor) + "'>" +
+        hackspace +
+        "<span style='" + qs2utf8s(prefs.qtermstyle) + "'>" 
+    };
     return startmarker;
 }
 
