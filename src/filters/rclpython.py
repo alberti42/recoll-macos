@@ -223,18 +223,6 @@ def colorize_file(file=None, outstream=sys.stdout, standalone=True):
         sourcefile.close()
 
 
-def _htmlwrapplain(txt, title=b"", charset=b"utf-8"):
-    return \
-        b'<html>\n<head>\n<title>' + \
-        title + \
-        b'</title>\n' + \
-        b'<meta http-equiv="Content-Type" content="text/html; charset=' + \
-        charset + \
-        b'">\n' + \
-        b'<body>\n<pre>\n' + \
-        rclexecm.htmlescape(txt) + \
-        b'</pre>\n</body>\n</html>\n'
-
 class PythonDump(RclBaseHandler):
     def __init__(self, em):
         super(PythonDump, self).__init__(em)
@@ -246,7 +234,8 @@ class PythonDump(RclBaseHandler):
             colorize_file(fn, out)
             return out.getvalue()
         else:
-            return _htmlwrapplain(open(fn, 'rb').read())
+            self.outputmimetype = "text/plain"
+            return open(fn, 'rb').read()
 
 if __name__ == '__main__':
     proto = rclexecm.RclExecM()
