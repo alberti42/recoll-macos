@@ -13,7 +13,7 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.30.0
+RCLVERS=1.30.1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.0
 PPAVERS=1
@@ -28,7 +28,7 @@ case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -50,7 +50,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series="bionic focal groovy hirsute"
-series=focal
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -86,7 +86,7 @@ done
 
 ### KIO.
 series="bionic focal groovy hirsute"
-series=
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
