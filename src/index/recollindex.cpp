@@ -770,7 +770,7 @@ int main(int argc, char *argv[])
         LOGERR("Could not initialize status updater\n");
         exit(1);
     }
-    statusUpdater->update(DbIxStatus::DBIXS_NONE, "");
+    statusUpdater()->update(DbIxStatus::DBIXS_NONE, "");
     
     if (op_flags & OPT_r) {
         if (aremain != 1) 
