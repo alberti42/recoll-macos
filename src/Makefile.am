@@ -89,8 +89,6 @@ common/unacpp.h \
 common/uproplist.h \
 common/utf8fn.cpp \
 common/utf8fn.h \
-index/webqueue.cpp \
-index/webqueue.h \
 index/webqueuefetcher.cpp \
 index/webqueuefetcher.h \
 index/checkretryfailed.cpp \
@@ -101,8 +99,6 @@ index/fetcher.cpp \
 index/fetcher.h \
 index/fsfetcher.cpp \
 index/fsfetcher.h \
-index/fsindexer.cpp \
-index/fsindexer.h \
 index/idxdiags.h \
 index/idxdiags.cpp \
 index/idxstatus.h \
@@ -273,6 +269,8 @@ utils/utf8iter.h \
 utils/wipedir.cpp \
 utils/wipedir.h \
 utils/workqueue.h \
+utils/x11mon.cpp \
+utils/x11mon.h \
 utils/zlibut.cpp \
 utils/zlibut.h \
 xaposix/safefcntl.h \
@@ -290,7 +288,7 @@ AM_YFLAGS = -d
 # need it
 librecoll_la_LDFLAGS = -release $(VERSION) -no-undefined @NO_UNDEF_LINK_FLAG@
 
-librecoll_la_LIBADD = $(XSLT_LIBS) $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
+librecoll_la_LIBADD = $(XSLT_LIBS) $(LIBXAPIAN) $(LIBICONV) $(X_LIBX11) $(LIBTHREADS)
 
 # There is probably a better way to do this. The KIO needs to be linked
 # with librecoll, but librecoll is installed into a non-standard place
@@ -319,16 +317,19 @@ if MAKEXADUMP
 endif
 
 recollindex_SOURCES = \
-                    index/recollindex.cpp \
-                    index/checkindexed.cpp \
-                    index/checkindexed.h \
-                    index/indexer.cpp \
-                    index/indexer.h \
-                    index/rclmonprc.cpp \
-                    index/rclmonrcv.cpp \
-                    utils/x11mon.cpp \
-                    utils/x11mon.h 
-recollindex_LDADD = librecoll.la $(X_LIBX11)
+    index/checkindexed.cpp \
+    index/checkindexed.h \
+    index/fsindexer.cpp \
+    index/fsindexer.h \
+    index/indexer.cpp \
+    index/indexer.h \
+    index/rclmonprc.cpp \
+    index/rclmonrcv.cpp \
+    index/recollindex.cpp \
+    index/webqueue.cpp \
+    index/webqueue.h
+
+recollindex_LDADD = librecoll.la 
 
 recollq_SOURCES = query/recollqmain.cpp
 recollq_LDADD = librecoll.la

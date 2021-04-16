@@ -42,10 +42,6 @@ using std::list;
 using std::string;
 using std::vector;
 
-// Global stop request flag. This is checked in a number of place in the
-// indexing routines.
-int stopindexing;
-
 // This would more logically live in recollindex.cpp, but then librecoll would
 // have an undefined symbol
 ConfSimple idxreasons;
@@ -94,10 +90,8 @@ bool runWebFilesMoverScript(RclConfig *config)
 }
 #endif
 
-ConfIndexer::ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc)
-    : m_config(cnf), m_db(cnf), m_fsindexer(0), 
-      m_doweb(false), m_webindexer(0),
-      m_updater(updfunc)
+ConfIndexer::ConfIndexer(RclConfig *cnf)
+    : m_config(cnf), m_db(cnf)
 {
     m_config->getConfParam("processwebqueue", &m_doweb);
 }
@@ -135,7 +129,7 @@ bool ConfIndexer::firstFsIndexingSequence()
 {
     LOGDEB("ConfIndexer::firstFsIndexingSequence\n");
     deleteZ(m_fsindexer);
-    m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+    m_fsindexer = new FsIndexer(m_config, &m_db);
     if (!m_fsindexer) {
         return false;
     }
@@ -170,7 +164,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
             firstFsIndexingSequence();
         }
         deleteZ(m_fsindexer);
-        m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+        m_fsindexer = new FsIndexer(m_config, &m_db);
         if (!m_fsindexer || !m_fsindexer->index(flags)) {
             if (stopindexing) {
                 addIdxReason("indexer", "Indexing was interrupted.");
@@ -185,7 +179,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     if (m_doweb && (typestorun & IxTWebQueue)) {
         runWebFilesMoverScript(m_config);
         deleteZ(m_webindexer);
-        m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
+        m_webindexer = new WebQueueIndexer(m_config, &m_db);
         if (!m_webindexer || !m_webindexer->index()) {
             m_db.close();
             addIdxReason("indexer", "Web index creation failed. See" + logloc);
@@ -196,7 +190,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     if (typestorun == IxTAll) {
         // Get rid of all database entries that don't exist in the
         // filesystem anymore. Only if all *configured* indexers ran.
-        if (m_updater && !m_updater->update(DbIxStatus::DBIXS_PURGE, "")) {
+        if (!statusUpdater()->update(DbIxStatus::DBIXS_PURGE, string())) {
             m_db.close();
             addIdxReason("indexer", "Index purge failed. See" + logloc);
             return false;
@@ -207,8 +201,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     // The close would be done in our destructor, but we want status
     // here. Makes no sense to check for cancel, we'll have to close
     // anyway
-    if (m_updater)
-        m_updater->update(DbIxStatus::DBIXS_CLOSING, string());
+    statusUpdater()->update(DbIxStatus::DBIXS_CLOSING, string());
     if (!m_db.close()) {
         LOGERR("ConfIndexer::index: error closing database in " <<
                m_config->getDbDir() << "\n");
@@ -216,13 +209,13 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         return false;
     }
 
-    if (m_updater && !m_updater->update(DbIxStatus::DBIXS_CLOSING, string()))
+    if (!statusUpdater()->update(DbIxStatus::DBIXS_CLOSING, string()))
         return false;
     bool ret = true;
     if (!createStemmingDatabases()) {
         ret = false;
     }
-    if (m_updater && !m_updater->update(DbIxStatus::DBIXS_CLOSING, string()))
+    if (!statusUpdater()->update(DbIxStatus::DBIXS_CLOSING, string()))
         return false;
 
     // Don't fail indexing because of an aspell issue: we ignore the status.
@@ -230,8 +223,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     (void)createAspellDict();
     
     clearMimeHandlerCache();
-    if (m_updater)
-        m_updater->update(DbIxStatus::DBIXS_DONE, string());
+    statusUpdater()->update(DbIxStatus::DBIXS_DONE, string());
     return ret;
 }
 
@@ -252,7 +244,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
     m_config->setKeyDir(cstr_null);
     bool ret = false;
     if (!m_fsindexer)
-        m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+        m_fsindexer = new FsIndexer(m_config, &m_db);
     if (m_fsindexer)
         ret = m_fsindexer->indexFiles(myfiles, flag);
     LOGDEB2("ConfIndexer::indexFiles: fsindexer returned " << ret << ", " <<
@@ -261,7 +253,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
 
     if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_webindexer)
-            m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
+            m_webindexer = new WebQueueIndexer(m_config, &m_db);
         if (m_webindexer) {
             ret = ret && m_webindexer->indexFiles(myfiles);
         } else {
@@ -313,14 +305,14 @@ bool ConfIndexer::purgeFiles(list<string> &files, int flag)
     bool ret = false;
     m_config->setKeyDir(cstr_null);
     if (!m_fsindexer)
-        m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+        m_fsindexer = new FsIndexer(m_config, &m_db);
     if (m_fsindexer)
         ret = m_fsindexer->purgeFiles(myfiles);
 
 #ifndef DISABLE_WEB_INDEXER
     if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_webindexer)
-            m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
+            m_webindexer = new WebQueueIndexer(m_config, &m_db);
         if (m_webindexer) {
             ret = ret && m_webindexer->purgeFiles(myfiles);
         } else {

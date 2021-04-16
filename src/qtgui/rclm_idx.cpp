@@ -46,6 +46,7 @@ void RclMain::updateIdxStatus()
     switch (status.phase) {
     case DbIxStatus::DBIXS_NONE:phs=tr("None");break;
     case DbIxStatus::DBIXS_FILES: phs=tr("Updating");break;
+    case DbIxStatus::DBIXS_FLUSH: phs=tr("Flushing");break;
     case DbIxStatus::DBIXS_PURGE: phs=tr("Purge");break;
     case DbIxStatus::DBIXS_STEMDB: phs=tr("Stemdb");break;
     case DbIxStatus::DBIXS_CLOSING:phs=tr("Closing");break;

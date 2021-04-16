@@ -60,7 +60,6 @@ using namespace std;
 #endif
 #include "execmd.h"
 #include "checkretryfailed.h"
-#include "idxstatus.h"
 #include "circache.h"
 #include "idxdiags.h"
 
@@ -117,79 +116,6 @@ static void cleanup()
     recoll_exitready();
 }
 
-// Receive status updates from the ongoing indexing operation
-// Also check for an interrupt request and return the info to caller which
-// should subsequently orderly terminate what it is doing.
-class MyUpdater : public DbIxStatusUpdater {
-public:
-    MyUpdater(const RclConfig *config) 
-        : m_file(config->getIdxStatusFile().c_str()),
-          m_stopfilename(config->getIdxStopFile()),
-          m_prevphase(DbIxStatus::DBIXS_NONE) {
-        // The total number of files included in the index is actually
-        // difficult to compute from the index itself. For display
-        // purposes, we save it in the status file from indexing to
-        // indexing (mostly...)
-        string stf;
-        if (m_file.get("totfiles", stf)) {
-            status.totfiles = atoi(stf.c_str());
-        }
-    }
-
-    virtual bool update() {
-        // Update the status file. Avoid doing it too often. Always do
-        // it at the end (status DONE)
-        if (status.phase == DbIxStatus::DBIXS_DONE || 
-            status.phase != m_prevphase || m_chron.millis() > 300) {
-            if (status.totfiles < status.filesdone ||
-                status.phase == DbIxStatus::DBIXS_DONE) {
-                status.totfiles = status.filesdone;
-            }
-            m_prevphase = status.phase;
-            m_chron.restart();
-            m_file.holdWrites(true);
-            m_file.set("phase", int(status.phase));
-            m_file.set("docsdone", status.docsdone);
-            m_file.set("filesdone", status.filesdone);
-            m_file.set("fileerrors", status.fileerrors);
-            m_file.set("dbtotdocs", status.dbtotdocs);
-            m_file.set("totfiles", status.totfiles);
-            m_file.set("fn", status.fn);
-            m_file.set("hasmonitor", status.hasmonitor);
-            m_file.holdWrites(false);
-        }
-        if (path_exists(m_stopfilename)) {
-            LOGINF("recollindex: asking indexer to stop because " <<
-                   m_stopfilename << " exists\n");
-            path_unlink(m_stopfilename);
-            stopindexing = true;
-        }
-        if (stopindexing) {
-            return false;
-        }
-
-#ifndef DISABLE_X11MON
-        // If we are in the monitor, we also need to check X11 status
-        // during the initial indexing pass (else the user could log
-        // out and the indexing would go on, not good (ie: if the user
-        // logs in again, the new recollindex will fail).
-        if ((op_flags & OPT_m) && !(op_flags & OPT_x) && !x11IsAlive()) {
-            LOGDEB("X11 session went away during initial indexing pass\n");
-            stopindexing = true;
-            return false;
-        }
-#endif
-        return true;
-    }
-
-private:
-    ConfSimple m_file;
-    string m_stopfilename;
-    Chrono m_chron;
-    DbIxStatus::Phase m_prevphase;
-};
-static MyUpdater *updater;
-
 // This holds the state of topdirs (exist+nonempty) on indexing
 // startup. If it changes after a resume from sleep we interrupt the
 // indexing (the assumption being that a volume has been mounted or
@@ -233,7 +159,7 @@ static void sigcleanup(int sig)
 static void makeIndexerOrExit(RclConfig *config, bool inPlaceReset)
 {
     if (!confindexer) {
-        confindexer = new ConfIndexer(config, updater);
+        confindexer = new ConfIndexer(config);
         if (inPlaceReset)
             confindexer->setInPlaceReset();
     }
@@ -831,13 +757,20 @@ int main(int argc, char *argv[])
 #endif
     
     Pidfile pidfile(config->getPidfile());
-    updater = new MyUpdater(config);
     lockorexit(&pidfile, config);
 
     // Log something at LOGINFO to reset the trace file. Else at level
     // 3 it's not even truncated if all docs are up to date.
     LOGINFO("recollindex: starting up\n");
     setMyPriority(config);
+
+    // Init status updater
+    if (nullptr == statusUpdater(config, op_flags & OPT_x)) {
+        std::cerr << "Could not initialize status updater\n";
+        LOGERR("Could not initialize status updater\n");
+        exit(1);
+    }
+    statusUpdater->update(DbIxStatus::DBIXS_NONE, "");
     
     if (op_flags & OPT_r) {
         if (aremain != 1) 
@@ -899,9 +832,7 @@ int main(int argc, char *argv[])
     } else if (op_flags & OPT_m) {
         if (aremain != 0) 
             Usage();
-        if (updater) {
-            updater->status.hasmonitor = true;
-        }
+        statusUpdater()->setMonitor(true);
         if (!(op_flags&OPT_D)) {
             LOGDEB("recollindex: daemonizing\n");
 #ifndef _WIN32
@@ -960,11 +891,8 @@ int main(int argc, char *argv[])
 #endif
         }
 
-        if (updater) {
-            updater->status.phase = DbIxStatus::DBIXS_MONITOR;
-            updater->status.fn.clear();
-            updater->update();
-        }
+        statusUpdater()->update(DbIxStatus::DBIXS_MONITOR, "");
+
         int opts = RCLMON_NONE;
         if (op_flags & OPT_D)
             opts |= RCLMON_NOFORK;
@@ -991,11 +919,7 @@ int main(int argc, char *argv[])
         addIdxReason("indexer", confindexer->getReason());
         cerr << confindexer->getReason() << endl;
     }
-    if (updater) {
-        updater->status.phase = DbIxStatus::DBIXS_DONE;
-        updater->status.fn.clear();
-        updater->update();
-    }
+    statusUpdater()->update(DbIxStatus::DBIXS_DONE, "");
     flushIdxReasons();
     return !status;
 }

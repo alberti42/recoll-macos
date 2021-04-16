@@ -18,6 +18,7 @@
 #define _FSFETCHER_H_INCLUDED_
 
 #include "fetcher.h"
+#include "pathut.h"
 
 /** 
  * The file-system fetcher: 
@@ -31,5 +32,7 @@ class FSDocFetcher : public DocFetcher{
     virtual DocFetcher::Reason testAccess(RclConfig* cnf, const Rcl::Doc& idoc);
     virtual ~FSDocFetcher() {}
 };
+
+extern void fsmakesig(const struct PathStat *stp, std::string& out);
 
 #endif /* _FSFETCHER_H_INCLUDED_ */

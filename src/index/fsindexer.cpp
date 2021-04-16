@@ -48,6 +48,7 @@
 #include "extrameta.h"
 #include "utf8fn.h"
 #include "idxdiags.h"
+#include "fsfetcher.h"
 #if defined(HAVE_POSIX_FADVISE)
 #include <unistd.h>
 #include <fcntl.h>
@@ -103,8 +104,8 @@ public:
         }
 };
 
-FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc) 
-    : m_config(cnf), m_db(db), m_updater(updfunc), 
+FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db) 
+    : m_config(cnf), m_db(db),
       m_missing(new FSIFIMissingStore), m_detectxattronly(false),
       m_noretryfailed(false)
 #ifdef IDX_THREADS
@@ -186,12 +187,7 @@ bool FsIndexer::index(int flags)
     if (!init())
         return false;
 
-    if (m_updater) {
-#ifdef IDX_THREADS
-        std::unique_lock<std::mutex> locker(m_updater->m_mutex);
-#endif
-        m_updater->status.dbtotdocs = m_db->docCnt();
-    }
+    statusUpdater()->setDbTotDocs(m_db->docCnt());
 
     m_walker.setSkippedPaths(m_config->getSkippedPaths());
     if (quickshallow) {
@@ -512,12 +508,6 @@ void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
     }
 }
 
-void FsIndexer::makesig(const struct PathStat *stp, string& out)
-{
-    out = lltodecstr(stp->pst_size) + 
-        lltodecstr(o_uptodate_test_use_mtime ? stp->pst_mtime : stp->pst_ctime);
-}
-
 #ifdef IDX_THREADS
 // Called updworker as seen from here, but the first step (and only in
 // most meaningful configurations) is doing the word-splitting, which
@@ -586,13 +576,8 @@ void *FsIndexerInternfileWorker(void * fsp)
 FsTreeWalker::Status FsIndexer::processone(
     const std::string &fn, const struct PathStat *stp, FsTreeWalker::CbFlag flg)
 {
-    if (m_updater) {
-#ifdef IDX_THREADS
-        std::unique_lock<std::mutex> locker(m_updater->m_mutex);
-#endif
-        if (!m_updater->update()) {
-            return FsTreeWalker::FtwStop;
-        }
+    if (!statusUpdater()->update(DbIxStatus::DBIXS_FILES, fn)) {
+        return FsTreeWalker::FtwStop;
     }
 
     // If we're changing directories, possibly adjust parameters (set
@@ -665,7 +650,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
     // m/ctime and size and the possibly new value is checked against
     // the stored one.
     string sig;
-    makesig(stp, sig);
+    fsmakesig(stp, sig);
     string udi;
     make_udi(fn, cstr_null, udi);
     unsigned int existingDoc;
@@ -706,16 +691,9 @@ FsTreeWalker::Status FsIndexer::processonefile(
 
     if (!needupdate) {
         LOGDEB0("processone: up to date: " << fn << "\n");
-        if (m_updater) {
-#ifdef IDX_THREADS
-            std::unique_lock<std::mutex> locker(m_updater->m_mutex);
-#endif
-            // Status bar update, abort request etc.
-            m_updater->status.fn = fn;
-            ++(m_updater->status.filesdone);
-            if (!m_updater->update()) {
-                return FsTreeWalker::FtwStop;
-            }
+        if (!statusUpdater()->update(
+                DbIxStatus::DBIXS_FILES, fn, DbIxStatusUpdater::IncrFilesDone)) {
+            return FsTreeWalker::FtwStop;
         }
         return FsTreeWalker::FtwOk;
     }
@@ -827,26 +805,20 @@ FsTreeWalker::Status FsIndexer::processonefile(
             } 
 
             // Tell what we are doing and check for interrupt request
-            if (m_updater) {
-#ifdef IDX_THREADS
-                std::unique_lock<std::mutex> locker(m_updater->m_mutex);
-#endif
-                ++(m_updater->status.docsdone);
-                if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
-                    m_updater->status.dbtotdocs = m_updater->status.docsdone;
-                m_updater->status.fn = fn;
-                if (!doc.ipath.empty()) {
-                    m_updater->status.fn += "|" + doc.ipath;
-                } else {
-                    if (fis == FileInterner::FIError) {
-                        ++(m_updater->status.fileerrors);
-                    }
-                    ++(m_updater->status.filesdone);
+            int incr = DbIxStatusUpdater::IncrDocsDone;
+            std::string sfn(fn);
+            if (!doc.ipath.empty()) {
+                sfn += "|" + doc.ipath;
+            } else {
+                if (fis == FileInterner::FIError) {
+                    incr |= DbIxStatusUpdater::IncrFileErrors;
                 }
-                if (!m_updater->update()) {
-                    return FsTreeWalker::FtwStop;
-                }
+                incr |= DbIxStatusUpdater::IncrFilesDone;
             }
+            if (!statusUpdater()->update(DbIxStatus::DBIXS_FILES, sfn, incr)) {
+                return FsTreeWalker::FtwStop;
+            }
+
         }
 
         if (fis == FileInterner::FIError) {

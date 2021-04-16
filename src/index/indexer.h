@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-#include "rclconfig.h"
 
 #include <string>
 #include <list>
@@ -24,37 +23,13 @@
 #include <vector>
 #include <mutex>
 
+#include "rclconfig.h"
 #include "rcldb.h"
 #include "rcldoc.h"
 #include "idxstatus.h"
 
 class FsIndexer;
 class WebQueueIndexer;
-
-/** Callback to say what we're doing. If the update func returns false, we
- * stop as soon as possible without corrupting state */
-class DbIxStatusUpdater {
-public:
-#ifdef IDX_THREADS
-    std::mutex m_mutex;
-#endif
-    DbIxStatus status;
-    virtual ~DbIxStatusUpdater(){}
-
-    // Convenience: change phase/fn and update
-    virtual bool update(DbIxStatus::Phase phase, const string& fn)
-        {
-#ifdef IDX_THREADS
-            std::unique_lock<std::mutex>  lock(m_mutex);
-#endif
-            status.phase = phase;
-            status.fn = fn;
-            return update();
-        }
-
-    // To be implemented by user for sending info somewhere
-    virtual bool update() = 0;
-};
 
 /**
  * The top level batch indexing object. Processes the configuration,
@@ -64,7 +39,7 @@ public:
 class ConfIndexer {
 public:
     enum runStatus {IndexerOk, IndexerError};
-    ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0);
+    ConfIndexer(RclConfig *cnf);
     virtual ~ConfIndexer();
 
     // Indexer types. Maybe we'll have something more dynamic one day
@@ -118,11 +93,10 @@ public:
 private:
     RclConfig *m_config;
     Rcl::Db    m_db;
-    FsIndexer *m_fsindexer; 
-    bool                m_doweb;
-    WebQueueIndexer *m_webindexer; 
-    DbIxStatusUpdater  *m_updater;
-    string              m_reason;
+    FsIndexer *m_fsindexer{nullptr}; 
+    bool       m_doweb{false};
+    WebQueueIndexer *m_webindexer{nullptr}; 
+    string     m_reason;
 
     // The first time we index, we do things a bit differently to
     // avoid user frustration (make at least some results available

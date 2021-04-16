@@ -26,7 +26,6 @@
 #include "workqueue.h"
 #endif // IDX_THREADS
 
-class DbIxStatusUpdater;
 class FIMissingStore;
 struct PathStat;
 
@@ -53,9 +52,8 @@ public:
     /** Constructor does nothing but store parameters 
      *
      * @param cnf Configuration data
-     * @param updfunc Status updater callback
      */
-    FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc = 0);
+    FsIndexer(RclConfig *cnf, Rcl::Db *db);
     virtual ~FsIndexer();
 
     /** 
@@ -77,10 +75,6 @@ public:
     FsTreeWalker::Status 
     processone(const string &fn, const struct PathStat *, FsTreeWalker::CbFlag);
 
-    /** Make signature for file up to date checks */
-    static void makesig(const struct PathStat *stp, string& out);
-
-    
 private:
 
     class PurgeCandidateRecorder {
@@ -118,7 +112,6 @@ private:
     RclConfig   *m_config;
     Rcl::Db     *m_db;
     string       m_reason;
-    DbIxStatusUpdater *m_updater;
     // Top/start directories list
     std::vector<std::string> m_tdl;
     // Store for missing filters and associated mime types

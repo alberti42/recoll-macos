@@ -30,7 +30,6 @@
 #include "fstreewalk.h"
 #include "rcldoc.h"
 
-class DbIxStatusUpdater;
 class CirCache;
 class RclConfig;
 class WebStore;
@@ -40,8 +39,7 @@ class Db;
 
 class WebQueueIndexer : public FsTreeWalkerCB {
 public:
-    WebQueueIndexer(RclConfig *cnf, Rcl::Db *db,
-                    DbIxStatusUpdater *updfunc = 0);
+    WebQueueIndexer(RclConfig *cnf, Rcl::Db *db);
     ~WebQueueIndexer();
 
     /** This is called by the top indexer in recollindex. 
@@ -69,7 +67,6 @@ private:
     Rcl::Db   *m_db{nullptr};
     WebStore  *m_cache{nullptr};
     std::string     m_queuedir;
-    DbIxStatusUpdater *m_updater{nullptr};
     // Don't process the cache. Set by indexFiles().
     bool       m_nocacheindex{false};
     // Config: page erase interval. We normally keep only one

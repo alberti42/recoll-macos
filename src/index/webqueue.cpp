@@ -173,8 +173,8 @@ public:
 
 // Initialize. Compute paths and create a temporary directory that will be
 // used by internfile()
-WebQueueIndexer::WebQueueIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
-    : m_config(cnf), m_db(db), m_updater(updfunc)
+WebQueueIndexer::WebQueueIndexer(RclConfig *cnf, Rcl::Db *db)
+    : m_config(cnf), m_db(db)
 {
     m_queuedir = m_config->getWebQueueDir();
     path_catslash(m_queuedir);
@@ -255,13 +255,7 @@ bool WebQueueIndexer::indexFromCache(const string& udi)
 
 void WebQueueIndexer::updstatus(const string& udi)
 {
-    if (m_updater) {
-        ++(m_updater->status.docsdone);
-        if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
-            m_updater->status.dbtotdocs = m_updater->status.docsdone;
-        m_updater->status.fn = udi;
-        m_updater->update();
-    }
+    statusUpdater()->update(DbIxStatus::DBIXS_FILES, udi, DbIxStatusUpdater::IncrDocsDone);
 }
 
 bool WebQueueIndexer::index()

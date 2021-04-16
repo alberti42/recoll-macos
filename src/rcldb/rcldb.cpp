@@ -63,6 +63,7 @@ using namespace std;
 #include "rclaspell.h"
 #endif
 #include "zlibut.h"
+#include "idxstatus.h"
 
 #ifndef XAPIAN_AT_LEAST
 // Added in Xapian 1.4.2. Define it here for older versions
@@ -2021,8 +2022,10 @@ bool Db::doFlush()
     }
     string ermsg;
     try {
+        statusUpdater()->update(DbIxStatus::DBIXS_FLUSH, "");
         m_ndb->xwdb.commit();
     } XCATCHERROR(ermsg);
+    statusUpdater()->update(DbIxStatus::DBIXS_NONE, "");
     if (!ermsg.empty()) {
         LOGERR("Db::doFlush: flush() failed: " << ermsg << "\n");
         return false;
@@ -2238,8 +2241,10 @@ bool Db::purge()
     // because it doesn't really hurt.
     m_reason.clear();
     try {
+        statusUpdater()->update(DbIxStatus::DBIXS_FLUSH, "");
         m_ndb->xwdb.commit();
     } XCATCHERROR(m_reason);
+    statusUpdater()->update(DbIxStatus::DBIXS_NONE, "");
     if (!m_reason.empty()) {
         LOGERR("Db::purge: 1st flush failed: " << m_reason << "\n");
         return false;
@@ -2286,8 +2291,10 @@ bool Db::purge()
 
     m_reason.clear();
     try {
+        statusUpdater()->update(DbIxStatus::DBIXS_FLUSH, "");
         m_ndb->xwdb.commit();
     } XCATCHERROR(m_reason);
+    statusUpdater()->update(DbIxStatus::DBIXS_NONE, "");
     if (!m_reason.empty()) {
         LOGERR("Db::purge: 2nd flush failed: " << m_reason << "\n");
         return false;

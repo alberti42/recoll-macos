@@ -57,14 +57,20 @@ bool FSDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
     out.data = fn;
     return true;
 }
-    
+
+void fsmakesig(const struct PathStat *stp, string& out)
+{
+    out = lltodecstr(stp->pst_size) + 
+        lltodecstr(o_uptodate_test_use_mtime ? stp->pst_mtime : stp->pst_ctime);
+}
+
 bool FSDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
 {
     string fn;
     struct PathStat st;
     if (urltopath(cnf, idoc, fn, st) != DocFetcher::FetchOk)
         return false;
-    FsIndexer::makesig(&st, sig);
+    fsmakesig(&st, sig);
     return true;
 }
 
