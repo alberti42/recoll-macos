@@ -30,12 +30,10 @@ SOURCES += \
 ../../common/textsplitko.cpp \
 ../../common/unacpp.cpp \
 ../../common/utf8fn.cpp \
-../../index/webqueue.cpp \
 ../../index/webqueuefetcher.cpp \
 ../../index/fetcher.cpp \
 ../../index/exefetcher.cpp \
 ../../index/fsfetcher.cpp \
-../../index/fsindexer.cpp \
 ../../index/idxdiags.cpp \
 ../../index/idxstatus.cpp \
 ../../index/indexer.cpp \

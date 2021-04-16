@@ -9,12 +9,16 @@ TEMPLATE = app
 DEFINES += BUILDING_RECOLL
 
 SOURCES += \
-../../index/recollindex.cpp \
 ../../index/checkindexed.cpp \
 ../../index/checkindexed.h \
 ../../index/checkretryfailed.cpp \
+../../index/fsindexer.cpp \
+../../index/fsindexer.h \
 ../../index/rclmonprc.cpp \
-../../index/rclmonrcv.cpp 
+../../index/rclmonrcv.cpp \
+../../index/recollindex.cpp \
+../../index/webqueue.cpp \
+../../index/webqueue.h
 
 INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
             ../../unac ../../utils ../../aspell ../../rcldb ../../qtgui \
