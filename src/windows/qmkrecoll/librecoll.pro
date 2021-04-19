@@ -178,7 +178,7 @@ mac {
     # This is necessary to avoid an undefined impl__xmlFree.
     # See comment in libxml/xmlexports.h
     DEFINES += LIBXML_STATIC
-    RECOLLDEPS = /Users/dockes/Recoll
+    RECOLLDEPS = ../../../../
     QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
     INCLUDEPATH += \
       $$RECOLLDEPS/xapian-core-1.4.18/include 
