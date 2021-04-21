@@ -269,7 +269,7 @@ static bool matchesSkipped(
     string topdir;
     for (;;) { // Used to test not root here, but root may be in topdirs !
 
-        for (const auto tdlent : tdl) {
+        for (const auto& tdlent : tdl) {
             // the topdirs members are already canonized.
             LOGDEB1("matchesSkipped: comparing ancestor [" << mpath <<
                     "] to topdir [" << tdlent << "]\n");

@@ -66,7 +66,7 @@ string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
         std::vector<Rcl::Snippet> snippets;
         std::ostringstream str;
         if (query.makeDocAbstract(doc, snippets, snipcount, -1, true)) {
-            for (const auto snippet : snippets) {
+            for (const auto& snippet : snippets) {
                 str << snippet.page << " : " << snippet.snippet << endl;
             }
         }
@@ -467,7 +467,7 @@ endopts:
                 << doc.fbytes << "\tbytes" << "\t"
                 <<  endl;
             if (op_flags & OPT_m) {
-                for (const auto ent : doc.meta) {
+                for (const auto& ent : doc.meta) {
                     cout << ent.first << " = " << ent.second << endl;
                 }
             }
