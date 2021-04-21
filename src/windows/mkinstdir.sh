@@ -73,7 +73,8 @@ RCLIDX=$RCLW/build-recollindex-${QTA}/${qtsdir}/recollindex.exe
 RCLQ=$RCLW/build-recollq-${QTA}/${qtsdir}/recollq.exe
 RCLS=$RCLW/build-rclstartw-${QTA}/${qtsdir}/rclstartw.exe
     
-PYTHON=${RCLDEPS}py-python3
+#PYTHON=${RCLDEPS}py-python3
+PYTHON=${RCLDEPS}python-3.7.9-embed-win32
 UNRTF=${RCLDEPS}unrtf
 ANTIWORD=${RCLDEPS}antiword
 PYXSLT=${RCLDEPS}pyxslt
@@ -138,6 +139,9 @@ copyqt()
     fi
 }
 
+# Note that pychm and pyhwp are pre-copied into the py-python3 python
+# distribution directory. The latter also needs olefile and six (also
+# copied to the python tree
 copypython()
 {
     set -x
@@ -217,6 +221,7 @@ copymutagen()
     chkcp $MUTAGEN/build/lib/mutagen/mp3.py $FILTERS/mutagen
 }
 
+# Not used any more, the epub python code is bundled with recoll
 copyepub()
 {
     cp -rp $EPUB/build/lib/epub $FILTERS
@@ -235,12 +240,14 @@ copyfuture()
     chkcp $FUTURE/future/builtins/newsuper.pyc $FILTERS/future/builtins
 }
 
+# Replaced by mutagen
 copypyexiv2()
 {
     cp -rp $PYEXIV2/pyexiv2 $FILTERS
     chkcp $PYEXIV2/libexiv2python.pyd $FILTERS/
 }
 
+# Replaced by lxml for python3
 copypyxslt()
 {
     chkcp $PYXSLT/libxslt.py $FILTERS/
@@ -319,11 +326,17 @@ copyaspell()
 copypyrecoll()
 {
     if test $BUILD = MSVC ; then
-        PYRCLWHEEL=${PYRECOLL}/dist/Recoll-${VERSION}-cp37-cp37m-win32.whl
         DEST=${DESTDIR}/Share/dist
         test -d $DEST || mkdir $DEST || fatal cant create $DEST
         rm -f ${DEST}/*
-        chkcp ${PYRCLWHEEL} $DEST
+        for v in 37;do
+            PYRCLWHEEL=${PYRECOLL}/dist/Recoll-${VERSION}-cp${v}-cp${v}m-win32.whl
+            chkcp ${PYRCLWHEEL} $DEST
+        done
+        for v in 38 39;do
+            PYRCLWHEEL=${PYRECOLL}/dist/Recoll-${VERSION}-cp${v}-cp${v}-win32.whl
+            chkcp ${PYRCLWHEEL} $DEST
+        done
     fi
 }
 
@@ -349,21 +362,11 @@ copyrecoll
 copypyrecoll
 copyqt
 copyaspell
-copypyxslt
 copypoppler
 copyantiword
 copyunrtf
-# Copied into python3 and installed with it
-#copyfuture
 copymutagen
-# Switched to perl for lack of python3 version
-#copypyexiv2
 copywpd
-# Chm is now copied into the python tree, which is installed by copypython
-#copychm
 copypff
 
-# Note that pychm and pyhwp are pre-copied into the py-python3 python
-# distribution directory. The latter also needs olefile and six (also
-# copied)
 copypython
