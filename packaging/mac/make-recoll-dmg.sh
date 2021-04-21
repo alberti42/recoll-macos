@@ -10,12 +10,19 @@ usage()
     fatal make-recoll-dmg.sh
 }
 
-deploy=~/Qt/5.14.2/clang_64/bin/macdeployqt
-
+# Adjustable things
 top=~/Recoll
+qtversion=5.14.2
+# Will probably need adjustment on M1
+path_clang=clang_64
+deploy=~/Qt/${qtversion}/${path_clang}/bin/macdeployqt
+
+
+qt_ver_sion=`echo $qtversion | sed -e 's/\./_/g'`
+
 toprecoll=$top/recoll/src
-appdir=$toprecoll/build-recoll-win-Desktop_Qt_5_14_2_clang_64bit-Release/recoll.app
-rclindexdir=$toprecoll/windows/build-recollindex-Desktop_Qt_5_14_2_clang_64bit-Release
+appdir=$toprecoll/build-recoll-win-Desktop_Qt_${qt_ver_sion}_${path_clang}bit-Release/recoll.app
+rclindexdir=$toprecoll/windows/build-recollindex-Desktop_Qt_${qt_ver_sion}_${path_clang}bit-Release
 bindir=$appdir/Contents/MacOS
 datadir=$appdir/Contents/Resources
 
@@ -37,8 +44,7 @@ rm -f $dmg ~/Documents/recoll-$version-*.dmg
 $deploy $appdir -dmg || exit 1
 
 
-
-hash=`(cd recoll;git log -n 1  | head -1  | awk '{print $2}' |cut -b 1-8)`
+hash=`(cd $top/recoll;git log -n 1  | head -1  | awk '{print $2}' |cut -b 1-8)`
 
 mv $dmg ~/Documents/recoll-$version-$hash.dmg || exit 1
 ls -l ~/Documents/recoll-$version-*.dmg
