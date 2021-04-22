@@ -1570,8 +1570,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
             // There is no way in hell we could have an idea of the
             // charset here, so let's hope it's ascii or utf-8. We call
             // transcode to strip the bad chars and pray
-            if (transcode(path_getsimple(doc.ipath), utf8ipathlast,
-                          "UTF-8", "UTF-8")) {
+            if (transcode(path_getsimple(doc.ipath), utf8ipathlast, "UTF-8", "UTF-8")) {
                 splitter.text_to_words(utf8ipathlast);
             }
         }
@@ -1596,14 +1595,12 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
             splitter.curpos = 0;
             newdocument.add_posting(wrap_prefix(pathelt_prefix),
                                     splitter.basepos + splitter.curpos++);
-            for (vector<string>::iterator it = vpath.begin(); 
-                 it != vpath.end(); it++){
-                if (it->length() > 230) {
-                    // Just truncate it. May still be useful because
-                    // of wildcards
-                    *it = it->substr(0, 230);
+            for (auto& elt : vpath) {
+                if (elt.length() > 230) {
+                    // Just truncate it. May still be useful because of wildcards
+                    elt = elt.substr(0, 230);
                 }
-                newdocument.add_posting(wrap_prefix(pathelt_prefix) + *it, 
+                newdocument.add_posting(wrap_prefix(pathelt_prefix) + elt, 
                                         splitter.basepos + splitter.curpos++);
             }
             splitter.basepos += splitter.curpos + 100;
