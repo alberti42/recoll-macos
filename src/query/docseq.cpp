@@ -81,8 +81,7 @@ bool DocSource::buildStack()
         }
     } else {
         if (m_fspec.isNotNull()) {
-            m_seq = 
-                std::shared_ptr<DocSequence>(new DocSeqFiltered(m_config, m_seq, m_fspec));
+            m_seq = std::shared_ptr<DocSequence>(new DocSeqFiltered(m_config, m_seq, m_fspec));
         } 
     }
     

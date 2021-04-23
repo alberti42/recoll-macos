@@ -36,7 +36,7 @@ static bool filter(const DocSeqFiltSpec& fs, const Rcl::Doc *x)
         case DocSeqFiltSpec::DSFS_QLANG: {
             LOGDEB(" filter: QLANG [" << fs.values[i] << "]!!\n");
         }
-        break;
+            break;
         case DocSeqFiltSpec::DSFS_PASSALL:
             return true;
         }
@@ -74,7 +74,7 @@ bool DocSeqFiltered::setFiltSpec(const DocSeqFiltSpec &filtspec)
                 }
             }
         }
-        break;
+            break;
         default:
             break;
         }

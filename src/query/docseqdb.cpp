@@ -31,14 +31,7 @@ using std::list;
 DocSequenceDb::DocSequenceDb(std::shared_ptr<Rcl::Db> db,
                              std::shared_ptr<Rcl::Query> q, const string &t, 
                              std::shared_ptr<Rcl::SearchData> sdata) 
-    : DocSequence(t), m_db(db), m_q(q), m_sdata(sdata), m_fsdata(sdata),
-      m_rescnt(-1), 
-      m_queryBuildAbstract(true),
-      m_queryReplaceAbstract(false),
-      m_isFiltered(false),
-      m_isSorted(false),
-      m_needSetQuery(false),
-      m_lastSQStatus(true)
+    : DocSequence(t), m_db(db), m_q(q), m_sdata(sdata), m_fsdata(sdata)
 {
 }
 
@@ -161,8 +154,7 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
     std::unique_lock<std::mutex> locker(o_dblock);
     if (fs.isNotNull()) {
         // We build a search spec by adding a filtering layer to the base one.
-        m_fsdata = std::make_shared<Rcl::SearchData>(
-            Rcl::SCLT_AND, m_sdata->getStemLang());
+        m_fsdata = std::make_shared<Rcl::SearchData>(Rcl::SCLT_AND, m_sdata->getStemLang());
         Rcl::SearchDataClauseSub *cl = new Rcl::SearchDataClauseSub(m_sdata);
         m_fsdata->addClause(cl);
     
@@ -171,22 +163,19 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
             case DocSeqFiltSpec::DSFS_MIMETYPE:
                 m_fsdata->addFiletype(fs.values[i]);
                 break;
-            case DocSeqFiltSpec::DSFS_QLANG:
-            {
+            case DocSeqFiltSpec::DSFS_QLANG: {
                 if (!m_q)
                     break;
                     
                 string reason;
-                auto sd = wasaStringToRcl(m_q->whatDb()->getConf(),
-                                          m_sdata->getStemLang(),
-                                          fs.values[i], reason);
+                auto sd = wasaStringToRcl(
+                    m_q->whatDb()->getConf(), m_sdata->getStemLang(), fs.values[i], reason);
                 if (sd)  {
-                    Rcl::SearchDataClauseSub *cl1 = 
-                        new Rcl::SearchDataClauseSub(sd);
+                    Rcl::SearchDataClauseSub *cl1 = new Rcl::SearchDataClauseSub(sd);
                     m_fsdata->addClause(cl1);
                 }
             }
-            break;
+                break;
             default:
                 break;
             }
@@ -226,8 +215,7 @@ bool DocSequenceDb::setQuery()
     m_lastSQStatus = m_q->setQuery(m_fsdata);
     if (!m_lastSQStatus) {
         m_reason = m_q->getReason();
-        LOGERR("DocSequenceDb::setQuery: rclquery::setQuery failed: " <<
-               m_reason << "\n");
+        LOGERR("DocSequenceDb::setQuery: rclquery::setQuery failed: " << m_reason << "\n");
     }
     return m_lastSQStatus;
 }
@@ -241,4 +229,3 @@ bool DocSequenceDb::docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)
         return false;
     }
 }
-
