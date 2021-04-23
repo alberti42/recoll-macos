@@ -10,9 +10,6 @@
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
-/* Path to the aspell api include file */
-#define ASPELL_INCLUDE "../aspell/aspell-local.h"
-
 /* Path to the aspell program */
 #define ASPELL_PROG "/opt/local/bin/aspell"
 

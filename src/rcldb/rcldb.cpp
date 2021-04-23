@@ -1453,14 +1453,11 @@ bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
             return false;
         }
 
-        list<string> asuggs;
         string reason;
-        if (!m_aspell->suggest(*this, term, asuggs, reason)) {
-            LOGERR("Db::getSpellingSuggestions: aspell failed: " << reason <<
-                   "\n");
+        if (!m_aspell->suggest(*this, term, suggs, reason)) {
+            LOGERR("Db::getSpellingSuggestions: aspell failed: " << reason << "\n");
             return false;
         }
-        suggs = vector<string>(asuggs.begin(), asuggs.end());
 #endif
     } else {
 #ifdef TESTING_XAPIAN_SPELL

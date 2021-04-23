@@ -4,9 +4,6 @@
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
-/* Path to the aspell api include file */
-#define ASPELL_INCLUDE "aspell-local.h"
-
 /* Aspell program parameter to findFilter(). */
 #define ASPELL_PROG "aspell-installed/mingw32/bin/aspell"
 

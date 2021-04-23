@@ -58,7 +58,6 @@ librcldir = $(libdir)/recoll
 librcl_LTLIBRARIES = librecoll.la
 
 librecoll_la_SOURCES = \
-aspell/aspell-local.h \
 aspell/rclaspell.cpp \
 aspell/rclaspell.h \
 bincimapmime/convert.cc \

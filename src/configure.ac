@@ -114,20 +114,8 @@ if test X$withAspell != Xno ; then
    if test X$aspellProg != X ; then
       aspellBase=`dirname $aspellProg`
       aspellBase=`dirname $aspellBase`
-      AC_DEFINE_UNQUOTED(ASPELL_PROG, "$aspellProg",
-	[Path to the aspell program])
-      if test -f $aspellBase/include/aspell.h ; then	
-          AC_DEFINE_UNQUOTED(ASPELL_INCLUDE, "$aspellBase/include/aspell.h",
-	    [Path to the aspell api include file])
-      else
-	AC_MSG_NOTICE([aspell support enabled but aspell package not found. Compiling with internal aspell interface file])
-	 AC_DEFINE(ASPELL_INCLUDE, ["aspell-local.h"])
-      fi
-   else
-     # aspell support enabled but no aspell install yet
-	AC_MSG_NOTICE([aspell support enabled but aspell package not found. Compiling with internal aspell interface file])
-	AC_DEFINE(ASPELL_INCLUDE, ["aspell-local.h"])
-   fi
+      AC_DEFINE_UNQUOTED(ASPELL_PROG, "$aspellProg", [Path to the aspell program])
+   fi   
 fi
 
 if test -f /usr/include/sys/inotify.h -o -f /usr/include/linux/inotify.h; then
