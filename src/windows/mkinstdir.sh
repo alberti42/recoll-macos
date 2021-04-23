@@ -55,9 +55,7 @@ else
     export PATH
 fi
 
-# We use the mingw-compiled aspell program in both cases. When
-# compiling with msvc, we copy the msvc dll to the recoll top dir (and
-# don't use the exec, we keep the already tested mingw one).
+# We use the mingw-compiled aspell program in both cases, it's only executed as a command
 ASPELL=${RCLDEPS}/mingw/aspell-0.60.7/aspell-installed
 
 # Where to find libgcc_s_dw2-1.dll et all for progs compiled with
@@ -316,9 +314,6 @@ copyaspell()
     chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DEST
     chkcp $MINGWBIN/libstdc++-6.dll $DEST
     chkcp $MINGWBIN/libwinpthread-1.dll $DEST
-    if test $BUILD = MSVC ; then
-        chkcp $RCLDEPS/mingw/build-libaspell-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release/aspell.dll $DESTDIR/libaspell-15.dll
-    fi
 }
 
 # Recoll python package. Only when compiled with msvc as this is what

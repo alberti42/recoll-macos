@@ -250,8 +250,6 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
     return true;
 }
 
-static const unsigned int ldatadiroptsz = strlen("--local-data-dir=");
-
 bool Aspell::make_speller(string& reason)
 {
     if (!ok())
@@ -259,7 +257,7 @@ bool Aspell::make_speller(string& reason)
     if (m_data->m_speller.getChildPid() > 0)
         return true;
 
-    // aspell --lang=[lang] --encoding=utf-8 --master=[dicPath()] --sug-mode=fast pipe
+    // aspell --lang=[lang] --encoding=utf-8 --master=[dicPath()] --sug-mode=fast --mode=none pipe
 
     string cmdstring(m_data->m_exec);
 
@@ -276,11 +274,6 @@ bool Aspell::make_speller(string& reason)
     args.push_back(string("--data-dir=") + m_data->m_datadir);
     cmdstring += string(" ") + args.back();
 #endif
-    if (m_data->m_addCreateParam.size() > ldatadiroptsz) {
-        args.push_back(
-            string("--local-data-dir=") + m_data->m_addCreateParam.substr(ldatadiroptsz));
-        cmdstring += string(" ") + args.back();
-    }
 
     if (!m_data->m_addCreateParam.empty()) {
         args.push_back(m_data->m_addCreateParam);
@@ -293,24 +286,21 @@ bool Aspell::make_speller(string& reason)
     args.push_back(string("--sug-mode=fast"));
     cmdstring += string(" ") + args.back();
 
+    args.push_back(string("--mode=none"));
+    cmdstring += string(" ") + args.back();
+
     args.push_back("pipe");
     cmdstring += string(" ") + args.back();
                    
-    // Keep stderr by default when querying?
-    bool keepStderr = true;
-    m_config->getConfParam("aspellKeepStderr", &keepStderr);
-    if (!keepStderr)
-        m_data->m_speller.setStderr("/dev/null");
-
     LOGDEB("Starting aspell command [" << cmdstring << "]\n");
     if (m_data->m_speller.startExec(m_data->m_exec, args, true, true) != 0) {
-        LOGERR("Can't start aspell\n");
+        reason += "Can't start aspell: " + cmdstring;
         return false;
     }
     // Read initial line from aspell: version etc.
     string line;
     if (m_data->m_speller.getline(line, 2) <= 0) {
-        LOGERR("rclaspell: failed reading initial aspell line. Command was " << cmdstring << "\n");
+        reason += "Aspell: failed reading initial line";
         m_data->m_speller.zapChild();
         return false;
     }

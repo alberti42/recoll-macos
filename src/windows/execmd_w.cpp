@@ -760,7 +760,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     if (!m->preparePipes(has_input, &hInputRead, has_output, 
                          &hOutputWrite, &hErrorWrite)) {
         LOGERR("ExecCmd::startExec: preparePipes failed\n");
-        return false;
+        return -1;
     }
 
     STARTUPINFOW siStartInfo;
@@ -820,7 +820,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     if (bSuccess) {
         cleaner.inactivate();
     }
-    return bSuccess;
+    return bSuccess ? 0 : -1;
 }
 
 // Send data to the child.
@@ -1009,6 +1009,29 @@ int ExecCmd::getline(string& data)
     }
     //??
     return -1;
+}
+
+class GetlineWatchdog : public ExecCmdAdvise {
+public:
+    GetlineWatchdog(int secs) : m_secs(secs), tstart(time(0)) {}
+    void newData(int) {
+        if (time(0) - tstart >= m_secs) {
+            throw std::runtime_error("getline timeout");
+        }
+    }
+    int m_secs;
+    time_t tstart;
+};
+
+int ExecCmd::getline(string& data, int timeosecs)
+{
+    GetlineWatchdog gwd(timeosecs);
+    setAdvise(&gwd);
+    try {
+        return getline(data);
+    } catch (...) {
+        return -1;
+    }
 }
 
 int ExecCmd::wait() 
