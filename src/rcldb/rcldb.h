@@ -151,6 +151,20 @@ inline string strip_prefix(const string& trm)
     return trm.substr(st);
 }
 
+inline string get_prefix(const string& trm)
+{
+    if (!has_prefix(trm))
+        return trm;
+    string::size_type st = 0;
+    if (o_index_stripchars) {
+        st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
+        return trm.substr(0, st);
+    } else {
+        st = trm.find_last_of(":") + 1;
+        return trm.substr(1, st-2);
+    }
+}
+
 inline string wrap_prefix(const string& pfx) 
 {
     if (o_index_stripchars) {

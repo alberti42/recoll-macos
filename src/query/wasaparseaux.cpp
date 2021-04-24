@@ -50,19 +50,6 @@ std::shared_ptr<SearchData> wasaStringToRcl(
     return sd;
 }
 
-WasaParserDriver::WasaParserDriver(const RclConfig *c, const std::string sl, 
-                                   const std::string& as)
-    : m_stemlang(sl), m_autosuffs(as), m_config(c),
-      m_index(0), m_result(0), m_haveDates(false), 
-      m_maxSize(-1), m_minSize(-1)
-{
-
-}
-
-WasaParserDriver::~WasaParserDriver()
-{
-}
-
 SearchData *WasaParserDriver::parse(const std::string& in)
 {
     m_input = in;
@@ -83,13 +70,11 @@ SearchData *WasaParserDriver::parse(const std::string& in)
         return m_result;
 
     // Set the top level filters (types, dates, size)
-    for (vector<string>::const_iterator it = m_filetypes.begin();
-         it != m_filetypes.end(); it++) {
-        m_result->addFiletype(*it);
+    for (const auto& ft : m_filetypes) {
+        m_result->addFiletype(ft);
     }
-    for (vector<string>::const_iterator it = m_nfiletypes.begin();
-         it != m_nfiletypes.end(); it++) {
-        m_result->remFiletype(*it);
+    for (const auto& ft : m_nfiletypes) {
+        m_result->remFiletype(ft);
     }
     if (m_haveDates) {
         m_result->setDateSpan(&m_dates);
@@ -100,6 +85,10 @@ SearchData *WasaParserDriver::parse(const std::string& in)
     if (m_maxSize != -1) {
         m_result->setMaxSize(m_maxSize);
     }
+    if (m_subSpec != Rcl::SearchData::SUBDOC_ANY) {
+        m_result->setSubSpec(m_subSpec);
+    }
+    
     //if (m_result)  m_result->dump(cout);
     return m_result;
 }
@@ -122,8 +111,7 @@ void WasaParserDriver::UNGETCHAR(int c)
 
 // Add clause to query, handling special pseudo-clauses for size/date
 // etc. (mostly determined on field name).
-bool WasaParserDriver::addClause(SearchData *sd, 
-                                 SearchDataClauseSimple* cl)
+bool WasaParserDriver::addClause(SearchData *sd, SearchDataClauseSimple* cl)
 {
     if (cl->getfield().empty()) {
         // Simple clause with empty field spec.
@@ -132,7 +120,7 @@ bool WasaParserDriver::addClause(SearchData *sd,
         if (!m_autosuffs.empty()) {
             vector<string> asfv;
             if (stringToStrings(m_autosuffs, asfv)) {
-                if (find_if(asfv.begin(), asfv.end(), 
+                if (find_if(asfv.begin(), asfv.end(),
                             StringIcmpPred(cl->gettext())) != asfv.end()) {
                     cl->setfield("ext");
                     cl->addModifier(SearchDataClause::SDCM_NOSTEMMING);
@@ -152,6 +140,13 @@ bool WasaParserDriver::addClause(SearchData *sd,
         } else {
             m_filetypes.push_back(cl->gettext());
         }
+        delete cl;
+        return false;
+    } 
+
+    // Filtering for standalone- or sub-documents
+    if (!fld.compare("issub")) {
+        m_subSpec = atoi(cl->gettext().c_str());
         delete cl;
         return false;
     } 
@@ -231,8 +226,7 @@ bool WasaParserDriver::addClause(SearchData *sd,
 
     if (!fld.compare("dir")) {
         // dir filtering special case
-        SearchDataClausePath *nclause = 
-            new SearchDataClausePath(cl->gettext(), cl->getexclude());
+        SearchDataClausePath *nclause = new SearchDataClausePath(cl->gettext(), cl->getexclude());
         delete cl;
         return sd->addClause(nclause);
     }
@@ -258,8 +252,7 @@ bool WasaParserDriver::addClause(SearchData *sd,
         }
 
         if (tp != SCLT_FILENAME) {
-            SearchDataClauseSimple *ncl = 
-                new SearchDataClauseSimple(tp, ns, ofld);
+            SearchDataClauseSimple *ncl = new SearchDataClauseSimple(tp, ns, ofld);
             delete cl;
             return sd->addClause(ncl);
         }

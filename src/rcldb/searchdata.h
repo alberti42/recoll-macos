@@ -114,6 +114,17 @@ public:
     void setMinSize(int64_t size) {m_minSize = size;}
     void setMaxSize(int64_t size) {m_maxSize = size;}
 
+    enum SubdocSpec {SUBDOC_ANY = -1, SUBDOC_NO = 0, SUBDOC_YES = 1};
+    void setSubSpec(int spec) {
+        switch (spec) {
+        case SUBDOC_ANY:
+        case SUBDOC_NO:
+        case SUBDOC_YES:
+            m_subspec = spec;
+        }
+    }
+    int getSubSpec() {return m_subspec;}
+    
     /** Set date span for filtering results */
     void setDateSpan(DateInterval *dip) {m_dates = *dip; m_haveDates = true;}
 
@@ -174,12 +185,14 @@ private:
     std::shared_ptr<SearchDataClauseDist>   m_autophrase;
 
     // Special stuff produced by input which looks like a clause but means
-    // something else (date and size specs)
+    // something else (date, size specs, etc.)
     bool           m_haveDates{false};
     DateInterval   m_dates; // Restrict to date interval
     int64_t        m_maxSize{-1};
     int64_t        m_minSize{-1};
-
+    // Filtering for subdocs: -1:any, 0: only free-standing, 1: only subdocs
+    int            m_subspec{SUBDOC_ANY};
+    
     // Printable expanded version of the complete query, retrieved/set
     // from rcldb after the Xapian::setQuery() call
     std::string m_description; 

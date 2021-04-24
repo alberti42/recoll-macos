@@ -139,13 +139,13 @@ public:
 private:
     std::string m_reason; // Error explanation
     Db    *m_db;
-    void  *m_sorter;
+    void  *m_sorter{nullptr};
     std::string m_sortField;
-    bool   m_sortAscending;
-    bool   m_collapseDuplicates;     
-    int    m_resCnt;
+    bool   m_sortAscending{true};
+    bool   m_collapseDuplicates{false};     
+    int    m_resCnt{-1};
     std::shared_ptr<SearchData> m_sd;
-    int    m_snipMaxPosWalk;
+    int    m_snipMaxPosWalk{1000000};
 };
 
 #ifndef NO_NAMESPACES

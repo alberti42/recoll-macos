@@ -152,8 +152,7 @@ private:
 };
 
 Query::Query(Db *db)
-    : m_nq(new Native(this)), m_db(db), m_sorter(0), m_sortAscending(true),
-      m_collapseDuplicates(false), m_resCnt(-1), m_snipMaxPosWalk(1000000)
+    : m_nq(new Native(this)), m_db(db)
 {
     if (db)
         db->getConf()->getConfParam("snippetMaxPosWalk", &m_snipMaxPosWalk);
@@ -179,6 +178,27 @@ void Query::setSortBy(const string& fld, bool ascending) {
             (m_sortAscending ? "ascending" : "descending") << "\n");
 }
 
+static const string parent_prefix{"F"};
+
+class SubdocDecider : public Xapian::MatchDecider {
+public:
+    SubdocDecider(bool sel) : MatchDecider(), m_select(sel) {}
+    virtual ~SubdocDecider() {}
+    
+    virtual bool operator()(const Xapian::Document &doc) const {
+        bool hasparent{false};
+        try {
+            Xapian::TermIterator xit = doc.termlist_begin();
+            xit.skip_to(wrap_prefix(parent_prefix));
+            hasparent = (xit != doc.termlist_end()) && (get_prefix(*xit) == parent_prefix);
+        } catch (...) {
+        }
+        return hasparent == m_select;
+    }
+
+    bool m_select;
+};
+    
 // Prepare query out of user search data
 bool Query::setQuery(std::shared_ptr<SearchData> sdata)
 {
@@ -199,8 +219,13 @@ bool Query::setQuery(std::shared_ptr<SearchData> sdata)
         m_reason += sdata->getReason();
         return false;
     }
-
     m_nq->xquery = xq;
+    
+    if (sdata->getSubSpec() == SearchData::SUBDOC_NO) {
+        m_nq->subdecider = new SubdocDecider(false);
+    } else if (sdata->getSubSpec() == SearchData::SUBDOC_YES) {
+        m_nq->subdecider = new SubdocDecider(true);
+    }
 
     string d;
     for (int tries = 0; tries < 2; tries++) {
@@ -361,7 +386,8 @@ int Query::getResCnt(int checkatleast, bool useestimate)
         Chrono chron;
         XAPTRY(if (checkatleast == -1)
                    checkatleast = m_db->docCnt();
-               m_nq->xmset = m_nq->xenquire->get_mset(0, qquantum, checkatleast),
+               m_nq->xmset = m_nq->xenquire->get_mset(
+                   0, qquantum, checkatleast, 0, m_nq->subdecider),
                m_db->m_ndb->xrdb, m_reason);
         if (!m_reason.empty()) {
             LOGERR("xenquire->get_mset: exception: " << m_reason << "\n");
@@ -401,10 +427,9 @@ bool Query::getDoc(int xapi, Doc &doc, bool fetchtext)
     if (!(xapi >= first && xapi <= last)) {
         LOGDEB("Fetching for first " << xapi << ", count " << qquantum << "\n");
 
-        XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(xapi, qquantum,  
-                                                      (const Xapian::RSet *)0),
+        XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(
+                   xapi, qquantum, nullptr, m_nq->subdecider),
                m_db->m_ndb->xrdb, m_reason);
-
         if (!m_reason.empty()) {
             LOGERR("enquire->get_mset: exception: " << m_reason << "\n");
             return false;

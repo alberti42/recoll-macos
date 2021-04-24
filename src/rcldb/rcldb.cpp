@@ -2557,7 +2557,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
             LOGERR("Db::getSubDocs: xapian error: " << m_reason << "\n");
             return false;
         }
-        if (xit == xdoc.termlist_end()) {
+        if (xit == xdoc.termlist_end() || get_prefix(*xit) != parent_prefix) {
             LOGERR("Db::getSubDocs: parent term not found\n");
             return false;
         }
@@ -2642,7 +2642,7 @@ bool Db::getContainerDoc(const Doc &idoc, Doc& ctdoc)
         LOGERR("Db::getContainerDoc: xapian error: " << m_reason << "\n");
         return false;
     }
-    if (xit == xdoc.termlist_end()) {
+    if (xit == xdoc.termlist_end() || get_prefix(*xit) != parent_prefix) {
         LOGERR("Db::getContainerDoc: parent term not found\n");
         return false;
     }
