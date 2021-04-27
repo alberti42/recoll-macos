@@ -23,6 +23,7 @@
 #include <string>
 
 #include <QSettings>
+#define LOGGER_LOCAL_LOGINC 2
 
 
 #include "recoll.h"
@@ -58,7 +59,7 @@ SCBase::SCBase()
         auto ssc = qs2utf8s(sl.at(i));
         std::vector<std::string> co_des_val;
         stringToStrings(ssc, co_des_val);
-        if (co_des_val.size() != 3) {
+        if (co_des_val.size() != 4) {
             LOGERR("Bad shortcut def in prefs: [" << ssc << "]\n");
             continue;
         }
@@ -68,8 +69,7 @@ SCBase::SCBase()
         QString val = u8s2qs(co_des_val[3]);
         auto it = m->scvalues.find(id);
         if (it == m->scvalues.end()) {
-            m->scvalues[id] =
-                SCDef{id, ctxt, desc, QKeySequence(val), QKeySequence()};
+            m->scvalues[id] = SCDef{id, ctxt, desc, QKeySequence(val), QKeySequence()};
         } else {
             it->second.val = QKeySequence(val);
         }
