@@ -1,3 +1,17 @@
+recoll (1.31.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * GUI: modified shortcuts were not read from the preferences !
+  * Query language. Add support for "issub" pseudo field to select standalone
+    (issub:0) or embedded (issub:1) results.
+  * Aspell: execute the command to retrieve the suggestions instead of loading
+    the library. This will avoid an aspell error from crashing the whole
+    program.
+  * GUI: we didn't show the last snippet in "Show snippets"
+  * GUI: fix issue with Ctrl+0 in result table.
+  * Indexer: add "Flushing" state, which will explain pauses while indexing.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Apr 2021 10:15:00 +0100
+
 recoll (1.30.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * GUI: fix the table header background color for the dark mode on
