@@ -5513,6 +5513,13 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               Categories are OR'ed like MIME types above, and can
               be negated with <code class="literal">-</code>.</p>
             </li>
+            <li class="listitem">
+              <p><code class="literal">issub</code> for specifying
+              that only standalone (<code class=
+              "literal">issub:0</code>) or only embedded
+              (<code class="literal">issub:1</code>) documents
+              should be returned as results.</p>
+            </li>
           </ul>
         </div>
         <div class="note" style=
@@ -5520,10 +5527,11 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           <h3 class="title">Note</h3>
           <p><code class="literal">mime</code>, <code class=
           "literal">rclcat</code>, <code class=
-          "literal">size</code> and <code class=
-          "literal">date</code> criteria always affect the whole
-          query (they are applied as a final filter), even if set
-          with other terms inside a parenthese.</p>
+          "literal">size</code>, <code class="literal">issub</code>
+          and <code class="literal">date</code> criteria always
+          affect the whole query (they are applied as a final
+          filter), even if set with other terms inside a
+          parenthese.</p>
         </div>
         <div class="note" style=
         "margin-left: 0.5in; margin-right: 0.5in;">

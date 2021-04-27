@@ -4213,13 +4213,19 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <literal>-</literal>.</para>
         </listitem>
 
+        <listitem><para><literal>issub</literal>
+            for specifying that only standalone (<literal>issub:0</literal>) or
+            only embedded (<literal>issub:1</literal>) documents should be
+            returned as results.</para>
+        </listitem>
+
       </itemizedlist>
 
       <note><para>
-        <literal>mime</literal>, <literal>rclcat</literal>,
-        <literal>size</literal> and <literal>date</literal> criteria
-        always affect the whole query (they are applied as a final
-        filter), even if set with other terms inside a parenthese.</para>
+        <literal>mime</literal>, <literal>rclcat</literal>, <literal>size</literal>,
+        <literal>issub</literal> and <literal>date</literal> criteria always
+        affect the whole query (they are applied as a final filter), even if set
+        with other terms inside a parenthese.</para>
       </note>
 
       <note><para>
