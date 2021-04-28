@@ -134,19 +134,24 @@ inline bool has_prefix(const string& trm)
 
 inline string strip_prefix(const string& trm)
 {
-    if (trm.empty())
+    if (!has_prefix(trm))
         return trm;
     string::size_type st = 0;
     if (o_index_stripchars) {
         st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
-        if (st == string::npos)
-            return string();
-    } else {
-        if (has_prefix(trm)) {
-            st = trm.find_last_of(":") + 1;
-        } else {
-            return trm;
+#ifdef _WIN32
+        // We have a problem there because we forgot to lowercase the drive
+        // name. So if the found character is a colon consider the drive name as
+        // the first non capital even if it is uppercase
+        if (st != string::npos && st >= 2 && trm[st] == ':') {
+            st -= 1;
         }
+#endif
+    } else {
+        st = trm.find_first_of(":", 1) + 1;
+    }
+    if (st == string::npos) {
+        return string(); // ??
     }
     return trm.substr(st);
 }
@@ -154,13 +159,27 @@ inline string strip_prefix(const string& trm)
 inline string get_prefix(const string& trm)
 {
     if (!has_prefix(trm))
-        return trm;
+        return string();
     string::size_type st = 0;
     if (o_index_stripchars) {
         st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
+        if (st == string::npos) {
+            return string(); // ??
+        }
+#ifdef _WIN32
+        // We have a problem there because we forgot to lowercase the drive
+        // name. So if the found character is a colon consider the drive name as
+        // the first non capital even if it is uppercase
+        if (st >= 2 && trm[st] == ':') {
+            st -= 1;
+        }
+#endif
         return trm.substr(0, st);
     } else {
-        st = trm.find_last_of(":") + 1;
+        st = trm.find_first_of(":", 1) + 1;
+        if (st == string::npos) {
+            return string(); // ??
+        }
         return trm.substr(1, st-2);
     }
 }
