@@ -35,11 +35,11 @@ public:
     }
     virtual ~RecollFilter() {}
 
-    virtual void setConfig(RclConfig *config) {
+    virtual void setConfig(RclConfig *config) override {
         m_config = config;
     }
 
-    virtual bool set_property(Properties p, const std::string &v) {
+    virtual bool set_property(Properties p, const std::string &v) override {
         switch (p) {
         case DJF_UDI: 
             m_udi = v;
@@ -58,31 +58,26 @@ public:
     }
 
     // We don't use this for now
-    virtual bool set_document_uri(const std::string& mtype, 
-                                  const std::string &) {
+    virtual bool set_document_uri(const std::string& mtype, const std::string &) override {
         m_mimeType = mtype;
         return false;
     }
 
-    virtual bool set_document_file(const std::string& mtype, 
-                                   const std::string &file_path) {
+    virtual bool set_document_file(const std::string& mtype,const std::string &file_path) override {
         m_mimeType = mtype;
         return set_document_file_impl(mtype, file_path);
     }
 
-    virtual bool set_document_string(const std::string& mtype, 
-                                     const std::string &contents) {
+    virtual bool set_document_string(const std::string& mtype,const std::string &contents) override{
         m_mimeType = mtype;
         return set_document_string_impl(mtype, contents);
     }
     
-    virtual bool set_document_data(const std::string& mtype, 
-                                   const char *cp, size_t sz) 
-        {
-            return set_document_string(mtype, std::string(cp, sz));
-        }
+    virtual bool set_document_data(const std::string& mtype, const char *cp, size_t sz) override {
+        return set_document_string(mtype, std::string(cp, sz));
+    }
 
-    virtual void set_docsize(int64_t size) {
+    virtual void set_docsize(int64_t size) override {
         m_docsize = size;
     }
 
@@ -90,24 +85,24 @@ public:
         return m_docsize;
     }
 
-    virtual bool has_documents() const {
+    virtual bool has_documents() const override {
         return m_havedoc;
     }
 
     // Most doc types are single-doc
-    virtual bool skip_to_document(const std::string& s) {
+    virtual bool skip_to_document(const std::string& s) override {
         if (s.empty())
             return true;
         return false;
     }
 
-    virtual bool is_data_input_ok(DataInput input) const {
+    virtual bool is_data_input_ok(DataInput input) const override {
         if (input == DOCUMENT_FILE_NAME)
             return true;
         return false;
     }
 
-    virtual std::string get_error() const {
+    virtual std::string get_error() const override {
         return m_reason;
     }
 
