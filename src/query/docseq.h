@@ -253,21 +253,21 @@ public:
     DocSource(RclConfig *config, std::shared_ptr<DocSequence> iseq) 
         : DocSeqModifier(iseq), m_config(config)
         {}
-    virtual bool canFilter() {return true;}
-    virtual bool canSort() {return true;}
-    virtual bool setFiltSpec(const DocSeqFiltSpec &);
-    virtual bool setSortSpec(const DocSeqSortSpec &);
-    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) {
+    virtual bool canFilter() override {return true;}
+    virtual bool canSort() override {return true;}
+    virtual bool setFiltSpec(const DocSeqFiltSpec &) override;
+    virtual bool setSortSpec(const DocSeqSortSpec &) override;
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) override {
         if (!m_seq)
             return false;
         return m_seq->getDoc(num, doc, sh);
     }
-    virtual int getResCnt() {
+    virtual int getResCnt() override {
         if (!m_seq)
             return 0;
         return m_seq->getResCnt();
     }
-    virtual std::string title();
+    virtual std::string title() override;
 private:
     bool buildStack();
     void stripStack();
