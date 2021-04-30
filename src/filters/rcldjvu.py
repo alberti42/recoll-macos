@@ -39,7 +39,7 @@ class DJVUExtractor(RclBaseHandler):
 
     def html_text(self, fn):
         self.em.setmimetype('text/html')
-
+        fn = rclexecm.subprocfile(fn)
         # Extract metadata
         metadata = b""
         if self.djvused:
