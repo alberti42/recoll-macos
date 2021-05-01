@@ -85,6 +85,7 @@ xapian
 xslt
 xml2
 KF5::KIOCore
+X11
 dl
 z
 pthread
