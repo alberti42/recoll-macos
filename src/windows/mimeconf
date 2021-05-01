@@ -166,6 +166,7 @@ image/jpeg = execm rclimg.exe
 image/png = execm rclimg.exe
 image/svg+xml = internal xsltproc svg.xsl
 image/tiff = execm rclimg.exe
+image/vnd.djvu = execm python rcldjvu.py
 inode/symlink = internal
 inode/x-empty = internal application/x-zerosize
 message/rfc822 = internal
