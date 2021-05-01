@@ -1,25 +1,13 @@
 #!/usr/bin/env python3
-"""Extract Html files from a Microsoft Compiled Html Help file (.chm)
-Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
-
-from __future__ import print_function
-
-rclchm_html_mtype = "text/html"
+"""Extract Html files from a Microsoft Compiled Html Help file (.chm)"""
 
 import sys
 import os
 import re
 import posixpath
-PY3 = sys.version > '3'
-if PY3:
-    from urllib.parse import unquote as urllib_unquote
-    from urllib.parse import urlparse as urlparse_urlparse
-    from html.parser import HTMLParser
-else:
-    from urlparse import urlparse as urlparse_urlparse
-    from urllib import unquote as urllib_unquote
-    from HTMLParser import HTMLParser
-
+from urllib.parse import unquote as urllib_unquote
+from urllib.parse import urlparse as urlparse_urlparse
+from html.parser import HTMLParser
 import subprocess
 
 import rclconfig
@@ -40,6 +28,9 @@ except:
         print("RECFILTERROR HELPERNOTFOUND python3:chm")
         sys.exit(1);
 
+def _deb(s):
+    print("%s"%s, file=sys.stderr)
+    
 # Small helper routines
 def getfile(chmfile, path):
     """Extract internal file text from chm object, given path"""
@@ -47,11 +38,11 @@ def getfile(chmfile, path):
         raise Exception("Chm:getfile: must be called with path as bytes")
     res, ui = chmfile.ResolveObject(path)
     if res != chmlib.CHM_RESOLVE_SUCCESS:
-        #print("ResolveObject failed: %s" % path, file=sys.stderr)
+        #_deb("ResolveObject failed: %s" % path)
         return ""
     res, doc = chmfile.RetrieveObject(ui)
     if not res:
-        print("RetrieveObject failed: %s" % path, file=sys.stderr)
+        _deb("RetrieveObject failed: %s" % path)
         return ""
     return doc
 
@@ -180,15 +171,13 @@ class ChmWalker(HTMLParser):
                 path = ""
 
         if path:
-            #print "got path", path, "me", self.path, "dir", self.dir
             bpath = path.encode(self.rclchm.charset)
             if path[0] == "/"[0]:
                 npath = posixpath.normpath(bpath)
             else:
                 npath = posixpath.normpath(posixpath.join(self.dir, bpath))
             if not npath in self.contents:
-                #print("Going into [%s] paths [%s]\n" %
-                #(npath,str(self.contents)))
+                #_deb("Going into [%s] paths [%s]\n" % (npath,str(self.contents)))
                 text = getfile(self.chm, npath)
                 if text:
                     try:
@@ -197,7 +186,8 @@ class ChmWalker(HTMLParser):
                         newwalker.feed(t)
                     except:
                         pass
-        
+
+
 class rclCHM:
     """RclExecM slave worker for extracting all files from an Msoft chm
     file. We first extract the list of internal nodes, and them return them
@@ -210,16 +200,17 @@ class rclCHM:
         cf = rclconfig.RclConfig()
         self.catenate = cf.getConfParam("chmcatenate")
         self.catenate = int(self.catenate) if self.catenate else False
-        if self.catenate:
-            self.em.setmimetype("text/plain")
-        else:
-            self.em.setmimetype(rclchm_html_mtype)
+        self.em.setmimetype("text/html")
         expr = b'''(<meta *http-equiv *= *"content-type".*charset *= *)((us-)?ascii)( *" *>)'''
         self.asciito1252re = re.compile(expr, re.IGNORECASE)
         expr = b'''<meta *http-equiv *= *"content-type".*charset *= *([a-z0-9-]+) *" *>'''
         self.findcharsetre = re.compile(expr, re.IGNORECASE)
+        self._headtagre = re.compile(b'</head>',  re.IGNORECASE)
+        self._headerre = re.compile(b'(<head.*</head>)', re.IGNORECASE|re.DOTALL)
+        self._bodyre = re.compile(b'<body[^>]*>(.*)</body>', re.IGNORECASE|re.DOTALL)
 
-    def extractone(self, path):
+
+    def extractone(self, path, norclaptag=False):
         """Extract one path-named internal file from the chm file"""
 
         #self.em.rclog("extractone: [%s]" % (path,))
@@ -237,34 +228,45 @@ class rclCHM:
         res, doc = self.chm.RetrieveObject(ui)
         #self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
         if res > 0:
-            doc = re.sub(b'''</[hH][eE][aA][dD]''',
-                         b'''<meta name="rclaptg" content="chm"></head>''', doc)
-            self.em.setmimetype(rclchm_html_mtype)
+            if not norclaptag:
+                doc = self._headtagre.sub(b'''<meta name="rclaptg" content="chm"></head>''', doc)
             return (True, doc, path, iseof)
         return (False, "", path, iseof)
 
     def dumpall(self):
         alltxt=b""
+        first = True
         for pth in self.contents:
-            ret,doc,path,iseof = self.extractone(pth)
+            ret,doc,path,iseof = self.extractone(pth, norclaptag=True)
             if not ret:
                 continue
-            # Feed doc to lynx
-            process = subprocess.Popen(["lynx", "-stdin", "-dump", "-nolist",
-                                        "-display_charset=utf8",
-                                        "-force_html"], 
-                                       stdin=subprocess.PIPE,
-                                       stdout=subprocess.PIPE
-                                       )
-            txt,err = process.communicate(doc)
-            alltxt += txt
+            if first:
+                # Save a header
+                headmatch = self._headerre.search(doc)
+                if headmatch:
+                    header = headmatch[1]
+                    #_deb("HEADER [%s]" % header)
+                    #_deb("type(self.chm.title) %s" % type(self.chm.title))
+                    if type(self.chm.title) == type(""):
+                        title = self.chm.title.encode(self.charset)
+                    else:
+                        title = self.chm.title
+                    header = re.sub(b"<title.*</title>", b"<title>" + title + b"</title>",
+                                    doc, re.IGNORECASE|re.DOTALL)
+                    first = False
+                    alltxt += header + b"<body>"
+            body = self._bodyre.search(doc)
+            if body:
+                body = body[1]
+                #_deb("BODY [%s]" % body[0:200])
+                alltxt += body
+        alltxt += b"</body></html>"
         return alltxt
 
     def fixencoding(self, text):
         """Fix encoding for supposedly html document. We do 2 things here:
-            - Change any 'ASCII' charset decl to windows-1252 because windows
-              people can't learn and we have to cope.
-            - Decode the string to unicode if it's originally an str because
+            - Change any 'ASCII' charset decl to windows-1252
+            - Decode the string if it's originally bytes because
               that's what Python HTMLParser actually expects even if it does not
               really say so. See http://bugs.python.org/issue3932.
         """
@@ -330,9 +332,15 @@ class rclCHM:
             walker.feed(text)
             walker.close()
 
-        #self.em.rclog("Contents size %d" % len(self.contents))
-        uniq = set(self.contents)
-        self.contents = list(uniq)
+        # Eliminate duplicates but keep order (can't directly use set)
+        u = set()
+        ct = []
+        for t in self.contents:
+            if t not in u:
+                ct.append(t)
+                u.add(t)
+        self.contents = ct
+        #self.em.rclog("Contents size %d contents %s" % (len(self.contents), self.contents))
         return True
     
     def getipath(self, params):
@@ -340,7 +348,6 @@ class rclCHM:
         
     def getnext(self, params):
         if self.catenate:
-            self.em.setmimetype("text/plain")
             alltxt = self.dumpall()
             self.closefile()
             if alltxt:
