@@ -380,19 +380,19 @@
     </message>
     <message>
         <source> (by default, aspell suggests mispellings when a query has no results).</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Page recycle interval</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1017,11 +1017,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Copy &amp;File Path</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイル Pathをコピー( &amp;F)</translation>
     </message>
     <message>
         <source>Copy File Name</source>
-        <translation type="unfinished"></translation>
+        <translation>コピー ファイル名</translation>
     </message>
 </context>
 <context>
@@ -1892,19 +1892,19 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Increase results text font size</source>
-        <translation type="unfinished"></translation>
+        <translation>結果のテキストフォントサイズを大きくする</translation>
     </message>
     <message>
         <source>Increase Font Size</source>
-        <translation type="unfinished"></translation>
+        <translation>フォントサイズを大きくする</translation>
     </message>
     <message>
         <source>Decrease results text font size</source>
-        <translation type="unfinished"></translation>
+        <translation>結果のテキストフォントサイズを小さくする</translation>
     </message>
     <message>
         <source>Decrease Font Size</source>
-        <translation type="unfinished"></translation>
+        <translation>フォントサイズを小さくする</translation>
     </message>
 </context>
 <context>
@@ -2125,7 +2125,7 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>%1 bytes copied to clipboard</source>
-        <translation type="unfinished">%1 bytes をクリップボードにコピーしました</translation>
+        <translation>%1 bytes をクリップボードにコピーしました</translation>
     </message>
 </context>
 <context>
@@ -2507,11 +2507,11 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
-        <translation type="unfinished"></translation>
+        <translation>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</translation>
     </message>
     <message>
         <source>Diagnostics file</source>
-        <translation type="unfinished"></translation>
+        <translation>Diagnostics file</translation>
     </message>
 </context>
 <context>
@@ -2861,11 +2861,11 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Save to File</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイルに保存</translation>
     </message>
     <message>
         <source>File creation failed: </source>
-        <translation type="unfinished"></translation>
+        <translation>ファイル保存に失敗: </translation>
     </message>
 </context>
 <context>
@@ -2880,11 +2880,11 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished">日付</translation>
+        <translation>日付</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>サイズ</translation>
     </message>
 </context>
 <context>
@@ -3367,27 +3367,27 @@ The default value is 2 (percent). </translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
-        <translation type="unfinished"></translation>
+        <translation>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</translation>
     </message>
     <message>
         <source>Result Table</source>
-        <translation type="unfinished">結果テープル</translation>
+        <translation>結果テープル</translation>
     </message>
     <message>
         <source>To display document text instead of metadata in result table detail area, use:</source>
-        <translation type="unfinished"></translation>
+        <translation>To display document text instead of metadata in result table detail area, use:</translation>
     </message>
     <message>
         <source>left mouse click</source>
-        <translation type="unfinished"></translation>
+        <translation>left mouse click</translation>
     </message>
     <message>
         <source>Shift+click</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift+click</translation>
     </message>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
-        <translation type="unfinished"></translation>
+        <translation>Do not display metadata when hovering over rows.</translation>
     </message>
 </context>
 </TS>
