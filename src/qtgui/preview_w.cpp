@@ -537,7 +537,9 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     QString title;
     string ctitle;
     if (doc.getmeta(Rcl::Doc::keytt, &ctitle) && !ctitle.empty()) {
-        title = QString::fromUtf8(ctitle.c_str(), ctitle.length());
+        title = u8s2qs(ctitle);
+    } else if (doc.getmeta(Rcl::Doc::keyfn, &ctitle) && !ctitle.empty()) {
+        title = u8s2qs(ctitle);
     } else {
         title = path2qs(path_getsimple(doc.url));
     }
