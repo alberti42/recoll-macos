@@ -799,7 +799,7 @@ bool RclConfig::getMimeCategories(vector<string>& cats) const
     return true;
 }
 
-bool RclConfig::isMimeCategory(string& cat) const
+bool RclConfig::isMimeCategory(const string& cat) const
 {
     vector<string>cats;
     getMimeCategories(cats);

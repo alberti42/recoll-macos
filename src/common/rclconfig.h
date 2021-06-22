@@ -274,7 +274,7 @@ public:
     /** mimeconf: get list of file categories */
     bool getMimeCategories(vector<string>&) const;
     /** mimeconf: is parameter one of the categories ? */
-    bool isMimeCategory(string&) const;
+    bool isMimeCategory(const string&) const;
     /** mimeconf: get list of mime types for category */
     bool getMimeCatTypes(const string& cat, vector<string>&) const;
 

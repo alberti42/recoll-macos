@@ -1,4 +1,4 @@
-/* Copyright (C) 2006-2019 J.F.Dockes
+/* Copyright (C) 2006-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -66,23 +66,23 @@ bool SearchData::expandFileTypes(Db &db, vector<string>& tps)
     }
     vector<string> exptps;
 
-    for (vector<string>::iterator it = tps.begin(); it != tps.end(); it++) {
-        if (cfg->isMimeCategory(*it)) {
-            vector<string>tps;
-            cfg->getMimeCatTypes(*it, tps);
-            exptps.insert(exptps.end(), tps.begin(), tps.end());
+    for (const auto& mtype : tps) {
+        if (cfg->isMimeCategory(mtype)) {
+            vector<string> ctps;
+            cfg->getMimeCatTypes(mtype, ctps);
+            exptps.insert(exptps.end(), ctps.begin(), ctps.end());
         } else {
             TermMatchResult res;
-            string mt = stringtolower((const string&)*it);
+            string mt = stringtolower(mtype);
+            // Expand possible wildcard in mime type, e.g. text/*
             // We set casesens|diacsens to get an equivalent of ixTermMatch()
-            db.termMatch(Db::ET_WILD|Db::ET_CASESENS|Db::ET_DIACSENS, string(),
-                         mt, res, -1, "mtype");
+            db.termMatch(
+                Db::ET_WILD|Db::ET_CASESENS|Db::ET_DIACSENS, string(), mt, res, -1, "mtype");
             if (res.entries.empty()) {
-                exptps.push_back(it->c_str());
+                exptps.push_back(mtype);
             } else {
-                for (vector<TermMatchEntry>::const_iterator rit = 
-                         res.entries.begin(); rit != res.entries.end(); rit++) {
-                    exptps.push_back(strip_prefix(rit->term));
+                for (const auto& entry : res.entries) {
+                    exptps.push_back(strip_prefix(entry.term));
                 }
             }
         }
@@ -95,18 +95,14 @@ bool SearchData::expandFileTypes(Db &db, vector<string>& tps)
 }
 
 static const char *maxXapClauseMsg = 
-    "Maximum Xapian query size exceeded. Increase maxXapianClauses "
-    "in the configuration. ";
+    "Maximum Xapian query size exceeded. Increase maxXapianClauses in the configuration. ";
 static const char *maxXapClauseCaseDiacMsg = 
-    "Or try to use case (C) or diacritics (D) sensitivity qualifiers, or less "
-    "wildcards ?"
-    ;
+    "Or try to use case (C) or diacritics (D) sensitivity qualifiers, or less wildcards ?";
 
 
 // Walk the clauses list, translate each and add to top Xapian Query
-bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp, 
-                                vector<SearchDataClause*>& query, 
-                                string& reason, void *d)
+bool SearchData::clausesToQuery(
+    Rcl::Db &db, SClType tp, vector<SearchDataClause*>& query, string& reason, void *d)
 {
     Xapian::Query xq;
     for (auto& clausep : query) {
@@ -263,11 +259,10 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
         expandFileTypes(db, m_filetypes);
         
         Xapian::Query tq;
-        for (vector<string>::iterator it = m_filetypes.begin(); 
-             it != m_filetypes.end(); it++) {
-            string term = wrap_prefix(mimetype_prefix) + *it;
+        for (const auto& ft : m_filetypes) {
+            string term = wrap_prefix(mimetype_prefix) + ft;
             LOGDEB0("Adding file type term: [" << term << "]\n");
-            tq = tq.empty() ? Xapian::Query(term) : 
+            tq = tq.empty() ? Xapian::Query(term) :
                 Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
         }
         xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_FILTER, xq, tq);
@@ -278,9 +273,8 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
         expandFileTypes(db, m_nfiletypes);
         
         Xapian::Query tq;
-        for (vector<string>::iterator it = m_nfiletypes.begin(); 
-             it != m_nfiletypes.end(); it++) {
-            string term = wrap_prefix(mimetype_prefix) + *it;
+        for (const auto& ft : m_nfiletypes) {
+            string term = wrap_prefix(mimetype_prefix) + ft;
             LOGDEB0("Adding negative file type term: [" << term << "]\n");
             tq = tq.empty() ? Xapian::Query(term) : 
                 Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
@@ -346,10 +340,9 @@ public:
     }
 
     bool flush() {
-        for (map<int, string>::const_iterator it = m_terms.begin();
-             it != m_terms.end(); it++) {
-            m_vterms.push_back(it->second);
-            m_vnostemexps.push_back(m_nste[it->first]);
+        for (const auto& entry : m_terms) {
+            m_vterms.push_back(entry.second);
+            m_vnostemexps.push_back(m_nste[entry.first]);
         }
         return true;
     }
@@ -544,8 +537,8 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 
 static void prefix_vector(vector<string>& v, const string& prefix)
 {
-    for (vector<string>::iterator it = v.begin(); it != v.end(); it++) {
-        *it = prefix + *it;
+    for (auto& elt : v) {
+        elt = prefix + elt;
     }
 }
 
@@ -624,17 +617,14 @@ void SearchDataClauseSimple::processSimpleSpan(
 // queries if the terms get expanded by stemming or wildcards (we
 // don't do stemming for PHRASE though)
 void SearchDataClauseSimple::processPhraseOrNear(
-    Rcl::Db &db, string& ermsg, TermProcQ *splitData, int mods, void *pq,
-    bool useNear, int slack)
+    Rcl::Db &db, string& ermsg, TermProcQ *splitData, int mods, void *pq, bool useNear, int slack)
 {
     vector<Xapian::Query> &pqueries(*(vector<Xapian::Query>*)pq);
-    Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
-        Xapian::Query::OP_PHRASE;
+    Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : Xapian::Query::OP_PHRASE;
     vector<Xapian::Query> orqueries;
     vector<vector<string> >groups;
 
-    bool useidxsynonyms =
-        db.getSynGroups().getpath() == db.getConf()->getIdxSynGroupsFile();
+    bool useidxsynonyms = db.getSynGroups().getpath() == db.getConf()->getIdxSynGroupsFile();
     
     string prefix;
     const FieldTraits *ftp;
@@ -648,12 +638,9 @@ void SearchDataClauseSimple::processPhraseOrNear(
 
     // Go through the list and perform stem/wildcard expansion for each element
     auto nxit = splitData->nostemexps().begin();
-    for (auto it = splitData->terms().begin();
-         it != splitData->terms().end(); it++, nxit++) {
+    for (auto it = splitData->terms().begin(); it != splitData->terms().end(); it++, nxit++) {
         LOGDEB0("ProcessPhrase: processing [" << *it << "]\n");
-        // Adjust when we do stem expansion. Not if disabled by
-        // caller, not inside phrases, and some versions of xapian
-        // will accept only one OR clause inside NEAR.
+        // Adjust when we do stem expansion. Not if disabled by caller, not inside phrases.
         bool nostemexp = *nxit || (op == Xapian::Query::OP_PHRASE);
         int lmods = mods;
         if (nostemexp)
@@ -681,8 +668,7 @@ void SearchDataClauseSimple::processPhraseOrNear(
             noprefs.push_back(prefterm.substr(prefix.size()));
         }
         groups.push_back(noprefs);
-        orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
-                                          exp.begin(), exp.end()));
+        orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, exp.begin(), exp.end()));
         m_curcl += exp.size();
         if (m_curcl >= getMaxCl())
             return;
@@ -696,11 +682,9 @@ void SearchDataClauseSimple::processPhraseOrNear(
     // For phrases, give a relevance boost like we do for original terms
     LOGDEB2("PHRASE/NEAR:  alltermcount " << splitData->alltermcount() <<
             " lastpos " << splitData->lastpos() << "\n");
-    Xapian::Query xq(op, orqueries.begin(), orqueries.end(),
-                     orqueries.size() + slack);
+    Xapian::Query xq(op, orqueries.begin(), orqueries.end(), orqueries.size() + slack);
     if (op == Xapian::Query::OP_PHRASE)
-        xq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, xq, 
-                           original_term_wqf_booster);
+        xq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, xq, original_term_wqf_booster);
     pqueries.push_back(xq);
 
     // Insert the search groups and slacks in the highlight data, with
@@ -735,7 +719,8 @@ static int stringToMods(string& s)
 }
 
 /** 
- * Turn user entry string (NOT query language) into a list of xapian queries.
+ * Turn user entry string (NOT raw query language, but possibly the contents of a phrase/near
+ * clause out of the parser) into a list of Xapian queries.
  * We just separate words and phrases, and do wildcard and stem expansion,
  *
  * This is used to process data entered into an OR/AND/NEAR/PHRASE field of
@@ -746,7 +731,7 @@ static int stringToMods(string& s)
  * terms/phrases should be performed in the upper layer so that we
  * only receive pure term or near/phrase pure elements here, but in
  * fact there are things that would appear like terms to naive code,
- * and which will actually may be turned into phrases (ie: tom:jerry),
+ * and which will actually may be turned into phrases (ie: tom-jerry),
  * in a manner which intimately depends on the index implementation,
  * so that it makes sense to process this here.
  *
@@ -758,9 +743,8 @@ static int stringToMods(string& s)
  * @return the subquery count (either or'd stem-expanded terms or phrase word
  *   count)
  */
-bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
-                                               string &ermsg, void *pq, 
-                                               int slack, bool useNear)
+bool SearchDataClauseSimple::processUserString(
+    Rcl::Db &db, const string &iq, string &ermsg, void *pq, int slack, bool useNear)
 {
     vector<Xapian::Query> &pqueries(*(vector<Xapian::Query>*)pq);
     int mods = m_modifiers;
@@ -776,7 +760,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
     //
     // The text splitter may further still decide that the resulting
     // "words" are really phrases, this depends on separators:
-    // [paul@dom.net] would still be a word (span), but [about:me]
+    // [paul@dom.net] would still be a word (span), but [about-me]
     // will probably be handled as a phrase.
     vector<string> phrases;
     TextSplit::stringToStrings(iq, phrases);
@@ -784,11 +768,10 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
     // Process each element: textsplit into terms, handle stem/wildcard 
     // expansion and transform into an appropriate Xapian::Query
     try {
-        for (vector<string>::iterator it = phrases.begin(); 
-             it != phrases.end(); it++) {
-            LOGDEB0("strToXapianQ: phrase/word: [" << *it << "]\n");
+        for (auto& wordorphrase : phrases) {
+            LOGDEB0("strToXapianQ: phrase/word: [" << wordorphrase << "]\n");
             // Anchoring modifiers
-            int amods = stringToMods(*it);
+            int amods = stringToMods(wordorphrase);
             int terminc = amods != 0 ? 1 : 0;
             mods |= amods;
             // If there are multiple spans in this element, including
@@ -820,7 +803,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
                                                  TextSplit::TXTS_KEEPWILD), 
                                 nxt);
             tpq.setTSQ(&splitter);
-            splitter.text_to_words(*it);
+            splitter.text_to_words(wordorphrase);
 
             slack += tpq.lastpos() - int(tpq.terms().size()) + 1;
 
@@ -835,16 +818,14 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
                 if (!m_exclude) {
                     m_hldata.ugroups.push_back(tpq.terms());
                 }
-                processSimpleSpan(db, ermsg, tpq.terms().front(),
-                                  lmods, &pqueries);
+                processSimpleSpan(db, ermsg, tpq.terms().front(), lmods, &pqueries);
             }
                 break;
             default:
                 if (!m_exclude) {
                     m_hldata.ugroups.push_back(tpq.terms());
                 }
-                processPhraseOrNear(db, ermsg, &tpq, mods, &pqueries,
-                                    useNear, slack);
+                processPhraseOrNear(db, ermsg, &tpq, mods, &pqueries, useNear, slack);
             }
             if (m_curcl >= getMaxCl()) {
                 ermsg = maxXapClauseMsg;
@@ -953,8 +934,7 @@ bool SearchDataClauseRange::toNativeQuery(Rcl::Db &db, void *p)
         return false;
     }
     if (ftp->valueslot == 0) {
-        m_reason = string("No value slot specified in configuration for field ")
-            + m_field;
+        m_reason = string("No value slot specified in configuration for field ") + m_field;
         return false;
     }
     LOGDEB("SearchDataClauseRange: value slot " << ftp->valueslot << endl);
@@ -975,8 +955,7 @@ bool SearchDataClauseRange::toNativeQuery(Rcl::Db &db, void *p)
     }
     XCATCHERROR(errstr);
     if (!errstr.empty()) {
-        LOGERR("SearchDataClauseRange: range query creation failed for slot "<<
-               ftp->valueslot << endl);
+        LOGERR("SearchDataClauseRange: range query creation failed for slot "<<ftp->valueslot<<"\n");
         m_reason = "Range query creation failed\n";
         *qp = Xapian::Query();
         return false;
@@ -1021,8 +1000,7 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 
     string ltext;
 #ifdef _WIN32
-    // Windows file names are case-insensitive, so we lowercase (same
-    // as when indexing)
+    // Windows file names are case-insensitive, so we lowercase (same as when indexing)
     unacmaybefold(m_text, ltext, "UTF-8", UNACOP_FOLD);
 #else
     ltext = m_text;
@@ -1044,13 +1022,11 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
     vector<string> vpath;
     stringToTokens(ltext, vpath, "/");
 
-    for (vector<string>::const_iterator pit = vpath.begin(); 
-         pit != vpath.end(); pit++){
-
+    for (const auto& pathelt : vpath) {
         string sterm;
         vector<string> exp;
-        if (!expandTerm(db, m_reason, SDCM_PATHELT,
-                        *pit, exp, sterm, wrap_prefix(pathelt_prefix))) {
+        if (!expandTerm(
+                db, m_reason, SDCM_PATHELT, pathelt, exp, sterm, wrap_prefix(pathelt_prefix))) {
             return false;
         }
         LOGDEB0("SDataPath::toNative: exp size " << exp.size() << ". Exp: " <<
@@ -1058,15 +1034,13 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
         if (exp.size() == 1)
             orqueries.push_back(Xapian::Query(exp[0]));
         else 
-            orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
-                                              exp.begin(), exp.end()));
+            orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, exp.begin(), exp.end()));
         m_curcl += exp.size();
         if (m_curcl >= getMaxCl())
             return false;
     }
 
-    *qp = Xapian::Query(Xapian::Query::OP_PHRASE, 
-                        orqueries.begin(), orqueries.end());
+    *qp = Xapian::Query(Xapian::Query::OP_PHRASE, orqueries.begin(), orqueries.end());
 
     if (m_weight != 1.0) {
         *qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);
@@ -1084,10 +1058,8 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
 
     vector<Xapian::Query> pqueries;
 
-    // We produce a single phrase out of the user entry then use
-    // stringToXapianQueries() to lowercase and simplify the phrase
-    // terms etc. This will result into a single (complex)
-    // Xapian::Query.
+    // We produce a single phrase out of the user entry then use processUserString() to lowercase
+    // and simplify the phrase terms etc. This will result into a single (complex) Xapian::Query.
     if (m_text.find('\"') != string::npos) {
         m_text = neutchars(m_text, "\"");
     }
@@ -1097,8 +1069,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
         return false;
     if (pqueries.empty()) {
         LOGERR("SearchDataClauseDist: resolved to null query\n");
-        m_reason = string("Resolved to null query. Term too long ? : [" + 
-                          m_text + string("]"));
+        m_reason = string("Resolved to null query. Term too long ? : [" +  m_text + string("]"));
         return false;
     }
 
