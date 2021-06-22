@@ -644,7 +644,6 @@ void SearchDataClauseSimple::processPhraseOrNear(
 
     if (mods & Rcl::SearchDataClause::SDCM_ANCHORSTART) {
         orqueries.push_back(Xapian::Query(prefix + start_of_field_term));
-        slack++;
     }
 
     // Go through the list and perform stem/wildcard expansion for each element
@@ -691,7 +690,6 @@ void SearchDataClauseSimple::processPhraseOrNear(
 
     if (mods & Rcl::SearchDataClause::SDCM_ANCHOREND) {
         orqueries.push_back(Xapian::Query(prefix + end_of_field_term));
-        slack++;
     }
 
     // Generate an appropriate PHRASE/NEAR query with adjusted slack
