@@ -96,9 +96,8 @@ test X"$toptmp" = X && fatal "empty toptmp??"
 test X"$toptmp" = X/ && fatal "toptmp == / ??"
 if test -d "$toptmp" ; then
    rm -rf $toptmp/*
-else
-    mkdir $toptmp || fatal cant create temp dir $toptmp
 fi
+mkdir -p $toptmp || fatal cant create temp dir $toptmp
 
 # Unset DISPLAY because xdg-mime may be affected by the desktop
 # environment on the X server
