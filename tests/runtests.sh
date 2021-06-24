@@ -23,9 +23,6 @@ rerootResults()
     cd $RECOLL_CONFDIR
     sed -i.bak \
   -e "s!/.*/testrecoll/!$RECOLL_TESTDATA/!g" \
-      recoll.conf
-    sed -i.bak \
-  -e "s!/.*/testrecoll/!$RECOLL_TESTDATA/!g" \
       mimemap
 
     cd $savedcd
