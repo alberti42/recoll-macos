@@ -357,6 +357,8 @@ doc/user/custom.xsl doc/user/usermanual.xml \
 filters/injectcommon.sh filters/recfiltcommon filters/rcltxtlines.py \
 \
 index/rclmon.sh \
+index/recollindex-system.service \
+index/recollindex-user.service \
 \
 kde/kioslave/kio_recoll/00README.txt \
 kde/kioslave/kio_recoll/CMakeLists.txt \
@@ -652,6 +654,8 @@ defconfdir = $(pkgdatadir)/examples
 defconf_DATA = \
 desktop/recollindex.desktop \
 index/rclmon.sh \
+index/recollindex-system.service \
+index/recollindex-user.service \
 sampleconf/fragbuts.xml \
 sampleconf/fields \
 sampleconf/recoll.conf \

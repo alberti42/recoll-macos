@@ -423,7 +423,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1453">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1465">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -2581,9 +2581,46 @@ metadatacmds = ; <em class=
             <div>
               <div>
                 <h3 class="title"><a name=
+                "RCL.INDEXING.MONITOR.START.SYSTEMD" id=
+                "RCL.INDEXING.MONITOR.START.SYSTEMD"></a>Automatic
+                daemon start with systemd</h3>
+              </div>
+            </div>
+          </div>
+          <p>The installation contains two example files (in
+          <code class="filename">share/recoll/examples</code>) for
+          starting the indexing daemon with <span class=
+          "application">systemd</span>.</p>
+          <p><code class="filename">recollindex-user.service</code>
+          would be used for starting <span class=
+          "command"><strong>recollindex</strong></span> as a user
+          service, and can be installed with the following
+          commands:</p>
+          <pre class=
+          "programlisting">systemctl --user link /usr/share/recoll/examples/recollindex-user.service
+systemctl --user enable --now recollindex-user.service</pre>
+          <p>The indexer will start when the user logs in and run
+          while there is a session open for them.</p>
+          <p><code class=
+          "filename">recollindex-system.service</code> would be
+          used for starting the indexer at boot time, running as a
+          specific user. It can be useful when running the text
+          search as a shared service (e.g. when users access it
+          through the WEB UI). You will need to edit it to replace
+          the @SOMEUSER@ value with something which makes sense in
+          your case, then install it as a regular <span class=
+          "application">systemd</span> system service. Of course,
+          if you want to run several such units, you will also need
+          to rename the installed file.</p>
+        </div>
+        <div class="simplesect">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name=
                 "RCL.INDEXING.MONITOR.START" id=
                 "RCL.INDEXING.MONITOR.START"></a>Automatic daemon
-                start</h3>
+                start from the desktop session</h3>
               </div>
             </div>
           </div>
@@ -4017,7 +4054,7 @@ fs.inotify.max_user_watches=32768
           given context (e.g. within a preview window, within the
           result table).</p>
           <div class="table">
-            <a name="idm1453" id="idm1453"></a>
+            <a name="idm1465" id="idm1465"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">

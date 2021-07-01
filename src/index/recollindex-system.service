@@ -1,0 +1,14 @@
+[Unit]
+Description=Recollindex indexing for @SOMEUSER@
+After=network-online.target
+RequiresMountsFor=/home/@SOMEUSER@
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=30
+ExecStart=/usr/bin/recollindex -m -D -x -w 10 -c /home/@SOMEUSER@/.recoll
+User=@SOMEUSER@
+
+[Install]
+WantedBy=multi-user.target
