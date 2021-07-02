@@ -423,7 +423,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1465">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1471">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -2591,27 +2591,37 @@ metadatacmds = ; <em class=
           <code class="filename">share/recoll/examples</code>) for
           starting the indexing daemon with <span class=
           "application">systemd</span>.</p>
-          <p><code class="filename">recollindex-user.service</code>
+          <p><code class="filename">recollindex.service</code>
           would be used for starting <span class=
           "command"><strong>recollindex</strong></span> as a user
-          service, and can be installed with the following
+          service. The indexer will start when the user logs in and
+          run while there is a session open for them.</p>
+          <p><code class="filename">recollindex@.service</code> is
+          a template service which would be used for starting the
+          indexer at boot time, running as a specific user. It can
+          be useful when running the text search as a shared
+          service (e.g. when users access it through the WEB
+          UI).</p>
+          <p>If configured to do so, the unit files should have
+          been installed in your system's default systemd paths
+          (usually <code class=
+          "filename">/usr/lib/systemd/system/</code> and
+          <code class="filename">/usr/lib/systemd/user/</code>). If
+          not, you may need to copy the files there before starting
+          the service.</p>
+          <p>With the unit files installed in the proper location,
+          the user unit can be started with the following
           commands:</p>
           <pre class=
-          "programlisting">systemctl --user link /usr/share/recoll/examples/recollindex-user.service
-systemctl --user enable --now recollindex-user.service</pre>
-          <p>The indexer will start when the user logs in and run
-          while there is a session open for them.</p>
-          <p><code class=
-          "filename">recollindex-system.service</code> would be
-          used for starting the indexer at boot time, running as a
-          specific user. It can be useful when running the text
-          search as a shared service (e.g. when users access it
-          through the WEB UI). You will need to edit it to replace
-          the @SOMEUSER@ value with something which makes sense in
-          your case, then install it as a regular <span class=
-          "application">systemd</span> system service. Of course,
-          if you want to run several such units, you will also need
-          to rename the installed file.</p>
+          "programlisting">systemctl --user daemon-reload
+systemctl --user enable --now recollindex.service</pre>
+          <p>The system unit file can be enabled for a particular
+          user by running, as root:</p>
+          <pre class="programlisting">systemctl daemon-reload
+systemctl enable --now recollindex@<code class=
+"varname">username</code>.service</pre>
+          <p>(A valid user name should be substituted for
+          <code class="varname">username</code>, of course.)</p>
         </div>
         <div class="simplesect">
           <div class="titlepage">
@@ -4054,7 +4064,7 @@ fs.inotify.max_user_watches=32768
           given context (e.g. within a preview window, within the
           result table).</p>
           <div class="table">
-            <a name="idm1465" id="idm1465"></a>
+            <a name="idm1471" id="idm1471"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -8381,6 +8391,23 @@ hasextract = False
                 the <span class="application">Python</span> or
                 <span class="application">PHP</span> extensions,
                 but might yield very marginally faster code.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="option">--without-systemd</code>
+                Disable the automatic installation of systemd unit
+                files. Normally unit files are installed if the
+                install path can be detected.</p>
+              </li>
+              <li class="listitem">
+                <p><code class=
+                "option">--with-system-unit-dir=DIR</code> Provide
+                an install path for the systemd system unit
+                template file.</p>
+              </li>
+              <li class="listitem">
+                <p><code class=
+                "option">--with-user-unit-dir=DIR</code> Provide an
+                install path for the systemd user unit file.</p>
               </li>
               <li class="listitem">
                 <p>Of course the usual <span class=
