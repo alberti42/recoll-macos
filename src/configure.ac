@@ -471,6 +471,46 @@ if test X$enableQT = Xyes ; then
   ##################### End QT stuff
 fi
 
+dnl Borrow a macro definition from pkg.config,
+dnl for older installs that lack it.
+m4_ifndef([PKG_CHECK_VAR], [
+dnl PKG_CHECK_VAR(VARIABLE, MODULE, CONFIG-VARIABLE,
+dnl [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+dnl -------------------------------------------
+dnl Retrieves the value of the pkg-config variable for the given module.
+AC_DEFUN([PKG_CHECK_VAR],
+[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+AC_ARG_VAR([$1], [value of $3 for $2, overriding pkg-config])dnl
+
+_PKG_CONFIG([$1], [variable="][$3]["], [$2])
+AS_VAR_COPY([$1], [pkg_cv_][$1])
+
+AS_VAR_IF([$1], [""], [$5], [$4])dnl
+])dnl PKG_CHECK_VAR
+])
+
+### Systemd
+AC_ARG_WITH([systemd],
+    AC_HELP_STRING([--without-systemd],
+        [Disable installation of the systemd unit files.]))
+AC_ARG_WITH([system-unit-dir],
+    AC_HELP_STRING([--with-system-unit-dir=DIR],
+        [Install location for systemd system unit files]),
+    [SYSTEMD_SYSTEM_UNIT_DIR="$withval"],
+    [PKG_CHECK_VAR([SYSTEMD_SYSTEM_UNIT_DIR], [systemd], [systemd_system_unit_dir])])
+AC_ARG_WITH([user-unit-dir],
+    AC_HELP_STRING([--with-user-unit-dir=DIR],
+        [Install location for systemd user unit files]),
+    [SYSTEMD_USER_UNIT_DIR="$withval"],
+    [PKG_CHECK_VAR([SYSTEMD_USER_UNIT_DIR], [systemd], [systemd_user_unit_dir])])
+
+if test "x$SYSTEMD_SYSTEM_UNIT_DIR" = "x" -o \
+        "x$SYSTEMD_USER_UNIT_DIR" = "x"; then
+    with_systemd = "no"
+fi
+
+AM_CONDITIONAL([INSTALL_SYSTEMD_UNITS], [test "X$with_systemd" != "Xno"])
+
 ### X11: this is needed for the session monitoring code (in recollindex -m)
 AC_ARG_ENABLE(x11mon, 
     AC_HELP_STRING([--disable-x11mon],
@@ -532,6 +572,8 @@ AC_SUBST(RCLVERSION)
 AC_SUBST(RCLLIBVERSION)
 AC_SUBST(XSLT_CFLAGS)
 AC_SUBST(XSLT_LIBS)
+AC_SUBST([SYSTEMD_SYSTEM_UNIT_DIR])
+AC_SUBST([SYSTEMD_USER_UNIT_DIR])
 
 AC_CONFIG_FILES([Makefile python/recoll/setup.py
  python/pychm/setup.py])
