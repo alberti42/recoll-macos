@@ -357,8 +357,8 @@ doc/user/custom.xsl doc/user/usermanual.xml \
 filters/injectcommon.sh filters/recfiltcommon filters/rcltxtlines.py \
 \
 index/rclmon.sh \
-index/recollindex-system.service \
-index/recollindex-user.service \
+index/recollindex@.service \
+index/recollindex.service \
 \
 kde/kioslave/kio_recoll/00README.txt \
 kde/kioslave/kio_recoll/CMakeLists.txt \
@@ -654,8 +654,8 @@ defconfdir = $(pkgdatadir)/examples
 defconf_DATA = \
 desktop/recollindex.desktop \
 index/rclmon.sh \
-index/recollindex-system.service \
-index/recollindex-user.service \
+index/recollindex@.service \
+index/recollindex.service \
 sampleconf/fragbuts.xml \
 sampleconf/fields \
 sampleconf/recoll.conf \
@@ -748,6 +748,13 @@ filters/xlsxmltocsv.py \
 filters/xml.xsl \
 python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py 
+
+if INSTALL_SYSTEMD_UNITS
+systemd_system_unitdir = @SYSTEMD_SYSTEM_UNIT_DIR@
+systemd_user_unitdir = @SYSTEMD_USER_UNIT_DIR@
+systemd_system_unit_DATA = index/recollindex@.service
+systemd_user_unit_DATA = index/recollindex.service
+endif
 
 install-data-hook: 
 	(cd $(DESTDIR)/$(filterdir); \
