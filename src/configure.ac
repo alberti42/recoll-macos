@@ -497,16 +497,16 @@ AC_ARG_WITH([system-unit-dir],
     AC_HELP_STRING([--with-system-unit-dir=DIR],
         [Install location for systemd system unit files]),
     [SYSTEMD_SYSTEM_UNIT_DIR="$withval"],
-    [PKG_CHECK_VAR([SYSTEMD_SYSTEM_UNIT_DIR], [systemd], [systemd_system_unit_dir])])
+    [PKG_CHECK_VAR([SYSTEMD_SYSTEM_UNIT_DIR], [systemd], [systemdsystemunitdir])])
 AC_ARG_WITH([user-unit-dir],
     AC_HELP_STRING([--with-user-unit-dir=DIR],
         [Install location for systemd user unit files]),
     [SYSTEMD_USER_UNIT_DIR="$withval"],
-    [PKG_CHECK_VAR([SYSTEMD_USER_UNIT_DIR], [systemd], [systemd_user_unit_dir])])
+    [PKG_CHECK_VAR([SYSTEMD_USER_UNIT_DIR], [systemd], [systemduserunitdir])])
 
 if test "x$SYSTEMD_SYSTEM_UNIT_DIR" = "x" -o \
         "x$SYSTEMD_USER_UNIT_DIR" = "x"; then
-    with_systemd = "no"
+    with_systemd="no"
 fi
 
 AM_CONDITIONAL([INSTALL_SYSTEMD_UNITS], [test "X$with_systemd" != "Xno"])
