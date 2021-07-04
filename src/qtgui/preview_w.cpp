@@ -61,6 +61,7 @@
 #include "preview_plaintorich.h"
 #include "rclmain_w.h"
 #include "scbase.h"
+#include "appformime.h"
 
 // Make an attempt at trimming wildcard exprs at both ends of string
 static void trimwildcards(string& elt)
@@ -945,18 +946,16 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         editor->displayFields();
 
     // If this is an image, display it instead of the text.
-    if (!idoc.mimetype.compare(0, 6, "image/")) {
+    if (mimeIsImage(idoc.mimetype)) {
         string fn = fileurltolocalpath(idoc.url);
         theconfig->setKeyDir(fn.empty() ? "" : path_getfather(fn));
 
-        // We want a real file, so if this comes from data or we have
-        // an ipath, create it.
+        // We want a real file, so if this comes from data or we have an ipath, create it.
         if (fn.empty() || !idoc.ipath.empty()) {
             TempFile temp = lthr.tmpimg;
             if (temp.ok()) {
                 LOGDEB1("Preview: load: got temp file from internfile\n");
-            } else if (!FileInterner::idocToFile(temp, string(), 
-                                                 theconfig, idoc)) {
+            } else if (!FileInterner::idocToFile(temp, string(), theconfig, idoc)) {
                 temp = TempFile(); // just in case.
             }
             if (temp.ok()) {
@@ -1137,10 +1136,8 @@ void PreviewTextEdit::displayImage()
         m_image.height() > height()) {
         m_image = m_image.scaled(width(), height(), Qt::KeepAspectRatio);
     }
-    document()->addResource(QTextDocument::ImageResource, QUrl("image"), 
-                            m_image);
-    QTextCursor cursor = textCursor();
-    cursor.insertImage("image");
+    document()->addResource(QTextDocument::ImageResource, QUrl("image"), m_image);
+    textCursor().insertImage("image");
     m_curdsp = PTE_DSPIMG;
 }
 

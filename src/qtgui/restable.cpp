@@ -147,9 +147,8 @@ void ResTableDetailArea::createPopupMenu(const QPoint& pos)
     if (m_table && m_table->m_model && m_table->m_detaildocnum >= 0) {
         int opts = m_table->m_ismainres ? ResultPopup::showExpand : 0;
         opts |= ResultPopup::showSaveOne;
-        QMenu *popup = ResultPopup::create(m_table, opts,
-                                           m_table->m_model->getDocSource(),
-                                           m_table->m_detaildoc);
+        QMenu *popup = ResultPopup::create(
+            m_table, opts, m_table->m_model->getDocSource(), m_table->m_detaildoc);
         popup->popup(mapToGlobal(pos));
     }
 }
@@ -669,8 +668,7 @@ void ResTable::init()
     m_detail->setOpenLinks(false);
     m_detail->init();
     // signals and slots connections
-    connect(m_detail, SIGNAL(anchorClicked(const QUrl &)),
-            this, SLOT(linkWasClicked(const QUrl &)));
+    connect(m_detail, SIGNAL(anchorClicked(const QUrl&)), this, SLOT(linkWasClicked(const QUrl&)));
     splitter->addWidget(m_detail);
     splitter->setOrientation(Qt::Vertical);
     QVariant saved = settings.value(settingskey_splittersizes);
@@ -767,21 +765,15 @@ void ResTable::setRclMain(RclMain *m, bool ismain)
         tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     if (!m_ismainres) {
-        // don't set this shortcut when we are a child of main, would
-        // be duplicate/ambiguous
-        connect(new QShortcut(quitKeySeq, this), SIGNAL(activated()),
-                m_rclmain, SLOT (fileExit()));
+        // Don't set this shortcut when we are a child of main, would be duplicate/ambiguous
+        connect(new QShortcut(quitKeySeq, this), SIGNAL(activated()), m_rclmain, SLOT (fileExit()));
     }
 
     new QShortcut(closeKeySeq, this, SLOT (close()));
-    connect(this, SIGNAL(previewRequested(Rcl::Doc)),
-            m_rclmain, SLOT(startPreview(Rcl::Doc)));
-    connect(this, SIGNAL(editRequested(Rcl::Doc)),
-            m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
-    connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)),
-            m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
-    connect(this, SIGNAL(showSnippets(Rcl::Doc)),
-            m_rclmain, SLOT(showSnippets(Rcl::Doc)));
+    connect(this, SIGNAL(previewRequested(Rcl::Doc)), m_rclmain, SLOT(startPreview(Rcl::Doc)));
+    connect(this, SIGNAL(editRequested(Rcl::Doc)), m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)), m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
+    connect(this, SIGNAL(showSnippets(Rcl::Doc)), m_rclmain, SLOT(showSnippets(Rcl::Doc)));
 }
 
 void ResTable::toggleHeader()
@@ -911,39 +903,65 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
     if (!m_model || !m_model->getDocSource())
         return;
     Rcl::Doc doc;
-    if (m_model->getDocSource()->getDoc(index.row(), doc)) {
-        m_detail->init();
-        m_detaildocnum = index.row();
-        m_detaildoc = doc;
-        bool isShift = (QApplication::keyboardModifiers() & Qt::ShiftModifier);
-        bool showtext{false};
-        bool showmeta{false};
-        if (m_rowchangefromkbd) {
-            // Ctrl+... jump to row. Show text/meta as for simple click
-            if (hasselection) {
-                // When getting here from ctrl+... we get called twice, once with row 0
-                // and no selection, once with the actual row and selection. Only
-                // reset fromkbd and set showtext in the second case.
-                m_rowchangefromkbd = false;
-                showtext = prefs.resTableTextNoShift;
-            }
-        } else {
-            // Mouse click. Show text or meta depending on shift key. Never show text when hovering
-            // (no selection).
-            showtext = hasselection && (isShift ^ prefs.resTableTextNoShift);
-        }
-        if (!showtext) {
-            showmeta = hasselection || !prefs.resTableNoHoverMeta;
-        }
-        if (showtext && rcldb->getDocRawText(m_detaildoc)) {
-            m_detail->setPlainText(u8s2qs(m_detaildoc.text));
-        }  else if (showmeta) {
-            m_pager->displaySingleDoc(theconfig, m_detaildocnum, m_detaildoc, m_model->m_hdata);
-        }
-        emit(detailDocChanged(doc, m_model->getDocSource()));
-    } else {
+    if (!m_model->getDocSource()->getDoc(index.row(), doc)) {
         m_detaildocnum = -1;
+        return;
     }
+    
+    m_detail->init();
+    m_detaildocnum = index.row();
+    m_detaildoc = doc;
+    bool isShift = (QApplication::keyboardModifiers() & Qt::ShiftModifier);
+    bool showcontent{false};
+    bool showmeta{false};
+        
+    if (m_rowchangefromkbd) {
+        // Ctrl+... jump to row. Show text/meta as for simple click
+        if (hasselection) {
+            // When getting here from ctrl+... we get called twice, once with row 0
+            // and no selection, once with the actual row and selection. Only
+            // reset fromkbd and set showcontent in the second case.
+            m_rowchangefromkbd = false;
+            showcontent = prefs.resTableTextNoShift;
+        }
+    } else {
+        // Mouse click. Show text or meta depending on shift key. Never show text when hovering
+        // (no selection).
+        showcontent = hasselection && (isShift ^ prefs.resTableTextNoShift);
+    }
+    if (!showcontent) {
+        showmeta = hasselection || !prefs.resTableNoHoverMeta;
+    }
+
+    bool displaydone{false};
+
+    if (showcontent) {
+        // If it's an image, and simply stored in a file, display it. We don't go to the trouble of
+        // extracting an embedded image here.
+        if (mimeIsImage(m_detaildoc.mimetype) && m_detaildoc.ipath.empty()) {
+            auto image = QImage(fileurltolocalpath(m_detaildoc.url).c_str());
+            if (!image.isNull()) {
+                m_detail->setPlainText("");
+                auto w =  m_detail->width();
+                auto h = m_detail->height();
+                if (image.width() > w || image.height() > h) {
+                    image = image.scaled(w, h, Qt::KeepAspectRatio);
+                }
+                m_detail->document()->addResource(QTextDocument::ImageResource,QUrl("image"),image);
+                m_detail->textCursor().insertImage("image");
+                displaydone = true;
+            }
+        }
+        if (!displaydone && rcldb->getDocRawText(m_detaildoc)) {
+            m_detail->setPlainText(u8s2qs(m_detaildoc.text));
+            displaydone = true;
+        }
+    }
+
+    if (!displaydone && showmeta) {
+        m_pager->displaySingleDoc(theconfig, m_detaildocnum, m_detaildoc, m_model->m_hdata);
+    }
+    emit(detailDocChanged(doc, m_model->getDocSource()));
 }
 
 void ResTable::on_tableView_entered(const QModelIndex& index)
@@ -1163,8 +1181,7 @@ void ResTable::onDoubleClick(const QModelIndex& index)
 
 void ResTable::createPopupMenu(const QPoint& pos)
 {
-    LOGDEB("ResTable::createPopupMenu: m_detaildocnum " << m_detaildocnum <<
-           "\n");
+    LOGDEB("ResTable::createPopupMenu: m_detaildocnum " << m_detaildocnum << "\n");
     if (m_detaildocnum >= 0 && m_model) {
         int opts = m_ismainres? ResultPopup::isMain : 0;
     
@@ -1177,8 +1194,7 @@ void ResTable::createPopupMenu(const QPoint& pos)
             // docs are necessary subdocs and multisave only works with those.
             opts |= ResultPopup::showSaveSel;
         }
-        QMenu *popup = ResultPopup::create(this, opts, m_model->getDocSource(),
-                                           m_detaildoc);
+        QMenu *popup = ResultPopup::create(this, opts, m_model->getDocSource(), m_detaildoc);
         popup->popup(mapToGlobal(pos));
     }
 }
@@ -1343,8 +1359,7 @@ void ResTable::menuShowSubDocs()
 
 void ResTable::createHeaderPopupMenu(const QPoint& pos)
 {
-    LOGDEB("ResTable::createHeaderPopupMenu(" << pos.x() << ", " <<
-           pos.y() << ")\n");
+    LOGDEB("ResTable::createHeaderPopupMenu(" << pos.x() << ", " << pos.y() << ")\n");
     QHeaderView *header = tableView->horizontalHeader();
     if (!header || !m_model)
         return;
@@ -1386,10 +1401,10 @@ void ResTable::deleteColumn()
 
 void ResTable::addColumn()
 {
-    if (!m_model)
-        return;
     QAction *action = (QAction *)sender();
-    LOGDEB("addColumn: text " << qs2utf8s(action->text()) << ", data " <<
-           qs2utf8s(action->data().toString()) << "\n");
-    m_model->addColumn(m_popcolumn, qs2utf8s(action->data().toString()));
+    if (nullptr == action || nullptr == m_model)
+        return;
+    std::string field = qs2utf8s(action->data().toString());
+    LOGDEB("addColumn: text " << qs2utf8s(action->text()) << ", field " << field << "\n");
+    m_model->addColumn(m_popcolumn, field);
 }
