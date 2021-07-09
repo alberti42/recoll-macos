@@ -1399,26 +1399,22 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
       extend the <link linkend="RCL.PROGRAM.FIELDS">field
       configuration</link>.</para>
 
-      <para>Once re-indexing is performed (you will need to force the file
-      reindexing, &RCL; will not detect the need by itself), you will be
-      able to search from the query language, through any of its aliases:
-      <replaceable>tags:some/alternate/values</replaceable> or
-      <replaceable>tags:all,these,values</replaceable> (the compact field search
-      syntax is supported for recoll 1.20 and later. For older versions,
-      you would need to repeat the <replaceable>tags:</replaceable>
-      specifier for each term, e.g.  <replaceable>tags:some</replaceable>
-      <literal>OR</literal>
-      <replaceable>tags:alternate</replaceable>).</para>
+      <para>Once re-indexing is performed (you will need to force the file reindexing, &RCL; will
+        not detect the need by itself), you will be able to search from the query language, through
+        any of its aliases: <replaceable>tags:some/alternate/values</replaceable>
+        or <replaceable>tags:all,these,values</replaceable>. The compact comma- or slash-based field
+        search syntax is supported for recoll 1.20 and later. For older versions, you would need to
+        repeat the <replaceable>tags:</replaceable> specifier for each term,
+        e.g. <replaceable>tags:some</replaceable> <literal>OR</literal> 
+        <replaceable>tags:alternate</replaceable>.</para>
 
-      <para>Tags changes will not be detected by
-      the indexer if the file itself did not change. One possible
-      workaround would be to update the file <literal>ctime</literal> when
-      you modify the tags, which 
-      would be consistent with how extended attributes function. A pair of
-      <command>chmod</command> commands could accomplish this, or a
-      <literal>touch -a</literal> . Alternatively, just
-      couple the tag update with a
-      <literal>recollindex -e -i</literal> <replaceable>/path/to/the/file</replaceable>.</para>
+      <para>Tags changes will not be detected by the indexer if the file itself did not change. One
+        possible workaround would be to update the file <literal>ctime</literal> when you modify the
+        tags, which would be consistent with how extended attributes function. A pair
+        of <command>chmod</command> commands could accomplish this, or a 
+        <literal>touch -a</literal>.
+        Alternatively, just couple the tag update with a 
+        <literal>recollindex -e -i</literal> <replaceable>/path/to/the/file</replaceable>.</para>
 
     </sect1>
 
@@ -1918,11 +1914,12 @@ fs.inotify.max_user_watches=32768
       <itemizedlist>
         <listitem><para>In <literal>All Terms</literal> mode, &RCL; looks
         for documents containing all your input terms.</para></listitem>
-        <listitem><para><literal>Query Language</literal> mode behaves like
 
-        <literal>All Terms</literal> in the absence of special input, but
-        it can also do much more. This is the best mode for getting the
-        most of &RCL;.</para></listitem>
+        <listitem><para>The <literal>Query Language</literal> mode behaves like <literal>All
+        Terms</literal> in the absence of special input, but it can also do much more. This is the
+        best mode for getting the most of &RCL;. It is usable from all possible interfaces (GUI,
+        command line, WEB UI, ...), and is <link linkend="RCL.SEARCH.LANG">described
+        here</link>.</para></listitem>
         
         <listitem><para>In <literal>Any Term</literal> mode, &RCL; looks
         for documents containing any your input terms, preferring those
@@ -2067,8 +2064,8 @@ fs.inotify.max_user_watches=32768
 
         <para>The <guilabel>File name</guilabel> search mode will
         specifically look for file names. The point of having a separate
-        file name search is that wild card expansion can be performed more
-        efficiently on a small subset of the index (allowing wild cards on
+        file name search is that wildcard expansion can be performed more
+        efficiently on a small subset of the index (allowing wildcards on
         the left of terms without excessive cost). Things to know:
         <itemizedlist>
           <listitem><para>White space in the entry should match white
@@ -2077,7 +2074,7 @@ fs.inotify.max_user_watches=32768
           <listitem><para>The search is insensitive to character case and
           accents, independently of the type of index.</para>
           </listitem>
-          <listitem><para>An entry without any wild card
+          <listitem><para>An entry without any wildcard
           character and not capitalized will be prepended and appended
           with '*' (ie: <replaceable>etc</replaceable> ->
           <replaceable>*etc*</replaceable>, but
@@ -3940,24 +3937,26 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
     <sect1 id="RCL.SEARCH.LANG">
       <title>The query language</title>
 
-      <para>The query language processor is activated in the GUI
-      simple search entry when the search mode selector is set to
-      <guilabel>Query Language</guilabel>. It can also be used with the KIO
-      slave or the command line search. It broadly has the same
-      capabilities as the complex search interface in the
-      GUI.</para>
+      <para>The &RCL; query language was based on the now defunct
+        <ulink url="http://www.xesam.org/main/XesamUserSearchLanguage95">
+          Xesam</ulink> user search language specification. It allows defining general boolean
+          searches within the main body text or specific fields, and has many additional features,
+        broadly equivalent to those provided by <emphasis>complex search</emphasis> interface in the
+        GUI.</para>
 
-      <para>The language was based on the now defunct
-      <ulink url="http://www.xesam.org/main/XesamUserSearchLanguage95">
-      Xesam</ulink> user search language specification.</para>
+      <para>The query language processor is activated in the GUI simple search entry when the search
+        mode selector is set to <literal>Query Language</literal>. It can also be used from the
+        command line search, the KIO slave, or the WEB UI.</para>
 
       <para>If the results of a query language search puzzle you and you
-      doubt what has been actually searched for, you can use the GUI
-      <literal>Show Query</literal> link at the top of the result list to
-      check the exact query which was finally executed by Xapian.</para>
+        doubt what has been actually searched for, you can use the GUI <literal>Show Query</literal>
+        link at the top of the result list to check the exact query which was finally executed by
+        Xapian.</para>
 
-      <para>Here follows a sample request that we are going to
-      explain:</para>
+    <sect2 id="RCL.SEARCH.LANG.SYNTAX">
+      <title>General syntax</title>
+
+      <para>Here follows a sample request that we are going to explain:</para>
 
       <programlisting>
         author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
@@ -3977,10 +3976,12 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <para>An element is composed of an optional field specification,
       and a value, separated by a colon (the field separator is the last
       colon in the element). Examples:
-      <replaceable>Eugenie</replaceable>,
-      <replaceable>author:balzac</replaceable>,
-      <replaceable>dc:title:grandet</replaceable> 
-      <replaceable>dc:title:"eugenie grandet"</replaceable> 
+        <itemizedlist>
+          <listitem><replaceable>Eugenie</replaceable></listitem>
+          <listitem><replaceable>author:balzac</replaceable></listitem>
+          <listitem><replaceable>dc:title:grandet</replaceable></listitem>
+          <listitem><replaceable>dc:title:"eugenie grandet"</replaceable></listitem>
+        </itemizedlist>
       </para>
 
       <para>The colon, if present, means "contains". Xesam defines other
@@ -4005,41 +4006,38 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <replaceable>word2</replaceable>) <literal>OR</literal>
       <replaceable>word3</replaceable>. </para>
 
-      <para>&RCL; versions 1.21 and later, allow using parentheses to
-      group elements, which will sometimes make things clearer, and may
-      allow expressing combinations which would have been difficult
+      <para>You can use parentheses to group elements (from version 1.21), which will sometimes make
+      things clearer, and may allow expressing combinations which would have been difficult
       otherwise.</para>
 
       <para>An element preceded by a <literal>-</literal> specifies a
-      term that should <emphasis>not</emphasis> appear.</para>
+        term that should <emphasis>not</emphasis> appear.</para>
 
-      <para>As usual, words inside quotes define a phrase
-      (the order of words is significant), so that
-      <replaceable>title:"prejudice pride"</replaceable> is not the same as
-      <replaceable>title:prejudice title:pride</replaceable>, and is
-      unlikely to find a result.</para> 
+      <para>As usual, words inside quotes define a phrase (the order of words is significant), so
+      that <replaceable>title:"prejudice pride"</replaceable> is not the same
+      as <replaceable>title:prejudice title:pride</replaceable>, and is unlikely to find a
+      result.</para>
 
-      <para>Words inside phrases and capitalized words are not
-      stem-expanded. Wildcards may be used anywhere inside a term.
-      Specifying a wild-card on the left of a term can produce a very
-      slow search (or even an incorrect one if the expansion is
-      truncated because of excessive size). Also see 
-      <link linkend="RCL.SEARCH.WILDCARDS">More about wildcards</link>.
+      <para>Words inside phrases and capitalized words are not stem-expanded. Wildcards may be used
+      anywhere inside a term.  Specifying a wildcard on the left of a term can produce a very slow
+      search (or even an incorrect one if the expansion is truncated because of excessive
+      size). Also see <link linkend="RCL.SEARCH.WILDCARDS">More about wildcards</link>.
       </para>
 
-      <para>To save you some typing, recent &RCL; versions (1.20 and later)
-      interpret a comma-separated list of terms for a field as an AND list
-      inside the field. Use slash characters ('/') for an OR list. No white
-      space is allowed. So
-      <programlisting>author:john,lennon</programlisting> will search for
-      documents with <literal>john</literal> and <literal>lennon</literal>
-      inside the <literal>author</literal> field (in any order), and
-      <programlisting>author:john/ringo</programlisting> would search for
-      <literal>john</literal> or <literal>ringo</literal>. This behaviour
-      only happens for field queries (input without a field, comma- or
-      slash- separated input will produce a phrase search). You can use a
-      <literal>text</literal> field name to search the main text this
-      way.</para>
+      <para>To save you some typing, &RCL; versions 1.20 and later
+        interpret a field value given as a comma-separated list of terms as an AND list and a
+        slash-separated list as an OR list. No white space is
+        allowed. So <programlisting>author:john,lennon</programlisting> will search for documents
+        with <literal>john</literal> and <literal>lennon</literal> inside
+        the <literal>author</literal> field (in any order),
+        and <programlisting>author:john/ringo</programlisting> would search
+        for <literal>john</literal> or <literal>ringo</literal>. This behaviour is only triggered by
+        a field prefix: without it, comma- or slash- separated input will produce a phrase
+        search. However, you can use a <literal>text</literal> field name to search the main text
+        this way, as an alternate to using an explicit <literal>OR</literal>,
+        e.g. <literal>text:napoleon/bonaparte</literal> would generate a search
+        for <replaceable>napoleon</replaceable> or <replaceable>bonaparte</replaceable> in the main
+        text body.</para>
 
       <para>Modifiers can be set on a double-quote value, for example to specify
       a proximity search (unordered). See 
@@ -4073,23 +4071,20 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         </listitem>
 
         <listitem><para><literal>filename</literal> for the document's
-        file name. This is not necessarily set for all documents:
-        internal documents contained inside a compound one (for example
-        an EPUB section) do not inherit the container file name any more,
-        this was replaced by an explicit field (see next). Sub-documents
-        can still have a specific <literal>filename</literal>, if it is
-        implied by the document format, for example the attachment file
-        name for an email attachment.</para></listitem> 
+            file name. You can use the shorter <literal>fn</literal> alias. This value is not set
+            for all documents: internal documents contained inside a compound one (for example an
+            EPUB section) do not inherit the container file name any more, this was replaced by an
+            explicit field (see next). Sub-documents can still have a <literal>filename</literal>,
+            if it is implied by the document format, for example the attachment file name for an
+            email attachment.</para></listitem>
 
-        <listitem><para><literal>containerfilename</literal>. This is
-            set for all documents, both top-level and contained
-            sub-documents, and is always the name of the filesystem directory
-            entry which contains the data. The terms from this field can
-            only be matched by an explicit field specification (as opposed
-            to terms from <literal>filename</literal> which are also indexed
-            as general document content). This avoids getting matches for
-            all the sub-documents when searching for the container file
-            name.</para></listitem> 
+        <listitem><para><literal>containerfilename</literal>, aliased
+            as <literal>cfn</literal>. This is set for all documents, both top-level and contained
+            sub-documents, and is always the name of the filesystem file which contains the
+            data. The terms from this field can only be matched by an explicit field specification
+            (as opposed to terms from <literal>filename</literal> which are also indexed as general
+            document content). This avoids getting matches for all the sub-documents when searching
+            for the container file name.</para></listitem>
         
         <listitem><para><literal>ext</literal> specifies the file
             name extension
@@ -4106,66 +4101,69 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
       </itemizedlist>
 
-      <para>&RCL; 1.20 and later have a way to specify aliases for the
-        field names, which will save typing, for example by aliasing
-        <literal>filename</literal> to <replaceable>fn</replaceable> or
-        <literal>containerfilename</literal> to
-        <replaceable>cfn</replaceable>. See the
-        <link linkend="RCL.INSTALL.CONFIG.FIELDS">section about the <filename>fields</filename> file</link>.
+      <para>You can define aliases for field names, in order to use your preferred denomination or
+        to save typing (e.g. the predefined <literal>fn</literal> and <literal>cfn</literal> aliases
+        defined for <literal>filename</literal> and <literal>containerfilename</literal>). See
+        the <link linkend="RCL.INSTALL.CONFIG.FIELDS">section about the <filename>fields</filename>
+        file</link>.
       </para> 
 
-      <para>The document input handlers used while indexing have the
-      possibility to create other fields with arbitrary names, and
-      aliases may be defined in the configuration, so that the exact
-      field search possibilities may be different for you if someone
-      took care of the customisation.</para>
+      <para>The document input handlers have the possibility to create other fields with arbitrary
+        names, and aliases may be defined in the configuration, so that the exact field search
+        possibilities may be different for you if someone took care of the customisation.</para>
+    </sect2>      
 
-      <para>The field syntax also supports a few field-like, but
-      special, criteria:</para>
+      <sect2 id="RCL.SEARCH.LANG.SPECIALFIELDS">
+        <title>Special field-like specifiers</title>
+
+      <para>The field syntax also supports a few field-like, but special, criteria, for which the
+        values are interpreted differently. Regular processing does not apply (for example the
+        slash- or comma- separated lists don't work). A list follows.</para>
 
       <itemizedlist>
 
-        <listitem><para><literal>dir</literal> for filtering the
-        results on file location
-        (Ex: <literal>dir:/home/me/somedir</literal>). 
-        <literal>-dir</literal>
-        also works to find results not in the specified directory
-        (release >= 1.15.8). Tilde expansion will be performed as
-        usual (except for a bug in versions 1.19 to
-        1.19.11p1). Wildcards will be expanded, but
-        please
-        <link linkend="RCL.SEARCH.WILDCARDS.PATH"> have a look</link>
-        at an important limitation of wildcards in path filters.</para>
+        <listitem>
+          <para id="RCL.SEARCH.LANG.SPECIALFIELDS.DIR"><literal>dir</literal> for filtering the
+            results on file location.  For example, <literal>dir:/home/me/somedir</literal> will
+            restrict the search to results found anywhere under
+            the <replaceable>/home/me/somedir</replaceable> directory (including
+            subdirectories).</para>
 
-        <para>Relative paths also make sense, for example, 
-        <literal>dir:share/doc</literal> would match either
-        <filename>/usr/share/doc</filename> or
-        <filename>/usr/local/share/doc</filename> </para>
+          <para>Tilde expansion will be performed as usual. Wildcards will be expanded, but
+            please <link linkend="RCL.SEARCH.WILDCARDS.PATH"> have a look</link> at an important
+            limitation of wildcards in path filters.</para>
 
-        <para>Several <literal>dir</literal> clauses can be specified,
-        both positive and negative. For example the following makes sense:
-        <programlisting>
-          dir:recoll dir:src -dir:utils -dir:common
-          </programlisting> This would select results which have both
-          <filename>recoll</filename> and <filename>src</filename> in the
-          path (in any order), and which have not either
-          <filename>utils</filename> or
-        <filename>common</filename>.</para>
+          <para>You can also use relative paths. For example, <literal>dir:share/doc</literal> would
+            match either <filename>/usr/share/doc</filename>
+            or <filename>/usr/local/share/doc</filename>.</para>
+
+          <para><literal>-dir</literal> will find
+            results <emphasis>not</emphasis> in the specified location.</para>
+
+          <para>Several <literal>dir</literal> clauses can be specified,
+            both positive and negative. For example the following makes sense:
+            <programlisting>dir:recoll dir:src -dir:utils -dir:common</programlisting>
+            This would select results which have both
+            <filename>recoll</filename> and <filename>src</filename> in the
+            path (in any order), and which have not either
+            <filename>utils</filename> or
+            <filename>common</filename>.</para>
         
-        <para>You can also use <literal>OR</literal> conjunctions
-        with <literal>dir:</literal> clauses.</para>
+          <para>You can also use <literal>OR</literal> conjunctions
+            with <literal>dir:</literal> clauses.</para>
 
         <para>A special aspect of <literal>dir</literal> clauses is
-        that the values in the index are not transcoded to UTF-8, and
-        never lower-cased or unaccented, but stored as binary. This means
-        that you need to enter the values in the exact lower or upper
-        case, and that searches for names with diacritics may sometimes
-        be impossible because of character set conversion
-        issues. Non-ASCII UNIX file paths are an unending source of
-        trouble and are best avoided.</para> 
+          that the values in the index are not transcoded to UTF-8, and never lower-cased or
+          unaccented, but stored as binary. This means that you need to enter the values in the
+          exact lower or upper case, and that searches for names with diacritics may sometimes be
+          impossible because of character set conversion issues. Non-ASCII UNIX file paths are an
+          unending source of trouble and are best avoided.</para>
 
-        <para>You need to use double-quotes around the path value if it
-        contains space characters.</para> 
+        <para>You need to use double-quotes around the path value if it contains space
+          characters.</para>  
+
+        <para>The shortcut syntax to define OR or AND lists within fields with commas or slash
+          characters is not available.</para>  
 
         </listitem>
 
@@ -4219,17 +4217,13 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         p2y).</para> 
         </listitem>
 
-        <listitem><para><literal>mime</literal> or
-        <literal>format</literal> for specifying the
-        MIME type. These clauses are processed besides the normal
-        Boolean logic of the search. Multiple values will be OR'ed
-        (instead of the normal AND). You can specify types to be
+        <listitem><para><literal>mime</literal> or <literal>format</literal> for specifying the MIME
+        type. These clauses are processed apart from the normal Boolean logic of the search:
+        multiple values will be OR'ed (instead of the normal AND). You can specify types to be
         excluded, with the usual <literal>-</literal>, and use
-        wildcards. Example: <replaceable>mime:text/*
-        -mime:text/plain</replaceable> 
-        Specifying an explicit boolean
-        operator before a <literal>mime</literal> specification is not
-        supported and will produce strange results. </para>
+        wildcards. Example: <replaceable>mime:text/* -mime:text/plain</replaceable>. Specifying an
+        explicit boolean operator before a <literal>mime</literal> specification is not supported
+        and will produce strange results. </para>
         </listitem>
 
         <listitem><para><literal>type</literal> or
@@ -4264,6 +4258,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         field with an <literal>OR</literal> default. You do need to use
         <literal>OR</literal> with <literal>ext</literal> terms for
       example.</para> </note>
+      </sect2>
 
       <sect2 id="RCL.SEARCH.LANG.RANGES">
         <title>Range clauses</title>
@@ -4343,20 +4338,18 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
     </sect1> <!-- rcl.search.lang -->
     
     <sect1 id="RCL.SEARCH.ANCHORWILD">
-      <title>Anchored searches and wildcards</title>
+      <title>Wildcards and anchored searches</title>
 
       <para>Some special characters are interpreted by &RCL; in search
-      strings to expand or specialize the search. Wildcards expand a root
-      term in controlled ways. Anchor characters can restrict a search to
-      succeed only if the match is found at or near the beginning of the
-      document or one of its fields.</para>
+        strings to expand or specialize the search. Wildcards expand a root term in controlled
+        ways. Anchor characters can restrict a search to succeed only if the match is found at or
+        near the beginning of the document or one of its fields.</para>
 
       <sect2 id="RCL.SEARCH.WILDCARDS">
-        <title>More about wildcards</title>
+        <title>Wildcards</title>
 
         <para>All words entered in &RCL; search fields will be processed
-        for wildcard expansion before the request is finally
-        executed.</para>
+          for wildcard expansion before the request is finally executed.</para>
 
         <para>The wildcard characters are:</para>
 
@@ -4376,8 +4369,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           </listitem>
         </itemizedlist>
 
-        <para>You should be aware of a few things when using
-        wildcards.</para>
+        <para>You should be aware of a few things when using wildcards.</para>
 
         <itemizedlist>
           <listitem><para>Using a wildcard character at the beginning of

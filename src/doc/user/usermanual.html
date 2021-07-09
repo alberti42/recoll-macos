@@ -257,20 +257,25 @@ alink="#0000FF">
             <dd>
               <dl>
                 <dt><span class="sect2">3.5.1. <a href=
+                "#RCL.SEARCH.LANG.SYNTAX">General
+                syntax</a></span></dt>
+                <dt><span class="sect2">3.5.2. <a href=
+                "#RCL.SEARCH.LANG.SPECIALFIELDS">Special field-like
+                specifiers</a></span></dt>
+                <dt><span class="sect2">3.5.3. <a href=
                 "#RCL.SEARCH.LANG.RANGES">Range
                 clauses</a></span></dt>
-                <dt><span class="sect2">3.5.2. <a href=
+                <dt><span class="sect2">3.5.4. <a href=
                 "#RCL.SEARCH.LANG.MODIFIERS">Modifiers</a></span></dt>
               </dl>
             </dd>
             <dt><span class="sect1">3.6. <a href=
-            "#RCL.SEARCH.ANCHORWILD">Anchored searches and
-            wildcards</a></span></dt>
+            "#RCL.SEARCH.ANCHORWILD">Wildcards and anchored
+            searches</a></span></dt>
             <dd>
               <dl>
                 <dt><span class="sect2">3.6.1. <a href=
-                "#RCL.SEARCH.WILDCARDS">More about
-                wildcards</a></span></dt>
+                "#RCL.SEARCH.WILDCARDS">Wildcards</a></span></dt>
                 <dt><span class="sect2">3.6.2. <a href=
                 "#RCL.SEARCH.ANCHOR">Anchored
                 searches</a></span></dt>
@@ -423,7 +428,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1471">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1472">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -2133,22 +2138,23 @@ metadatacmds = ; <em class=
         language, through any of its aliases: <em class=
         "replaceable"><code>tags:some/alternate/values</code></em>
         or <em class=
-        "replaceable"><code>tags:all,these,values</code></em> (the
-        compact field search syntax is supported for recoll 1.20
-        and later. For older versions, you would need to repeat the
-        <em class="replaceable"><code>tags:</code></em> specifier
-        for each term, e.g. <em class=
+        "replaceable"><code>tags:all,these,values</code></em>. The
+        compact comma- or slash-based field search syntax is
+        supported for recoll 1.20 and later. For older versions,
+        you would need to repeat the <em class=
+        "replaceable"><code>tags:</code></em> specifier for each
+        term, e.g. <em class=
         "replaceable"><code>tags:some</code></em> <code class=
         "literal">OR</code> <em class=
-        "replaceable"><code>tags:alternate</code></em>).</p>
+        "replaceable"><code>tags:alternate</code></em>.</p>
         <p>Tags changes will not be detected by the indexer if the
         file itself did not change. One possible workaround would
         be to update the file <code class="literal">ctime</code>
         when you modify the tags, which would be consistent with
         how extended attributes function. A pair of <span class=
         "command"><strong>chmod</strong></span> commands could
-        accomplish this, or a <code class="literal">touch -a</code>
-        . Alternatively, just couple the tag update with a
+        accomplish this, or a <code class="literal">touch
+        -a</code>. Alternatively, just couple the tag update with a
         <code class="literal">recollindex -e -i</code> <em class=
         "replaceable"><code>/path/to/the/file</code></em>.</p>
       </div>
@@ -2771,11 +2777,16 @@ fs.inotify.max_user_watches=32768
               documents containing all your input terms.</p>
             </li>
             <li class="listitem">
-              <p><code class="literal">Query Language</code> mode
-              behaves like <code class="literal">All Terms</code>
-              in the absence of special input, but it can also do
-              much more. This is the best mode for getting the most
-              of <span class="application">Recoll</span>.</p>
+              <p>The <code class="literal">Query Language</code>
+              mode behaves like <code class="literal">All
+              Terms</code> in the absence of special input, but it
+              can also do much more. This is the best mode for
+              getting the most of <span class=
+              "application">Recoll</span>. It is usable from all
+              possible interfaces (GUI, command line, WEB UI, ...),
+              and is <a class="link" href="#RCL.SEARCH.LANG" title=
+              "3.5.&nbsp;The query language">described
+              here</a>.</p>
             </li>
             <li class="listitem">
               <p>In <code class="literal">Any Term</code> mode,
@@ -2906,8 +2917,8 @@ fs.inotify.max_user_watches=32768
           <code class="literal">?</code>, <code class=
           "literal">[]</code>). See the <a class="link" href=
           "#RCL.SEARCH.WILDCARDS" title=
-          "3.6.1.&nbsp;More about wildcards">section about
-          wildcards</a> for more details.</p>
+          "3.6.1.&nbsp;Wildcards">section about wildcards</a> for
+          more details.</p>
           <p>In all modes except <span class="guilabel">File
           name</span>, you can search for exact phrases (adjacent
           words in a given order) by enclosing the input inside
@@ -2964,9 +2975,9 @@ fs.inotify.max_user_watches=32768
           complex searches.</p>
           <p>The <span class="guilabel">File name</span> search
           mode will specifically look for file names. The point of
-          having a separate file name search is that wild card
+          having a separate file name search is that wildcard
           expansion can be performed more efficiently on a small
-          subset of the index (allowing wild cards on the left of
+          subset of the index (allowing wildcards on the left of
           terms without excessive cost). Things to know:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
@@ -2981,7 +2992,7 @@ fs.inotify.max_user_watches=32768
                 accents, independently of the type of index.</p>
               </li>
               <li class="listitem">
-                <p>An entry without any wild card character and not
+                <p>An entry without any wildcard character and not
                 capitalized will be prepended and appended with '*'
                 (ie: <em class="replaceable"><code>etc</code></em>
                 -&gt; <em class=
@@ -3841,7 +3852,7 @@ fs.inotify.max_user_watches=32768
                 <em class="replaceable"><code>xapi</code></em>.
                 (More about wildcards <a class="link" href=
                 "#RCL.SEARCH.WILDCARDS" title=
-                "3.6.1.&nbsp;More about wildcards">here</a> ).</p>
+                "3.6.1.&nbsp;Wildcards">here</a> ).</p>
               </dd>
               <dt><span class="term">Regular expression</span></dt>
               <dd>
@@ -4064,7 +4075,7 @@ fs.inotify.max_user_watches=32768
           given context (e.g. within a preview window, within the
           result table).</p>
           <div class="table">
-            <a name="idm1471" id="idm1471"></a>
+            <a name="idm1472" id="idm1472"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -4291,8 +4302,7 @@ fs.inotify.max_user_watches=32768
             <p><b>Wildcards.&nbsp;</b>Wildcards can be used inside
             search terms in all forms of searches. <a class="link"
             href="#RCL.SEARCH.WILDCARDS" title=
-            "3.6.1.&nbsp;More about wildcards">More about
-            wildcards</a>.</p>
+            "3.6.1.&nbsp;Wildcards">More about wildcards</a>.</p>
             <p><b>Automatic suffixes.&nbsp;</b>Words like
             <code class="literal">odt</code> or <code class=
             "literal">ods</code> can be automatically turned into
@@ -4361,7 +4371,7 @@ fs.inotify.max_user_watches=32768
             Example: "user manual"p would also match "manual user".
             Also see <a class="link" href=
             "#RCL.SEARCH.LANG.MODIFIERS" title=
-            "3.5.2.&nbsp;Modifiers">the modifier section</a> from
+            "3.5.4.&nbsp;Modifiers">the modifier section</a> from
             the query language documentation.</p>
             <p><b>AutoPhrases.&nbsp;</b>This option can be set in
             the preferences dialog. If it is set, a phrase will be
@@ -5213,389 +5223,447 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             </div>
           </div>
         </div>
+        <p>The <span class="application">Recoll</span> query
+        language was based on the now defunct <a class="ulink"
+        href="http://www.xesam.org/main/XesamUserSearchLanguage95"
+        target="_top">Xesam</a> user search language specification.
+        It allows defining general boolean searches within the main
+        body text or specific fields, and has many additional
+        features, broadly equivalent to those provided by
+        <span class="emphasis"><em>complex search</em></span>
+        interface in the GUI.</p>
         <p>The query language processor is activated in the GUI
         simple search entry when the search mode selector is set to
-        <span class="guilabel">Query Language</span>. It can also
-        be used with the KIO slave or the command line search. It
-        broadly has the same capabilities as the complex search
-        interface in the GUI.</p>
-        <p>The language was based on the now defunct <a class=
-        "ulink" href=
-        "http://www.xesam.org/main/XesamUserSearchLanguage95"
-        target="_top">Xesam</a> user search language
-        specification.</p>
+        <code class="literal">Query Language</code>. It can also be
+        used from the command line search, the KIO slave, or the
+        WEB UI.</p>
         <p>If the results of a query language search puzzle you and
         you doubt what has been actually searched for, you can use
         the GUI <code class="literal">Show Query</code> link at the
         top of the result list to check the exact query which was
         finally executed by Xapian.</p>
-        <p>Here follows a sample request that we are going to
-        explain:</p>
-        <pre class="programlisting">
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.SEARCH.LANG.SYNTAX"
+                id="RCL.SEARCH.LANG.SYNTAX"></a>3.5.1.&nbsp;General
+                syntax</h3>
+              </div>
+            </div>
+          </div>
+          <p>Here follows a sample request that we are going to
+          explain:</p>
+          <pre class="programlisting">
         author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
       </pre>
-        <p>This would search for all documents with <em class=
-        "replaceable"><code>John Doe</code></em> appearing as a
-        phrase in the author field (exactly what this is would
-        depend on the document type, ie: the <code class=
-        "literal">From:</code> header, for an email message), and
-        containing either <em class=
-        "replaceable"><code>beatles</code></em> or <em class=
-        "replaceable"><code>lennon</code></em> and either
-        <em class="replaceable"><code>live</code></em> or
-        <em class="replaceable"><code>unplugged</code></em> but not
-        <em class="replaceable"><code>potatoes</code></em> (in any
-        part of the document).</p>
-        <p>An element is composed of an optional field
-        specification, and a value, separated by a colon (the field
-        separator is the last colon in the element). Examples:
-        <em class="replaceable"><code>Eugenie</code></em>,
-        <em class="replaceable"><code>author:balzac</code></em>,
-        <em class="replaceable"><code>dc:title:grandet</code></em>
-        <em class="replaceable"><code>dc:title:"eugenie
-        grandet"</code></em></p>
-        <p>The colon, if present, means "contains". Xesam defines
-        other relations, which are mostly unsupported for now
-        (except in special cases, described further down).</p>
-        <p>All elements in the search entry are normally combined
-        with an implicit AND. It is possible to specify that
-        elements be OR'ed instead, as in <em class=
-        "replaceable"><code>Beatles</code></em> <code class=
-        "literal">OR</code> <em class=
-        "replaceable"><code>Lennon</code></em>. The <code class=
-        "literal">OR</code> must be entered literally (capitals),
-        and it has priority over the AND associations: <em class=
-        "replaceable"><code>word1</code></em> <em class=
-        "replaceable"><code>word2</code></em> <code class=
-        "literal">OR</code> <em class=
-        "replaceable"><code>word3</code></em> means <em class=
-        "replaceable"><code>word1</code></em> AND (<em class=
-        "replaceable"><code>word2</code></em> <code class=
-        "literal">OR</code> <em class=
-        "replaceable"><code>word3</code></em>) not (<em class=
-        "replaceable"><code>word1</code></em> AND <em class=
-        "replaceable"><code>word2</code></em>) <code class=
-        "literal">OR</code> <em class=
-        "replaceable"><code>word3</code></em>.</p>
-        <p><span class="application">Recoll</span> versions 1.21
-        and later, allow using parentheses to group elements, which
-        will sometimes make things clearer, and may allow
-        expressing combinations which would have been difficult
-        otherwise.</p>
-        <p>An element preceded by a <code class="literal">-</code>
-        specifies a term that should <span class=
-        "emphasis"><em>not</em></span> appear.</p>
-        <p>As usual, words inside quotes define a phrase (the order
-        of words is significant), so that <em class=
-        "replaceable"><code>title:"prejudice pride"</code></em> is
-        not the same as <em class=
-        "replaceable"><code>title:prejudice
-        title:pride</code></em>, and is unlikely to find a
-        result.</p>
-        <p>Words inside phrases and capitalized words are not
-        stem-expanded. Wildcards may be used anywhere inside a
-        term. Specifying a wild-card on the left of a term can
-        produce a very slow search (or even an incorrect one if the
-        expansion is truncated because of excessive size). Also see
-        <a class="link" href="#RCL.SEARCH.WILDCARDS" title=
-        "3.6.1.&nbsp;More about wildcards">More about
-        wildcards</a>.</p>
-        <p>To save you some typing, recent <span class=
-        "application">Recoll</span> versions (1.20 and later)
-        interpret a comma-separated list of terms for a field as an
-        AND list inside the field. Use slash characters ('/') for
-        an OR list. No white space is allowed. So</p>
-        <pre class="programlisting">author:john,lennon</pre>
-        <p>will search for documents with <code class=
-        "literal">john</code> and <code class=
-        "literal">lennon</code> inside the <code class=
-        "literal">author</code> field (in any order), and</p>
-        <pre class="programlisting">author:john/ringo</pre>
-        <p>would search for <code class="literal">john</code> or
-        <code class="literal">ringo</code>. This behaviour only
-        happens for field queries (input without a field, comma- or
-        slash- separated input will produce a phrase search). You
-        can use a <code class="literal">text</code> field name to
-        search the main text this way.</p>
-        <p>Modifiers can be set on a double-quote value, for
-        example to specify a proximity search (unordered). See
-        <a class="link" href="#RCL.SEARCH.LANG.MODIFIERS" title=
-        "3.5.2.&nbsp;Modifiers">the modifier section</a>. No space
-        must separate the final double-quote and the modifiers
-        value, e.g. <em class="replaceable"><code>"two
-        one"po10</code></em></p>
-        <p><span class="application">Recoll</span> currently
-        manages the following default fields:</p>
-        <div class="itemizedlist">
-          <ul class="itemizedlist" style="list-style-type: disc;">
-            <li class="listitem">
-              <p><code class="literal">title</code>, <code class=
-              "literal">subject</code> or <code class=
-              "literal">caption</code> are synonyms which specify
-              data to be searched for in the document title or
-              subject.</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">author</code> or
-              <code class="literal">from</code> for searching the
-              documents originators.</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">recipient</code> or
-              <code class="literal">to</code> for searching the
-              documents recipients.</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">keyword</code> for searching
-              the document-specified keywords (few documents
-              actually have any).</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">filename</code> for the
-              document's file name. This is not necessarily set for
-              all documents: internal documents contained inside a
-              compound one (for example an EPUB section) do not
-              inherit the container file name any more, this was
-              replaced by an explicit field (see next).
-              Sub-documents can still have a specific <code class=
-              "literal">filename</code>, if it is implied by the
-              document format, for example the attachment file name
-              for an email attachment.</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">containerfilename</code>.
-              This is set for all documents, both top-level and
-              contained sub-documents, and is always the name of
-              the filesystem directory entry which contains the
-              data. The terms from this field can only be matched
-              by an explicit field specification (as opposed to
-              terms from <code class="literal">filename</code>
-              which are also indexed as general document content).
-              This avoids getting matches for all the sub-documents
-              when searching for the container file name.</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">ext</code> specifies the
-              file name extension (Ex: <code class=
-              "literal">ext:html</code>).</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">rclmd5</code> the MD5
-              checksum for the document. This is used for
-              displaying the duplicates of a search result (when
-              querying with the option to collapse duplicate
-              results). Incidentally, this could be used to find
-              the duplicates of any given file by computing its MD5
-              checksum and executing a query with just the
-              <code class="literal">rclmd5</code> value.</p>
-            </li>
-          </ul>
+          <p>This would search for all documents with <em class=
+          "replaceable"><code>John Doe</code></em> appearing as a
+          phrase in the author field (exactly what this is would
+          depend on the document type, ie: the <code class=
+          "literal">From:</code> header, for an email message), and
+          containing either <em class=
+          "replaceable"><code>beatles</code></em> or <em class=
+          "replaceable"><code>lennon</code></em> and either
+          <em class="replaceable"><code>live</code></em> or
+          <em class="replaceable"><code>unplugged</code></em> but
+          not <em class="replaceable"><code>potatoes</code></em>
+          (in any part of the document).</p>
+          <p>An element is composed of an optional field
+          specification, and a value, separated by a colon (the
+          field separator is the last colon in the element).
+          Examples:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist" style=
+            "list-style-type: disc;">
+              <li class="listitem"><em class=
+              "replaceable"><code>Eugenie</code></em></li>
+              <li class="listitem"><em class=
+              "replaceable"><code>author:balzac</code></em></li>
+              <li class="listitem"><em class=
+              "replaceable"><code>dc:title:grandet</code></em></li>
+              <li class="listitem"><em class=
+              "replaceable"><code>dc:title:"eugenie
+              grandet"</code></em></li>
+            </ul>
+          </div>
+          <p>The colon, if present, means "contains". Xesam defines
+          other relations, which are mostly unsupported for now
+          (except in special cases, described further down).</p>
+          <p>All elements in the search entry are normally combined
+          with an implicit AND. It is possible to specify that
+          elements be OR'ed instead, as in <em class=
+          "replaceable"><code>Beatles</code></em> <code class=
+          "literal">OR</code> <em class=
+          "replaceable"><code>Lennon</code></em>. The <code class=
+          "literal">OR</code> must be entered literally (capitals),
+          and it has priority over the AND associations: <em class=
+          "replaceable"><code>word1</code></em> <em class=
+          "replaceable"><code>word2</code></em> <code class=
+          "literal">OR</code> <em class=
+          "replaceable"><code>word3</code></em> means <em class=
+          "replaceable"><code>word1</code></em> AND (<em class=
+          "replaceable"><code>word2</code></em> <code class=
+          "literal">OR</code> <em class=
+          "replaceable"><code>word3</code></em>) not (<em class=
+          "replaceable"><code>word1</code></em> AND <em class=
+          "replaceable"><code>word2</code></em>) <code class=
+          "literal">OR</code> <em class=
+          "replaceable"><code>word3</code></em>.</p>
+          <p>You can use parentheses to group elements (from
+          version 1.21), which will sometimes make things clearer,
+          and may allow expressing combinations which would have
+          been difficult otherwise.</p>
+          <p>An element preceded by a <code class=
+          "literal">-</code> specifies a term that should
+          <span class="emphasis"><em>not</em></span> appear.</p>
+          <p>As usual, words inside quotes define a phrase (the
+          order of words is significant), so that <em class=
+          "replaceable"><code>title:"prejudice pride"</code></em>
+          is not the same as <em class=
+          "replaceable"><code>title:prejudice
+          title:pride</code></em>, and is unlikely to find a
+          result.</p>
+          <p>Words inside phrases and capitalized words are not
+          stem-expanded. Wildcards may be used anywhere inside a
+          term. Specifying a wildcard on the left of a term can
+          produce a very slow search (or even an incorrect one if
+          the expansion is truncated because of excessive size).
+          Also see <a class="link" href="#RCL.SEARCH.WILDCARDS"
+          title="3.6.1.&nbsp;Wildcards">More about
+          wildcards</a>.</p>
+          <p>To save you some typing, <span class=
+          "application">Recoll</span> versions 1.20 and later
+          interpret a field value given as a comma-separated list
+          of terms as an AND list and a slash-separated list as an
+          OR list. No white space is allowed. So</p>
+          <pre class="programlisting">author:john,lennon</pre>
+          <p>will search for documents with <code class=
+          "literal">john</code> and <code class=
+          "literal">lennon</code> inside the <code class=
+          "literal">author</code> field (in any order), and</p>
+          <pre class="programlisting">author:john/ringo</pre>
+          <p>would search for <code class="literal">john</code> or
+          <code class="literal">ringo</code>. This behaviour is
+          only triggered by a field prefix: without it, comma- or
+          slash- separated input will produce a phrase search.
+          However, you can use a <code class="literal">text</code>
+          field name to search the main text this way, as an
+          alternate to using an explicit <code class=
+          "literal">OR</code>, e.g. <code class=
+          "literal">text:napoleon/bonaparte</code> would generate a
+          search for <em class=
+          "replaceable"><code>napoleon</code></em> or <em class=
+          "replaceable"><code>bonaparte</code></em> in the main
+          text body.</p>
+          <p>Modifiers can be set on a double-quote value, for
+          example to specify a proximity search (unordered). See
+          <a class="link" href="#RCL.SEARCH.LANG.MODIFIERS" title=
+          "3.5.4.&nbsp;Modifiers">the modifier section</a>. No
+          space must separate the final double-quote and the
+          modifiers value, e.g. <em class="replaceable"><code>"two
+          one"po10</code></em></p>
+          <p><span class="application">Recoll</span> currently
+          manages the following default fields:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist" style=
+            "list-style-type: disc;">
+              <li class="listitem">
+                <p><code class="literal">title</code>, <code class=
+                "literal">subject</code> or <code class=
+                "literal">caption</code> are synonyms which specify
+                data to be searched for in the document title or
+                subject.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">author</code> or
+                <code class="literal">from</code> for searching the
+                documents originators.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">recipient</code> or
+                <code class="literal">to</code> for searching the
+                documents recipients.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">keyword</code> for
+                searching the document-specified keywords (few
+                documents actually have any).</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">filename</code> for the
+                document's file name. You can use the shorter
+                <code class="literal">fn</code> alias. This value
+                is not set for all documents: internal documents
+                contained inside a compound one (for example an
+                EPUB section) do not inherit the container file
+                name any more, this was replaced by an explicit
+                field (see next). Sub-documents can still have a
+                <code class="literal">filename</code>, if it is
+                implied by the document format, for example the
+                attachment file name for an email attachment.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">containerfilename</code>,
+                aliased as <code class="literal">cfn</code>. This
+                is set for all documents, both top-level and
+                contained sub-documents, and is always the name of
+                the filesystem file which contains the data. The
+                terms from this field can only be matched by an
+                explicit field specification (as opposed to terms
+                from <code class="literal">filename</code> which
+                are also indexed as general document content). This
+                avoids getting matches for all the sub-documents
+                when searching for the container file name.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">ext</code> specifies the
+                file name extension (Ex: <code class=
+                "literal">ext:html</code>).</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">rclmd5</code> the MD5
+                checksum for the document. This is used for
+                displaying the duplicates of a search result (when
+                querying with the option to collapse duplicate
+                results). Incidentally, this could be used to find
+                the duplicates of any given file by computing its
+                MD5 checksum and executing a query with just the
+                <code class="literal">rclmd5</code> value.</p>
+              </li>
+            </ul>
+          </div>
+          <p>You can define aliases for field names, in order to
+          use your preferred denomination or to save typing (e.g.
+          the predefined <code class="literal">fn</code> and
+          <code class="literal">cfn</code> aliases defined for
+          <code class="literal">filename</code> and <code class=
+          "literal">containerfilename</code>). See the <a class=
+          "link" href="#RCL.INSTALL.CONFIG.FIELDS" title=
+          "5.4.3.&nbsp;The fields file">section about the
+          <code class="filename">fields</code> file</a>.</p>
+          <p>The document input handlers have the possibility to
+          create other fields with arbitrary names, and aliases may
+          be defined in the configuration, so that the exact field
+          search possibilities may be different for you if someone
+          took care of the customisation.</p>
         </div>
-        <p><span class="application">Recoll</span> 1.20 and later
-        have a way to specify aliases for the field names, which
-        will save typing, for example by aliasing <code class=
-        "literal">filename</code> to <em class=
-        "replaceable"><code>fn</code></em> or <code class=
-        "literal">containerfilename</code> to <em class=
-        "replaceable"><code>cfn</code></em>. See the <a class=
-        "link" href="#RCL.INSTALL.CONFIG.FIELDS" title=
-        "5.4.3.&nbsp;The fields file">section about the
-        <code class="filename">fields</code> file</a>.</p>
-        <p>The document input handlers used while indexing have the
-        possibility to create other fields with arbitrary names,
-        and aliases may be defined in the configuration, so that
-        the exact field search possibilities may be different for
-        you if someone took care of the customisation.</p>
-        <p>The field syntax also supports a few field-like, but
-        special, criteria:</p>
-        <div class="itemizedlist">
-          <ul class="itemizedlist" style="list-style-type: disc;">
-            <li class="listitem">
-              <p><code class="literal">dir</code> for filtering the
-              results on file location (Ex: <code class=
-              "literal">dir:/home/me/somedir</code>). <code class=
-              "literal">-dir</code> also works to find results not
-              in the specified directory (release &gt;= 1.15.8).
-              Tilde expansion will be performed as usual (except
-              for a bug in versions 1.19 to 1.19.11p1). Wildcards
-              will be expanded, but please <a class="link" href=
-              "#RCL.SEARCH.WILDCARDS.PATH" title=
-              "Wildcards and path filtering">have a look</a> at an
-              important limitation of wildcards in path
-              filters.</p>
-              <p>Relative paths also make sense, for example,
-              <code class="literal">dir:share/doc</code> would
-              match either <code class=
-              "filename">/usr/share/doc</code> or <code class=
-              "filename">/usr/local/share/doc</code></p>
-              <p>Several <code class="literal">dir</code> clauses
-              can be specified, both positive and negative. For
-              example the following makes sense:</p>
-              <pre class="programlisting">
-          dir:recoll dir:src -dir:utils -dir:common
-          </pre>
-              <p>This would select results which have both
-              <code class="filename">recoll</code> and <code class=
-              "filename">src</code> in the path (in any order), and
-              which have not either <code class=
-              "filename">utils</code> or <code class=
-              "filename">common</code>.</p>
-              <p>You can also use <code class="literal">OR</code>
-              conjunctions with <code class="literal">dir:</code>
-              clauses.</p>
-              <p>A special aspect of <code class=
-              "literal">dir</code> clauses is that the values in
-              the index are not transcoded to UTF-8, and never
-              lower-cased or unaccented, but stored as binary. This
-              means that you need to enter the values in the exact
-              lower or upper case, and that searches for names with
-              diacritics may sometimes be impossible because of
-              character set conversion issues. Non-ASCII UNIX file
-              paths are an unending source of trouble and are best
-              avoided.</p>
-              <p>You need to use double-quotes around the path
-              value if it contains space characters.</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">size</code> for filtering
-              the results on file size. Example: <code class=
-              "literal">size&lt;10000</code>. You can use
-              <code class="literal">&lt;</code>, <code class=
-              "literal">&gt;</code> or <code class=
-              "literal">=</code> as operators. You can specify a
-              range like the following: <code class=
-              "literal">size&gt;100 size&lt;1000</code>. The usual
-              <code class="literal">k/K, m/M, g/G, t/T</code> can
-              be used as (decimal) multipliers. Ex: <code class=
-              "literal">size&gt;1k</code> to search for files
-              bigger than 1000 bytes.</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">date</code> for searching or
-              filtering on dates. The syntax for the argument is
-              based on the ISO8601 standard for dates and time
-              intervals. Only dates are supported, no times. The
-              general syntax is 2 elements separated by a
-              <code class="literal">/</code> character. Each
-              element can be a date or a period of time. Periods
-              are specified as <code class=
-              "literal">P</code><em class=
-              "replaceable"><code>n</code></em><code class=
-              "literal">Y</code><em class=
-              "replaceable"><code>n</code></em><code class=
-              "literal">M</code><em class=
-              "replaceable"><code>n</code></em><code class=
-              "literal">D</code>. The <em class=
-              "replaceable"><code>n</code></em> numbers are the
-              respective numbers of years, months or days, any of
-              which may be missing. Dates are specified as
-              <em class=
-              "replaceable"><code>YYYY</code></em>-<em class=
-              "replaceable"><code>MM</code></em>-<em class=
-              "replaceable"><code>DD</code></em>. The days and
-              months parts may be missing. If the <code class=
-              "literal">/</code> is present but an element is
-              missing, the missing element is interpreted as the
-              lowest or highest date in the index. Examples:</p>
-              <div class="itemizedlist">
-                <ul class="itemizedlist" style=
-                "list-style-type: circle;">
-                  <li class="listitem">
-                    <p><code class=
-                    "literal">2001-03-01/2002-05-01</code> the
-                    basic syntax for an interval of dates.</p>
-                  </li>
-                  <li class="listitem">
-                    <p><code class=
-                    "literal">2001-03-01/P1Y2M</code> the same
-                    specified with a period.</p>
-                  </li>
-                  <li class="listitem">
-                    <p><code class="literal">2001/</code> from the
-                    beginning of 2001 to the latest date in the
-                    index.</p>
-                  </li>
-                  <li class="listitem">
-                    <p><code class="literal">2001</code> the whole
-                    year of 2001</p>
-                  </li>
-                  <li class="listitem">
-                    <p><code class="literal">P2D/</code> means 2
-                    days ago up to now if there are no documents
-                    with dates in the future.</p>
-                  </li>
-                  <li class="listitem">
-                    <p><code class="literal">/2003</code> all
-                    documents from 2003 or older.</p>
-                  </li>
-                </ul>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name=
+                "RCL.SEARCH.LANG.SPECIALFIELDS" id=
+                "RCL.SEARCH.LANG.SPECIALFIELDS"></a>3.5.2.&nbsp;Special
+                field-like specifiers</h3>
               </div>
-              <p>Periods can also be specified with small letters
-              (ie: p2y).</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">mime</code> or <code class=
-              "literal">format</code> for specifying the MIME type.
-              These clauses are processed besides the normal
-              Boolean logic of the search. Multiple values will be
-              OR'ed (instead of the normal AND). You can specify
-              types to be excluded, with the usual <code class=
-              "literal">-</code>, and use wildcards. Example:
-              <em class="replaceable"><code>mime:text/*
-              -mime:text/plain</code></em> Specifying an explicit
-              boolean operator before a <code class=
-              "literal">mime</code> specification is not supported
-              and will produce strange results.</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">type</code> or <code class=
-              "literal">rclcat</code> for specifying the category
-              (as in text/media/presentation/etc.). The
-              classification of MIME types in categories is defined
-              in the <span class="application">Recoll</span>
-              configuration (<code class=
-              "filename">mimeconf</code>), and can be modified or
-              extended. The default category names are those which
-              permit filtering results in the main GUI screen.
-              Categories are OR'ed like MIME types above, and can
-              be negated with <code class="literal">-</code>.</p>
-            </li>
-            <li class="listitem">
-              <p><code class="literal">issub</code> for specifying
-              that only standalone (<code class=
-              "literal">issub:0</code>) or only embedded
-              (<code class="literal">issub:1</code>) documents
-              should be returned as results.</p>
-            </li>
-          </ul>
-        </div>
-        <div class="note" style=
-        "margin-left: 0.5in; margin-right: 0.5in;">
-          <h3 class="title">Note</h3>
-          <p><code class="literal">mime</code>, <code class=
-          "literal">rclcat</code>, <code class=
-          "literal">size</code>, <code class="literal">issub</code>
-          and <code class="literal">date</code> criteria always
-          affect the whole query (they are applied as a final
-          filter), even if set with other terms inside a
-          parenthese.</p>
-        </div>
-        <div class="note" style=
-        "margin-left: 0.5in; margin-right: 0.5in;">
-          <h3 class="title">Note</h3>
-          <p><code class="literal">mime</code> (or the equivalent
-          <code class="literal">rclcat</code>) is the <span class=
-          "emphasis"><em>only</em></span> field with an
-          <code class="literal">OR</code> default. You do need to
-          use <code class="literal">OR</code> with <code class=
-          "literal">ext</code> terms for example.</p>
+            </div>
+          </div>
+          <p>The field syntax also supports a few field-like, but
+          special, criteria, for which the values are interpreted
+          differently. Regular processing does not apply (for
+          example the slash- or comma- separated lists don't work).
+          A list follows.</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist" style=
+            "list-style-type: disc;">
+              <li class="listitem">
+                <p><a name="RCL.SEARCH.LANG.SPECIALFIELDS.DIR" id=
+                "RCL.SEARCH.LANG.SPECIALFIELDS.DIR"></a><code class="literal">dir</code>
+                for filtering the results on file location. For
+                example, <code class=
+                "literal">dir:/home/me/somedir</code> will restrict
+                the search to results found anywhere under the
+                <em class=
+                "replaceable"><code>/home/me/somedir</code></em>
+                directory (including subdirectories).</p>
+                <p>Tilde expansion will be performed as usual.
+                Wildcards will be expanded, but please <a class=
+                "link" href="#RCL.SEARCH.WILDCARDS.PATH" title=
+                "Wildcards and path filtering">have a look</a> at
+                an important limitation of wildcards in path
+                filters.</p>
+                <p>You can also use relative paths. For example,
+                <code class="literal">dir:share/doc</code> would
+                match either <code class=
+                "filename">/usr/share/doc</code> or <code class=
+                "filename">/usr/local/share/doc</code>.</p>
+                <p><code class="literal">-dir</code> will find
+                results <span class="emphasis"><em>not</em></span>
+                in the specified location.</p>
+                <p>Several <code class="literal">dir</code> clauses
+                can be specified, both positive and negative. For
+                example the following makes sense:</p>
+                <pre class=
+                "programlisting">dir:recoll dir:src -dir:utils -dir:common</pre>
+                <p>This would select results which have both
+                <code class="filename">recoll</code> and
+                <code class="filename">src</code> in the path (in
+                any order), and which have not either <code class=
+                "filename">utils</code> or <code class=
+                "filename">common</code>.</p>
+                <p>You can also use <code class="literal">OR</code>
+                conjunctions with <code class="literal">dir:</code>
+                clauses.</p>
+                <p>A special aspect of <code class=
+                "literal">dir</code> clauses is that the values in
+                the index are not transcoded to UTF-8, and never
+                lower-cased or unaccented, but stored as binary.
+                This means that you need to enter the values in the
+                exact lower or upper case, and that searches for
+                names with diacritics may sometimes be impossible
+                because of character set conversion issues.
+                Non-ASCII UNIX file paths are an unending source of
+                trouble and are best avoided.</p>
+                <p>You need to use double-quotes around the path
+                value if it contains space characters.</p>
+                <p>The shortcut syntax to define OR or AND lists
+                within fields with commas or slash characters is
+                not available.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">size</code> for filtering
+                the results on file size. Example: <code class=
+                "literal">size&lt;10000</code>. You can use
+                <code class="literal">&lt;</code>, <code class=
+                "literal">&gt;</code> or <code class=
+                "literal">=</code> as operators. You can specify a
+                range like the following: <code class=
+                "literal">size&gt;100 size&lt;1000</code>. The
+                usual <code class="literal">k/K, m/M, g/G,
+                t/T</code> can be used as (decimal) multipliers.
+                Ex: <code class="literal">size&gt;1k</code> to
+                search for files bigger than 1000 bytes.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">date</code> for searching
+                or filtering on dates. The syntax for the argument
+                is based on the ISO8601 standard for dates and time
+                intervals. Only dates are supported, no times. The
+                general syntax is 2 elements separated by a
+                <code class="literal">/</code> character. Each
+                element can be a date or a period of time. Periods
+                are specified as <code class=
+                "literal">P</code><em class=
+                "replaceable"><code>n</code></em><code class=
+                "literal">Y</code><em class=
+                "replaceable"><code>n</code></em><code class=
+                "literal">M</code><em class=
+                "replaceable"><code>n</code></em><code class=
+                "literal">D</code>. The <em class=
+                "replaceable"><code>n</code></em> numbers are the
+                respective numbers of years, months or days, any of
+                which may be missing. Dates are specified as
+                <em class=
+                "replaceable"><code>YYYY</code></em>-<em class=
+                "replaceable"><code>MM</code></em>-<em class=
+                "replaceable"><code>DD</code></em>. The days and
+                months parts may be missing. If the <code class=
+                "literal">/</code> is present but an element is
+                missing, the missing element is interpreted as the
+                lowest or highest date in the index. Examples:</p>
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style=
+                  "list-style-type: circle;">
+                    <li class="listitem">
+                      <p><code class=
+                      "literal">2001-03-01/2002-05-01</code> the
+                      basic syntax for an interval of dates.</p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class=
+                      "literal">2001-03-01/P1Y2M</code> the same
+                      specified with a period.</p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class="literal">2001/</code> from
+                      the beginning of 2001 to the latest date in
+                      the index.</p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class="literal">2001</code> the
+                      whole year of 2001</p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class="literal">P2D/</code> means 2
+                      days ago up to now if there are no documents
+                      with dates in the future.</p>
+                    </li>
+                    <li class="listitem">
+                      <p><code class="literal">/2003</code> all
+                      documents from 2003 or older.</p>
+                    </li>
+                  </ul>
+                </div>
+                <p>Periods can also be specified with small letters
+                (ie: p2y).</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">mime</code> or
+                <code class="literal">format</code> for specifying
+                the MIME type. These clauses are processed apart
+                from the normal Boolean logic of the search:
+                multiple values will be OR'ed (instead of the
+                normal AND). You can specify types to be excluded,
+                with the usual <code class="literal">-</code>, and
+                use wildcards. Example: <em class=
+                "replaceable"><code>mime:text/*
+                -mime:text/plain</code></em>. Specifying an
+                explicit boolean operator before a <code class=
+                "literal">mime</code> specification is not
+                supported and will produce strange results.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">type</code> or
+                <code class="literal">rclcat</code> for specifying
+                the category (as in text/media/presentation/etc.).
+                The classification of MIME types in categories is
+                defined in the <span class=
+                "application">Recoll</span> configuration
+                (<code class="filename">mimeconf</code>), and can
+                be modified or extended. The default category names
+                are those which permit filtering results in the
+                main GUI screen. Categories are OR'ed like MIME
+                types above, and can be negated with <code class=
+                "literal">-</code>.</p>
+              </li>
+              <li class="listitem">
+                <p><code class="literal">issub</code> for
+                specifying that only standalone (<code class=
+                "literal">issub:0</code>) or only embedded
+                (<code class="literal">issub:1</code>) documents
+                should be returned as results.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="note" style=
+          "margin-left: 0.5in; margin-right: 0.5in;">
+            <h3 class="title">Note</h3>
+            <p><code class="literal">mime</code>, <code class=
+            "literal">rclcat</code>, <code class=
+            "literal">size</code>, <code class=
+            "literal">issub</code> and <code class=
+            "literal">date</code> criteria always affect the whole
+            query (they are applied as a final filter), even if set
+            with other terms inside a parenthese.</p>
+          </div>
+          <div class="note" style=
+          "margin-left: 0.5in; margin-right: 0.5in;">
+            <h3 class="title">Note</h3>
+            <p><code class="literal">mime</code> (or the equivalent
+            <code class="literal">rclcat</code>) is the
+            <span class="emphasis"><em>only</em></span> field with
+            an <code class="literal">OR</code> default. You do need
+            to use <code class="literal">OR</code> with
+            <code class="literal">ext</code> terms for example.</p>
+          </div>
         </div>
         <div class="sect2">
           <div class="titlepage">
             <div>
               <div>
                 <h3 class="title"><a name="RCL.SEARCH.LANG.RANGES"
-                id="RCL.SEARCH.LANG.RANGES"></a>3.5.1.&nbsp;Range
+                id="RCL.SEARCH.LANG.RANGES"></a>3.5.3.&nbsp;Range
                 clauses</h3>
               </div>
             </div>
@@ -5634,7 +5702,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               <div>
                 <h3 class="title"><a name=
                 "RCL.SEARCH.LANG.MODIFIERS" id=
-                "RCL.SEARCH.LANG.MODIFIERS"></a>3.5.2.&nbsp;Modifiers</h3>
+                "RCL.SEARCH.LANG.MODIFIERS"></a>3.5.4.&nbsp;Modifiers</h3>
               </div>
             </div>
           </div>
@@ -5698,8 +5766,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             <div>
               <h2 class="title" style="clear: both"><a name=
               "RCL.SEARCH.ANCHORWILD" id=
-              "RCL.SEARCH.ANCHORWILD"></a>3.6.&nbsp;Anchored
-              searches and wildcards</h2>
+              "RCL.SEARCH.ANCHORWILD"></a>3.6.&nbsp;Wildcards and
+              anchored searches</h2>
             </div>
           </div>
         </div>
@@ -5714,8 +5782,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             <div>
               <div>
                 <h3 class="title"><a name="RCL.SEARCH.WILDCARDS"
-                id="RCL.SEARCH.WILDCARDS"></a>3.6.1.&nbsp;More
-                about wildcards</h3>
+                id="RCL.SEARCH.WILDCARDS"></a>3.6.1.&nbsp;Wildcards</h3>
               </div>
             </div>
           </div>
