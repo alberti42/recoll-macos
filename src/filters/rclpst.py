@@ -97,7 +97,7 @@ class EmailBuilder(object):
         # print("%s" % headerstr)
         headers = self.parser.parsestr(headerstr, headersonly=True)
         #self.log("EmailBuilder: content-type %s" % headers['content-type'])
-        for nm in ('from', 'subject'):
+        for nm in ('from', 'subject', 'date'):
             if nm in headers:
                 newmsg.add_header(nm, headers[nm])
 
