@@ -23,6 +23,8 @@ from __future__ import print_function
 import os
 import posixpath
 import fnmatch
+import datetime
+
 import rclexecm
 from zipfile import ZipFile
 
@@ -119,6 +121,8 @@ class ZipExtractor:
                 # element).
                 filename = posixpath.basename(ipath)
                 self.em.setfield("filename", filename)
+                dt = datetime.datetime(*info.date_time)
+                self.em.setfield("modificationdate", str(int(dt.timestamp())))
             except:
                 pass
             ok = True
