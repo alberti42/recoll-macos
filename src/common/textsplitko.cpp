@@ -133,7 +133,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     unordered_map<string, string> args;
 
     args.insert(pair<string,string>{"data", string()});
-    string& inputdata{args.begin()->second};
+    string& inputdata(args.begin()->second);
 
     // We send the tagger name every time but it's only used the first
     // one: can't change it after init. We could avoid sending it
