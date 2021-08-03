@@ -44,6 +44,7 @@ const int FsTreeWalker::FtwTravMask = FtwTravNatural|
 #ifndef _WIN32
 // dev/ino means nothing on Windows. It seems that FileId could replace it
 // but we only use this for cycle detection which we just disable.
+#include <sys/stat.h>
 class DirId {
 public:
     dev_t dev;
