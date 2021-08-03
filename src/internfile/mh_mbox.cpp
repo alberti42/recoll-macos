@@ -321,7 +321,14 @@ void MimeHandlerMbox::clear_impl()
 {
     m->fn.erase();
     m->ipath.erase();
-    m->instream = ifstream();
+
+    // We used to use m->instream = ifstream() which fails with some compilers, as the copy
+    // constructor is marked deleted in standard c++ (works with many compilers though).
+    if (m->instream.is_open()) {
+        m->instream.close();
+    }
+    m->instream.clear();
+
     m->msgnum = 0;
     m->lineno = 0;
     m->fsize = 0;
