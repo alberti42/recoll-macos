@@ -346,7 +346,7 @@ bool MimeHandlerMbox::set_document_file_impl(const string&, const string &fn)
     LOGDEB("MimeHandlerMbox::set_document_file(" << fn << ")\n");
     clear_impl();
     m->fn = fn;
-    m->instream = ifstream(fn.c_str(), std::ifstream::binary);
+    m->instream.open(fn.c_str(), std::ifstream::binary);
     if (!m->instream.good()) {
         LOGSYSERR("MimeHandlerMail::set_document_file", "ifstream", fn);
         return false;

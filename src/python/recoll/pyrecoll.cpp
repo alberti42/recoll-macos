@@ -1497,7 +1497,7 @@ Query_getgroups(recoll_QueryObject* self, PyObject *, PyObject *)
     // make a python list of each, then group those in a pair, and
     // append this to the main list.
     for (unsigned int i = 0; i < hld.index_term_groups.size(); i++) {
-        HighlightData::TermGroup& tg{hld.index_term_groups[i]};
+        HighlightData::TermGroup& tg(hld.index_term_groups[i]);
         unsigned int ugidx = tg.grpsugidx;
         ulist = PyList_New(hld.ugroups[ugidx].size());
         for (unsigned int j = 0; j < hld.ugroups[ugidx].size(); j++) {
