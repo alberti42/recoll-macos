@@ -154,6 +154,7 @@ bool TextSplitPTR::matchGroups()
     return true;
 }
 
+#ifndef NO_STD_REGEX
 // Replace HTTP(s) urls in text/plain with proper HTML anchors so that
 // they become clickable in the preview. We don't make a lot of effort
 // for validating, or catching things which are probably urls but miss
@@ -165,6 +166,12 @@ static string activate_urls(const string& in)
 {
     return std::regex_replace(in, url_re, urlRep);
 }
+#else
+static string activate_urls(const string& in)
+{
+    return in;
+}
+#endif
 
 // Fix result text for display inside the gui text window.
 //

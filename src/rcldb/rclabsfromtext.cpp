@@ -52,6 +52,7 @@ using namespace std;
 
 namespace Rcl {
 
+#ifndef NO_STD_REGEX
 //// Fragment cleanup
 // Chars we turn to spaces in the Snippets
 static const string cstr_nc("\n\r\x0c\\");
@@ -65,6 +66,12 @@ static string fixfrag(const string& infrag)
 {
     return std::regex_replace(neutchars(infrag, cstr_nc), fixfrag_re, punctRep);
 }
+#else
+static string fixfrag(const string& infrag)
+{
+    return infrag;
+}
+#endif
 
 
 // Fragment descriptor. A fragment is a text area with one or several

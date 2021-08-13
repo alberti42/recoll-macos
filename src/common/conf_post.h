@@ -67,4 +67,11 @@ typedef int ssize_t;
 #  define PRETEND_USE(expr) ((void)(expr))
 #endif /* PRETEND_USE */
 
+#ifdef __GNUC__
+#include <features.h>
+#if ! __GNUC_PREREQ(6,0)
+#define NO_STD_REGEX 1
+#endif
+#endif
+
 #endif /* INCLUDED */
