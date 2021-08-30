@@ -59,8 +59,8 @@ public:
             radio = true;
             bg = new QButtonGroup(parent);
             hl = new QHBoxLayout();
-        } else if (nm == "label" || nm == "frag" || nm == "fragbuts" ||
-                   nm == "fragbut") {
+        } else if (nm == "label" || nm == "frag" || nm == "fragbuts" || nm == "fragbuttons" ||
+                   nm == "fragbut" || nm == "fragbutton") {
         } else {
             QMessageBox::warning(
                 0, "Recoll", QString("Bad element name: [%1]").arg(nm.c_str()));
@@ -73,7 +73,7 @@ public:
             label = u8s2qs(currentText);
         } else if (nm == "frag") {
             frag = currentText;
-        } else if (nm == "fragbut") {
+        } else if (nm == "fragbut" || nm == "fragbutton") {
             string slab = qs2utf8s(label);
             trimstring(slab, " \t\n\t");
             label = u8s2qs(slab.c_str());
@@ -94,7 +94,7 @@ public:
         } else if (nm == "buttons" || nm == "radiobuttons") {
             vl->addLayout(hl);
             hl = 0;
-        } else if (nm == "fragbuts") {
+        } else if (nm == "fragbuts" || nm == "fragbuttons") {
             vlw->addLayout(vl);
         } else {
             QMessageBox::warning(
@@ -125,32 +125,32 @@ private:
 FragButs::FragButs(QWidget* parent)
     : QWidget(parent), m_reftime(0), m_ok(false)
 {
-    m_fn = path_cat(theconfig->getConfDir(), "fragbuts.xml");
-
+    m_fn = path_cat(theconfig->getConfDir(), "fragment-buttons.xml");
     string data, reason;
     if (!path_exists(m_fn)) {
-        // config does not exist: try to create it from sample
-        string src = path_cat(theconfig->getDatadir(), "examples");
-        src = path_cat(src, "fragbuts.xml");
-        copyfile(src.c_str(), m_fn.c_str(), reason);
+        // Try the older name
+        m_fn = path_cat(theconfig->getConfDir(), "fragbuts.xml");
+        if (!path_exists(m_fn)) {
+            // No configuration file yet: create it from the sample file
+            string src = path_cat(theconfig->getDatadir(), "examples");
+            src = path_cat(src, "fragment-buttons.xml");
+            m_fn = path_cat(theconfig->getConfDir(), "fragment-buttons.xml");
+            copyfile(src.c_str(), m_fn.c_str(), reason);
+        }
     }
     if (!file_to_string(m_fn, data, &reason)) {
-        QMessageBox::warning(
-            0, "Recoll", tr("%1 not found.").arg(path2qs(m_fn)));
+        QMessageBox::warning(0, "Recoll", tr("%1 not found.").arg(path2qs(m_fn)));
         LOGERR("Fragbuts:: can't read [" << m_fn << "]\n");
         return;
     }
     FragButsParser parser(data, this, m_buttons);
     if (!parser.Parse()) {
-        QMessageBox::warning(
-            0, "Recoll", tr("%1:\n %2").arg(path2qs(m_fn))
-            .arg(u8s2qs(parser.getReason())));
+        QMessageBox::warning(0, "Recoll", tr("%1:\n %2").arg(path2qs(m_fn))
+                             .arg(u8s2qs(parser.getReason())));
         return;
     }
-    for (vector<ButFrag>::iterator it = m_buttons.begin(); 
-         it != m_buttons.end(); it++) {
-        connect(it->button, SIGNAL(clicked(bool)), 
-                this, SLOT(onButtonClicked(bool)));
+    for (auto& entry : m_buttons) {
+        connect(entry.button, SIGNAL(clicked(bool)), this, SLOT(onButtonClicked(bool)));
     }
     setWindowTitle(tr("Query Fragments"));
     isStale(&m_reftime);
@@ -179,11 +179,10 @@ void FragButs::onButtonClicked(bool on)
 
 void FragButs::getfrags(std::vector<std::string>& frags)
 {
-    for (vector<ButFrag>::iterator it = m_buttons.begin(); 
-         it != m_buttons.end(); it++) {
-        if (it->button->isChecked() && !it->fragment.empty()) {
-            LOGDEB("FragButs: fragment ["  << (it->fragment) << "]\n" );
-            frags.push_back(it->fragment);
+    for (auto &entry : m_buttons) {
+        if (entry.button->isChecked() && !entry.fragment.empty()) {
+            LOGDEB("FragButs: fragment [" << entry.fragment << "]\n" );
+            frags.push_back(entry.fragment);
         }
     }
 }

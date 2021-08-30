@@ -428,7 +428,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1478">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1494">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -3538,75 +3538,109 @@ fs.inotify.max_user_watches=32768
           <p>Selecting the <span class="guimenu">Tools</span> →
           <span class="guimenuitem">Query Fragments</span> menu
           entry will open a window with radio- and check-buttons
-          which can be used to activate query language fragments
-          for filtering the current query. This can be useful if
-          you have frequent reusable selectors, for example,
-          filtering on alternate directories, or searching just one
-          category of files, not covered by the standard category
-          selectors.</p>
+          which can be used to filter the current query with
+          user-defined query language fragments. This can be useful
+          if you have frequent reusable selectors, not covered by
+          the standard category selectors, for example, filtering
+          on alternate directories, or searching just one category
+          of files. In practise, the query fragments are joined to
+          the current query as an AND clause.</p>
           <p>The contents of the window are entirely customizable,
-          and defined by the contents of the <code class=
-          "filename">fragbuts.xml</code> file inside the
+          and defined by the contents of a XML text file, named
+          <code class="filename">fragment-buttons.xml</code> and
+          which will be looked for in the current index
           configuration directory. The sample file distributed with
-          <span class="application">Recoll</span> (which you should
-          be able to find under <code class=
-          "filename">/usr/share/recoll/examples/fragbuts.xml</code>),
-          contains an example which filters the results from the
-          Web history.</p>
+          <span class="application">Recoll</span> contains a number
+          of example filters. This will be automatically copied to
+          the configuration directory if the file does not exist in
+          there (e.g. <code class=
+          "filename">~/.recoll/fragment-buttons.xml</code> under
+          Linux and Mac OS, <code class=
+          "filename">$HOME/AppData/Local/Recoll</code> for
+          Windows). Editing the copy will allow you to configure
+          the tool for your needs .</p>
+          <div class="note" style=
+          "margin-left: 0.5in; margin-right: 0.5in;">
+            <h3 class="title">Note</h3>
+            <p>The <code class=
+            "filename">fragment-buttons.xml</code> file was named
+            <code class="filename">fragbuts.xml</code> up to
+            <span class="application">Recoll</span> version 1.31.0.
+            This was deemed too close to offensive for native
+            English speakers, so that the file was renamed. An
+            existing <code class="filename">fragbuts.xml</code>
+            will still be used if <code class=
+            "filename">fragment-buttons.xml</code> does not exist.
+            No automatic renaming will be performed.</p>
+          </div>
           <p>Here follows an example:</p>
           <pre class="programlisting">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;fragbuts version="1.0"&gt;
+&lt;fragbuttons version="1.0"&gt;
 
   &lt;radiobuttons&gt;
     &lt;!-- Actually useful: toggle Web queue results inclusion --&gt;
-    &lt;fragbut&gt;
+    &lt;fragbutton&gt;
       &lt;label&gt;Include Web Results&lt;/label&gt;
       &lt;frag&gt;&lt;/frag&gt;
-    &lt;/fragbut&gt;
+    &lt;/fragbutton&gt;
 
-    &lt;fragbut&gt;
+    &lt;fragbutton&gt;
       &lt;label&gt;Exclude Web Results&lt;/label&gt;
       &lt;frag&gt;-rclbes:BGL&lt;/frag&gt;
-    &lt;/fragbut&gt;
+    &lt;/fragbutton&gt;
 
-    &lt;fragbut&gt;
+    &lt;fragbutton&gt;
       &lt;label&gt;Only Web Results&lt;/label&gt;
       &lt;frag&gt;rclbes:BGL&lt;/frag&gt;
-    &lt;/fragbut&gt;
+    &lt;/fragbutton&gt;
 
   &lt;/radiobuttons&gt;
 
   &lt;buttons&gt;
 
-    &lt;fragbut&gt;
+    &lt;fragbutton&gt;
       &lt;label&gt;Example: Year 2010&lt;/label&gt;
       &lt;frag&gt;date:2010-01-01/2010-12-31&lt;/frag&gt;
-    &lt;/fragbut&gt;
+    &lt;/fragbutton&gt;
 
-    &lt;fragbut&gt;
+    &lt;fragbutton&gt;
       &lt;label&gt;Example: c++ files&lt;/label&gt;
       &lt;frag&gt;ext:cpp OR ext:cxx&lt;/frag&gt;
-    &lt;/fragbut&gt;
+    &lt;/fragbutton&gt;
 
-    &lt;fragbut&gt;
+    &lt;fragbutton&gt;
       &lt;label&gt;Example: My Great Directory&lt;/label&gt;
       &lt;frag&gt;dir:/my/great/directory&lt;/frag&gt;
-    &lt;/fragbut&gt;
+    &lt;/fragbutton&gt;
 
   &lt;/buttons&gt;
 
-&lt;/fragbuts&gt;
+&lt;/fragbuttons&gt;
         </pre>
           <p>Each <code class="literal">radiobuttons</code> or
           <code class="literal">buttons</code> section defines a
           line of checkbuttons or radiobuttons inside the window.
-          Any number of buttons can be selected, but the
-          radiobuttons in a line are exclusive.</p>
-          <p>Each <code class="literal">fragbut</code> section
+          Any number of <code class="literal">buttons</code> can be
+          selected, but the <code class=
+          "literal">radiobuttons</code> in a line are
+          exclusive.</p>
+          <p>Each <code class="literal">fragbutton</code> section
           defines the label for a button, and the Query Language
           fragment which will be added (as an AND filter) before
           performing the query if the button is active.</p>
+          <p>The only thing that you need to know about XML for
+          editing this file is that any opening tag like <em class=
+          "replaceable"><code>&lt;label&gt;</code></em> needs to be
+          matched by a closing tag after the value: <em class=
+          "replaceable"><code>&lt;/label&gt;</code></em>.</p>
+          <p>You will normally edit the file with a regular text
+          editor, like, e.g. <span class=
+          "command"><strong>vi</strong></span> or <span class=
+          "command"><strong>notepad</strong></span>.
+          Double-clicking the file in a file manager may not work,
+          because this usually opens it in a WEB browser, which
+          will not let you modify the contents.</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -4083,7 +4117,7 @@ fs.inotify.max_user_watches=32768
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1478" id="idm1478"></a>
+            <a name="idm1494" id="idm1494"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -4214,13 +4248,19 @@ fs.inotify.max_user_watches=32768
                     <td align="left">Ctrl+G</td>
                   </tr>
                   <tr>
-                    <td align="left">Open the current document and
-                    exit Recoll</td>
-                    <td align="left">Ctrl+Shift+O</td>
+                    <td align="left">Copy the text contained in the
+                    selected document to the clipboard, then exit
+                    recoll</td>
+                    <td align="left">Ctrl+Alt+Shift+G</td>
                   </tr>
                   <tr>
                     <td align="left">Open the current document</td>
                     <td align="left">Ctrl+O</td>
+                  </tr>
+                  <tr>
+                    <td align="left">Open the current document and
+                    exit Recoll</td>
+                    <td align="left">Ctrl+Alst+Shift+O</td>
                   </tr>
                   <tr>
                     <td align="left">Show a full preview for the

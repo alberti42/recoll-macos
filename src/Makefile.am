@@ -567,7 +567,7 @@ python/samples/recollgui/rclmain.ui \
 python/samples/recollq.py \
 python/samples/recollqsd.py \
 \
-sampleconf/fields sampleconf/fragbuts.xml sampleconf/mimeconf \
+sampleconf/fields sampleconf/fragment-buttons.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
 sampleconf/recoll.conf sampleconf/recoll.qss \
 sampleconf/recoll-dark.qss sampleconf/recoll-dark.css \
@@ -656,7 +656,7 @@ desktop/recollindex.desktop \
 index/rclmon.sh \
 index/recollindex@.service \
 index/recollindex.service \
-sampleconf/fragbuts.xml \
+sampleconf/fragment-buttons.xml \
 sampleconf/fields \
 sampleconf/recoll.conf \
 sampleconf/mimeconf \

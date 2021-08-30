@@ -2507,82 +2507,96 @@ fs.inotify.max_user_watches=32768
       <sect2 id="RCL.SEARCH.GUI.FRAGBUTS">
         <title>The Query Fragments window</title>
 
-        <para>Selecting the <menuchoice><guimenu>Tools</guimenu> 
-        <guimenuitem>Query Fragments</guimenuitem></menuchoice> menu
-        entry will open a window with radio- and check-buttons which
-        can be used to activate query language fragments for
-        filtering the current query. This can be useful if you have
-        frequent reusable selectors, for example, filtering on
-        alternate directories, or searching just one category of
-        files, not covered by the standard category
-        selectors.</para>
+        <para>Selecting the <menuchoice><guimenu>Tools</guimenu> <guimenuitem>Query
+        Fragments</guimenuitem></menuchoice> menu entry will open a window with radio- and
+        check-buttons which can be used to filter the current query with user-defined query language
+        fragments. This can be useful if you have frequent reusable selectors, not covered by the
+        standard category selectors, for example, filtering on alternate directories, or searching
+        just one category of files. In practise, the query fragments are joined to the current
+        query as an AND clause.</para>
 
-        <para>The contents of the window are entirely customizable, and
-        defined by the contents of the <filename>fragbuts.xml</filename>
-        file inside the configuration directory. The sample file
-        distributed with &RCL; (which you should be able to find under
-        <filename>/usr/share/recoll/examples/fragbuts.xml</filename>),
-        contains an example which filters the results from the Web
-        history.</para>
+        <para>The contents of the window are entirely customizable, and defined by the contents of a
+          XML text file, named <filename>fragment-buttons.xml</filename> and which will be looked
+          for in the current index configuration directory. The sample file distributed with &RCL;
+          contains a number of example filters. This will be automatically copied to the
+          configuration directory if the file does not exist in there
+          (e.g. <filename>~/.recoll/fragment-buttons.xml</filename> under Linux and Mac
+          OS, <filename>$HOME/AppData/Local/Recoll</filename> for Windows). Editing the copy will
+          allow you to configure the tool for your needs .</para>
 
+      <note><para>
+          The <filename>fragment-buttons.xml</filename> file was
+          named <filename>fragbuts.xml</filename> up to &RCL; version 1.31.0. This was deemed too
+          close to offensive for native English speakers, so that the file was renamed. An
+          existing <filename>fragbuts.xml</filename> will still be used
+          if <filename>fragment-buttons.xml</filename> does not exist. No automatic renaming will be
+          performed.</para>
+      </note>
 
         <para>Here follows an example:
         <programlisting><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
-<fragbuts version="1.0">
+<fragbuttons version="1.0">
 
   <radiobuttons>
     <!-- Actually useful: toggle Web queue results inclusion -->
-    <fragbut>
+    <fragbutton>
       <label>Include Web Results</label>
       <frag></frag>
-    </fragbut>
+    </fragbutton>
 
-    <fragbut>
+    <fragbutton>
       <label>Exclude Web Results</label>
       <frag>-rclbes:BGL</frag>
-    </fragbut>
+    </fragbutton>
 
-    <fragbut>
+    <fragbutton>
       <label>Only Web Results</label>
       <frag>rclbes:BGL</frag>
-    </fragbut>
+    </fragbutton>
 
   </radiobuttons>
 
   <buttons>
 
-    <fragbut>
+    <fragbutton>
       <label>Example: Year 2010</label>
       <frag>date:2010-01-01/2010-12-31</frag>
-    </fragbut>
+    </fragbutton>
 
-    <fragbut>
+    <fragbutton>
       <label>Example: c++ files</label>
       <frag>ext:cpp OR ext:cxx</frag>
-    </fragbut>
+    </fragbutton>
 
-    <fragbut>
+    <fragbutton>
       <label>Example: My Great Directory</label>
       <frag>dir:/my/great/directory</frag>
-    </fragbut>
+    </fragbutton>
 
   </buttons>
 
-</fragbuts>
+</fragbuttons>
         ]]></programlisting>
         </para>
         
-        <para>Each <literal>radiobuttons</literal> or
-        <literal>buttons</literal> section defines a line of
-        checkbuttons or radiobuttons inside the window. Any number of
-        buttons can be selected, but the radiobuttons in a line are
-        exclusive.</para>
+        <para>Each <literal>radiobuttons</literal> or <literal>buttons</literal> section defines a
+        line of checkbuttons or radiobuttons inside the window. Any number
+        of <literal>buttons</literal> can be selected, but the <literal>radiobuttons</literal> in a
+        line are exclusive.</para>
         
-        <para>Each <literal>fragbut</literal> section defines the label
-        for a button, and the Query Language fragment which will be
-        added (as an AND filter) before performing the query if the
-        button is active.</para>
+        <para>Each <literal>fragbutton</literal> section defines the label
+          for a button, and the Query Language fragment which will be added (as an AND filter)
+          before performing the query if the button is active.</para>
+
+        <para>The only thing that you need to know about XML for editing this file is that any
+          opening tag like <replaceable>&lt;label&gt;</replaceable> needs to be matched by a closing
+          tag after the value: <replaceable>&lt;/label&gt;</replaceable>.</para>
+
+        <para>You will normally edit the file with a regular text editor, like,
+          e.g. <command>vi</command> or <command>notepad</command>. Double-clicking the file in a
+          file manager may not work, because this usually opens it in a WEB browser, which will not
+          let you modify the contents.</para>
 
       </sect2>
 

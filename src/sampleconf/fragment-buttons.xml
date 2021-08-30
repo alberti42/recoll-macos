@@ -5,53 +5,53 @@
      before execution. 
 -->
 
-<fragbuts version="1.0">
+<fragbuttons version="1.0">
 
   <radiobuttons>
     <!-- Actually useful: toggle WEB queue results inclusion -->
-    <fragbut>
+    <fragbutton>
       <label>Include Web Results</label>
       <frag></frag>
-    </fragbut>
+    </fragbutton>
 
-    <fragbut>
+    <fragbutton>
       <label>Exclude Web Results</label>
       <frag>-rclbes:BGL</frag>
-    </fragbut>
+    </fragbutton>
 
-    <fragbut>
+    <fragbutton>
       <label>Only Web Results</label>
       <frag>rclbes:BGL</frag>
-    </fragbut>
+    </fragbutton>
 
   </radiobuttons>
 
   <buttons>
 
-    <fragbut>
+    <fragbutton>
       <label>Example: Year 2010</label>
       <frag>date:2010-01-01/2010-12-31</frag>
-    </fragbut>
+    </fragbutton>
 
-    <fragbut>
+    <fragbutton>
       <label>Example: c++ files</label>
       <frag>ext:cpp OR ext:cxx</frag>
-    </fragbut>
+    </fragbutton>
 
-    <fragbut>
+    <fragbutton>
       <label>Example: My Great Directory</label>
       <frag>dir:/my/great/directory</frag>
-    </fragbut>
+    </fragbutton>
 
   </buttons>
 
   <buttons>
 
-    <fragbut>
+    <fragbutton>
       <label>Check the manual (Query Fragments Window section) for explanations</label>
       <frag></frag>
-    </fragbut>
+    </fragbutton>
 
   </buttons>
 
-</fragbuts>
+</fragbuttons>

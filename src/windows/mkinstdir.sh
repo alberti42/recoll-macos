@@ -171,7 +171,7 @@ copyrecoll()
     mkdir -p $DESTDIR/Share/doc/webhelp
     rsync -av $RCL/doc/user/webhelp/docs/* $DESTDIR/Share/doc/webhelp || exit 1
     chkcp $RCL/sampleconf/fields        $DESTDIR/Share/examples
-    chkcp $RCL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/fragment-buttons.xml  $DESTDIR/Share/examples
     chkcp $RCL/windows/mimeconf         $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/mimemap       $DESTDIR/Share/examples
     chkcp $RCL/windows/mimeview         $DESTDIR/Share/examples
