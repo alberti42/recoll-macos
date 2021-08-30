@@ -466,6 +466,18 @@ if test X$enableQT = Xyes ; then
    QMAKE_DISABLE_ZEITGEIST=""
   fi
 
+ # Retain debugging symbols in GUI recoll ? This makes it enormous (~50MB)
+  AC_ARG_ENABLE(guidebug,
+    AC_HELP_STRING([--enable-guidebug],
+      [Generate and retain debug symbols in GUI program (makes the file very big).]),
+        enableGuiDebug=$enableval, enableGuiDebug="no")
+
+  if test "$enableGuiDebug" = "yes" ; then
+   QMAKE_ENABLE_GUIDEBUG=""
+  else
+   QMAKE_ENABLE_GUIDEBUG="#"
+  fi
+
   AC_CONFIG_FILES($QTGUI/recoll.pro)
 
   ##################### End QT stuff
@@ -565,6 +577,8 @@ AC_SUBST(QMAKE_ENABLE_WEBKIT)
 AC_SUBST(QMAKE_DISABLE_WEBKIT)
 AC_SUBST(QMAKE_ENABLE_WEBENGINE)
 AC_SUBST(QMAKE_DISABLE_WEBENGINE)
+AC_SUBST(QMAKE_ENABLE_GUIDEBUG)
+AC_SUBST(QMAKE_DISABLE_GUIDEBUG)
 AC_SUBST(QMAKE_ENABLE_ZEITGEIST)
 AC_SUBST(QMAKE_DISABLE_ZEITGEIST)
 AC_SUBST(LIBQZEITGEIST)

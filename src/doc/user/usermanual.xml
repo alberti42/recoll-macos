@@ -5363,10 +5363,10 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           </listitem>
         </itemizedlist>
 
-        <para>There is a good chance that your system repository has
-        packages for the Recoll Python API, sometimes in a package separate
-        from the main one (maybe named something like python-recoll).  Else
-        refer to the <link linkend="RCL.INSTALL.BUILDING">Building from source chapter</link>.</para>
+        <para>There is a good chance that your system repository has packages for the Recoll Python
+        API, sometimes in a package separate from the main one (maybe named something like
+        python-recoll).  Else refer to the <link linkend="RCL.INSTALL.BUILDING">Building from source
+        chapter</link>.</para>
 
         <para>As an introduction, the following small sample will run a
         query and list the title and url for each of the results. The
@@ -6323,12 +6323,10 @@ hasextract = False
           for <ulink url="http://www.xapian.org"> <application>Xapian
           core</application></ulink>.</para> 
           <important>
-            <para>If you are
-            building Xapian for an older CPU (before Pentium 4 or Athlon
-            64), you need to add the <option>--disable-sse</option> flag
-            to the configure command. Else all Xapian application will
-            crash with an <literal>illegal instruction</literal>
-            error.</para> 
+            <para>If you are building Xapian for an older CPU (before Pentium 4 or Athlon 64), you
+            need to add the <option>--disable-sse</option> flag to the configure command. Else all
+            Xapian application will crash with an <literal>illegal instruction</literal>
+            error.</para>
           </important>
           </listitem>
 
@@ -6357,8 +6355,8 @@ hasextract = False
         </itemizedlist>
 
         <para>Check the <ulink url="http://www.recoll.org/pages/download.html">
-        &RCL; download page</ulink> for up to date version
-        information.</para>
+            &RCL; download page</ulink> for up to date version
+          information.</para>
 
       </sect2>
 
@@ -6366,147 +6364,143 @@ hasextract = False
         <title>Building</title>
 
         <para>&RCL; has been built on Linux, FreeBSD, Mac OS X, and Solaris,
-        most versions after 2005 should be ok, maybe some older ones too
-        (Solaris 8 used to be ok). If you build on another system, and
-        need to modify things,
-        <ulink url="mailto:jfd@recoll.org">I would
-        very much welcome patches</ulink>.</para>
+          most versions after 2005 should be ok, maybe some older ones too (Solaris 8 used to be
+          ok). If you build on another system, and need to modify
+          things, <ulink url="mailto:jfd@recoll.org">I would very much welcome
+            patches</ulink>.</para>
 
 
-        <formalpara>
+        <sect3 id="RCL.INSTALL.BUILDING.BUILDING.CONFIGURE">
           <title>Configure options:</title>
-          <para>
-            <itemizedlist>
 
-              <listitem><para><option>--without-aspell</option> 
-              will disable the code for phonetic matching of search
-              terms. </para></listitem>
+          <para><option>--without-aspell</option> 
+            will disable the code for phonetic matching of search
+            terms. </para>
 
-              <listitem><para><option>--with-fam</option> or
-              <option>--with-inotify</option> will enable the code for real
-              time indexing. Inotify support is enabled by default on Linux
-              systems.</para></listitem>
-              
+          <para><option>--with-fam</option> or
+            <option>--with-inotify</option> will enable the code for real
+            time indexing. Inotify support is enabled by default on Linux
+            systems.</para>
 
-              <listitem><para><option>--with-qzeitgeist</option> will
-              enable sending <application>Zeitgeist</application>
-              events about the visited search results, and needs
-              the <application>qzeitgeist</application>
-              package.</para></listitem> 
+          <para><option>--with-qzeitgeist</option> will
+            enable sending <application>Zeitgeist</application>
+            events about the visited search results, and needs
+            the <application>qzeitgeist</application>
+            package.</para> 
 
-              <listitem><para><option>--disable-webkit</option> is available
-              from version 1.17 to implement the result list with a
-              <application>Qt</application> QTextBrowser instead of a
-              WebKit widget if you do not or can't depend on the
-              latter.</para></listitem>
+          <para><option>--disable-qtgui</option> will disable the Qt
+            graphical interface, which allows building the indexer and the command line search
+            program in absence of a Qt environment.</para>
 
-              <listitem><para><option>--disable-qtgui</option> Disable the Qt
-              interface. Will allow building the indexer and the command line
-              search program in absence of a Qt environment.</para> 
-              </listitem>
+          <para><option>--disable-webkit</option> will implement the result list with
+            a <application>Qt</application> QTextBrowser instead of a WebKit widget if you do
+            not or can't depend on the latter.</para>
 
-              <listitem><para><option>--enable-webengine</option> Enable the
-              use of Qt Webengine (only meaningful if the Qt GUI 
-              is enabled), in place or Qt Webkit.</para></listitem>
+          <para><option>--enable-webengine</option> will enable the use of Qt
+            Webengine (only meaningful if the Qt GUI is enabled), in place or Qt
+            Webkit.</para>
 
-              <listitem><para><option>--disable-idxthreads</option> is available
-              from version 1.19 to suppress multithreading inside the
-              indexing process. You can also use the run-time
-              configuration to restrict <command>recollindex</command>
-              to using a single thread, but the compile-time option
-              may disable a few more unused locks. This only applies
-              to the use of multithreading for the core index
-              processing (data input). The &RCL; monitor mode always
-              uses at least two threads of execution.</para></listitem>
+          <para><option>--enable-guidebug</option> will build the recoll GUI program
+            with debug symbols. This makes it very big (~50MB), which is why it is stripped by
+            default.</para>
 
-              <listitem><para><option>--disable-python-module</option> will 
-              avoid building the <application>Python</application>
-              module.</para></listitem>
+          <para><option>--disable-idxthreads</option> is available from version 1.19
+            to suppress multithreading inside the indexing process. You can also use the run-time
+            configuration to restrict <command>recollindex</command> to using a single thread, but
+            the compile-time option may disable a few more unused locks. This only applies to the
+            use of multithreading for the core index processing (data input). The &RCL; monitor
+            mode always uses at least two threads of execution.</para>
 
-              <listitem><para><option>--disable-python-chm</option> will
-              avoid building the Python libchm interface used to index CHM
-              files.</para></listitem>
+          <para><option>--disable-python-module</option> will 
+            avoid building the <application>Python</application>
+            module.</para>
 
-              <listitem><para><option>--enable-camelcase</option> will enable
-              splitting <replaceable>camelCase</replaceable> words. This
-              is not enabled by default as it has the unfortunate
-              side-effect of making some phrase searches quite
-              confusing: ie, <literal>"MySQL manual"</literal> would be
-              matched by <literal>"MySQL manual"</literal> and
-              <literal>"my sql manual"</literal> but not
-              <literal>"mysql manual"</literal> (only inside phrase
-              searches).</para>
-              </listitem>
+          <para><option>--disable-python-chm</option> will
+            avoid building the Python libchm interface used to index CHM
+            files.</para>
 
-              <listitem><para><option>--with-file-command</option> Specify
-              the version of the 'file' command to use (ie:
-              --with-file-command=/usr/local/bin/file). Can be useful to
-              enable the gnu version on systems where the native one is
-              bad.</para> </listitem>
+          <para><option>--enable-camelcase</option> will enable
+            splitting <replaceable>camelCase</replaceable> words. This
+            is not enabled by default as it has the unfortunate
+            side-effect of making some phrase searches quite
+            confusing: ie, <literal>"MySQL manual"</literal> would be
+            matched by <literal>"MySQL manual"</literal> and
+            <literal>"my sql manual"</literal> but not
+            <literal>"mysql manual"</literal> (only inside phrase
+            searches).</para>
+          
+          <para><option>--with-file-command</option> Specify
+            the version of the 'file' command to use (ie:
+            --with-file-command=/usr/local/bin/file). Can be useful to
+            enable the gnu version on systems where the native one is
+            bad.</para> 
 
-              <listitem><para><option>--disable-x11mon</option> Disable
-              <application>X11</application> connection monitoring
-              inside recollindex. Together with --disable-qtgui, this
-              allows building recoll without
-              <application>Qt</application> and
-              <application>X11</application>.</para> </listitem>
+          <para><option>--disable-x11mon</option> Disable
+            <application>X11</application> connection monitoring
+            inside recollindex. Together with --disable-qtgui, this
+            allows building recoll without
+            <application>Qt</application> and
+            <application>X11</application>.</para> 
 
-              <listitem><para><option>--disable-userdoc</option> 
-              will avoid building the user manual. This avoids having to
-              install the Docbook XML/XSL files and the TeX toolchain used for
-              translating the manual to PDF.</para></listitem>
+          <para><option>--disable-userdoc</option> 
+            will avoid building the user manual. This avoids having to
+            install the Docbook XML/XSL files and the TeX toolchain used for
+            translating the manual to PDF.</para>
 
-              <listitem><para><option>--enable-recollq</option> Enable
-              building the <command>recollq</command> command line query
-              tool (recoll -t without need for Qt). This is done by 
-              default if --disable-qtgui is set but this option
-              enables forcing it.</para></listitem>
+          <para><option>--enable-recollq</option> Enable
+            building the <command>recollq</command> command line query
+            tool (recoll -t without need for Qt). This is done by 
+            default if --disable-qtgui is set but this option
+            enables forcing it.</para>
 
-              <listitem><para><option>--disable-pic</option> (&RCL; versions up
-              to 1.21 only) will compile
-              &RCL; with position-dependant code. This is incompatible with
-              building the KIO or the <application>Python</application>
-              or <application>PHP</application> extensions, but might
-              yield very marginally faster code.</para></listitem>
+          <para><option>--disable-pic</option> (&RCL; versions up to 1.21 only) will
+            compile &RCL; with position-dependant code. This is incompatible with building the KIO
+            or the <application>Python</application> or <application>PHP</application> extensions,
+            but might yield very marginally faster code.</para>
 
-              <listitem><para><option>--without-systemd</option> Disable
-              the automatic installation of systemd unit files. Normally
-              unit files are installed if the install path can be detected.
-              </para></listitem>
-              
-              <listitem><para>
-               <option>--with-system-unit-dir=DIR</option> Provide
-               an install path for the systemd system unit template file.
-              </para></listitem>
-              
-              <listitem><para>
-               <option>--with-user-unit-dir=DIR</option> Provide
-               an install path for the systemd user unit file.
-              </para></listitem>
-               
-              <listitem><para>Of course the usual 
-              <application>autoconf</application> <command>configure</command>
-              options, like <option>--prefix</option> apply.</para> 
-              </listitem>
-            </itemizedlist>
+          <para><option>--without-systemd</option> Disable
+            the automatic installation of systemd unit files. Normally
+            unit files are installed if the install path can be detected.
           </para>
-        </formalpara>
+          
+          <para>
+            <option>--with-system-unit-dir=DIR</option> Provide
+            an install path for the systemd system unit template file.
+          </para>
+          
+          <para>
+            <option>--with-user-unit-dir=DIR</option> Provide
+            an install path for the systemd user unit file.
+          </para>
+          
+          <para>Of course the usual <application>autoconf</application> <command>configure</command>
+            options, like <option>--prefix</option> apply.</para> 
+        </sect3>        
 
-        <para>Normal procedure (for source extracted from a tar
-        distribution):</para>
-        <screen>
-          <userinput>cd recoll-xxx</userinput>
-          <userinput>./configure</userinput>
-          <userinput>make</userinput>
-          <userinput>(practices usual hardship-repelling invocations)</userinput>
-        </screen>
+        <sect3 id="RCL.INSTALL.BUILDING.BUILDING.TAR">
+          <title>Normal procedure, for source extracted from a tar distribution)</title>
 
-        <para>When building from source cloned from the git repository,
-        you also need to install <application>autoconf</application>,
-        <application>automake</application>, and
-        <application>libtool</application> and you must execute
-        <literal>sh autogen.sh</literal> in the top source directory
-        before running <literal>configure</literal>.</para>
+          <para>
+            <screen><userinput>cd recoll-xxx</userinput>
+<userinput>./configure <replaceable>[options]</replaceable></userinput>
+<userinput>make</userinput>
+<userinput>(practices usual hardship-repelling invocations)</userinput></screen>
+          </para>
+
+        </sect3>
+
+        <sect3 id="RCL.INSTALL.BUILDING.BUILDING.GIT">
+          <title>Building from git code</title>
+
+          <para>When building from source cloned from the git repository,
+            you also need to install <application>autoconf</application>,
+            <application>automake</application>, and
+            <application>libtool</application> and you must execute
+            <literal>sh autogen.sh</literal> in the top source directory
+            before running <literal>configure</literal>.</para>
+
+        </sect3>
+
       </sect2>
       
       <sect2 id="RCL.INSTALL.BUILDING.INSTALL">
