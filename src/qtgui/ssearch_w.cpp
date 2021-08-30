@@ -38,6 +38,7 @@
 #include <QModelIndex>
 #include <QTimer>
 #include <QListView>
+#include <QShortcut>
 
 #include "log.h"
 #include "guiutils.h"
@@ -50,6 +51,7 @@
 #include "smallut.h"
 #include "rcldb.h"
 #include "recoll.h"
+#include "scbase.h"
 
 using namespace std;
 
@@ -188,6 +190,14 @@ void SSearch::init()
             SLOT(onCompletionActivated(const QString&)));
     connect(historyPB, SIGNAL(clicked()), this, SLOT(onHistoryClicked()));
     setupButtons();
+    onNewShortcuts();
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),this, SLOT(onNewShortcuts()));
+}
+
+void SSearch::onNewShortcuts()
+{
+    SETSHORTCUT(this, "ssearch:197", tr("Simple search"), tr("History"),
+                "Ctrl+H", m_histsc, onHistoryClicked);
 }
 
 void SSearch::setupButtons()

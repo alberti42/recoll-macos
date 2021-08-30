@@ -27,6 +27,7 @@
 #include <QPixmap>
 
 class QTimer;
+class QShortcut;
 
 #include "recoll.h"
 #include "searchdata.h"
@@ -96,6 +97,7 @@ public slots:
     // Forget current entry and any state (history)
     virtual void clearAll();
     virtual void setPrefs();
+    virtual void onNewShortcuts();
 
 private slots:
     virtual void searchTextChanged(const QString&);
@@ -118,6 +120,7 @@ private:
 
     RclCompleterModel *m_completermodel{nullptr};
     QCompleter *m_completer{nullptr};
+    QShortcut *m_histsc{nullptr};
     /* We save multiword entries because the completer replaces them with
        the completion */
     QString m_savedEditText;
