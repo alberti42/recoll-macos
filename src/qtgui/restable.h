@@ -172,6 +172,7 @@ public slots:
     virtual void menuCopyPath();
     virtual void menuCopyURL();
     virtual void menuCopyText();
+    virtual void menuCopyTextAndQuit();
     virtual void menuExpand();
     virtual void menuPreviewParent();
     virtual void menuOpenParent();
@@ -229,6 +230,7 @@ private:
     QShortcut *m_showheadersc{nullptr};
     QShortcut *m_showvheadersc{nullptr};
     QShortcut *m_copycurtextsc{nullptr};
+    QShortcut *m_copycurtextquitsc{nullptr};
     std::vector<SCData*> m_rowlinks;
     std::vector<QShortcut *> m_rowsc;
 };

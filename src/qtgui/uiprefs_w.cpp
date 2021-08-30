@@ -104,8 +104,7 @@ void UIPrefsDialog::init()
     connect(resetscPB, SIGNAL(clicked()), this, SLOT(resetShortcuts()));
 
     (void)new HelpClient(this);
-    HelpClient::installMap("sctab", "RCL.SEARCH.GUI.SHORTCUTS");
-    
+    HelpClient::installMap("tab_shortcuts", "RCL.SEARCH.GUI.SHORTCUTS");
     setFromPrefs();
 }
 
@@ -299,14 +298,10 @@ void UIPrefsDialog::readShortcutsInternal(const QStringList& sl)
 {
     shortcutsTB->setRowCount(0);
     shortcutsTB->setColumnCount(4);
-    shortcutsTB->setHorizontalHeaderItem(
-        0, new QTableWidgetItem(tr("Context")));
-    shortcutsTB->setHorizontalHeaderItem(
-        1, new QTableWidgetItem(tr("Description")));
-    shortcutsTB->setHorizontalHeaderItem(
-        2, new QTableWidgetItem(tr("Shortcut")));
-    shortcutsTB->setHorizontalHeaderItem(
-        3, new QTableWidgetItem(tr("Default")));
+    shortcutsTB->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Context")));
+    shortcutsTB->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Description")));
+    shortcutsTB->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Shortcut")));
+    shortcutsTB->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Default")));
     int row = 0;
     m_scids.clear();
     for (int i = 0; i < sl.size();) {

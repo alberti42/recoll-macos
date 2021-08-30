@@ -718,7 +718,7 @@ void ResTable::onNewShortcuts()
                 tr("Open current result document"),"Ctrl+O", m_opensc, menuEdit);
     SETSHORTCUT(this, "restable:706", tr("Result Table"),
                 tr("Open current result and quit"),
-                "Ctrl+Shift+O", m_openquitsc, menuEditAndQuit);
+                "Ctrl+Alt+Shift+O", m_openquitsc, menuEditAndQuit);
     SETSHORTCUT(this, "restable:709", tr("Result Table"), tr("Preview"),
                 "Ctrl+D", m_previewsc, menuPreview);
     SETSHORTCUT(this, "restable:711", tr("Result Table"), tr("Show snippets"),
@@ -731,9 +731,12 @@ void ResTable::onNewShortcuts()
     SETSHORTCUT(this, "restable:718", tr("Result Table"),
                 tr("Copy current result text to clipboard"),
                 "Ctrl+G", m_copycurtextsc, menuCopyText);
+    SETSHORTCUT(this, "restable:734", tr("Result Table"),
+                tr("Copy result text and quit"),
+                "Ctrl+Alt+Shift+G", m_copycurtextquitsc, menuCopyTextAndQuit);
     std::vector<QShortcut*> scps={
         m_opensc, m_openquitsc, m_previewsc, m_showsnipssc, m_showheadersc,
-        m_showvheadersc, m_copycurtextsc};
+        m_showvheadersc, m_copycurtextsc, m_copycurtextquitsc};
     for (auto& scp : scps) {
         scp->setContext(Qt::WidgetWithChildrenShortcut);
     }
@@ -1336,6 +1339,14 @@ void ResTable::menuCopyText()
             }
         }
 
+    }
+}
+
+void ResTable::menuCopyTextAndQuit()
+{
+    if (m_detaildocnum >= 0 && rcldb) {
+        menuCopyText();
+        m_rclmain->fileExit();
     }
 }
 

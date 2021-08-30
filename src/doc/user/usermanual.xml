@@ -2963,6 +2963,14 @@ fs.inotify.max_user_watches=32768
           preferences. Most shortcuts are specific to a given context
           (e.g. within a preview window, within the result table).</para>
 
+        <para>Most shortcuts can be changed to a preferred value by using the GUI shortcut editor:
+          <menuchoice>
+            <guimenu>Preferences</guimenu>
+            <guimenuitem>GUI configuration</guimenuitem>
+            <guimenuitem>Shortcuts</guimenuitem>
+          </menuchoice>. In order to change a shortcut, just click the corresponding cell in
+          the <guilabel>Shortcut</guilabel> column, and type the desired sequence.</para>
+
         <table frame='all'>
           <title>Keyboard shortcuts</title>
           <tgroup cols='2' align='left' colsep='1' rowsep='1'>
@@ -3065,12 +3073,17 @@ fs.inotify.max_user_watches=32768
                   document to the clipboard</entry> <entry>Ctrl+G</entry>
               </row>
               <row>
-                <entry>Open the current document and exit Recoll</entry>
-                <entry>Ctrl+Shift+O</entry>
+                <entry>Copy the text contained in the selected
+                  document to the clipboard, then exit recoll</entry>
+                <entry>Ctrl+Alt+Shift+G</entry>
               </row>
               <row>
                 <entry>Open the current document</entry>
                 <entry>Ctrl+O</entry>
+              </row>
+              <row>
+                <entry>Open the current document and exit Recoll</entry>
+                <entry>Ctrl+Alst+Shift+O</entry>
               </row>
               <row>
                 <entry>Show a full preview for the current document</entry>
