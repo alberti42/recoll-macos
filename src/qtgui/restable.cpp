@@ -407,6 +407,10 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
         return m_cachedfont;
     }
 
+    // Note that, because we use a style sheet, there is no way to dynamically set the background
+    // color. See: https://forum.qt.io/topic/95940/model-backgroundrole-overridden-by-style-sheet/
+    // https://bugreports.qt.io/browse/QTBUG-70100
+    
     if (!m_source || role != Qt::DisplayRole || !index.isValid() ||
         index.column() >= int(m_fields.size())) {
         return QVariant();
