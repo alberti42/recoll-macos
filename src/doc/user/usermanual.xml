@@ -2001,8 +2001,8 @@ fs.inotify.max_user_watches=32768
           </step>
         </procedure>
 
-        <para>The initial default search mode is <guilabel>Query
-        language</guilabel>. Without special directives, this will look for
+        <para>The initial default search mode is <link linkend="RCL.SEARCH.LANG"><guilabel>Query
+              language</guilabel></link>. Without special directives, this will look for
         documents containing all of the search terms (the ones with more
         terms will get better scores), just like the <guilabel>All
         terms</guilabel> mode. <guilabel>Any term</guilabel> will search
@@ -2021,9 +2021,8 @@ fs.inotify.max_user_watches=32768
         enclosing the input inside double quotes. Ex:
         <literal>"virtual reality"</literal>.</para>
 
-        <para>The <guilabel>Query Language</guilabel> features are
-        described in
-        <link linkend="RCL.SEARCH.LANG">a separate section</link>.
+        <para>The <guilabel>Query Language</guilabel> features are described in
+          <link linkend="RCL.SEARCH.LANG">a separate section</link>.
         </para>  
 
         <para>When using a stripped index (the default), character case has
