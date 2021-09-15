@@ -148,8 +148,7 @@ static void sigcleanup(int sig)
             stopindexing = 1;
         }
     } else {
-        cerr << "Recollindex: got signal " << sig <<
-            ", registering stop request\n";
+        cerr << "Recollindex: got signal " << sig << ", registering stop request\n";
         LOGDEB("Got signal " << sig << ", registering stop request\n");
         CancelCheck::instance().setCancel();
         stopindexing = 1;
@@ -169,6 +168,7 @@ static void makeIndexerOrExit(RclConfig *config, bool inPlaceReset)
     }
 }
 
+// Adjust IO priority (if available), and also Linux Out-Of-Memory killer badness (idem)
 void rclIxIonice(const RclConfig *config)
 {
     PRETEND_USE(config);
@@ -179,6 +179,18 @@ void rclIxIonice(const RclConfig *config)
     // Classdata may be empty (must be for idle class)
     config->getConfParam("monioniceclassdata", classdata);
     rclionice(clss, classdata);
+
+    std::string choompath;
+    if (ExecCmd::which("choom", choompath) && !choompath.empty()) {
+        std::string oomadj = "300";
+        config->getConfParam("oomadj", oomadj);
+        std::string spid = lltodecstr(getpid());
+        ExecCmd cmd;
+        std::string msg;
+        cmd.doexec(choompath, {"-n", oomadj, "-p", spid}, nullptr, &msg);
+        LOGDEB("rclIxIonice: oomadj output: " << msg);
+    }
+    
 #endif
 }
 
