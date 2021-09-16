@@ -428,7 +428,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1495">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1497">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -2045,8 +2045,13 @@ recollindex -c "$confdir"
         </div>
         <p>User extended attributes are named pieces of information
         that most modern file systems can attach to any file.</p>
-        <p><span class="application">Recoll</span> processes
-        extended attributes as document fields by default.</p>
+        <p><span class="application">Recoll</span> processes all
+        extended attributes as document fields. Note that most
+        fields are not indexed by default, you need to activate
+        them by defining a prefix in the <a class="link" href=
+        "#RCL.INSTALL.CONFIG.FIELDS" title=
+        "5.4.3.&nbsp;The fields file"><code class=
+        "filename">fields</code> configuration file</a>.</p>
         <p>A <a class="ulink" href=
         "http://www.freedesktop.org/wiki/CommonExtendedAttributes"
         target="_top">freedesktop standard</a> defines a few
@@ -2070,8 +2075,8 @@ recollindex -c "$confdir"
         "application">Recoll</span> fields of the same name.</p>
         <p>On Linux, the <code class="literal">user</code> prefix
         is removed from the name.</p>
-        <p>The name translation can be configured more precisely
-        inside the <a class="link" href=
+        <p>The name translation can be configured more precisely,
+        also inside the <a class="link" href=
         "#RCL.INSTALL.CONFIG.FIELDS" title=
         "5.4.3.&nbsp;The fields file"><code class=
         "filename">fields</code> configuration file</a>.</p>
@@ -4119,7 +4124,7 @@ fs.inotify.max_user_watches=32768
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1495" id="idm1495"></a>
+            <a name="idm1497" id="idm1497"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
