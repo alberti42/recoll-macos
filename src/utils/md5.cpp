@@ -26,9 +26,10 @@
 #include "md5.h"
 
 #include <cstring>
+#include <cstdint>
 
 #define PUT_BIT_LE(i, cp, value) do {                   \
-        (cp)[i] = (uint8_t)(((value) >> 8 * i) & 0xFF); \
+        (cp)[i] = uint8_t(((value) >> 8 * i) & 0xFF); \
     } while (0)
 
 #define PUT_64BIT_LE(cp, value) do {            \
