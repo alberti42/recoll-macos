@@ -312,7 +312,7 @@ RclConfig *recollinit(int flags,
 #if defined(MACPORTS)
     PATH = string("/opt/local/bin/") + ":" + PATH;
 #elif defined(HOMEBREW)
-    PATH = string("/usr/local/bin/") + ":" + PATH;
+    PATH = string("/opt/homebrew/bin:/usr/local/bin/") + ":" + PATH;
 #else
     // Native qt build. Add our own directory to the path so that
     // recoll finds recollindex pkgdatadir:
