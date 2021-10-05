@@ -8927,22 +8927,26 @@ hasextract = False
                 <dd>
                   <p>Files and directories which should be ignored.
                   White space separated list of wildcard patterns
-                  (simple ones, not paths, must contain no / ),
-                  which will be tested against file and directory
-                  names. The list in the default configuration does
-                  not exclude hidden directories (names beginning
-                  with a dot), which means that it may index quite
-                  a few things that you do not want. On the other
-                  hand, email user agents like Thunderbird usually
-                  store messages in hidden directories, and you
-                  probably want this indexed. One possible solution
-                  is to have ".*" in "skippedNames", and add things
-                  like "~/.thunderbird" "~/.evolution" to
-                  "topdirs". Not even the file names are indexed
-                  for patterns in this list, see the
-                  "noContentSuffixes" variable for an alternative
-                  approach which indexes the file names. Can be
-                  redefined for any subtree.</p>
+                  (simple ones, not paths, must contain no '/'
+                  characters), which will be tested against file
+                  and directory names. Have a look at the default
+                  configuration for the initial value, some entries
+                  may not suit your situation. The easiest way to
+                  see it is through the GUI Index configuration
+                  "local parameters" panel. The list in the default
+                  configuration does not exclude hidden directories
+                  (names beginning with a dot), which means that it
+                  may index quite a few things that you do not
+                  want. On the other hand, email user agents like
+                  Thunderbird usually store messages in hidden
+                  directories, and you probably want this indexed.
+                  One possible solution is to have ".*" in
+                  "skippedNames", and add things like
+                  "~/.thunderbird" "~/.evolution" to "topdirs". Not
+                  even the file names are indexed for patterns in
+                  this list, see the "noContentSuffixes" variable
+                  for an alternative approach which indexes the
+                  file names. Can be redefined for any subtree.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES-" id=
@@ -9425,7 +9429,7 @@ hasextract = False
                   unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe
                   æae Æae ﬀff ﬁfi ﬂfl åå Åå . German:
                   unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe
-                  æae Æae ﬀff ﬁfi ﬂfl In French, you probably want
+                  æae Æae ﬀff ﬁfi ﬂfl . French: you probably want
                   to decompose oe and ae and nobody would type a
                   German ß unac_except_trans = ßss œoe Œoe æae Æae
                   ﬀff ﬁfi ﬂfl . The default for all until someone
@@ -9644,6 +9648,21 @@ hasextract = False
                   to webqueuedir.</p>
                 </dd>
                 <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEKEEPINTERVAL"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEKEEPINTERVAL">
+                </a><span class="term"><code class=
+                "varname">webcachekeepinterval</code></span></dt>
+                <dd>
+                  <p>Page recycle interval By default, only one
+                  instance of an URL is kept in the cache. This can
+                  be changed by setting this to a value determining
+                  at what frequency we keep multiple instances
+                  ('day', 'week', 'month', 'year'). Note that
+                  increasing the interval will not erase existing
+                  entries.</p>
+                </dd>
+                <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLDICDIR" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLDICDIR"></a><span class="term"><code class="varname">aspellDicDir</code></span></dt>
                 <dd>
@@ -9734,7 +9753,9 @@ hasextract = False
                   no reliable Linux way to limit the data space
                   only), so we need to be a bit generous here.
                   Anything over 2000 will be ignored on 32 bits
-                  machines.</p>
+                  machines. The previous default value of 2000
+                  would prevent java pdftk to work when executed
+                  from Python rclpdf.py.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.THRQSIZES" id=
@@ -9816,6 +9837,19 @@ hasextract = False
                 "RCL.INSTALL.CONFIG.RECOLLCONF.IDXLOGFILENAME"></a><span class="term"><code class="varname">idxlogfilename</code></span></dt>
                 <dd>
                   <p>Override logfilename for the indexer.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.HELPERLOGFILENAME"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.HELPERLOGFILENAME"></a><span class="term"><code class="varname">helperlogfilename</code></span></dt>
+                <dd>
+                  <p>Destination file for external helpers standard
+                  error output. The external program error output
+                  is left alone by default, e.g. going to the
+                  terminal when the recoll[index] program is
+                  executed from the command line. Use /dev/null or
+                  a file inside a non-existent directory to
+                  completely suppress the output.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMLOGLEVEL" id=
@@ -9915,8 +9949,13 @@ hasextract = False
                 "varname">recollhelperpath</code></span></dt>
                 <dd>
                   <p>Additional places to search for helper
-                  executables. This is only used on Windows for
-                  now.</p>
+                  executables. This is used, e.g., on Windows by
+                  the Python code, and on Mac OS by the bundled
+                  recoll.app (because I could find no reliable way
+                  to tell launchd to set the PATH). The example
+                  below is for Windows. Use ':' as entry separator
+                  for Mac and Ux-like systems, ';' is for Windows
+                  only.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.IDXABSMLEN" id=
@@ -9962,6 +10001,16 @@ hasextract = False
                   recommended except if you are sure that the
                   interesting keywords are at the top and have
                   severe disk space issues.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXSYNONYMS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXSYNONYMS"></a><span class="term"><code class="varname">idxsynonyms</code></span></dt>
+                <dd>
+                  <p>Name of the index-time synonyms file. This is
+                  used for indexing multiword synonyms as single
+                  terms, which in turn is only useful if you want
+                  to perform proximity searches with such
+                  terms.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE" id=
