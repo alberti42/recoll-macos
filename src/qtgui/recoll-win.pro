@@ -171,7 +171,7 @@ mac {
   system(cp ../sampleconf/mimeview.mac ../mimeview)
   
   APP_EXAMPLES.files = \
-  ../sampleconf/fragbuts.xml \
+  ../sampleconf/fragment-buttons.xml \
   ../sampleconf/fields \
   ../sampleconf/recoll.conf \
   ../sampleconf/mimeconf \
