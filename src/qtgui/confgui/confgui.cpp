@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2016 J.F.Dockes
+/* Copyright (C) 2005-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
  *   the Free Software Foundation; either version 2.1 of the License, or
@@ -57,19 +57,27 @@ using namespace std;
 
 namespace confgui {
 
+// Main layout spacing
 static const int spacing = 3;
+
 // left,top,right, bottom
 static QMargins margin(4,3,4,3);
 
-ConfTabsW::ConfTabsW(QWidget *parent, const QString& title,
-                     ConfLinkFact *fact)
+// Margin around text to explicitely set pushbutton sizes lower than
+// the default min (80?). Different on Mac OS for some reason
+#ifdef __APPLE__
+static const int pbTextMargin = 30;
+#else
+static const int pbTextMargin = 15;
+#endif
+
+ConfTabsW::ConfTabsW(QWidget *parent, const QString& title, ConfLinkFact *fact)
     : QDialog(parent), m_makelink(fact)
 {
     setWindowTitle(title);
     tabWidget = new QTabWidget;
 
-    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
-                                     | QDialogButtonBox::Cancel);
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setSpacing(spacing);
@@ -226,6 +234,7 @@ ConfParamW *ConfTabsW::findParamW(const QString& varname)
     }
     return nullptr;
 }
+
 void ConfTabsW::endOfList(int tabindex)
 {
     ConfPanelW *panel = dynamic_cast<ConfPanelW*>(tabWidget->widget(tabindex));
@@ -612,7 +621,7 @@ ConfParamFNW::ConfParamFNW(
 
     QString text = tr("Choose");
     m_pb->setText(text);
-    int width = m_pb->fontMetrics().boundingRect(text).width() + 15;
+    int width = m_pb->fontMetrics().boundingRect(text).width() + pbTextMargin;
     m_pb->setMaximumWidth(width);
     setSzPol(m_pb, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     m_hl->addWidget(m_pb);
@@ -688,7 +697,7 @@ ConfParamSLW::ConfParamSLW(
     QString text = tr("+");
     pbA->setText(text);
     pbA->setToolTip(tr("Add entry"));
-    int width = pbA->fontMetrics().boundingRect(text).width() + 15;
+    int width = pbA->fontMetrics().boundingRect(text).width() + pbTextMargin;
     pbA->setMaximumWidth(width);
     setSzPol(pbA, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(pbA);
@@ -698,7 +707,7 @@ ConfParamSLW::ConfParamSLW(
     text = tr("-");
     pbD->setText(text);
     pbD->setToolTip(tr("Delete selected entries"));
-    width = pbD->fontMetrics().boundingRect(text).width() + 15;
+    width = pbD->fontMetrics().boundingRect(text).width() + pbTextMargin;
     pbD->setMaximumWidth(width);
     setSzPol(pbD, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(pbD);
@@ -708,7 +717,7 @@ ConfParamSLW::ConfParamSLW(
     text = tr("~");
     m_pbE->setText(text);
     m_pbE->setToolTip(tr("Edit selected entries"));
-    width = m_pbE->fontMetrics().boundingRect(text).width() + 15;
+    width = m_pbE->fontMetrics().boundingRect(text).width() + pbTextMargin;
     m_pbE->setMaximumWidth(width);
     setSzPol(m_pbE, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(m_pbE);
