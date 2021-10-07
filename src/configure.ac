@@ -1,4 +1,4 @@
-AC_INIT([Recoll], m4_esyscmd_s(cat VERSION))
+AC_INIT([Recoll], m4_esyscmd_s(cat RECOLL-VERSION.txt))
 AC_CONFIG_HEADERS([common/autoconfig.h])
 AH_BOTTOM([#include "conf_post.h"])
 AC_PREREQ(2.53)

@@ -20,14 +20,15 @@ else:
 	
 extra_compile_args = ['-std=c++11']
 
+VERSION = open(os.path.join(top, "RECOLL-VERSION.txt")).read().strip()
+
 if 'libdir' in os.environ and os.environ['libdir'] != "":
     runtime_library_dirs = [os.path.join(os.environ['libdir'], 'recoll')]
 else:
     runtime_library_dirs = [os.path.join('@prefix@', 'lib', 'recoll')]
 
 module1 = Extension('_recoll',
-                    define_macros = [('MAJOR_VERSION', '1'),
-                                     ('MINOR_VERSION', '0'),
+                    define_macros = [
                                      ('RECOLL_DATADIR', '"@RECOLL_DATADIR@"')
                                      ],
                     include_dirs = ['/usr/local/include',
@@ -50,7 +51,7 @@ module1 = Extension('_recoll',
                                ])
 
 setup (name = 'Recoll',
-       version = '1.0',
+       version = VERSION,
        description = 'Query/Augment a Recoll full text index',
        author = 'J.F. Dockes',
        author_email = 'jfd@recoll.org',

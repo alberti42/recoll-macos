@@ -15,7 +15,7 @@ pytop = srcdir
 localtop = top
 extra_compile_args = ''
 
-VERSION = open(os.path.join(top, "VERSION")).read().strip()
+VERSION = open(os.path.join(top, "RECOLL-VERSION.txt")).read().strip()
 
 include_dirs = [
         os.path.join(top, 'common'),

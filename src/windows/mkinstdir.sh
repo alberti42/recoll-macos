@@ -338,11 +338,11 @@ copypyrecoll()
 # First check that the config is ok
 diff -q $RCL/common/autoconfig.h $RCL/common/autoconfig-win.h || \
     fatal autoconfig.h and autoconfig-win.h differ
-VERSION=`cat $RCL/VERSION`
+VERSION=`cat $RCL/RECOLL-VERSION.txt`
 CFVERS=`grep PACKAGE_VERSION $RCL/common/autoconfig.h | \
 cut -d ' ' -f 3 | sed -e 's/"//g'`
 test "$VERSION" = "$CFVERS" ||
-    fatal Versions in VERSION and autoconfig.h differ
+    fatal Versions in RECOLL-VERSION.txt and autoconfig.h differ
 
 
 echo Packaging version $CFVERS
