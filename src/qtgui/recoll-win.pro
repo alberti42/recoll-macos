@@ -5,10 +5,10 @@ TEMPLATE        = app
 LANGUAGE        = C++
 TARGET          = recoll
 
-DEFINES += USING_WEBKIT
-QT += webkit webkitwidgets
-#QT += widgets webenginewidgets
-#DEFINES += USING_WEBENGINE
+#DEFINES += USING_WEBKIT
+#QT += webkit webkitwidgets
+DEFINES += USING_WEBENGINE
+QT += widgets webenginewidgets
 
 QT += xml printsupport
 

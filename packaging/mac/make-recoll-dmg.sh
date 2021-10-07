@@ -12,13 +12,16 @@ usage()
 
 # Adjustable things
 top=~/Recoll
-qtversion=5.14.2
+# The possibly bogus version we have in paths (may be harcoded in the .pro)
+qtpathversion=5.14.2
 # Will probably need adjustment on M1
 path_clang=clang_64
+# The real version for finding macdeployqt
+qtversion=5.15.2
+
 deploy=~/Qt/${qtversion}/${path_clang}/bin/macdeployqt
 
-
-qt_ver_sion=`echo $qtversion | sed -e 's/\./_/g'`
+qt_ver_sion=`echo $qtpathversion | sed -e 's/\./_/g'`
 
 toprecoll=$top/recoll/src
 appdir=$toprecoll/build-recoll-win-Desktop_Qt_${qt_ver_sion}_${path_clang}bit-Release/recoll.app
@@ -28,7 +31,7 @@ datadir=$appdir/Contents/Resources
 
 dmg=$appdir/../recoll.dmg
 
-version=`cat $toprecoll/VERSION`
+version=`cat $toprecoll/RECOLL-VERSION.txt`
 
 test -d $appdir || fatal Must first have built recoll in $appdir
 
