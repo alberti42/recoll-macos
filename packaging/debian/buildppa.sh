@@ -15,14 +15,14 @@ PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.31.0
 SCOPEVERS=1.20.2.4
-GSSPVERS=1.1.0
+GSSPVERS=1.1.1
 PPAVERS=1
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
 SCOPESRC=/y/home/dockes/projets/fulltext/unity-scope-recoll
-GSSPSRC=/y/home/dockes/projets/fulltext/gssp-recoll
-RCLDOWNLOAD=/y/home/dockes/projets/lesbonscomptes/recoll
+GSSPSRC=/home/dockes/projets/fulltext/gssp-recoll
+RCLDOWNLOAD=/home/dockes/projets/lesbonscomptes/recoll
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
@@ -86,7 +86,7 @@ done
 
 ### KIO.
 series="bionic focal groovy hirsute"
-#series=
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -126,7 +126,7 @@ done
 
 ### GSSP
 series="bionic focal groovy hirsute"
-series=
+#series=
 
 debdir=debiangssp
 if test ! -d ${debdir}/ ; then
