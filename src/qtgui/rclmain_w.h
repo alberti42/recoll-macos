@@ -50,6 +50,7 @@ class ConfIndexW;
 class RclTrayIcon;
 class QShortcut;
 class QActionGroup;
+class ActSearchW;
 
 #include "ui_rclmain.h"
 
@@ -134,6 +135,7 @@ public slots:
     virtual void docExpand(Rcl::Doc);
     virtual void showSubDocs(Rcl::Doc);
     virtual void showSnippets(Rcl::Doc);
+    virtual void showActionsSearch();
     virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
     virtual void startNativeViewer(Rcl::Doc, int pagenum = -1,
@@ -176,7 +178,7 @@ private slots:
     virtual void onWebcacheDestroyed(QObject *);
     virtual void onSSTypMenu(QAction *act);
     virtual void onSSTypCMB(int);
-
+    
 signals:
     void docSourceChanged(std::shared_ptr<DocSequence>);
     void stemLangChanged(const QString& lang);
@@ -210,6 +212,7 @@ private:
     WebcacheEdit   *webcache{0};
     ResTable       *restable{0};
     bool            displayingTable{false};
+    ActSearchW     *actsearchw{0};
     QAction        *m_idNoStem{0};
     QAction        *m_idAllStem{0};
     QToolBar       *m_toolsTB{0};
@@ -223,6 +226,7 @@ private:
     QShortcut      *m_focustosearcholdsc{0};
     QShortcut      *m_clearsearchsc{0};
     QShortcut      *m_toggletablesc{0};
+    QShortcut      *m_actionssearchsc{0};
     QFileSystemWatcher m_watcher;
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc{0}; // Indexing process

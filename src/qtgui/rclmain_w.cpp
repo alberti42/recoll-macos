@@ -367,12 +367,11 @@ void RclMain::onNewShortcuts()
                 "Ctrl+Shift+S", m_focustosearcholdsc, takeFocus);
     // We could set this as an action shortcut, but then, it would not
     // be editable
-    SETSHORTCUT(this, "main:357",
-                tr("Main Window"), tr("Toggle tabular display"),
+    SETSHORTCUT(this, "main:357", tr("Main Window"), tr("Toggle tabular display"),
                 "Ctrl+T", m_toggletablesc, toggleTable);
-
-    ks = scb.get("rclmain:361", tr("Main Window"),
-                 tr("Move keyboard focus to table"), "Ctrl+R");
+    SETSHORTCUT(this, "main:373", tr("Main Window"), tr("Show menu search dialog"),
+                "Alt+/", m_actionssearchsc, showActionsSearch);
+    ks = scb.get("rclmain:361", tr("Main Window"), tr("Move keyboard focus to table"), "Ctrl+R");
     if (!ks.isEmpty()) {
         delete m_focustotablesc;
         m_focustotablesc = new QShortcut(ks, this);

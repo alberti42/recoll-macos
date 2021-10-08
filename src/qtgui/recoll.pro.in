@@ -27,6 +27,7 @@ CONFIG  += qt warn_on thread release
 
 
 HEADERS += \
+        actsearch_w.h \
         advsearch_w.h \
         advshist.h \
         confgui/confgui.h \
@@ -59,6 +60,7 @@ HEADERS += \
         widgets/qxtconfirmationmessage.h
 
 SOURCES += \
+        actsearch_w.cpp \
         advsearch_w.cpp \
         advshist.cpp \
         confgui/confgui.cpp \
@@ -98,6 +100,7 @@ SOURCES += \
         xmltosd.cpp
 
 FORMS   = \
+        actsearch.ui \
         advsearch.ui \
         crontool.ui \
         firstidx.ui \

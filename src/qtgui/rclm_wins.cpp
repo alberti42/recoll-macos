@@ -36,6 +36,7 @@
 #include "rclmain_w.h"
 #include "webcache.h"
 #include "restable.h"
+#include "actsearch_w.h"
 
 using namespace std;
 
@@ -488,4 +489,17 @@ void RclMain::showSnippets(Rcl::Doc doc)
         m_snippets->onSetDoc(doc, m_source);
     }
     m_snippets->show();
+}
+
+void RclMain::showActionsSearch()
+{
+    if (nullptr == actsearchw) {
+        actsearchw = new ActSearchW(this);
+        actsearchw->setActList(findChildren<QAction *>());
+        connect(actsearchw->actCMB, SIGNAL(editTextChanged(const QString&)),
+                actsearchw, SLOT(onTextChanged(const QString&)));
+    }
+    actsearchw->actCMB->setCurrentIndex(-1);
+    actsearchw->actCMB->clearEditText();
+    actsearchw->show();
 }
