@@ -576,7 +576,7 @@ testmains/Makefile.am \
 \
 unac/AUTHORS unac/COPYING unac/README unac/README.recoll unac/unac.c \
 \
-VERSION
+RECOLL-VERSION.txt
 
 # EXTRA_DIST: The Php Code does not build anymore. No need to ship it until
 # someone fixes it:
@@ -782,7 +782,7 @@ dist-hook:
 	(cd $(top_srcdir); find . \
             \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
 	if test -z "$(NOTAG)";then \
-	  test -z "`git status -s|grep -v recoll-$(VERSION)`"||exit 1; \
-	  vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
+	  test -z "`git status -s|grep -v recoll-$(RECOLL-VERSION.txt)`"||exit 1; \
+	  vers=`echo $(RECOLL-VERSION.txt) | sed -e 's/~/_/g'`;\
 	  git tag -a RECOLL-$$vers -m "Release $$vers tagged"; \
 	fi
