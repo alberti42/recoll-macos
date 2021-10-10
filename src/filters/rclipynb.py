@@ -35,18 +35,22 @@ class IPYNBextractor(RclBaseHandler):
         text = open(fn, 'rb').read()
         data = json.loads(text)
         mdtext = ""
-        for cell in data["cells"]:
+        if "worksheets" in data:
+            cells = data["worksheets"][0]["cells"]
+        else:
+            cells = data["cells"]
+        for cell in cells:
             if cell["cell_type"] == "markdown":
                 mdtext += "\n"
                 for line in cell["source"]:
-                    mdtext += "# " + line
-                mdtext += "\n"
+                    mdtext += "# " + line + "\n"
             elif cell["cell_type"] == "code":
                 mdtext += "\n\n"
-                for line in cell["source"]:
+                key = "source" if "source" in cell else "input"
+                for line in cell[key]:
                     mdtext += line
                 mdtext += "\n"
-        print("%s"%mdtext, file=sys.stderr)
+        #print("%s"%mdtext, file=sys.stderr)
         self.outputmimetype = 'text/plain'
         return mdtext
 
