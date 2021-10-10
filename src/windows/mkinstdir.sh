@@ -320,6 +320,7 @@ copyaspell()
 # the standard Python dist is built with
 copypyrecoll()
 {
+    # e.g. build: "/c/Program Files (x86)/Python39-32/python" setup-win.py bdist_wheel
     if test $BUILD = MSVC ; then
         DEST=${DESTDIR}/Share/dist
         test -d $DEST || mkdir $DEST || fatal cant create $DEST

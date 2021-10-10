@@ -84,6 +84,7 @@ SOURCES += \
         xmltosd.cpp
 
 FORMS   = \
+        actsearch.ui \
         advsearch.ui \
         widgets/editdialog.ui \
         firstidx.ui \

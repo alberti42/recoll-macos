@@ -21,6 +21,7 @@
 #include <QAbstractItemView>
 #include <QLineEdit>
 #include <QAction>
+#include <QKeyEvent>
 
 #include "log.h"
 #include "actsearch_w.h"
