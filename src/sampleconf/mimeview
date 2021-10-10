@@ -24,7 +24,7 @@
 xallexcepts = application/pdf application/postscript application/x-dvi \
  text/html|gnuinfo text/html|chm text/html|epub text/html|rclman \
  application/x-fsdirectory|parentopen inode/directory|parentopen \
- application/vnd.ms-visio.drawing
+ application/vnd.ms-visio.drawing application/x-ipynb+json
 
 
 [view]
@@ -39,6 +39,8 @@ application/epub+zip = ebook-viewer %f
 # Open the parent epub document for epub parts instead of opening them as
 # html documents. This is almost always what we want.
 text/html|epub = ebook-viewer %F;ignoreipath=1
+
+application/x-ipynb+json = jupyter notebook %f
 
 application/x-gnote = gnote %f
 

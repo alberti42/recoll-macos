@@ -151,6 +151,7 @@ application/vnd.sun.xml.writer.template = \
 #application/x-tar = execm rcltar
 
 application/epub+zip = execm rclepub
+application/x-ipynb+json = exec jupyter nbconvert --to script --stdout ; mimetype = text/plain
 application/javascript = internal text/plain
 application/ogg = execm rclaudio
 application/pdf = execm rclpdf.py
@@ -256,6 +257,7 @@ application/ogg = sownd
 application/pdf = pdf
 application/postscript = postscript
 application/sql = source
+application/x-ipynb+json = document
 application/vnd.ms-excel = spreadsheet
 application/vnd.ms-office = document
 application/vnd.ms-outlook = document
@@ -407,13 +409,14 @@ text = \
       application/x-dvi \
       application/x-gnote \
       application/x-gnuinfo \
+      application/x-ipynb+json \
       application/x-kword \
       application/x-lyx \
       application/x-mobipocket-ebook \
       application/x-okular-notes \
       application/x-perl \
       application/x-php \
-	  application/x-ruby \
+      application/x-ruby \
       application/x-scribus \
       application/x-shellscript \
       application/x-tex \

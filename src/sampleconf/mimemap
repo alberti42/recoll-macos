@@ -50,6 +50,8 @@
 .sql = application/sql
 .tcl = text/x-tcl
 
+.ipynb = application/x-ipynb+json
+
 .xml = text/xml
 
 .note = application/x-gnote

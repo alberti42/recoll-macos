@@ -706,6 +706,7 @@ filters/rclics \
 filters/rclimg \
 filters/rclimg.py \
 filters/rclinfo \
+filters/rclipynb.py \
 filters/rclkar \
 filters/rclkwd \
 filters/rcllatinclass.py \
