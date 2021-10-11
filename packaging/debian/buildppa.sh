@@ -13,7 +13,7 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.31.0
+RCLVERS=1.31.2
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.1
 PPAVERS=1
@@ -49,8 +49,8 @@ check_recoll_orig()
 
 ####### QT
 debdir=debian
-series="bionic focal groovy hirsute"
-series=
+series="bionic focal groovy hirsute impish"
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -85,7 +85,7 @@ done
 
 
 ### KIO.
-series="bionic focal groovy hirsute"
+series="bionic focal groovy hirsute impish"
 series=
 
 debdir=debiankio
@@ -125,8 +125,8 @@ for svers in $series ; do
 done
 
 ### GSSP
-series="bionic focal groovy hirsute"
-#series=
+series="bionic focal groovy hirsute impish"
+series=
 
 debdir=debiangssp
 if test ! -d ${debdir}/ ; then

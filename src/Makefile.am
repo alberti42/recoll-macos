@@ -388,6 +388,9 @@ kde/kioslave/kio_recoll-kde4/recoll.protocol \
 \
 query/location.hh  query/position.hh  query/stack.hh \
 \
+qtgui/actsearch.ui \
+qtgui/actsearch_w.cpp \
+qtgui/actsearch_w.h \
 qtgui/advsearch.ui \
 qtgui/advsearch_w.cpp \
 qtgui/advsearch_w.h \

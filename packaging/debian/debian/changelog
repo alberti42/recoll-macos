@@ -1,3 +1,21 @@
+recoll (1.31.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Add support for .ipynb iPython/Jupyter notebook format.
+  * Implement Alt+/ shortcut to search the menu entries and possibly execute the result.
+  * Fix configuration GUI button margins on Mac OS.
+  * Add *.pyc __pycache__ .pytest_cache .tox  and .direnv to the default skipped names list.
+  * Add /opt/homebrew/bin to the helper search path when built under Mac Homebrew.
+  * Linux: let recollindex adjust its OOM killer "badness" on startup.
+  * simple search: add Ctrl+H as keyboard shortcut for "show history".
+  * Renamed the fragment buttons configuration file from fragbuts.xml to fragment-buttons.xml.
+  * Zip archives: set the modification date attribute for members.
+  * ost/pst filter: fix not fetching the message dates.
+  * Anchored searches: remove unwarranted slack increase. The anchor term should behave like a
+    normal one for slack computations.
+  * Fix djvu issues on Windows.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 11 Oct 2021 10:51:00 +0200
+
 recoll (1.31.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * GUI: modified shortcuts were not read from the preferences !
