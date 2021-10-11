@@ -786,6 +786,6 @@ dist-hook:
             \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
 	if test -z "$(NOTAG)";then \
 	  test -z "`git status -s|grep -v recoll-$(RECOLL-VERSION.txt)`"||exit 1; \
-	  vers=`echo $(RECOLL-VERSION.txt) | sed -e 's/~/_/g'`;\
+	  vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
 	  git tag -a RECOLL-$$vers -m "Release $$vers tagged"; \
 	fi
