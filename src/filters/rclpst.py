@@ -135,8 +135,13 @@ class EmailBuilder(object):
                 charset = headers.get_content_charset()
                 body = ''
                 if charset:
-                    body = self.body.decode(charset, errors='replace')
-                    #self.log("DECODE FROM HEADER CHARSET %s SUCCEEDED"% charset)
+                    if charset == 'unicode':
+                        charset = 'utf-16'
+                    try:
+                        body = self.body.decode(charset, errors='replace')
+                        #self.log("DECODE FROM HEADER CHARSET %s SUCCEEDED"% charset)
+                    except:
+                        pass
                 else:
                     try:
                         body = self.body.decode('utf-8')
