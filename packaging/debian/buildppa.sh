@@ -5,18 +5,18 @@
 # sudo apt-get install pkg-kde-tools  cdbs
 
 # Active series:
-# 16.04LTS xenial 2021-04
 # 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
 # 20.10    groovy 2021-07
 # 21.04    hirsute 2022-01
+# 21.10    impish
 
 PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.31.2
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.1
-PPAVERS=1
+PPAVERS=2
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -77,7 +77,7 @@ for series in $series ; do
       -e s/PPAVERS/${PPAVERS}/g \
       < ${debdir}/changelog > recoll-${RCLVERS}/debian/changelog
 
-  (cd recoll-${RCLVERS};debuild -k$PPA_KEYID -S -sa)  || break
+  (cd recoll-${RCLVERS};debuild -d -k$PPA_KEYID -S -sa)  || break
 
   dput $PPANAME recoll_${RCLVERS}-1~ppa${PPAVERS}~${series}1_source.changes
 done
