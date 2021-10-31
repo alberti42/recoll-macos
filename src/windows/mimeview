@@ -35,6 +35,15 @@ text/html|epub = rclstartw %F;ignoreipath=1
 application/x-fsdirectory|parentopen = rclstartw %f
 inode/directory|parentopen = rclstartw %f
 
+# Examples for PDF. These can be set from the GUI preferences "editor applications" section. Select
+# application/pdf, check "exception to desktop preferences, and enter something similar to the below
+# values. 
+# Evince is the only application which lets you specify a search string on the command line. The
+# exact command value will need some tweaking (user name and version number).
+#application/pdf = c:/users/bill/appdata/local/apps/evince-2.32.0.145/bin/evince --page-index=%p --find=%s %f
+#application/pdf  = "C:/Program Files/SumatraPDF/SumatraPDF.exe" -page %p %f
+#application/pdf = "C:/Program Files (x86)/Foxit Software/Foxit Reader/FoxitReader.exe" %f /A page=%p
+
 ###### THE FOLLOWING ARE NOT USED AT ALL ON WINDOWS, but the types need to
 ###### be listed for an "Open" link to appear in the result list
 application/epub+zip = ebook-viewer %f
@@ -46,9 +55,6 @@ application/x-mobipocket-ebook = ebook-viewer %f
 application/x-kword = kword %f
 application/x-abiword = abiword %f
 
-application/pdf  = evince --page-index=%p --find=%s %f
-# Or:
-#application/pdf  = qpdfview --search %s %f#%p
 
 application/postscript = evince --page-index=%p --find=%s %f
 application/x-dvi = evince --page-index=%p --find=%s  %f
