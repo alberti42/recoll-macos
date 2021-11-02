@@ -170,17 +170,14 @@ private:
 // /// QtGuiResListPager methods:
 bool QtGuiResListPager::append(const string& data)
 {
-    LOGDEB2("QtGuiReslistPager::appendString   : " << data << "\n");
     m_reslist->append(QString::fromUtf8(data.c_str()));
     return true;
 }
 
-bool QtGuiResListPager::append(const string& data, int docnum, 
-                               const Rcl::Doc&)
+bool QtGuiResListPager::append(const string& data, int docnum, const Rcl::Doc&)
 {
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
-    QString sdoc = QString(
-        "<div class=\"rclresult\" id=\"%1\" rcldocnum=\"%1\">").arg(docnum);
+    QString sdoc = QString("<div class=\"rclresult\" id=\"%1\" rcldocnum=\"%1\">").arg(docnum);
     m_reslist->append(sdoc);
     m_reslist->append(QString::fromUtf8(data.c_str()));
     m_reslist->append("</div>");
@@ -354,13 +351,11 @@ ResList::ResList(QWidget* parent, const char* name)
     languageChange();
 
     (void)new HelpClient(this);
-    HelpClient::installMap(qs2utf8s(this->objectName()),
-                           "RCL.SEARCH.GUI.RESLIST");
+    HelpClient::installMap(qs2utf8s(this->objectName()), "RCL.SEARCH.GUI.RESLIST");
 
 #if 0
     // See comments in "highlighted
-    connect(this, SIGNAL(highlighted(const QString &)), 
-            this, SLOT(highlighted(const QString &)));
+    connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(highlighted(const QString &)));
 #endif
 
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -812,7 +807,9 @@ void ResList::resultPageFor(int docnum)
 
 void ResList::append(const QString &text)
 {
-    LOGDEB2("QtGuiReslistPager::appendQString : " << qs2utf8s(text) << "\n");
+#if 0
+    std::cout << qs2utf8s(text) << "\n";
+#endif
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     m_text += text;
 #else
