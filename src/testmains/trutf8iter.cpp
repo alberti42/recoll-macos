@@ -48,6 +48,7 @@ static char usage [] =
 " converts infile to 32 bits unicode (processor order), for testing\n"
 "  -v : print stuff as we go\n"
 "-t [-w] [-e] <string> <maxlen> : test truncation\n"
+"-c <str> : str must be a single utf-8 char. Convert to code then show character bytes count\n"
 ;
 
 void Usage() {
@@ -59,6 +60,7 @@ static int     op_flags;
 #define OPT_t     0x4
 #define OPT_w     0x8
 #define OPT_e     0x10
+#define OPT_c     0x20
 
 int trytruncate(std::string s, int maxlen)
 {
@@ -86,11 +88,24 @@ int main(int argc, char **argv)
             switch (*(*argv)++) {
             case 'e': op_flags |= OPT_e;break;
             case 't': op_flags |= OPT_t;break;
-            case 'v':   op_flags |= OPT_v; break;
+            case 'v': op_flags |= OPT_v;break;
             case 'w': op_flags |= OPT_w;break;
+            case 'c': op_flags |= OPT_c;break;
             default: Usage();   break;
             }
         argc--;argv++;
+    }
+
+    if (op_flags & OPT_c) {
+        if (argc != 1)
+            Usage();
+        std::string s = *argv++;argc--;
+        Utf8Iter uit(s);
+        auto code = *uit;
+        auto cnt = utf8codepointsize(code);
+        std::cout << "0x" << std::hex << code << std::dec << " : " << cnt << " byte" <<
+            (cnt>1?"s":"") << "\n";
+        return 0;
     }
 
     if (op_flags & OPT_t) {
