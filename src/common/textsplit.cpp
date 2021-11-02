@@ -206,32 +206,24 @@ public:
 };
 static const CharClassInit charClassInitInstance;
 
-static inline int whatcc(unsigned int c, char *asciirep = nullptr)
+static inline bool isvisiblewhite(int c)
+{
+    return visiblewhite.find(c) != visiblewhite.end();
+}
+
+static inline int whatcc(unsigned int c)
 {
     if (c <= 127) {
         return charclasses[c]; 
     } else {
-        if (c == 0x2010) {
-            // Special treatment for hyphen: handle as ascii minus. See
-            // doc/notes/minus-hyphen-dash.txt
-            if (asciirep)
-                *asciirep = '-';
-            return c;
-        } else if (c == 0x2019 || c == 0x275c || c == 0x02bc) {
-            // Things sometimes replacing a single quote. Use single
-            // quote so that span processing works ok
-            if (asciirep)
-                *asciirep = '\'';
-            return c;
-        } else if (sskip.find(c) != sskip.end()) {
+        if (sskip.find(c) != sskip.end()) {
             return SKIP;
         } else if (spunc.find(c) != spunc.end()) {
             return SPACE;
         } else {
-            vector<unsigned int>::iterator it = 
-                lower_bound(vpuncblocks.begin(), vpuncblocks.end(), c);
-                if (it == vpuncblocks.end())
-                        return LETTER;
+            auto it = lower_bound(vpuncblocks.begin(), vpuncblocks.end(), c);
+            if (it == vpuncblocks.end())
+                return LETTER;
             if (c == *it)
                 return SPACE;
             if ((it - vpuncblocks.begin()) % 2 == 1) {
@@ -245,16 +237,16 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 
 // testing whatcc...
 #if 0
-  unsigned int testvalues[] = {'a', '0', 0x80, 0xbf, 0xc0, 0x05c3, 0x1000, 
-                               0x2000, 0x2001, 0x206e, 0x206f, 0x20d0, 0x2399, 
-                               0x2400, 0x2401, 0x243f, 0x2440, 0xff65};
-  int ntest = sizeof(testvalues) / sizeof(int);
-  for (int i = 0; i < ntest; i++) {
-      int ret = whatcc(testvalues[i]);
-      printf("Tested value 0x%x, returned value %d %s\n",
-             testvalues[i], ret, ret == LETTER ? "LETTER" : 
-             ret == SPACE ? "SPACE" : "OTHER");
-  }
+unsigned int testvalues[] = {'a', '0', 0x80, 0xbf, 0xc0, 0x05c3, 0x1000, 
+                             0x2000, 0x2001, 0x206e, 0x206f, 0x20d0, 0x2399, 
+                             0x2400, 0x2401, 0x243f, 0x2440, 0xff65};
+int ntest = sizeof(testvalues) / sizeof(int);
+for (int i = 0; i < ntest; i++) {
+    int ret = whatcc(testvalues[i]);
+    printf("Tested value 0x%x, returned value %d %s\n",
+           testvalues[i], ret, ret == LETTER ? "LETTER" : 
+           ret == SPACE ? "SPACE" : "OTHER");
+}
 #endif
 
 // CJK Unicode character detection. CJK text is indexed using an n-gram
@@ -287,16 +279,16 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 // FF00..FFEF; Halfwidth and Fullwidth Forms
 // 20000..2A6DF; CJK Unified Ideographs Extension B
 // 2F800..2FA1F; CJK Compatibility Ideographs Supplement
-#define UNICODE_IS_CJK(p)                                               \
-    (((p) >= 0x1100 && (p) <= 0x11FF) ||                                \
-     ((p) >= 0x2E80 && (p) <= 0x2EFF) ||                                \
-     ((p) >= 0x3000 && (p) <= 0x9FFF) ||                                \
-     ((p) >= 0xA700 && (p) <= 0xA71F) ||                                \
-     ((p) >= 0xAC00 && (p) <= 0xD7AF) ||                                \
-     ((p) >= 0xF900 && (p) <= 0xFAFF) ||                                \
-     ((p) >= 0xFE30 && (p) <= 0xFE4F) ||                                \
-     ((p) >= 0xFF00 && (p) <= 0xFFEF) ||                                \
-     ((p) >= 0x20000 && (p) <= 0x2A6DF) ||                              \
+#define UNICODE_IS_CJK(p)                       \
+    (((p) >= 0x1100 && (p) <= 0x11FF) ||        \
+     ((p) >= 0x2E80 && (p) <= 0x2EFF) ||        \
+     ((p) >= 0x3000 && (p) <= 0x9FFF) ||        \
+     ((p) >= 0xA700 && (p) <= 0xA71F) ||        \
+     ((p) >= 0xAC00 && (p) <= 0xD7AF) ||        \
+     ((p) >= 0xF900 && (p) <= 0xFAFF) ||        \
+     ((p) >= 0xFE30 && (p) <= 0xFE4F) ||        \
+     ((p) >= 0xFF00 && (p) <= 0xFFEF) ||        \
+     ((p) >= 0x20000 && (p) <= 0x2A6DF) ||      \
      ((p) >= 0x2F800 && (p) <= 0x2FA1F))
 
 // We should probably map 'fullwidth ascii variants' and 'halfwidth
@@ -304,9 +296,9 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 // filter, KuromojiNormalizeFilter.java
 // 309F is Hiragana.
 #ifdef KATAKANA_AS_WORDS
-#define UNICODE_IS_KATAKANA(p)                                          \
-    ((p) != 0x309F &&                                                   \
-     (((p) >= 0x3099 && (p) <= 0x30FF) ||                               \
+#define UNICODE_IS_KATAKANA(p)                  \
+    ((p) != 0x309F &&                           \
+     (((p) >= 0x3099 && (p) <= 0x30FF) ||       \
       ((p) >= 0x31F0 && (p) <= 0x31FF)))
 #else
 #define UNICODE_IS_KATAKANA(p) false
@@ -315,14 +307,14 @@ static inline int whatcc(unsigned int c, char *asciirep = nullptr)
 #ifdef HANGUL_AS_WORDS
 // If no external tagger is configured, we process HANGUL as generic
 // cjk (n-grams)
-#define UNICODE_IS_HANGUL(p) (                 \
-        o_exthangultagger &&                   \
-        (((p) >= 0x1100 && (p) <= 0x11FF) ||   \
-         ((p) >= 0x3130 && (p) <= 0x318F) ||   \
-         ((p) >= 0x3200 && (p) <= 0x321e) ||   \
-         ((p) >= 0x3248 && (p) <= 0x327F) ||   \
-         ((p) >= 0x3281 && (p) <= 0x32BF) ||   \
-         ((p) >= 0xAC00 && (p) <= 0xD7AF))     \
+#define UNICODE_IS_HANGUL(p) (                  \
+        o_exthangultagger &&                    \
+        (((p) >= 0x1100 && (p) <= 0x11FF) ||    \
+         ((p) >= 0x3130 && (p) <= 0x318F) ||    \
+         ((p) >= 0x3200 && (p) <= 0x321e) ||    \
+         ((p) >= 0x3248 && (p) <= 0x327F) ||    \
+         ((p) >= 0x3281 && (p) <= 0x32BF) ||    \
+         ((p) >= 0xAC00 && (p) <= 0xD7AF))      \
         )
 #else
 #define UNICODE_IS_HANGUL(p) false
@@ -351,19 +343,16 @@ bool TextSplit::isNGRAMMED(int c)
 }
 
 
-// This is used to detect katakana/other transitions, which must
-// trigger a word split (there is not always a separator, and katakana
-// is otherwise treated like other, in the same routine, unless cjk
+// This is used to detect katakana/other transitions, which must trigger a word split (there is not
+// always a separator, and katakana is otherwise treated like other, in the same routine, unless cjk
 // which has its span reader causing a word break)
 enum CharSpanClass {CSC_HANGUL, CSC_CJK, CSC_KATAKANA, CSC_OTHER};
-std::vector<CharFlags> csc_names {CHARFLAGENTRY(CSC_HANGUL),
-        CHARFLAGENTRY(CSC_CJK), CHARFLAGENTRY(CSC_KATAKANA),
-        CHARFLAGENTRY(CSC_OTHER)};
+std::vector<CharFlags> csc_names {CHARFLAGENTRY(CSC_HANGUL), CHARFLAGENTRY(CSC_CJK),
+                                  CHARFLAGENTRY(CSC_KATAKANA), CHARFLAGENTRY(CSC_OTHER)};
 
-// Final term checkpoint: do some checking (the kind which is simpler
-// to do here than in the main loop), then send term to our client.
-inline bool TextSplit::emitterm(bool isspan, string &w, int pos, 
-                                size_t btstart, size_t btend)
+// Final term checkpoint: do some checking (the kind which is simpler to do here than in the main
+// loop), then send term to our client.
+inline bool TextSplit::emitterm(bool isspan, string &w, int pos, size_t btstart, size_t btend)
 {
     LOGDEB2("TextSplit::emitterm: [" << w << "] pos " << pos << "\n");
 
@@ -378,39 +367,38 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
     PRETEND_USE(isspan);
 #endif
 
-    if (l > 0 && l <= o_maxWordLength) {
-        // 1 byte word: we index single ascii letters and digits, but
-        // nothing else. We might want to turn this into a test for a
-        // single utf8 character instead ?
-        if (l == 1) {
-            unsigned int c = ((unsigned int)w[0]) & 0xff;
-            if (charclasses[c] != A_ULETTER && charclasses[c] != A_LLETTER && 
-                charclasses[c] != DIGIT &&
-                (!(m_flags & TXTS_KEEPWILD) || charclasses[c] != WILD)
-                ) {
-                //cerr << "ERASING single letter term " << c << endl;
-                return true;
-            }
-        }
-        if (pos != m_prevpos || l != m_prevlen) {
-            bool ret = takeword(w, pos, int(btstart), int(btend));
-            m_prevpos = pos;
-            m_prevlen = int(w.length());
-            return ret;
-        }
-        LOGDEB2("TextSplit::emitterm:dup: [" << w << "] pos " << pos << "\n");
+    if (l == 0 || l > o_maxWordLength) {
+        return true;
     }
+    if (l == 1) {
+        // 1 byte word: we index single ascii letters and digits, but nothing else. We might want to
+        // turn this into a test for a single utf8 character instead ?
+        unsigned int c = ((unsigned int)w[0]) & 0xff;
+        if (charclasses[c] != A_ULETTER && charclasses[c] != A_LLETTER && 
+            charclasses[c] != DIGIT &&
+            (!(m_flags & TXTS_KEEPWILD) || charclasses[c] != WILD)
+            ) {
+            //cerr << "ERASING single letter term " << c << endl;
+            return true;
+        }
+    }
+    if (pos != m_prevpos || l != m_prevlen) {
+        bool ret = takeword(w, pos, int(btstart), int(btend));
+        m_prevpos = pos;
+        m_prevlen = int(w.length());
+        return ret;
+    }
+    LOGDEB2("TextSplit::emitterm:dup: [" << w << "] pos " << pos << "\n");
     return true;
 }
 
-// Check for an acronym/abbreviation ie I.B.M. This only works with
-// ascii (no non-ascii utf-8 acronym are possible)
+// Check for an acronym/abbreviation ie I.B.M. This only works with ascii (we do not detect
+// non-ascii utf-8 acronyms)
 bool TextSplit::span_is_acronym(string *acronym)
 {
     bool acron = false;
 
-    if (m_wordLen != m_span.length() && 
-        m_span.length() > 2 && m_span.length() <= 20) {
+    if (m_wordLen != m_span.length() && m_span.length() > 2 && m_span.length() <= 20) {
         acron = true;
         // Check odd chars are '.'
         for (unsigned int i = 1 ; i < m_span.length(); i += 2) {
@@ -439,27 +427,23 @@ bool TextSplit::span_is_acronym(string *acronym)
 }
 
 
-// Generate terms from span. Have to take into account the
-// flags: ONLYSPANS, NOSPANS, noNumbers
+// Generate terms from span. Have to take into account the flags: ONLYSPANS, NOSPANS, noNumbers
 bool TextSplit::words_from_span(size_t bp)
 {
 #if 0
-    cerr << "Span: [" << m_span << "] " << " w_i_s size: " << 
-        m_words_in_span.size() <<  " : ";
+    cerr << "Span: [" << m_span << "] " << " bp " << bp <<
+        " w_i_s size: " << m_words_in_span.size() <<  " : ";
     for (unsigned int i = 0; i < m_words_in_span.size(); i++) {
-        cerr << " [" << m_words_in_span[i].first << " " <<
-            m_words_in_span[i].second << "] ";
+        cerr << " [" << m_words_in_span[i].first << " " << m_words_in_span[i].second << "] ";
                 
     }
     cerr << endl;
 #endif
     int spanwords = int(m_words_in_span.size());
-    // It seems that something like: tv_combo-sample_util.Po@am_quote
-    // can get the splitter to call doemit with a span of '@' and
-    // words_in_span==0, which then causes a crash when accessing
-    // words_in_span[0] if the stl assertions are active (e.g. Fedora
-    // RPM build). Not too sure what the right fix would be, but for
-    // now, just defend against it
+    // It seems that something like: tv_combo-sample_util.Po@am_quote can get the splitter to call
+    // doemit with a span of '@' and words_in_span==0, which then causes a crash when accessing
+    // words_in_span[0] if the stl assertions are active (e.g. Fedora RPM build). Not too sure what
+    // the right fix would be, but for now, just defend against it
     if (spanwords == 0) {
         return true;
     }
@@ -467,21 +451,17 @@ bool TextSplit::words_from_span(size_t bp)
     // Byte position of the span start
     size_t spboffs = bp - m_span.size();
 
-    if (o_deHyphenate && spanwords == 2 && 
-        m_span[m_words_in_span[0].second] == '-') {
+    if (o_deHyphenate && spanwords == 2 && m_span[m_words_in_span[0].second] == '-') {
         unsigned int s0 = m_words_in_span[0].first;
         unsigned int l0 = m_words_in_span[0].second - m_words_in_span[0].first;
         unsigned int s1 = m_words_in_span[1].first;
         unsigned int l1 = m_words_in_span[1].second - m_words_in_span[1].first;
         string word = m_span.substr(s0, l0) + m_span.substr(s1, l1);
         if (l0 && l1) 
-            emitterm(false, word,
-                     m_spanpos, spboffs, spboffs + m_words_in_span[1].second);
+            emitterm(false, word, m_spanpos, spboffs, spboffs + m_words_in_span[1].second);
     }
 
-    for (int i = 0; 
-         i < ((m_flags&TXTS_ONLYSPANS) ? 1 : spanwords); 
-         i++) {
+    for (int i = 0; i < ((m_flags&TXTS_ONLYSPANS) ? 1 : spanwords); i++) {
 
         int deb = m_words_in_span[i].first;
         bool noposinc = m_words_in_span[i].second == deb;
@@ -490,8 +470,7 @@ bool TextSplit::words_from_span(size_t bp)
              j++) {
 
             int fin = m_words_in_span[j].second;
-            //cerr << "i " << i << " j " << j << " deb " << deb << 
-            //" fin " << fin << endl;
+            //cerr << "i " << i << " j " << j << " deb " << deb << " fin " << fin << endl;
             if (fin - deb > int(m_span.size()))
                 break;
             string word(m_span.substr(deb, fin-deb));
@@ -519,7 +498,7 @@ bool TextSplit::words_from_span(size_t bp)
  * 
  * @return true if ok, false for error. Splitting should stop in this case.
  * @param spanerase Set if the current span is at its end. Process it.
- * @param bp        The current BYTE position in the stream
+ * @param bp        The current BYTE position in the stream (it's beyond the current span data).
  */
 inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 {
@@ -550,36 +529,11 @@ inline bool TextSplit::doemit(bool spanerase, size_t _bp)
         return true;
     }
 
-
-    // Span is done (too long or span-terminating character). Produce
-    // terms and reset it.
+    // Span is done (too long or span-terminating character). Produce terms and reset it.
     string acronym;
     if (span_is_acronym(&acronym)) {
         if (!emitterm(false, acronym, m_spanpos, bp - m_span.length(), bp))
             return false;
-    }
-
-    // Maybe trim at end. These are chars that we might keep
-    // inside a span, but not at the end.
-    string::size_type trimsz{0};
-    while (trimsz < m_span.length()) {
-        auto c = m_span[m_span.length() - 1 - trimsz];
-        if (c == '.' || c == '-' || c == ',' || c == '@' || c == '\'' ||
-            c == underscoreatend) {
-            trimsz++;
-            if (m_words_in_span.size() &&
-                m_words_in_span.back().second > int(m_span.size())) {
-                m_words_in_span.back().second = int(m_span.size());
-            }
-            if (--bp < 0) {
-                bp = 0;
-            }
-        } else {
-            break;
-        }
-    }
-    if (trimsz > 0) {
-        m_span.resize(m_span.length() - trimsz);
     }
 
     if (!words_from_span(bp)) {
@@ -713,8 +667,7 @@ bool TextSplit::text_to_words(const string &in)
         prev_csc = csc;
 #endif
 
-        char asciirep = 0;
-        int cc = whatcc(c, &asciirep);
+        int cc = whatcc(c);
 
         switch (cc) {
         case SKIP:
@@ -773,7 +726,7 @@ bool TextSplit::text_to_words(const string &in)
                 } 
             } else if (m_inNumber) {
                 if ((m_span[m_span.length() - 1] == 'e' ||
-                                      m_span[m_span.length() - 1] == 'E')) {
+                     m_span[m_span.length() - 1] == 'E')) {
                     if (isdigit(whatcc(it[it.getCpos()+1]), m_flags)) {
                         m_wordLen += it.appendchartostring(m_span);
                         STATS_INC_WORDCHARS;
@@ -781,17 +734,18 @@ bool TextSplit::text_to_words(const string &in)
                     }
                 }
             } else {
+                int nextc = it[it.getCpos()+1];
                 if (cc == '+') {
-                    int nextc = it[it.getCpos()+1];
-                    if (nextc == '+' || nextc == -1 || visiblewhite.find(nextc) 
-                        != visiblewhite.end()) {
+                    if (nextc == '+' || nextc == -1 || isvisiblewhite(nextc)) {
                         // someword++[+...] !
                         m_wordLen += it.appendchartostring(m_span);
                         STATS_INC_WORDCHARS;
                         break;
                     }
                 } else {
-                    // Treat '-' inside span as glue char
+                    if (nextc == -1 || isvisiblewhite(nextc)) {
+                        goto SPACE;
+                    }
                     if (!doemit(false, it.getBpos()))
                         return false;
                     m_inNumber = false;
@@ -827,8 +781,7 @@ bool TextSplit::text_to_words(const string &in)
                         m_inNumber = true;
                         m_wordLen += it.appendchartostring(m_span);
                     } else {
-                        m_words_in_span.
-                            push_back(pair<int,int>(m_wordStart, m_wordStart));
+                        m_words_in_span.push_back(pair<int,int>(m_wordStart, m_wordStart));
                         m_wordStart += it.appendchartostring(m_span);
                     }
                     STATS_INC_WORDCHARS;
@@ -845,38 +798,28 @@ bool TextSplit::text_to_words(const string &in)
         }
         break;
 
-        case 0x2010:
-        case 0x2019:
+        case 0x2010: // hyphen
+        case 0x2019: // variations on single quote
         case 0x275c:
         case 0x02bc:
-            // Unicode chars which we replace with ascii for
-            // processing (2010 -> -,others -> '). It happens that
-            // they all work as glue chars and use the same code, but
-            // there might be cases needing different processing.
-            // Hyphen is replaced with ascii minus
-            if (m_wordLen) {
-                // Inside span: glue char
-                if (!doemit(false, it.getBpos()))
-                    return false;
-                m_inNumber = false;
-                m_span += asciirep;
-                m_wordStart++;
-                break;
-            }
-            goto SPACE;
-
         case '@':
         case '_': // If underscoreasletter is set, we'll never get this
         case '\'':
+        {
             // If in word, potential span: o'brien, jf@dockes.org,
             // else just ignore
+            int nextc = it[it.getCpos()+1];
+            if (nextc == -1 || isvisiblewhite(nextc)) {
+                goto SPACE;
+            }
             if (m_wordLen) {
                 if (!doemit(false, it.getBpos()))
                     return false;
                 m_inNumber = false;
                 m_wordStart += it.appendchartostring(m_span);
             }
-            break;
+        }
+        break;
 
         case '#':  {
             int w = whatcc(it[it.getCpos()+1]);
@@ -1107,7 +1050,7 @@ bool TextSplit::cjk_to_words(Utf8Iter& it, unsigned int *cp)
 
 // Specialization for countWords 
 class TextSplitCW : public TextSplit {
- public:
+public:
     int wcnt;
     TextSplitCW(Flags flags) : TextSplit(flags), wcnt(0) {}
     bool takeword(const string &, int, int, int) {
@@ -1132,7 +1075,7 @@ bool TextSplit::hasVisibleWhite(const string &in)
             LOGERR("hasVisibleWhite: error while scanning UTF-8 string\n");
             return false;
         }
-        if (visiblewhite.find(c) != visiblewhite.end())
+        if (isvisiblewhite(c))
             return true;
     }
     return false;
@@ -1157,7 +1100,7 @@ template <class T> bool u8stringToStrings(const string &s, T &tokens)
         }
 
         switch (c) {
-            case '"': 
+        case '"': 
             switch(state) {
             case SPACE: state = INQUOTE; continue;
             case TOKEN: goto push_char;
@@ -1166,7 +1109,7 @@ template <class T> bool u8stringToStrings(const string &s, T &tokens)
                 state = SPACE; continue;
             }
             break;
-            case '\\': 
+        case '\\': 
             switch(state) {
             case SPACE: 
             case TOKEN: state=TOKEN; goto push_char;
@@ -1175,25 +1118,25 @@ template <class T> bool u8stringToStrings(const string &s, T &tokens)
             }
             break;
 
-            case ' ': 
-            case '\t': 
-            case '\n': 
-            case '\r': 
+        case ' ': 
+        case '\t': 
+        case '\n': 
+        case '\r': 
             switch(state) {
-              case SPACE: continue;
-              case TOKEN: tokens.push_back(current); current.clear();
+            case SPACE: continue;
+            case TOKEN: tokens.push_back(current); current.clear();
                 state = SPACE; continue; 
             case INQUOTE: 
             case ESCAPE: goto push_char;
             }
             break;
 
-            default:
+        default:
             switch(state) {
-              case ESCAPE: state = INQUOTE; break;
-              case SPACE:  state = TOKEN;  break;
-              case TOKEN: 
-              case INQUOTE: break;
+            case ESCAPE: state = INQUOTE; break;
+            case SPACE:  state = TOKEN;  break;
+            case TOKEN: 
+            case INQUOTE: break;
             }
         push_char:
             it.appendchartostring(current);
@@ -1214,4 +1157,3 @@ bool TextSplit::stringToStrings(const string &s, vector<string> &tokens)
 {
     return u8stringToStrings<vector<string> >(s, tokens);
 }
-
