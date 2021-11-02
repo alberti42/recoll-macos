@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -78,8 +78,7 @@ public:
         string dumb = term;
         if (o_index_stripchars) {
             if (!unacmaybefold(term, dumb, "UTF-8", UNACOP_UNACFOLD)) {
-                LOGINFO("PlainToRich::takeword: unac failed for [" << term <<
-                        "]\n");
+                LOGINFO("PlainToRich::takeword: unac failed for [" << term << "]\n");
                 return true;
             }
         }
@@ -173,30 +172,25 @@ static string activate_urls(const string& in)
 }
 #endif
 
-// Fix result text for display inside the gui text window.
+// Enrich result text for display inside the gui text window.
 //
-// We call overridden functions to output header data, beginnings and ends of
-// matches etc.
+// We call overridden functions to output header data, beginnings and ends of matches etc.
 //
-// If the input is text, we output the result in chunks, arranging not
-// to cut in the middle of a tag, which would confuse qtextedit. If
-// the input is html, the body is always a single output chunk.
-bool PlainToRich::plaintorich(const string& in, 
-                              list<string>& out, // Output chunk list
-                              const HighlightData& hdata,
-                              int chunksize)
+// If the input is text, we output the result in chunks, arranging not to cut in the middle of a
+// tag, which would confuse qtextedit. If the input is html, the body is always a single output
+// chunk.
+bool PlainToRich::plaintorich(
+    const string& in, list<string>& out, const HighlightData& hdata, int chunksize)
 {
     Chrono chron;
     bool ret = true;
     LOGDEB1("plaintorichich: in: [" << in << "]\n");
 
     m_hdata = &hdata;
-    // Compute the positions for the query terms.  We use the text
-    // splitter to break the text into words, and compare the words to
-    // the search terms,
+    // Compute the positions for the query terms.  We use the text splitter to break the text into
+    // words, and compare the words to the search terms,
     TextSplitPTR splitter(hdata);
-    // Note: the splitter returns the term locations in byte, not
-    // character, offsets.
+    // Note: the splitter returns the term locations in byte, not character, offsets.
     splitter.text_to_words(in);
     LOGDEB2("plaintorich: split done " << chron.millis() << " mS\n");
     // Compute the positions for NEAR and PHRASE groups.
@@ -205,7 +199,7 @@ bool PlainToRich::plaintorich(const string& in,
 
     out.clear();
     out.push_back("");
-    list<string>::iterator olit = out.begin();
+    auto olit = out.begin();
 
     // Rich text output
     *olit = header();
@@ -225,9 +219,10 @@ bool PlainToRich::plaintorich(const string& in,
     vector<GroupMatchEntry>::iterator tPosEnd = splitter.m_tboffs.end();
 
 #if 0
-    for (vector<pair<int, int> >::const_iterator it = splitter.m_tboffs.begin();
-         it != splitter.m_tboffs.end(); it++) {
-        LOGDEB2("plaintorich: region: " << it->first << " "<<it->second<< "\n");
+    for (const auto& region : splitter.m_tboffs) {
+        auto st = region.offs.first;
+        auto nd = region.offs.second;
+        LOGDEB0("plaintorich: region: " << st << " " << nd << "\n");
     }
 #endif
 
@@ -276,8 +271,7 @@ bool PlainToRich::plaintorich(const string& in,
                 }
                 // Skip all highlight areas that would overlap this one
                 int crend = tPosIt->offs.second;
-                while (tPosIt != splitter.m_tboffs.end() && 
-                       tPosIt->offs.first < crend)
+                while (tPosIt != splitter.m_tboffs.end() && tPosIt->offs.first < crend)
                     tPosIt++;
                 inrcltag = 0;
             }

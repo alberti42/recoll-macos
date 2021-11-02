@@ -163,6 +163,9 @@ private:
     // Current span. Might be jf.dockes@wanadoo.f
     std::string        m_span; 
 
+    // Words in span: byte positions of start and end of words in m_span. For example:
+    // 0   4    9
+    // bill@some.com -> (0,4) (5,9) (10,13)
     std::vector <std::pair<int, int> > m_words_in_span;
 
     // Current word: no punctuation at all in there. Byte offset

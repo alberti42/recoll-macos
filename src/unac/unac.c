@@ -14109,7 +14109,7 @@ static int debug_level = UNAC_DEBUG_LOW;
  */
 static void debug_doprint_default(const char* message, void* data)
 {
-  fprintf(stderr, "%s", message);
+    fprintf(stderr, "%s", message);
 }
 
 /*
@@ -14130,30 +14130,30 @@ static void* debug_appdata = (void*)0;
 static void debug_print(const char* message, ...)
 {
 #define UNAC_MAXIMUM_MESSAGE_SIZE 512
-  /*
-   * UNAC_MAXIMUM_MESSAGE_SIZE is supposedly enough but I
-   * do trust some vsnprintf implementations to be bugous.
-   */
-  char unac_message_buffer[UNAC_MAXIMUM_MESSAGE_SIZE+1] = { '\0' };
-  va_list args;
-  va_start(args, message);
-  if(vsnprintf(unac_message_buffer, UNAC_MAXIMUM_MESSAGE_SIZE, message, args) < 0) {
-    char tmp[UNAC_MAXIMUM_MESSAGE_SIZE];
-    sprintf(tmp, "[message larger than %d, truncated]", UNAC_MAXIMUM_MESSAGE_SIZE);
-    debug_doprint(tmp, debug_appdata);
-  }
-  va_end(args);
-  unac_message_buffer[UNAC_MAXIMUM_MESSAGE_SIZE] = '\0';
+    /*
+     * UNAC_MAXIMUM_MESSAGE_SIZE is supposedly enough but I
+     * do trust some vsnprintf implementations to be bugous.
+     */
+    char unac_message_buffer[UNAC_MAXIMUM_MESSAGE_SIZE+1] = { '\0' };
+    va_list args;
+    va_start(args, message);
+    if(vsnprintf(unac_message_buffer, UNAC_MAXIMUM_MESSAGE_SIZE, message, args) < 0) {
+        char tmp[UNAC_MAXIMUM_MESSAGE_SIZE];
+        sprintf(tmp, "[message larger than %d, truncated]", UNAC_MAXIMUM_MESSAGE_SIZE);
+        debug_doprint(tmp, debug_appdata);
+    }
+    va_end(args);
+    unac_message_buffer[UNAC_MAXIMUM_MESSAGE_SIZE] = '\0';
 
-  debug_doprint(unac_message_buffer, debug_appdata);
+    debug_doprint(unac_message_buffer, debug_appdata);
 }
 
 void unac_debug_callback(int level, unac_debug_print_t function, void* data)
 {
-  debug_level = level;
-  if(function)
-    debug_doprint = function;
-  debug_appdata = data;
+    debug_level = level;
+    if(function)
+        debug_doprint = function;
+    debug_appdata = data;
 }
 
 #else /* UNAC_DEBUG_AVAILABLE */
@@ -14167,146 +14167,140 @@ void unac_debug_callback(int level, unac_debug_print_t function, void* data)
 #define UNAC_FOLD 2
 
 int unacmaybefold_string_utf16(const char* in, size_t in_length,
-                   char** outp, size_t* out_lengthp, int what)
+                               char** outp, size_t* out_lengthp, int what)
 {
-  char* out;
-  size_t out_size;
-  size_t out_length;
-  size_t i;
-
-  out_size = in_length > 0 ? in_length : 1024;
-
-  out = *outp;
-  out = (char*)realloc(out, out_size + 1);
-  if(out == 0) {
-      if(debug_level >= UNAC_DEBUG_LOW)
-      DEBUG("realloc %d bytes failed\n", out_size+1);
-      /* *outp is still valid. Let the caller free it */
-      return -1;
-  }
-
-  out_length = 0;
-
-  for(i = 0; i < in_length; i += 2) {
-    unsigned short c;
-    unsigned short* p;
-    size_t l;
-    size_t k;
-    c = (in[i] << 8) | (in[i + 1] & 0xff);
-    /*
-     * Lookup the tables for decomposition information
-     */
-#ifdef BUILDING_RECOLL
-    // Exception unac/fold values set by user. There should be 3 arrays for
-    // unac/fold/unac+fold. For now there is only one array, which used to
-    // be set for unac+fold, and is mostly or only used to prevent diacritics
-    // removal for some chars and languages where it should not be done.
-    // In conformance with current usage, but incorrectly, we do the following
-    // things for the special chars depending on the operation requested:
-    //   - unaccenting: do nothing (copy original char)
-    //   - unac+fold: use table
-    //   - fold: use the unicode data.
-    string trans;
-    if (what != UNAC_FOLD && except_trans.size() != 0 && 
-    is_except_char(c, trans)) {
-    if (what == UNAC_UNAC) {
-        // Unaccent only. Do nothing
-        p = 0;
-        l = 0;
-    } else {
-        // Has to be UNAC_UNACFOLD: use table
-        p = (unsigned short *)trans.c_str();
-        l = trans.size() / 2;
-    }
-    } else {
-#endif /* BUILDING_RECOLL */
-    unac_uf_char_utf16_(c, p, l, what)
-#ifdef BUILDING_RECOLL
-    }
-#endif /* BUILDING_RECOLL */
-
-    /*
-     * Explain what's done in great detail
-     */
-    if(debug_level == UNAC_DEBUG_HIGH) {
-      unsigned short index = unac_indexes[(c) >> UNAC_BLOCK_SHIFT];
-      unsigned char position = (c) & UNAC_BLOCK_MASK;
-      DEBUG("unac_data%d[%d] & unac_positions[%d][%d]: ", index, unac_positions[index][position], index, position+1);
-      DEBUG_APPEND("0x%04x => ", (c));
-      if(l == 0) {
-    DEBUG_APPEND("untouched\n");
-      } else {
+    char* out;
+    size_t out_size;
+    size_t out_length;
     size_t i;
-    for(i = 0; i < l; i++)
-      DEBUG_APPEND("0x%04x ", p[i]);
-    DEBUG_APPEND("\n");
-      }
+
+    out_size = in_length > 0 ? in_length : 1024;
+
+    out = *outp;
+    out = (char*)realloc(out, out_size + 1);
+    if(out == 0) {
+        if(debug_level >= UNAC_DEBUG_LOW)
+            DEBUG("realloc %d bytes failed\n", out_size+1);
+        /* *outp is still valid. Let the caller free it */
+        return -1;
     }
 
-    /*
-     * Make sure there is enough space to hold the decomposition
-     * Note: a previous realloc may have succeeded, which means that *outp 
-     * is not valid any more. We have to do the freeing and zero out *outp
-     */
-    if(out_length + ((l + 1) * 2) > out_size) {
-      char *saved;
-      out_size += ((l + 1) * 2) + 1024;
-      saved = out;
-      out = (char *)realloc(out, out_size);
-      if(out == 0) {
-    if(debug_level >= UNAC_DEBUG_LOW)
-      DEBUG("realloc %d bytes failed\n", out_size);
-        free(saved);
-    *outp = 0;
-    return -1;
-      }
-    }
-    if(l > 0) {
-    /* l == 1 && *p == 0 is the special case generated for
-       mark characters (which may be found if the input is
-       already in decomposed form. Output nothing */
-    if (l != 1 || *p != 0) {
+    out_length = 0;
+
+    for(i = 0; i < in_length; i += 2) {
+        unsigned short c;
+        unsigned short* p;
+        size_t l;
+        size_t k;
+        c = (in[i] << 8) | (in[i + 1] & 0xff);
         /*
-         * If there is a decomposition, insert it in the output 
-         * string.
+         * Lookup the tables for decomposition information
          */
-        for(k = 0; k < l; k++) {
-        out[out_length++] = (p[k] >> 8) & 0xff;
-        out[out_length++] = (p[k] & 0xff);
+#ifdef BUILDING_RECOLL
+        // Exception unac/fold values set by user. There should be 3 arrays for
+        // unac/fold/unac+fold. For now there is only one array, which used to
+        // be set for unac+fold, and is mostly or only used to prevent diacritics
+        // removal for some chars and languages where it should not be done.
+        // In conformance with current usage, but incorrectly, we do the following
+        // things for the special chars depending on the operation requested:
+        //   - unaccenting: do nothing (copy original char)
+        //   - unac+fold: use table
+        //   - fold: use the unicode data.
+        string trans;
+        if (what != UNAC_FOLD && except_trans.size() != 0 && 
+            is_except_char(c, trans)) {
+            if (what == UNAC_UNAC) {
+                // Unaccent only. Do nothing
+                p = 0;
+                l = 0;
+            } else {
+                // Has to be UNAC_UNACFOLD: use table
+                p = (unsigned short *)trans.c_str();
+                l = trans.size() / 2;
+            }
+        } else {
+#endif /* BUILDING_RECOLL */
+            unac_uf_char_utf16_(c, p, l, what)
+#ifdef BUILDING_RECOLL
+                }
+#endif /* BUILDING_RECOLL */
+
+        /*
+         * Explain what's done in great detail
+         */
+        if(debug_level == UNAC_DEBUG_HIGH) {
+            unsigned short index = unac_indexes[(c) >> UNAC_BLOCK_SHIFT];
+            unsigned char position = (c) & UNAC_BLOCK_MASK;
+            DEBUG("unac_data%d[%d] & unac_positions[%d][%d]: ", index, unac_positions[index][position], index, position+1);
+            DEBUG_APPEND("0x%04x => ", (c));
+            if(l == 0) {
+                DEBUG_APPEND("untouched\n");
+            } else {
+                size_t i;
+                for(i = 0; i < l; i++)
+                    DEBUG_APPEND("0x%04x ", p[i]);
+                DEBUG_APPEND("\n");
+            }
+        }
+
+        /*
+         * Make sure there is enough space to hold the decomposition
+         * Note: a previous realloc may have succeeded, which means that *outp 
+         * is not valid any more. We have to do the freeing and zero out *outp
+         */
+        if(out_length + ((l + 1) * 2) > out_size) {
+            char *saved;
+            out_size += ((l + 1) * 2) + 1024;
+            saved = out;
+            out = (char *)realloc(out, out_size);
+            if(out == 0) {
+                if(debug_level >= UNAC_DEBUG_LOW)
+                    DEBUG("realloc %d bytes failed\n", out_size);
+                free(saved);
+                *outp = 0;
+                return -1;
+            }
+        }
+        if(l > 0) {
+            /* l == 1 && *p == 0 is the special case generated for
+               mark characters (which may be found if the input is
+               already in decomposed form. Output nothing */
+            if (l != 1 || *p != 0) {
+                /*
+                 * If there is a decomposition, insert it in the output 
+                 * string.
+                 */
+                for(k = 0; k < l; k++) {
+                    out[out_length++] = (p[k] >> 8) & 0xff;
+                    out[out_length++] = (p[k] & 0xff);
+                }
+            }
+        } else {
+            /*
+             * If there is no decomposition leave it unchanged
+             */
+            out[out_length++] = in[i];
+            out[out_length++] = in[i + 1];
         }
     }
-    } else {
-      /*
-       * If there is no decomposition leave it unchanged
-       */
-      out[out_length++] = in[i];
-      out[out_length++] = in[i + 1];
-    }
-  }
 
-  *outp = out;
-  *out_lengthp = out_length;
-  (*outp)[*out_lengthp] = '\0';
+    *outp = out;
+    *out_lengthp = out_length;
+    (*outp)[*out_lengthp] = '\0';
 
-  return 0;
+    return 0;
 }
-int unac_string_utf16(const char* in, size_t in_length,
-              char** outp, size_t* out_lengthp)
+int unac_string_utf16(const char* in, size_t in_length, char** outp, size_t* out_lengthp)
 {
-    return unacmaybefold_string_utf16(in, in_length,
-                      outp, out_lengthp, UNAC_UNAC);
+    return unacmaybefold_string_utf16(in, in_length, outp, out_lengthp, UNAC_UNAC);
 }
-int unacfold_string_utf16(const char* in, size_t in_length,
-              char** outp, size_t* out_lengthp)
+int unacfold_string_utf16(const char* in, size_t in_length, char** outp, size_t* out_lengthp)
 {
-    return unacmaybefold_string_utf16(in, in_length,
-                      outp, out_lengthp, UNAC_UNACFOLD);
+    return unacmaybefold_string_utf16(in, in_length, outp, out_lengthp, UNAC_UNACFOLD);
 }
-int fold_string_utf16(const char* in, size_t in_length,
-              char** outp, size_t* out_lengthp)
+int fold_string_utf16(const char* in, size_t in_length, char** outp, size_t* out_lengthp)
 {
-    return unacmaybefold_string_utf16(in, in_length,
-                      outp, out_lengthp, UNAC_FOLD);
+    return unacmaybefold_string_utf16(in, in_length, outp, out_lengthp, UNAC_FOLD);
 }
 
 static const char *utf16be = "UTF-16BE";
@@ -14322,229 +14316,223 @@ static std::mutex o_unac_mutex;
  * The out string is always null terminated.
  */
 static int convert(const char* from, const char* to,
-           const char* in, size_t in_length,
-           char** outp, size_t* out_lengthp)
+                   const char* in, size_t in_length,
+                   char** outp, size_t* out_lengthp)
 {
-  int ret = -1;
-  iconv_t cd;
-  char* out;
-  size_t out_remain;
-  size_t out_size;
-  char* out_base;
-  int from_utf16, from_utf8, to_utf16, to_utf8, u8tou16, u16tou8;
-  const char space[] = { 0x00, 0x20 };
+    int ret = -1;
+    iconv_t cd;
+    char* out;
+    size_t out_remain;
+    size_t out_size;
+    char* out_base;
+    int from_utf16, from_utf8, to_utf16, to_utf8, u8tou16, u16tou8;
+    const char space[] = { 0x00, 0x20 };
 
-  std::unique_lock<std::mutex> lock(o_unac_mutex);
+    std::unique_lock<std::mutex> lock(o_unac_mutex);
 
-  if (!strcmp(utf16be, from)) {
-      from_utf8 = 0;
-      from_utf16 = 1;
-  } else if (!strcasecmp("UTF-8", from)) {
-      from_utf8 = 1;
-      from_utf16 = 0;
-  } else {
-      from_utf8 = from_utf16 = 0;
-  }
-  if (!strcmp(utf16be, to)) {
-      to_utf8 = 0;
-      to_utf16 = 1;
-  } else if (!strcasecmp("UTF-8", to)) {
-      to_utf8 = 1;
-      to_utf16 = 0;
-  } else {
-      to_utf8 = to_utf16 = 0;
-  }
-  u16tou8 = from_utf16 && to_utf8;
-  u8tou16 = from_utf8 && to_utf16;
-
-  out_size = in_length > 0 ? in_length : 1024;
-
-  out = *outp;
-  out = (char *)realloc(out, out_size + 1);
-  if(out == 0) {
-      /* *outp still valid, no freeing */
-      if(debug_level >= UNAC_DEBUG_LOW)
-      DEBUG("realloc %d bytes failed\n", out_size+1);
-      goto out;
-  }
-
-  out_remain = out_size;
-  out_base = out;
-
-  if (u8tou16) {
-      if (u8tou16_cd == (iconv_t)-1) {
-      if((u8tou16_cd = iconv_open(to, from)) == (iconv_t)-1) {
-          goto out;
-      }
-      } else {
-      iconv(u8tou16_cd, 0, 0, 0, 0);
-      }
-      cd = u8tou16_cd;
-  } else if (u16tou8) {
-      if (u16tou8_cd == (iconv_t)-1) {
-      if((u16tou8_cd = iconv_open(to, from)) == (iconv_t)-1) {
-          goto out;
-      }
-      } else {
-      iconv(u16tou8_cd, 0, 0, 0, 0);
-      }
-      cd = u16tou8_cd;
-  } else {
-      if((cd = iconv_open(to, from)) == (iconv_t)-1) {
-      goto out;
-      }
-  }
-
-  do {
-    if(iconv(cd, (ICONV_CONST char **) &in, &in_length, &out, &out_remain) == (size_t)-1) {
-      switch(errno) {
-      case EILSEQ:
-    /*
-     * If an illegal sequence is found in the context of unac_string
-     * it means the unaccented version of a character contains
-     * a sequence that cannot be mapped back to the original charset.
-     * For instance, the 1/4 character in ISO-8859-1 is decomposed
-     * in three characters including the FRACTION SLASH (2044) which
-     * have no equivalent in the ISO-8859-1 map. One can argue that
-     * the conversions tables should map it to the regular / character
-     * or that a <compat> entry should be associated with it. 
-     *
-     * To cope with this situation, convert silently transform all
-     * illegal sequences (EILSEQ) into a SPACE character 0x0020.
-     *
-     * In the general conversion case this behaviour is not desirable.
-     * However, it is not the responsibility of this program to cope
-     * with inconsistencies of the Unicode description and a bug report
-     * should be submited to Unicode so that they can fix the problem.
-     * 
-     */
-    if(from_utf16) {
-      const char* tmp = space;
-      size_t tmp_length = 2;
-      if(iconv(cd, (ICONV_CONST char **) &tmp, &tmp_length, &out, &out_remain) == (size_t)-1) {
-              if(errno == E2BIG) {
-          /* fall thru to the E2BIG case below */;
-              } else {
-                  goto out;
-              }
-      } else {
-        /* The offending character was replaced by a SPACE, skip it. */
-        in += 2;
-        in_length -= 2;
-        /* And continue conversion. */
-        break;
-      }
+    if (!strcmp(utf16be, from)) {
+        from_utf8 = 0;
+        from_utf16 = 1;
+    } else if (!strcasecmp("UTF-8", from)) {
+        from_utf8 = 1;
+        from_utf16 = 0;
     } else {
-      goto out;
+        from_utf8 = from_utf16 = 0;
     }
-      case E2BIG:
-    {
-      /*
-       * The output does not fit in the current out buffer, enlarge it.
-       */
-      size_t length = out - out_base;
-      out_size *= 2;
-      {
-          char *saved = out_base;
-          /* +1 for null */
-          out_base = (char *)realloc(out_base, out_size + 1);
-          if (out_base == 0) {
-          /* *outp potentially not valid any more. Free here,
-           * and zero out */
-          if(debug_level >= UNAC_DEBUG_LOW)
-              DEBUG("realloc %d bytes failed\n", out_size+1);
-          free(saved);
-          *outp = 0;
-          goto out;
-          }
-      }
-      out = out_base + length;
-      out_remain = out_size - length;
+    if (!strcmp(utf16be, to)) {
+        to_utf8 = 0;
+        to_utf16 = 1;
+    } else if (!strcasecmp("UTF-8", to)) {
+        to_utf8 = 1;
+        to_utf16 = 0;
+    } else {
+        to_utf8 = to_utf16 = 0;
     }
-    break;
-      default:
-    goto out;
-    break;
-      }
+    u16tou8 = from_utf16 && to_utf8;
+    u8tou16 = from_utf8 && to_utf16;
+
+    out_size = in_length > 0 ? in_length : 1024;
+
+    out = *outp;
+    out = (char *)realloc(out, out_size + 1);
+    if(out == 0) {
+        /* *outp still valid, no freeing */
+        if(debug_level >= UNAC_DEBUG_LOW)
+            DEBUG("realloc %d bytes failed\n", out_size+1);
+        goto out;
     }
-  } while(in_length > 0);
 
-  if (!u8tou16 && !u16tou8)
-      iconv_close(cd);
+    out_remain = out_size;
+    out_base = out;
 
-  *outp = out_base;
-  *out_lengthp = out - out_base;
-  (*outp)[*out_lengthp] = '\0';
+    if (u8tou16) {
+        if (u8tou16_cd == (iconv_t)-1) {
+            if((u8tou16_cd = iconv_open(to, from)) == (iconv_t)-1) {
+                goto out;
+            }
+        } else {
+            iconv(u8tou16_cd, 0, 0, 0, 0);
+        }
+        cd = u8tou16_cd;
+    } else if (u16tou8) {
+        if (u16tou8_cd == (iconv_t)-1) {
+            if((u16tou8_cd = iconv_open(to, from)) == (iconv_t)-1) {
+                goto out;
+            }
+        } else {
+            iconv(u16tou8_cd, 0, 0, 0, 0);
+        }
+        cd = u16tou8_cd;
+    } else {
+        if((cd = iconv_open(to, from)) == (iconv_t)-1) {
+            goto out;
+        }
+    }
 
-  ret = 0;
+    do {
+        if(iconv(cd, (ICONV_CONST char **) &in, &in_length, &out, &out_remain) == (size_t)-1) {
+            switch(errno) {
+            case EILSEQ:
+                /*
+                 * If an illegal sequence is found in the context of unac_string
+                 * it means the unaccented version of a character contains
+                 * a sequence that cannot be mapped back to the original charset.
+                 * For instance, the 1/4 character in ISO-8859-1 is decomposed
+                 * in three characters including the FRACTION SLASH (2044) which
+                 * have no equivalent in the ISO-8859-1 map. One can argue that
+                 * the conversions tables should map it to the regular / character
+                 * or that a <compat> entry should be associated with it. 
+                 *
+                 * To cope with this situation, convert silently transform all
+                 * illegal sequences (EILSEQ) into a SPACE character 0x0020.
+                 *
+                 * In the general conversion case this behaviour is not desirable.
+                 * However, it is not the responsibility of this program to cope
+                 * with inconsistencies of the Unicode description and a bug report
+                 * should be submited to Unicode so that they can fix the problem.
+                 * 
+                 */
+                if (from_utf16) {
+                    const char* tmp = space;
+                    size_t tmp_length = 2;
+                    if (iconv(cd, (ICONV_CONST char **)&tmp, &tmp_length, &out, &out_remain) ==
+                        (size_t)-1) {
+                        if(errno == E2BIG) {
+                            /* fall thru to the E2BIG case below */;
+                        } else {
+                            goto out;
+                        }
+                    } else {
+                        /* The offending character was replaced by a SPACE, skip it. */
+                        in += 2;
+                        in_length -= 2;
+                        /* And continue conversion. */
+                        break;
+                    }
+                } else {
+                    goto out;
+                }
+            case E2BIG:
+            {
+                /*
+                 * The output does not fit in the current out buffer, enlarge it.
+                 */
+                size_t length = out - out_base;
+                out_size *= 2;
+                {
+                    char *saved = out_base;
+                    /* +1 for null */
+                    out_base = (char *)realloc(out_base, out_size + 1);
+                    if (out_base == 0) {
+                        /* *outp potentially not valid any more. Free here,
+                         * and zero out */
+                        if(debug_level >= UNAC_DEBUG_LOW)
+                            DEBUG("realloc %d bytes failed\n", out_size+1);
+                        free(saved);
+                        *outp = 0;
+                        goto out;
+                    }
+                }
+                out = out_base + length;
+                out_remain = out_size - length;
+            }
+            break;
+            default:
+                goto out;
+                break;
+            }
+        }
+    } while(in_length > 0);
+
+    if (!u8tou16 && !u16tou8)
+        iconv_close(cd);
+
+    *outp = out_base;
+    *out_lengthp = out - out_base;
+    (*outp)[*out_lengthp] = '\0';
+
+    ret = 0;
 out:
-  return ret;
+    return ret;
 }
 
-int unacmaybefold_string(const char* charset,
-             const char* in, size_t in_length,
-             char** outp, size_t* out_lengthp, int what)
+int unacmaybefold_string(const char* charset, const char* in, size_t in_length,
+                         char** outp, size_t* out_lengthp, int what)
 {
     /*
      * When converting an empty string, skip everything but alloc the
      * buffer if NULL pointer.
      */
     if (in_length <= 0) {
-    if(!*outp) {
-        if ((*outp = (char*)malloc(32)) == 0)
-        return -1;
-    }
-    (*outp)[0] = '\0';
-    *out_lengthp = 0;
+        if(!*outp) {
+            if ((*outp = (char*)malloc(32)) == 0)
+                return -1;
+        }
+        (*outp)[0] = '\0';
+        *out_lengthp = 0;
     } else {
-    char* utf16 = 0;
-    size_t utf16_length = 0;
-    char* utf16_unaccented = 0;
-    size_t utf16_unaccented_length = 0;
+        char* utf16 = 0;
+        size_t utf16_length = 0;
+        char* utf16_unaccented = 0;
+        size_t utf16_unaccented_length = 0;
   
-    if(convert(charset, utf16be, in, in_length, &utf16, &utf16_length) < 0) {
-        return -1;
-    }
+        if(convert(charset, utf16be, in, in_length, &utf16, &utf16_length) < 0) {
+            return -1;
+        }
 
-    unacmaybefold_string_utf16(utf16, utf16_length, &utf16_unaccented, 
-                   &utf16_unaccented_length, what);
-    free(utf16);
+        unacmaybefold_string_utf16(utf16, utf16_length, &utf16_unaccented, 
+                                   &utf16_unaccented_length, what);
+        free(utf16);
 
-    if(convert(utf16be, charset, utf16_unaccented, utf16_unaccented_length, 
-           outp, out_lengthp) < 0) {
-        return -1;
-    }
-    free(utf16_unaccented);
+        if(convert(utf16be, charset, utf16_unaccented, utf16_unaccented_length, 
+                   outp, out_lengthp) < 0) {
+            return -1;
+        }
+        free(utf16_unaccented);
     }
 
     return 0;
 }
 
-int unac_string(const char* charset,
-        const char* in, size_t in_length,
-        char** outp, size_t* out_lengthp)
+int unac_string(
+    const char* charset, const char* in, size_t in_length, char** outp, size_t* out_lengthp)
 {
-    return unacmaybefold_string(charset, in, in_length,
-                outp, out_lengthp, UNAC_UNAC);
+    return unacmaybefold_string(charset, in, in_length, outp, out_lengthp, UNAC_UNAC);
 }
-int unacfold_string(const char* charset,
-            const char* in, size_t in_length,
-            char** outp, size_t* out_lengthp)
+int unacfold_string(
+    const char* charset, const char* in, size_t in_length, char** outp, size_t* out_lengthp)
 {
-    return unacmaybefold_string(charset, in, in_length,
-                outp, out_lengthp, UNAC_UNACFOLD);
+    return unacmaybefold_string(charset, in, in_length, outp, out_lengthp, UNAC_UNACFOLD);
 }
-int fold_string(const char* charset,
-            const char* in, size_t in_length,
-            char** outp, size_t* out_lengthp)
+int fold_string(
+    const char* charset, const char* in, size_t in_length, char** outp, size_t* out_lengthp)
 {
-    return unacmaybefold_string(charset, in, in_length,
-                outp, out_lengthp, UNAC_FOLD);
+    return unacmaybefold_string(charset, in, in_length, outp, out_lengthp, UNAC_FOLD);
 }
 
 const char* unac_version(void)
 {
-  return UNAC_VERSION;
+    return UNAC_VERSION;
 }
 
 #ifdef BUILDING_RECOLL
@@ -14552,7 +14540,7 @@ void unac_set_except_translations(const char *spectrans)
 {
     except_trans.clear();
     if (!spectrans || !spectrans[0])
-    return;
+        return;
 
     // The translation tables out of Unicode are in machine byte order (we
     // just let the compiler read the values). 
@@ -14563,41 +14551,39 @@ void unac_set_except_translations(const char *spectrans)
     static const char *machinecoding = 0;
     bool littleendian = true;
     if (machinecoding == 0) {
-    const char*  charshort = "\001\002";
-    short *ip = (short *)charshort;
-    if (*ip == 0x0102) {
-        littleendian = false;
-        machinecoding = "UTF-16BE";
-    } else {
-        littleendian = true;
-        machinecoding = "UTF-16LE";
-    }
+        const char*  charshort = "\001\002";
+        short *ip = (short *)charshort;
+        if (*ip == 0x0102) {
+            littleendian = false;
+            machinecoding = "UTF-16BE";
+        } else {
+            littleendian = true;
+            machinecoding = "UTF-16LE";
+        }
     }
 
     vector<string> vtrans;
     stringToStrings(spectrans, vtrans);
 
-    for (vector<string>::iterator it = vtrans.begin();
-     it != vtrans.end(); it++) {
+    for (const auto& trans : vtrans) {
 
-    /* Convert the whole thing to utf-16be/le according to endianness */
-    char *out = 0;
-    size_t outsize;
-    if (convert("UTF-8", machinecoding,
-            it->c_str(), it->size(),
-            &out, &outsize) != 0 || outsize < 2)
-        continue;
+        /* Convert the whole thing to utf-16be/le according to endianness */
+        char *out = 0;
+        size_t outsize;
+        if (convert("UTF-8", machinecoding, trans.c_str(), trans.size(), &out, &outsize) != 0 ||
+            outsize < 2)
+            continue;
 
-    /* The source char must be utf-16be as this is what we convert the
-       input text to for internal processing */
-    unsigned short ch;
-    if (littleendian)
-        ch = (out[1] << 8) | (out[0] & 0xff);
-    else
-        ch = (out[0] << 8) | (out[1] & 0xff);
+        /* The source char must be utf-16be as this is what we convert the
+           input text to for internal processing */
+        unsigned short ch;
+        if (littleendian)
+            ch = (out[1] << 8) | (out[0] & 0xff);
+        else
+            ch = (out[0] << 8) | (out[1] & 0xff);
 
-    except_trans[ch] = string((const char *)(out + 2), outsize-2);
-    free(out);
+        except_trans[ch] = string((const char *)(out + 2), outsize-2);
+        free(out);
     }
 }
 #endif /* BUILDING_RECOLL */
