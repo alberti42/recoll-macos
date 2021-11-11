@@ -475,7 +475,9 @@ void ConfParamStrW::storeValue()
 void ConfParamStrW::loadValue()
 {
     string s;
-    m_cflink->get(s);
+    if (!m_cflink->get(s)) {
+        s = m_strdefault;
+    }
     if (m_fsencoding) {
 #ifdef _WIN32
         m_le->setText(m_origvalue = QString::fromUtf8(s.c_str()));
@@ -529,7 +531,9 @@ void ConfParamCStrW::storeValue()
 void ConfParamCStrW::loadValue()
 {
     string s;
-    m_cflink->get(s);
+    if (!m_cflink->get(s)) {
+        s = m_strdefault;
+    }
     QString cs;
     if (m_fsencoding) {
 #ifdef _WIN32
@@ -640,7 +644,9 @@ void ConfParamFNW::storeValue()
 void ConfParamFNW::loadValue()
 {
     string s;
-    m_cflink->get(s);
+    if (!m_cflink->get(s)) {
+        s = m_strdefault;
+    }
 #ifdef _WIN32
     m_le->setText(m_origvalue = QString::fromUtf8(s.c_str()));
 #else
@@ -784,7 +790,9 @@ void ConfParamSLW::storeValue()
 void ConfParamSLW::loadValue()
 {
     m_origvalue.clear();
-    m_cflink->get(m_origvalue);
+    if (!m_cflink->get(m_origvalue)) {
+        m_origvalue = m_strdefault;
+    }
     vector<string> ls;
     stringToStrings(m_origvalue, ls);
     QStringList qls;
