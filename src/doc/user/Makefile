@@ -49,7 +49,7 @@ usermanual.pdf: usermanual.xml recoll.conf.xml
 	dblatex --xslt-opts="--xinclude" -tpdf $<
 
 UTILBUILDS=/home/dockes/tmp/builds/medocutils/
-recoll-conf-xml:
+recoll.conf.xml: ../../sampleconf/recoll.conf
 	$(UTILBUILDS)/confxml --docbook \
         --idprefix=RCL.INSTALL.CONFIG.RECOLLCONF  \
         ../../sampleconf/recoll.conf  > recoll.conf.xml
@@ -65,7 +65,7 @@ recoll-conf-xml:
 # script. 
 # Also could not get readthedocs to generate the left pane TOC? could
 # probably be fixed...
-#usermanual-rst: recoll-conf-xml
+#usermanual-rst: recoll.conf.xml
 #	tail -n +2 recoll.conf.xml > rcl-conf-tail.xml
 #	sed -e '/xi:include/r rcl-conf-tail.xml' \
 #		< usermanual.xml > full-man.xml
