@@ -1398,7 +1398,19 @@ string RclConfig::getIdxStatusFile() const
 // Thanks to user Madhu for this fix.
 string RclConfig::getPidfile() const
 {
+    string fn;
+#ifndef _WIN32
     const char *p = getenv("XDG_RUNTIME_DIR");
+    string rundir;
+    if (nullptr == p) {
+        // Problem is, we may have been launched outside the desktop, maybe by cron. Basing
+        // everything on XDG_RUNTIME_DIR was a mistake, sometimes resulting in different pidfiles
+        // being used by recollindex instances. So explicitely test for /run/user/$uid
+        rundir = path_cat("/run/user", lltodecstr(getuid()));
+        if (path_isdir(rundir)) {
+            p = rundir.c_str();
+        }
+    }
     if (p) {
         string base = path_canon(p);
         string digest, hex;
@@ -1406,9 +1418,15 @@ string RclConfig::getPidfile() const
         path_catslash(cfdir);
         MD5String(cfdir, digest);
         MD5HexPrint(digest, hex);
-        return path_cat(base, "/recoll-" + hex + "-index.pid");
-    } 
-    return path_cat(getCacheDir(), "index.pid");
+        fn =  path_cat(base, "recoll-" + hex + "-index.pid");
+        goto out;
+    }
+#endif // ! _WIN32
+    
+    fn = path_cat(getCacheDir(), "index.pid");
+out:
+    LOGINF("RclConfig: pid/lock file: " << fn << "\n");
+    return fn;
 }
 
 
