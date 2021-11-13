@@ -148,6 +148,8 @@ void ResListPager::resultPageFor(int docnum)
     m_respage = npage;
 }
 
+static const SimpleRegexp pagenumre("(^ *\\[[pP]\\.* [0-9]+\\])", 0);
+
 void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc, 
                               const HighlightData& hdata, const string& sh)
 {
@@ -220,23 +222,26 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     string richabst;
     bool needabstract = parFormat().find("%A") != string::npos;
     if (needabstract && m_docSource) {
-        vector<string> vabs;
-        m_docSource->getAbstract(doc, vabs);
+        vector<string> snippets;
+        m_docSource->getAbstract(doc, snippets);
         m_hiliter->set_inputhtml(false);
 
-        for (vector<string>::const_iterator it = vabs.begin();
-             it != vabs.end(); it++) {
-            if (!it->empty()) {
+        for (const auto& snippet : snippets) {
+            if (!snippet.empty()) {
                 // No need to call escapeHtml(), plaintorich handles it
                 list<string> lr;
-                // There may be data like page numbers before the snippet text.
-                // will be in brackets.
-                string::size_type bckt = it->find("]");
-                if (bckt == string::npos) {
-                    m_hiliter->plaintorich(*it, lr, hdata);
+                // There may be data like page numbers before the snippet text.  will be in
+                // brackets.
+                if (pagenumre.simpleMatch(snippet)) {
+                    string pagenum = pagenumre.getMatch(snippet, 0);
+                    if (!pagenum.empty()) {
+                        m_hiliter->plaintorich(snippet.substr(pagenum.size()), lr, hdata);
+                        lr.front() = snippet.substr(0, pagenum.size()) + lr.front();
+                    } else {
+                        m_hiliter->plaintorich(snippet, lr, hdata);
+                    }
                 } else {
-                    m_hiliter->plaintorich(it->substr(bckt), lr, hdata);
-                    lr.front() = it->substr(0, bckt) + lr.front();
+                    m_hiliter->plaintorich(snippet, lr, hdata);
                 }
                 richabst += lr.front();
                 richabst += absSep();
