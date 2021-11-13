@@ -78,8 +78,7 @@ int RclCompleterModel::rowCount(const QModelIndex &) const
 
 QVariant RclCompleterModel::data(const QModelIndex &index, int role) const
 {
-    LOGDEB1("RclCompleterModel::data: row: " << index.row() << " role " <<
-            role << "\n");
+    LOGDEB1("RclCompleterModel::data: row: " << index.row() << " role " << role << "\n");
     if (role != Qt::DisplayRole && role != Qt::EditRole &&
         role != Qt::DecorationRole) {
         return QVariant();
@@ -99,14 +98,12 @@ QVariant RclCompleterModel::data(const QModelIndex &index, int role) const
     }
 }
 
-void RclCompleterModel::onPartialWord(
-    int tp, const QString& _qtext, const QString& qpartial)
+void RclCompleterModel::onPartialWord(int tp, const QString& _qtext, const QString& qpartial)
 {
     string partial = qs2u8s(qpartial);
     QString qtext = _qtext.trimmed();
     bool onlyspace = qtext.isEmpty();
-    LOGDEB1("RclCompleterModel::onPartialWord: [" << partial << "] onlyspace "<<
-            onlyspace << "\n");
+    LOGDEB1("RclCompleterModel::onPartialWord: [" << partial << "] onlyspace "<< onlyspace << "\n");
     
     currentlist.clear();
     beginResetModel();
@@ -122,12 +119,10 @@ void RclCompleterModel::onPartialWord(
     // Look for matches between the full entry and the search history
     // (anywhere in the string)
     for (int i = 0; i < prefs.ssearchHistory.count(); i++) {
-        LOGDEB1("[" << qs2u8s(prefs.ssearchHistory[i]) << "] contains [" <<
-                qs2u8s(qtext) << "] ?\n");
+        LOGDEB1("[" << qs2u8s(prefs.ssearchHistory[i]) << "] contains ["<<qs2u8s(qtext) << "] ?\n");
         // If there is current text, only show a limited count of
         // matching entries, else show the full history.
-        if (onlyspace ||
-            prefs.ssearchHistory[i].contains(qtext, Qt::CaseInsensitive)) {
+        if (onlyspace || prefs.ssearchHistory[i].contains(qtext, Qt::CaseInsensitive)) {
             currentlist.push_back(prefs.ssearchHistory[i]);
             if (!onlyspace && ++histmatch >= maxhistmatch)
                 break;
@@ -135,16 +130,17 @@ void RclCompleterModel::onPartialWord(
     }
     firstfromindex = currentlist.size();
 
-    // Look for Recoll terms beginning with the partial word
-    if (!qpartial.trimmed().isEmpty()) {
+    // Look for Recoll terms beginning with the partial word. If the index is not stripped, only do
+    // this after the partial has at least 2 characters, else the syn/diac/case expansion is too
+    // expensive
+    int mintermsizeforexpand = o_index_stripchars ? 1 : 2;
+    if (qpartial.trimmed().size() >= mintermsizeforexpand) {
         Rcl::TermMatchResult rclmatches;
         if (!rcldb->termMatch(Rcl::Db::ET_WILD, string(),
                               partial + "*", rclmatches, maxdbtermmatch)) {
-            LOGDEB1("RclCompleterModel: termMatch failed: [" << partial + "*" <<
-                    "]\n");
+            LOGDEB1("RclCompleterModel: termMatch failed: [" << partial + "*" << "]\n");
         } else {
-            LOGDEB1("RclCompleterModel: termMatch cnt: " <<
-                    rclmatches.entries.size() << endl);
+            LOGDEB1("RclCompleterModel: termMatch cnt: " << rclmatches.entries.size() << endl);
         }
         for (const auto& entry : rclmatches.entries) {
             LOGDEB1("RclCompleterModel: match " << entry.term << endl);
