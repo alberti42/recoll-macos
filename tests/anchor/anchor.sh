@@ -29,7 +29,7 @@ for q in \
 'title:"anchortitleend$"o1' \
 ; do 
     echo $q
-    recollq -q $q
+    recollq -S url -q $q
 done
 
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout

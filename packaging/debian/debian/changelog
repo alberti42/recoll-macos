@@ -1,3 +1,17 @@
+recoll (1.31.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Highligthing for group (phrase/near): eliminate some spurious matches.
+  * Fix page number string detection which could sometimes prevent correct
+    highlighting in snippets.
+  * Avoid query completer consuming excessive resources on unstripped
+    indexes.
+  * Fix some cases where different instances of the indexer could use
+    different pid/lock files.
+  * Fix processing on some unicode dash and apos character variations.
+  * PST: fix indexing in marginal cases. Extract message dates.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 13 Nov 2021 16:30:00 +0200
+
 recoll (1.31.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Add support for .ipynb iPython/Jupyter notebook format.
