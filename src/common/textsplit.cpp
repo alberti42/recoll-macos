@@ -216,7 +216,9 @@ static inline int whatcc(unsigned int c)
     if (c <= 127) {
         return charclasses[c]; 
     } else {
-        if (sskip.find(c) != sskip.end()) {
+        if (c == 0x2010 || c == 0x2019 || c == 0x275c || c == 0x02bc) {
+            return c;
+        } else if (sskip.find(c) != sskip.end()) {
             return SKIP;
         } else if (spunc.find(c) != spunc.end()) {
             return SPACE;
