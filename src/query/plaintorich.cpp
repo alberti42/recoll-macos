@@ -32,6 +32,8 @@ using std::pair;
 using std::set;
 using std::unordered_map;
 
+// #define LOGGER_LOCAL_LOGINC 3
+
 #include "rcldb.h"
 #include "rclconfig.h"
 #include "log.h"
@@ -83,12 +85,12 @@ public:
             }
         }
 
-        LOGDEB2("Input dumbbed term: '" << dumb << "' " <<  pos << " " << bts
-                << " " << bte << "\n");
+        LOGDEB2("Input dumbbed term: '" << dumb << "' " <<  pos << " " << bts << " " << bte << "\n");
 
         // If this word is a search term, remember its byte-offset span. 
         map<string, size_t>::const_iterator it = m_terms.find(dumb);
         if (it != m_terms.end()) {
+            LOGDEB1("search term [" << dumb << "] at bytepos(" << bts << ", " << bte << ")\n");
             m_tboffs.push_back(GroupMatchEntry(bts, bte, it->second));
         }
         
@@ -97,8 +99,8 @@ public:
             // Term group (phrase/near) handling
             m_plists[dumb].push_back(pos);
             m_gpostobytes[pos] = pair<int,int>(bts, bte);
-            LOGDEB2("Recorded bpos for " << pos << ": " << bts << " " <<
-                    bte << "\n");
+            LOGDEB1("Group term [" << dumb << "] at pos " << pos <<
+                    " bytepos(" << bts << ", " << bte << ")\n");
         }
 
         // Check for cancellation request
@@ -135,8 +137,7 @@ private:
 bool TextSplitPTR::matchGroups()
 {
     for (unsigned int i = 0; i < m_hdata.index_term_groups.size(); i++) {
-        if (m_hdata.index_term_groups[i].kind !=
-            HighlightData::TermGroup::TGK_TERM) {
+        if (m_hdata.index_term_groups[i].kind != HighlightData::TermGroup::TGK_TERM) {
             matchGroup(m_hdata, i, m_plists, m_gpostobytes, m_tboffs);
         }
     }
@@ -184,7 +185,7 @@ bool PlainToRich::plaintorich(
 {
     Chrono chron;
     bool ret = true;
-    LOGDEB1("plaintorichich: in: [" << in << "]\n");
+    LOGDEB1("plaintorich: hdata: [" << hdata.toString() << "] in: [" << in << "]\n");
 
     m_hdata = &hdata;
     // Compute the positions for the query terms.  We use the text splitter to break the text into
