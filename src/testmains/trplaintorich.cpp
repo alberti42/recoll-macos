@@ -36,6 +36,7 @@
 #include <iostream>
 
 #include "readfile.h"
+#include "smallut.h"
 #include "log.h"
 
 using namespace std;
@@ -50,7 +51,8 @@ static string usage =
     " plaintorich [opts] [filename]\n"
     "   -H : input is html\n"
     "   -L <loglevel> : set log level 0-6\n"
-    "   -t term : add term to match. Must in index form (lowercase/unac)\n";
+    "   -t term : add term or group to match. Must in index form (lowercase/unac)\n"
+    " Omit filename to read from stdin\n";
     ;
 
 static void
@@ -106,7 +108,23 @@ int main(int argc, char **argv)
             case 't':   {
                 if (argc < 2)  Usage();
                 HighlightData::TermGroup tg;
-                tg.term = *(++argv); argc--;
+                string in = *(++argv); argc--;
+                // Note that this is not exactly how the query processor would split the group, but
+                // it should be enough for generating groups for testing.
+                vector<string> vterms;
+                stringToTokens(in, vterms);
+                if (vterms.size() == 1) {
+                    cerr << "SINGLE TERM\n";
+                    tg.term = in;
+                    hldata.ugroups.push_back(vector<string>{in});
+                } else {
+                    for (const auto& term : vterms) {
+                        tg.orgroups.push_back(vector<string>{term});
+                    }
+                    tg.slack = 0;
+                    tg.kind = HighlightData::TermGroup::TGK_NEAR;
+                    hldata.ugroups.push_back(vterms);
+                }
                 hldata.index_term_groups.push_back(tg);
                 goto b1;
             }
@@ -139,10 +157,9 @@ int main(int argc, char **argv)
     if (ishtml) {
         hiliter.set_inputhtml(true);
     }
+    std::cout << "Using hldata: " << hldata.toString() << "\n";
     std::list<std::string> result;
     hiliter.plaintorich(inputdata, result, hldata);
     std::cout << *result.begin() << "\n";
     return 0;
 }
-
-
