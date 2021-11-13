@@ -49,7 +49,7 @@ check_recoll_orig()
 
 ####### QT
 debdir=debian
-series="bionic focal groovy hirsute impish"
+series="bionic focal hirsute impish"
 #series=
 
 if test "X$series" != X ; then
