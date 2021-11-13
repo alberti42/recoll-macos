@@ -5,14 +5,23 @@ TEMPLATE        = app
 LANGUAGE        = C++
 TARGET          = recoll
 
-#DEFINES += USING_WEBKIT
-#QT += webkit webkitwidgets
-DEFINES += USING_WEBENGINE
-QT += widgets webenginewidgets
-
-QT += xml printsupport
-
 DEFINES += BUILDING_RECOLL
+DEFINES += BUILDING_RECOLLGUI
+
+# QT += webkit webkitwidgets
+# DEFINES += USING_WEBKIT
+
+QT += widgets webenginewidgets
+DEFINES += USING_WEBENGINE
+
+# QT += dbus
+# QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
+
+QT += xml widgets printsupport
+
+CONFIG  += qt warn_on thread release
+# CONFIG += force_debug_info
+
 
 HEADERS += \
         actsearch_w.h \
@@ -20,15 +29,12 @@ HEADERS += \
         advshist.h \
         confgui/confgui.h \
         confgui/confguiindex.h \
-        widgets/editdialog.h \
         firstidx.h \
         fragbuts.h \
         idxsched.h \
-        widgets/listdialog.h \
-        widgets/qxtconfirmationmessage.h \
-        preview_w.h \
         preview_load.h \
         preview_plaintorich.h \
+        preview_w.h \
         ptrans_w.h \
         rclhelp.h \
         rclmain_w.h \
@@ -43,7 +49,10 @@ HEADERS += \
         systray.h \
         uiprefs_w.h \
         viewaction_w.h \
-        webcache.h
+        webcache.h \
+        widgets/editdialog.h \
+        widgets/listdialog.h \
+        widgets/qxtconfirmationmessage.h
 
 SOURCES += \
         actsearch_w.cpp \
@@ -55,21 +64,21 @@ SOURCES += \
         guiutils.cpp \
         main.cpp \
         multisave.cpp \
-        preview_w.cpp \
         preview_load.cpp \
         preview_plaintorich.cpp \
+        preview_w.cpp \
         ptrans_w.cpp \
         rclhelp.cpp \
-        rclmain_w.cpp \
         rclm_idx.cpp \
         rclm_menus.cpp \
         rclm_preview.cpp \
         rclm_saveload.cpp \
         rclm_view.cpp \
         rclm_wins.cpp \
+        rclmain_w.cpp \
         rclzg.cpp \
-        respopup.cpp \
         reslist.cpp \
+        respopup.cpp \
         restable.cpp \
         scbase.cpp \
         searchclause_w.cpp \
@@ -86,22 +95,22 @@ SOURCES += \
 FORMS   = \
         actsearch.ui \
         advsearch.ui \
-        widgets/editdialog.ui \
         firstidx.ui \
         idxsched.ui \
-        widgets/listdialog.ui \
         preview.ui \
         ptrans.ui \
         rclmain.ui \
         restable.ui \
+        snippets.ui \
         specialindex.ui \
         spell.ui \
-        snippets.ui \
         ssearchb.ui \
         uiprefs.ui \
         viewaction.ui \
-        webcache.ui
-
+        webcache.ui \
+        widgets/editdialog.ui \
+        widgets/listdialog.ui
+        
 RESOURCES = recoll.qrc
 
 INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
