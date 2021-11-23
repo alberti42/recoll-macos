@@ -137,12 +137,12 @@ exit 0
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png
 %{_libdir}/recoll
-%{python_sitearch}/recoll
-%{python_sitearch}/Recoll*.egg-info
+%{python2_sitearch}/recoll
+%{python2_sitearch}/Recoll*.egg-info
 %{python3_sitearch}/recoll
 %{python3_sitearch}/Recoll*.egg-info
-%{python_sitearch}/recollchm
-%{python_sitearch}/recollchm*.egg-info
+%{python2_sitearch}/recollchm
+%{python2_sitearch}/recollchm*.egg-info
 %{python3_sitearch}/recollchm
 %{python3_sitearch}/recollchm*.egg-info
 %{_mandir}/man1/%{name}.1*
