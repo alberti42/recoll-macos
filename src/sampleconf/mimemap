@@ -15,6 +15,11 @@
 .rst = text/plain
 .md = text/plain
 .gv = text/plain
+
+# .log is in the default noContentSuffixes, so this will also need a recoll.conf setting to do
+# anything
+.log = text/plain
+
 .srt = text/x-srt
 .ini = text/x-ini
 .csv = text/x-csv
