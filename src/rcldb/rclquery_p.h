@@ -49,6 +49,9 @@ public:
     ~Native() {
         clear();
     }
+    Native(const Native &) = delete;
+    Native& operator=(const Native &) = delete;
+    
     void clear() {
         deleteZ(xenquire);
         deleteZ(subdecider);

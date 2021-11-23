@@ -30,6 +30,8 @@ public:
         : RecollFilter(cnf, id) {
     }
     virtual ~MimeHandlerHtml() {}
+    MimeHandlerHtml(const MimeHandlerHtml&) = delete;
+    MimeHandlerHtml& operator=(const MimeHandlerHtml&) = delete;
 
     virtual bool is_data_input_ok(DataInput input) const override {
         if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)

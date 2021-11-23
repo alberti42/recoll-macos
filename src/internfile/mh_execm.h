@@ -107,6 +107,8 @@ class MimeHandlerExecMultiple : public MimeHandlerExec {
     }
     // No resources to clean up, the ExecCmd destructor does it.
     virtual ~MimeHandlerExecMultiple() {}
+    MimeHandlerExecMultiple(const MimeHandlerExecMultiple&) = delete;
+    MimeHandlerExecMultiple& operator=(const MimeHandlerExecMultiple&) = delete;
 
     virtual bool next_document() override;
 

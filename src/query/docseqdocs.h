@@ -31,10 +31,10 @@ class DocSequenceDocs : public DocSequence {
  public:
     DocSequenceDocs(std::shared_ptr<Rcl::Db> d,
                     const std::vector<Rcl::Doc> docs, const string &t) 
-    : DocSequence(t), m_db(d), m_docs(docs) {
-    }
-    virtual ~DocSequenceDocs() {
-    }
+    : DocSequence(t), m_db(d), m_docs(docs) {}
+    virtual ~DocSequenceDocs() {}
+    DocSequenceDocs(const DocSequenceDocs&) = delete;
+    DocSequenceDocs& operator=(const DocSequenceDocs&) = delete;
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0) {
     if (sh)
         *sh = string();

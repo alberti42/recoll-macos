@@ -39,6 +39,8 @@ public:
 
     FragButs(QWidget* parent = 0);
     virtual ~FragButs();
+    FragButs(const FragButs&) = delete;
+    FragButs& operator=(const FragButs&) = delete;
 
     struct ButFrag {
         QAbstractButton *button;

@@ -84,6 +84,8 @@ public:
     static const int FtwTravMask;
     FsTreeWalker(int opts = FtwTravNatural);
     ~FsTreeWalker();
+    FsTreeWalker(const FsTreeWalker&) = delete;
+    FsTreeWalker& operator=(const FsTreeWalker&) = delete;
 
     void setOpts(int opts);
     int getOpts();
@@ -132,11 +134,14 @@ private:
 
 class FsTreeWalkerCB {
 public:
+    FsTreeWalkerCB() {}
     virtual ~FsTreeWalkerCB() {}
+    FsTreeWalkerCB(const FsTreeWalkerCB&) = delete;
+    FsTreeWalkerCB& operator=(const FsTreeWalkerCB&) = delete;
+    
     // Only st_mtime, st_ctime, st_size, st_mode (filetype bits: dir/reg/lnk),
     virtual FsTreeWalker::Status 
-    processone(const std::string&, const struct PathStat *,
-               FsTreeWalker::CbFlag) = 0;
+    processone(const std::string&, const struct PathStat *, FsTreeWalker::CbFlag) = 0;
 };
 
 // Utility function. Somewhat like du.

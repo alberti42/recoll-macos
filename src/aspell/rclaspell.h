@@ -41,6 +41,8 @@ class Aspell {
 public:
     Aspell(const RclConfig *cnf);
     ~Aspell();
+    Aspell(const Aspell &) = delete;
+    Aspell& operator=(const Aspell &) = delete;
 
     /** Check health */
     bool ok() const;

@@ -34,6 +34,8 @@ public:
         : m_config(config), m_id(id) {
     }
     virtual ~RecollFilter() {}
+    RecollFilter(const RecollFilter&) = delete;
+    RecollFilter& operator=(const RecollFilter&) = delete;
 
     virtual void setConfig(RclConfig *config) override {
         m_config = config;

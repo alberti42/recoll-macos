@@ -61,8 +61,7 @@ public:
 EXEDocFetcher::EXEDocFetcher(const EXEDocFetcher::Internal& _m)
 {
     m = new Internal(_m);
-    LOGDEB("EXEDocFetcher::EXEDocFetcher: fetch is " <<
-           stringsToString(m->sfetch) << "\n");
+    LOGDEB("EXEDocFetcher::EXEDocFetcher: fetch is " << stringsToString(m->sfetch) << "\n");
 }
 
 bool EXEDocFetcher::fetch(RclConfig*, const Rcl::Doc& idoc, RawDoc& out)
@@ -77,8 +76,7 @@ bool EXEDocFetcher::makesig(RclConfig*, const Rcl::Doc& idoc, string& sig)
 }
 
 // Lookup bckid in the config and create an appropriate fetcher.
-std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config,
-                                                 const string& bckid)
+std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config, const string& bckid)
 {
     // The config we only read once, not gonna change.
     static ConfSimple *bconf;

@@ -88,6 +88,8 @@ class TempDir {
 public:
     TempDir();
     ~TempDir();
+    TempDir(const TempDir&) = delete;
+    TempDir& operator=(const TempDir&) = delete;
     const char *dirname() {
         return m_dirname.c_str();
     }
@@ -102,10 +104,6 @@ public:
 private:
     std::string m_dirname;
     std::string m_reason;
-    TempDir(const TempDir&) {}
-    TempDir& operator=(const TempDir&) {
-        return *this;
-    };
 };
 
 // Freedesktop thumbnail standard path routine

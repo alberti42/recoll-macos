@@ -144,6 +144,8 @@ public:
         }
     
     virtual ~ResTable() {}
+    ResTable(const ResTable&) = delete;
+    ResTable& operator=(const ResTable&) = delete;
     virtual RecollModel *getModel() {return m_model;}
     virtual ResTableDetailArea* getDetailArea() {return m_detail;}
     virtual int getDetailDocNumOrTopRow();

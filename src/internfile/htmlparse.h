@@ -46,7 +46,6 @@ class HtmlParser {
     virtual void parse_html(const string &text);
     virtual void do_eof() {}
     HtmlParser();
-    virtual ~HtmlParser() { }
 };
 
 #endif

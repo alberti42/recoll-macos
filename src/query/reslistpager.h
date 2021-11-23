@@ -35,6 +35,8 @@ class ResListPager {
 public:
     ResListPager(int pagesize=10, bool alwaysSnippets = false);
     virtual ~ResListPager() {}
+    ResListPager(const ResListPager&) = delete;
+    ResListPager& operator=(const ResListPager&) = delete;
 
     void setHighLighter(PlainToRich *ptr) {
             m_hiliter = ptr;

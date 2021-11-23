@@ -50,6 +50,8 @@ public:
     TextSplit(Flags flags = Flags(TXTS_NONE))
         : m_flags(flags) {}
     virtual ~TextSplit() {}
+    TextSplit(const TextSplit&) = delete;
+    TextSplit& operator=(const TextSplit&) = delete;
 
     /** Call at program initialization to read non default values from the 
         configuration */

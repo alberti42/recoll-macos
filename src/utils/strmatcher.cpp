@@ -51,21 +51,21 @@ string::size_type StrWildMatcher::baseprefixlen() const
 
 StrRegexpMatcher::StrRegexpMatcher(const string& exp)
     : StrMatcher(exp),
-      m_re(exp, SimpleRegexp::SRE_NOSUB)
+      m_re(new SimpleRegexp(exp, SimpleRegexp::SRE_NOSUB))
 {
 }
 
 bool StrRegexpMatcher::setExp(const string& exp)
 {
-    m_re = SimpleRegexp(exp, SimpleRegexp::SRE_NOSUB);
-    return m_re.ok();
+    m_re = std::unique_ptr<SimpleRegexp>(new SimpleRegexp(exp, SimpleRegexp::SRE_NOSUB));
+    return ok();
 }
 
 bool StrRegexpMatcher::match(const string& val) const
 {
-    if (!m_re.ok()) 
+    if (ok()) 
         return false;
-    return m_re(val);
+    return (*m_re)(val);
 }
 
 string::size_type StrRegexpMatcher::baseprefixlen() const
@@ -75,5 +75,5 @@ string::size_type StrRegexpMatcher::baseprefixlen() const
 
 bool StrRegexpMatcher::ok() const
 {
-    return m_re.ok();
+    return m_re && m_re->ok();
 }

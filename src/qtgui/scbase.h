@@ -49,6 +49,8 @@ class SCBase : public QObject {
     Q_OBJECT;
 public:
     ~SCBase();
+    SCBase(const SCBase&) = delete;
+    SCBase& operator=(const SCBase&) = delete;
 
     /* Return a reference to the instantiated singleton */
     static SCBase& scBase();

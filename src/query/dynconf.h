@@ -49,7 +49,10 @@
 /** Interface for a stored object. */
 class DynConfEntry {
 public:
+    DynConfEntry() {}
     virtual ~DynConfEntry() {}
+    DynConfEntry(const DynConfEntry&) = default;
+    DynConfEntry& operator=(const DynConfEntry&) = default;
     /** Decode object-as-string coming out from storage */
     virtual bool decode(const std::string &value) = 0;
     /** Encode object state into state for storing */
@@ -63,6 +66,8 @@ class RclSListEntry : public DynConfEntry {
 public:
     RclSListEntry() {}
     virtual ~RclSListEntry() {}
+    RclSListEntry(const RclSListEntry&) = default;
+    RclSListEntry& operator=(const RclSListEntry&) = default;
     RclSListEntry(const std::string& v) 
         : value(v) {
     }

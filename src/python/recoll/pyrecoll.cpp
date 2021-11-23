@@ -1418,17 +1418,17 @@ Query_getsnippets(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     PyObject *sniplist = PyList_New(snippets.size());
     int i = 0;
     HighlightData hldata;
-    PyPlainToRich hler;
+    std::unique_ptr<PyPlainToRich> hler;
     if (hlmethods) {
         sd->getTerms(hldata);
-        hler = PyPlainToRich(hlmethods);
-        hler.set_inputhtml(0);
+        hler = std::unique_ptr<PyPlainToRich>(new PyPlainToRich(hlmethods));
+        hler->set_inputhtml(0);
     }
     for (const auto& snip : snippets) {
         const std::string *textp = &snip.snippet;
         list<string> lr;
         if (hlmethods) {
-            hler.plaintorich(snip.snippet, lr, hldata);
+            hler->plaintorich(snip.snippet, lr, hldata);
             textp = &lr.front();
         }
         PyList_SetItem(

@@ -78,6 +78,8 @@ class DocSequence {
 public:
     DocSequence(const std::string &t) : m_title(t) {}
     virtual ~DocSequence() {}
+    DocSequence(const DocSequence&) = delete;
+    DocSequence& operator=(const DocSequence&) = delete;
 
     /** Get document at given rank. 
      *
@@ -181,6 +183,8 @@ public:
         : DocSequence(""), m_seq(iseq) 
         {}
     virtual ~DocSeqModifier() {}
+    DocSeqModifier(const DocSeqModifier&) = delete;
+    DocSeqModifier& operator=(const DocSeqModifier&) = delete;
 
     virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs)
         override{

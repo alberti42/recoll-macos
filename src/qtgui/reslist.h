@@ -54,6 +54,8 @@ class ResList : public RESLIST_PARENTCLASS
 public:
     ResList(QWidget* parent = 0, const char* name = 0);
     virtual ~ResList();
+    ResList(const ResList&) = delete;
+    ResList& operator=(const ResList&) = delete;
     
     // Return document for given docnum. We mostly act as an
     // intermediary to the docseq here, but this has also the

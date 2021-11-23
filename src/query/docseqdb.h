@@ -30,6 +30,8 @@ public:
                   std::shared_ptr<Rcl::Query> q, const std::string &t, 
                   std::shared_ptr<Rcl::SearchData> sdata);
     virtual ~DocSequenceDb() {}
+    DocSequenceDb(const DocSequenceDb&) = delete;
+    DocSequenceDb& operator=(const DocSequenceDb&) = delete;
     virtual bool getDoc(int num, Rcl::Doc &doc, std::string * = 0) override;
     virtual int getResCnt() override;
     virtual void getTerms(HighlightData& hld) override;

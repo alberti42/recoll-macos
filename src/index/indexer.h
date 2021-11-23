@@ -41,6 +41,8 @@ public:
     enum runStatus {IndexerOk, IndexerError};
     ConfIndexer(RclConfig *cnf);
     virtual ~ConfIndexer();
+    ConfIndexer(const ConfIndexer&) = delete;
+    ConfIndexer& operator=(const ConfIndexer&) = delete;
 
     // Indexer types. Maybe we'll have something more dynamic one day
     enum ixType {IxTNone, IxTFs=1, IxTWebQueue=2, 

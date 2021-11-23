@@ -103,6 +103,14 @@ public:
         freeAll();
     }
 
+    RclConfig& operator=(const RclConfig &r) {
+        if (this != &r) {
+            freeAll();
+            initFrom(r);
+        }
+        return *this;
+    }
+
     // Return a writable clone of the main config. This belongs to the
     // caller (must delete it when done)
     ConfNull *cloneMainConfig();
@@ -360,14 +368,6 @@ public:
 
     const string& getOrigCwd() {
         return o_origcwd;
-    }
-
-    RclConfig& operator=(const RclConfig &r) {
-        if (this != &r) {
-            freeAll();
-            initFrom(r);
-        }
-        return *this;
     }
 
     friend class ParamStale;

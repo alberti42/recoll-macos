@@ -87,6 +87,8 @@ public:
     }
     
     ~SearchData();
+    SearchData(const SearchData &) = delete;
+    SearchData& operator=(const SearchData&) = delete;
 
     /** Is there anything but a file name search in here ? */
     bool fileNameOnly();
@@ -225,9 +227,6 @@ private:
     bool clausesToQuery(Rcl::Db &db, SClType tp,     
                         std::vector<SearchDataClause*>& query,
                         string& reason, void *d);
-    /* Copyconst and assignment private and forbidden */
-    SearchData(const SearchData &) {}
-    SearchData& operator=(const SearchData&) {return *this;};
 };
 
 class SearchDataClause {
@@ -247,6 +246,9 @@ public:
           m_modifiers(SDCM_NONE), m_weight(1.0), m_exclude(false), 
           m_rel(REL_CONTAINS) {}
     virtual ~SearchDataClause() {}
+    SearchDataClause(const SearchDataClause &) = default;
+    SearchDataClause& operator=(const SearchDataClause&) = default;
+
     virtual bool toNativeQuery(Rcl::Db &db, void *) = 0;
     bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
     virtual std::string getReason() const {return m_reason;}

@@ -98,6 +98,8 @@ class Db::Native {
 
     Native(Db *db);
     ~Native();
+    Native(const Native &) = delete;
+    Native& operator=(const Native &) = delete;
 
 #ifdef IDX_THREADS
     friend void *DbUpdWorker(void*);

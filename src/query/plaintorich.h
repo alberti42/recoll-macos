@@ -31,7 +31,10 @@
  */
 class PlainToRich {
 public:
+    PlainToRich() {}
     virtual ~PlainToRich() {}
+    PlainToRich(const PlainToRich&) = delete;
+    PlainToRich& operator=(const PlainToRich&) = delete;
 
     void set_inputhtml(bool v) {
         m_inputhtml = v;

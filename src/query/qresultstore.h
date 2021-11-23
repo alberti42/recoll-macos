@@ -37,6 +37,8 @@ class QResultStore {
 public:
     QResultStore();
     ~QResultStore();
+    QResultStore(const QResultStore&) = delete;
+    QResultStore& operator=(const QResultStore&) = delete;
 
     /**
      * Fetch and store the results of the input query.
@@ -46,8 +48,7 @@ public:
      * @param isinc if true, the field list defines the fields to be stored, 
      *   else, those to be excluded.
      */
-    bool storeQuery(Rcl::Query& q, std::set<std::string> fldspec = {},
-                    bool isinc = false);
+    bool storeQuery(Rcl::Query& q, std::set<std::string> fldspec = {}, bool isinc = false);
 
     /**  Retrieve count of stored results */
     int getCount();
@@ -60,9 +61,6 @@ public:
      */
     const char *fieldValue(int docindex, const std::string& fldname);
 
-    
-    QResultStore(const QResultStore&) = delete;
-    QResultStore& operator=(const QResultStore&) = delete;
     class Internal;
 private:
     Internal *m{nullptr};

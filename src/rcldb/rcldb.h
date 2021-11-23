@@ -205,6 +205,8 @@ public:
     /* General stuff (valid for query or update) ****************************/
     Db(const RclConfig *cfp);
     ~Db();
+    Db(const Db&) = delete;
+    Db& operator=(const Db&) = delete;
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
     bool isWriteMode(OpenMode mode) {
@@ -629,9 +631,6 @@ private:
 
     bool getDoc(const std::string& udi, int idxi, Doc& doc);
 
-    /* Copyconst and assignment private and forbidden */
-    Db(const Db &) {}
-    Db& operator=(const Db &) {return *this;};
 };
 
 // This has to go somewhere, and as it needs the Xapian version, this is

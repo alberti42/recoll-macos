@@ -71,6 +71,8 @@ public:
             setTerminateAndWait();
         }
     }
+    WorkQueue(const WorkQueue&) = delete;
+    WorkQueue& operator=(const WorkQueue&) = delete;
 
     /** Task deleter
      * If put() is called with the flush option, and the tasks allocate memory,

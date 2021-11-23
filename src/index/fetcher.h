@@ -72,18 +72,18 @@ public:
      * @param idoc the data gathered from the index for this doc (udi/ipath)
      * @param sig output. 
      */
-    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,
-                         std::string& sig) = 0;
+    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc, std::string& sig) = 0;
     enum Reason{FetchOk, FetchNotExist, FetchNoPerm, FetchOther};
     virtual Reason testAccess(RclConfig*, const Rcl::Doc&) {
         return FetchOther;
     }
+    DocFetcher() {}
     virtual ~DocFetcher() {}
+    DocFetcher(const DocFetcher&) = delete;
+    DocFetcher& operator=(const DocFetcher&) = delete;
 };
 
-/** Return an appropriate fetcher object given the backend string 
- * identifier inside idoc*/
-std::unique_ptr<DocFetcher> docFetcherMake(RclConfig *config,
-                                           const Rcl::Doc& idoc);
+/** Return an appropriate fetcher object given the backend string identifier inside idoc*/
+std::unique_ptr<DocFetcher> docFetcherMake(RclConfig *config, const Rcl::Doc& idoc);
 
 #endif /* _FETCHER_H_INCLUDED_ */

@@ -55,6 +55,8 @@ public:
      */
     FsIndexer(RclConfig *cnf, Rcl::Db *db);
     virtual ~FsIndexer();
+    FsIndexer(const FsIndexer&) = delete;
+    FsIndexer& operator=(const FsIndexer&) = delete;
 
     /** 
      * Top level file system tree index method for updating a given database.

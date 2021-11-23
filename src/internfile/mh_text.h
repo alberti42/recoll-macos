@@ -35,6 +35,8 @@ public:
         : RecollFilter(cnf, id), m_paging(false), m_offs(0), m_pagesz(0) {
     }
     virtual ~MimeHandlerText() {}
+    MimeHandlerText(const MimeHandlerText&) = delete;
+    MimeHandlerText& operator=(const MimeHandlerText&) = delete;
 
     virtual bool is_data_input_ok(DataInput input) const override {
         if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)

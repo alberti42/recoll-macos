@@ -57,6 +57,8 @@ class DbIxStatusUpdater {
 public:
     DbIxStatusUpdater(const RclConfig *config, bool nox11monitor);
     virtual ~DbIxStatusUpdater(){}
+    DbIxStatusUpdater(const DbIxStatusUpdater&) = delete;
+    DbIxStatusUpdater& operator=(const DbIxStatusUpdater&) = delete;
 
     enum Incr {IncrNone, IncrDocsDone = 0x1, IncrFilesDone = 0x2, IncrFileErrors = 0x4};
     // Change phase/fn and update

@@ -37,6 +37,8 @@ class DocSeqFiltered : public DocSeqModifier {
 public:
     DocSeqFiltered(RclConfig *conf, std::shared_ptr<DocSequence> iseq, DocSeqFiltSpec &filtspec);
     virtual ~DocSeqFiltered() {}
+    DocSeqFiltered(const DocSeqFiltered&) = delete;
+    DocSeqFiltered& operator=(const DocSeqFiltered&) = delete;
     virtual bool canFilter() {return true;}
     virtual bool setFiltSpec(const DocSeqFiltSpec &filtspec);
     virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0);

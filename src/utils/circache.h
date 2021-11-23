@@ -46,6 +46,8 @@ class CirCache {
 public:
     CirCache(const std::string& dir);
     virtual ~CirCache();
+    CirCache(const CirCache&) = delete;
+    CirCache& operator=(const CirCache&) = delete;
 
     virtual std::string getReason();
 
@@ -135,11 +137,6 @@ public:
 protected:
     CirCacheInternal *m_d;
     std::string m_dir;
-private:
-    CirCache(const CirCache&) {}
-    CirCache& operator=(const CirCache&) {
-        return *this;
-    }
 };
 
 #endif /* _circache_h_included_ */

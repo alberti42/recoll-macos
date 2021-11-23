@@ -41,6 +41,8 @@ class WebQueueIndexer : public FsTreeWalkerCB {
 public:
     WebQueueIndexer(RclConfig *cnf, Rcl::Db *db);
     ~WebQueueIndexer();
+    WebQueueIndexer(const WebQueueIndexer&) = delete;
+    WebQueueIndexer& operator=(const WebQueueIndexer&) = delete;
 
     /** This is called by the top indexer in recollindex. 
      *  Does the walking and the talking */

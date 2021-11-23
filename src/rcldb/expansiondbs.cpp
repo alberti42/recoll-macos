@@ -40,8 +40,7 @@ namespace Rcl {
  * Create all expansion dbs used to transform user input term to widen a query
  * We use Xapian synonyms subsets to store the expansions.
  */
-bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
-                        const vector<string>& langs)
+bool createExpansionDbs(Xapian::WritableDatabase& wdb, const vector<string>& langs)
 {
     LOGDEB("StemDb::createExpansionDbs: languages: " <<stringsToString(langs) << "\n");
     Chrono cron;

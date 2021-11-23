@@ -79,6 +79,8 @@ class RclMonEventQueue {
 public:
     RclMonEventQueue();
     ~RclMonEventQueue();
+    RclMonEventQueue(const RclMonEventQueue&) = delete;
+    RclMonEventQueue& operator=(const RclMonEventQueue&) = delete;
     /** Wait for event or timeout. Returns with the queue locked */
     std::unique_lock<std::mutex> wait(int secs = -1, bool *timedout = 0);
     /** Add event. */

@@ -35,6 +35,8 @@ class WebcacheModel : public QAbstractTableModel {
 public:
     WebcacheModel(QObject *parent = 0);
     ~WebcacheModel();
+    WebcacheModel(const WebcacheModel&) = delete;
+    WebcacheModel& operator=(const WebcacheModel&) = delete;
 
     // Reimplemented methods
     virtual int rowCount (const QModelIndex& = QModelIndex()) const;

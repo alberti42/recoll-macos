@@ -39,6 +39,8 @@ public:
         init();
     }
     ~UIPrefsDialog(){};
+    UIPrefsDialog(const UIPrefsDialog&) = delete;
+    UIPrefsDialog& operator=(const UIPrefsDialog&) = delete;
 
     virtual void init();
     void setFromPrefs();

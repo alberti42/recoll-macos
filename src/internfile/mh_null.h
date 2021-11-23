@@ -38,6 +38,8 @@ class MimeHandlerNull : public RecollFilter {
     : RecollFilter(cnf, id) {
     }
     virtual ~MimeHandlerNull() {}
+    MimeHandlerNull(const MimeHandlerNull&) = delete;
+    MimeHandlerNull& operator=(const MimeHandlerNull&) = delete;
 
     virtual bool is_data_input_ok(DataInput) const {
         return true;

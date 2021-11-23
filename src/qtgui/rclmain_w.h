@@ -65,6 +65,8 @@ public:
         init();
     }
     ~RclMain() {}
+    RclMain(const RclMain&) = delete;
+    RclMain& operator=(const RclMain&) = delete;
 
     QString getQueryDescription();
 

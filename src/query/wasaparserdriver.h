@@ -39,6 +39,8 @@ public:
         : m_stemlang(sl), m_autosuffs(as), m_config(c) {}
         
     ~WasaParserDriver() {}
+    WasaParserDriver(const WasaParserDriver&) = delete;
+    WasaParserDriver& operator=(const WasaParserDriver&) = delete;
     
     Rcl::SearchData *parse(const std::string&);
     bool addClause(Rcl::SearchData *sd, Rcl::SearchDataClauseSimple* cl);
