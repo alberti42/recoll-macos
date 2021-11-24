@@ -335,6 +335,7 @@ public:
     bool addOrUpdate(const string &udi, const string &parent_udi, Doc &doc);
 
 #ifdef IDX_THREADS
+    void closeQueue();
     void waitUpdIdle();
 #endif
 

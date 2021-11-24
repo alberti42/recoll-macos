@@ -1028,11 +1028,11 @@ bool Db::i_close(bool final)
         bool w = m_ndb->m_iswritable;
         if (w) {
 #ifdef IDX_THREADS
+            m_ndb->m_wqueue.closeShop();
             waitUpdIdle();
 #endif
             if (!m_ndb->m_noversionwrite)
-                m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, 
-                                         cstr_RCL_IDX_VERSION);
+                m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, cstr_RCL_IDX_VERSION);
             LOGDEB("Rcl::Db:close: xapian will close. May take some time\n");
         }
         deleteZ(m_ndb);
@@ -1974,6 +1974,12 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
 }
 
 #ifdef IDX_THREADS
+void Db::closeQueue()
+{
+    if (m_ndb->m_iswritable && m_ndb->m_havewriteq) {
+        m_ndb->m_wqueue.closeShop();
+    }
+}
 void Db::waitUpdIdle()
 {
     if (m_ndb->m_iswritable && m_ndb->m_havewriteq) {

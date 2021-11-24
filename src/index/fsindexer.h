@@ -159,6 +159,7 @@ private:
     processonefile(RclConfig *config, const string &fn, 
                    const struct PathStat *,
                    const map<string,string>& localfields);
+    void shutdownQueues(bool);
 };
 
 #endif /* _fsindexer_h_included_ */

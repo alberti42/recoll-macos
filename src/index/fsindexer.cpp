@@ -236,25 +236,40 @@ bool FsIndexer::index(int flags)
         }
     }
 
-#ifdef IDX_THREADS
-    if (m_haveInternQ) 
-        m_iwqueue.waitIdle();
-    if (m_haveSplitQ)
-        m_dwqueue.waitIdle();
-    m_db->waitUpdIdle();
-#endif // IDX_THREADS
-
+    shutdownQueues(walkok);
     if (m_missing) {
         string missing;
         m_missing->getMissingDescription(missing);
         if (!missing.empty()) {
-            LOGINFO("FsIndexer::index missing helper program(s):\n" <<
-                    missing << "\n");
+            LOGINFO("FsIndexer::index missing helper program(s):\n" << missing << "\n");
         }
         m_config->storeMissingHelperDesc(missing);
     }
     LOGINFO("fsindexer: status: " << walkok << " index time:  " << chron.millis() << " mS\n");
     return walkok;
+}
+
+void FsIndexer::shutdownQueues(bool ok)
+{
+#ifdef IDX_THREADS
+    if (!ok) {
+        // Error or more probably interrupt. Discard everything for fast shutdown
+        if (m_haveInternQ)  {
+            m_iwqueue.closeShop();
+        }
+        if (m_haveSplitQ) {
+            m_dwqueue.closeShop();
+        }
+        m_db->closeQueue();
+    }
+    if (m_haveInternQ)  {
+        m_iwqueue.waitIdle();
+    }
+    if (m_haveSplitQ) {
+        m_dwqueue.waitIdle();
+    }
+    m_db->waitUpdIdle();
+#endif // IDX_THREADS
 }
 
 static bool matchesSkipped(
@@ -406,13 +421,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
 
     ret = true;
 out:
-#ifdef IDX_THREADS
-    if (m_haveInternQ) 
-        m_iwqueue.waitIdle();
-    if (m_haveSplitQ)
-        m_dwqueue.waitIdle();
-    m_db->waitUpdIdle();
-#endif // IDX_THREADS
+    shutdownQueues(ret);
 
     // Purge possible orphan documents
     if (ret == true) {
@@ -461,13 +470,7 @@ bool FsIndexer::purgeFiles(list<string>& files)
 
     ret = true;
 out:
-#ifdef IDX_THREADS
-    if (m_haveInternQ) 
-        m_iwqueue.waitIdle();
-    if (m_haveSplitQ)
-        m_dwqueue.waitIdle();
-    m_db->waitUpdIdle();
-#endif // IDX_THREADS
+    shutdownQueues(ret);
     LOGDEB("FsIndexer::purgeFiles: done\n");
     return ret;
 }
