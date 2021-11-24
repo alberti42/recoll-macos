@@ -195,6 +195,7 @@ bool FsIndexer::index(int flags)
         m_walker.setMaxDepth(2);
     }
 
+    bool walkok(true);
     for (const auto& topdir : m_tdl) {
         LOGDEB("FsIndexer::index: Indexing " << topdir << " into " <<
                getDbDir() << "\n");
@@ -229,7 +230,9 @@ bool FsIndexer::index(int flags)
         if (m_walker.walk(topdir, *this) != FsTreeWalker::FtwOk) {
             LOGERR("FsIndexer::index: error while indexing " << topdir <<
                    ": " << m_walker.getReason() << "\n");
-            return false;
+            // DO NOT return: we need to flush the queues before the Db can be closed !
+            walkok = false;
+            break;
         }
     }
 
@@ -250,8 +253,8 @@ bool FsIndexer::index(int flags)
         }
         m_config->storeMissingHelperDesc(missing);
     }
-    LOGINFO("fsindexer index time:  " << chron.millis() << " mS\n");
-    return true;
+    LOGINFO("fsindexer: status: " << walkok << " index time:  " << chron.millis() << " mS\n");
+    return walkok;
 }
 
 static bool matchesSkipped(
