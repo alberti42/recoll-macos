@@ -1,3 +1,10 @@
+recoll (1.31.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Linux/Mac: Bug in threads management could result in index corruption or crash
+    after signal interrupt.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 25 Nov 2021 16:30:00 +0100
+
 recoll (1.31.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Highligthing for group (phrase/near): eliminate some spurious matches.
@@ -10,7 +17,7 @@ recoll (1.31.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Fix processing on some unicode dash and apos character variations.
   * PST: fix indexing in marginal cases. Extract message dates.
 
- -- Jean-Francois Dockes <jf@dockes.org>  Sat, 13 Nov 2021 16:30:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 13 Nov 2021 16:30:00 +0100
 
 recoll (1.31.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
