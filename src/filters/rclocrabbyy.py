@@ -42,6 +42,9 @@ abbyocrdir = ""
 def _deb(s):
     rclexecm.logmsg(s)
 
+def cleanocr():
+    pass
+
 # Return true if abbyy appears to be available
 def ocrpossible(config, path):
     global abbyyocrcmd
