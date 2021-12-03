@@ -80,12 +80,10 @@ void ViewAction::fillLists()
     int row = 0;
     for (const auto& def : defs) {
         actionsLV->setItem(row, 0, new QTableWidgetItem(u8s2qs(def.first)));
-        if (!prefs.useDesktopOpen ||
-            viewerXs.find(def.first) != viewerXs.end()) {
+        if (!prefs.useDesktopOpen || viewerXs.find(def.first) != viewerXs.end()) {
             actionsLV->setItem(row, 1, new QTableWidgetItem(u8s2qs(def.second)));
         } else {
-            actionsLV->setItem(
-                row, 1, new QTableWidgetItem(tr("Desktop Default")));
+            actionsLV->setItem(row, 1, new QTableWidgetItem(tr("Desktop Default")));
         }
         row++;
     }
@@ -97,10 +95,9 @@ void ViewAction::fillLists()
 void ViewAction::selectMT(const QString& mt)
 {
     actionsLV->clearSelection();
-    QList<QTableWidgetItem *>items = 
+    QList<QTableWidgetItem *>items =
         actionsLV->findItems(mt, Qt::MatchFixedString|Qt::MatchCaseSensitive);
-    for (QList<QTableWidgetItem *>::iterator it = items.begin();
-         it != items.end(); it++) {
+    for (QList<QTableWidgetItem *>::iterator it = items.begin(); it != items.end(); it++) {
         (*it)->setSelected(true);
         actionsLV->setCurrentItem(*it, QItemSelectionModel::Columns);
     }
