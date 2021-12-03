@@ -26,6 +26,8 @@
 
 import os
 import sys
+import atexit
+import signal
 import importlib.util
 
 import rclconfig
@@ -33,7 +35,27 @@ import rclocrcache
 import rclexecm
 
 def _deb(s):
-    rclexecm.logmsg(s)
+    rclexecm.logmsg("rclocr: %s" % s)
+
+ocrcleanupmodule = None
+@atexit.register
+def finalcleanup():
+    if ocrcleanupmodule:
+        ocrcleanupmodule.cleanocr()
+
+def signal_handler(sig, frame):
+    sys.exit(1)
+
+# Not all signals necessary exist on all systems, use catch
+try: signal.signal(signal.SIGHUP, signal_handler)
+except: pass
+try: signal.signal(signal.SIGINT, signal_handler)
+except: pass
+try: signal.signal(signal.SIGQUIT, signal_handler)
+except: pass
+try: signal.signal(signal.SIGTERM, signal_handler)
+except: pass
+
     
 def Usage():
     _deb("Usage: rclocr.py <imagefilename>")
@@ -72,7 +94,7 @@ if incache:
     try:
         breakwrite(sys.stdout.buffer, data)
     except Exception as e:
-        _deb("RCLOCR error writing: %s" % e)
+        _deb("error writing: %s" % e)
         sys.exit(1)
     sys.exit(0)
     
@@ -112,6 +134,7 @@ if not ok:
 
 # The OCR module will retrieve its specific parameters from the
 # configuration
+ocrcleanupmodule = ocr
 status, data = ocr.runocr(config, path)
 
 if not status:

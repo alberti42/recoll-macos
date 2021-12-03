@@ -21,7 +21,6 @@
 
 import os
 import sys
-import atexit
 import tempfile
 import subprocess
 import glob
@@ -41,8 +40,7 @@ pdftoppmcmd = None
 
 
 def _deb(s):
-    rclexecm.logmsg(s)
-
+    rclexecm.logmsg("rclocrtesseract: %s" % s)
 
 def vacuumdir(dir):
     if dir:
@@ -61,18 +59,16 @@ def _maybemaketmpdir():
             _deb("openfile: vacuumdir %s failed" % tmpdir)
             return False
     else:
-        tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
+        tmpdir = tempfile.mkdtemp(prefix='rclocrtmp')
 
 
-def finalcleanup():
+def cleanocr():
+    global tmpdir
     if tmpdir:
         vacuumdir(tmpdir)
         os.rmdir(tmpdir)
-
-
-atexit.register(finalcleanup)
-
-
+        tmpdir = None
+        
 # Return true if tesseract and the appropriate conversion program for
 # the file type (e.g. pdftoppt for pdf) appear to be available
 def ocrpossible(config, path):

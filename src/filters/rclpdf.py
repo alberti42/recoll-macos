@@ -33,6 +33,7 @@ import glob
 import traceback
 import atexit
 import signal
+import time
 
 import rclexecm
 import rclconfig
@@ -66,11 +67,18 @@ _htmlprefix =b'''<html><head>
 _htmlsuffix = b'''</pre></body></html>'''
 
 def finalcleanup():
+    global tmpdir
     if tmpdir:
         vacuumdir(tmpdir)
         os.rmdir(tmpdir)
+        tmpdir = None
 
+ocrproc = None
 def signal_handler(signal, frame):
+    global ocrproc
+    if ocrproc:
+        ocrproc.wait()
+        ocrproc = None
     sys.exit(1)
 
 atexit.register(finalcleanup)
@@ -491,9 +499,11 @@ class PDFExtractor:
             s = self.config.getConfParam("pdfocr")
             if rclexecm.configparamtrue(s):
                 try:
-                    cmd = [sys.executable, os.path.join(_execdir, "rclocr.py"),
-                           self.filename]
-                    data = subprocess.check_output(cmd)
+                    cmd = [sys.executable, os.path.join(_execdir, "rclocr.py"), self.filename]
+                    global ocrproc
+                    ocrproc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                    data, stderr = ocrproc.communicate()
+                    ocrproc = None
                     html = _htmlprefix + rclexecm.htmlescape(data) + _htmlsuffix
                 except Exception as e:
                     self.em.rclog("%s failed: %s" % (cmd, e))
