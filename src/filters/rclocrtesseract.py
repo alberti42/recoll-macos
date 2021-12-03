@@ -42,33 +42,25 @@ pdftoppmcmd = None
 def _deb(s):
     rclexecm.logmsg("rclocrtesseract: %s" % s)
 
-def vacuumdir(dir):
-    if dir:
-        for fn in os.listdir(dir):
-            path = os.path.join(dir, fn)
-            if os.path.isfile(path):
-                os.unlink(path)
-    return True
-
-
 tmpdir = None
+
 def _maybemaketmpdir():
     global tmpdir
     if tmpdir:
-        if not vacuumdir(tmpdir):
-            _deb("openfile: vacuumdir %s failed" % tmpdir)
+        if not tmpdir.vacuumdir():
+            _deb("openfile: vacuumdir %s failed" % tmpdir.getpath())
             return False
     else:
-        tmpdir = tempfile.mkdtemp(prefix='rclocrtmp')
+        tmpdir = rclexecm.SafeTmpDir("rclocrtesseract")
 
 
 def cleanocr():
     global tmpdir
     if tmpdir:
-        vacuumdir(tmpdir)
-        os.rmdir(tmpdir)
+        del tmpdir
         tmpdir = None
-        
+
+
 # Return true if tesseract and the appropriate conversion program for
 # the file type (e.g. pdftoppt for pdf) appear to be available
 def ocrpossible(config, path):
@@ -165,12 +157,12 @@ def _pdftesseract(config, path):
 
     tesseractlang = _guesstesseractlang(config, path)
 
-    #tesserrorfile = os.path.join(tmpdir, "tesserrorfile")
-    tmpfile = os.path.join(tmpdir, "ocrXXXXXX")
+    #tesserrorfile = os.path.join(tmpdir.getpath(), "tesserrorfile")
+    tmpfile = os.path.join(tmpdir.getpath(), "ocrXXXXXX")
 
     # Split pdf pages
     try:
-        vacuumdir(tmpdir)
+        tmpdir.vacuumdir()
         cmd = [pdftoppmcmd, "-r", "300", path, tmpfile]
         #_deb("Executing %s" % cmd)
         subprocess.check_call(cmd)

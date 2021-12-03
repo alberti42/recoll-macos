@@ -265,19 +265,30 @@ def execPythonScript(icmd):
     
 # Temp dir helper
 class SafeTmpDir:
-    def __init__(self, em):
+    def __init__(self, tag, em=None):
+        self.tag = tag
         self.em = em
-        self.toptmp = ""
-        self.tmpdir = ""
+        self.toptmp = None
+        self.tmpdir = None
 
     def __del__(self):
-        try:
-            if self.toptmp:
-                shutil.rmtree(self.tmpdir, True)
+        if self.toptmp:
+            try:
+                if self.tmpdir:
+                    shutil.rmtree(self.tmpdir, True)
                 os.rmdir(self.toptmp)
-        except Exception as err:
-            self.em.rclog("delete dir failed for " + self.toptmp)
+            except Exception as err:
+                if self.em:
+                    self.em.rclog("delete dir failed for " + self.toptmp)
 
+    def vacuumdir(self):
+        if self.tmpdir:
+            for fn in os.listdir(self.tmpdir):
+                path = os.path.join(self.tmpdir, fn)
+                if os.path.isfile(path):
+                    os.unlink(path)
+        return True
+    
     def getpath(self):
         if not self.tmpdir:
             envrcltmp = os.getenv('RECOLL_TMPDIR')
@@ -286,7 +297,7 @@ class SafeTmpDir:
             else:
                 self.toptmp = tempfile.mkdtemp(prefix='rcltmp')
 
-            self.tmpdir = os.path.join(self.toptmp, 'rclsofftmp')
+            self.tmpdir = os.path.join(self.toptmp, self.tag)
             os.makedirs(self.tmpdir)
 
         return self.tmpdir

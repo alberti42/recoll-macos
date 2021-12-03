@@ -69,8 +69,7 @@ _htmlsuffix = b'''</pre></body></html>'''
 def finalcleanup():
     global tmpdir
     if tmpdir:
-        vacuumdir(tmpdir)
-        os.rmdir(tmpdir)
+        del tmpdir
         tmpdir = None
 
 ocrproc = None
@@ -92,14 +91,6 @@ try: signal.signal(signal.SIGQUIT, signal_handler)
 except: pass
 try: signal.signal(signal.SIGTERM, signal_handler)
 except: pass
-
-def vacuumdir(dir):
-    if dir:
-        for fn in os.listdir(dir):
-            path = os.path.join(dir, fn)
-            if os.path.isfile(path):
-                os.unlink(path)
-    return True
 
 class PDFExtractor:
     def __init__(self, em):
@@ -221,7 +212,7 @@ class PDFExtractor:
             # no big deal
             return True
         try:
-            vacuumdir(tmpdir)
+            tmpdir.vacuumdir()
             # Note: the java version of pdftk sometimes/often fails
             # here with writing to stdout:
             #    Error occurred during initialization of VM
@@ -231,9 +222,9 @@ class PDFExtractor:
             # output, until we fix the error or preferably find a way
             # to do it with poppler...
             subprocess.check_call(
-                [self.pdftk, self.filename, "unpack_files", "output",
-                 tmpdir], stdout=sys.stderr)
-            self.attachlist = sorted(os.listdir(tmpdir))
+                [self.pdftk, self.filename, "unpack_files", "output", tmpdir.getpath()],
+                stdout=sys.stderr)
+            self.attachlist = sorted(os.listdir(tmpdir.getpath()))
             return True
         except Exception as e:
             self.em.rclog("extractAttach: failed: %s" % e)
@@ -407,11 +398,12 @@ class PDFExtractor:
     def maybemaketmpdir(self):
         global tmpdir
         if tmpdir:
-            if not vacuumdir(tmpdir):
-                self.em.rclog("openfile: vacuumdir %s failed" % tmpdir)
+            if not tmpdir.vacuumdir():
+                self.em.rclog("openfile: vacuumdir %s failed" % tmpdir.getpath())
                 return False
         else:
-            tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
+            tmpdir = rclexecm.SafeTmpDir("rclpdf", self.em)
+            #self.em.rclog("Using temporary directory %s" % tmpdir.getpath())
             if self.pdftk and re.match("/snap/", self.pdftk):
                 # We know this is Unix (Ubuntu actually). Check that tmpdir
                 # belongs to the user as snap commands can't use /tmp to share
@@ -423,9 +415,7 @@ class PDFExtractor:
                     if st.st_uid == os.getuid():
                         ok = True
                 if not ok:
-                    self.em.rclog(
-                        "pdftk is a snap command and needs TMPDIR to be "
-                        "a directory you own")
+                    self.em.rclog("pdftk is a snap command and needs TMPDIR to be owned by you")
 
     def _process_annotations(self, html):
         doc = Poppler.Document.new_from_file(
@@ -530,7 +520,7 @@ class PDFExtractor:
         if not self.attextractdone:
             if not self.extractAttach():
                 return (False, "", "", rclexecm.RclExecM.eofnow)
-        path = os.path.join(tmpdir, ipath)
+        path = os.path.join(tmpdir.getpath(), ipath)
         if os.path.isfile(path):
             f = open(path, "rb")
             docdata = f.read();
