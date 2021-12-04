@@ -37,7 +37,7 @@ _okexts = ('.tif', '.tiff', '.jpg', '.png', '.jpeg')
 
 tesseractcmd = None
 pdftoppmcmd = None
-
+pdftocairocmd = None
 
 def _deb(s):
     rclexecm.logmsg("rclocrtesseract: %s" % s)
@@ -95,12 +95,16 @@ def ocrpossible(config, path):
         # legacy code used pdftoppm for some reason, and it appears
         # that the newest builds from conda-forge do not include
         # pdftocairo. So stay with pdftoppm.
-        global pdftoppmcmd
-        if not pdftoppmcmd:
-            pdftoppmcmd = rclexecm.which("pdftoppm")
-            if not pdftoppmcmd:
-                pdftoppmcmd = rclexecm.which("poppler/pdftoppm")
-        if pdftoppmcmd:
+        global pdftoppmcmd, pdftocairocmd
+        if not pdftoppmcmd and not pdftocairocmd:
+            pdftocairocmd = rclexecm.which("pdftocairo")
+            if not pdftocairocmd:
+                pdftocairocmd = rclexecm.which("poppler/pdftocairo")
+            if not pdftocairocmd:
+                pdftoppmcmd = rclexecm.which("pdftoppm")
+                if not pdftoppmcmd:
+                    pdftoppmcmd = rclexecm.which("poppler/pdftoppm")
+        if pdftoppmcmd or pdftocairocmd:
             return True
 
     return False
@@ -163,8 +167,11 @@ def _pdftesseract(config, path):
     # Split pdf pages
     try:
         tmpdir.vacuumdir()
-        cmd = [pdftoppmcmd, "-r", "300", path, tmpfile]
-        #_deb("Executing %s" % cmd)
+        if pdftocairocmd:
+            cmd = [pdftocairocmd, "-tiff", "-tiffcompression", "lzw", "-r", "300", path, tmpfile]
+        else:
+            cmd = [pdftoppmcmd, "-r", "300", path, tmpfile]
+            #_deb("Executing %s" % cmd)
         subprocess.check_call(cmd)
     except Exception as e:
         _deb("%s failed: %s" % (pdftoppmcmd,e))
@@ -174,8 +181,8 @@ def _pdftesseract(config, path):
     # system is full. There is no really good way to check for
     # this. We consider any empty file to signal an error
     
-    ppmfiles = glob.glob(tmpfile + "*")
-    for f in ppmfiles:
+    pages = glob.glob(tmpfile + "*")
+    for f in pages:
         size = os.path.getsize(f)
         if os.path.getsize(f) == 0:
             _deb("pdftoppm created empty files. "
@@ -191,7 +198,7 @@ def _pdftesseract(config, path):
         except:
             pass
 
-    for f in sorted(ppmfiles):
+    for f in sorted(pages):
         out = b''
         try:
             out = subprocess.check_output(
