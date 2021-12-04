@@ -1,3 +1,9 @@
+recoll (1.31.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix ennoying bug in tesseract OCR temporary files cleanup.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 04 Dec 2021 10:05:00 +0100
+
 recoll (1.31.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Linux/Mac: Bug in threads management could result in index corruption or crash
