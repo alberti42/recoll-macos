@@ -40,7 +40,7 @@ inode/directory|parentopen = rclstartw %f
 # values. 
 # Evince is the only application which lets you specify a search string on the command line. The
 # exact command value will need some tweaking (user name and version number).
-#application/pdf = c:/users/bill/appdata/local/apps/evince-2.32.0.145/bin/evince --page-index=%p --find=%s %f
+application/pdf = C:/users/bill/appdata/local/apps/evince-2.32.0.145/bin/evince --page-index=%p --find=%s %f
 #application/pdf  = "C:/Program Files/SumatraPDF/SumatraPDF.exe" -page %p %f
 #application/pdf = "C:/Program Files (x86)/Foxit Software/Foxit Reader/FoxitReader.exe" %f /A page=%p
 
