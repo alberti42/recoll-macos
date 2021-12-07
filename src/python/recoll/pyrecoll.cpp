@@ -222,7 +222,7 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
     case 'A':
         if (strcasecmp(tp, "and"))
             goto defaultcase;
-        cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, qs, fld?fld:"");
+        cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, qs, fld ? fld : "");
         break;
     case 'f':
     case 'F':
@@ -234,20 +234,18 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
     case 'O':
         if (strcasecmp(tp, "or"))
             goto defaultcase;
-        cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, qs, fld?fld:"");
+        cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, qs, fld ? fld : "");
         break;
     case 'n':
     case 'N':
         if (strcasecmp(tp, "near"))
             goto defaultcase;
-        cl = new Rcl::SearchDataClauseDist(Rcl::SCLT_NEAR, qs, slack, 
-                                           fld ? fld : "");
+        cl = new Rcl::SearchDataClauseDist(Rcl::SCLT_NEAR, qs, slack, fld ? fld : "");
         break;
     case 'p':
     case 'P':
         if (!strcasecmp(tp, "phrase")) {
-            cl = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, slack, 
-                                               fld ? fld : "");
+            cl = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, slack, fld ? fld : "");
         } else if (!strcasecmp(tp, "path")) {
             cl = new Rcl::SearchDataClausePath(qs);
         } else {
@@ -367,10 +365,9 @@ Doc_setbinurl(recoll_DocObject *self, PyObject *value)
         return 0;
     }
 
-    self->doc->url = string(PyByteArray_AsString(value),
-                            PyByteArray_Size(value));
-    printableUrl(self->rclconfig->getDefCharset(), self->doc->url, 
-                 self->doc->meta[Rcl::Doc::keyurl]);
+    self->doc->url = string(PyByteArray_AsString(value), PyByteArray_Size(value));
+    printableUrl(
+        self->rclconfig->getDefCharset(), self->doc->url, self->doc->meta[Rcl::Doc::keyurl]);
     Py_RETURN_NONE;
 }
 
@@ -390,9 +387,8 @@ Doc_keys(recoll_DocObject *self)
     if (!pkeys)
         return 0;
     for (const auto& entry : self->doc->meta) {
-        PyList_Append(pkeys,
-                      PyUnicode_Decode(entry.first.c_str(), entry.first.size(),
-                                       "UTF-8", "replace"));
+        PyList_Append(
+            pkeys, PyUnicode_Decode(entry.first.c_str(), entry.first.size(), "UTF-8", "replace"));
     }
     return pkeys;
 }
@@ -414,12 +410,10 @@ Doc_items(recoll_DocObject *self)
         return 0;
     for (const auto& entry : self->doc->meta) {
         PyDict_SetItem(pdict, 
-                       PyUnicode_Decode(entry.first.c_str(), 
-                                        entry.first.size(), 
-                                        "UTF-8", "replace"),
-                       PyUnicode_Decode(entry.second.c_str(), 
-                                        entry.second.size(), 
-                                        "UTF-8", "replace"));
+                       PyUnicode_Decode(
+                           entry.first.c_str(), entry.first.size(), "UTF-8", "replace"),
+                       PyUnicode_Decode(
+                           entry.second.c_str(), entry.second.size(), "UTF-8", "replace"));
     }
     return pdict;
 }
@@ -462,8 +456,7 @@ static bool idocget(recoll_DocObject *self, const string& key, string& value)
             value = self->doc->mimetype;
             return true;
         } else if (!key.compare(Rcl::Doc::keymt)) {
-            value = self->doc->dmtime.empty() ? self->doc->fmtime : 
-                self->doc->dmtime;
+            value = self->doc->dmtime.empty() ? self->doc->fmtime : self->doc->dmtime;
             return true;
         }
         break;
@@ -478,8 +471,7 @@ static bool idocget(recoll_DocObject *self, const string& key, string& value)
             value = self->doc->sig;
             return true;
         } else     if (!key.compare(Rcl::Doc::keysz)) {
-            value = self->doc->dbytes.empty() ? self->doc->fbytes : 
-                self->doc->dbytes;
+            value = self->doc->dbytes.empty() ? self->doc->fbytes : self->doc->dbytes;
             return true;
         }
         break;
@@ -569,8 +561,7 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
         return 0;
     }
     if (!self->rclconfig || !self->rclconfig->ok()) {
-        PyErr_SetString(PyExc_AttributeError,
-                        "Configuration not initialized");
+        PyErr_SetString(PyExc_AttributeError, "Configuration not initialized");
         return 0;
     }
 
@@ -605,8 +596,7 @@ Doc_setattro(recoll_DocObject *self, PyObject *nameobj, PyObject *value)
         return -1;
     }
     if (!self->rclconfig || !self->rclconfig->ok()) {
-        PyErr_SetString(PyExc_AttributeError,
-                        "Configuration not initialized");
+        PyErr_SetString(PyExc_AttributeError, "Configuration not initialized");
         return -1;
     }
     string name;
@@ -681,7 +671,7 @@ Doc_setattro(recoll_DocObject *self, PyObject *nameobj, PyObject *value)
     case 's':
         if (key == Rcl::Doc::keysig) {
             self->doc->sig.swap(uvalue);
-        } else     if (key == Rcl::Doc::keysz) {
+        } else if (key == Rcl::Doc::keysz) {
             self->doc->dbytes.swap(uvalue);
         }
         break;
@@ -708,8 +698,7 @@ Doc_subscript(recoll_DocObject *self, PyObject *key)
         return NULL;
     }
     if (!self->rclconfig || !self->rclconfig->ok()) {
-        PyErr_SetString(PyExc_AttributeError,
-                        "Configuration not initialized");
+        PyErr_SetString(PyExc_AttributeError, "Configuration not initialized");
         return NULL;
     }
     string name;
@@ -721,8 +710,7 @@ Doc_subscript(recoll_DocObject *self, PyObject *key)
     string skey = self->rclconfig->fieldQCanon(name);
     string value;
     if (idocget(self, skey, value)) {
-        return PyUnicode_Decode(value.c_str(), value.size(),
-                                "UTF-8", "backslashreplace");
+        return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8", "backslashreplace");
     }
     Py_RETURN_NONE;
 }
@@ -913,9 +901,7 @@ Query_sortby(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     static const char *kwlist[] = {"field", "ascending", NULL};
     char *sfield = 0;
     PyObject *ascobj = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", (char**)kwlist,
-                                     &sfield,
-                                     &ascobj))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", (char**)kwlist, &sfield, &ascobj))
         return 0;
 
     if (sfield) {
@@ -1059,8 +1045,7 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 // one knows their name (e.g. xdocid).
 static void movedocfields(const RclConfig* rclconfig, Rcl::Doc *doc)
 {
-    printableUrl(rclconfig->getDefCharset(), doc->url, 
-                 doc->meta[Rcl::Doc::keyurl]);
+    printableUrl(rclconfig->getDefCharset(), doc->url, doc->meta[Rcl::Doc::keyurl]);
     doc->meta[Rcl::Doc::keytp] = doc->mimetype;
     doc->meta[Rcl::Doc::keyipt] = doc->ipath;
     doc->meta[Rcl::Doc::keyfs] = doc->fbytes;
@@ -1082,7 +1067,7 @@ Query_iternext(PyObject *_self)
         // This happens if there are no results and is not an error
         return 0;
     }
-    recoll_DocObject *result = 
+    recoll_DocObject *result =
         (recoll_DocObject *)PyObject_CallObject((PyObject *)&recoll_DocType, 0);
     if (!result) {
         PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
@@ -1131,8 +1116,7 @@ Query_fetchmany(PyObject* _self, PyObject *args, PyObject *kwargs)
     static const char *kwlist[] = {"size", NULL};
     int size = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i", (char**)kwlist,
-                                     &size))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i", (char**)kwlist, &size))
         return 0;
 
     if (size == 0)
@@ -1169,8 +1153,7 @@ Query_scroll(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     static const char *kwlist[] = {"position", "mode", NULL};
     int pos = 0;
     char *smode = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|s", (char**)kwlist,
-                                     &pos, &smode))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|s", (char**)kwlist, &pos, &smode))
         return 0;
 
     bool isrelative = 1;
@@ -1219,8 +1202,7 @@ public:
     virtual string startMatch(unsigned int idx) {
         PyObject *res =  0;
         if (m_methods)
-            res = PyObject_CallMethod(m_methods, (char *)"startMatch", 
-                                      (char *)"(i)", idx);
+            res = PyObject_CallMethod(m_methods, (char *)"startMatch", (char *)"(i)", idx);
         if (res == 0)
             return "<span class=\"rclmatch\">";
         PyObject *res1 = res;
@@ -1292,8 +1274,7 @@ Query_highlight(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
         return 0;
     }
     // cf python manual:The bytes will be interpreted as being UTF-8 encoded.
-    PyObject* unicode = PyUnicode_FromStringAndSize(out.begin()->c_str(),
-                                                    out.begin()->size());
+    PyObject* unicode = PyUnicode_FromStringAndSize(out.begin()->c_str(), out.begin()->size());
     // We used to return a copy of the unicode object. Can't see why any more
     return unicode;
 }
@@ -1365,8 +1346,7 @@ Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
     }
 
     // Return a python unicode object
-    return PyUnicode_Decode(abstract.c_str(), abstract.size(), 
-                            "UTF-8", "replace");
+    return PyUnicode_Decode(abstract.c_str(), abstract.size(), "UTF-8", "replace");
 }
 
 PyDoc_STRVAR(doc_Query_getsnippets,
@@ -1511,16 +1491,14 @@ Query_getgroups(recoll_QueryObject* self, PyObject *, PyObject *)
         // multiply_groups to using or-plists. TBD: check
         if (tg.kind == HighlightData::TermGroup::TGK_TERM) {
             xlist = PyList_New(1);
-            PyList_SetItem(xlist, 0, 
-                           PyUnicode_Decode(tg.term.c_str(), tg.term.size(), 
-                                            "UTF-8", "replace"));
+            PyList_SetItem(xlist, 0,
+                           PyUnicode_Decode(tg.term.c_str(), tg.term.size(), "UTF-8", "replace"));
         } else {
             xlist = PyList_New(tg.orgroups.size());
             for (unsigned int j = 0; j < tg.orgroups.size(); j++) {
-                PyList_SetItem(xlist, j, 
+                PyList_SetItem(xlist, j,
                                PyUnicode_Decode(tg.orgroups[j][0].c_str(),
-                                                tg.orgroups[j][0].size(), 
-                                                "UTF-8", "replace"));
+                                                tg.orgroups[j][0].size(), "UTF-8", "replace"));
             }
         }
         PyList_Append(mainlist,  Py_BuildValue("(OO)", ulist, xlist));
@@ -1717,19 +1695,26 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
         }
         for (int i = 0; i < dbcnt; i++) {
             PyObject *item = PySequence_GetItem(extradbs, i);
-            const char *s = PyBytes_AsString(item);
-            if (s == nullptr) {
-                PyErr_SetString(PyExc_TypeError,
-                                "extra_dbs must contain strings");
+            string dbname;
+            if (PyUnicode_Check(item)) {
+                PyObject *utf8o = PyUnicode_AsUTF8String(item);
+                if (nullptr != utf8o) {
+                    dbname = PyBytes_AsString(utf8o);
+                    Py_DECREF(utf8o);
+                }
+            }  else if (PyBytes_Check(item)) {
+                dbname = PyBytes_AsString(item);
+            }
+            if (dbname.empty()) {
+                PyErr_SetString(PyExc_TypeError, "extra_dbs items must be bytes or strings");
                 deleteZ(self->db);
                 Py_DECREF(item);
                 return -1;
             }
-            string dbname(s);
             Py_DECREF(item);
+            string errmsg = string("extra db could not be opened: ") + dbname;
             if (!self->db->addQueryDb(dbname)) {
-                PyErr_SetString(PyExc_EnvironmentError, 
-                                "extra db could not be opened");
+                PyErr_SetString(PyExc_EnvironmentError, errmsg.c_str());
                 deleteZ(self->db);
                 return -1;
             }
@@ -1792,8 +1777,7 @@ Db_setAbstractParams(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "db id not found");
         return 0;
     }
-    LOGDEB0("Db_setAbstractParams: mxchrs " << maxchars << ", ctxwrds " <<
-            ctxwords << "\n");
+    LOGDEB0("Db_setAbstractParams: mxchrs " << maxchars << ", ctxwrds " << ctxwords << "\n");
     self->db->setAbstractParams(-1, maxchars, ctxwords);
     Py_RETURN_NONE;
 }
@@ -1830,8 +1814,7 @@ Db_makeDocAbstract(recoll_DbObject* self, PyObject *args)
         return 0;
     }
     // Return a python unicode object
-    return PyUnicode_Decode(abstract.c_str(), abstract.size(), 
-                            "UTF-8", "replace");
+    return PyUnicode_Decode(abstract.c_str(), abstract.size(), "UTF-8", "replace");
 }
 
 PyDoc_STRVAR(
@@ -1906,8 +1889,7 @@ Db_termMatch(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
 
     ret = PyList_New(result.entries.size());
     for (unsigned int i = 0; i < result.entries.size(); i++) {
-        PyObject *term = PyUnicode_FromString(
-            Rcl::strip_prefix(result.entries[i].term).c_str());
+        PyObject *term = PyUnicode_FromString(Rcl::strip_prefix(result.entries[i].term).c_str());
         if (showfreqs) {
             PyObject *totcnt = PyLong_FromLong(result.entries[i].wcf);
             PyObject *doccnt = PyLong_FromLong(result.entries[i].docs);
@@ -1934,8 +1916,7 @@ Db_needUpdate(recoll_DbObject* self, PyObject *args, PyObject *kwds)
     LOGDEB0("Db_needUpdate\n");
     char *udi = 0; // needs freeing
     char *sig = 0; // needs freeing
-    if (!PyArg_ParseTuple(args, "eses:Db_needUpdate", 
-                          "utf-8", &udi, "utf-8", &sig)) {
+    if (!PyArg_ParseTuple(args, "eses:Db_needUpdate", "utf-8", &udi, "utf-8", &sig)) {
         return 0;
     }
     if (self->db == 0) {
@@ -2244,8 +2225,7 @@ PyInit__recoll(void)
     if (PyType_Ready(&recoll_SearchDataType) < 0)
         INITERROR;
     Py_INCREF((PyObject*)&recoll_SearchDataType);
-    PyModule_AddObject(module, "SearchData", 
-                       (PyObject *)&recoll_SearchDataType);
+    PyModule_AddObject(module, "SearchData", (PyObject *)&recoll_SearchDataType);
 
     PyModule_AddStringConstant(module, "__doc__", pyrecoll_doc_string);
 
@@ -2262,8 +2242,7 @@ PyInit__recoll(void)
     if (PyType_Ready(&recoll_QRSDocType) < 0)
         INITERROR;
     Py_INCREF((PyObject*)&recoll_QRSDocType);
-    PyModule_AddObject(module, "QRSDoc",
-                       (PyObject *)&recoll_QRSDocType);
+    PyModule_AddObject(module, "QRSDoc", (PyObject *)&recoll_QRSDocType);
     
 #if PY_MAJOR_VERSION >= 3
     return module;
