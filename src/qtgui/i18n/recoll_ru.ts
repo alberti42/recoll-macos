@@ -391,7 +391,7 @@
     </message>
     <message>
         <source>If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</source>
-        <translation type="unfinished">If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</translation>
+        <translation>Если не указано, будет использовано расположенное выше значение имени файла журнала. Для целей диагностики может быть полезен отдельный журнал,&lt;br&gt;так как общий журнал будет стёрт при запуске графического интерфейса пользователя.</translation>
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
@@ -403,23 +403,23 @@
     </message>
     <message>
         <source>Process the Web history queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Обрабатывать просмотренные веб-страницы</translation>
     </message>
     <message>
         <source> (by default, aspell suggests mispellings when a query has no results).</source>
-        <translation type="unfinished"></translation>
+        <translation> (по умолчанию aspell предполагает ошибки, когда запрос не возвращает результатов).</translation>
     </message>
     <message>
         <source>Page recycle interval</source>
-        <translation type="unfinished"></translation>
+        <translation>Интервал удаления страниц</translation>
     </message>
     <message>
         <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;По умолчанию в кэше хранится только один экземпляр URL. Это поведение можно изменить, установив этот параметр в значение, которое определяет периодичность хранения нескольких экземпляров («день», «неделя», «месяц», «год»). Обратите внимание, что увеличение интервала не приведёт к удалению существующих записей.</translation>
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Примечание: старые страницы будут удалены, чтобы освободить место для новых, когда будет достигнуто предельное значение размера кэша. Текущий размер: %1</translation>
     </message>
 </context>
 <context>
@@ -1135,15 +1135,15 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Copy Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать текст</translation>
     </message>
     <message>
         <source>Copy &amp;File Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать путь к &amp;файлу</translation>
     </message>
     <message>
         <source>Copy File Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать имя файла</translation>
     </message>
 </context>
 <context>
@@ -2204,19 +2204,19 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Increase results text font size</source>
-        <translation type="unfinished"></translation>
+        <translation>Увеличить размер шрифта текста результатов</translation>
     </message>
     <message>
         <source>Increase Font Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Увеличить размер шрифта</translation>
     </message>
     <message>
         <source>Decrease results text font size</source>
-        <translation type="unfinished"></translation>
+        <translation>Уменьшить размер шрифта текста результатов</translation>
     </message>
     <message>
         <source>Decrease Font Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Уменьшить размер шрифта</translation>
     </message>
 </context>
 <context>
@@ -2548,11 +2548,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Use Shift+click to display the text instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>Чтобы вместо этого просмотреть текст, используйте Shift+щелчок.</translation>
     </message>
     <message>
         <source>%1 bytes copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 байт скопировано в буфер обмена</translation>
     </message>
 </context>
 <context>
@@ -3214,11 +3214,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
-        <translation type="unfinished"></translation>
+        <translation>Выходной файл диагностики. Будет усечён и получит диагностику индексирования (причины отсутствия индексации файлов).</translation>
     </message>
     <message>
         <source>Diagnostics file</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл диагностики</translation>
     </message>
 </context>
 <context>
@@ -3491,7 +3491,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose QSS File</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать файл QSS</translation>
     </message>
 </context>
 <context>
@@ -3834,11 +3834,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Save to File</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить в файл</translation>
     </message>
     <message>
         <source>File creation failed: </source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать файл: </translation>
     </message>
 </context>
 <context>
@@ -3853,11 +3853,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished">Дата</translation>
+        <translation>Дата</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер</translation>
     </message>
 </context>
 <context>
@@ -4697,83 +4697,83 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Hide some user interface elements.</source>
-        <translation type="unfinished"></translation>
+        <translation>Скрыть некоторые элементы интерфейса пользователя.</translation>
     </message>
     <message>
         <source>Hide:</source>
-        <translation type="unfinished"></translation>
+        <translation>Скрыть:</translation>
     </message>
     <message>
         <source>Toolbars</source>
-        <translation type="unfinished"></translation>
+        <translation>Панели инструментов</translation>
     </message>
     <message>
         <source>Status bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Строка состояния</translation>
     </message>
     <message>
         <source>Show button instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>Заменить на кнопку.</translation>
     </message>
     <message>
         <source>Menu bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Строка меню</translation>
     </message>
     <message>
         <source>Show choice in menu only.</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать варианты только в меню.</translation>
     </message>
     <message>
         <source>Simple search type</source>
-        <translation type="unfinished">Простой тип поиска</translation>
+        <translation>Простой тип поиска</translation>
     </message>
     <message>
         <source>Clear/Search buttons</source>
-        <translation type="unfinished"></translation>
+        <translation>Кнопки «Очистить» и «Поиск»</translation>
     </message>
     <message>
         <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключить комбинации клавиш Ctrl+[0-9]/Shift+[a-z] для быстрого перехода к строкам таблицы.</translation>
     </message>
     <message>
         <source>None (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет (по умолчанию)</translation>
     </message>
     <message>
         <source>Uses the default dark mode style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать таблицу стилей тёмного режима по умолчанию</translation>
     </message>
     <message>
         <source>Dark mode</source>
-        <translation type="unfinished">Темный режим</translation>
+        <translation>Тёмный режим</translation>
     </message>
     <message>
         <source>Choose QSS File</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать файл QSS</translation>
     </message>
     <message>
         <source>To display document text instead of metadata in result table detail area, use:</source>
-        <translation type="unfinished"></translation>
+        <translation>Чтобы просмотреть текст документа (а не метаданные) в области сведений таблицы результатов:</translation>
     </message>
     <message>
         <source>left mouse click</source>
-        <translation type="unfinished"></translation>
+        <translation>щелчок левой кнопкой мыши</translation>
     </message>
     <message>
         <source>Shift+click</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift+щелчок</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть диалог выбора файла таблицы стилей.&lt;br&gt;Пример: /usr/share/recoll/examples/recoll[-dark].qss.</translation>
     </message>
     <message>
         <source>Result Table</source>
-        <translation type="unfinished">Таблица результатов</translation>
+        <translation>Таблица результатов</translation>
     </message>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не показывать метаданные при наведении указателя на строки.</translation>
     </message>
 </context>
 </TS>
