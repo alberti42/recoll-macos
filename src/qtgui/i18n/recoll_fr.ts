@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fr" sourcelanguage="en">
 <context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation>Recherche dans les menus</translation>
+    </message>
+</context>
+<context>
     <name>AdvSearch</name>
     <message>
         <source>All clauses</source>
@@ -1871,6 +1878,14 @@ Merci de vérifier le fichier desktop </translation>
         <source>Move keyboard focus to table</source>
         <translation>Cibler l&apos;entrée clavier vers la table</translation>
     </message>
+    <message>
+        <source>Flushing</source>
+        <translation>Écriture de l&apos;index</translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation>Afficher le dialogue de recherche dans les menus</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2550,6 +2565,10 @@ Merci de vérifier le fichier desktop </translation>
         <source>%1 bytes copied to clipboard</source>
         <translation>%1 octets copiés vers le presse-papiers</translation>
     </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation>Copier le texte du résultat et quitter le programme</translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2914,6 +2933,14 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Using current preferences.</source>
         <translation>Utilisation des préférences actuelles.</translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation>Type de recherche simple</translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation>Historique</translation>
     </message>
 </context>
 <context>
@@ -4633,7 +4660,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation>Contourner le QTBUG-78923 en inseŕant un espace devant le texte du lien</translation>
+        <translation type="vanished">Contourner le QTBUG-78923 en inseŕant un espace devant le texte du lien</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
@@ -4770,6 +4797,14 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
         <translation>Ne pas afficher les détails quand on passe sur un rang avec la souris.</translation>
+    </message>
+    <message>
+        <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
+        <translation>Contourner le bug QTBUG-78923 pour le Tamil en inseŕant un espace devant le texte du lien</translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation>Ce bug provoque l&apos;apparition d&apos;un caractère étrange en forme de cercle à l&apos;intérieur de mots en Tamil. Le contournement insère un caractère d&apos;espace additionnel supplémentaire qui semble corriger le problème.</translation>
     </message>
 </context>
 </TS>

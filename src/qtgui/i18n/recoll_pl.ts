@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="pl" sourcelanguage="en">
 <context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AdvSearch</name>
     <message>
         <source>All clauses</source>
@@ -1873,6 +1880,14 @@ Sprawdź plik pulpitu</translation>
         <source>Move keyboard focus to table</source>
         <translation>Przenieś ostrość klawiatury do tabeli</translation>
     </message>
+    <message>
+        <source>Flushing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2552,6 +2567,10 @@ Sprawdź plik pulpitu</translation>
         <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2916,6 +2935,14 @@ Użyj &lt;b&gt;Pokaż link Zapytania&lt;/b&gt; w razie wątpliwości co do wynik
     <message>
         <source>Using current preferences.</source>
         <translation>Używanie aktualnych preferencji.</translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4635,7 +4662,7 @@ Domyślna wartość to 2 (%).</translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation>Pracuj wokół QTBUG-78923 wstawiając spację przed kotwicą tekstu</translation>
+        <translation type="vanished">Pracuj wokół QTBUG-78923 wstawiając spację przed kotwicą tekstu</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
@@ -4771,6 +4798,14 @@ Domyślna wartość to 2 (%).</translation>
     </message>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

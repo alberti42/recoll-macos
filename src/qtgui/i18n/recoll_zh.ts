@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AdvSearch</name>
     <message>
         <source>All clauses</source>
@@ -1753,6 +1760,14 @@ Please check the desktop file</source>
         <source>Move keyboard focus to table</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Flushing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2376,6 +2391,10 @@ Please check the desktop file</source>
         <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2696,6 +2715,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Using current preferences.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3898,10 +3925,6 @@ The default value is 2 (percent). </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4011,6 +4034,14 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

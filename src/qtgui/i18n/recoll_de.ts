@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de" sourcelanguage="en">
 <context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AdvSearch</name>
     <message>
         <source>All clauses</source>
@@ -1884,6 +1891,14 @@ Bitte überprüfen Sie die Desktop-Datei</translation>
         <source>Move keyboard focus to table</source>
         <translation>Tastaturfokus in Tabelle verschieben</translation>
     </message>
+    <message>
+        <source>Flushing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2563,6 +2578,10 @@ Bitte überprüfen Sie die Desktop-Datei</translation>
         <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2928,6 +2947,14 @@ Benutze &lt;b&gt;Abfrage anzeigen&lt;/b&gt; Link bei Zweifeln am Ergebnis und si
     <message>
         <source>Using current preferences.</source>
         <translation>Benutze die aktuellen Einstellungen.</translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4655,7 +4682,7 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation>Umgehen Sie QTBUG-78923, indem Sie vor dem Ankertext ein Leerzeichen einfügen</translation>
+        <translation type="vanished">Umgehen Sie QTBUG-78923, indem Sie vor dem Ankertext ein Leerzeichen einfügen</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
@@ -4791,6 +4818,14 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
