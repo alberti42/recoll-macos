@@ -70,7 +70,7 @@ GUIBIN=$RCL/build-recoll-win-${QTA}/${qtsdir}/recoll.exe
 RCLIDX=$RCLW/build-recollindex-${QTA}/${qtsdir}/recollindex.exe
 RCLQ=$RCLW/build-recollq-${QTA}/${qtsdir}/recollq.exe
 RCLS=$RCLW/build-rclstartw-${QTA}/${qtsdir}/rclstartw.exe
-    
+XAPC=$RCLW/build-xapian-check-${QTA}/xapian-check.exe
 #PYTHON=${RCLDEPS}py-python3
 PYTHON=${RCLDEPS}python-3.7.9-embed-win32
 UNRTF=${RCLDEPS}unrtf
@@ -162,6 +162,7 @@ copyrecoll()
 	chkcp $LIBR $DESTDIR 
         chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DESTDIR
     else
+        chkcp $XAPC $DESTDIR
 	chkcp $LIBXML $DESTDIR
 	chkcp $LIBXSLT $DESTDIR
     fi
