@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ko" sourcelanguage="en">
 <context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AdvSearch</name>
     <message>
         <source>All clauses</source>
@@ -1873,6 +1880,14 @@ Please check the desktop file</source>
         <source>Move keyboard focus to table</source>
         <translation>키보드 포커스를 테이블로 이동</translation>
     </message>
+    <message>
+        <source>Flushing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2552,6 +2567,10 @@ Please check the desktop file</source>
         <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2915,6 +2934,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Using current preferences.</source>
         <translation type="unfinished">Using current preferences.</translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3943,7 +3970,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Recoll - Index Settings: </source>
-        <translation>Recoll - 색인 설정: </translation>
+        <translation type="vanished">Recoll - 색인 설정: </translation>
     </message>
 </context>
 <context>
@@ -4557,7 +4584,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Start with simple search mode</source>
-        <translation>단순 검색의 검색 기준 기본값:</translation>
+        <translation type="vanished">단순 검색의 검색 기준 기본값:</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
@@ -4770,6 +4797,10 @@ The default value is 2 (percent). </source>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
         <translation>마우스가 행 위에 있을 때 메타데이터 표시하지 않기.</translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

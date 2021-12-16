@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="it" sourcelanguage="en">
 <context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AdvSearch</name>
     <message>
         <source>All clauses</source>
@@ -1871,6 +1878,14 @@ Si prega di controllare il file desktop</translation>
         <source>Move keyboard focus to table</source>
         <translation>Sposta il focus della tastiera nella tabella</translation>
     </message>
+    <message>
+        <source>Flushing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2550,6 +2565,10 @@ Si prega di controllare il file desktop</translation>
         <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2914,6 +2933,14 @@ Usa &lt;b&gt;Mostra il link Query&lt;/b&gt; quando hai dubbi sul risultato e ved
     <message>
         <source>Using current preferences.</source>
         <translation>Usare le preferenze correnti.</translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4635,7 +4662,7 @@ Il valore predefinito è 2 (percentuale). </translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation>Lavorare intorno a QTBUG-78923 inserendo spazio prima del testo di ancoraggio</translation>
+        <translation type="vanished">Lavorare intorno a QTBUG-78923 inserendo spazio prima del testo di ancoraggio</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
@@ -4771,6 +4798,14 @@ Il valore predefinito è 2 (percentuale). </translation>
     </message>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

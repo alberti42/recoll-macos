@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="da" sourcelanguage="en">
 <context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AdvSearch</name>
     <message>
         <source>All clauses</source>
@@ -1870,6 +1877,14 @@ Tjek venligst desktopfilen</translation>
         <source>Move keyboard focus to table</source>
         <translation>Flyt tastaturets fokus til tabellen</translation>
     </message>
+    <message>
+        <source>Flushing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2549,6 +2564,10 @@ Tjek venligst desktopfilen</translation>
         <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2911,6 +2930,14 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>Using current preferences.</source>
         <translation>Brug af aktuelle indstillinger.</translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4630,7 +4657,7 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation>Arbejd omkring QTBUG-78923 ved at indsætte plads før ankertekst</translation>
+        <translation type="vanished">Arbejd omkring QTBUG-78923 ved at indsætte plads før ankertekst</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
@@ -4766,6 +4793,14 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

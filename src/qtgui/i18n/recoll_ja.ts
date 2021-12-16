@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ja_JP" sourcelanguage="en_US">
 <context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AdvSearch</name>
     <message>
         <source>All clauses</source>
@@ -1611,6 +1618,14 @@ Please check the desktop file</translation>
         <source>Move keyboard focus to table</source>
         <translation>キーボードのフォーカスをテーブルに移動します</translation>
     </message>
+    <message>
+        <source>Flushing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2127,6 +2142,10 @@ Please check the desktop file</translation>
         <source>%1 bytes copied to clipboard</source>
         <translation>%1 bytes をクリップボードにコピーしました</translation>
     </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearch</name>
@@ -2325,6 +2344,14 @@ Please check the desktop file</translation>
     <message>
         <source>Using current preferences.</source>
         <translation>現在の詳細設定を使用.</translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3271,7 +3298,7 @@ The default value is 2 (percent). </translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation>アンカーテキストの前にスペースを挿入して、QTBUG-78923を回避します</translation>
+        <translation type="vanished">アンカーテキストの前にスペースを挿入して、QTBUG-78923を回避します</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
@@ -3388,6 +3415,14 @@ The default value is 2 (percent). </translation>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
         <translation>Do not display metadata when hovering over rows.</translation>
+    </message>
+    <message>
+        <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
