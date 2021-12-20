@@ -187,6 +187,7 @@ text/x-csv = internal text/plain
 text/x-fictionbook = internal xsltproc fb2.xsl
 text/x-ini = internal text/plain
 text/x-mail = internal
+text/x-orgmode = execm python rclorgmode.py
 text/x-perl = internal text/plain
 text/x-python = execm python rclpython.py
 text/x-shellscript = internal text/plain
@@ -291,6 +292,7 @@ text/x-html-sidux-man = sidux-book
 text/x-ini = txt
 text/x-mail = message
 text/x-man = document
+text/x-orgmode = document
 text/x-perl = source
 text/x-purple-html-log = pidgin
 text/x-purple-log = pidgin
@@ -359,6 +361,7 @@ text = \
       text/x-html-sidux-man \
       text/x-ini \
       text/x-man \
+      text/x-orgmode \
       text/x-perl \
       text/x-python \
       text/x-shellscript

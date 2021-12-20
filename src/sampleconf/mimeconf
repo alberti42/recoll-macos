@@ -359,6 +359,7 @@ text/x-java = source
 text/x-lua = source
 text/x-mail = message
 text/x-man = document
+text/x-orgmode = document
 text/x-perl = source
 text/x-php = source
 text/x-purple-html-log = pidgin
@@ -443,6 +444,7 @@ text = \
       text/x-ini \
       text/x-java \
       text/x-man \
+      text/x-orgmode \
       text/x-perl \
       text/x-php \
       text/x-python \
