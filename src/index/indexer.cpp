@@ -59,8 +59,9 @@ bool runWebFilesMoverScript(RclConfig *config)
     static string downloadsdir;
     if (downloadsdir.empty()) {
         if (!config->getConfParam("webdownloadsdir", downloadsdir)) {
-            downloadsdir = path_tildexpand("~/Downloads");
+            downloadsdir = "~/Downloads";
         }
+        downloadsdir = path_tildexpand(downloadsdir);
     }
     vector<string> cmdvec;
     config->pythonCmd("recoll-we-move-files.py", cmdvec);
