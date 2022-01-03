@@ -619,10 +619,16 @@ static const string& thumbnailsdir()
     return thumbnailsd;
 }
 
+// Place for 1024x1024 files
+static const string thmbdirxxlarge = "xx-large";
+// Place for 512x512 files
+static const string thmbdirxlarge = "x-large";
 // Place for 256x256 files
 static const string thmbdirlarge = "large";
 // 128x128
 static const string thmbdirnormal = "normal";
+
+static const vector<string> thmbdirs{thmbdirxxlarge, thmbdirxlarge, thmbdirlarge, thmbdirnormal};
 
 static void thumbname(const string& url, string& name)
 {
@@ -635,26 +641,47 @@ static void thumbname(const string& url, string& name)
 
 bool thumbPathForUrl(const string& url, int size, string& path)
 {
-    string name;
+    string name, path128, path256, path512, path1024;
     thumbname(url, name);
     if (size <= 128) {
         path = path_cat(thumbnailsdir(), thmbdirnormal);
+        path = path_cat(path, name);
+        path128 = path;
+    } else if (size <= 256) {
+        path = path_cat(thumbnailsdir(), thmbdirlarge);
+        path = path_cat(path, name);
+        path256 = path;
+    } else if (size <= 512) {
+        path = path_cat(thumbnailsdir(), thmbdirxlarge);
+        path = path_cat(path, name);
+        path512 = path;
+    } else {
+        path = path_cat(thumbnailsdir(), thmbdirxxlarge);
+        path = path_cat(path, name);
+        path1024 = path;
+    }
+    if (access(path.c_str(), R_OK) == 0) {
+        return true;
+    }
+
+    // Not found in requested size. Try to find any size and return it. Let the client scale.
+    for (const auto& tdir : thmbdirs) {
+        path = path_cat(thumbnailsdir(), tdir);
         path = path_cat(path, name);
         if (access(path.c_str(), R_OK) == 0) {
             return true;
         }
     }
-    path = path_cat(thumbnailsdir(), thmbdirlarge);
-    path = path_cat(path, name);
-    if (access(path.c_str(), R_OK) == 0) {
-        return true;
-    }
 
-    // File does not exist. Path corresponds to the large version at this point,
-    // fix it if needed.
+    // File does not exist. Return appropriate path anyway.
     if (size <= 128) {
-        path = path_cat(path_home(), thmbdirnormal);
-        path = path_cat(path, name);
+        path = path128;
+    } else if (size <= 256) {
+        path = path256;
+    } else if (size <= 512) {
+        path = path512;
+    } else {
+        path = path1024;
     }
     return false;
 }
