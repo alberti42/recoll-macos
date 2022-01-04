@@ -11,7 +11,7 @@
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
 /* Path to the aspell program */
-#define ASPELL_PROG "/opt/local/bin/aspell"
+#undef ASPELL_PROG
 
 /* No X11 session monitoring support */
 #define DISABLE_X11MON 1
