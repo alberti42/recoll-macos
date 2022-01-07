@@ -10758,17 +10758,28 @@ other = rclcat:other
               <li class="listitem">
                 <p><b>%p.&nbsp;</b>Page index. Only significant for
                 a subset of document types, currently only PDF,
-                Postscript and DVI files. Can be used to start the
-                editor at the right page for a match or
-                snippet.</p>
+                Postscript and DVI files. If it is set, a
+                significant term will be chosen in the query, and
+                %p will be substituted with the first page where
+                the term appears. Can be used to start the editor
+                at the right page for a match or snippet.</p>
+              </li>
+              <li class="listitem">
+                <p><b>%l.&nbsp;</b>Line number. Only significant
+                for document types with relevant line breaks,
+                mostly text/plain and analogs. If it is set, a
+                significant term will be chosen in the query, and
+                %p will be substituted with the first line where
+                the term appears.</p>
               </li>
               <li class="listitem">
                 <p><b>%s.&nbsp;</b>Search term. The value will only
-                be set for documents with indexed page numbers (ie:
-                PDF). The value will be one of the matched search
-                terms. It would allow pre-setting the value in the
-                "Find" entry inside Evince for example, for easy
-                highlighting of the term.</p>
+                be set for documents with indexed page or line
+                numbers and if %p or %l is also used. The value
+                will be one of the matched search terms. It would
+                allow pre-setting the value in the "Find" entry
+                inside Evince for example, for easy highlighting of
+                the term.</p>
               </li>
               <li class="listitem">
                 <p><b>%u.&nbsp;</b>Url.</p>
