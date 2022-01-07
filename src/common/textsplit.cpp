@@ -596,6 +596,7 @@ bool TextSplit::text_to_words(const string &in)
     clearsplitstate();
     
     bool pagepending = false;
+    bool nlpending = false;
     bool softhyphenpending = false;
 
     // Running count of non-alphanum chars. Reset when we see one;
@@ -705,6 +706,10 @@ bool TextSplit::text_to_words(const string &in)
                 pagepending = false;
                 newpage(m_wordpos);
             }
+            if (nlpending) {
+                nlpending = false;
+                newline(m_wordpos);
+            }
             break;
 
         case WILD:
@@ -745,6 +750,12 @@ bool TextSplit::text_to_words(const string &in)
                         break;
                     }
                 } else {
+                    // Note about dangling hyphens: we always strip '-' found before whitespace,
+                    // even before a newline, then generate two terms, before and after the line
+                    // break. We have no way to know if '-' is there because a word was broken by
+                    // justification or if it was part of an actual compound word (would need a
+                    // dictionary to check). As soft-hyphen *should* be used if the '-' is not part
+                    // of the text.
                     if (nextc == -1 || isvisiblewhite(nextc)) {
                         goto SPACE;
                     }
@@ -844,19 +855,10 @@ bool TextSplit::text_to_words(const string &in)
             break;
 
         case '\n':
+            nlpending = true;
+            /* FALLTHROUGH */
         case '\r':
-            if (m_span.length() && *m_span.rbegin() == '-') {
-                // if '-' is the last char before end of line, we
-                // strip it.  We have no way to know if this is added
-                // because of the line split or if it was part of an
-                // actual compound word (would need a dictionary to
-                // check).  As soft-hyphen *should* be used if the '-'
-                // is not part of the text, it is better to properly
-                // process a real compound word, and produce wrong
-                // output from wrong text. The word-emitting routine
-                // will strip the trailing '-'.
-                goto SPACE;
-            } else if (softhyphenpending) {
+            if (softhyphenpending) {
                 // Don't reset soft-hyphen
                 continue;
             } else {

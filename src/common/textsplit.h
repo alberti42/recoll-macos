@@ -73,6 +73,9 @@ public:
      * just don't know about pages. */
     virtual void newpage(int /*pos*/) {}
 
+    /** Called when we encounter newline \n 0x0a. Override to use the event. */
+    virtual void newline(int /*pos*/) {}
+
     // Static utility functions:
 
     /** Count words in string, as the splitter would generate them */
