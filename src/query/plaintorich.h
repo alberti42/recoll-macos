@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -60,8 +60,7 @@ public:
      * @param in    raw text out of internfile.
      * @param out   rich text output, divided in chunks (to help our caller
      *   avoid inserting half tags into textedit which doesnt like it)
-     * @param in hdata terms and groups to be highlighted. These are
-     *   lowercase and unaccented.
+     * @param in hdata terms and groups to be highlighted. See utils/hldata.h
      * @param chunksize max size of chunks in output list
      */
     virtual bool plaintorich(const std::string &in, std::list<std::string> &out,
