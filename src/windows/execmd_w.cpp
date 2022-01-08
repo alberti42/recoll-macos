@@ -1100,17 +1100,6 @@ bool ExecCmd::maybereap(int *status)
     }
 }
 
-// Static
-bool ExecCmd::backtick(const vector<string> cmd, string& out)
-{
-    vector<string>::const_iterator it = cmd.begin();
-    it++;
-    vector<string> args(it, cmd.end());
-    ExecCmd mexec;
-    int status = mexec.doexec(*cmd.begin(), args, 0, &out);
-    return status == 0;
-}
-
 int ExecCmd::doexec(const string &cmd, const vector<string>& args,
                     const string *input, string *output)
 {
@@ -1159,3 +1148,23 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
     cleaner.inactivate();
     return wait();
 }
+
+// Static
+bool ExecCmd::backtick(const vector<string> cmd, string& out)
+{
+    vector<string>::const_iterator it = cmd.begin();
+    it++;
+    vector<string> args(it, cmd.end());
+    ExecCmd mexec;
+    int status = mexec.doexec(*cmd.begin(), args, 0, &out);
+    return status == 0;
+}
+
+// Static. Unimplemented on windows for now
+std::string ExecCmd::waitStatusAsString(int wstatus)
+{
+    std::ostringstream oss;
+    oss << std::hex << "0x" << wstatus << std::dec;
+    return oss.str();
+}
+
