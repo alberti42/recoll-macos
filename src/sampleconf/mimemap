@@ -15,6 +15,8 @@
 .rst = text/plain
 .md = text/plain
 .gv = text/plain
+.desktop = text/plain
+.json = text/plain
 
 # .log is in the default noContentSuffixes, so this will also need a recoll.conf setting to do
 # anything
@@ -58,6 +60,7 @@
 .ipynb = application/x-ipynb+json
 
 .xml = text/xml
+.opf = text/xml
 
 .note = application/x-gnote
 
@@ -90,15 +93,19 @@
 .svg = image/svg+xml
 .dia = application/x-dia-diagram
 
+# Compressed files
 .gz = application/x-gzip
 .Z = application/x-gzip
 .bz2 = application/x-bzip2
-.rar = application/x-rar
-#.Z  = application/x-compress
-.zip = application/zip
-.7z = application/x-7z-compressed
-.maff = application/zip
+.lzma = application/x-lzma
+.xz = application/x-xz
 .zst = application/x-zstd
+
+# Archives
+.rar = application/x-rar
+.zip = application/zip
+.maff = application/zip
+.7z = application/x-7z-compressed
 
 # The rcltar module can handle compressed tar formats internally so we
 # use application/x-tar for all tar files compressed or not. Note that tar
@@ -123,7 +130,9 @@
 .chm = application/x-chm
 
 .epub = application/epub+zip
+.kepub = application/epub+zip
 .mobi = application/x-mobipocket-ebook 
+.lit = application/x-ms-reader
 
 # OpenOffice / opendocument. We handle opendocument as old openoffice files
 # for now
@@ -200,6 +209,7 @@
 .ogg = application/ogg
 .ogx = audio/ogg
 .opus = audio/ogg
+.wav = audio/x-wav
 .wv = audio/x-wavpack
 
 .mkv = video/x-matroska
