@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 
 #ifdef RCL_MONITOR
-/* Copyright (C) 2006 J.F.Dockes 
+/* Copyright (C) 2006-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -122,7 +122,7 @@ struct DelayPat {
  */
 class RclEQData {
 public:
-    int        m_opts;
+    int        m_opts{0};
     // Queue for normal files (unlimited reindex)
     queue_type m_iqueue;
     // Queue for delayed reindex files
@@ -135,27 +135,21 @@ public:
     delays_type m_delays;
     // Configured intervals for path patterns, read from the configuration.
     vector<DelayPat> m_delaypats;
-    RclConfig *m_config;
-    bool       m_ok;
+    RclConfig *m_config{nullptr};
+    bool       m_ok{true};
 
     std::mutex m_mutex;
     std::condition_variable m_cond;
 
-    RclEQData() 
-        : m_config(0), m_ok(true)
-        {
-        }
     void readDelayPats(int dfltsecs);
-    DelayPat searchDelayPats(const string& path)
-        {
-            for (vector<DelayPat>::iterator it = m_delaypats.begin();
-                 it != m_delaypats.end(); it++) {
-                if (fnmatch(it->pattern.c_str(), path.c_str(), 0) == 0) {
-                    return *it;
-                }
+    DelayPat searchDelayPats(const string& path) {
+        for (const auto& dpat: m_delaypats) {
+            if (fnmatch(dpat.pattern.c_str(), path.c_str(), 0) == 0) {
+                return dpat;
             }
-            return DelayPat();
         }
+        return DelayPat();
+    }
     void delayInsert(const queue_type::iterator &qit);
 };
 
@@ -170,22 +164,21 @@ void RclEQData::readDelayPats(int dfltsecs)
 
     vector<string> dplist;
     if (!stringToStrings(patstring, dplist)) {
-        LOGERR("rclEQData: bad pattern list: ["  << (patstring) << "]\n" );
+        LOGERR("rclEQData: bad pattern list: [" << patstring << "]\n");
         return;
     }
 
-    for (vector<string>::iterator it = dplist.begin(); 
-         it != dplist.end(); it++) {
-        string::size_type pos = it->find_last_of(":");
+    for (const auto& entry : dplist) {
+        string::size_type pos = entry.find_last_of(":");
         DelayPat dp;
-        dp.pattern = it->substr(0, pos);
-        if (pos != string::npos && pos != it->size()-1) {
-            dp.seconds = atoi(it->substr(pos+1).c_str());
+        dp.pattern = entry.substr(0, pos);
+        if (pos != string::npos && pos != entry.size() - 1) {
+            dp.seconds = atoi(entry.substr(pos+1).c_str());
         } else {
             dp.seconds = dfltsecs;
         }
         m_delaypats.push_back(dp);
-        LOGDEB2("rclmon::readDelayPats: add ["  << (dp.pattern) << "] "  << (dp.seconds) << "\n" );
+        LOGDEB2("rclmon::readDelayPats: add [" << dp.pattern << "] " << dp.seconds << "\n");
     }
 }
 
@@ -194,10 +187,8 @@ void RclEQData::readDelayPats(int dfltsecs)
 // when necessary.
 void RclEQData::delayInsert(const queue_type::iterator &qit)
 {
-    MONDEB("RclEQData::delayInsert: minclock " << qit->second.m_minclock <<
-           std::endl);
-    for (delays_type::iterator dit = m_delays.begin(); 
-         dit != m_delays.end(); dit++) {
+    MONDEB("RclEQData::delayInsert: minclock " << qit->second.m_minclock << "\n");
+    for (delays_type::iterator dit = m_delays.begin(); dit != m_delays.end(); dit++) {
         queue_type::iterator qit1 = *dit;
         if ((*qit1).second.m_minclock > qit->second.m_minclock) {
             m_delays.insert(dit, qit);
@@ -230,7 +221,7 @@ std::unique_lock<std::mutex> RclMonEventQueue::wait(int seconds, bool *top)
 {
     std::unique_lock<std::mutex> lock(m_data->m_mutex);
     
-    MONDEB("RclMonEventQueue::wait, seconds: " << seconds << std::endl);
+    MONDEB("RclMonEventQueue::wait, seconds: " << seconds << "\n");
     if (!empty()) {
         MONDEB("RclMonEventQueue:: immediate return\n");
         return lock;
@@ -310,7 +301,7 @@ bool RclMonEventQueue::empty()
     // first, earliest one):
     queue_type::iterator qit = *(m_data->m_delays.begin());
     if (qit->second.m_minclock > time(0)) {
-        MONDEB("RclMonEventQueue::empty(): true (no delay ready " << 
+        MONDEB("RclMonEventQueue::empty(): true (no delay ready " <<
                qit->second.m_minclock << ")\n");
         return true;
     }
@@ -324,7 +315,7 @@ bool RclMonEventQueue::empty()
 RclMonEvent RclMonEventQueue::pop()
 {
     time_t now = time(0);
-    MONDEB("RclMonEventQueue::pop(), now " << now << std::endl);
+    MONDEB("RclMonEventQueue::pop(), now " << now << "\n");
 
     // Look at the delayed events, get rid of the expired/unactive
     // ones, possibly return an expired/needidx one.
@@ -332,7 +323,7 @@ RclMonEvent RclMonEventQueue::pop()
         delays_type::iterator dit = m_data->m_delays.begin();
         queue_type::iterator qit = *dit;
         MONDEB("RclMonEventQueue::pop(): in delays: evt minclock " << 
-               qit->second.m_minclock << std::endl);
+               qit->second.m_minclock << "\n");
         if (qit->second.m_minclock <= now) {
             if (qit->second.m_needidx) {
                 RclMonEvent ev = qit->second;
@@ -371,7 +362,7 @@ RclMonEvent RclMonEventQueue::pop()
 // special processing to limit their reindexing rate.
 bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
 {
-    MONDEB("RclMonEventQueue::pushEvent for " << ev.m_path << std::endl);
+    MONDEB("RclMonEventQueue::pushEvent for " << ev.m_path << "\n");
     std::unique_lock<std::mutex> lock(m_data->m_mutex);
 
     DelayPat pat = m_data->searchDelayPats(ev.m_path);
@@ -381,8 +372,7 @@ bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
         queue_type::iterator qit = m_data->m_dqueue.find(ev.m_path);
         if (qit == m_data->m_dqueue.end()) {
             // Not there yet, insert new
-            qit = 
-                m_data->m_dqueue.insert(queue_type::value_type(ev.m_path, ev)).first;
+            qit = m_data->m_dqueue.insert(queue_type::value_type(ev.m_path, ev)).first;
             // Set the time to next index to "now" as it has not been
             // indexed recently (otherwise it would still be in the
             // queue), and add the iterator to the delay queue.
@@ -491,7 +481,7 @@ bool startMonitor(RclConfig *conf, int opts)
 #ifndef _WIN32
             bool x11dead = !(opts & RCLMON_NOX11) && !x11IsAlive();
             if (x11dead)
-                LOGDEB("RclMonprc: x11 is dead\n" );
+                LOGDEB("RclMonprc: x11 is dead\n");
 #else
             bool x11dead = false;
 #endif
@@ -512,26 +502,24 @@ bool startMonitor(RclConfig *conf, int opts)
                     modified.push_back(ev.m_path);
                     break;
                 case RclMonEvent::RCLEVT_DELETE:
-                    LOGDEB0("Monitor: Delete on "  << (ev.m_path) << "\n" );
-                    // If this is for a directory (which the caller should
-                    // tell us because he knows), we should purge the db
-                    // of all the subtree, because on a directory rename,
-                    // inotify will only generate one event for the
-                    // renamed top, not the subentries. This is relatively
-                    // complicated to do though, and we currently do not
-                    // do it, and just wait for a restart to do a full run and
-                    // purge.
+                    LOGDEB0("Monitor: Delete on "  << ev.m_path << "\n");
+                    // If this is for a directory (which the caller should tell us because he
+                    // knows), we should purge the db of all the subtree entries, because on a
+                    // directory rename, inotify will only generate one event for the renamed top,
+                    // not the subentries. The entries from the new subtree are updated when the
+                    // monitor walks it on the DIRCREATE event.
+                    // If the monitor does not have the ISDIR info, we'll just wait for a restart to
+                    // do a full run and purge, no big deal.
                     deleted.push_back(ev.m_path);
                     if (ev.evflags() & RclMonEvent::RCLEVT_ISDIR) {
                         vector<string> paths;
                         if (subtreelist(conf, ev.m_path, paths)) {
-                            deleted.insert(deleted.end(),
-                                           paths.begin(), paths.end());
+                            deleted.insert(deleted.end(), paths.begin(), paths.end());
                         }
                     }
                     break;
                 default:
-                    LOGDEB("Monitor: got Other on ["  << (ev.m_path) << "]\n" );
+                    LOGDEB("Monitor: got Other on [" << ev.m_path << "]\n");
                 }
             }
         }
@@ -579,7 +567,7 @@ bool startMonitor(RclConfig *conf, int opts)
 #ifndef _WIN32
         // Check for a config change
         if (!(opts & RCLMON_NOCONFCHECK) && o_reexec && conf->sourceChanged()) {
-            LOGDEB("Rclmonprc: config changed, reexecuting myself\n" );
+            LOGDEB("Rclmonprc: config changed, reexecuting myself\n");
             // We never want to have a -n option after a config
             // change. -n was added by the reexec after the initial
             // pass even if it was not given on the command line
@@ -588,7 +576,7 @@ bool startMonitor(RclConfig *conf, int opts)
         }
 #endif // ! _WIN32
     }
-    LOGDEB("Rclmonprc: calling queue setTerminate\n" );
+    LOGDEB("Rclmonprc: calling queue setTerminate\n");
     rclEQ.setTerminate();
 
     // We used to wait for the receiver thread here before returning,
@@ -596,9 +584,8 @@ bool startMonitor(RclConfig *conf, int opts)
     // during our limited time window for exiting. To be reviewed if
     // we ever need several monitor invocations in the same process
     // (can't foresee any reason why we'd want to do this).
-    LOGDEB("Monitor: returning\n" );
+    LOGDEB("Monitor: returning\n");
     return true;
 }
 
 #endif // RCL_MONITOR
-
