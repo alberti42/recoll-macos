@@ -96,10 +96,13 @@ const string pathelt_prefix = "XP";
 static const string udi_prefix("Q");
 static const string parent_prefix("F");
 
-// Special terms to mark begin/end of field (for anchored searches), and
-// page breaks
+// Special terms to mark begin/end of field (for anchored searches).
 string start_of_field_term;
 string end_of_field_term;
+
+// Special term for page breaks. Note that we use a complicated mechanism for multiple page
+// breaks at the same position, when it would have been probably simpler to use XXPG/n terms
+// instead (did not try to implement though). A change would force users to reindex.
 const string page_break_term = "XXPG/";
 
 // Special term to mark documents with children.
@@ -1846,16 +1849,14 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
             }
         }
 
-        // If empty pages (multiple break at same pos) were recorded, save
-        // them (this is because we have no way to record them in the
-        // Xapian list
+        // If empty pages (multiple break at same pos) were recorded, save them (this is
+        // because we have no way to record them in the Xapian list)
         if (!tpidx.m_pageincrvec.empty()) {
             ostringstream multibreaks;
             for (unsigned int i = 0; i < tpidx.m_pageincrvec.size(); i++) {
                 if (i != 0)
                     multibreaks << ",";
-                multibreaks << tpidx.m_pageincrvec[i].first << "," << 
-                    tpidx.m_pageincrvec[i].second;
+                multibreaks << tpidx.m_pageincrvec[i].first << "," << tpidx.m_pageincrvec[i].second;
             }
             RECORD_APPEND(record, string(cstr_mbreaks), multibreaks.str());
         }

@@ -23,7 +23,7 @@ class OrgModeExtractor:
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.docs) -1:
             iseof = rclexecm.RclExecM.eofnext
-        self.em.setmimetype("text/plain")
+        self.em.setmimetype("text/x-orgmode-sub")
         try:
             self.em.setfield("title", docdata.splitlines()[0])
         except:

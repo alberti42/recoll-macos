@@ -254,7 +254,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 }
 
 
-// Return page number for first match of "significant" term.
+// Choose most interesting term and return the page number for its first match
 int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 {
     LOGDEB("Query::Native::getFirstMatchPage\n");
@@ -286,9 +286,7 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
     qualityTerms(docid, terms, byQ);
 
     for (auto mit = byQ.rbegin(); mit != byQ.rend(); mit++) {
-        for (vector<string>::const_iterator qit = mit->second.begin();
-             qit != mit->second.end(); qit++) {
-            string qterm = *qit;
+        for (const auto& qterm : mit->second) {
             Xapian::PositionIterator pos;
             string emptys;
             try {
@@ -619,9 +617,8 @@ int Query::Native::abstractFromIndex(
 // possibly retried by our caller.
 //
 // @param[out] vabs the abstract is returned as a vector of snippets.
-int Query::Native::makeAbstract(Xapian::docid docid,
-                                vector<Snippet>& vabs, 
-                                int imaxoccs, int ictxwords, bool sortbypage)
+int Query::Native::makeAbstract(
+    Xapian::docid docid, vector<Snippet>& vabs, int imaxoccs, int ictxwords, bool sortbypage)
 {
     chron.restart();
     LOGDEB("makeAbstract: docid " << docid << " imaxoccs " <<

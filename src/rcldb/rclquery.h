@@ -115,10 +115,18 @@ public:
     // Returned as a vector of pair<page,snippet> page is 0 if unknown
     int makeDocAbstract(const Doc &doc, std::vector<Snippet>& abst, 
                         int maxoccs= -1, int ctxwords= -1,bool sortbypage=false);
-    /** Retrieve page number for first match for "significant" query term 
-     *  @param term returns the chosen term */
+
+    /** Choose most interesting term and return the page number for its first match
+     *  @param term returns the chosen term 
+     *  @return page number or -1 if term not found or other issue
+     */
     int getFirstMatchPage(const Doc &doc, std::string& term);
 
+    /** Compute line number for first match of term. Only works if doc.text has text.
+     * This uses a text split. Both this and the above getFirstMaxPage() could be done and saved
+     * while we compute the abstracts, quite a lot of waste here. */
+    int getFirstMatchLine(const Doc &doc, const std::string& term);
+    
     /** Retrieve a reference to the searchData we are using */
     std::shared_ptr<SearchData> getSD() {
         return m_sd;

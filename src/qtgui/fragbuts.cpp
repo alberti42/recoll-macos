@@ -50,7 +50,7 @@ public:
 
     void startElement(const std::string &nm,
                       const std::map<std::string, std::string>&) override {
-        std::cerr << "startElement [" << nm << "]\n";
+        //std::cerr << "startElement [" << nm << "]\n";
         currentText.clear();
         if (nm == "buttons") {
             radio = false;
@@ -67,7 +67,7 @@ public:
         }
     }        
     void endElement(const std::string& nm) override {
-        std::cerr << "endElement [" << nm << "]\n";
+        //std::cerr << "endElement [" << nm << "]\n";
 
         if (nm == "label") {
             label = u8s2qs(currentText);
@@ -102,7 +102,7 @@ public:
         }
     }
     void characterData(const std::string &str) override {
-        std::cerr << "characterData [" << str << "]\n";
+        //std::cerr << "characterData [" << str << "]\n";
         currentText += str;
     }
 

@@ -13,7 +13,7 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.31.5
+RCLVERS=1.31.6
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.1
 PPAVERS=1
@@ -85,7 +85,7 @@ done
 
 
 ### KIO.
-series="bionic focal groovy hirsute impish"
+#series="bionic focal hirsute impish"
 series=
 
 debdir=debiankio

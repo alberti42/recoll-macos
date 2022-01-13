@@ -1,3 +1,9 @@
+recoll (1.31.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Almost no change: translation files update.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 20 Dec 2021 09:25:00 +0100
+
 recoll (1.31.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix ennoying bug in tesseract OCR temporary files cleanup.

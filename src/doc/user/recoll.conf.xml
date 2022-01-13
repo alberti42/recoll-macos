@@ -170,13 +170,12 @@ listing either MIME types (e.g. audio/mpeg) or handler names
 files. We need to decompress these in a
 temporary directory for identification, which can be wasteful in some
 cases. Limit the waste. Negative means no limit. 0 results in no
-processing of any compressed file. Default 50 MB.
+processing of any compressed file. Default 100 MB.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEMAXMBS">
 <term><varname>textfilemaxmbs</varname></term>
-<listitem><para>Size limit for text
-files. Mostly for skipping monster
-logs. Default 20 MB.
+<listitem><para>Size limit for text files. Mostly for skipping monster logs. Default 20 MB. Use a value of -1 to
+disable.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXALLFILENAMES">
 <term><varname>indexallfilenames</varname></term>

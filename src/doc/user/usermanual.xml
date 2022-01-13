@@ -5,7 +5,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/pages/features.html#doctypes'>http://www.recoll.org/pages/features.html</ulink>">
-<!ENTITY RCLVERSION "1.29">
+<!ENTITY RCLVERSION "1.32">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
@@ -7114,28 +7114,37 @@ other = rclcat:other
           (possibly a script) to be able to handle it.</para></formalpara>
           </listitem>
 
-          <listitem><formalpara><title>%M</title>
-          <para>MIME type</para></formalpara> 
+          <listitem>
+            <formalpara><title>%M</title><para>MIME type</para></formalpara> 
           </listitem>
 
-          <listitem><formalpara><title>%p</title>
-          <para>Page index. Only significant for a subset of document
-          types, currently only PDF, Postscript and DVI files. Can be
-          used to start the editor at the right page for a match or
-          snippet.</para></formalpara>
+          <listitem>
+            <formalpara><title>%p</title><para>Page index. Only significant for a subset of
+                document types, currently only PDF, Postscript and DVI files. If it is set, a
+                significant term will be chosen in the query, and %p will be substituted with the
+                first page where the term appears. Can be used to start the editor at the right page
+                for a match or snippet.</para></formalpara>
           </listitem>
 
-          <listitem><formalpara><title>%s</title>
-          <para>Search term. The value will only be set for documents
-          with indexed page numbers (ie: PDF). The value will be one of
-          the matched search terms. It would allow pre-setting the
-          value in the "Find" entry inside Evince for example, for easy
-          highlighting of the term.</para></formalpara>  
+          <listitem>
+            <formalpara><title>%l</title><para>Line number. Only significant for document
+                types with relevant line breaks, mostly text/plain and analogs. If it is set, a
+                significant term will be chosen in the query, and %p will be substituted with the
+                first line where the term appears.</para></formalpara>
           </listitem>
 
-          <listitem><formalpara><title>%u</title>
-          <para>Url.</para></formalpara> 
+          <listitem>
+            <formalpara><title>%s</title><para>Search term. The value will only be set for
+                documents with indexed page or line numbers and if %p or %l is also used. The value
+                will be one of the matched search terms. It would allow pre-setting the value in the
+                "Find" entry inside Evince for example, for easy highlighting of the
+                term.</para></formalpara>
           </listitem>
+
+          <listitem>
+            <formalpara><title>%u</title><para>Url.</para></formalpara> 
+          </listitem>
+
         </itemizedlist>
 
         <para>In addition to the predefined values above, all strings like

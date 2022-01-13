@@ -111,6 +111,9 @@ public:
     virtual int getFirstMatchPage(Rcl::Doc&, std::string&) {
         return -1;
     }
+    virtual int getFirstMatchLine(const Rcl::Doc&, const std::string&) {
+        return 1;
+    }
     /** Get duplicates. */
     virtual bool docDups(const Rcl::Doc&, std::vector<Rcl::Doc>&) {
         return false;
