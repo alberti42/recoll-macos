@@ -512,7 +512,7 @@ bool startMonitor(RclConfig *conf, int opts)
                     modified.push_back(ev.m_path);
                     break;
                 case RclMonEvent::RCLEVT_DELETE:
-                    LOGDEB0("Monitor: Delete on "  << (ev.m_path) << "\n" );
+                    LOGDEB0("Monitor: Delete on " << ev.m_path << "\n");
                     // If this is for a directory (which the caller should
                     // tell us because he knows), we should purge the db
                     // of all the subtree, because on a directory rename,
@@ -522,16 +522,20 @@ bool startMonitor(RclConfig *conf, int opts)
                     // do it, and just wait for a restart to do a full run and
                     // purge.
                     deleted.push_back(ev.m_path);
-                    if (ev.evflags() & RclMonEvent::RCLEVT_ISDIR) {
+#ifndef _WIN32
+                    // We don't know the type of deleted entries on
+                    // win32. So do the subtree things always.
+                    if (ev.evflags() & RclMonEvent::RCLEVT_ISDIR)
+#endif
+                    {
                         vector<string> paths;
                         if (subtreelist(conf, ev.m_path, paths)) {
-                            deleted.insert(deleted.end(),
-                                           paths.begin(), paths.end());
+                            deleted.insert(deleted.end(), paths.begin(), paths.end());
                         }
                     }
                     break;
                 default:
-                    LOGDEB("Monitor: got Other on ["  << (ev.m_path) << "]\n" );
+                    LOGDEB("Monitor: got Other on [" << ev.m_path << "]\n");
                 }
             }
         }
