@@ -103,7 +103,9 @@ static struct option long_options[] = {
     {0, 0, 0, 0}
 };
 
+#ifndef _WIN32
 ReExec *o_reexec;
+#endif
 
 // Globals for atexit cleanup
 static ConfIndexer *confindexer;
@@ -867,11 +869,13 @@ int main(int argc, char *argv[])
             LOGDEB("recollindex: sleeping " << sleepsecs << "\n");
             for (int i = 0; i < sleepsecs; i++) {
                 sleep(1);
+#ifndef _WIN32
                 // Check that x11 did not go away while we were sleeping.
                 if (!(op_flags & OPT_x) && !x11IsAlive()) {
                     LOGDEB("X11 session went away during initial sleep period\n");
                     exit(0);
                 }
+#endif
             }
         }
 
