@@ -60,12 +60,10 @@
 
 /**
  * Recoll real time monitor event receiver. This file has code to interface 
- * to FAM or inotify and place events on the event queue.
+ * to FAM, inotify, etc. and place events on the event queue.
  */
 
-/** A small virtual interface for monitors. Lets
- *  either fam/gamin or raw imonitor hide behind 
- */
+/** Virtual interface for the actual filesystem monitoring module. */
 class RclMonitor {
 public:
     RclMonitor() {}
@@ -75,8 +73,12 @@ public:
     virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
     virtual bool ok() const = 0;
     // Does this monitor generate 'exist' events at startup?
-    virtual bool generatesExist() const = 0; 
-
+    virtual bool generatesExist() const {
+        return false;
+    }
+    virtual bool isRecursive() const {
+        return false;
+    }
     // Save significant errno after monitor calls
     int saved_errno{0};
 };
@@ -126,9 +128,8 @@ public:
             if (!m_mon || !m_mon->ok())
                 return FsTreeWalker::FtwError;
             // We do nothing special if addWatch fails for a reasonable reason
-            if (!m_mon->addWatch(fn, true)) {
-                if (m_mon->saved_errno != EACCES && 
-                    m_mon->saved_errno != ENOENT) {
+            if (!m_mon->isRecursive() && !m_mon->addWatch(fn, true)) {
+                if (m_mon->saved_errno != EACCES && m_mon->saved_errno != ENOENT) {
                     LOGINF("walkerCB: addWatch failed\n");
                     return FsTreeWalker::FtwError;
                 }
@@ -144,8 +145,8 @@ public:
             //  monitoring ? There should be another way: maybe start
             //  monitoring without actually handling events (just
             //  queue), then run incremental then start handling
-            //  events ? But we also have to do it on a directory
-            //  move! So keep it
+            //  events ? ** But we also have to do it on a directory
+            //  move! So keep it ** We could probably skip it on the initial run though.
             RclMonEvent ev;
             ev.m_path = fn;
             ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
@@ -160,6 +161,96 @@ private:
     RclMonEventQueue  *m_queue;
     FsTreeWalker&      m_walker;
 };
+
+static bool rclMonAddTopWatches(
+    FsTreeWalker& walker, RclConfig& lconfig, RclMonitor *mon, RclMonEventQueue *queue)
+{
+    // Get top directories from config. Special monitor sublist if
+    // set, else full list.
+    vector<string> tdl = lconfig.getTopdirs(true);
+    if (tdl.empty()) {
+        LOGERR("rclMonRcvRun:: top directory list (topdirs param.) not found "
+               "in configuration or topdirs list parse error");
+        queue->setTerminate();
+        return false;
+    }
+    // Walk the directory trees to add watches
+    WalkCB walkcb(&lconfig, mon, queue, walker);
+    for (const auto& dir : tdl) {
+        lconfig.setKeyDir(dir);
+        // Adjust the follow symlinks options
+        bool follow;
+        if (lconfig.getConfParam("followLinks", &follow) && follow) {
+            walker.setOpts(FsTreeWalker::FtwFollow);
+        } else {
+            walker.setOpts(FsTreeWalker::FtwOptNone);
+        }
+        if (path_isdir(dir, follow)) {
+            LOGDEB("rclMonRcvRun: walking "  << dir << "\n");
+            // If the fs watcher is recursive, we add the watches for the topdirs here, and walk the
+            // tree just for generating initial events.
+            if (mon->isRecursive() && !mon->addWatch(dir, true)) {
+                if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT) {
+                    LOGERR("rclMonAddTopWatches: addWatch failed for [" << dir << "]\n");
+                    return false;
+                }
+            }
+            if (walker.walk(dir, walkcb) != FsTreeWalker::FtwOk) {
+                LOGERR("rclMonRcvRun: tree walk failed\n");
+                return false;
+            }
+            if (walker.getErrCnt() > 0) {
+                LOGINFO("rclMonRcvRun: fs walker errors: " << walker.getReason() << "\n");
+            }
+        } else {
+            // We have to special-case regular files which are part of the topdirs list because the
+            // tree walker only adds watches for directories
+            if (!mon->addWatch(dir, false)) {
+                LOGSYSERR("rclMonRcvRun", "addWatch", dir);
+            }
+        }
+    }
+
+    bool doweb = false;
+    lconfig.getConfParam("processwebqueue", &doweb);
+    if (doweb) {
+        string webqueuedir = lconfig.getWebQueueDir();
+        if (!mon->addWatch(webqueuedir, true)) {
+            LOGERR("rclMonRcvRun: addwatch (webqueuedir) failed\n");
+            if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT)
+                return false;
+        }
+    }
+    return true;
+}
+
+static bool rclMonAddSubWatches(
+    const std::string& path, FsTreeWalker& walker, RclConfig& lconfig,
+    RclMonitor *mon, RclMonEventQueue *queue)
+{
+    WalkCB walkcb(&lconfig, mon, queue, walker);
+    if (walker.walk(path, walkcb) != FsTreeWalker::FtwOk) {
+        LOGERR("rclMonRcvRun: walking new dir " << path << " : " << walker.getReason() << "\n");
+        return false;
+    }
+    if (walker.getErrCnt() > 0) {
+        LOGINFO("rclMonRcvRun: fs walker errors: " << walker.getReason() << "\n");
+    }
+    return true;
+}
+
+// Don't push events for skipped files. This would get filtered on the processing side
+// anyway, but causes unnecessary wakeups and messages. Do not test skippedPaths here,
+// this would be incorrect (because a topdir can be under a skippedPath and this was
+// handled while adding the watches). Also we let the other side process onlyNames.
+static bool rclMonShouldSkip(const std::string& path, RclConfig& lconfig, FsTreeWalker& walker)
+{
+    lconfig.setKeyDir(path_getfather(path));
+    walker.setSkippedNames(lconfig.getSkippedNames());
+    if (walker.inSkippedNames(path_getsimple(path)))
+        return true;
+    return false;
+}
 
 // Main thread routine: create watches, then forever wait for and queue events
 void *rclMonRcvRun(void *q)
@@ -181,99 +272,33 @@ void *rclMonRcvRun(void *q)
         return 0;
     }
 
-    // Get top directories from config. Special monitor sublist if
-    // set, else full list.
-    vector<string> tdl = lconfig.getTopdirs(true);
-    if (tdl.empty()) {
-        LOGERR("rclMonRcvRun:: top directory list (topdirs param.) not found "
-               "in configuration or topdirs list parse error");
-        queue->setTerminate();
-        return 0;
-    }
-
-    // Walk the directory trees to add watches
     FsTreeWalker walker;
     walker.setSkippedPaths(lconfig.getDaemSkippedPaths());
-    WalkCB walkcb(&lconfig, mon, queue, walker);
-    for (const auto& dir : tdl) {
-        lconfig.setKeyDir(dir);
-        // Adjust the follow symlinks options
-        bool follow;
-        if (lconfig.getConfParam("followLinks", &follow) && 
-            follow) {
-            walker.setOpts(FsTreeWalker::FtwFollow);
-        } else {
-            walker.setOpts(FsTreeWalker::FtwOptNone);
-        }
-        // We have to special-case regular files which are part of the topdirs
-        // list because we the tree walker only adds watches for directories
-        if (path_isdir(dir, follow)) {
-            LOGDEB("rclMonRcvRun: walking "  << dir << "\n");
-            if (walker.walk(dir, walkcb) != FsTreeWalker::FtwOk) {
-                LOGERR("rclMonRcvRun: tree walk failed\n");
-                goto terminate;
-            }
-            if (walker.getErrCnt() > 0) {
-                LOGINFO("rclMonRcvRun: fs walker errors: " << walker.getReason() << "\n");
-            }
-        } else {
-            if (!mon->addWatch(dir, false)) {
-                LOGSYSERR("rclMonRcvRun", "addWatch", dir);
-            }
-        }
-    }
 
-    {
-        bool doweb = false;
-        lconfig.getConfParam("processwebqueue", &doweb);
-        if (doweb) {
-            string webqueuedir = lconfig.getWebQueueDir();
-            if (!mon->addWatch(webqueuedir, true)) {
-                LOGERR("rclMonRcvRun: addwatch (webqueuedir) failed\n");
-                if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT)
-                    goto terminate;
-            }
-        }
+    if (!rclMonAddTopWatches(walker, lconfig, mon, queue)) {
+        LOGERR("rclMonRcvRun: addtopwatches failed\n");
+        goto terminate;
     }
 
     // Forever wait for monitoring events and add them to queue:
     MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() << "\n");
     while (queue->ok() && mon->ok()) {
         RclMonEvent ev;
-        // Note: I could find no way to get the select
-        // call to return when a signal is delivered to the process
-        // (it goes to the main thread, from which I tried to close or
-        // write to the select fd, with no effect). So set a 
-        // timeout so that an intr will be detected
+        // Note: I could find no way to get the select call to return when a signal is delivered to
+        // the process (it goes to the main thread, from which I tried to close or write to the
+        // select fd, with no effect). So set a timeout so that an intr will be detected
         if (mon->getEvent(ev, 2000)) {
-            // Don't push events for skipped files. This would get
-            // filtered on the processing side anyway, but causes
-            // unnecessary wakeups and messages. Do not test
-            // skippedPaths here, this would be incorrect (because a
-            // topdir can be under a skippedPath and this was handled
-            // while adding the watches).
-            // Also we let the other side process onlyNames.
-            lconfig.setKeyDir(path_getfather(ev.m_path));
-            walker.setSkippedNames(lconfig.getSkippedNames());
-            if (walker.inSkippedNames(path_getsimple(ev.m_path)))
+            if (rclMonShouldSkip(ev.m_path, lconfig, walker))
                 continue;
 
             if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
-                // Recursive addwatch: there may already be stuff
-                // inside this directory. Ie: files were quickly
-                // created, or this is actually the target of a
-                // directory move. This is necessary for inotify, but
-                // it seems that fam/gamin is doing the job for us so
-                // that we are generating double events here (no big
-                // deal as prc will sort/merge).
+                // Recursive addwatch: there may already be stuff inside this directory. E.g.: files
+                // were quickly created, or this is actually the target of a directory move. This is
+                // necessary for inotify, but it seems that fam/gamin is doing the job for us so
+                // that we are generating double events here (no big deal as prc will sort/merge).
                 LOGDEB("rclMonRcvRun: walking new dir " << ev.m_path << "\n");
-                if (walker.walk(ev.m_path, walkcb) != FsTreeWalker::FtwOk) {
-                    LOGERR("rclMonRcvRun: walking new dir " << ev.m_path <<
-                           " : "  << walker.getReason() << "\n");
+                if (!rclMonAddSubWatches(ev.m_path, walker, lconfig, mon, queue)) {
                     goto terminate;
-                }
-                if (walker.getErrCnt() > 0) {
-                    LOGINFO("rclMonRcvRun: fs walker errors: " << walker.getReason() << "\n");
                 }
             }
 
@@ -298,7 +323,7 @@ bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
     while (it != idtopath.end()) {
         if (it->second.find(top) == 0) {
             found = true;
-            idtopath.erase(it++);
+            it = idtopath.erase(it);
         } else {
             it++;
         }
@@ -557,7 +582,6 @@ public:
     virtual bool addWatch(const string& path, bool isdir);
     virtual bool getEvent(RclMonEvent& ev, int msecs = -1);
     bool ok() const {return m_ok;}
-    virtual bool generatesExist() const {return false;}
 
 private:
     bool m_ok;
@@ -749,22 +773,17 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 
 #ifdef _WIN32
 
-
 /*
- * WIN32 VERSION ISSUES: 
+ * WIN32 VERSION NOTES: 
  *
- * - It appears that watching a subdirectory of a given directory
- *   prevents renaming the top directory, Windows says: can't rename
- *   because open or a file in it is open. This is a major issue of
- *   course. Check if this can be solved by using a recursive watch
- *   instead of setting watches on all subdirs. Would need a code
- *   changes in the "generic" part of course.
- * - In general, directory renames need more studying.
- * - Otherwise appears to more or less work...
+ * - When using non-recursive watches (one per dir), it appeared that
+ *   watching a subdirectory of a given directory prevented renaming
+ *   the top directory, Windows says: can't rename because open or a
+ *   file in it is open. This is mostly why we use recursive watches 
+ *   on the topdirs only.
  */
 #include <string>
 #include <vector>
-#include <mutex>
 #include <thread>
 #include <queue>
 
@@ -776,33 +795,29 @@ class RclFSWatchWin32;
 
 enum class Action {Add = 1, Delete = 2, Modify = 3, Move = 4};
 
+// Virtual interface for the monitor callback. Note: this for compatibility with the efsw code, as
+// rclmon uses a pull, not push interface. The callback pushes the events to a local queue from
+// which they are then pulled by the upper level code.
 class FileWatchListener {
 public:
     virtual ~FileWatchListener() {}
-
-    /// Handles the action file action
-    /// @param watchid The watch id for the directory
-    /// @param dir The directory
-    /// @param filename The filename that was accessed (not full path)
-    /// @param action Action that was performed
-    /// @param oldFilename The name of the file or directory moved
     virtual void handleFileAction(WatchID watchid, const std::string& dir, const std::string& fn,
                                   Action action, bool isdir, std::string oldfn = "" ) = 0;
 };
 
-// Internal watch data
+// Internal watch data. This piggy-back our actual data pointer to the MS overlapped pointer. This
+// is a bit of a hack, and we could probably use event Ids instead.
 struct WatcherStructWin32
 {
     OVERLAPPED Overlapped;
     WatcherWin32 *Watch;
 };
 
+// Actual data structure for one directory watch
 class WatcherWin32 {
 public:
-    WatcherWin32() {}
-
     WatchID ID;
-    FileWatchListener *Listener;
+    FileWatchListener *Listener{nullptr};
     bool Recursive;
     std::string DirName;
     std::string	OldFileName;
@@ -816,6 +831,7 @@ public:
     RclFSWatchWin32 *Watch{nullptr};
 };
 
+// The efsw top level file system watcher: manages all the directory watches.
 class RclFSWatchWin32 {
 public:
     RclFSWatchWin32();
@@ -850,16 +866,14 @@ private:
     void removeAllWatches();
 };
 
+// Adapter for the rclmon interface
 class RclMonitorWin32 : public RclMonitor, public FileWatchListener {
 public:
-    RclMonitorWin32() {
-        MONDEB("RclMonitorWin32::RclMonitorWin32\n");
-    }
     virtual ~RclMonitorWin32() {}
 
     virtual bool addWatch(const string& path, bool /*isDir*/) override {
         MONDEB("RclMonitorWin32::addWatch: " << path << "\n");
-        return m_fswatcher.addWatch(path, this, false) != -1;
+        return m_fswatcher.addWatch(path, this, true) != -1;
     }
 
     virtual bool getEvent(RclMonEvent& ev, int msecs = -1) {
@@ -884,6 +898,10 @@ public:
     // Does this monitor generate 'exist' events at startup?
     virtual bool generatesExist() const override {
         return false;
+    }
+    // Can the caller avoid setting watches on subdirs ?
+    virtual bool isRecursive() const override {
+        return true;
     }
     virtual void handleFileAction(WatchID watchid, const std::string& dir, const std::string& fn,
                                   Action action, bool isdir, std::string oldfn = "") {
@@ -996,8 +1014,6 @@ RclFSWatchWin32::~RclFSWatchWin32()
         PostQueuedCompletionStatus(mIOCP, 0, reinterpret_cast<ULONG_PTR>(this), NULL);
     }
 
-    // delete mThread ??
-
     removeAllWatches();
 
     CloseHandle(mIOCP);
@@ -1010,7 +1026,7 @@ WatchID RclFSWatchWin32::addWatch(const std::string& _dir,FileWatchListener *wat
     path_slashize(dir);
     if (!path_isdir(dir)) {
         LOGDEB("RclFSWatchWin32::addWatch: not a directory: " << dir << "\n");
-        return -1;
+        return 0;
     }
     if (!path_readable(dir)) {
         LOGINF("RclFSWatchWin32::addWatch: not readable: " << dir << "\n");
@@ -1063,7 +1079,7 @@ void RclFSWatchWin32::removeAllWatches()
     mWatches.clear();
 }
 
-/// Unpacks events and passes them to the event processor
+// Unpacks events and passes them to the event processor
 void CALLBACK WatchCallback(DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped)
 {
     if (dwNumberOfBytesTransfered == 0 || NULL == lpOverlapped) {
@@ -1115,9 +1131,11 @@ void RclFSWatchWin32::run(DWORD msecs)
     }
 }
 
-void RclFSWatchWin32::handleAction(WatcherWin32 *watch, const std::string& fn, unsigned long action)
+void RclFSWatchWin32::handleAction(WatcherWin32 *watch, const std::string& _fn, unsigned long action)
 {
+    std::string fn(_fn);
     Action fwAction;
+    path_slashize(fn);
     MONDEB("handleAction: fn [" << fn << "] action " << action << "\n");
 
     // In case fn is not a simple name but a relative path (probably
@@ -1154,8 +1172,9 @@ void RclFSWatchWin32::handleAction(WatcherWin32 *watch, const std::string& fn, u
     case FILE_ACTION_RENAMED_NEW_NAME: {
         fwAction = Action::Move;
 
-        // If this is a directory, possibly update the watches.
-        // TBD: this seems wrong because we should process the whole subtree ?
+        // If this is a directory, possibly update the watches.  TBD: this seems wrong because we
+        // should process the whole subtree ? Also probably not needed at all because we are
+        // recursive and only set watches on the top directories.
         if (isdir) {
             // Update the new directory path
             std::string oldpath = path_cat(watch->DirName, watch->OldFileName);

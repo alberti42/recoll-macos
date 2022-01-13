@@ -133,7 +133,7 @@
 /* #undef PUTENV_ARG_CONST */
 
 /* Real time monitoring option */
-#undef RCL_MONITOR
+#define RCL_MONITOR 1
 
 /* Split camelCase words */
 /* #undef RCL_SPLIT_CAMELCASE */

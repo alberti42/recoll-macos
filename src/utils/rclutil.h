@@ -48,6 +48,9 @@ extern bool printableUrl(const std::string& fcharset,
                          const std::string& in, std::string& out);
 /// Same but, in the case of a Windows local path, also turn "c:/" into
 /// "/c/" This should be used only for splitting the path in rcldb.
+#ifdef _WIN32
+extern std::string path_slashdrive(const std::string& path);
+#endif
 extern std::string url_gpathS(const std::string& url);
 
 /// Like strftime but guaranteed utf-8 output (esp. useful on Windows)

@@ -508,10 +508,13 @@ bool startMonitor(RclConfig *conf, int opts)
                     // directory rename, inotify will only generate one event for the renamed top,
                     // not the subentries. The entries from the new subtree are updated when the
                     // monitor walks it on the DIRCREATE event.
-                    // If the monitor does not have the ISDIR info, we'll just wait for a restart to
-                    // do a full run and purge, no big deal.
                     deleted.push_back(ev.m_path);
-                    if (ev.evflags() & RclMonEvent::RCLEVT_ISDIR) {
+#ifndef _WIN32
+                    // We don't know the type of deleted entries on
+                    // win32. So do the subtree things always.
+                    if (ev.evflags() & RclMonEvent::RCLEVT_ISDIR)
+#endif
+                    {
                         vector<string> paths;
                         if (subtreelist(conf, ev.m_path, paths)) {
                             deleted.insert(deleted.end(), paths.begin(), paths.end());
