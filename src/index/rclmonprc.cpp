@@ -452,6 +452,8 @@ bool startMonitor(RclConfig *conf, int opts)
         auxinterval = dfltauxinterval;
     if (!conf->getConfParam("monixinterval", &ixinterval))
         ixinterval = dfltixinterval;
+    bool doweb{false};
+    conf->getConfParam("processwebqueue", &doweb);
 
     rclEQ.setConfig(conf);
     rclEQ.setopts(opts);
@@ -471,11 +473,13 @@ bool startMonitor(RclConfig *conf, int opts)
 
     while (true) {
         time_t now = time(0);
-        if (now - lastmovetime > ixinterval) {
+#ifndef DISABLE_WEB_INDEXER
+        if (doweb && (now - lastmovetime > ixinterval)) {
             lastmovetime = now;
             runWebFilesMoverScript(conf);
         }
-
+#endif // DISABLE_WEB_INDEXER
+        
         {
             // Wait for event or timeout.
             // Set a relatively short timeout for better monitoring of
@@ -572,6 +576,7 @@ bool startMonitor(RclConfig *conf, int opts)
             }
         }
 
+#ifndef _WIN32
         // Check for a config change
         if (!(opts & RCLMON_NOCONFCHECK) && o_reexec && conf->sourceChanged()) {
             LOGDEB("Rclmonprc: config changed, reexecuting myself\n" );
@@ -581,6 +586,7 @@ bool startMonitor(RclConfig *conf, int opts)
             o_reexec->removeArg("-n");
             o_reexec->reexec();
         }
+#endif // ! _WIN32
     }
     LOGDEB("Rclmonprc: calling queue setTerminate\n" );
     rclEQ.setTerminate();
