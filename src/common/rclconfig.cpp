@@ -1633,6 +1633,7 @@ vector<string> RclConfig::getDaemSkippedPaths() const
 // and filtersdir from the config file to the PATH, then use execmd::which()
 string RclConfig::findFilter(const string &icmd) const
 {
+    LOGDEB2("findFilter: " << icmd << "\n");
     // If the path is absolute, this is it
     if (path_isabsolute(icmd))
         return icmd;
@@ -1680,13 +1681,19 @@ bool RclConfig::processFilterCmd(std::vector<std::string>& cmd) const
     LOGDEB0("processFilterCmd: in: " << stringsToString(cmd) << "\n");
     auto it = cmd.begin();
 
-    // Special-case python and perl on windows: we need to also locate the
-    // first argument which is the script name "python somescript.py". 
-    // On Unix, thanks to #!, we usually just run "somescript.py", but need
-    // the same change if we ever want to use the same cmd line as windows
-    bool hasinterp = !stringlowercmp("python", *it) ||
-        !stringlowercmp("perl", *it);
-
+#ifdef _WIN32
+    // Special-case interpreters on windows: we used to have an additional 1st argument "python" in
+    // mimeconf, but we now rely on the .py extension for better sharing of mimeconf.
+    std::string ext = path_suffix(*it);
+    if ("py" == ext) {
+        it = cmd.insert(it, findFilter("python"));
+        it++;
+    } else if ("pl" == ext) {
+        it = cmd.insert(it, findFilter("perl"));
+        it++;
+    }
+#endif
+    
     // Note that, if the cmd vector size is 1, post-incrementing the
     // iterator in the following statement, which works on x86, leads
     // to a crash on ARM with gcc 6 and 8 (at least), which does not
@@ -1694,25 +1701,15 @@ bool RclConfig::processFilterCmd(std::vector<std::string>& cmd) const
     // whatever... We do it later then.
     *it = findFilter(*it);
 
-    if (hasinterp) {
-        if (cmd.size() < 2) {
-            LOGERR("processFilterCmd: python/perl cmd: no script?. [" <<
-                   stringsToString(cmd) << "]\n");
-            return false;
-        } else {
-            ++it;
-            *it = findFilter(*it);
-        }
-    }
     LOGDEB0("processFilterCmd: out: " << stringsToString(cmd) << "\n");
     return true;
 }
 
-bool RclConfig::pythonCmd(const std::string& scriptname,
-                          std::vector<std::string>& cmd) const
+// This now does nothing more than processFilterCmd (after we changed to relying on the py extension)
+bool RclConfig::pythonCmd(const std::string& scriptname, std::vector<std::string>& cmd) const
 {
 #ifdef _WIN32
-    cmd = {"python", scriptname};
+    cmd = {scriptname};
 #else
     cmd = {scriptname};
 #endif

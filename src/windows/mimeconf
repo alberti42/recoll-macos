@@ -1,4 +1,4 @@
-# (C) 2015 J.F.Dockes
+# (C) 2015-2022 J.F.Dockes
 
 # This file contains most of the data which determines how we
 # handle the different mime types (also see the "mimeview" file).
@@ -30,12 +30,12 @@
 # The script (ie: rcluncomp) must output the uncompressed file name on
 # stdout. Note that the windows version will always use 7z, and ignore
 # the decompressor parameter in the following lines
-application/gzip  =  uncompress python rcluncomp.py 7z %f %t
-application/x-gzip  =  uncompress python rcluncomp.py 7z %f %t
-application/x-compress = uncompress python rcluncomp.py 7z %f %t
-application/x-bzip2 =  uncompress python rcluncomp.py 7z %f %t
-application/x-xz = uncompress python rcluncomp.py 7z %f %t
-application/x-lzma = uncompress python rcluncomp.py 7z %f %t
+application/gzip  =  uncompress rcluncomp.py 7z %f %t
+application/x-gzip  =  uncompress rcluncomp.py 7z %f %t
+application/x-compress = uncompress rcluncomp.py 7z %f %t
+application/x-bzip2 =  uncompress rcluncomp.py 7z %f %t
+application/x-xz = uncompress rcluncomp.py 7z %f %t
+application/x-lzma = uncompress rcluncomp.py 7z %f %t
 
 
 ## ###################################
@@ -47,14 +47,14 @@ application/x-lzma = uncompress python rcluncomp.py 7z %f %t
 # each filter, see the exemples below (ie: msword)
 [index]
 
-application/msword = execm python rcldoc.py
-application/vnd.ms-excel = execm python rclxls.py
-application/vnd.ms-outlook = execm python rclpst.py
-application/vnd.ms-powerpoint = execm python rclppt.py
+application/msword = execm rcldoc.py
+application/vnd.ms-excel = execm rclxls.py
+application/vnd.ms-outlook = execm rclpst.py
+application/vnd.ms-powerpoint = execm rclppt.py
 # Also Handle the mime type returned by "file -i" for a suffix-less word
 # file. This could probably just as well be an excel file, but we have to
 # chose one.
-application/vnd.ms-office = execm python rcldoc.py
+application/vnd.ms-office = execm rcldoc.py
 
 application/vnd.oasis.opendocument.text = \
  internal xsltproc meta meta.xml opendoc-meta.xsl \
@@ -89,9 +89,9 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
  body word/footnotes.xml openxml-word-body.xsl \
  body word/endnotes.xml openxml-word-body.xsl 
 application/vnd.openxmlformats-officedocument.presentationml.template = \
- execm python rclopxml.py
+ execm rclopxml.py
 application/vnd.openxmlformats-officedocument.presentationml.presentation = \
- execm python rclopxml.py
+ execm rclopxml.py
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
  internal xsltproc meta docProps/core.xml openxml-meta.xsl \
  body xl/sharedStrings.xml openxml-xls-body.xsl
@@ -131,52 +131,52 @@ application/vnd.sun.xml.writer.template = \
  body content.xml opendoc-body.xsl
 
 #application/postscript = exec rclps
-#application/x-gnuinfo = execm python rclinfo.py
-#application/x-tar = execm python rcltar.py
+#application/x-gnuinfo = execm rclinfo.py
+#application/x-tar = execm rcltar.py
 
-application/epub+zip = execm python rclepub.py
-application/x-ipynb+json = execm python rclipynb.py
+application/epub+zip = execm rclepub.py
+application/x-ipynb+json = execm rclipynb.py
 application/javascript = internal text/plain
-application/ogg = execm python rclaudio.py
-application/pdf = execm python rclpdf.py
+application/ogg = execm rclaudio.py
+application/pdf = execm rclpdf.py
 application/sql = internal text/plain
 application/vnd.wordperfect = exec wpd/wpd2html;mimetype=text/html
-application/x-7z-compressed = execm python rcl7z.py
+application/x-7z-compressed = execm rcl7z.py
 application/x-abiword = internal xsltproc abiword.xsl
 application/x-awk = internal text/plain
-application/x-chm = execm python rclchm.py
-application/x-dia-diagram = execm python rcldia.py;mimetype=text/plain
-application/x-flac = execm python rclaudio.py
-application/x-gnote = execm python rclxml.py
-application/x-hwp = execm python rclhwp.py
+application/x-chm = execm rclchm.py
+application/x-dia-diagram = execm rcldia.py;mimetype=text/plain
+application/x-flac = execm rclaudio.py
+application/x-gnote = execm rclxml.py
+application/x-hwp = execm rclhwp.py
 application/x-mimehtml = internal message/rfc822
 application/x-perl = internal text/plain
 application/x-php = internal text/plain
-application/x-rar = execm python rclrar.py;charset=default
+application/x-rar = execm rclrar.py;charset=default
 application/x-shellscript = internal text/plain
-application/x-webarchive = execm python rclwar.py
+application/x-webarchive = execm rclwar.py
 application/x-zerosize = internal
-application/zip = execm python rclzip.py;charset=default
-audio/aac = execm python rclaudio.py
-audio/mp4 = execm python rclaudio.py
-audio/mpeg = execm python rclaudio.py
-audio/x-karaoke = execm python rclkar.py
+application/zip = execm rclzip.py;charset=default
+audio/aac = execm rclaudio.py
+audio/mp4 = execm rclaudio.py
+audio/mpeg = execm rclaudio.py
+audio/x-karaoke = execm rclkar.py
 image/gif = execm rclimg.exe
 image/jp2 = execm rclimg.exe
 image/jpeg = execm rclimg.exe
 image/png = execm rclimg.exe
 image/svg+xml = internal xsltproc svg.xsl
 image/tiff = execm rclimg.exe
-image/vnd.djvu = execm python rcldjvu.py
+image/vnd.djvu = execm rcldjvu.py
 inode/symlink = internal
 inode/x-empty = internal application/x-zerosize
 message/rfc822 = internal
-text/calendar = execm python rclics.py;mimetype=text/plain
+text/calendar = execm rclics.py;mimetype=text/plain
 text/css = internal text/plain
 text/html  = internal 
 text/plain = internal 
 text/plain1 = internal 
-#text/rtf = execm python rclrtf.py
+#text/rtf = execm rclrtf.py
 text/rtf = exec unrtf --nopict --html;mimetype=text/html
 text/x-c = internal
 text/x-c+ = internal
@@ -187,9 +187,9 @@ text/x-csv = internal text/plain
 text/x-fictionbook = internal xsltproc fb2.xsl
 text/x-ini = internal text/plain
 text/x-mail = internal
-text/x-orgmode = execm python rclorgmode.py
+text/x-orgmode = execm rclorgmode.py
 text/x-perl = internal text/plain
-text/x-python = execm python rclpython.py
+text/x-python = execm rclpython.py
 text/x-shellscript = internal text/plain
 text/x-srt = internal text/plain
 image/x-xcf = execm rclimg.exe
