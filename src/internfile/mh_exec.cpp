@@ -82,8 +82,7 @@ bool MimeHandlerExec::set_document_file_impl(const std::string& mt,
             tpsread = true;
             if (!nomd5tps.empty()) {
                 if (params.size() &&
-                    nomd5tps.find(path_getsimple(params[0])) !=
-                    nomd5tps.end()) {
+                    nomd5tps.find(path_getsimple(params[0])) != nomd5tps.end()) {
                     m_handlernomd5 = true;
                 }
                 // On windows the 1st param is often a script interp

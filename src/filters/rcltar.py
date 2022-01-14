@@ -2,7 +2,7 @@
 
 # Tar-file filter for Recoll
 # Thanks to Recoll user Martin Ziegler
-# This is a modified version of /usr/share/recoll/filters/rclzip
+# This is a modified version of /usr/share/recoll/filters/rclzip.py
 # It works not only for tar-files, but automatically for gzipped and
 # bzipped tar-files at well.
 

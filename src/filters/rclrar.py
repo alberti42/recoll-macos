@@ -60,7 +60,7 @@ except Exception as ex:
 # (https://www.rarlab.com/rar_add.htm). The unrar-free version fails
 # with the message "Failed the read enough data"
 # 
-# This is identical to rclzip except I did a search/replace from zip
+# This is identical to rclzip.py except I did a search/replace from zip
 # to rar, and changed this comment.
 class RarExtractor:
     def __init__(self, em):

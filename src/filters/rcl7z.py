@@ -3,7 +3,7 @@
 # 7-Zip file filter for Recoll
 
 # Thanks to Recoll user Martin Ziegler
-# This is a modified version of rclzip, with some help from rcltar
+# This is a modified version of rclzip.py, with some help from rcltar.py
 #
 # Normally using py7zr https://github.com/miurahr/py7zr
 #

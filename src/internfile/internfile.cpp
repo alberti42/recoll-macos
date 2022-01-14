@@ -51,7 +51,7 @@ using namespace std;
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
 // We replace it with a control char if it comes out of a filter (ie:
-// rclzip or rclchm can do this). If you want the SOH control char
+// rclzip.py or rclchm.py can do this). If you want the SOH control char
 // inside an ipath, you're out of luck (and a bit weird).
 static const string cstr_isep(":");
 

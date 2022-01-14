@@ -209,30 +209,30 @@ mac {
   ../filters/openxml-word-body.xsl \
   ../filters/openxml-meta.xsl \
   ../filters/ppt-dump.py \
-  ../filters/rcl7z \
+  ../filters/rcl7z.py \
   ../filters/rclaptosidman \
-  ../filters/rclaudio \
+  ../filters/rclaudio.py \
   ../filters/rclbasehandler.py \
   ../filters/rclbibtex.sh \
   ../filters/rclcheckneedretry.sh \
-  ../filters/rclchm \
-  ../filters/rcldia \
+  ../filters/rclchm.py \
+  ../filters/rcldia.py \
   ../filters/rcldjvu.py \
   ../filters/rcldoc.py \
   ../filters/rcldvi \
-  ../filters/rclepub \
-  ../filters/rclepub1 \
+  ../filters/rclepub.py \
+  ../filters/rclepub1.py \
   ../filters/rclexec1.py \
   ../filters/rclexecm.py \
   ../filters/rclfb2.py \
   ../filters/rclgaim \
   ../filters/rclgenxslt.py \
   ../filters/rclhwp.py \
-  ../filters/rclics \
+  ../filters/rclics.py \
   ../filters/rclimg \
   ../filters/rclimg.py \
-  ../filters/rclinfo \
-  ../filters/rclkar \
+  ../filters/rclinfo.py \
+  ../filters/rclkar.py \
   ../filters/rclkwd \
   ../filters/rcllatinclass.py \
   ../filters/rcllatinstops.zip \
@@ -250,21 +250,21 @@ mac {
   ../filters/rclpst.py \
   ../filters/rclpurple \
   ../filters/rclpython.py \
-  ../filters/rclrar \
+  ../filters/rclrar.py \
   ../filters/rclrtf.py \
   ../filters/rclscribus \
   ../filters/rclshowinfo \
-  ../filters/rcltar \
+  ../filters/rcltar.py \
   ../filters/rcltex \
   ../filters/rcltext.py \
   ../filters/rcluncomp \
   ../filters/rcluncomp.py \
-  ../filters/rclwar \
+  ../filters/rclwar.py \
   ../filters/rclxls.py \
   ../filters/rclxml.py \
   ../filters/rclxmp.py \
   ../filters/rclxslt.py \
-  ../filters/rclzip \
+  ../filters/rclzip.py \
   ../filters/recoll-we-move-files.py \
   ../filters/recollepub.zip \
   ../filters/svg.xsl \

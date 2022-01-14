@@ -4957,7 +4957,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           is).</para></listitem> <listitem><para>All the Python handlers
           share at least the <filename>rclexecm.py</filename> module, which
           handles the communication. Have a look at, for
-          example, <filename>rclzip</filename> for a handler which
+          example, <filename>rclzip.py</filename> for a handler which
           uses <filename>rclexecm.py</filename>
           directly.</para></listitem> <listitem><para>Most Python handlers
           which process single-document files by executing another command
@@ -4994,7 +4994,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         the moment).</para>
 
         <para>You can also have a look at the slightly more complex
-        <command>rclzip</command> which uses Zip
+        <command>rclzip.py</command> which uses Zip
         file paths as identifiers (<literal>ipath</literal>).</para>
 
         <para><literal>execm</literal> handlers sometimes need to make
@@ -5062,7 +5062,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
           text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
 
-          application/x-chm = execm rclchm
+          application/x-chm = execm rclchm.py
         </programlisting>
 
         <para>The fragment specifies that:
@@ -5205,7 +5205,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         method to produce metadata, by calling the
         <literal>setfield()</literal> helper method. This avoids the
         necessity to produce HTML, and any issue with HTML quoting. See,
-        for example, <filename>rclaudio</filename> in &RCL; 1.23 and
+        for example, <filename>rclaudio.py</filename> in &RCL; 1.23 and
         later for an example of handler which outputs
         <literal>text/plain</literal> and uses
         <literal>setfield()</literal> to produce metadata.</para>

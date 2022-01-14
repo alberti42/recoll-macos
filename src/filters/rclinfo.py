@@ -141,7 +141,7 @@ class InfoSimpleSplitter:
                         if name == b'File':
                             infofile = value
                 except Exception as err:
-                    print("rclinfo: bad line in %s: [%s] %s\n" % \
+                    print("rclinfo.py: bad line in %s: [%s] %s\n" % \
                           (infofile, line, err), file = sys.stderr)
                     nodename = prevnodename
                     node += line

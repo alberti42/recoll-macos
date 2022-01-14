@@ -148,25 +148,25 @@ application/vnd.sun.xml.writer.template = \
  body content.xml opendoc-body.xsl
 
 #application/x-mobipocket-ebook = execm rclmobi
-#application/x-tar = execm rcltar
+#application/x-tar = execm rcltar.py
 
-application/epub+zip = execm rclepub
+application/epub+zip = execm rclepub.py
 application/x-ipynb+json = exec jupyter nbconvert --to script --stdout ; mimetype = text/plain
 application/javascript = internal text/plain
-application/ogg = execm rclaudio
+application/ogg = execm rclaudio.py
 application/pdf = execm rclpdf.py
 application/postscript = exec rclps
 application/sql = internal text/plain
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
-application/x-7z-compressed = execm rcl7z
+application/x-7z-compressed = execm rcl7z.py
 application/x-abiword = internal xsltproc abiword.xsl
 application/x-awk = internal text/plain
-application/x-chm = execm rclchm
-application/x-dia-diagram = execm rcldia;mimetype=text/plain
+application/x-chm = execm rclchm.py
+application/x-dia-diagram = execm rcldia.py;mimetype=text/plain
 application/x-dvi = exec rcldvi
-application/x-flac = execm rclaudio
+application/x-flac = execm rclaudio.py
 application/x-gnote = execm rclxml.py
-application/x-gnuinfo = execm rclinfo
+application/x-gnuinfo = execm rclinfo.py
 application/x-gnumeric = internal xsltproc gnumeric.xsl
 application/x-hwp = execm rclhwp.py
 application/x-kword = exec rclkwd
@@ -175,22 +175,22 @@ application/x-mimehtml = internal message/rfc822
 application/x-okular-notes = internal xsltproc okular-note.xsl
 application/x-perl = internal text/plain
 application/x-php = internal text/plain
-application/x-rar = execm rclrar;charset=default
+application/x-rar = execm rclrar.py;charset=default
 application/x-ruby = internal text/plain
 application/x-scribus = exec rclscribus
 application/x-shellscript = internal text/plain
 application/x-tex = exec rcltex
-application/x-webarchive = execm rclwar
+application/x-webarchive = execm rclwar.py
 application/x-zerosize = internal
-application/zip = execm rclzip;charset=default
-audio/aac = execm rclaudio
-audio/ape = execm rclaudio
-audio/mp4 = execm rclaudio
-audio/mpeg = execm rclaudio
-audio/ogg = execm rclaudio
-audio/x-karaoke = execm rclkar
-audio/x-musepack = execm rclaudio
-audio/x-wavpack = execm rclaudio
+application/zip = execm rclzip.py;charset=default
+audio/aac = execm rclaudio.py
+audio/ape = execm rclaudio.py
+audio/mp4 = execm rclaudio.py
+audio/mpeg = execm rclaudio.py
+audio/ogg = execm rclaudio.py
+audio/x-karaoke = execm rclkar.py
+audio/x-musepack = execm rclaudio.py
+audio/x-wavpack = execm rclaudio.py
 image/gif = execm rclimg
 image/jp2 = execm rclimg
 image/jpeg = execm rclimg
@@ -203,7 +203,7 @@ image/x-xcf = execm rclimg
 inode/symlink = internal
 inode/x-empty = internal application/x-zerosize
 message/rfc822 = internal
-text/calendar = execm rclics;mimetype=text/plain
+text/calendar = execm rclics.py;mimetype=text/plain
 text/css = internal text/plain
 text/html  = internal 
 text/plain = internal 
@@ -234,7 +234,7 @@ text/x-ruby = internal
 text/x-shellscript = internal text/plain
 text/x-srt = internal text/plain
 text/x-tex = exec rcltex
-video/mp4 = execm rclaudio
+video/mp4 = execm rclaudio.py
 video/x-msvideo = execm rclimg
 
 

@@ -131,36 +131,36 @@ application/vnd.sun.xml.writer.template = \
  body content.xml opendoc-body.xsl
 
 #application/postscript = exec rclps
-#application/x-gnuinfo = execm python rclinfo
-#application/x-tar = execm python rcltar
+#application/x-gnuinfo = execm python rclinfo.py
+#application/x-tar = execm python rcltar.py
 
-application/epub+zip = execm python rclepub
+application/epub+zip = execm python rclepub.py
 application/x-ipynb+json = execm python rclipynb.py
 application/javascript = internal text/plain
-application/ogg = execm python rclaudio
+application/ogg = execm python rclaudio.py
 application/pdf = execm python rclpdf.py
 application/sql = internal text/plain
 application/vnd.wordperfect = exec wpd/wpd2html;mimetype=text/html
-application/x-7z-compressed = execm python rcl7z
+application/x-7z-compressed = execm python rcl7z.py
 application/x-abiword = internal xsltproc abiword.xsl
 application/x-awk = internal text/plain
-application/x-chm = execm python rclchm
-application/x-dia-diagram = execm python rcldia;mimetype=text/plain
-application/x-flac = execm python rclaudio
+application/x-chm = execm python rclchm.py
+application/x-dia-diagram = execm python rcldia.py;mimetype=text/plain
+application/x-flac = execm python rclaudio.py
 application/x-gnote = execm python rclxml.py
 application/x-hwp = execm python rclhwp.py
 application/x-mimehtml = internal message/rfc822
 application/x-perl = internal text/plain
 application/x-php = internal text/plain
-application/x-rar = execm python rclrar;charset=default
+application/x-rar = execm python rclrar.py;charset=default
 application/x-shellscript = internal text/plain
-application/x-webarchive = execm python rclwar
+application/x-webarchive = execm python rclwar.py
 application/x-zerosize = internal
-application/zip = execm python rclzip;charset=default
-audio/aac = execm python rclaudio
-audio/mp4 = execm python rclaudio
-audio/mpeg = execm python rclaudio
-audio/x-karaoke = execm python rclkar
+application/zip = execm python rclzip.py;charset=default
+audio/aac = execm python rclaudio.py
+audio/mp4 = execm python rclaudio.py
+audio/mpeg = execm python rclaudio.py
+audio/x-karaoke = execm python rclkar.py
 image/gif = execm rclimg.exe
 image/jp2 = execm rclimg.exe
 image/jpeg = execm rclimg.exe
@@ -171,7 +171,7 @@ image/vnd.djvu = execm python rcldjvu.py
 inode/symlink = internal
 inode/x-empty = internal application/x-zerosize
 message/rfc822 = internal
-text/calendar = execm python rclics;mimetype=text/plain
+text/calendar = execm python rclics.py;mimetype=text/plain
 text/css = internal text/plain
 text/html  = internal 
 text/plain = internal 
