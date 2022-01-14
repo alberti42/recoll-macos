@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """Extract Html content from an EPUB file (.epub)"""
 from __future__ import print_function
 
