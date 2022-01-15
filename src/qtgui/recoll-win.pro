@@ -170,29 +170,31 @@ mac {
     rtitool.cpp
 
   FORMS += \
-  crontool.ui \
-  rtitool.ui
+    crontool.ui \
+    rtitool.ui
 
   LIBS += \
-../windows/build-librecoll-Desktop_Qt_5_14_2_clang_64bit-Release/liblibrecoll.a \
-  ../../../xapian-core-1.4.18/.libs/libxapian.a \
-  -lxslt -lxml2 -liconv -lz
+    ../windows/build-librecoll-Desktop_Qt_5_14_2_clang_64bit-Release/liblibrecoll.a \
+    ../../../xapian-core-1.4.18/.libs/libxapian.a \
+    -lxslt -lxml2 -liconv -lz
 
   ICON = images/recoll.icns
 
-  system(cp ../sampleconf/mimeview.mac ../mimeview)
-  
   APP_EXAMPLES.files = \
-  ../sampleconf/fragment-buttons.xml \
-  ../sampleconf/fields \
-  ../sampleconf/recoll.conf \
-  ../sampleconf/mimeconf \
-  ../sampleconf/recoll.qss \
-  ../sampleconf/recoll-dark.qss \
-  ../sampleconf/recoll-dark.css \
-  ../sampleconf/mimemap \
-  ../mimeview 
+    ../sampleconf/fragment-buttons.xml \
+    ../sampleconf/fields \
+    ../sampleconf/recoll.conf \
+    ../sampleconf/mimeconf \
+    ../sampleconf/mimeview \
+    ../sampleconf/mimemap \
+    ../sampleconf/recoll.qss \
+    ../sampleconf/recoll-dark.qss \
+    ../sampleconf/recoll-dark.css 
   APP_EXAMPLES.path = Contents/Resources/examples
+
+  APP_EXAMPLES_MAC.files = \
+    ../sampleconf/macos/mimeview 
+  APP_EXAMPLES_MAC.path = Contents/Resources/examples/macos
 
   APP_FILTERS.files = \
   ../filters/abiword.xsl \
