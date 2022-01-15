@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Rclpython is based on "colorize.py" from:
 # http://chrisarndt.de/en/software/python/colorize.html

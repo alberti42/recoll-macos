@@ -85,7 +85,7 @@ done
 
 
 ### KIO.
-series="bionic focal groovy hirsute impish"
+#series="bionic focal hirsute impish"
 series=
 
 debdir=debiankio

@@ -6,7 +6,7 @@ from __future__ import print_function
 # stefan.friedel@iwr.uni-heidelberg.de 2012
 #
 # add the following to ~/.recoll/mimeconf into the [index] section:
-# application/x-dia-diagram = execm rcldia;mimetype=text/plain;charset=utf-8
+# application/x-dia-diagram = execm rcldia.py;mimetype=text/plain;charset=utf-8
 # and into the [icons] section:
 # application/x-dia-diagram = drawing
 # and finally under [categories]:

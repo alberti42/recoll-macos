@@ -360,7 +360,6 @@ int Query::getFirstMatchPage(const Doc &doc, string& term)
     return m_reason.empty() ? pagenum : -1;
 }
 
-
 // Mset size
 // Note: times for retrieving (multiple times)all docs from a sample
 // 25k docs db (q: mime:*)
@@ -511,8 +510,7 @@ vector<string> Query::expand(const Doc &doc)
             Xapian::ESet eset = m_nq->xenquire->get_eset(20, rset, false);
             LOGDEB("ESet terms:\n");
             // We filter out the special terms
-            for (Xapian::ESetIterator it = eset.begin(); 
-                 it != eset.end(); it++) {
+            for (Xapian::ESetIterator it = eset.begin(); it != eset.end(); it++) {
                 LOGDEB(" [" << (*it) << "]\n");
                 if ((*it).empty() || has_prefix(*it))
                     continue;

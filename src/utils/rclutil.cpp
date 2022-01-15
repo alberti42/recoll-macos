@@ -310,23 +310,30 @@ bool printableUrl(const string& fcharset, const string& in, string& out)
     return true;
 }
 
+#ifdef _WIN32
+// Convert X:/path to /X/path for path splitting inside the index
+string path_slashdrive(const string& path)
+{
+    string npath;
+    if (path_hasdrive(path)) {
+        npath.append(1, '/');
+        npath.append(1, path[0]);
+        if (path_isdriveabs(path)) {
+            npath.append(path.substr(2));
+        } else {
+            // This should be an error really
+            npath.append(1, '/');
+            npath.append(path.substr(2));
+        }
+    }
+    return npath;
+}
+#endif // _WIN32
+
 string url_gpathS(const string& url)
 {
 #ifdef _WIN32
-    string u = url_gpath(url);
-    string nu;
-    if (path_hasdrive(u)) {
-        nu.append(1, '/');
-        nu.append(1, u[0]);
-        if (path_isdriveabs(u)) {
-            nu.append(u.substr(2));
-        } else {
-            // This should be an error really
-            nu.append(1, '/');
-            nu.append(u.substr(2));
-        }
-    }
-    return nu;
+    return path_slashdrive(url_gpath(url));
 #else
     return url_gpath(url);
 #endif

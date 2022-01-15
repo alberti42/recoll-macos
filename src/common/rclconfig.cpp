@@ -58,6 +58,16 @@
 
 using namespace std;
 
+// Naming the directory for platform-specific default config files, overriding the top-level ones
+// E.g. /usr/share/recoll/examples/windows
+#ifdef _WIN32
+static const string confsysdir{"windows"};
+#elif defined(_APPLE__)
+static const string confsysdir{"macos"};
+#else
+static const string confsysdir;
+#endif
+
 // Static, logically const, RclConfig members or module static
 // variables are initialized once from the first object build during
 // process initialization.
@@ -303,8 +313,15 @@ RclConfig::RclConfig(const string *argcnf)
         m_cdirs.push_back(cp);
     } 
 
-    // Base/installation config
-    m_cdirs.push_back(path_cat(m_datadir, "examples"));
+    // Base/installation config, and its platform-specific overrides
+    std::string defaultsdir = path_cat(m_datadir, "examples");
+    if (!confsysdir.empty()) {
+        std::string sdir = path_cat(defaultsdir, confsysdir);
+        if (path_isdir(sdir)) {
+            m_cdirs.push_back(sdir);
+        }
+    }
+    m_cdirs.push_back(defaultsdir);
 
     string cnferrloc;
     for (const auto& dir : m_cdirs) {
@@ -376,6 +393,7 @@ bool RclConfig::updateMainConfig()
 {
     ConfStack<ConfTree> *newconf = new ConfStack<ConfTree>("recoll.conf", m_cdirs, true);
     if (newconf == 0 || !newconf->ok()) {
+        std::cerr << "updateMainConfig: new Confstack not ok\n";
         if (m_conf)
             return false;
         m_ok = false;
@@ -1633,6 +1651,7 @@ vector<string> RclConfig::getDaemSkippedPaths() const
 // and filtersdir from the config file to the PATH, then use execmd::which()
 string RclConfig::findFilter(const string &icmd) const
 {
+    LOGDEB2("findFilter: " << icmd << "\n");
     // If the path is absolute, this is it
     if (path_isabsolute(icmd))
         return icmd;
@@ -1680,13 +1699,19 @@ bool RclConfig::processFilterCmd(std::vector<std::string>& cmd) const
     LOGDEB0("processFilterCmd: in: " << stringsToString(cmd) << "\n");
     auto it = cmd.begin();
 
-    // Special-case python and perl on windows: we need to also locate the
-    // first argument which is the script name "python somescript.py". 
-    // On Unix, thanks to #!, we usually just run "somescript.py", but need
-    // the same change if we ever want to use the same cmd line as windows
-    bool hasinterp = !stringlowercmp("python", *it) ||
-        !stringlowercmp("perl", *it);
-
+#ifdef _WIN32
+    // Special-case interpreters on windows: we used to have an additional 1st argument "python" in
+    // mimeconf, but we now rely on the .py extension for better sharing of mimeconf.
+    std::string ext = path_suffix(*it);
+    if ("py" == ext) {
+        it = cmd.insert(it, findFilter("python"));
+        it++;
+    } else if ("pl" == ext) {
+        it = cmd.insert(it, findFilter("perl"));
+        it++;
+    }
+#endif
+    
     // Note that, if the cmd vector size is 1, post-incrementing the
     // iterator in the following statement, which works on x86, leads
     // to a crash on ARM with gcc 6 and 8 (at least), which does not
@@ -1694,25 +1719,15 @@ bool RclConfig::processFilterCmd(std::vector<std::string>& cmd) const
     // whatever... We do it later then.
     *it = findFilter(*it);
 
-    if (hasinterp) {
-        if (cmd.size() < 2) {
-            LOGERR("processFilterCmd: python/perl cmd: no script?. [" <<
-                   stringsToString(cmd) << "]\n");
-            return false;
-        } else {
-            ++it;
-            *it = findFilter(*it);
-        }
-    }
     LOGDEB0("processFilterCmd: out: " << stringsToString(cmd) << "\n");
     return true;
 }
 
-bool RclConfig::pythonCmd(const std::string& scriptname,
-                          std::vector<std::string>& cmd) const
+// This now does nothing more than processFilterCmd (after we changed to relying on the py extension)
+bool RclConfig::pythonCmd(const std::string& scriptname, std::vector<std::string>& cmd) const
 {
 #ifdef _WIN32
-    cmd = {"python", scriptname};
+    cmd = {scriptname};
 #else
     cmd = {scriptname};
 #endif

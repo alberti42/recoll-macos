@@ -51,7 +51,7 @@ using namespace std;
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
 // We replace it with a control char if it comes out of a filter (ie:
-// rclzip or rclchm can do this). If you want the SOH control char
+// rclzip.py or rclchm.py can do this). If you want the SOH control char
 // inside an ipath, you're out of luck (and a bit weird).
 static const string cstr_isep(":");
 
@@ -562,13 +562,13 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
             const string *val = 0;
             if (!doc.peekmeta(Rcl::Doc::keymd5, &val) || val->empty())
                 doc.meta[Rcl::Doc::keymd5] = ent.second;
-        } else if (ent.first == cstr_dj_keymt || 
-                   ent.first == cstr_dj_keycharset) {
+        } else if (ent.first == cstr_dj_keymt || ent.first == cstr_dj_keycharset) {
             // don't need/want these.
         } else {
-            LOGDEB2("dijontorcl: " << m_cfg->fieldCanon(ent.first) << " -> " <<
-                    ent.second << endl);
-            doc.addmeta(m_cfg->fieldCanon(ent.first), ent.second);
+            LOGDEB2("dijontorcl: " << m_cfg->fieldCanon(ent.first) << " -> " << ent.second << "\n");
+            if (!ent.second.empty()) {
+                doc.meta[m_cfg->fieldCanon(ent.first)] = ent.second;
+            }
         }
     }
     if (doc.meta[Rcl::Doc::keyabs].empty() && 
@@ -583,7 +583,7 @@ const set<string> nocopyfields{cstr_dj_keycontent, cstr_dj_keymd,
         cstr_dj_keyanc, cstr_dj_keyorigcharset, cstr_dj_keyfn,
         cstr_dj_keymt, cstr_dj_keycharset, cstr_dj_keyds};
 
-static void copymeta(const RclConfig *cfg,Rcl::Doc& doc, const RecollFilter* hp)
+static void copymeta(const RclConfig *cfg, Rcl::Doc& doc, const RecollFilter* hp)
 {
     for (const auto& entry : hp->get_meta_data()) {
         if (nocopyfields.find(entry.first) == nocopyfields.end()) {
@@ -650,7 +650,7 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
             // handlers to use setfield() instead of embedding
             // metadata in the HTML meta tags.
             if (i == 0 || !pathelprev.empty()) {
-                copymeta(m_cfg, doc, m_handlers[i]);
+                copymeta(m_cfg, doc, m_handlers[i == 0 ? 0 : i-1]);
             }
             if (doc.fbytes.empty()) {
                 lltodecstr(m_handlers[i]->get_docsize(), doc.fbytes);
@@ -744,8 +744,7 @@ int FileInterner::addHandler()
         LOGINFO("FileInterner::addHandler: no filter for [" << mimetype << "]\n");
         return ADD_CONTINUE;
     }
-    newflt->set_property(Dijon::Filter::OPERATING_MODE, 
-                         m_forPreview ? "view" : "index");
+    newflt->set_property(Dijon::Filter::OPERATING_MODE, m_forPreview ? "view" : "index");
     if (!charset.empty())
         newflt->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
 

@@ -2763,8 +2763,8 @@ Chapter 4. Programming interface
 
    If you can program and want to write an execm handler, it should not be
    too difficult to make sense of one of the existing modules. For example,
-   look at rclzip which uses Zip file paths as identifiers (ipath), and
-   rclics, which uses an integer index. Also have a look at the comments
+   look at rclzip.py which uses Zip file paths as identifiers (ipath), and
+   rclics.py, which uses an integer index. Also have a look at the comments
    inside the internfile/mh_execm.h file and possibly at the corresponding
    module.
 
@@ -2819,7 +2819,7 @@ Chapter 4. Programming interface
 
  text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
 
- application/x-chm = execm rclchm
+ application/x-chm = execm rclchm.py
 
    The fragment specifies that:
 

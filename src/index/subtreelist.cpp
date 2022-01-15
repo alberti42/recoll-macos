@@ -26,13 +26,18 @@
 #include "subtreelist.h"
 #include "log.h"
 
-bool subtreelist(RclConfig *config, const string& top, 
-                 vector<string>& paths)
+bool subtreelist(RclConfig *config, const string& _top, vector<string>& paths)
 {
-    LOGDEB("subtreelist: top: ["  << (top) << "]\n" );
+    std::string top(_top);
+#ifdef _WIN32
+    // Need to convert c:path to /c/path because this is how paths are indexed
+    top = path_slashdrive(top);
+#endif
+
+    LOGDEB("subtreelist: top: [" << top << "]\n");
     Rcl::Db rcldb(config);
     if (!rcldb.open(Rcl::Db::DbRO)) {
-        LOGERR("subtreelist: can't open database in [" << config->getDbDir() <<
+        LOGERR("subtreelist: can't open index in [" << config->getDbDir() <<
                "]: " << rcldb.getReason() << "\n");
         return false;
     }

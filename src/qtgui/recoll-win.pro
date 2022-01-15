@@ -117,40 +117,39 @@ INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
               ../utils ../aspell ../rcldb ../qtgui ../xaposix \
               confgui widgets
 windows {
-    DEFINES += PSAPI_VERSION=1
-    DEFINES += __WIN32__
-    DEFINES += UNICODE
-    RC_FILE = recoll.rc
+  DEFINES += PSAPI_VERSION=1
+  DEFINES += __WIN32__
+  DEFINES += UNICODE
+  RC_FILE = recoll.rc
 
-    HEADERS += \
-      winschedtool.h
-    SOURCES += \
+  HEADERS += \
+    winschedtool.h
+  SOURCES += \
     winschedtool.cpp
-    FORMS += \
+  FORMS += \
     winschedtool.ui
     
-    contains(QMAKE_CC, gcc){
-        # MingW
-        QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
-        LIBS += C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
-    }
+  contains(QMAKE_CC, gcc){
+    # MingW
+    QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+    LIBS += \
+    C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
+  }
 
   contains(QMAKE_CC, cl){
     # MSVC
     RECOLLDEPS = ../../../recolldeps/msvc
     DEFINES += USING_STATIC_LIBICONV
+    PRE_TARGETDEPS = \
+      ../windows/build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release/librecoll.lib
     LIBS += \
-  -L../windows/build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
-        -llibrecoll \
+      -L../windows/build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibrecoll \
       $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
       $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
-  -L../windows/build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
-        -llibxapian \
- -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
-        -llibiconv \
+      -L../windows/build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibxapian \
+      -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibiconv \
       $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
-      -lrpcrt4 -lws2_32 -luser32 \
-      -lshell32 -lshlwapi -lpsapi -lkernel32
+      -lrpcrt4 -lws2_32 -luser32 -lshell32 -lshlwapi -lpsapi -lkernel32
   }
 }
 
@@ -170,29 +169,31 @@ mac {
     rtitool.cpp
 
   FORMS += \
-  crontool.ui \
-  rtitool.ui
+    crontool.ui \
+    rtitool.ui
 
   LIBS += \
-../windows/build-librecoll-Desktop_Qt_5_14_2_clang_64bit-Release/liblibrecoll.a \
-  ../../../xapian-core-1.4.18/.libs/libxapian.a \
-  -lxslt -lxml2 -liconv -lz
+    ../windows/build-librecoll-Desktop_Qt_5_14_2_clang_64bit-Release/liblibrecoll.a \
+    ../../../xapian-core-1.4.18/.libs/libxapian.a \
+    -lxslt -lxml2 -liconv -lz
 
   ICON = images/recoll.icns
 
-  system(cp ../sampleconf/mimeview.mac ../mimeview)
-  
   APP_EXAMPLES.files = \
-  ../sampleconf/fragment-buttons.xml \
-  ../sampleconf/fields \
-  ../sampleconf/recoll.conf \
-  ../sampleconf/mimeconf \
-  ../sampleconf/recoll.qss \
-  ../sampleconf/recoll-dark.qss \
-  ../sampleconf/recoll-dark.css \
-  ../sampleconf/mimemap \
-  ../mimeview 
+    ../sampleconf/fragment-buttons.xml \
+    ../sampleconf/fields \
+    ../sampleconf/recoll.conf \
+    ../sampleconf/mimeconf \
+    ../sampleconf/mimeview \
+    ../sampleconf/mimemap \
+    ../sampleconf/recoll.qss \
+    ../sampleconf/recoll-dark.qss \
+    ../sampleconf/recoll-dark.css 
   APP_EXAMPLES.path = Contents/Resources/examples
+
+  APP_EXAMPLES_MAC.files = \
+    ../sampleconf/macos/mimeview 
+  APP_EXAMPLES_MAC.path = Contents/Resources/examples/macos
 
   APP_FILTERS.files = \
   ../filters/abiword.xsl \
@@ -209,30 +210,30 @@ mac {
   ../filters/openxml-word-body.xsl \
   ../filters/openxml-meta.xsl \
   ../filters/ppt-dump.py \
-  ../filters/rcl7z \
+  ../filters/rcl7z.py \
   ../filters/rclaptosidman \
-  ../filters/rclaudio \
+  ../filters/rclaudio.py \
   ../filters/rclbasehandler.py \
   ../filters/rclbibtex.sh \
   ../filters/rclcheckneedretry.sh \
-  ../filters/rclchm \
-  ../filters/rcldia \
+  ../filters/rclchm.py \
+  ../filters/rcldia.py \
   ../filters/rcldjvu.py \
   ../filters/rcldoc.py \
   ../filters/rcldvi \
-  ../filters/rclepub \
-  ../filters/rclepub1 \
+  ../filters/rclepub.py \
+  ../filters/rclepub1.py \
   ../filters/rclexec1.py \
   ../filters/rclexecm.py \
   ../filters/rclfb2.py \
   ../filters/rclgaim \
   ../filters/rclgenxslt.py \
   ../filters/rclhwp.py \
-  ../filters/rclics \
+  ../filters/rclics.py \
   ../filters/rclimg \
   ../filters/rclimg.py \
-  ../filters/rclinfo \
-  ../filters/rclkar \
+  ../filters/rclinfo.py \
+  ../filters/rclkar.py \
   ../filters/rclkwd \
   ../filters/rcllatinclass.py \
   ../filters/rcllatinstops.zip \
@@ -250,21 +251,21 @@ mac {
   ../filters/rclpst.py \
   ../filters/rclpurple \
   ../filters/rclpython.py \
-  ../filters/rclrar \
+  ../filters/rclrar.py \
   ../filters/rclrtf.py \
   ../filters/rclscribus \
   ../filters/rclshowinfo \
-  ../filters/rcltar \
+  ../filters/rcltar.py \
   ../filters/rcltex \
   ../filters/rcltext.py \
   ../filters/rcluncomp \
   ../filters/rcluncomp.py \
-  ../filters/rclwar \
+  ../filters/rclwar.py \
   ../filters/rclxls.py \
   ../filters/rclxml.py \
   ../filters/rclxmp.py \
   ../filters/rclxslt.py \
-  ../filters/rclzip \
+  ../filters/rclzip.py \
   ../filters/recoll-we-move-files.py \
   ../filters/recollepub.zip \
   ../filters/svg.xsl \

@@ -51,7 +51,7 @@ if not hasrclconfig:
 # and stores it in the catalog as an unicode object. Else it uses the
 # binary string, which it decodes as CP437 (zip standard).
 #
-# When reading the file, the input file name is used by rclzip
+# When reading the file, the input file name is used by rclzip.py
 # directly as an index into the catalog.
 #
 # When we send the file name data to the indexer, we have to serialize

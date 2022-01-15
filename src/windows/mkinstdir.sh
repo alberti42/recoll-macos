@@ -171,13 +171,15 @@ copyrecoll()
     chkcp $RCL/doc/user/docbook-xsl.css $DESTDIR/Share/doc
     mkdir -p $DESTDIR/Share/doc/webhelp
     rsync -av $RCL/doc/user/webhelp/docs/* $DESTDIR/Share/doc/webhelp || exit 1
-    chkcp $RCL/sampleconf/fields        $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/fields          $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/fragment-buttons.xml  $DESTDIR/Share/examples
-    chkcp $RCL/windows/mimeconf         $DESTDIR/Share/examples
-    chkcp $RCL/sampleconf/mimemap       $DESTDIR/Share/examples
-    chkcp $RCL/windows/mimeview         $DESTDIR/Share/examples
-    chkcp $RCL/sampleconf/recoll.conf   $DESTDIR/Share/examples
-    chkcp $RCL/sampleconf/recoll.qss    $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/mimeconf        $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/mimeview        $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/mimemap         $DESTDIR/Share/examples
+    chkcp $RCL/windows/mimeconf           $DESTDIR/Share/examples/windows
+    chkcp $RCL/windows/mimeview           $DESTDIR/Share/examples/windows
+    chkcp $RCL/sampleconf/recoll.conf     $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/recoll.qss      $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll-dark.qss $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll-dark.css $DESTDIR/Share/examples
 
@@ -349,7 +351,7 @@ test "$VERSION" = "$CFVERS" ||
 
 echo Packaging version $CFVERS
 
-for d in doc examples filters images translations; do
+for d in doc examples examples/windows filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
         fatal mkdir $d failed
 done

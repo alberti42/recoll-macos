@@ -34,6 +34,7 @@
 #include "rclmain_w.h"
 #include "rclzg.h"
 #include "pathut.h"
+#include "unacpp.h"
 
 using namespace std;
 
@@ -41,7 +42,6 @@ using namespace std;
 static const vector<string> browser_list{
     "opera", "google-chrome", "chromium-browser",
     "palemoon", "iceweasel", "firefox", "konqueror", "epiphany"};
-
 
 // Start native viewer or preview for input Doc. This is used to allow
 // using recoll from another app (e.g. Unity Scope) to view embedded
@@ -155,13 +155,27 @@ void RclMain::openWith(Rcl::Doc doc, string cmdspec)
     execViewer(subs, false, execname, lcmd, cmdspec, doc);
 }
 
-void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
+static bool pagenumNeeded(const std::string& cmd)
 {
+    return cmd.find("%p") != std::string::npos;
+}
+static bool linenumNeeded(const std::string& cmd)
+{
+    return cmd.find("%l") != std::string::npos;
+}
+static bool termNeeded(const std::string& cmd)
+{
+    return cmd.find("%s") != std::string::npos;
+}
+
+void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm)
+{
+    std::string term = qs2utf8s(qterm);
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
     LOGDEB("RclMain::startNativeViewer: mtype [" << doc.mimetype <<
            "] apptag ["  << apptag << "] page "  << pagenum << " term ["  <<
-           qs2utf8s(term) << "] url ["  << doc.url << "] ipath [" <<
+           term << "] url ["  << doc.url << "] ipath [" <<
            doc.ipath << "]\n");
 
     // Look for appropriate viewer
@@ -377,19 +391,19 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 
     // If we are not called with a page number (which would happen for a call
     // from the snippets window), see if we can compute a page number anyway.
-    if (pagenum == -1) {
-        pagenum = 1;
-        string lterm;
-        if (m_source)
-            pagenum = m_source->getFirstMatchPage(doc, lterm);
+    if (m_source && pagenum == -1 && (pagenumNeeded(cmd) || termNeeded(cmd)|| linenumNeeded(cmd))) {
+        pagenum = m_source->getFirstMatchPage(doc, term);
         if (pagenum == -1)
             pagenum = 1;
-        else // We get the match term used to compute the page
-            term = QString::fromUtf8(lterm.c_str());
     }
-    char cpagenum[20];
-    sprintf(cpagenum, "%d", pagenum);
 
+    int line = 1;
+    if (m_source && !term.empty() && linenumNeeded(cmd)) {
+        if (doc.text.empty()) {
+            rcldb->getDocRawText(doc);
+        }
+        line = m_source->getFirstMatchLine(doc, term);
+    }
 
     // Substitute %xx inside arguments
     string efftime;
@@ -408,9 +422,10 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     subs["f"] = fn;
     subs["F"] = fn;
     subs["i"] = FileInterner::getLastIpathElt(doc.ipath);
+    subs["l"] = ulltodecstr(line);
     subs["M"] = doc.mimetype;
-    subs["p"] = cpagenum;
-    subs["s"] = (const char*)term.toLocal8Bit();
+    subs["p"] = ulltodecstr(pagenum);
+    subs["s"] = term;
     subs["U"] = url_encode(url);
     subs["u"] = url;
     // Let %(xx) access all metadata.

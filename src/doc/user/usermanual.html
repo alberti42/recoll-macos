@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="docbook-xsl.css">
   <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
   <meta name="description" content=
-  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.31.">
+  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.32.">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084"
 alink="#0000FF">
@@ -53,7 +53,7 @@ alink="#0000FF">
             and describes the installation and use of the
             <span class="application">Recoll</span> application.
             This version describes <span class=
-            "application">Recoll</span> 1.31.</p>
+            "application">Recoll</span> 1.32.</p>
           </div>
         </div>
       </div>
@@ -443,7 +443,7 @@ alink="#0000FF">
       <p>This document introduces full text search notions and
       describes the installation and use of the <span class=
       "application">Recoll</span> application. It is updated for
-      <span class="application">Recoll</span> 1.31.</p>
+      <span class="application">Recoll</span> 1.32.</p>
       <p><span class="application">Recoll</span> was for a long
       time dedicated to Unix-like systems. It was only lately
       (2015) ported to <span class="application">MS-Windows</span>.
@@ -6581,9 +6581,10 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
                 <p>All the Python handlers share at least the
                 <code class="filename">rclexecm.py</code> module,
                 which handles the communication. Have a look at,
-                for example, <code class="filename">rclzip</code>
-                for a handler which uses <code class=
-                "filename">rclexecm.py</code> directly.</p>
+                for example, <code class=
+                "filename">rclzip.py</code> for a handler which
+                uses <code class="filename">rclexecm.py</code>
+                directly.</p>
               </li>
               <li class="listitem">
                 <p>Most Python handlers which process
@@ -6633,7 +6634,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           "_top">Git repository</a> (the sample not in the
           distributed release at the moment).</p>
           <p>You can also have a look at the slightly more complex
-          <span class="command"><strong>rclzip</strong></span>
+          <span class="command"><strong>rclzip.py</strong></span>
           which uses Zip file paths as identifiers (<code class=
           "literal">ipath</code>).</p>
           <p><code class="literal">execm</code> handlers sometimes
@@ -6726,7 +6727,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
           text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
 
-          application/x-chm = execm rclchm
+          application/x-chm = execm rclchm.py
         </pre>
           <p>The fragment specifies that:</p>
           <div class="itemizedlist">
@@ -6880,7 +6881,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           "literal">setfield()</code> helper method. This avoids
           the necessity to produce HTML, and any issue with HTML
           quoting. See, for example, <code class=
-          "filename">rclaudio</code> in <span class=
+          "filename">rclaudio.py</code> in <span class=
           "application">Recoll</span> 1.23 and later for an example
           of handler which outputs <code class=
           "literal">text/plain</code> and uses <code class=
@@ -9081,9 +9082,10 @@ hasextract = False
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ZIPUSESKIPPEDNAMES"></a><span class="term"><code class="varname">zipUseSkippedNames</code></span></dt>
                 <dd>
                   <p>Use skippedNames inside Zip archives. Fetched
-                  directly by the rclzip handler. Skip the patterns
-                  defined by skippedNames inside Zip archives. Can
-                  be redefined for subdirectories. See
+                  directly by the rclzip.py handler. Skip the
+                  patterns defined by skippedNames inside Zip
+                  archives. Can be redefined for subdirectories.
+                  See
                   https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html</p>
                 </dd>
                 <dt><a name=
@@ -9155,7 +9157,8 @@ hasextract = False
                   moment, it only has an effect for external
                   handlers (exec and execm). The file types can be
                   specified by listing either MIME types (e.g.
-                  audio/mpeg) or handler names (e.g. rclaudio).</p>
+                  audio/mpeg) or handler names (e.g.
+                  rclaudio.py).</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.COMPRESSEDFILEMAXKBS"
@@ -10758,17 +10761,28 @@ other = rclcat:other
               <li class="listitem">
                 <p><b>%p.&nbsp;</b>Page index. Only significant for
                 a subset of document types, currently only PDF,
-                Postscript and DVI files. Can be used to start the
-                editor at the right page for a match or
-                snippet.</p>
+                Postscript and DVI files. If it is set, a
+                significant term will be chosen in the query, and
+                %p will be substituted with the first page where
+                the term appears. Can be used to start the editor
+                at the right page for a match or snippet.</p>
+              </li>
+              <li class="listitem">
+                <p><b>%l.&nbsp;</b>Line number. Only significant
+                for document types with relevant line breaks,
+                mostly text/plain and analogs. If it is set, a
+                significant term will be chosen in the query, and
+                %p will be substituted with the first line where
+                the term appears.</p>
               </li>
               <li class="listitem">
                 <p><b>%s.&nbsp;</b>Search term. The value will only
-                be set for documents with indexed page numbers (ie:
-                PDF). The value will be one of the matched search
-                terms. It would allow pre-setting the value in the
-                "Find" entry inside Evince for example, for easy
-                highlighting of the term.</p>
+                be set for documents with indexed page or line
+                numbers and if %p or %l is also used. The value
+                will be one of the matched search terms. It would
+                allow pre-setting the value in the "Find" entry
+                inside Evince for example, for easy highlighting of
+                the term.</p>
               </li>
               <li class="listitem">
                 <p><b>%u.&nbsp;</b>Url.</p>

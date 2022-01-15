@@ -38,8 +38,8 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     -D_GNU_SOURCE \
     $(DEFS)
 
-noinst_PROGRAMS = plaintorich textsplit utf8iter fstreewalk rclconfig hldata unac mbox \
-    circache wipedir mimetype pathut fileudi x11mon trqrstore ecrontab
+noinst_PROGRAMS = plaintorich textsplit fstreewalk rclconfig hldata unac mbox \
+    circache wipedir mimetype fileudi x11mon trqrstore ecrontab
 
 ecrontab_SOURCES = trecrontab.cpp
 ecrontab_LDADD = ../librecoll.la
@@ -62,9 +62,6 @@ mbox_LDADD = ../librecoll.la
 mimetype_SOURCES = trmimetype.cpp
 mimetype_LDADD = ../librecoll.la
 
-pathut_SOURCES = trpathut.cpp
-pathut_LDADD = ../librecoll.la
-
 rclconfig_SOURCES = trrclconfig.cpp
 rclconfig_LDADD = ../librecoll.la
 
@@ -76,9 +73,6 @@ plaintorich_LDADD = ../librecoll.la
 
 unac_SOURCES = trunac.cpp
 unac_LDADD = ../librecoll.la
-
-utf8iter_SOURCES = trutf8iter.cpp
-utf8iter_LDADD = ../librecoll.la
 
 wipedir_SOURCES = trwipedir.cpp
 wipedir_LDADD = ../librecoll.la

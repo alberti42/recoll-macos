@@ -372,7 +372,7 @@ def main(proto, extract):
 
     params = {'filename' : makebytes(path)}
 
-    # Some filters (e.g. rclaudio) need/get a MIME type from the indexer.
+    # Some filters (e.g. rclaudio.py) need/get a MIME type from the indexer.
     # We make a half-assed attempt to emulate:
     mimetype = _g_config.mimeType(path)
     if not mimetype and not _g_mswindows:
