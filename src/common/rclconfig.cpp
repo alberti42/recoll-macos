@@ -58,6 +58,16 @@
 
 using namespace std;
 
+// Naming the directory for platform-specific default config files, overriding the top-level ones
+// E.g. /usr/share/recoll/examples/windows
+#ifdef _WIN32
+static const string confsysdir{"windows"};
+#elif defined(_APPLE__)
+static const string confsysdir{"macos"};
+#else
+static const string confsysdir;
+#endif
+
 // Static, logically const, RclConfig members or module static
 // variables are initialized once from the first object build during
 // process initialization.
@@ -303,8 +313,15 @@ RclConfig::RclConfig(const string *argcnf)
         m_cdirs.push_back(cp);
     } 
 
-    // Base/installation config
-    m_cdirs.push_back(path_cat(m_datadir, "examples"));
+    // Base/installation config, and its platform-specific overrides
+    std::string defaultsdir = path_cat(m_datadir, "examples");
+    if (!confsysdir.empty()) {
+        std::string sdir = path_cat(defaultsdir, confsysdir);
+        if (path_isdir(sdir)) {
+            m_cdirs.push_back(sdir);
+        }
+    }
+    m_cdirs.push_back(defaultsdir);
 
     string cnferrloc;
     for (const auto& dir : m_cdirs) {
@@ -376,6 +393,7 @@ bool RclConfig::updateMainConfig()
 {
     ConfStack<ConfTree> *newconf = new ConfStack<ConfTree>("recoll.conf", m_cdirs, true);
     if (newconf == 0 || !newconf->ok()) {
+        std::cerr << "updateMainConfig: new Confstack not ok\n";
         if (m_conf)
             return false;
         m_ok = false;
