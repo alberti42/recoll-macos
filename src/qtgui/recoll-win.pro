@@ -117,40 +117,39 @@ INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
               ../utils ../aspell ../rcldb ../qtgui ../xaposix \
               confgui widgets
 windows {
-    DEFINES += PSAPI_VERSION=1
-    DEFINES += __WIN32__
-    DEFINES += UNICODE
-    RC_FILE = recoll.rc
+  DEFINES += PSAPI_VERSION=1
+  DEFINES += __WIN32__
+  DEFINES += UNICODE
+  RC_FILE = recoll.rc
 
-    HEADERS += \
-      winschedtool.h
-    SOURCES += \
+  HEADERS += \
+    winschedtool.h
+  SOURCES += \
     winschedtool.cpp
-    FORMS += \
+  FORMS += \
     winschedtool.ui
     
-    contains(QMAKE_CC, gcc){
-        # MingW
-        QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
-        LIBS += C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
-    }
+  contains(QMAKE_CC, gcc){
+    # MingW
+    QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+    LIBS += \
+    C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
+  }
 
   contains(QMAKE_CC, cl){
     # MSVC
     RECOLLDEPS = ../../../recolldeps/msvc
     DEFINES += USING_STATIC_LIBICONV
+    PRE_TARGETDEPS = \
+      ../windows/build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release/librecoll.lib
     LIBS += \
-  -L../windows/build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
-        -llibrecoll \
+      -L../windows/build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibrecoll \
       $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
       $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
-  -L../windows/build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
-        -llibxapian \
- -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
-        -llibiconv \
+      -L../windows/build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibxapian \
+      -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibiconv \
       $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
-      -lrpcrt4 -lws2_32 -luser32 \
-      -lshell32 -lshlwapi -lpsapi -lkernel32
+      -lrpcrt4 -lws2_32 -luser32 -lshell32 -lshlwapi -lpsapi -lkernel32
   }
 }
 

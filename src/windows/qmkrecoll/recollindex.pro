@@ -35,25 +35,23 @@ windows {
     LIBS += \
        ../build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
        -lshlwapi -lpsapi -lkernel32
-    }
+  }
 
-    contains(QMAKE_CC, cl){
-      # MSVC
-      RECOLLDEPS = ../../../../recolldeps/msvc
-      DEFINES += USING_STATIC_LIBICONV
-      LIBS += \
-        -L../build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
-          -llibrecoll \
-        $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
-        $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
-        -L../build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
-          -llibxapian \
-        $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
- -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
-        -llibiconv -lShell32  \
-        -lrpcrt4 -lws2_32 -luser32 \
-        -lshlwapi -lpsapi -lkernel32
-    }
+  contains(QMAKE_CC, cl){
+    # MSVC
+    RECOLLDEPS = ../../../../recolldeps/msvc
+    DEFINES += USING_STATIC_LIBICONV
+    PRE_TARGETDEPS = \
+      ../build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release/librecoll.lib
+    LIBS += \
+      -L../build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibrecoll \
+      $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
+      $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
+      -L../build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibxapian \
+      $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
+      -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibiconv \
+      -lShell32 -lrpcrt4 -lws2_32 -luser32 -lshlwapi -lpsapi -lkernel32
+  }
 
   INCLUDEPATH += ../../windows
   SOURCES += ../../windows/getopt.cc
