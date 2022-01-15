@@ -26,6 +26,7 @@ qt_ver_sion=`echo $qtpathversion | sed -e 's/\./_/g'`
 toprecoll=$top/recoll/src
 appdir=$toprecoll/build-recoll-win-Desktop_Qt_${qt_ver_sion}_${path_clang}bit-Release/recoll.app
 rclindexdir=$toprecoll/windows/build-recollindex-Desktop_Qt_${qt_ver_sion}_${path_clang}bit-Release
+rclqdir=$toprecoll/windows/build-recollq-Desktop_Qt_${qt_ver_sion}_${path_clang}bit-Release
 bindir=$appdir/Contents/MacOS
 datadir=$appdir/Contents/Resources
 
@@ -36,6 +37,7 @@ version=`cat $toprecoll/RECOLL-VERSION.txt`
 test -d $appdir || fatal Must first have built recoll in $appdir
 
 cp $rclindexdir/recollindex $bindir || exit 1
+cp $rclqdir/recollq $bindir || exit 1
 
 cp $top/antiword/antiword $bindir || exit 1
 mkdir -p $datadir/antiword || exit 1
@@ -48,7 +50,7 @@ $deploy $appdir -dmg || exit 1
 
 
 hash=`(cd $top/recoll;git log -n 1  | head -1  | awk '{print $2}' |cut -b 1-8)`
-
-mv $dmg ~/Documents/recoll-$version-$hash.dmg || exit 1
+dte=`date +%Y%m%d`
+mv $dmg ~/Documents/recoll-$version-$dte-$hash.dmg || exit 1
 ls -l ~/Documents/recoll-$version-*.dmg
 
