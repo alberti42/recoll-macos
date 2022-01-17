@@ -37,7 +37,6 @@
 
 #ifndef _WIN32
 #include <sys/uio.h>
-#define O_BINARY 0
 #else
 struct iovec {
     void *iov_base;

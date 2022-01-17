@@ -69,11 +69,9 @@ bool MimeHandlerText::set_document_file_impl(const string&, const string &fn)
         return false;
     }
 
-#ifndef _WIN32
     // Check for charset defined in extended attribute as per:
     // http://freedesktop.org/wiki/CommonExtendedAttributes
     pxattr::get(m_fn, "charset", &m_charsetfromxattr);
-#endif
 
     getparams();
     if (m_maxmbs != -1 && m_totlen / (1024*1024) > m_maxmbs) {
@@ -88,8 +86,7 @@ bool MimeHandlerText::set_document_file_impl(const string&, const string &fn)
     return true;
 }
 
-bool MimeHandlerText::set_document_string_impl(const string&,
-                                               const string& otext)
+bool MimeHandlerText::set_document_string_impl(const string&, const string& otext)
 {
     m_fn.clear();
     m_totlen = otext.size();

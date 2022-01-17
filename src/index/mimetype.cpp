@@ -161,7 +161,6 @@ string mimetype(const string &fn, const struct PathStat *stp,
 
     string mtype;
 
-#ifndef _WIN32
     // Extended attribute has priority on everything, as per:
     // http://freedesktop.org/wiki/CommonExtendedAttributes
     if (pxattr::get(fn, "mime_type", &mtype)) {
@@ -172,7 +171,6 @@ string mimetype(const string &fn, const struct PathStat *stp,
             return mtype;
         }
     }
-#endif
 
     if (cfg == 0)  {
         LOGERR("Mimetype: null config ??\n");

@@ -24,12 +24,6 @@
 #include "log.h"
 #include "pathut.h"
 
-#ifdef _WIN32
-#  include "safeunistd.h"
-#else // Not windows ->
-#  include <unistd.h>
-#endif
-
 
 int wipedir(const std::string& dir, bool selfalso, bool recurse)
 {
