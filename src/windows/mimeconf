@@ -11,8 +11,6 @@ application/x-compress = uncompress rcluncomp.py 7z %f %t
 application/x-bzip2 =  uncompress rcluncomp.py 7z %f %t
 application/x-xz = uncompress rcluncomp.py 7z %f %t
 application/x-lzma = uncompress rcluncomp.py 7z %f %t
-application/x-scribus =
-application/x-tex =
 
 
 [index]
@@ -21,7 +19,11 @@ application/vnd.wordperfect = exec wpd/wpd2html;mimetype=text/html
 application/x-dvi =
 application/x-gnuinfo =
 application/x-ipynb+json = execm rclipynb.py
+application/x-kword =
+application/x-lyx =
+application/x-scribus =
 application/x-tar =
+application/x-tex =
 image/gif = execm rclimg.exe
 image/jp2 = execm rclimg.exe
 image/jpeg = execm rclimg.exe

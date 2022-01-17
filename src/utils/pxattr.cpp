@@ -50,8 +50,12 @@
 #define HAS_NO_XATTR
 #endif
 
-#if defined(__FreeBSD__) || defined(PXALINUX) || defined(__APPLE__)     \
-    || defined(HAS_NO_XATTR)
+#if defined(_MSC_VER)
+#define ssize_t int
+#endif
+
+
+#if defined(__FreeBSD__) || defined(PXALINUX) || defined(__APPLE__) || defined(HAS_NO_XATTR)
 
 
 #ifndef TEST_PXATTR
@@ -73,6 +77,9 @@
 #endif
 
 #include "pxattr.h"
+#ifndef PRETEND_USE
+#define PRETEND_USE(var) ((void)var)
+#endif
 
 namespace pxattr {
 
@@ -102,7 +109,6 @@ get(int fd, const string& path, const string& _name, string *value,
 
     ssize_t ret = -1;
     AutoBuf buf;
-
 #if defined(__FreeBSD__)
     if (fd < 0) {
         if (flags & PXATTR_NOFOLLOW) {
@@ -179,6 +185,9 @@ get(int fd, const string& path, const string& _name, string *value,
         ret = fgetxattr(fd, name.c_str(), buf.buf, ret, 0, 0);
     }
 #else
+    PRETEND_USE(fd);
+    PRETEND_USE(flags);
+    PRETEND_USE(path);
     errno = ENOTSUP;
 #endif
 
@@ -276,6 +285,10 @@ set(int fd, const string& path, const string& _name,
                         value.length(), 0, opts);
     }
 #else
+    PRETEND_USE(fd);
+    PRETEND_USE(flags);
+    PRETEND_USE(value);
+    PRETEND_USE(path);
     errno = ENOTSUP;
 #endif
     return ret >= 0;
@@ -323,6 +336,9 @@ del(int fd, const string& path, const string& _name, flags flags, nspace dom)
         ret = fremovexattr(fd, name.c_str(), 0);
     }
 #else
+    PRETEND_USE(fd);
+    PRETEND_USE(flags);
+    PRETEND_USE(path);
     errno = ENOTSUP;
 #endif
     return ret >= 0;
@@ -407,6 +423,10 @@ list(int fd, const string& path, vector<string>* names, flags flags, nspace dom)
         ret = flistxattr(fd, buf.buf, ret, 0);
     }
 #else
+    PRETEND_USE(fd);
+    PRETEND_USE(flags);
+    PRETEND_USE(dom);
+    PRETEND_USE(path);
     errno = ENOTSUP;
 #endif
 
@@ -497,7 +517,7 @@ bool sysname(nspace dom, const string& pname, string* sname)
     return true;
 }
 
-bool pxname(nspace dom, const string& sname, string* pname) 
+bool pxname(nspace, const string& sname, string* pname) 
 {
     if (!userstring.empty() && sname.find(userstring) != 0) {
         errno = EINVAL;
