@@ -1168,3 +1168,87 @@ std::string ExecCmd::waitStatusAsString(int wstatus)
     return oss.str();
 }
 
+
+///////////// ReExec class methods. 
+ReExec::ReExec(int argc, char *args[])
+{
+    for (int i = 0; i < argc; i++) {
+        m_argv.push_back(args[i]);
+    }
+}
+
+ReExec::ReExec(const std::vector<std::string>& args)
+    : m_argv(args)
+{
+}
+
+void ReExec::insertArgs(const vector<string>& args, int idx)
+{
+    vector<string>::iterator it;
+    unsigned int cmpoffset = (unsigned int) - 1;
+
+    if (idx == -1 || string::size_type(idx) >= m_argv.size()) {
+        it = m_argv.end();
+        if (m_argv.size() >= args.size()) {
+            cmpoffset = m_argv.size() - args.size();
+        }
+    } else {
+        it = m_argv.begin() + idx;
+        if (idx + args.size() <= m_argv.size()) {
+            cmpoffset = idx;
+        }
+    }
+
+    // Check that the option is not already there
+    if (cmpoffset != (unsigned int) - 1) {
+        bool allsame = true;
+        for (unsigned int i = 0; i < args.size(); i++) {
+            if (m_argv[cmpoffset + i] != args[i]) {
+                allsame = false;
+                break;
+            }
+        }
+        if (allsame) {
+            return;
+        }
+    }
+
+    m_argv.insert(it, args.begin(), args.end());
+}
+
+void ReExec::removeArg(const string& arg)
+{
+    for (vector<string>::iterator it = m_argv.begin(); it != m_argv.end(); it++) {
+        if (*it == arg) {
+            it = m_argv.erase(it);
+        }
+    }
+}
+
+void ReExec::reexec()
+{
+    // Execute the atexit funcs
+    while (!m_atexitfuncs.empty()) {
+        (m_atexitfuncs.top())();
+        m_atexitfuncs.pop();
+    }
+
+    // Allocate arg vector (1 more for final 0)
+    typedef const wchar_t *Ccharp;
+    Ccharp *argv;
+    argv = (Ccharp *)malloc((m_argv.size() + 1) * sizeof(wchar_t *));
+    if (argv == 0) {
+        LOGERR("ExecCmd::doexec: malloc() failed. errno " << errno << "\n");
+        return;
+    }
+
+    // Fill up argv
+    int i = 0;
+    std::vector<std::unique_ptr<wchar_t[]>> ptrs;
+    for (const auto& arg: m_argv) {
+        ptrs.push_back(utf8towchar(arg));
+        argv[i++] = ptrs.back().get();
+    }
+    argv[i] = nullptr;
+    _wexecvp(argv[0], argv);
+}

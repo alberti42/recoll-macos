@@ -567,7 +567,6 @@ bool startMonitor(RclConfig *conf, int opts)
             }
         }
 
-#ifndef _WIN32
         // Check for a config change
         if (!(opts & RCLMON_NOCONFCHECK) && o_reexec && conf->sourceChanged()) {
             LOGDEB("Rclmonprc: config changed, reexecuting myself\n");
@@ -577,7 +576,6 @@ bool startMonitor(RclConfig *conf, int opts)
             o_reexec->removeArg("-n");
             o_reexec->reexec();
         }
-#endif // ! _WIN32
     }
     LOGDEB("Rclmonprc: calling queue setTerminate\n");
     rclEQ.setTerminate();

@@ -103,9 +103,7 @@ static struct option long_options[] = {
     {0, 0, 0, 0}
 };
 
-#ifndef _WIN32
 ReExec *o_reexec;
-#endif
 
 // Globals for atexit cleanup
 static ConfIndexer *confindexer;
@@ -458,25 +456,19 @@ static void lockorexit(Pidfile *pidfile, RclConfig *config)
         if (pid > 0) {
             cerr << "Can't become exclusive indexer: " << pidfile->getreason()
                  << ". Return (other pid?): " << pid << endl;
-#ifndef _WIN32
             // Have a look at the status file. If the other process is
             // a monitor we can tell it to start an incremental pass
             // by touching the configuration file
             DbIxStatus status;
             readIdxStatus(config, status);
             if (status.hasmonitor) {
-                string cmd("touch ");
                 string path = path_cat(config->getConfDir(), "recoll.conf");
-                cmd += path;
-                int status;
-                if ((status = system(cmd.c_str()))) {
-                    cerr << cmd << " failed with status " << status << endl;
+                if (!path_utimes(path, nullptr)) {
+                    cerr << "Could not notify indexer" << endl;
                 } else {
-                    cerr << "Monitoring indexer process was notified of "
-                        "indexing request\n";
+                    cerr << "Monitoring indexer process was notified of indexing request" << endl;
                 }
             }
-#endif
         } else {
             cerr << "Can't become exclusive indexer: " << pidfile->getreason()
                  << endl;
@@ -525,16 +517,17 @@ static void flushIdxReasons()
 static vector<const char*> argstovector(int argc, wchar_t **argv, vector<string>& storage)
 #else
 #define WARGTOSTRING(w) (w)
-    static vector<const char*> argstovector(int argc, char **argv, vector<string>& storage)
+static vector<const char*> argstovector(int argc, char **argv, vector<string>& storage)
 #endif
 {
     vector<const char *> args(argc+1);
-    storage.resize(argc+1);
+    storage.resize(argc);
     thisprog = path_absolute(WARGTOSTRING(argv[0]));
     for (int i = 0; i < argc; i++) {
         storage[i] = WARGTOSTRING(argv[i]);
         args[i] = storage[i].c_str();
     }
+    args[argc] = 0;
     return args;
 }
 
@@ -556,17 +549,13 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-#ifndef _WIN32
-    // The reexec struct is used by the daemon to shed memory after
-    // the initial indexing pass and to restart when the configuration
-    // changes
-    o_reexec = new ReExec;
-    o_reexec->init(argc, argv);
-#endif
-
     // Only actually useful on Windows: convert wargs to utf-8 chars
     vector<string> astore;
     vector<const char*> args = argstovector(argc, argv, astore);
+    // The reexec struct is used by the daemon to shed memory after
+    // the initial indexing pass and to restart when the configuration
+    // changes
+    o_reexec = new ReExec(astore);
 
     vector<string> selpatterns;
     int sleepsecs{60};
@@ -683,10 +672,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-#ifndef _WIN32
     o_reexec->atexit(cleanup);
-#endif
-
     vector<string> nonexist;
     if (!checktopdirs(config, nonexist)) {
         std::cerr << "topdirs not set or only contains invalid paths.\n";
@@ -848,8 +834,8 @@ int main(int argc, char *argv[])
             Usage();
         statusUpdater()->setMonitor(true);
         if (!(op_flags&OPT_D)) {
-            LOGDEB("recollindex: daemonizing\n");
 #ifndef _WIN32
+            LOGDEB("recollindex: daemonizing\n");
             if (daemon(0,0) != 0) {
                 addIdxReason("monitor", "daemon() failed");
                 cerr << "daemon() failed, errno " << errno << endl;
@@ -895,16 +881,13 @@ int main(int argc, char *argv[])
                 }
             }
             deleteZ(confindexer);
-#ifndef _WIN32
             o_reexec->insertArgs(vector<string>(1, "-n"));
-            LOGINFO("recollindex: reexecuting with -n after initial full "
-                    "pass\n");
+            LOGINFO("recollindex: reexecuting with -n after initial full pass\n");
             // Note that -n will be inside the reexec when we come
             // back, but the monitor will explicitly strip it before
             // starting a config change exec to ensure that we do a
             // purging pass in this latter case (full restart).
             o_reexec->reexec();
-#endif
         }
 
         statusUpdater()->update(DbIxStatus::DBIXS_MONITOR, "");

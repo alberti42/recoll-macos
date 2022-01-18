@@ -176,13 +176,15 @@ bool renameormove(const char *src, const char *dst, string &reason)
             reason += string("Chown ") + dst + "Error : " + strerror(errno);
         }
     }
-    struct timeval times[2];
+#endif
+
+    struct path_timeval times[2];
     times[0].tv_sec = st.st_atime;
     times[0].tv_usec = 0;
     times[1].tv_sec = st.st_mtime;
     times[1].tv_usec = 0;
-    utimes(dst, times);
-#endif
+    path_utimes(dst, times);
+
     // All ok, get rid of origin
     if (!path_unlink(src)) {
         reason += string("Can't unlink ") + src + "Error : " + strerror(errno);
