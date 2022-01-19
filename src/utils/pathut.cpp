@@ -1611,13 +1611,13 @@ int Pidfile::write_pid()
     }
     char pidstr[20];
     sprintf(pidstr, "%u", int(getpid()));
-    lseek(fd, 0, 0);
+    ::lseek(fd, 0, 0);
     if (::write(fd, pidstr, strlen(pidstr)) != (PATHUT_SSIZE_T)strlen(pidstr)) {
         m_reason = "write failed";
         return -1;
     }
 #ifdef _WIN32
-    close(fd);
+    ::close(fd);
 #endif
     return 0;
 }

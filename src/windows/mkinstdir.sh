@@ -367,5 +367,6 @@ copyunrtf
 copymutagen
 copywpd
 copypff
-
 copypython
+
+echo "MKINSTDIR OK"

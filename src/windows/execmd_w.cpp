@@ -32,6 +32,7 @@
 #include <psapi.h>
 #include "smallut.h"
 #include "pathut.h"
+#include "closefrom.h"
 
 using namespace std;
 
@@ -1242,13 +1243,26 @@ void ReExec::reexec()
         return;
     }
 
-    // Fill up argv
-    int i = 0;
+    // Fill up argv. Can you believe that we need to quote the args !!
+    // Esp. argv[0] if it's c:\program files\...
     std::vector<std::unique_ptr<wchar_t[]>> ptrs;
-    for (const auto& arg: m_argv) {
+    std::unique_ptr<wchar_t[]> cmd = utf8towchar(m_argv[0]);
+    unsigned int i = 0;
+    for (; i < m_argv.size(); i++) {
+        LOGDEB2("argv[" << i << "] " << m_argv[i] << "\n");
+        std::string arg;
+        argQuote(m_argv[i], arg);
+        LOGDEB2("  Quoted: [" << arg << "]\n");
         ptrs.push_back(utf8towchar(arg));
-        argv[i++] = ptrs.back().get();
+        argv[i] = ptrs.back().get();
     }
     argv[i] = nullptr;
-    _wexecvp(argv[0], argv);
+
+    // Close all descriptors except 0,1,2
+    // Does not work under windows for some reason, the new process does not start
+    //libclf_closefrom(3);
+
+    auto ret = _wexecvp(cmd.get(), argv);
+    LOGERR("_WEXECVP ["<<argv[0]<< "] FAILED: returned: " << ret << " errno " << errno << "\n");
+    std::cerr<<"_WEXECVP ["<<argv[0]<< "] FAILED: returned: " << ret << " errno " << errno << "\n";
 }

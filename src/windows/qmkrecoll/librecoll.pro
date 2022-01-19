@@ -88,6 +88,7 @@ SOURCES += \
 ../../utils/cancelcheck.cpp \
 ../../utils/chrono.cpp \
 ../../utils/circache.cpp \
+../../utils/closefrom.cpp \
 ../../utils/cmdtalk.cpp \
 ../../utils/conftree.cpp \
 ../../utils/copyfile.cpp \

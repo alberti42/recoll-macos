@@ -73,12 +73,14 @@
 #include "closefrom.h"
 
 #include <stdio.h>
-#include <unistd.h>
+#include "safeunistd.h"
 #include <fcntl.h>
 #include <string.h>
+#ifndef _WIN32
 #include <sys/param.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#endif
 
 
 /* #define DEBUG_CLOSEFROM */
