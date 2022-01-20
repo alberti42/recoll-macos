@@ -100,6 +100,17 @@
     <cstring>fileBumpIndexingAction</cstring>
    </property>
   </action>
+  <action name="fileStartMonitorAction">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Start real time indexer</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileStartMonitorAction</cstring>
+   </property>
+  </action>
   <action name="fileRebuildIndexAction">
    <property name="text">
     <string>&amp;Rebuild index</string>

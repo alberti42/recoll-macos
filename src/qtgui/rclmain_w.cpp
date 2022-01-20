@@ -168,77 +168,45 @@ void RclMain::init()
     SnippetsW::listShortcuts();
     AdvSearch::listShortcuts();
     
-    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
-            this, SLOT(onNewShortcuts()));
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()), this, SLOT(onNewShortcuts()));
 
-    connect(&m_watcher, SIGNAL(fileChanged(QString)),
-            this, SLOT(updateIdxStatus()));
+    connect(&m_watcher, SIGNAL(fileChanged(QString)), this, SLOT(updateIdxStatus()));
 
-    connect(sSearch,
-            SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
+    connect(sSearch, SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
             this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
-    connect(sSearch, SIGNAL(setDescription(QString)), 
-            this, SLOT(onSetDescription(QString)));
-    connect(sSearch, SIGNAL(clearSearch()), 
-            this, SLOT(resetSearch()));
+    connect(sSearch, SIGNAL(setDescription(QString)),  this, SLOT(onSetDescription(QString)));
+    connect(sSearch, SIGNAL(clearSearch()), this, SLOT(resetSearch()));
     connect(this, SIGNAL(uiPrefsChanged()), sSearch, SLOT(setPrefs()));
-    connect(preferencesMenu, SIGNAL(triggered(QAction*)),
-            this, SLOT(setStemLang(QAction*)));
-    connect(preferencesMenu, SIGNAL(aboutToShow()),
-            this, SLOT(adjustPrefsMenu()));
-    connect(fileExitAction, SIGNAL(triggered() ), 
-            this, SLOT(fileExit() ) );
-    connect(fileToggleIndexingAction, SIGNAL(triggered()), 
-            this, SLOT(toggleIndexing()));
-#ifndef _WIN32
-    fileMenu->insertAction(fileRebuildIndexAction, fileBumpIndexingAction);
-    connect(fileBumpIndexingAction, SIGNAL(triggered()), 
-            this, SLOT(bumpIndexing()));
-#endif
-    connect(fileRebuildIndexAction, SIGNAL(triggered()), 
-            this, SLOT(rebuildIndex()));
-    connect(fileEraseDocHistoryAction, SIGNAL(triggered()), 
-            this, SLOT(eraseDocHistory()));
-    connect(fileEraseSearchHistoryAction, SIGNAL(triggered()), 
-            this, SLOT(eraseSearchHistory()));
-    connect(fileExportSSearchHistoryAction, SIGNAL(triggered()), 
+    connect(preferencesMenu, SIGNAL(triggered(QAction*)), this, SLOT(setStemLang(QAction*)));
+    connect(preferencesMenu, SIGNAL(aboutToShow()), this, SLOT(adjustPrefsMenu()));
+
+    connect(fileExitAction, SIGNAL(triggered()),  this, SLOT(fileExit()));
+    connect(fileToggleIndexingAction, SIGNAL(triggered()), this, SLOT(toggleIndexing()));
+    connect(fileStartMonitorAction, SIGNAL(triggered()), this, SLOT(startMonitor()));
+    connect(fileBumpIndexingAction, SIGNAL(triggered()), this, SLOT(bumpIndexing()));
+    connect(fileRebuildIndexAction, SIGNAL(triggered()), this, SLOT(rebuildIndex()));
+    connect(actionSpecial_Indexing, SIGNAL(triggered()), this, SLOT(showSpecIdx()));
+    connect(fileEraseDocHistoryAction, SIGNAL(triggered()), this, SLOT(eraseDocHistory()));
+    connect(fileEraseSearchHistoryAction, SIGNAL(triggered()), this, SLOT(eraseSearchHistory()));
+    connect(fileExportSSearchHistoryAction, SIGNAL(triggered()),
             this, SLOT(exportSimpleSearchHistory()));
-    connect(actionSave_last_query, SIGNAL(triggered()),
-            this, SLOT(saveLastQuery()));
-    connect(actionLoad_saved_query, SIGNAL(triggered()),
-            this, SLOT(loadSavedQuery()));
-    connect(actionShow_index_statistics, SIGNAL(triggered()),
-            this, SLOT(showIndexStatistics()));
-    connect(helpAbout_RecollAction, SIGNAL(triggered()), 
-            this, SLOT(showAboutDialog()));
-    connect(showMissingHelpers_Action, SIGNAL(triggered()), 
-            this, SLOT(showMissingHelpers()));
-    connect(showActiveTypes_Action, SIGNAL(triggered()), 
-            this, SLOT(showActiveTypes()));
-    connect(userManualAction, SIGNAL(triggered()), 
-            this, SLOT(startManual()));
-    connect(toolsDoc_HistoryAction, SIGNAL(triggered()), 
-            this, SLOT(showDocHistory()));
-    connect(toolsAdvanced_SearchAction, SIGNAL(triggered()), 
-            this, SLOT(showAdvSearchDialog()));
-    connect(toolsSpellAction, SIGNAL(triggered()), 
-            this, SLOT(showSpellDialog()));
-    connect(actionWebcache_Editor, SIGNAL(triggered()),
-            this, SLOT(showWebcacheDialog()));
-    connect(actionQuery_Fragments, SIGNAL(triggered()), 
-            this, SLOT(showFragButs()));
-    connect(actionSpecial_Indexing, SIGNAL(triggered()), 
-            this, SLOT(showSpecIdx()));
-    connect(indexConfigAction, SIGNAL(triggered()), 
-            this, SLOT(showIndexConfig()));
-    connect(indexScheduleAction, SIGNAL(triggered()), 
-            this, SLOT(showIndexSched()));
-    connect(queryPrefsAction, SIGNAL(triggered()), 
-            this, SLOT(showUIPrefs()));
-    connect(extIdxAction, SIGNAL(triggered()), 
-            this, SLOT(showExtIdxDialog()));
-    connect(enbSynAction, SIGNAL(toggled(bool)),
-            this, SLOT(setSynEnabled(bool)));
+    connect(actionSave_last_query, SIGNAL(triggered()), this, SLOT(saveLastQuery()));
+    connect(actionLoad_saved_query, SIGNAL(triggered()), this, SLOT(loadSavedQuery()));
+    connect(actionShow_index_statistics, SIGNAL(triggered()), this, SLOT(showIndexStatistics()));
+    connect(helpAbout_RecollAction, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
+    connect(showMissingHelpers_Action, SIGNAL(triggered()), this, SLOT(showMissingHelpers()));
+    connect(showActiveTypes_Action, SIGNAL(triggered()), this, SLOT(showActiveTypes()));
+    connect(userManualAction, SIGNAL(triggered()), this, SLOT(startManual()));
+    connect(toolsDoc_HistoryAction, SIGNAL(triggered()), this, SLOT(showDocHistory()));
+    connect(toolsAdvanced_SearchAction, SIGNAL(triggered()), this, SLOT(showAdvSearchDialog()));
+    connect(toolsSpellAction, SIGNAL(triggered()), this, SLOT(showSpellDialog()));
+    connect(actionWebcache_Editor, SIGNAL(triggered()), this, SLOT(showWebcacheDialog()));
+    connect(actionQuery_Fragments, SIGNAL(triggered()), this, SLOT(showFragButs()));
+    connect(indexConfigAction, SIGNAL(triggered()), this, SLOT(showIndexConfig()));
+    connect(indexScheduleAction, SIGNAL(triggered()), this, SLOT(showIndexSched()));
+    connect(queryPrefsAction, SIGNAL(triggered()), this, SLOT(showUIPrefs()));
+    connect(extIdxAction, SIGNAL(triggered()), this, SLOT(showExtIdxDialog()));
+    connect(enbSynAction, SIGNAL(toggled(bool)), this, SLOT(setSynEnabled(bool)));
 
     connect(toggleFullScreenAction, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
     zoomInAction->setShortcut(QKeySequence::ZoomIn);
@@ -246,20 +214,15 @@ void RclMain::init()
     zoomOutAction->setShortcut(QKeySequence::ZoomOut);
     connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-    connect(actionShowQueryDetails, SIGNAL(triggered()),
-            reslist, SLOT(showQueryDetails()));
-    connect(periodictimer, SIGNAL(timeout()), 
-            this, SLOT(periodic100()));
+    connect(actionShowQueryDetails, SIGNAL(triggered()), reslist, SLOT(showQueryDetails()));
+    connect(periodictimer, SIGNAL(timeout()), this, SLOT(periodic100()));
 
     restable->setRclMain(this, true);
-    connect(actionSaveResultsAsCSV, SIGNAL(triggered()), 
-            restable, SLOT(saveAsCSV()));
+    connect(actionSaveResultsAsCSV, SIGNAL(triggered()), restable, SLOT(saveAsCSV()));
     connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
             restable, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
-    connect(this, SIGNAL(searchReset()), 
-            restable, SLOT(resetSource()));
-    connect(this, SIGNAL(resultsReady()), 
-            restable, SLOT(readDocSource()));
+    connect(this, SIGNAL(searchReset()), restable, SLOT(resetSource()));
+    connect(this, SIGNAL(resultsReady()), restable, SLOT(readDocSource()));
     connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
             restable, SLOT(onSortDataChanged(DocSeqSortSpec)));
     connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
@@ -271,55 +234,38 @@ void RclMain::init()
 
     connect(restable, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
             this, SLOT(startPreview(int, Rcl::Doc, int)));
-    connect(restable, SIGNAL(docExpand(Rcl::Doc)), 
-            this, SLOT(docExpand(Rcl::Doc)));
-    connect(restable, SIGNAL(showSubDocs(Rcl::Doc)), 
-            this, SLOT(showSubDocs(Rcl::Doc)));
+    connect(restable, SIGNAL(docExpand(Rcl::Doc)), this, SLOT(docExpand(Rcl::Doc)));
+    connect(restable, SIGNAL(showSubDocs(Rcl::Doc)), this, SLOT(showSubDocs(Rcl::Doc)));
     connect(restable, SIGNAL(openWithRequested(Rcl::Doc, string)), 
             this, SLOT(openWith(Rcl::Doc, string)));
 
     reslist->setRclMain(this, true);
     connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
             reslist, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
-    connect(firstPageAction, SIGNAL(triggered()), 
-            reslist, SLOT(resultPageFirst()));
-    connect(prevPageAction, SIGNAL(triggered()), 
-            reslist, SLOT(resPageUpOrBack()));
-    connect(nextPageAction, SIGNAL(triggered()),
-            reslist, SLOT(resPageDownOrNext()));
-    connect(this, SIGNAL(searchReset()), 
-            reslist, SLOT(resetList()));
-    connect(this, SIGNAL(resultsReady()), 
-            reslist, SLOT(readDocSource()));
+    connect(firstPageAction, SIGNAL(triggered()), reslist, SLOT(resultPageFirst()));
+    connect(prevPageAction, SIGNAL(triggered()), reslist, SLOT(resPageUpOrBack()));
+    connect(nextPageAction, SIGNAL(triggered()), reslist, SLOT(resPageDownOrNext()));
+    connect(this, SIGNAL(searchReset()), reslist, SLOT(resetList()));
+    connect(this, SIGNAL(resultsReady()), reslist, SLOT(readDocSource()));
     connect(this, SIGNAL(uiPrefsChanged()), reslist, SLOT(onUiPrefsChanged()));
     
-    connect(reslist, SIGNAL(hasResults(int)), 
-            this, SLOT(resultCount(int)));
-    connect(reslist, SIGNAL(wordSelect(QString)),
-            sSearch, SLOT(addTerm(QString)));
+    connect(reslist, SIGNAL(hasResults(int)), this, SLOT(resultCount(int)));
+    connect(reslist, SIGNAL(wordSelect(QString)), sSearch, SLOT(addTerm(QString)));
     connect(reslist, SIGNAL(wordReplace(const QString&, const QString&)),
             sSearch, SLOT(onWordReplace(const QString&, const QString&)));
-    connect(reslist, SIGNAL(nextPageAvailable(bool)), 
-            this, SLOT(enableNextPage(bool)));
-    connect(reslist, SIGNAL(prevPageAvailable(bool)), 
-            this, SLOT(enablePrevPage(bool)));
+    connect(reslist, SIGNAL(nextPageAvailable(bool)), this, SLOT(enableNextPage(bool)));
+    connect(reslist, SIGNAL(prevPageAvailable(bool)), this, SLOT(enablePrevPage(bool)));
 
-    connect(reslist, SIGNAL(docExpand(Rcl::Doc)), 
-            this, SLOT(docExpand(Rcl::Doc)));
-    connect(reslist, SIGNAL(showSnippets(Rcl::Doc)), 
-            this, SLOT(showSnippets(Rcl::Doc)));
-    connect(reslist, SIGNAL(showSubDocs(Rcl::Doc)), 
-            this, SLOT(showSubDocs(Rcl::Doc)));
-    connect(reslist, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
-            this, SLOT(saveDocToFile(Rcl::Doc)));
-    connect(reslist, SIGNAL(editRequested(Rcl::Doc)), 
-            this, SLOT(startNativeViewer(Rcl::Doc)));
-    connect(reslist, SIGNAL(openWithRequested(Rcl::Doc, string)), 
+    connect(reslist, SIGNAL(docExpand(Rcl::Doc)), this, SLOT(docExpand(Rcl::Doc)));
+    connect(reslist, SIGNAL(showSnippets(Rcl::Doc)), this, SLOT(showSnippets(Rcl::Doc)));
+    connect(reslist, SIGNAL(showSubDocs(Rcl::Doc)), this, SLOT(showSubDocs(Rcl::Doc)));
+    connect(reslist, SIGNAL(docSaveToFileClicked(Rcl::Doc)), this, SLOT(saveDocToFile(Rcl::Doc)));
+    connect(reslist, SIGNAL(editRequested(Rcl::Doc)), this, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(reslist, SIGNAL(openWithRequested(Rcl::Doc, string)),
             this, SLOT(openWith(Rcl::Doc, string)));
     connect(reslist, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
             this, SLOT(startPreview(int, Rcl::Doc, int)));
-    connect(reslist, SIGNAL(previewRequested(Rcl::Doc)), 
-            this, SLOT(startPreview(Rcl::Doc)));
+    connect(reslist, SIGNAL(previewRequested(Rcl::Doc)), this, SLOT(startPreview(Rcl::Doc)));
 
     setFilterCtlStyle(prefs.filterCtlStyle);
 

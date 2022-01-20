@@ -50,8 +50,9 @@ void RclMain::buildMenus()
     queryMenu->setTitle(QApplication::translate("RclMainBase", "&Query"));
 
 
-    fileMenu->insertAction(fileRebuildIndexAction, fileBumpIndexingAction);
     fileMenu->addAction(fileToggleIndexingAction);
+    fileMenu->addAction(fileStartMonitorAction);
+    fileMenu->addAction(fileBumpIndexingAction);
     fileMenu->addAction(fileRebuildIndexAction);
     fileMenu->addAction(actionSpecial_Indexing);
     fileMenu->addSeparator();

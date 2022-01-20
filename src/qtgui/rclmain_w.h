@@ -102,6 +102,7 @@ public slots:
     virtual void fileExit();
     virtual void periodic100();
     virtual void toggleIndexing();
+    virtual void startMonitor();
     virtual void bumpIndexing();
     virtual void rebuildIndex();
     virtual void specialIndex();

@@ -121,8 +121,7 @@ void RclMain::periodic100()
             deleteZ(m_idxproc);
             if (status) {
                 if (m_idxkilled) {
-                    QMessageBox::warning(0, "Recoll", 
-                                         tr("Indexing interrupted"));
+                    QMessageBox::warning(0, "Recoll", tr("Indexing interrupted"));
                     m_idxkilled = false;
                 } else {
                     QString msg(tr("Indexing failed"));
@@ -158,6 +157,8 @@ void RclMain::periodic100()
         m_indexerState = IXST_RUNNINGMINE;
         fileToggleIndexingAction->setText(tr("Stop &Indexing"));
         fileToggleIndexingAction->setEnabled(true);
+        fileStartMonitorAction->setEnabled(false);
+        fileBumpIndexingAction->setEnabled(false);
         fileRebuildIndexAction->setEnabled(false);
         actionSpecial_Indexing->setEnabled(false);
         periodictimer->setInterval(200);
@@ -170,6 +171,8 @@ void RclMain::periodic100()
             m_indexerState = IXST_NOTRUNNING;
             fileToggleIndexingAction->setText(tr("Index locked"));
             fileToggleIndexingAction->setEnabled(false);
+            fileStartMonitorAction->setEnabled(false);
+            fileBumpIndexingAction->setEnabled(false);
             fileRebuildIndexAction->setEnabled(false);
             actionSpecial_Indexing->setEnabled(false);
             periodictimer->setInterval(1000);
@@ -177,6 +180,8 @@ void RclMain::periodic100()
             m_indexerState = IXST_NOTRUNNING;
             fileToggleIndexingAction->setText(tr("Update &Index"));
             fileToggleIndexingAction->setEnabled(true);
+            fileStartMonitorAction->setEnabled(true);
+            fileBumpIndexingAction->setEnabled(false);
             fileRebuildIndexAction->setEnabled(true);
             actionSpecial_Indexing->setEnabled(true);
             periodictimer->setInterval(1000);
@@ -184,6 +189,7 @@ void RclMain::periodic100()
             // Real time or externally started batch indexer running
             m_indexerState = IXST_RUNNINGNOTMINE;
             fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+            fileToggleIndexingAction->setEnabled(true);
             DbIxStatus status;
             readIdxStatus(theconfig, status);
             if (status.hasmonitor) {
@@ -191,7 +197,7 @@ void RclMain::periodic100()
                 // incremental pass
                 fileBumpIndexingAction->setEnabled(true);
             }
-            fileToggleIndexingAction->setEnabled(true);
+            fileStartMonitorAction->setEnabled(false);
             fileRebuildIndexAction->setEnabled(false);
             actionSpecial_Indexing->setEnabled(false);
             periodictimer->setInterval(200);
@@ -254,9 +260,8 @@ void RclMain::toggleIndexing()
         int rep = 
             QMessageBox::information(
                 0, tr("Warning"), 
-                tr("The current indexing process was not started from this "
-                   "interface. Click Ok to kill it "
-                   "anyway, or Cancel to leave it alone"),
+                tr("The current indexing process is a monitor or was not started from this "
+                   "interface. Click Ok to kill it anyway, or Cancel to leave it alone"),
                 QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
         if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
@@ -296,27 +301,34 @@ void RclMain::toggleIndexing()
     }
 }
 
-#ifndef _WIN32
+void RclMain::startMonitor()
+{
+    DbIxStatus status;
+    readIdxStatus(theconfig, status);
+    if (nullptr == m_idxproc && m_indexerState == IXST_NOTRUNNING) {
+        if (!checkIdxPaths()) {
+            return;
+        }
+        vector<string> args{"-c", theconfig->getConfDir()};
+        if (m_idxreasontmp && m_idxreasontmp->ok()) {
+            args.push_back("-R");
+            args.push_back(m_idxreasontmp->filename());
+        }
+        args.push_back("-mw");
+        args.push_back("0");
+        m_idxproc = new ExecCmd;
+        m_idxproc->startExec("recollindex", args, false, false);
+    }
+}
+
 void RclMain::bumpIndexing()
 {
     DbIxStatus status;
     readIdxStatus(theconfig, status);
     if (status.hasmonitor) {
-        string cmd("touch ");
-        string path = path_cat(theconfig->getConfDir(), "recoll.conf");
-        cmd += path;
-        int status;
-        if ((status = system(cmd.c_str()))) {
-            cerr << cmd << " failed with status " << status << endl;
-        }
+        path_utimes(path_cat(theconfig->getConfDir(), "recoll.conf"), nullptr);
     }
 }
-#else
-// Because moc does not understand ifdefs, have to have this as an empty func
-void RclMain::bumpIndexing()
-{
-}
-#endif
 
 static void delay(int millisecondsWait)
 {
