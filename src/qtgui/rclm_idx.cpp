@@ -34,11 +34,14 @@
 
 using namespace std;
 
+static std::string recollindex;
 
 // This is called from periodic100 if we started an indexer, or from
 // the rclmain idxstatus file watcher, every time the file changes.
-void RclMain::updateIdxStatus()
+// Returns true if a real time indexer is currently monitoring, false else.
+bool RclMain::updateIdxStatus()
 {
+    bool ret{false};
     DbIxStatus status;
     readIdxStatus(theconfig, status);
     QString msg = tr("Indexing in progress: ");
@@ -51,7 +54,7 @@ void RclMain::updateIdxStatus()
     case DbIxStatus::DBIXS_STEMDB: phs=tr("Stemdb");break;
     case DbIxStatus::DBIXS_CLOSING:phs=tr("Closing");break;
     case DbIxStatus::DBIXS_DONE:phs=tr("Done");break;
-    case DbIxStatus::DBIXS_MONITOR:phs=tr("Monitor");break;
+    case DbIxStatus::DBIXS_MONITOR:phs=tr("Monitor"); ret = true;break;
     default: phs=tr("Unknown");break;
     }
     msg += phs + " ";
@@ -83,20 +86,40 @@ void RclMain::updateIdxStatus()
     }
     msg += QString::fromUtf8(mf.c_str());
     statusBar()->showMessage(msg, 4000);
+    return ret;
 }
 
 // This is called by a periodic timer to check the status of 
 // indexing, a possible need to exit, and cleanup exited viewers
+// We don't need thread locking, but we're not reentrant either
+static bool periodic100busy(false);
+class Periodic100Guard {
+public:
+    Periodic100Guard() { periodic100busy = true;}
+    ~Periodic100Guard() { periodic100busy = false;}
+};
 void RclMain::periodic100()
 {
+    if (periodic100busy)
+        return;
+    Periodic100Guard guard;
+    
     LOGDEB2("Periodic100\n" );
+    if (recollindex.empty()) {
+#ifdef _WIN32
+        // We are not in the PATH in general. make recollindex a full path
+        recollindex = path_cat(path_thisexecpath(), "recollindex");
+#else
+        recollindex = "recollindex";
+#endif
+    }
     if (!m_idxreasontmp || !m_idxreasontmp->ok()) {
         // We just store the pointer and let the tempfile cleaner deal
         // with delete on exiting
         TempFile temp(".txt");
         m_idxreasontmp = rememberTempFile(temp);
     }
-
+    bool isMonitor{false};
     if (m_idxproc) {
         // An indexing process was launched. If its' done, see status.
         int status;
@@ -147,7 +170,7 @@ void RclMain::periodic100()
             // update/show status even if the status file did not
             // change (else the status line goes blank during
             // lengthy operations).
-            updateIdxStatus();
+            isMonitor = updateIdxStatus();
         }
     }
     // Update the "start/stop indexing" menu entry, can't be done from
@@ -158,7 +181,7 @@ void RclMain::periodic100()
         fileToggleIndexingAction->setText(tr("Stop &Indexing"));
         fileToggleIndexingAction->setEnabled(true);
         fileStartMonitorAction->setEnabled(false);
-        fileBumpIndexingAction->setEnabled(false);
+        fileBumpIndexingAction->setEnabled(isMonitor);
         fileRebuildIndexAction->setEnabled(false);
         actionSpecial_Indexing->setEnabled(false);
         periodictimer->setInterval(200);
@@ -224,7 +247,7 @@ void RclMain::periodic100()
 bool RclMain::checkIdxPaths()
 {
     string badpaths;
-    vector<string> args{"recollindex", "-c", theconfig->getConfDir(), "-E"};
+    vector<string> args{recollindex, "-c", theconfig->getConfDir(), "-E"};
     ExecCmd::backtick(args, badpaths);
     if (!badpaths.empty()) {
         int rep = QMessageBox::warning(
@@ -240,9 +263,9 @@ bool RclMain::checkIdxPaths()
     return true;
 }
 
-// This gets called when the "update index" action is activated. It executes
-// the requested action, and disables the menu entry. This will be
-// re-enabled by the indexing status check
+// This gets called when the "Update index/Stop indexing" action is
+// activated. It executes the requested action. The menu
+// entry will be updated by the indexing status check
 void RclMain::toggleIndexing()
 {
     switch (m_indexerState) {
@@ -266,7 +289,10 @@ void RclMain::toggleIndexing()
         if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
             // No simple way to signal the process. Use the stop file
-            ::close(::creat(theconfig->getIdxStopFile().c_str(), 0666));
+            std::fstream ost;
+            if (!path_streamopen(theconfig->getIdxStopFile(), std::fstream::out, ost)) {
+                LOGSYSERR("toggleIndexing", "path_streamopen", theconfig->getIdxStopFile());
+            }
 #else
             Pidfile pidfile(theconfig->getPidfile());
             pid_t pid = pidfile.open();
@@ -293,7 +319,7 @@ void RclMain::toggleIndexing()
             args.push_back(m_idxreasontmp->filename());
         }
         m_idxproc = new ExecCmd;
-        m_idxproc->startExec("recollindex", args, false, false);
+        m_idxproc->startExec(recollindex, args, false, false);
     }
     break;
     case IXST_UNKNOWN:
@@ -317,7 +343,7 @@ void RclMain::startMonitor()
         args.push_back("-mw");
         args.push_back("0");
         m_idxproc = new ExecCmd;
-        m_idxproc->startExec("recollindex", args, false, false);
+        m_idxproc->startExec(recollindex, args, false, false);
     }
 }
 
@@ -361,13 +387,9 @@ void RclMain::rebuildIndex()
             LOGERR("RclMain::rebuildIndex: current indexer exec not null\n" );
             return;
         }
-        int rep = 
-            QMessageBox::warning(0, tr("Erasing index"), 
-                                 tr("Reset the index and start "
-                                    "from scratch ?"),
-                                 QMessageBox::Ok,
-                                 QMessageBox::Cancel,
-                                 QMessageBox::NoButton);
+        int rep = QMessageBox::warning(
+            0, tr("Erasing index"), tr("Reset the index and start from scratch ?"),
+            QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
         if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
             // Under windows, it is necessary to close the db here,
@@ -405,7 +427,7 @@ void RclMain::rebuildIndex()
                 args.push_back(m_idxreasontmp->filename());
             }
             m_idxproc = new ExecCmd;
-            m_idxproc->startExec("recollindex", args, false, false);
+            m_idxproc->startExec(recollindex, args, false, false);
         }
     }
     break;
@@ -548,8 +570,8 @@ void RclMain::specialIndex()
         args.push_back(top);
     }
     m_idxproc = new ExecCmd;
-    LOGINFO("specialIndex: exec: " << execToString("recollindex", args) <<endl);
-    m_idxproc->startExec("recollindex", args, false, false);
+    LOGINFO("specialIndex: exec: " << execToString(recollindex, args) <<endl);
+    m_idxproc->startExec(recollindex, args, false, false);
 }
 
 void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
@@ -570,7 +592,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
         }
         args.insert(args.end(), paths.begin(), paths.end());
         m_idxproc = new ExecCmd;
-        m_idxproc->startExec("recollindex", args, false, false);
+        m_idxproc->startExec(recollindex, args, false, false);
         // Call periodic100 to update the menu entries states
         periodic100();
     } else {

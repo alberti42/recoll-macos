@@ -176,7 +176,7 @@ public slots:
     virtual void zoomOut();
 
 private slots:
-    virtual void updateIdxStatus();
+    virtual bool updateIdxStatus();
     virtual void onWebcacheDestroyed(QObject *);
     virtual void onSSTypMenu(QAction *act);
     virtual void onSSTypCMB(int);

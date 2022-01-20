@@ -52,6 +52,7 @@ using std::vector;
 #include "x11mon.h"
 #endif
 #include "subtreelist.h"
+#include "idxstatus.h"
 
 typedef unsigned long mttcast;
 
@@ -227,7 +228,6 @@ std::unique_lock<std::mutex> RclMonEventQueue::wait(int seconds, bool *top)
         return lock;
     }
 
-    int err;
     if (seconds > 0) {
         if (top)
             *top = false;
@@ -575,6 +575,10 @@ bool startMonitor(RclConfig *conf, int opts)
             // pass even if it was not given on the command line
             o_reexec->removeArg("-n");
             o_reexec->reexec();
+        }
+        if (!statusUpdater()->update(DbIxStatus::DBIXS_MONITOR, "")) {
+            LOGDEB("Monitor returning because stop request (stop file)\n");
+            break;
         }
     }
     LOGDEB("Rclmonprc: calling queue setTerminate\n");

@@ -1185,6 +1185,7 @@ ReExec::ReExec(const std::vector<std::string>& args)
 
 void ReExec::insertArgs(const vector<string>& args, int idx)
 {
+    LOGDEB2("ReExec::insertArgs: args before [" << stringsToString(m_argv) << "]\n");
     vector<string>::iterator it;
     unsigned int cmpoffset = (unsigned int) - 1;
 
@@ -1215,19 +1216,23 @@ void ReExec::insertArgs(const vector<string>& args, int idx)
     }
 
     m_argv.insert(it, args.begin(), args.end());
+    LOGDEB2("ReExec::insertArgs: args after [" << stringsToString(m_argv) << "]\n");
 }
 
 void ReExec::removeArg(const string& arg)
 {
+    LOGDEB2("ReExec::removeArg: args before [" << stringsToString(m_argv) << "]\n");
     for (vector<string>::iterator it = m_argv.begin(); it != m_argv.end(); it++) {
         if (*it == arg) {
             it = m_argv.erase(it);
         }
     }
+    LOGDEB2("ReExec::removeArg: args after [" << stringsToString(m_argv) << "]\n");
 }
 
 void ReExec::reexec()
 {
+    LOGDEB("ReExec::reexec: args [" << stringsToString(m_argv) << "]\n");
     // Execute the atexit funcs
     while (!m_atexitfuncs.empty()) {
         (m_atexitfuncs.top())();
@@ -1263,6 +1268,9 @@ void ReExec::reexec()
     //libclf_closefrom(3);
 
     auto ret = _wexecvp(cmd.get(), argv);
-    LOGERR("_WEXECVP ["<<argv[0]<< "] FAILED: returned: " << ret << " errno " << errno << "\n");
-    std::cerr<<"_WEXECVP ["<<argv[0]<< "] FAILED: returned: " << ret << " errno " << errno << "\n";
+    LOGERR("_WEXECVP ["<<wchartoutf8(cmd.get())<< "] FAILED: returned: " << ret << 
+           " errno " << errno << "\n");
+    std::cerr<<"_WEXECVP ["<<wchartoutf8(cmd.get())<< "] FAILED: returned: " << ret << 
+        " errno " << errno << "\n";
+    _exit(1);
 }
