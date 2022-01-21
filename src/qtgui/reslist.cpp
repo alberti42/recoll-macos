@@ -669,10 +669,9 @@ void ResList::resPageUpOrBack()
 #elif defined(USING_WEBENGINE)
     if (scrollIsAtTop()) {
         resultPageBack();
+        runJS("window.scrollBy(0,50000);");
     } else {
-        QString js = "window.scrollBy(" + 
-            QString::number(0) + ", " +
-            QString::number(-int(0.9*geometry().height())) + ");";
+        QString js = QString("window.scrollBy(%1, %2);").arg(0).arg(-int(0.9*geometry().height()));
         runJS(js);
     }
     setupArrows();
@@ -696,10 +695,9 @@ void ResList::resPageDownOrNext()
 #elif defined(USING_WEBENGINE)
     if (scrollIsAtBottom()) {
         resultPageNext();
+        runJS("window.scrollTo(0, 0);");
     } else {
-        QString js = "window.scrollBy(" + 
-            QString::number(0) + ", " +
-            QString::number(int(0.9*geometry().height())) + ");";
+        QString js = QString("window.scrollBy(%1, %2);").arg(0).arg(int(0.9*geometry().height()));
         runJS(js);
     }
     setupArrows();
