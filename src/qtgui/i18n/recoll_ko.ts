@@ -1451,7 +1451,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>이 인터페이스에서 현재 색인 작성 프로세스가 시작되지 않았습니다. 확인을 클릭하여 종료하거나, 취소하십시오.</translation>
+        <translation type="vanished">이 인터페이스에서 현재 색인 작성 프로세스가 시작되지 않았습니다. 확인을 클릭하여 종료하거나, 취소하십시오.</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2229,6 +2229,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

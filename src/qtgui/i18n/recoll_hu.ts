@@ -1454,7 +1454,7 @@ Megnyissuk a beállítások ablakát?</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>A jelenleg futó indexelő nem erről a felületről lett indítva.&lt;br&gt;Az OK gombbal kilőhető, a Mégsem gombbal meghagyható.</translation>
+        <translation type="vanished">A jelenleg futó indexelő nem erről a felületről lett indítva.&lt;br&gt;Az OK gombbal kilőhető, a Mégsem gombbal meghagyható.</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2232,6 +2232,10 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     </message>
     <message>
         <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

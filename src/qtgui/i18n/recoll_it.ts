@@ -1448,7 +1448,7 @@ Vuoi avviare la finestra di dialogo delle preferenze?</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Il processo di indicizzazione corrente non è stato avviato da questa interfaccia. Fare clic su Ok per ucciderlo comunque, o Annulla per lasciarlo da solo</translation>
+        <translation type="vanished">Il processo di indicizzazione corrente non è stato avviato da questa interfaccia. Fare clic su Ok per ucciderlo comunque, o Annulla per lasciarlo da solo</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2227,6 +2227,10 @@ Si prega di controllare il file desktop</translation>
     </message>
     <message>
         <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

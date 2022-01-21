@@ -1449,7 +1449,7 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Nynější rejstříkovací proces nebyl spuštěn z tohoto rozhraní. Klepněte na OK pro jeho zabití, nebo na Zrušit, aby byl ponechán sám</translation>
+        <translation type="vanished">Nynější rejstříkovací proces nebyl spuštěn z tohoto rozhraní. Klepněte na OK pro jeho zabití, nebo na Zrušit, aby byl ponechán sám</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2227,6 +2227,10 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

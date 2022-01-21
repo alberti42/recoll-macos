@@ -1449,7 +1449,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface. Cliquer OK pour le tuer quand même, ou Annuler pour le laisser tranquille.</translation>
+        <translation type="vanished">Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface. Cliquer OK pour le tuer quand même, ou Annuler pour le laisser tranquille.</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2228,6 +2228,10 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Decrease Font Size</source>
         <translation>Réduire la taille de police</translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
+        <translation>Démarrage de l&apos;indexation au fil de l&apos;eau</translation>
     </message>
 </context>
 <context>

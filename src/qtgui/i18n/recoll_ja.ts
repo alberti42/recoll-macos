@@ -1285,7 +1285,7 @@ Do you want to start the  preferences dialog ?</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</translation>
+        <translation type="vanished">The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -1920,6 +1920,10 @@ Please check the desktop file</translation>
     <message>
         <source>Decrease Font Size</source>
         <translation>フォントサイズを小さくする</translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

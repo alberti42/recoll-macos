@@ -1449,7 +1449,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Для запуска текущего процесса индексирования был использован другой интерфейс. Нажмите «OK» для прекращения процесса или «Отмена» для его продолжения</translation>
+        <translation type="vanished">Для запуска текущего процесса индексирования был использован другой интерфейс. Нажмите «OK» для прекращения процесса или «Отмена» для его продолжения</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2232,6 +2232,10 @@ Please check the desktop file</source>
     <message>
         <source>Decrease Font Size</source>
         <translation>Уменьшить размер шрифта</translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

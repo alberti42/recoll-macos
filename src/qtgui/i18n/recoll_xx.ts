@@ -1235,10 +1235,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Erasing index</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1854,6 +1850,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

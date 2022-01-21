@@ -1450,7 +1450,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Поточний процес індексування не був запущений з цього інтерфейсу. Натисніть ОК, щоб вбити його в будь-якому разі, або Скасувати, щоб залишити його одним</translation>
+        <translation type="vanished">Поточний процес індексування не був запущений з цього інтерфейсу. Натисніть ОК, щоб вбити його в будь-якому разі, або Скасувати, щоб залишити його одним</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2229,6 +2229,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

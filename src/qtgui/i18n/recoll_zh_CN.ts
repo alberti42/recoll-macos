@@ -1514,7 +1514,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>当前索引进程不是由此界面启动的。点击确定以杀死它，或者点击取消以让它自由运行</translation>
+        <translation type="vanished">当前索引进程不是由此界面启动的。点击确定以杀死它，或者点击取消以让它自由运行</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2292,6 +2292,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

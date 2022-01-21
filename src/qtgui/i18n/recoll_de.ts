@@ -1460,7 +1460,7 @@ Wollen Sie den Einstellungs-Dialog starten?</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Der laufende Indizierungs-Prozess wurde nicht aus diesem Programm gestartet. Drücken SIe OK, um ihn dennoch zu stoppen oder Abbrechen, um ihn unverändert zu lassen.</translation>
+        <translation type="vanished">Der laufende Indizierungs-Prozess wurde nicht aus diesem Programm gestartet. Drücken SIe OK, um ihn dennoch zu stoppen oder Abbrechen, um ihn unverändert zu lassen.</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2240,6 +2240,10 @@ Bitte überprüfen Sie die Desktop-Datei</translation>
     </message>
     <message>
         <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1448,7 +1448,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Den nuværende indekseringsproces blev ikke startet fra denne grænseflade. Klik på OK for at stoppe den alligevel, eller Annuller for at lade den køre</translation>
+        <translation type="vanished">Den nuværende indekseringsproces blev ikke startet fra denne grænseflade. Klik på OK for at stoppe den alligevel, eller Annuller for at lade den køre</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -2226,6 +2226,10 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
