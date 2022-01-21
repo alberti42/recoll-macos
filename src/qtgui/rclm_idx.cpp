@@ -280,33 +280,24 @@ void RclMain::toggleIndexing()
         break;
     case IXST_RUNNINGNOTMINE:
     {
-        int rep = 
-            QMessageBox::information(
-                0, tr("Warning"), 
-                tr("The current indexing process is a monitor or was not started from this "
-                   "interface. Click Ok to kill it anyway, or Cancel to leave it alone"),
-                QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
-        if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
-            // No simple way to signal the process. Use the stop file
-            std::fstream ost;
-            if (!path_streamopen(theconfig->getIdxStopFile(), std::fstream::out, ost)) {
-                LOGSYSERR("toggleIndexing", "path_streamopen", theconfig->getIdxStopFile());
-            }
-#else
-            Pidfile pidfile(theconfig->getPidfile());
-            pid_t pid = pidfile.open();
-            if (pid > 0)
-                kill(pid, SIGTERM);
-#endif // !_WIN32
+        // No simple way to signal the process. Use the stop file
+        std::fstream ost;
+        if (!path_streamopen(theconfig->getIdxStopFile(), std::fstream::out, ost)) {
+            LOGSYSERR("toggleIndexing", "path_streamopen", theconfig->getIdxStopFile());
         }
+#else
+        Pidfile pidfile(theconfig->getPidfile());
+        pid_t pid = pidfile.open();
+        if (pid > 0)
+            kill(pid, SIGTERM);
+#endif // !_WIN32
     }
     break;
     case IXST_NOTRUNNING:
     {
-        // Could also mean that no helpers are missing, but then we
-        // won't try to show a message anyway (which is what
-        // firstIndexing is used for)
+        // Could also mean that no helpers are missing, but then we won't try to show a message
+        // anyway (which is what firstIndexing is used for)
         string mhd;
         m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
 
