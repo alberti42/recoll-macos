@@ -35,6 +35,7 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QCheckBox>
+#include <QSettings>
 
 class QxtConfirmationMessagePrivate : public QxtPrivate<QxtConfirmationMessage>
 {
@@ -140,6 +141,8 @@ QxtConfirmationMessage::QxtConfirmationMessage(QWidget* parent)
 {
     QXT_INIT_PRIVATE(QxtConfirmationMessage);
     qxt_d().init();
+    connect(this, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(onButtonClicked(QAbstractButton*)));
 }
 
 /*!
@@ -154,6 +157,8 @@ QxtConfirmationMessage::QxtConfirmationMessage(
 {
     QXT_INIT_PRIVATE(QxtConfirmationMessage);
     qxt_d().init(confirmation);
+    connect(this, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(onButtonClicked(QAbstractButton*)));
 }
 
 /*!
@@ -284,21 +289,17 @@ int QxtConfirmationMessage::exec()
     return res;
 }
 
-/*!
-  \reimp
-*/
-void QxtConfirmationMessage::done(int result)
+void QxtConfirmationMessage::onButtonClicked(QAbstractButton *button)
 {
     QDialogButtonBox* buttons = this->findChild<QDialogButtonBox*>();
     Q_ASSERT(buttons != 0);
 
-    int role = buttons->buttonRole(clickedButton());
+    int role = buttons->buttonRole(button);
     if (qxt_d().confirm->isChecked() &&
         (qxt_d().remember || role != QDialogButtonBox::RejectRole))
     {
-        qxt_d().doNotShowAgain(result);
+        qxt_d().doNotShowAgain(0);
     }
-    QMessageBox::done(result);
 }
 
 /*!

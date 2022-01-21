@@ -32,7 +32,6 @@
 
 #define QXTCONFIRMATIONMESSAGE_H
 
-#include <QSettings>
 #include <QMessageBox>
 #include "qxtglobal.h"
 
@@ -75,7 +74,7 @@ public:
 public Q_SLOTS:
     int exec();
     void reset();
-    virtual void done(int result);
+    void onButtonClicked(QAbstractButton *button);
 };
 
 #endif // QXTCONFIRMATIONMESSAGE_H

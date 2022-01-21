@@ -21,6 +21,7 @@
 #include <list>
 
 #include <QMessageBox>
+#include <QSettings>
 
 #include "qxtconfirmationmessage.h"
 
@@ -382,11 +383,11 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm)
                "<br/>them to a permanent location."),
             tr("Do not show this warning next time (use GUI preferences "
                "to restore)."));
-        confirm.setOverrideSettingsKey("Recoll/prefs/showTempFileWarning");
+        confirm.setOverrideSettingsKey("/Recoll/prefs/showTempFileWarning");
         confirm.exec();
         QSettings settings;
         prefs.showTempFileWarning =
-            settings.value("Recoll/prefs/showTempFileWarning").toInt();
+            settings.value("/Recoll/prefs/showTempFileWarning").toInt();
     }
 
     // If we are not called with a page number (which would happen for a call
