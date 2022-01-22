@@ -368,9 +368,8 @@ void AdvSearch::browsePB_clicked()
     QString dir = myGetFileName(true, m_gfnparams);
 #ifdef _WIN32
     string s = qs2utf8s(dir);
-    path_slashize(dir);
-    dir = path_slashdrive(dir);
-    dir = u8s2qs(s);
+    path_slashize(s);
+    dir = u8s2qs(path_slashdrive(s));
 #endif
     subtreeCMB->setEditText(dir);
 }
