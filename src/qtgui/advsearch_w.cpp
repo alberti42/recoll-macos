@@ -356,18 +356,20 @@ void AdvSearch::saveFileTypes()
 
 void AdvSearch::browsePB_clicked()
 {
-    QString dir = myGetFileName(true);
+    auto topdirs = theconfig->getTopdirs();
+    // if dirlocation is not empty, it's the last location set by the user, leave it alone
+    if (m_gfnparams.dirlocation.isEmpty() && !topdirs.empty()) {
+        m_gfnparams.dirlocation = u8s2qs(topdirs[0]);
+    }
+    m_gfnparams.sidedirs = topdirs;
+    m_gfnparams.readonly = true;
+    
+    m_gfnparams.caption = "Select directory";
+    QString dir = myGetFileName(true, m_gfnparams);
 #ifdef _WIN32
     string s = qs2utf8s(dir);
-    for (string::size_type i = 0; i < s.size(); i++) {
-        if (s[i] == '\\') {
-            s[i] = '/';
-        }
-    }
-    if (s.size() >= 2 && isalpha(s[0]) && s[1] == ':') {
-        s.erase(1,1);
-        s = string("/") + s;
-    }
+    path_slashize(dir);
+    dir = path_slashdrive(dir);
     dir = u8s2qs(s);
 #endif
     subtreeCMB->setEditText(dir);

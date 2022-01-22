@@ -325,6 +325,8 @@ string path_slashdrive(const string& path)
             npath.append(1, '/');
             npath.append(path.substr(2));
         }
+    } else {
+        npath = path; ///??
     }
     return npath;
 }

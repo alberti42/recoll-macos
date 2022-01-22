@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -425,18 +425,27 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-QString myGetFileName(bool isdir, QString caption, bool filenosave,
-                      QString dirloc, QString dfltnm)
+QString myGetFileName(bool isdir, QString caption, bool filenosave, QString dirloc, QString dfltnm)
 {
-    LOGDEB1("myFileDialog: isdir " << isdir << "\n");
-    QFileDialog dialog(0, caption);
+    MyGFNParams parms;
+    parms.caption = caption;
+    parms.filenosave = filenosave;
+    parms.dirlocation = dirloc;
+    parms.dfltnm = dfltnm;
+    return myGetFileName(isdir, parms);
+}
+
+QString myGetFileName(bool isdir, MyGFNParams &parms)
+{
+    LOGDEB1("myGetFileName: isdir " << isdir << "\n");
+    QFileDialog dialog(0, parms.caption);
 
 #ifdef _WIN32
-    // The default initial directory on WIndows is the Recoll install,
+    // The default initial directory on Windows is the Recoll install,
     // which is not appropriate. Change it, only for the first call
     // (next will start with the previous selection).
     static bool first{true};
-    if (first) {
+    if (first && parms.dirlocation.isEmpty()) {
         first = false;
         // See https://doc.qt.io/qt-5/qfiledialog.html#setDirectoryUrl
         // about the clsid magic (this one points to the desktop).
@@ -444,22 +453,29 @@ QString myGetFileName(bool isdir, QString caption, bool filenosave,
             QUrl("clsid:B4BFCC3A-DB2C-424C-B029-7FE99A87C641"));
     }
 #endif
-    if (!dirloc.isEmpty()) {
-        dialog.setDirectory(dirloc);
+    if (!parms.dirlocation.isEmpty()) {
+        dialog.setDirectory(parms.dirlocation);
     }
-    if (!dfltnm.isEmpty()) {
-        dialog.selectFile(dfltnm);
+    if (!parms.dfltnm.isEmpty()) {
+        dialog.selectFile(parms.dfltnm);
+    }
+
+    // DontUseNativeDialog is needed for sidebarurls
+    QFileDialog::Options opts = QFileDialog::DontUseNativeDialog;
+    if (parms.readonly) {
+        opts |= QFileDialog::ReadOnly;
     }
     if (isdir) {
         dialog.setFileMode(QFileDialog::Directory);
-        dialog.setOptions(QFileDialog::ShowDirsOnly);
+        opts |= QFileDialog::ShowDirsOnly;
     } else {
         dialog.setFileMode(QFileDialog::AnyFile);
-        if (filenosave)
+        if (parms.filenosave)
             dialog.setAcceptMode(QFileDialog::AcceptOpen);
         else
             dialog.setAcceptMode(QFileDialog::AcceptSave);
     }
+    dialog.setOptions(opts);
     dialog.setViewMode(QFileDialog::List);
     QFlags<QDir::Filter> flags = QDir::NoDotAndDotDot | QDir::Hidden; 
     if (isdir)
@@ -468,7 +484,15 @@ QString myGetFileName(bool isdir, QString caption, bool filenosave,
         flags |= QDir::Dirs | QDir::Files;
     dialog.setFilter(flags);
 
+    if (!parms.sidedirs.empty()) {
+        QList<QUrl> sidebarurls;
+        for (const auto& dir : parms.sidedirs) {
+            sidebarurls.push_back(QUrl::fromLocalFile(path2qs(dir)));
+        }
+        dialog.setSidebarUrls(sidebarurls);
+    }
     if (dialog.exec() == QDialog::Accepted) {
+        parms.dirlocation = dialog.directory().absolutePath();
         return dialog.selectedFiles().value(0);
     }
     return QString();

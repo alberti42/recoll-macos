@@ -75,12 +75,26 @@ inline std::string qs2path(const QString& qs)
 #endif
 }
 
-/** Specialized version of the qt file dialog. Can't use getOpenFile()
-    etc. cause they hide dot files... */
+/** Specialized version of the qt file dialog. Can't use getOpenFile() etc. cause they hide dot
+    files... Need something more adaptable than the static functions but less complex than the full
+    dialog */
+
+// Also : can't keep adding parms with default values, we now use an object as parameter.
+class MyGFNParams {
+public:
+    QString caption;
+    bool filenosave{false};
+    QString dirlocation; // Note: this holds the new location on return
+    QString dfltnm;
+    std::vector<std::string> sidedirs;
+    bool readonly{false};
+};
 extern QString myGetFileName(bool isdir, QString caption = QString(),
                              bool filenosave = false,
                              QString dirlocation = QString(),
                              QString dlftnm = QString()
     );
+
+extern QString myGetFileName(bool isdir, MyGFNParams &parms);
 
 #endif /* _RECOLL_H_INCLUDED_ */

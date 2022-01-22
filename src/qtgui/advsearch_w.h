@@ -78,7 +78,8 @@ private:
     bool                       m_ignByCats;
     QShortcut *m_histnextsc{nullptr};
     QShortcut *m_histprevsc{nullptr};
-
+    MyGFNParams m_gfnparams;
+    
     void saveCnf();
     void fillFileTypes();
     size_t stringToSize(QString);
