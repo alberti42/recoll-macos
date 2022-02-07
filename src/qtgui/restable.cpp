@@ -774,9 +774,9 @@ void ResTable::setRclMain(RclMain *m, bool ismain)
     if (!m_ismainres) {
         // Don't set this shortcut when we are a child of main, would be duplicate/ambiguous
         connect(new QShortcut(quitKeySeq, this), SIGNAL(activated()), m_rclmain, SLOT (fileExit()));
+        new QShortcut(closeKeySeq, this, SLOT (close()));
     }
 
-    new QShortcut(closeKeySeq, this, SLOT (close()));
     connect(this, SIGNAL(previewRequested(Rcl::Doc)), m_rclmain, SLOT(startPreview(Rcl::Doc)));
     connect(this, SIGNAL(editRequested(Rcl::Doc)), m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
     connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)), m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
