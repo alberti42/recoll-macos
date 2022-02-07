@@ -250,8 +250,7 @@ string RecollModel::baseField(const string& field)
         return field;
 }
 
-RecollModel::RecollModel(const QStringList fields, ResTable *tb,
-                         QObject *parent)
+RecollModel::RecollModel(const QStringList fields, ResTable *tb, QObject *parent)
     : QAbstractTableModel(parent), m_table(tb), m_ignoreSort(false)
 {
     // Initialize the translated map for column headers
@@ -286,8 +285,7 @@ RecollModel::RecollModel(const QStringList fields, ResTable *tb,
     }
 
     // Construct the actual list of column names
-    for (QStringList::const_iterator it = fields.begin();
-         it != fields.end(); it++) {
+    for (QStringList::const_iterator it = fields.begin(); it != fields.end(); it++) {
         m_fields.push_back((const char *)(it->toUtf8()));
         m_getters.push_back(chooseGetter(m_fields.back()));
     }
@@ -593,16 +591,21 @@ void ResTable::setDefRowHeight()
     }
 }
 
-void ResTable::init()
+void ResTable::init(QStringList _ifields)
 {
     QSettings settings;
-    auto restableFields = settings.value(settingskey_fieldlist).toStringList();
-    if (restableFields.empty()) {
-        restableFields.push_back("date");
-        restableFields.push_back("title");
-        restableFields.push_back("filename");
-        restableFields.push_back("author");
-        restableFields.push_back("url");
+    QStringList restableFields;
+    if (_ifields.empty()) {
+        restableFields = settings.value(settingskey_fieldlist).toStringList();
+        if (restableFields.empty()) {
+            restableFields.push_back("date");
+            restableFields.push_back("title");
+            restableFields.push_back("filename");
+            restableFields.push_back("author");
+            restableFields.push_back("url");
+        }
+    } else {
+        restableFields = _ifields;
     }
     if (!(m_model = new RecollModel(restableFields, this)))
         return;
@@ -626,26 +629,29 @@ void ResTable::init()
 
     QHeaderView *header = tableView->horizontalHeader();
     if (header) {
-        QString qw = settings.value(settingskey_fieldwiths).toString();
-        vector<string> vw;
-        stringToStrings(qs2utf8s(qw), vw);
-        vector<int> restableColWidths;
-        for (const auto& w : vw) {
-            restableColWidths.push_back(atoi(w.c_str()));
-        }
-        if (int(restableColWidths.size()) == header->count()) {
-            for (int i = 0; i < header->count(); i++) {
-                header->resizeSection(i, restableColWidths[i]);
+        if (_ifields.empty()) {
+            QString qw = settings.value(settingskey_fieldwiths).toString();
+            vector<string> vw;
+            stringToStrings(qs2utf8s(qw), vw);
+            vector<int> restableColWidths;
+            for (const auto& w : vw) {
+                restableColWidths.push_back(atoi(w.c_str()));
             }
+            if (int(restableColWidths.size()) == header->count()) {
+                for (int i = 0; i < header->count(); i++) {
+                    header->resizeSection(i, restableColWidths[i]);
+                }
+            }
+            header->setSortIndicatorShown(true);
+            header->setSortIndicator(-1, Qt::AscendingOrder);
+            header->setContextMenuPolicy(Qt::CustomContextMenu);
+            connect(header, SIGNAL(sectionResized(int,int,int)), this, SLOT(saveColState()));
+            connect(header, SIGNAL(customContextMenuRequested(const QPoint&)),
+                    this, SLOT(createHeaderPopupMenu(const QPoint&)));
+        } else {
+            header->setSortIndicatorShown(false);
         }
-        header->setSortIndicatorShown(true);
-        header->setSortIndicator(-1, Qt::AscendingOrder);
-        header->setContextMenuPolicy(Qt::CustomContextMenu);
         header->setStretchLastSection(1);
-        connect(header, SIGNAL(sectionResized(int,int,int)),
-                this, SLOT(saveColState()));
-        connect(header, SIGNAL(customContextMenuRequested(const QPoint&)),
-                this, SLOT(createHeaderPopupMenu(const QPoint&)));
     }
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     header->setSectionsMovable(true);

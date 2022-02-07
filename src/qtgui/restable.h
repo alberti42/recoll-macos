@@ -137,10 +137,10 @@ class ResTable : public QWidget, public Ui::ResTable
     Q_OBJECT;
 
 public:
-    ResTable(QWidget* parent = 0) 
+    ResTable(QWidget* parent = 0, QStringList fields = QStringList()) 
         : QWidget(parent) {
             setupUi(this);
-            init();
+            init(fields);
         }
     
     virtual ~ResTable() {}
@@ -214,7 +214,7 @@ protected:
     bool eventFilter(QObject* obj, QEvent* event);
 
 private:
-    void init();
+    void init(QStringList fields);
 
     RecollModel   *m_model{nullptr};
     ResTablePager *m_pager{nullptr};

@@ -213,6 +213,7 @@ private:
     QTimer         *periodictimer{0};
     WebcacheEdit   *webcache{0};
     ResTable       *restable{0};
+    ResTable       *m_dupsw{0};
     bool            displayingTable{false};
     ActSearchW     *actsearchw{0};
     QAction        *m_idNoStem{0};

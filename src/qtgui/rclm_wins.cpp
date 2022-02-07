@@ -37,6 +37,7 @@
 #include "webcache.h"
 #include "restable.h"
 #include "actsearch_w.h"
+#include "docseqdocs.h"
 
 using namespace std;
 
@@ -443,27 +444,16 @@ void RclMain::showActiveTypes()
 
 void RclMain::newDupsW(const Rcl::Doc, const vector<Rcl::Doc> dups)
 {
-    ListDialog dialog;
-    dialog.setWindowTitle(tr("Duplicate documents"));
-
-    dialog.groupBox->setTitle(tr("These Urls ( | ipath) share the same"
-                                 " content:"));
-    // We replace the list with an editor so that the user can copy/paste
-    deleteZ(dialog.listWidget);
-    QTextEdit *editor = new QTextEdit(dialog.groupBox);
-    editor->setReadOnly(true);
-    dialog.horizontalLayout->addWidget(editor);
-
-    for (vector<Rcl::Doc>::const_iterator it = dups.begin(); 
-         it != dups.end(); it++) {
-        if (it->ipath.empty()) 
-            editor->append(path2qs(it->url));
-        else 
-            editor->append(path2qs(it->url) + " | " + u8s2qs(it->ipath));
+    if (nullptr == m_dupsw) {
+        m_dupsw = new ResTable(nullptr, {"ipath", "url"});
+        m_dupsw->setRclMain(this, false);
     }
-    editor->moveCursor(QTextCursor::Start);
-    editor->ensureCursorVisible();
-    dialog.exec();
+    auto src = std::make_shared<DocSequenceDocs>(rcldb, dups, qs2utf8s(tr("Duplicates")));
+    src->setDescription(qs2utf8s(tr("Duplicates")));
+    auto source = std::make_shared<DocSource>(theconfig, src);
+    m_dupsw->setDocSource(source);
+    m_dupsw->readDocSource();
+    m_dupsw->show();
 }
 
 void RclMain::showSnippets(Rcl::Doc doc)
