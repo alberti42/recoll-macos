@@ -289,8 +289,7 @@ void RclMain::init()
         sideFiltersSPLT->setSizes(sizes);
     }
 
-    populateFilters();
-    connect(idxTreeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(setFiltSpec()));
+    populateSideFilters(true);
 
     enableTrayIcon(prefs.showTrayIcon);
 
@@ -1151,7 +1150,7 @@ void RclMain::setUIPrefs()
         return;
     LOGDEB("Recollmain::setUIPrefs\n");
     if (nullptr != m_idxtreemodel && m_idxtreemodel->getDepth() != prefs.idxFilterTreeDepth) {
-        populateFilters();
+        populateSideFilters();
     }
     emit uiPrefsChanged();
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
@@ -1256,6 +1255,13 @@ void RclMain::setFiltSpec()
         m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
     }
 
+    if (dateFilterCB->isChecked()) {
+        QString mindate = minDateFilterDTEDT->date().toString("yyyy-MM-dd");
+        QString maxdate = maxDateFilterDTEDT->date().toString("yyyy-MM-dd");
+        std::string clause = std::string("date:") + qs2utf8s(mindate) + "/" + qs2utf8s(maxdate);
+        LOGDEB1("RclMain::setFiltSpec: date clause " << clause << "\n");
+        m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
+    }
     if (m_source)
         m_source->setFiltSpec(m_filtspec);
     initiateQuery();

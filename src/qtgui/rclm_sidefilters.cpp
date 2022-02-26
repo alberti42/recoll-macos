@@ -24,14 +24,27 @@
 #include "idxmodel.h"
 #include "guiutils.h"
 
-void RclMain::populateFilters()
+void RclMain::populateSideFilters(bool init)
 {
     m_idxtreemodel = new IdxTreeModel(theconfig, prefs.idxFilterTreeDepth, idxTreeView);
     m_idxtreemodel->populate();
     m_idxtreemodel->setHeaderData(0, Qt::Horizontal, QVariant(tr("Filter directories")));
     idxTreeView->setModel(m_idxtreemodel);
-    idxTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    idxTreeView->setSelectionMode(QAbstractItemView::MultiSelection);
+    if (init) {
+        idxTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        idxTreeView->setSelectionMode(QAbstractItemView::MultiSelection);
+        connect(idxTreeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(setFiltSpec()));
+
+        minDateFilterDTEDT->setCalendarPopup(true);
+        maxDateFilterDTEDT->setCalendarPopup(true);
+        minDateFilterDTEDT->setDate(QDate::currentDate());
+        maxDateFilterDTEDT->setDate(QDate::currentDate());
+        connect(minDateFilterDTEDT, SIGNAL(dateChanged(const QDate &)), this, SLOT(setFiltSpec()));
+        connect(maxDateFilterDTEDT, SIGNAL(dateChanged(const QDate &)), this, SLOT(setFiltSpec()));
+        connect(dateFilterCB, SIGNAL(toggled(bool)), this, SLOT(setFiltSpec()));
+        connect(dateFilterCB, SIGNAL(toggled(bool)), minDateFilterDTEDT, SLOT(setEnabled(bool)));
+        connect(dateFilterCB, SIGNAL(toggled(bool)), maxDateFilterDTEDT, SLOT(setEnabled(bool)));
+    }
 }
 
 void RclMain::clearDirFilter()
