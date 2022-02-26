@@ -1240,19 +1240,21 @@ void RclMain::setFiltSpec()
     }
 
     auto treedirs = idxTreeGetDirs();
-    bool first{true};
-    const std::string prefix{"dir:"};
-    std::string clause;
-    for (const auto& dir : treedirs) {
-        if (first) {
-            first = false;
-        } else {
-            clause += " OR ";
-        }           
-        clause += prefix + makeCString(dir);
+    if (!treedirs.empty()) {
+        bool first{true};
+        const std::string prefix{"dir:"};
+        std::string clause;
+        for (const auto& dir : treedirs) {
+            if (first) {
+                first = false;
+            } else {
+                clause += " OR ";
+            }           
+            clause += prefix + makeCString(dir);
+        }
+        LOGDEB0("Sidefilter dir clause: [" << clause << "]\n");
+        m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
     }
-    LOGDEB0("Sidefilter dir clause: [" << clause << "]\n");
-    m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
 
     if (m_source)
         m_source->setFiltSpec(m_filtspec);
