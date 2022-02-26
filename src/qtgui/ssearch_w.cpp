@@ -167,8 +167,7 @@ void SSearch::init()
             this, SLOT(searchTextEdited(const QString&)));
     connect(clearqPB, SIGNAL(clicked()), queryText, SLOT(clear()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(startSimpleSearch()));
-    connect(searchTypCMB, SIGNAL(activated(int)), this,
-            SLOT(onSearchTypeChanged(int)));
+    connect(searchTypCMB, SIGNAL(activated(int)), this, SLOT(onSearchTypeChanged(int)));
 
     m_completermodel = new RclCompleterModel(this);
     m_completer = new QCompleter(m_completermodel, this);
@@ -391,11 +390,9 @@ void SSearch::onSearchTypeChanged(int typ)
     
     // Adjust context help
     if (typ == SST_LANG) {
-        HelpClient::installMap((const char *)this->objectName().toUtf8(), 
-                               "RCL.SEARCH.LANG");
+        HelpClient::installMap((const char *)this->objectName().toUtf8(), "RCL.SEARCH.LANG");
     } else {
-        HelpClient::installMap((const char *)this->objectName().toUtf8(), 
-                               "RCL.SEARCH.GUI.SIMPLE");
+        HelpClient::installMap((const char *)this->objectName().toUtf8(), "RCL.SEARCH.GUI.SIMPLE");
     }
     // Also fix tooltips
     switch (typ) {
@@ -447,6 +444,7 @@ void SSearch::onSearchTypeChanged(int typ)
     default:
         queryText->setToolTip(tr("Enter search terms here."));
     }
+    emit ssearchTypeChanged(typ);
 }
 
 void SSearch::startSimpleSearch()

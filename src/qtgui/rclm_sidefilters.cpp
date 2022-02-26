@@ -47,6 +47,14 @@ void RclMain::populateSideFilters(bool init)
     }
 }
 
+void RclMain::enableSideFilters(bool enable)
+{
+    idxTreeView->setEnabled(enable);
+    dateFilterCB->setEnabled(enable);
+    minDateFilterDTEDT->setEnabled(enable && dateFilterCB->isChecked());
+    maxDateFilterDTEDT->setEnabled(enable && dateFilterCB->isChecked());
+}
+
 void RclMain::clearDirFilter()
 {
     idxTreeView->clearSelection();

@@ -112,7 +112,8 @@ signals:
     void setDescription(QString);
     void clearSearch();
     void partialWord(int, const QString& text, const QString &partial);
-
+    void ssearchTypeChanged(int typ);
+    
 private:
     int getPartialWord(QString& word);
     bool startSimpleSearch(const string& q, int maxexp = -1);

@@ -41,6 +41,20 @@
         <widget class="QWidget" name="layoutWidget">
          <layout class="QVBoxLayout" name="verticalLayoutsidefilt">
           <item>
+           <widget class="Line" name="line3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="sideFilterLBL">
+            <property name="text">
+             <string>Query Language Filters</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="Line" name="line2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>

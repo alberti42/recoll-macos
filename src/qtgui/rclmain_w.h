@@ -177,7 +177,9 @@ public slots:
     virtual void zoomIn();
     virtual void zoomOut();
     virtual void setFiltSpec();
-
+    virtual void onSSearchTypeChanged(int);
+    virtual void enableSideFilters(bool enable);
+                                          
 private slots:
     virtual bool updateIdxStatus();
     virtual void onWebcacheDestroyed(QObject *);

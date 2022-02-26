@@ -177,6 +177,7 @@ void RclMain::init()
 
     connect(sSearch, SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
             this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
+    connect(sSearch, SIGNAL(ssearchTypeChanged(int)), this, SLOT(onSSearchTypeChanged(int)));
     connect(sSearch, SIGNAL(setDescription(QString)),  this, SLOT(onSetDescription(QString)));
     connect(sSearch, SIGNAL(clearSearch()), this, SLOT(resetSearch()));
     connect(this, SIGNAL(uiPrefsChanged()), sSearch, SLOT(setPrefs()));
@@ -299,6 +300,11 @@ void RclMain::init()
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
+}
+
+void RclMain::onSSearchTypeChanged(int typ)
+{
+    enableSideFilters(typ == SSearch::SST_LANG);
 }
 
 void RclMain::zoomIn()
@@ -1220,7 +1226,9 @@ void RclMain::catgFilter(int id)
 void RclMain::setFiltSpec()
 {
     m_filtspec.reset();
-
+    if (nullptr == m_source)
+        return;
+    
     // "Category" buttons
     if (m_catgbutvecidx != 0)  {
         string catg = m_catgbutvec[m_catgbutvecidx];
@@ -1238,32 +1246,35 @@ void RclMain::setFiltSpec()
         }
     }
 
-    auto treedirs = idxTreeGetDirs();
-    if (!treedirs.empty()) {
-        bool first{true};
-        const std::string prefix{"dir:"};
-        std::string clause;
-        for (const auto& dir : treedirs) {
-            if (first) {
-                first = false;
-            } else {
-                clause += " OR ";
-            }           
-            clause += prefix + makeCString(dir);
+    if (dateFilterCB->isEnabled()) {
+        // The CB is only disabled when we are not in query language mode
+        auto treedirs = idxTreeGetDirs();
+        if (!treedirs.empty()) {
+            bool first{true};
+            const std::string prefix{"dir:"};
+            std::string clause;
+            for (const auto& dir : treedirs) {
+                if (first) {
+                    first = false;
+                } else {
+                    clause += " OR ";
+                }           
+                clause += prefix + makeCString(dir);
+            }
+            LOGDEB0("Sidefilter dir clause: [" << clause << "]\n");
+            m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
         }
-        LOGDEB0("Sidefilter dir clause: [" << clause << "]\n");
-        m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
+
+        if (dateFilterCB->isChecked()) {
+            QString mindate = minDateFilterDTEDT->date().toString("yyyy-MM-dd");
+            QString maxdate = maxDateFilterDTEDT->date().toString("yyyy-MM-dd");
+            std::string clause = std::string("date:") + qs2utf8s(mindate) + "/" + qs2utf8s(maxdate);
+            LOGDEB1("RclMain::setFiltSpec: date clause " << clause << "\n");
+            m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
+        }
     }
 
-    if (dateFilterCB->isChecked()) {
-        QString mindate = minDateFilterDTEDT->date().toString("yyyy-MM-dd");
-        QString maxdate = maxDateFilterDTEDT->date().toString("yyyy-MM-dd");
-        std::string clause = std::string("date:") + qs2utf8s(mindate) + "/" + qs2utf8s(maxdate);
-        LOGDEB1("RclMain::setFiltSpec: date clause " << clause << "\n");
-        m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
-    }
-    if (m_source)
-        m_source->setFiltSpec(m_filtspec);
+    m_source->setFiltSpec(m_filtspec);
     initiateQuery();
 }
 
