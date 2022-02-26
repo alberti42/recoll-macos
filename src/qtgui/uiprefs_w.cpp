@@ -79,28 +79,19 @@ void UIPrefsDialog::init()
     connect(synFilePB, SIGNAL(clicked()),this, SLOT(showSynFileDialog()));
     connect(resetSnipCssPB, SIGNAL(clicked()), this, SLOT(resetSnipCss()));
 
-    connect(idxLV, SIGNAL(itemSelectionChanged()),
-            this, SLOT(extradDbSelectChanged()));
-    connect(ptransPB, SIGNAL(clicked()),
-            this, SLOT(extraDbEditPtrans()));
-    connect(addExtraDbPB, SIGNAL(clicked()), 
-            this, SLOT(addExtraDbPB_clicked()));
-    connect(delExtraDbPB, SIGNAL(clicked()), 
-            this, SLOT(delExtraDbPB_clicked()));
-    connect(togExtraDbPB, SIGNAL(clicked()), 
-            this, SLOT(togExtraDbPB_clicked()));
-    connect(actAllExtraDbPB, SIGNAL(clicked()), 
-            this, SLOT(actAllExtraDbPB_clicked()));
-    connect(unacAllExtraDbPB, SIGNAL(clicked()), 
-            this, SLOT(unacAllExtraDbPB_clicked()));
+    connect(idxLV, SIGNAL(itemSelectionChanged()), this, SLOT(extradDbSelectChanged()));
+    connect(ptransPB, SIGNAL(clicked()), this, SLOT(extraDbEditPtrans()));
+    connect(addExtraDbPB, SIGNAL(clicked()), this, SLOT(addExtraDbPB_clicked()));
+    connect(delExtraDbPB, SIGNAL(clicked()), this, SLOT(delExtraDbPB_clicked()));
+    connect(togExtraDbPB, SIGNAL(clicked()), this, SLOT(togExtraDbPB_clicked()));
+    connect(actAllExtraDbPB, SIGNAL(clicked()), this, SLOT(actAllExtraDbPB_clicked()));
+    connect(unacAllExtraDbPB, SIGNAL(clicked()), this, SLOT(unacAllExtraDbPB_clicked()));
     connect(CLEditPara, SIGNAL(clicked()), this, SLOT(editParaFormat()));
     connect(CLEditHeader, SIGNAL(clicked()), this, SLOT(editHeaderText()));
     connect(buttonOk, SIGNAL(clicked()), this, SLOT(accept()));
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(buildAbsCB, SIGNAL(toggled(bool)), 
-            replAbsCB, SLOT(setEnabled(bool)));
-    connect(ssNoCompleteCB, SIGNAL(toggled(bool)), 
-            ssSearchOnCompleteCB, SLOT(setDisabled(bool)));
+    connect(buildAbsCB, SIGNAL(toggled(bool)), replAbsCB, SLOT(setEnabled(bool)));
+    connect(ssNoCompleteCB, SIGNAL(toggled(bool)), ssSearchOnCompleteCB, SLOT(setDisabled(bool)));
     connect(resetscPB, SIGNAL(clicked()), this, SLOT(resetShortcuts()));
 
     (void)new HelpClient(this);
@@ -117,6 +108,7 @@ void UIPrefsDialog::setFromPrefs()
 
     // Entries per result page spinbox
     pageLenSB->setValue(prefs.respagesize);
+    idxTreeDepthSB->setValue(prefs.idxFilterTreeDepth);
     maxHistSizeSB->setValue(prefs.historysize);
     collapseDupsCB->setChecked(prefs.collapseDuplicates);
     maxHLTSB->setValue(prefs.maxhltextkbs);
@@ -384,6 +376,7 @@ void UIPrefsDialog::accept()
     m_mainWindow->setFilterCtlStyle(prefs.filterCtlStyle);
 
     prefs.respagesize = pageLenSB->value();
+    prefs.idxFilterTreeDepth = idxTreeDepthSB->value();
     prefs.historysize = maxHistSizeSB->value();
     prefs.collapseDuplicates = collapseDupsCB->isChecked();
     prefs.maxhltextkbs = maxHLTSB->value();

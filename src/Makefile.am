@@ -410,6 +410,8 @@ qtgui/fragbuts.h \
 qtgui/guiutils.cpp \
 qtgui/guiutils.h \
 qtgui/i18n/*.qm qtgui/i18n/*.ts \
+qtgui/idxmodel.cpp \
+qtgui/idxmodel.h \
 qtgui/idxsched.h \
 qtgui/idxsched.ui \
 qtgui/images/asearch.png \
@@ -478,6 +480,7 @@ qtgui/rclm_idx.cpp \
 qtgui/rclm_menus.cpp \
 qtgui/rclm_preview.cpp \
 qtgui/rclm_saveload.cpp \
+qtgui/rclm_sidefilters.cpp \
 qtgui/rclm_view.cpp \
 qtgui/rclm_wins.cpp \
 qtgui/rclmain.ui \

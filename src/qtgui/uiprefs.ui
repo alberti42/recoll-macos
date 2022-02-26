@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>731</width>
-    <height>652</height>
+    <height>684</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -136,6 +136,52 @@
           <bool>false</bool>
          </property>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" stretch="0,0,2">
+         <item>
+          <widget class="QLabel" name="textLabel20">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Depth of side filter directory tree</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="idxTreeDepthSB">
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>99</number>
+           </property>
+           <property name="value">
+            <number>2</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_20">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="Line" name="line2">
@@ -1531,12 +1577,12 @@ May be slow for big documents.</string>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QCheckBox" name="anchorTamilHackCB">
+           <property name="toolTip">
+            <string>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</string>
+           </property>
            <property name="text">
             <string>Work around Tamil QTBUG-78923 by inserting space before anchor text</string>
            </property>
-             <property name="toolTip">
-              <string>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</string>
-             </property>
           </widget>
          </item>
          <item>

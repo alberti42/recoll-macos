@@ -43,6 +43,7 @@
 #include <QToolBar>
 #include <QSettings>
 #include <QToolTip>
+#include <QStandardItemModel>
 
 #include "recoll.h"
 #include "log.h"
@@ -71,10 +72,12 @@
 #include "readfile.h"
 #include "moc_rclmain_w.cpp"
 #include "scbase.h"
+#include "idxmodel.h"
 
 QString g_stringAllStem, g_stringNoStem;
 static const char *settingskey_toolarea="/Recoll/geometry/toolArea";
 static const char *settingskey_resarea="/Recoll/geometry/resArea";
+static const char *settingskey_sidefilterssize = "/Recoll/geometry/sideFilters";
 
 static Qt::ToolBarArea int2area(int in)
 {
@@ -276,6 +279,18 @@ void RclMain::init()
     }
     QSettings settings;
     restoreGeometry(settings.value("/Recoll/geometry/maingeom").toByteArray());
+
+    QVariant saved = settings.value(settingskey_sidefilterssize);
+    if (saved != QVariant()) {
+        sideFiltersSPLT->restoreState(saved.toByteArray());
+    } else {
+        QList<int> sizes;
+        sizes << 200 << 600;
+        sideFiltersSPLT->setSizes(sizes);
+    }
+
+    populateFilters();
+    connect(idxTreeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(setFiltSpec()));
 
     enableTrayIcon(prefs.showTrayIcon);
 
@@ -692,6 +707,7 @@ void RclMain::fileExit()
         settings.setValue(settingskey_resarea, toolBarArea(m_resTB));
     }
     restable->saveColState();
+    settings.setValue(settingskey_sidefilterssize, sideFiltersSPLT->saveState());
 
     if (prefs.ssearchTypSav) {
         prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
@@ -769,13 +785,13 @@ class QueryThread : public QThread {
 public: 
     QueryThread(std::shared_ptr<DocSequence> source)
         : m_source(source)
-    {
-    }
+        {
+        }
     ~QueryThread() { }
     virtual void run() 
-    {
-        cnt = m_source->getResCnt();
-    }
+        {
+            cnt = m_source->getResCnt();
+        }
     int cnt;
 };
 
@@ -1134,6 +1150,9 @@ void RclMain::setUIPrefs()
     if (!uiprefs)
         return;
     LOGDEB("Recollmain::setUIPrefs\n");
+    if (nullptr != m_idxtreemodel && m_idxtreemodel->getDepth() != prefs.idxFilterTreeDepth) {
+        populateFilters();
+    }
     emit uiPrefsChanged();
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
     enbSynAction->setChecked(prefs.synFileEnable);
@@ -1215,11 +1234,25 @@ void RclMain::setFiltSpec()
     if (fragbuts) {
         vector<string> frags;
         fragbuts->getfrags(frags);
-        for (vector<string>::const_iterator it = frags.begin();
-             it != frags.end(); it++) {
-            m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, *it);
+        for (const auto& frag : frags) {
+            m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, frag);
         }
     }
+
+    auto treedirs = idxTreeGetDirs();
+    bool first{true};
+    const std::string prefix{"dir:"};
+    std::string clause;
+    for (const auto& dir : treedirs) {
+        if (first) {
+            first = false;
+        } else {
+            clause += " OR ";
+        }           
+        clause += prefix + makeCString(dir);
+    }
+    LOGDEB0("Sidefilter dir clause: [" << clause << "]\n");
+    m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
 
     if (m_source)
         m_source->setFiltSpec(m_filtspec);

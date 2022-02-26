@@ -108,11 +108,10 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.pvheight, "/Recoll/geometry/pvheight", Int, 0);
     SETTING_RW(prefs.ssearchTypSav, "/Recoll/prefs/ssearchTypSav", Bool, 0);
     SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Int, 3);
-    SETTING_RW(prefs.startWithAdvSearchOpen, 
-               "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
+    SETTING_RW(prefs.startWithAdvSearchOpen, "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
     SETTING_RW(prefs.previewHtml, "/Recoll/prefs/previewHtml", Bool, true);
-    SETTING_RW(prefs.previewActiveLinks,
-               "/Recoll/prefs/previewActiveLinks", Bool, false);
+    SETTING_RW(prefs.previewActiveLinks, "/Recoll/prefs/previewActiveLinks", Bool, false);
+    SETTING_RW(prefs.idxFilterTreeDepth, "/Recoll/prefs/ssearch/idxfiltertreedepth", Int, 2);
 
     QString advSearchClauses;
     const int maxclauselistsize = 20;
@@ -149,24 +148,18 @@ void rwSettings(bool writing)
         }
     }
 
-    SETTING_RW(prefs.ssearchNoComplete, 
-               "/Recoll/prefs/ssearch/noComplete", Bool, false);
-    SETTING_RW(prefs.ssearchStartOnComplete, 
-               "/Recoll/prefs/ssearch/startOnComplete", Bool, true);
+    SETTING_RW(prefs.ssearchNoComplete, "/Recoll/prefs/ssearch/noComplete", Bool, false);
+    SETTING_RW(prefs.ssearchStartOnComplete, "/Recoll/prefs/ssearch/startOnComplete", Bool, true);
     SETTING_RW(prefs.filterCtlStyle, "/Recoll/prefs/filterCtlStyle", Int, 0);
-    SETTING_RW(prefs.ssearchAutoPhrase, 
-               "/Recoll/prefs/ssearchAutoPhrase", Bool, true);
-    SETTING_RW(prefs.ssearchAutoPhraseThreshPC, 
+    SETTING_RW(prefs.ssearchAutoPhrase, "/Recoll/prefs/ssearchAutoPhrase", Bool, true);
+    SETTING_RW(prefs.ssearchAutoPhraseThreshPC,
                "/Recoll/prefs/ssearchAutoPhraseThreshPC", Double, 2.0);
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Int, 8);
     SETTING_RW(prefs.historysize, "/Recoll/prefs/historysize", Int, -1);
-    SETTING_RW(prefs.collapseDuplicates, 
-               "/Recoll/prefs/reslist/collapseDuplicates", Bool, false);
-    SETTING_RW(prefs.showResultsAsTable, 
-               "/Recoll/prefs/showResultsAsTable", Bool, false);
+    SETTING_RW(prefs.collapseDuplicates, "/Recoll/prefs/reslist/collapseDuplicates", Bool, false);
+    SETTING_RW(prefs.showResultsAsTable, "/Recoll/prefs/showResultsAsTable", Bool, false);
 
-    SETTING_RW(prefs.maxhltextkbs, "/Recoll/prefs/preview/maxhltextkbs", Int,
-               3000);
+    SETTING_RW(prefs.maxhltextkbs, "/Recoll/prefs/preview/maxhltextkbs", Int, 3000);
     // Compat: if maxhltextkbs is not set but old maxhltextmbs is set use it
     if (!writing && !settings.contains("/Recoll/prefs/preview/maxhltextkbs") &&
         settings.contains("/Recoll/prefs/preview/maxhltextmbs")) {
@@ -174,14 +167,12 @@ void rwSettings(bool writing)
             "/Recoll/prefs/preview/maxhltextmbs").toInt() * 1024;
     }
 
-    SETTING_RW(prefs.previewPlainPre, 
-               "/Recoll/prefs/preview/plainPre", Int, PrefsPack::PP_PREWRAP);
+    SETTING_RW(prefs.previewPlainPre, "/Recoll/prefs/preview/plainPre", Int, PrefsPack::PP_PREWRAP);
 
     // History: used to be able to only set a bare color name. Can now
     // set any CSS style. Hack on ':' presence to keep compat with old
     // values
-    SETTING_RW(prefs.qtermstyle, "/Recoll/prefs/qtermcolor", String,
-               "color: blue");
+    SETTING_RW(prefs.qtermstyle, "/Recoll/prefs/qtermcolor", String, "color: blue");
     if (!writing && prefs.qtermstyle == "")
         prefs.qtermstyle = "color: blue";
     { // histo compatibility hack
@@ -225,23 +216,17 @@ void rwSettings(bool writing)
         prefs.creslistformat = qs2utf8s(prefs.reslistformat);
     }
 
-    SETTING_RW(prefs.reslistheadertext, "/Recoll/prefs/reslist/headertext", 
-               String, "");
+    SETTING_RW(prefs.reslistheadertext, "/Recoll/prefs/reslist/headertext", String, "");
     SETTING_RW(prefs.darkMode, "/Recoll/prefs/darkMode", Bool, 0);
     SETTING_RW(prefs.qssFile, "/Recoll/prefs/stylesheet", String, "");
     SETTING_RW(prefs.snipCssFile, "/Recoll/prefs/snippets/cssfile", String, "");
-    SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", String,
-               "english");
-    SETTING_RW(prefs.useDesktopOpen, "/Recoll/prefs/useDesktopOpen", 
-               Bool, true);
+    SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", String, "english");
+    SETTING_RW(prefs.useDesktopOpen, "/Recoll/prefs/useDesktopOpen", Bool, true);
 
-    SETTING_RW(prefs.keepSort, 
-               "/Recoll/prefs/keepSort", Bool, false);
+    SETTING_RW(prefs.keepSort, "/Recoll/prefs/keepSort", Bool, false);
     SETTING_RW(prefs.sortField, "/Recoll/prefs/sortField", String, "");
-    SETTING_RW(prefs.sortActive, 
-               "/Recoll/prefs/sortActive", Bool, false);
-    SETTING_RW(prefs.sortDesc, 
-               "/Recoll/prefs/query/sortDesc", Bool, 0);
+    SETTING_RW(prefs.sortActive, "/Recoll/prefs/sortActive", Bool, false);
+    SETTING_RW(prefs.sortDesc, "/Recoll/prefs/query/sortDesc", Bool, 0);
     if (!writing) {
         // Handle transition from older prefs which did not store sortColumn
         // (Active always meant sort by date).
@@ -249,29 +234,22 @@ void rwSettings(bool writing)
             prefs.sortField = "mtime";
     }
 
-    SETTING_RW(prefs.queryBuildAbstract, 
-               "/Recoll/prefs/query/buildAbstract", Bool, true);
-    SETTING_RW(prefs.queryReplaceAbstract, 
-               "/Recoll/prefs/query/replaceAbstract", Bool, false);
-    SETTING_RW(prefs.syntAbsLen, "/Recoll/prefs/query/syntAbsLen", 
-               Int, 250);
-    SETTING_RW(prefs.syntAbsCtx, "/Recoll/prefs/query/syntAbsCtx", 
-               Int, 4);
+    SETTING_RW(prefs.queryBuildAbstract, "/Recoll/prefs/query/buildAbstract", Bool, true);
+    SETTING_RW(prefs.queryReplaceAbstract, "/Recoll/prefs/query/replaceAbstract", Bool, false);
+    SETTING_RW(prefs.syntAbsLen, "/Recoll/prefs/query/syntAbsLen", Int, 250);
+    SETTING_RW(prefs.syntAbsCtx, "/Recoll/prefs/query/syntAbsCtx", Int, 4);
     // Abstract snippet separator
     SETTING_RW(prefs.abssep, "/Recoll/prefs/reslist/abssep", String,"&hellip;");
     if (!writing && prefs.abssep == "")
         prefs.abssep = "&hellip;";
     SETTING_RW(prefs.snipwMaxLength, "/Recoll/prefs/snipwin/maxlen", Int, 1000);
     SETTING_RW(prefs.snipwSortByPage,"/Recoll/prefs/snipwin/bypage", Bool,false);
-    SETTING_RW(prefs.alwaysSnippets, "/Recoll/prefs/reslist/alwaysSnippets",
-               Bool,false);
+    SETTING_RW(prefs.alwaysSnippets, "/Recoll/prefs/reslist/alwaysSnippets", Bool,false);
 
     SETTING_RW(prefs.autoSuffs, "/Recoll/prefs/query/autoSuffs", String, "");
-    SETTING_RW(prefs.autoSuffsEnable, 
-               "/Recoll/prefs/query/autoSuffsEnable", Bool, false);
+    SETTING_RW(prefs.autoSuffsEnable, "/Recoll/prefs/query/autoSuffsEnable", Bool, false);
 
-    SETTING_RW(prefs.synFileEnable, 
-               "/Recoll/prefs/query/synFileEnable", Bool, false);
+    SETTING_RW(prefs.synFileEnable, "/Recoll/prefs/query/synFileEnable", Bool, false);
     SETTING_RW(prefs.synFile, "/Recoll/prefs/query/synfile", String, "");
     
     SETTING_RW(prefs.termMatchType, "/Recoll/prefs/query/termMatchType", 
@@ -284,20 +262,17 @@ void rwSettings(bool writing)
 
     // Ssearch combobox history list
     if (writing) {
-        settings.setValue("/Recoll/prefs/query/ssearchHistory",
-                          prefs.ssearchHistory);
+        settings.setValue("/Recoll/prefs/query/ssearchHistory",prefs.ssearchHistory);
     } else {
-        prefs.ssearchHistory = 
-            settings.value("/Recoll/prefs/query/ssearchHistory").toStringList();
+        prefs.ssearchHistory = settings.value("/Recoll/prefs/query/ssearchHistory").toStringList();
     }
 
     // Ignored file types (advanced search)
     if (writing) {
-        settings.setValue("/Recoll/prefs/query/asearchIgnFilTyps",
-                          prefs.asearchIgnFilTyps);
+        settings.setValue("/Recoll/prefs/query/asearchIgnFilTyps", prefs.asearchIgnFilTyps);
     } else {
-        prefs.asearchIgnFilTyps = settings.value(
-            "/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
+        prefs.asearchIgnFilTyps =
+            settings.value("/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
     }
 
     SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat", Bool, false);

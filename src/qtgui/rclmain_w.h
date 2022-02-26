@@ -51,6 +51,7 @@ class RclTrayIcon;
 class QShortcut;
 class QActionGroup;
 class ActSearchW;
+class IdxTreeModel;
 
 #include "ui_rclmain.h"
 
@@ -106,8 +107,7 @@ public slots:
     virtual void bumpIndexing();
     virtual void rebuildIndex();
     virtual void specialIndex();
-    virtual void startSearch(std::shared_ptr<Rcl::SearchData> sdata,
-                             bool issimple);
+    virtual void startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple);
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSpellDialog();
@@ -144,6 +144,7 @@ public slots:
     virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, QString term = QString());
     virtual void openWith(Rcl::Doc, string);
     virtual void saveDocToFile(Rcl::Doc);
+    virtual void populateFilters();
     virtual void previewNextInTab(Preview *, int sid, int docnum);
     virtual void previewPrevInTab(Preview *, int sid, int docnum);
     virtual void previewExposed(Preview *, int sid, int docnum);
@@ -171,9 +172,11 @@ public slots:
     virtual void onSetDescription(QString);
     virtual void onNewShortcuts();
     virtual void toggleTable();
+    virtual void clearDirFilter();
     virtual void hideToolTip();
     virtual void zoomIn();
     virtual void zoomOut();
+    virtual void setFiltSpec();
 
 private slots:
     virtual bool updateIdxStatus();
@@ -230,6 +233,7 @@ private:
     QShortcut      *m_clearsearchsc{0};
     QShortcut      *m_toggletablesc{0};
     QShortcut      *m_actionssearchsc{0};
+    QShortcut      *m_cleardirfiltersc{0};
     QFileSystemWatcher m_watcher;
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc{0}; // Indexing process
@@ -257,7 +261,8 @@ private:
     RclTrayIcon     *m_trayicon{0};
     // We sometimes take the indexer lock (e.g.: when editing the webcache)
     Pidfile         *m_pidfile{0};
-
+    IdxTreeModel    *m_idxtreemodel{nullptr};
+    
     // Menu for the button version of the top menu.
     QMenu *buttonTopMenu;
     // Entries/submenus for the top menu.
@@ -288,8 +293,8 @@ private:
     virtual void updateIdxForDocs(vector<Rcl::Doc>&);
     virtual void initiateQuery();
     virtual bool containerUpToDate(Rcl::Doc& doc);
-    virtual void setFiltSpec();
     virtual bool checkIdxPaths();
+    virtual std::vector<std::string> idxTreeGetDirs();
 };
 
 #endif // RCLMAIN_W_H

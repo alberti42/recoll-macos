@@ -190,6 +190,7 @@ void RclMain::showIndexConfig(bool modal)
     if (created) {
         connect(new QShortcut(quitKeySeq, indexConfig->getDialog()),
                 SIGNAL (activated()), this, SLOT (fileExit()));
+        connect(indexConfig, SIGNAL(idxConfigPossiblyChanged()), this, SLOT(populateFilters()));
     }
 }
 

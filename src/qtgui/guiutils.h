@@ -45,6 +45,7 @@ public:
     // toolbar+combobox or as a button group under simple search
     enum FilterCtlStyle {FCS_BT, FCS_CMB, FCS_MN};
     int filterCtlStyle;
+    int idxFilterTreeDepth{2};
     int respagesize{8};
     int historysize{0};
     int maxhltextkbs;
