@@ -1259,7 +1259,12 @@ void RclMain::setFiltSpec()
                 } else {
                     clause += " OR ";
                 }           
+#ifdef _WIN32
+                clause += prefix + makeCString(path_slashdrive(dir));
+#else
                 clause += prefix + makeCString(dir);
+#endif
+
             }
             LOGDEB0("Sidefilter dir clause: [" << clause << "]\n");
             m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
