@@ -31,6 +31,7 @@ HEADERS += \
         confgui/confguiindex.h \
         firstidx.h \
         fragbuts.h \
+        idxmodel.h \
         idxsched.h \
         preview_load.h \
         preview_plaintorich.h \
@@ -62,6 +63,7 @@ SOURCES += \
         confgui/confguiindex.cpp \
         fragbuts.cpp \
         guiutils.cpp \
+        idxmodel.cpp \
         main.cpp \
         multisave.cpp \
         preview_load.cpp \
@@ -73,6 +75,7 @@ SOURCES += \
         rclm_menus.cpp \
         rclm_preview.cpp \
         rclm_saveload.cpp \
+        rclm_sidefilters.cpp \
         rclm_view.cpp \
         rclm_wins.cpp \
         rclmain_w.cpp \
