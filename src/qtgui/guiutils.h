@@ -161,7 +161,8 @@ public:
     bool showTrayIcon{false};
     bool closeToTray{false};
     bool trayMessages{false};
-    
+    /*INSERTHERE*/
+
     // See widgets/qxtconfirmationmessage.
     // Values -1/positive. -1 will trigger the dialog.
     int showTempFileWarning{-1};

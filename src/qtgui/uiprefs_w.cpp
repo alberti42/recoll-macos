@@ -118,7 +118,7 @@ void UIPrefsDialog::setFromPrefs()
     } else {
         ssearchTypCMB->setCurrentIndex(prefs.ssearchTyp);
     }
-    
+
     switch (prefs.filterCtlStyle) {
     case PrefsPack::FCS_MN:
         filterMN_RB->setChecked(1);
@@ -135,7 +135,7 @@ void UIPrefsDialog::setFromPrefs()
     ssNoCompleteCB->setChecked(prefs.ssearchNoComplete);
     ssSearchOnCompleteCB->setChecked(prefs.ssearchStartOnComplete);
     ssSearchOnCompleteCB->setEnabled(!prefs.ssearchNoComplete);
-    
+
     syntlenSB->setValue(prefs.syntAbsLen);
     syntctxSB->setValue(prefs.syntAbsCtx);
 
@@ -163,7 +163,8 @@ void UIPrefsDialog::setFromPrefs()
     trayMessagesCB->setEnabled(showTrayIconCB->checkState());
     closeToTrayCB->setChecked(prefs.closeToTray);
     trayMessagesCB->setChecked(prefs.trayMessages);
-    
+    /*INSERTHERE_LOAD*/
+
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
     showTempFileWarningCB->setChecked(prefs.showTempFileWarning == -1);
     anchorTamilHackCB->setChecked(settings.value("anchorSpcHack", 0).toBool());
@@ -189,7 +190,7 @@ void UIPrefsDialog::setFromPrefs()
         qtermStyleCMB->addItem("color: red;background: yellow");
         qtermStyleCMB->addItem(
             "color: #dddddd; background: black; font-weight: bold");
-    }    
+    }
     // Abstract snippet separator string
     abssepLE->setText(prefs.abssep);
     dateformatLE->setText(u8s2qs(prefs.reslistdateformat));
@@ -228,15 +229,15 @@ void UIPrefsDialog::setFromPrefs()
     stemLangCMB->addItem(g_stringAllStem);
     vector<string> langs;
     if (!getStemLangs(langs)) {
-        QMessageBox::warning(0, "Recoll", 
+        QMessageBox::warning(0, "Recoll",
                              tr("error retrieving stemming languages"));
     }
     int cur = prefs.queryStemLang == ""  ? 0 : 1;
-    for (vector<string>::const_iterator it = langs.begin(); 
+    for (vector<string>::const_iterator it = langs.begin();
          it != langs.end(); it++) {
         stemLangCMB->
             addItem(QString::fromUtf8(it->c_str(), it->length()));
-        if (cur == 0 && !strcmp((const char*)prefs.queryStemLang.toUtf8(), 
+        if (cur == 0 && !strcmp((const char*)prefs.queryStemLang.toUtf8(),
                                 it->c_str())) {
             cur = stemLangCMB->count();
         }
@@ -268,14 +269,14 @@ void UIPrefsDialog::setFromPrefs()
     // Initialize the extra indexes listboxes
     idxLV->clear();
     for (const auto& dbdir : prefs.allExtraDbs) {
-        QListWidgetItem *item = 
+        QListWidgetItem *item =
             new QListWidgetItem(path2qs(dbdir), idxLV);
-        if (item) 
+        if (item)
             item->setCheckState(Qt::Unchecked);
     }
     for (const auto& dbdir : prefs.activeExtraDbs) {
         auto items =
-            idxLV->findItems(path2qs(dbdir), 
+            idxLV->findItems(path2qs(dbdir),
                              Qt::MatchFixedString|Qt::MatchCaseSensitive);
         for (auto& entry : items) {
             entry->setCheckState(Qt::Checked);
@@ -414,7 +415,7 @@ void UIPrefsDialog::accept()
     prefs.ssearchAutoPhrase = autoPhraseCB->isChecked();
     prefs.ssearchAutoPhraseThreshPC = autoPThreshSB->value();
     prefs.queryBuildAbstract = buildAbsCB->isChecked();
-    prefs.queryReplaceAbstract = buildAbsCB->isChecked() && 
+    prefs.queryReplaceAbstract = buildAbsCB->isChecked() &&
         replAbsCB->isChecked();
 
     prefs.startWithAdvSearchOpen = initStartAdvCB->isChecked();
@@ -438,6 +439,8 @@ void UIPrefsDialog::accept()
     m_mainWindow->enableTrayIcon(prefs.showTrayIcon);
     prefs.closeToTray = closeToTrayCB->isChecked();
     prefs.trayMessages = trayMessagesCB->isChecked();
+    /*INSERTHERE_ACCEPT*/
+
     // -1 is the qxtconf... predefined value to show the dialog
     prefs.showTempFileWarning = showTempFileWarningCB->isChecked() ? -1 : 1;
     settings.setValue("anchorSpcHack", anchorTamilHackCB->isChecked());
@@ -460,7 +463,7 @@ void UIPrefsDialog::accept()
 
     prefs.synFileEnable = synFileCB->isChecked();
     prefs.synFile = synFile;
-    
+
     prefs.allExtraDbs.clear();
     prefs.activeExtraDbs.clear();
     for (int i = 0; i < idxLV->count(); i++) {
@@ -475,7 +478,7 @@ void UIPrefsDialog::accept()
 
     rwSettings(true);
     storeShortcuts();
-    
+
     string reason;
     maybeOpenDb(reason, true);
     emit uiprefsDone();
@@ -642,7 +645,7 @@ void UIPrefsDialog::showViewAction(const QString& mt)
 
 void UIPrefsDialog::extradDbSelectChanged()
 {
-    if (idxLV->selectedItems().size() <= 1) 
+    if (idxLV->selectedItems().size() <= 1)
         ptransPB->setEnabled(true);
     else
         ptransPB->setEnabled(false);
@@ -698,7 +701,7 @@ void UIPrefsDialog::unacAllExtraDbPB_clicked()
 void UIPrefsDialog::delExtraDbPB_clicked()
 {
     QList<QListWidgetItem *> items = idxLV->selectedItems();
-    for (QList<QListWidgetItem *>::iterator it = items.begin(); 
+    for (QList<QListWidgetItem *>::iterator it = items.begin();
          it != items.end(); it++) {
         delete *it;
     }
@@ -714,14 +717,14 @@ void UIPrefsDialog::on_showTrayIconCB_clicked()
     trayMessagesCB->setEnabled(showTrayIconCB->checkState());
 }
 
-/** 
+/**
  * Browse to add another index.
  * We do a textual comparison to check for duplicates, except for
- * the main db for which we check inode numbers. 
+ * the main db for which we check inode numbers.
  */
 void UIPrefsDialog::addExtraDbPB_clicked()
 {
-    QString input = myGetFileName(true, 
+    QString input = myGetFileName(true,
                                   tr("Select recoll config directory or "
                                      "xapian index directory "
                                      "(e.g.: /home/me/.recoll or "
@@ -743,7 +746,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
         }
     }
 
-    LOGDEB("ExtraDbDial: got: ["  << (dbdir) << "]\n" );
+    LOGDEB("ExtraDbDial: got: ["  << (dbdir) << "]\n");
     bool stripped;
     if (!Rcl::Db::testDbDir(dbdir, &stripped)) {
         QMessageBox::warning(0, "Recoll", tr("The selected directory does not "
@@ -751,7 +754,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
         return;
     }
     if (o_index_stripchars != stripped) {
-        QMessageBox::warning(0, "Recoll", 
+        QMessageBox::warning(0, "Recoll",
                              tr("Cant add index with different case/diacritics"
                                 " stripping option"));
         return;
