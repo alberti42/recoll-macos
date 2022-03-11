@@ -162,7 +162,7 @@ void RclMain::init()
     setupCategoryFiltering();
 
     restable = new ResTable(this);
-    verticalLayout->insertWidget(2, restable);
+    resultsHLayout->insertWidget(1, restable);
     actionShowResultsAsTable->setChecked(prefs.showResultsAsTable);
     on_actionShowResultsAsTable_toggled(prefs.showResultsAsTable);
 
@@ -289,6 +289,10 @@ void RclMain::init()
         sizes << 200 << 600;
         sideFiltersSPLT->setSizes(sizes);
     }
+    // We don't want the side filters part of the splitter to change width when the window is
+    // resized
+    sideFiltersSPLT->setStretchFactor(0, 0);
+    sideFiltersSPLT->setStretchFactor(1, 1);
 
     populateSideFilters(true);
 
