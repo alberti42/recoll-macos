@@ -574,7 +574,7 @@ python/samples/recollq.py \
 python/samples/recollqsd.py \
 \
 sampleconf/fields sampleconf/fragment-buttons.xml sampleconf/mimeconf \
-sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
+sampleconf/mimemap sampleconf/mimeview sampleconf/macos/mimeview \
 sampleconf/recoll.conf sampleconf/recoll.qss \
 sampleconf/recoll-dark.qss sampleconf/recoll-dark.css \
 \
