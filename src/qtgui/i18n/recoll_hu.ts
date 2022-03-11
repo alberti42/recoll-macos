@@ -1564,11 +1564,11 @@ Ellenőrizni kell a mimeview fájlt!</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Másodpéldányok</translation>
+        <translation type="vanished">Másodpéldányok</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Ezek az URL-ek (| ipath) azonos tartalmúak:</translation>
+        <translation type="vanished">Ezek az URL-ek (| ipath) azonos tartalmúak:</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1891,6 +1891,10 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
         <source>Show menu search dialog</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1948,7 +1952,7 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
-        <translation>Összetett keresés</translation>
+        <translation type="vanished">Összetett keresés</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
@@ -2236,6 +2240,18 @@ Ellenőrizni kell az asztali beállítófájlt!</translation>
     </message>
     <message>
         <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished">Dátum</translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4829,6 +4845,10 @@ A PRE+wrap valószínűleg a legjobb választás.</translation>
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

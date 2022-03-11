@@ -1559,11 +1559,11 @@ Kolla mimewiew-filen.</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Dubblettdokument</translation>
+        <translation type="vanished">Dubblettdokument</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Dessa URL:er ( | ipath) delar samma innehåll:</translation>
+        <translation type="vanished">Dessa URL:er ( | ipath) delar samma innehåll:</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1887,6 +1887,10 @@ Kolla desktop-filen.</translation>
         <source>Show menu search dialog</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1944,7 +1948,7 @@ Kolla desktop-filen.</translation>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
-        <translation>Avancerat/Komplext sök</translation>
+        <translation type="vanished">Avancerat/Komplext sök</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
@@ -2232,6 +2236,18 @@ Kolla desktop-filen.</translation>
     </message>
     <message>
         <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished">Filtrera efter datum</translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4810,6 +4826,10 @@ Standardvärdet är 2 (procent). </translation>
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

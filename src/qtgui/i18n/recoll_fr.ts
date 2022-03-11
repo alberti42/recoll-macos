@@ -1559,11 +1559,11 @@ Vérifier le fichier mimeview.</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Documents identiques</translation>
+        <translation type="vanished">Documents identiques</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Ces URLs(| ipath) partagent le même contenu : </translation>
+        <translation type="vanished">Ces URLs(| ipath) partagent le même contenu : </translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1886,6 +1886,10 @@ Merci de vérifier le fichier desktop </translation>
         <source>Show menu search dialog</source>
         <translation>Afficher le dialogue de recherche dans les menus</translation>
     </message>
+    <message>
+        <source>Duplicates</source>
+        <translation>Doublons</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1943,7 +1947,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
-        <translation>Recherche Avancée</translation>
+        <translation type="vanished">Recherche Avancée</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
@@ -2232,6 +2236,18 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Start real time indexer</source>
         <translation>Démarrage de l&apos;indexation au fil de l&apos;eau</translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation>Filtres de recherche (mode language)</translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation>Filtrer sur les dates</translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
+        <translation>Recherche complexe assistée</translation>
     </message>
 </context>
 <context>
@@ -4809,6 +4825,10 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
         <translation>Ce bug provoque l&apos;apparition d&apos;un caractère étrange en forme de cercle à l&apos;intérieur de mots en Tamil. Le contournement insère un caractère d&apos;espace additionnel supplémentaire qui semble corriger le problème.</translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
+        <translation>Profondeur de l&apos;arbre du filtre de répertoires</translation>
     </message>
 </context>
 </TS>

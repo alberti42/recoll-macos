@@ -1292,14 +1292,6 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Duplicate documents</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Bad desktop app spec for %1: [%2]
 Please check the desktop file</source>
         <translation type="unfinished"></translation>
@@ -1565,6 +1557,10 @@ Please check the desktop file</source>
         <source>Show menu search dialog</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1622,10 +1618,6 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Advanced Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Advanced/complex  Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1854,6 +1846,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3338,6 +3342,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

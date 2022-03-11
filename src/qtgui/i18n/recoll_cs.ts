@@ -1559,11 +1559,11 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Zdvojené dokumenty</translation>
+        <translation type="vanished">Zdvojené dokumenty</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Tyto adresy ( | ipath) sdílejí totožný obsah:</translation>
+        <translation type="vanished">Tyto adresy ( | ipath) sdílejí totožný obsah:</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1886,6 +1886,10 @@ Prověřte soubor pracovní plochy</translation>
         <source>Show menu search dialog</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1943,7 +1947,7 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
-        <translation>Pokročilé/Složené hledání</translation>
+        <translation type="vanished">Pokročilé/Složené hledání</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
@@ -2231,6 +2235,18 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished">Filtrovat data</translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4809,6 +4825,10 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

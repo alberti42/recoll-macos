@@ -1558,11 +1558,11 @@ Kontroller venligst mimeview-filen</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Identiske dokumenter</translation>
+        <translation type="vanished">Identiske dokumenter</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Disse webadresser ( | ipath) deler samme indhold:</translation>
+        <translation type="vanished">Disse webadresser ( | ipath) deler samme indhold:</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1885,6 +1885,10 @@ Tjek venligst desktopfilen</translation>
         <source>Show menu search dialog</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1942,7 +1946,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
-        <translation>Avanceret/kompleks søgning</translation>
+        <translation type="vanished">Avanceret/kompleks søgning</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
@@ -2230,6 +2234,18 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished">Filtrer datoer</translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4805,6 +4821,10 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

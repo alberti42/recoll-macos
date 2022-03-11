@@ -1560,11 +1560,11 @@ Sprawdź plik widoku MIME</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Duplikaty dokumentów</translation>
+        <translation type="vanished">Duplikaty dokumentów</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Te URLe ( | ipath) mają tą samą zawartość:</translation>
+        <translation type="vanished">Te URLe ( | ipath) mają tą samą zawartość:</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1888,6 +1888,10 @@ Sprawdź plik pulpitu</translation>
         <source>Show menu search dialog</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1945,7 +1949,7 @@ Sprawdź plik pulpitu</translation>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
-        <translation>Złożone szukanie</translation>
+        <translation type="vanished">Złożone szukanie</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
@@ -2233,6 +2237,18 @@ Sprawdź plik pulpitu</translation>
     </message>
     <message>
         <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished">Po dacie</translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4810,6 +4826,10 @@ Domyślna wartość to 2 (%).</translation>
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

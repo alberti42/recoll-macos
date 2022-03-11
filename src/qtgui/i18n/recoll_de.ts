@@ -1571,11 +1571,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Doppelte Dokumente</translation>
+        <translation type="vanished">Doppelte Dokumente</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Diese URLs ( | ipath) sind inhaltsgleich:</translation>
+        <translation type="vanished">Diese URLs ( | ipath) sind inhaltsgleich:</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1899,6 +1899,10 @@ Bitte überprüfen Sie die Desktop-Datei</translation>
         <source>Show menu search dialog</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1956,7 +1960,7 @@ Bitte überprüfen Sie die Desktop-Datei</translation>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
-        <translation>Erweiterte/komplexe Suche</translation>
+        <translation type="vanished">Erweiterte/komplexe Suche</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
@@ -2244,6 +2248,18 @@ Bitte überprüfen Sie die Desktop-Datei</translation>
     </message>
     <message>
         <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished">Nach Datum filtern</translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4830,6 +4846,10 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
