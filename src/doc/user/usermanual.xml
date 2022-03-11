@@ -62,18 +62,16 @@
     application. It is updated for &RCL; &RCLVERSION;.</para>
 
     <para>&RCL; was for a long time dedicated to Unix-like systems. It
-      was only lately (2015) ported to
-      <application>MS-Windows</application>. Many references in this
-      manual, especially file locations, are specific to Unix, and not
-      valid on &WIN;, where some described features are also not available.
-      The manual will be progressively updated. Until this happens, on
-      &WIN;, most references to shared files can be translated by looking
-      under the Recoll installation directory (Typically <filename>C:/Program
-        Files (x86)/Recoll</filename>, esp. anything referenced
-      in <filename>/usr/share</filename> in this document will be found int
-      the <filename>Share</filename> subdirectory). The user configuration is
-      stored by default under <filename>AppData/Local/Recoll</filename>
-      inside the user directory, along with the index itself.</para>
+      was only lately (2015) ported to <application>MS-Windows</application>. Many references in
+      this manual, especially file locations, are specific to Unix, and not valid on &WIN;, where
+      some described features are also not available.  The manual will be progressively
+      updated. Until this happens, on &WIN;, most references to shared files can be translated by
+      looking under the Recoll installation directory (Typically <filename>C:/Program
+        Files (x86)/Recoll</filename>). Especially, anything referenced
+      inside <filename>/usr/share</filename> in this document will be found in
+      the <filename>Share</filename> subdirectory of the installation). The user configuration is
+      stored by default under <filename>AppData/Local/Recoll</filename> inside the user directory,
+      along with the index itself.</para>
     
     <sect1 id="RCL.INTRODUCTION.TRYIT">
       <title>Giving it a try</title>
@@ -86,26 +84,20 @@
       directory, allowing you to search immediately after
       indexing completes.</para>
 
-      <para>Do not do this if your home directory contains a huge
-      number of documents and you do not want to wait or are very
-      short on disk space. In this case, you may first want to customize
-      the <link linkend="RCL.INDEXING.CONFIG">configuration</link>
-      to restrict the indexed area (shortcut: from the
-      <command>recoll</command> GUI go to:
-      <menuchoice> 
+      <para>Do not do this if your home directory contains a huge number of documents and you do not
+      want to wait or are very short on disk space. In this case, you may first want to customize
+      the <link linkend="RCL.INDEXING.CONFIG">configuration</link> to restrict the indexed area
+      (shortcut: from the <command>recoll</command> GUI go to: <menuchoice>
         <guimenu>Preferences</guimenu>
         <guimenuitem>Indexing configuration</guimenuitem>
         </menuchoice>, then adjust the <guilabel>Top
       directories</guilabel> section).</para>
 
       <para>On &LIN;, you may need to install the
-      appropriate
-      <link linkend="RCL.INSTALL.EXTERNAL">supporting applications</link> 
-      for document types that need them (for
-      example <application>antiword</application> for
-      <application>Microsoft Word</application> files).
-      The &RCL; for &WIN; package is self-contained and includes
-      most useful auxiliary programs.</para>
+      appropriate <link linkend="RCL.INSTALL.EXTERNAL">supporting applications</link> for document
+      types that need them (for example <application>antiword</application>
+      for <application>Microsoft Word</application> files).  The &WIN; package is self-contained and
+      includes most useful auxiliary programs.</para>
 
     </sect1>
 
@@ -250,17 +242,14 @@
         index your home directory with generic parameters. Most common
         parameters can be set by using
         configuration menus in the <command>recoll</command> GUI. Some less
-        common parameters can only be set by editing the text files (the
-        new values will be preserved by the GUI).</para>
+        common parameters can only be set by editing the text files.</para>
 
-      <para>The <link linkend="RCL.INDEXING.PERIODIC.EXEC">indexing process</link>
-      is started automatically (after asking permission), the
-      first time you execute the <command>recoll</command> GUI. Indexing
-      can also be performed by executing the <command>recollindex</command>
-      command. &RCL; indexing is multithreaded by default when appropriate
-      hardware resources are available, and can perform in parallel
-      multiple tasks for text extraction, segmentation and index
-      updates.</para>
+      <para>The <link linkend="RCL.INDEXING.PERIODIC.EXEC">indexing process</link> is started
+      automatically (after asking permission), the first time you execute
+      the <command>recoll</command> GUI. Indexing can also be performed by executing
+      the <command>recollindex</command> command. &RCL; indexing is multithreaded by default when
+      appropriate hardware resources are available, and can perform multiple tasks in parallel for
+      text extraction, segmentation and index updates.</para>
 
       <para><link linkend="RCL.SEARCH">Searches</link> are usually
       performed inside the <command>recoll</command> GUI, which has many
@@ -268,22 +257,21 @@
       are other ways to query the index:
       <itemizedlist>
         <listitem><para>A
-        <link linkend="RCL.SEARCH.COMMANDLINE">command line interface</link>.
-        </para></listitem>
+            <link linkend="RCL.SEARCH.COMMANDLINE">command line interface</link>.</para></listitem>
         <listitem><para>A
-        <link linkend="RCL.PROGRAM.PYTHONAPI"><application>Python</application> programming interface</link>
+            <ulink url="https://framagit.org/medoc92/recollwebui">Web interface</ulink>.
         </para></listitem>
-        <listitem><para>A <link linkend="RCL.SEARCH.KIO"><application>KDE</application> KIO slave module</link>.
-        </para></listitem> 
-        <listitem><para>A Ubuntu Unity
-        <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Scope</ulink>
-        module.</para></listitem>
         <listitem><para>A Gnome Shell
-        <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Search Provider</ulink>.
-        </para></listitem>
+            <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Search Provider
+            </ulink>.</para></listitem>
         <listitem><para>A
-        <ulink url="https://framagit.org/medoc92/recollwebui">Web interface</ulink>.
-        </para></listitem>
+            <link linkend="RCL.PROGRAM.PYTHONAPI"><application>Python</application> programming
+              interface</link></para></listitem>
+        <listitem><para>A <link linkend="RCL.SEARCH.KIO"><application>KDE</application> KIO slave
+              module</link>.</para></listitem> 
+        <listitem><para>A Ubuntu Unity
+            <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Scope</ulink>
+            module.</para></listitem>
       </itemizedlist>
       </para>
 
@@ -346,26 +334,25 @@
             <formalpara><title>
               <link linkend="RCL.INDEXING.MONITOR">Real time indexing</link>
             </title>
-            <para>(Only available on &LIN;). <command>recollindex</command> runs
-            permanently as a daemon and uses a file system alteration monitor
-            (e.g. <application>inotify</application>) to detect file
-            changes. New or updated files are indexed at once. Monitoring a
-            big file system tree can consume 
-            significant system resources. </para>
+            <para><command>recollindex</command> runs permanently as a daemon and uses a file system
+              alteration monitor (e.g. <application>inotify</application> on &LIN;) to detect file
+              changes. New or updated files are indexed at once. Monitoring a big file system tree
+              can consume significant system resources.</para>
             </formalpara>
           </listitem>
         </itemizedlist>
 
-        <simplesect><title>&LIN;: choosing an indexing mode</title>
+        <simplesect><title>Choosing an indexing mode</title>
         <para>The choice between the two methods is mostly a matter of
-        preference, and they can be combined by setting up multiple
-        indexes (ie: use periodic indexing on a big documentation
-        directory, and real time indexing on a small home
-        directory), or, with &RCL; 1.24 and newer, by
-        <link linkend="RCL.INDEXING.MONITOR">configuring the index so that only a subset of the tree will be monitored.</link>
+          preference, and they can be combined by setting up multiple
+          indexes (e.g.: use periodic indexing on a big documentation
+          directory, and real time indexing on a small home
+          directory), or by
+          <link linkend="RCL.INDEXING.MONITOR">configuring the index so that only a subset of the
+            tree will be monitored.</link> 
         </para>
         <para>The choice of method and the parameters used can be
-        configured from the <command>recoll</command> GUI:
+          configured from the <command>recoll</command> GUI:
         <menuchoice>
           <guimenu>Preferences</guimenu>
           <guimenuitem>Indexing schedule</guimenuitem>
@@ -388,9 +375,8 @@
         default configuration directory. This configuration is the one used
         for indexing and querying when no specific configuration is
         specified. It is located in <filename>$HOME/.recoll/</filename> for
-        &LIN; and <filename>%LOCALAPPDATA%\Recoll</filename> on &WIN;
-        (typically
-        <filename>C:\Users\[me]\Appdata\Local\Recoll</filename>).</para> 
+        &LIN; and <filename>%LOCALAPPDATA%/Recoll</filename> on &WIN;
+        (typically <filename>C:/Users/[me]/Appdata/Local/Recoll</filename>).</para> 
 
         <para>All configuration parameters have defaults, defined in
         system-wide files. Without further customisation, the default
@@ -427,18 +413,15 @@
         <command>recoll</command> GUI, or some other functions in the
         command line and programming tools.</para>
         
-        <para>A plausible usage scenario for the multiple index feature
-        would be for a system administrator to set up a central index for
-        shared data, that you choose to search or not in addition to your
-        personal data. Of course, there are other possibilities. for
-        example, there are many cases where you know the subset of files
-        that should be searched, and where narrowing the search can improve
-        the results. You can achieve approximately the same effect with the
-        directory filter in advanced search, but multiple indexes may have
-        better performance and may be worth the trouble in some
-        cases.</para>
+        <para>A plausible usage scenario for the multiple index feature would be for a system
+        administrator to set up a central index for shared data, that you choose to search or not in
+        addition to your personal data. Of course, there are other possibilities. for example, there
+        are many cases where you know the subset of files that should be searched, and where
+        narrowing the search can improve the results. You can achieve approximately the same effect
+        by using a directory filter clause in a search, but multiple indexes may have better
+        performance and may be worth the trouble in some cases.</para>
 
-        <para>A more advanced use case would be to use multiple index to
+        <para>A more advanced use case would be to use multiple indexes to
         improve indexing performance, by updating several indexes in
         parallel (using multiple CPU cores and disks, or possibly several
         machines), and then merging them, or querying them in
@@ -472,7 +455,7 @@
         OpenDocument (Open/LibreOffice), email formats, and a few others
         internally.</para>
 
-        <para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
+        <para>Other file types (e.g.: postscript, pdf, ms-word, rtf ...) 
         need external applications for preprocessing. The list is in the
         <link linkend="RCL.INSTALL.EXTERNAL">installation</link>
         section. After every indexing operation, &RCL; updates a list of
@@ -515,8 +498,7 @@
         menu. Excluding by type can be done by setting the 
         <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
           excludedmimetypes</link> 
-        list in the configuration file (1.20 and later). This can be
-        redefined for subdirectories.</para>
+        list in the configuration file. This can be redefined for subdirectories.</para>
 
         <para>You can also define an exclusive list of MIME types to be
         indexed (no others will be indexed), by setting 
@@ -599,10 +581,10 @@
     <sect1 id="RCL.INDEXING.STORAGE">
       <title>Index storage</title>
 
-      <para>The default location for the index data is the
-      <filename>xapiandb</filename> subdirectory of the &RCL;
-      configuration directory, typically
-      <filename>$HOME/.recoll/xapiandb/</filename>. This can be
+      <para>The default location for the index data is the <filename>xapiandb</filename>
+      subdirectory of the &RCL; configuration directory,
+      typically <filename>$HOME/.recoll/xapiandb/</filename> on &LIN;
+      or <filename>C:/Users/[me]/Appdata/Local/Recoll/xapiandb</filename> on &WIN;. This can be
       changed via two different methods (with different purposes):
       <orderedlist>
 
@@ -773,7 +755,7 @@
       which lists the subtrees and files to be indexed.</para>
 
       <para>The applications needed to index file types other than
-      text, HTML or email (ie: pdf, postscript, ms-word...) are
+      text, HTML or email (e.g.: pdf, postscript, ms-word...) are
       described in the <link linkend="RCL.INSTALL.EXTERNAL">external packages section</link>.
       </para>
 
@@ -944,9 +926,66 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
 
 
 
+      <sect2 id="RCL.INDEXING.CONFIG.GUI">
+        <title>The index configuration GUI</title>
+
+        <para>Most parameters for a given index configuration can
+        be set from a <command>recoll</command> GUI running on this
+        configuration (either as default, or by setting
+        <envar>RECOLL_CONFDIR</envar> or the <option>-c</option>
+        option.)</para> 
+
+        <para>The interface is started from the
+        <menuchoice>
+          <guimenu>Preferences</guimenu>
+          <guimenuitem>Index Configuration</guimenuitem> 
+        </menuchoice>
+        menu entry. It is divided in four tabs,
+        <guilabel>Global parameters</guilabel>, <guilabel>Local
+        parameters</guilabel>, <guilabel>Web history</guilabel>
+        (which is explained in the next section) and <guilabel>Search
+        parameters</guilabel>.</para>
+
+        <para>The <guilabel>Global parameters</guilabel> tab allows setting
+        global variables, like the lists of top directories, skipped paths,
+        or stemming languages.</para> 
+
+        <para>The <guilabel>Local parameters</guilabel> tab allows setting
+        variables that can be redefined for subdirectories. This second tab
+        has an initially empty list of customisation directories, to which
+        you can add. The variables are then set for the currently selected
+        directory (or at the top level if the empty line is
+        selected).</para>
+
+        <para>The <guilabel>Search parameters</guilabel> section defines
+        parameters which are used at query time, but are global to an
+        index and affect all search tools, not only the GUI.</para>
+
+        <para>The meaning for most entries in the interface is 
+        self-evident and documented by a <literal>ToolTip</literal>
+        popup on the text label. For more detail, you will need to
+        refer to the
+        <link linkend="RCL.INSTALL.CONFIG">configuration section</link>
+        of this guide.</para>
+
+        <para>The configuration tool normally respects the comments
+        and most of the formatting inside the configuration file, so
+        that it is quite possible to use it on hand-edited files,
+        which you might nevertheless want to backup first...</para>
+
+      </sect2>
+
 
       <sect2 id="RCL.INDEXING.CONFIG.THREADS">
         <title>Indexing threads configuration (&LIN;)</title>
+
+        <para>Note: you don't probably don't need to read this. The default automatic configuration
+        is fine is most cases. Only the part about disabling multithreading may be more commonly
+          useful, so I'll prepend it here. In <filename>recoll.conf</filename>:
+        <programlisting>
+          thrQSizes = -1 -1 -1
+        </programlisting>
+        </para>
 
         <para>The &RCL; indexing process 
         <command>recollindex</command> can use multiple threads to
@@ -1042,55 +1081,6 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
       </sect2>
 
 
-
-      <sect2 id="RCL.INDEXING.CONFIG.GUI">
-        <title>The index configuration GUI</title>
-
-        <para>Most parameters for a given index configuration can
-        be set from a <command>recoll</command> GUI running on this
-        configuration (either as default, or by setting
-        <envar>RECOLL_CONFDIR</envar> or the <option>-c</option>
-        option.)</para> 
-
-        <para>The interface is started from the
-        <menuchoice>
-          <guimenu>Preferences</guimenu>
-          <guimenuitem>Index Configuration</guimenuitem> 
-        </menuchoice>
-        menu entry. It is divided in four tabs,
-        <guilabel>Global parameters</guilabel>, <guilabel>Local
-        parameters</guilabel>, <guilabel>Web history</guilabel>
-        (which is explained in the next section) and <guilabel>Search
-        parameters</guilabel>.</para>
-
-        <para>The <guilabel>Global parameters</guilabel> tab allows setting
-        global variables, like the lists of top directories, skipped paths,
-        or stemming languages.</para> 
-
-        <para>The <guilabel>Local parameters</guilabel> tab allows setting
-        variables that can be redefined for subdirectories. This second tab
-        has an initially empty list of customisation directories, to which
-        you can add. The variables are then set for the currently selected
-        directory (or at the top level if the empty line is
-        selected).</para>
-
-        <para>The <guilabel>Search parameters</guilabel> section defines
-        parameters which are used at query time, but are global to an
-        index and affect all search tools, not only the GUI.</para>
-
-        <para>The meaning for most entries in the interface is 
-        self-evident and documented by a <literal>ToolTip</literal>
-        popup on the text label. For more detail, you will need to
-        refer to the
-        <link linkend="RCL.INSTALL.CONFIG">configuration section</link>
-        of this guide.</para>
-
-        <para>The configuration tool normally respects the comments
-        and most of the formatting inside the configuration file, so
-        that it is quite possible to use it on hand-edited files,
-        which you might nevertheless want to backup first...</para>
-
-      </sect2>
     </sect1>
 
     <sect1 id="RCL.INDEXING.REMOVABLE">
@@ -1725,35 +1715,34 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
     </sect1>
 
     <sect1 id="RCL.INDEXING.MONITOR">
-      <title>&LIN;: real time indexing</title>
+      <title>Real time indexing</title>
 
-      <para>Real time monitoring/indexing is performed by starting the
-      <command>recollindex</command> <option>-m</option> command.
-      With this option, <command>recollindex</command> will detach
-      from the terminal and become a daemon, permanently monitoring
-      file changes and updating the index.</para>
+      <para>Real time monitoring/indexing is performed by starting
+        the <command>recollindex</command> <option>-m</option> command. With this
+        option, <command>recollindex</command> will permanently monitor file changes and update the
+        index.</para>
 
-      <para>In this situation, the <command>recoll</command>
-      GUI <menuchoice><guimenu>File</guimenu></menuchoice> menu makes two
-      operations available: <guimenuitem>Stop</guimenuitem>
-      and <guimenuitem>Trigger incremental pass</guimenuitem>.
-      </para>
+      <para>On &WIN; systems, the monitoring process is started from the <command>recoll</command>
+        GUI <guilabel>File</guilabel> menu. On &LIN;, there are other possibilities, see
+        the following sections.</para> 
+
+      <para>When this is in use, the <command>recoll</command>
+        GUI <menuchoice><guimenu>File</guimenu></menuchoice> menu makes two operations
+        available: <guimenuitem>Stop</guimenuitem> and <guimenuitem>Trigger incremental
+        pass</guimenuitem>.</para>
 
       <para><guimenuitem>Trigger incremental pass</guimenuitem> has the
-        same effect as restarting the indexer, and will cause a complete
-        walk of the indexed area, processing the changed files, then switch
-        to monitoring. This is only marginally useful, maybe in cases where
-        the indexer is configured to delay updates, or to force an
-        immediate rebuild of the stemming and phonetic data, which are only
-        processed at intervals by the real time indexer.</para>
+        same effect as restarting the indexer, and will cause a complete walk of the indexed area,
+        processing the changed files, then switch to monitoring. This is only marginally useful,
+        maybe in cases where the indexer is configured to delay updates, or to force an immediate
+        rebuild of the stemming and phonetic data, which are only processed at intervals by the real
+        time indexer.</para>
 
       <para>While it is convenient that data is indexed in real time,
-      repeated indexing can generate a significant load on the
-      system when files such as email folders change. Also,
-      monitoring large file trees by itself significantly taxes
-      system resources. You probably do not want to enable it if
-      your system is short on resources. Periodic indexing is
-      adequate in most cases.</para>
+        repeated indexing can generate a significant load on the system when files such as email
+        folders change. Also, monitoring large file trees by itself significantly taxes system
+        resources. You probably do not want to enable it if your system is short on
+        resources. Periodic indexing is adequate in most cases.</para>
 
       <para>As of &RCL; 1.24, you can set the
       <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">monitordirs</link>
@@ -1765,8 +1754,9 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
       process. The <command>recoll</command> GUI also has a menu entry for
       this.</para>
 
+
       <simplesect id="RCL.INDEXING.MONITOR.START.SYSTEMD">
-        <title>Automatic daemon start with systemd</title>
+        <title>&LIN;: automatic daemon start with systemd</title>
 
         <para>The installation contains two example files
           (in <filename>share/recoll/examples</filename>) for starting the indexing daemon with
@@ -1796,7 +1786,7 @@ systemctl enable --now recollindex@<varname>username</varname>.service</programl
       </simplesect>
 
       <simplesect id="RCL.INDEXING.MONITOR.START">
-        <title>Automatic daemon start from the desktop session</title>
+        <title>&LIN;: automatic daemon start from the desktop session</title>
 
         <para>Under <application>KDE</application>,
         <application>Gnome</application> and some other desktop
@@ -1852,11 +1842,12 @@ fvwm
         the daemon runs permanently, the log file may grow quite big,
         depending on the log level.</para>
 
-        <formalpara><title>Increasing resources for inotify</title>
-        <para>On Linux systems, monitoring a big tree may need
-        increasing the resources available to inotify, which are
-        normally defined in <filename>/etc/sysctl.conf</filename>.
-        <programlisting>
+        <formalpara>
+          <title>&LIN;: increasing resources for inotify</title>
+          <para>On Linux systems, monitoring a big tree may need
+            increasing the resources available to inotify, which are
+            normally defined in <filename>/etc/sysctl.conf</filename>.
+            <programlisting>
 ### inotify
 #
 # cat  /proc/sys/fs/inotify/max_queued_events   - 16384
@@ -1870,25 +1861,23 @@ fs.inotify.max_user_instances=256
 fs.inotify.max_user_watches=32768
         </programlisting>
         
-        Especially, you will need to trim your tree or adjust
-        the <literal>max_user_watches</literal> value if indexing exits with
-        a message about errno <literal>ENOSPC</literal> (28) from
-        <function>inotify_add_watch</function>.
-        </para>
+            Especially, you will need to trim your tree or adjust
+            the <literal>max_user_watches</literal> value if indexing exits with
+            a message about errno <literal>ENOSPC</literal> (28) from
+            <function>inotify_add_watch</function>.</para>
         </formalpara>
 
         
-        <formalpara><title>Slowing down the reindexing rate for fast changing
-        files</title>
-        <para>When using the real time monitor, it may happen that some
-        files need to be indexed, but change so often that they impose an
-        excessive load for the system.
+        <formalpara>
+          <title>Slowing down the reindexing rate for fast changing files</title>
+          <para>When using the real time monitor, it may happen that some
+            files need to be indexed, but change so often that they impose an
+            excessive load for the system.</para>
 
-        &RCL; provides a configuration option to specify the minimum
-        time before which a file, specified by a wildcard pattern, cannot be
-        reindexed. See the <varname>mondelaypatterns</varname> parameter in
-        the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">configuration section</link>.
-        </para>
+          <para>&RCL; provides a configuration option to specify the minimum
+            time before which a file, specified by a wildcard pattern, cannot be reindexed. See
+            the <varname>mondelaypatterns</varname> parameter in the
+            <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">configuration section</link>.</para>
         </formalpara>
       
       </simplesect>
@@ -1896,6 +1885,8 @@ fs.inotify.max_user_watches=32768
     </sect1>
 
   </chapter>
+
+
 
   <chapter id="RCL.SEARCH">
     <title>Searching</title>
@@ -1949,38 +1940,38 @@ fs.inotify.max_user_watches=32768
       <title>Searching with the Qt graphical user interface</title>
 
       <para>The <command>recoll</command> program provides the main user
-        interface for searching. It is based on the
-        <application>Qt</application> library.</para>
+        interface for searching. It is based on the <application>Qt</application> library.</para>
 
       <para><command>recoll</command> has two search interfaces:</para>
       <itemizedlist>
         <listitem><para>Simple search (the default, on the main screen) has
-            a single entry field where you can enter multiple words.</para>
+            a single entry field where you can enter multiple words or a query language
+            query.</para>
         </listitem>
         <listitem><para>Advanced search (a panel accessed through the
-            <guilabel>Tools</guilabel> menu or the toolbox bar icon) has
-            multiple entry fields, which you may use to build a logical
-            condition, with additional filtering on file type, location
-            in the file system, modification date, and size.</para>
+            <guilabel>Tools</guilabel> menu or the toolbox bar icon) has multiple entry fields,
+            which you may use to build a logical condition, with additional filtering on file type,
+            location in the file system, modification date, and size.</para>
         </listitem>
       </itemizedlist>
 
-      <para>In most cases, you can enter the terms as you think them, even
-      if they contain embedded punctuation or other non-textual characters
-      (e.g. &RCL; can handle things like email addresses).</para>
+      <para>The <guilabel>Advanced Search</guilabel> tool is easier to use, but not actually more
+        powerful, than the <guilabel>Simple Search</guilabel> in query language mode. Its name
+        is historical, but <guilabel>Assisted Search</guilabel> would probably have been a better
+        designation.</para>
 
-      <para>The main case where you should enter text differently from
-      how it is printed is for east-asian languages (Chinese,
-      Japanese, Korean). Words composed of single or multiple
-      characters should be entered separated by white space in this
-      case (they would typically be printed without white
-      space).</para>
+      <para>In most text areas, you can enter the terms as you think them, even if they contain
+        embedded punctuation or other non-textual characters (e.g. &RCL; can handle things like
+        email addresses).</para>
 
-      <para>Some searches can be quite complex, and you may want to re-use
-      them later, perhaps with some tweaking. &RCL; can save and restore
-      searches. See <link linkend="RCL.SEARCH.SAVING">Saving and restoring
-      queries</link>.
-      </para>
+      <para>The main case where you should enter text differently from how it is printed is for
+        east-asian languages (Chinese, Japanese, Korean). Words composed of single or multiple
+        characters should be entered separated by white space in this case (they would typically be
+        printed without white space).</para>
+
+      <para>Some searches can be quite complex, and you may want to re-use them later, perhaps with
+        some tweaking. &RCL; can save and restore searches. 
+        See <link linkend="RCL.SEARCH.SAVING">Saving and restoring queries</link>.</para>
 
       <sect2 id="RCL.SEARCH.GUI.SIMPLE">
         <title>Simple search</title>
@@ -2003,12 +1994,14 @@ fs.inotify.max_user_watches=32768
 
         <para>The initial default search mode is <link linkend="RCL.SEARCH.LANG"><guilabel>Query
               language</guilabel></link>. Without special directives, this will look for
-        documents containing all of the search terms (the ones with more
-        terms will get better scores), just like the <guilabel>All
-        terms</guilabel> mode. <guilabel>Any term</guilabel> will search
-        for documents where at least one of the terms
-        appear. <guilabel>File name</guilabel> will exclusively look for
-        file names, not contents</para>
+          documents containing all of the search terms (the ones with more terms will get better
+          scores), just like the <guilabel>All Terms</guilabel> mode.</para>
+
+        <para><guilabel>Any term</guilabel> will search for documents where at least one of the
+          terms appear.</para> 
+
+        <para><guilabel>File name</guilabel> will exclusively look for file names, not
+          contents</para> 
 
         <para>All search modes allow terms to be expanded with wildcards
         characters (<literal>*</literal>, <literal>?</literal>,
@@ -2026,14 +2019,13 @@ fs.inotify.max_user_watches=32768
         </para>  
 
         <para>When using a stripped index (the default), character case has
-        no influence on search, except that you can disable stem expansion
-        for any term by capitalizing it. Ie: a search for
-        <literal>floor</literal> will also normally look for
-        <literal>flooring</literal>, <literal>floored</literal>, etc., but
-        a search for <literal>Floor</literal> will only look for
-        <literal>floor</literal>, in any character case. Stemming can also
-        be disabled globally in the preferences. When using a raw index,
-        <link linkend="RCL.SEARCH.CASEDIAC">the rules are a bit more complicated</link>.</para>
+          no influence on search, except that you can disable stem expansion for any term by
+          capitalizing it. E.g.: a search for <literal>floor</literal> will also normally look
+          for <literal>flooring</literal>, <literal>floored</literal>, etc., but a search
+          for <literal>Floor</literal> will only look for <literal>floor</literal>, in any character
+          case. Stemming can also be disabled globally in the preferences. When using a raw
+          index, <link linkend="RCL.SEARCH.CASEDIAC">the rules are a bit more
+          complicated</link>.</para>
 
         <para>&RCL; remembers the last few searches that you performed. You
         can directly access the search history by clicking the clock button
@@ -2058,33 +2050,30 @@ fs.inotify.max_user_watches=32768
         this mode from the <guilabel>Query Language</guilabel> mode, where
         you have to care about the syntax.</para>
 
-        <para>You can use the <link linkend="RCL.SEARCH.GUI.COMPLEX"><menuchoice><guimenu>Tools</guimenu><guimenuitem>Advanced search</guimenuitem></menuchoice></link>
-        dialog for more complex searches.</para>
-
         <para>The <guilabel>File name</guilabel> search mode will
-        specifically look for file names. The point of having a separate
-        file name search is that wildcard expansion can be performed more
-        efficiently on a small subset of the index (allowing wildcards on
-        the left of terms without excessive cost). Things to know:
-        <itemizedlist>
-          <listitem><para>White space in the entry should match white
-          space in the file name, and is not treated specially.</para>
-          </listitem>
-          <listitem><para>The search is insensitive to character case and
-          accents, independently of the type of index.</para>
-          </listitem>
-          <listitem><para>An entry without any wildcard
-          character and not capitalized will be prepended and appended
-          with '*' (ie: <replaceable>etc</replaceable> ->
-          <replaceable>*etc*</replaceable>, but
-          <replaceable>Etc</replaceable> ->
-          <replaceable>etc</replaceable>).</para> 
-          </listitem>
-          <listitem><para>If you have a big index (many files),
-          excessively generic fragments may result in inefficient
-          searches.</para>
-          </listitem>
-        </itemizedlist>
+          specifically look for file names. The point of having a separate
+          file name search is that wildcard expansion can be performed more
+          efficiently on a small subset of the index (allowing wildcards on
+          the left of terms without excessive cost). Things to know:
+          <itemizedlist>
+            <listitem><para>White space in the entry should match white
+                space in the file name, and is not treated specially.</para>
+            </listitem>
+            <listitem><para>The search is insensitive to character case and
+                accents, independently of the type of index.</para>
+            </listitem>
+            <listitem><para>An entry without any wildcard
+                character and not capitalized will be prepended and appended
+                with '*' (e.g.: <replaceable>etc</replaceable> ->
+                <replaceable>*etc*</replaceable>, but
+                <replaceable>Etc</replaceable> ->
+                <replaceable>etc</replaceable>).</para> 
+            </listitem>
+            <listitem><para>If you have a big index (many files),
+                excessively generic fragments may result in inefficient
+                searches.</para>
+            </listitem>
+          </itemizedlist>
         </para>
 
       </sect2>
@@ -2265,7 +2254,7 @@ fs.inotify.max_user_watches=32768
           <para><guilabel>Save to File</guilabel> allows saving the
           contents of a result document to a chosen file. This entry
           will only appear if the document does not correspond to an
-          existing file, but is a subdocument inside such a file (ie: an
+          existing file, but is a subdocument inside such a file (e.g.: an
           email attachment). It is especially useful to extract attachments
           with no associated editor.</para> 
 
@@ -2303,6 +2292,7 @@ fs.inotify.max_user_watches=32768
 
       </sect2>
 
+
       <sect2 id="RCL.SEARCH.GUI.RESTABLE">
         <title>The result table</title>
 
@@ -2335,7 +2325,42 @@ fs.inotify.max_user_watches=32768
         <keycap>Esc</keycap> (the Escape key) will unfreeze the
         display.</para>
 
+        <para>Using Shift-click on a row will display the document extracted text (somewhat like a
+          preview) instead of the document details. The functions of Click and Shift-Click can be
+          reversed in the GUI preferences.</para>
+
       </sect2>
+
+
+      <sect2 id="RCL.SEARCH.GUI.SIDEFILTERS">
+        <title>The filters panel</title>
+
+        <para>By default, the GUI displays the filters panel on the left of the results area. This
+        is new in version 1.32. You can adjust the width of the panel, and hide it
+          by squeezing it completely. The width will be memorized for the next session.</para>
+
+        <para>The panel currently has two areas, for filtering the results by dates, or by
+          filesystem location.</para> 
+
+        <para>The panel is only active in <guilabel>Query Language</guilabel> search mode, and its
+          effect is to add <literal>date:</literal> and <literal>dir:</literal> clauses to the
+          actual search.</para>
+
+        <para>The dates filter can be activated by clicking the checkbox. It has two assisted date
+          entry widgets, for the minimum and maximum dates of the search period.</para>
+
+        <para>The directory filter displays a subset of the filesystem directories, reduced to the
+          indexed area, as defined by the <literal>topdirs</literal> list and the name exclusion
+          parameters. You can independantly select and deselect directories by clicking them. Note
+          that selecting a directory will activate the whole subtree for searching, there is no need
+          to select the subdirectories, and no way to exclude some of them (use 
+          <link linkend="RCL.SEARCH.LANG"><guilabel>Query
+          language</guilabel></link> <literal>dir:</literal> clauses if this
+          is needed).</para>
+
+
+      </sect2>
+
 
       <sect2 id="RCL.SEARCH.GUI.RUNSCRIPT">
         <title>&LIN;: running arbitrary commands on result files</title> 
@@ -2382,6 +2407,7 @@ fs.inotify.max_user_watches=32768
 
       </sect2>
 
+
       <sect2 id="RCL.SEARCH.GUI.THUMBNAILS">
         <title>&LIN;: displaying thumbnails</title>
 
@@ -2406,6 +2432,7 @@ fs.inotify.max_user_watches=32768
             FAQ.</para> 
 
       </sect2>
+
 
       <sect2 id="RCL.SEARCH.GUI.PREVIEW">
         <title>The preview window</title>
@@ -2435,7 +2462,7 @@ fs.inotify.max_user_watches=32768
 
         <para>A right-click menu in the text area allows switching
         between displaying the main text or the contents of fields
-        associated to the document (ie: author, abtract, etc.). This is
+        associated to the document (e.g.: author, abtract, etc.). This is
         especially useful in cases where the term match did not occur in
         the main text but in one of the fields. In the case of
         images, you can switch between three displays: the image
@@ -2449,7 +2476,7 @@ fs.inotify.max_user_watches=32768
         <keycap>P</keycap>) in  the window text.</para> 
 
 
-        <sect3 id="RCL.SEARCH.GUI.PREVIEW.SEARCH">
+        <simplesect id="RCL.SEARCH.GUI.PREVIEW.SEARCH">
           <title>Searching inside the preview</title>
 
           <para>The preview window has an internal search capability,
@@ -2499,7 +2526,7 @@ fs.inotify.max_user_watches=32768
           </variablelist>
 
 
-        </sect3>        
+        </simplesect>
         
       </sect2>
 
@@ -2601,12 +2628,12 @@ fs.inotify.max_user_watches=32768
 
 
       <sect2 id="RCL.SEARCH.GUI.COMPLEX">
-        <title>Complex/advanced search</title>
+        <title>Assisted Complex Search (A.K.A. "Advanced Search")</title>
 
         <para>The advanced search dialog helps you build more complex queries
-        without memorizing the search language constructs. It can be opened
-        through the <guilabel>Tools</guilabel> menu or through the main
-        toolbar.</para>
+          without memorizing the search language constructs. It can be opened
+          through the <guilabel>Tools</guilabel> menu or through the main
+          toolbar.</para>
 
         <para>&RCL; keeps a history of searches. See 
         <link linkend="RCL.SEARCH.GUI.COMPLEX.HISTORY">Advanced search history</link>.
@@ -2615,17 +2642,10 @@ fs.inotify.max_user_watches=32768
         <para>The dialog has two tabs:</para> 
 
         <orderedlist>
-
-          <listitem><para>The first tab lets you specify terms to search
-          for, and permits specifying multiple clauses which are combined
-          to build the search.</para>
-          </listitem> 
-
-          <listitem><para>The second tab lets filter the results according
-          to file size, date of modification, MIME type, or
-          location.</para>
-          </listitem>
-          
+          <listitem><para>The first tab lets you specify terms to search for, and permits specifying
+              multiple clauses which are combined to build the search.</para> </listitem> 
+          <listitem><para>The second tab allows filtering the results according to file size, date
+              of modification, MIME type, or location.</para></listitem>
         </orderedlist>
 
         <para>Click on the <guilabel>Start Search</guilabel> button in
@@ -2639,9 +2659,8 @@ fs.inotify.max_user_watches=32768
         <sect3 id="RCL.SEARCH.GUI.COMPLEX.TERMS">
           <title>Advanced search: the "find" tab</title>
 
-          <para>This part of the dialog lets you constructc a query by
-          combining multiple clauses of different types.  Each entry
-          field is configurable for the following modes:</para>
+          <para>This part of the dialog lets you construct a query by combining multiple clauses of
+            different types.  Each entry field is configurable for the following modes:</para>
 
           <itemizedlist>
             <listitem><para>All terms.</para>
@@ -2702,48 +2721,29 @@ fs.inotify.max_user_watches=32768
           criteria</para>
 
           <itemizedlist>
-
-            <listitem>
-              <para>The first section allows filtering by dates of last
-              modification. You can specify both a minimum and a maximum
-              date. The initial values are set according to the oldest and
-              newest documents found in the index.</para>
-            </listitem>
-
-            <listitem>
-              <para>The next section allows filtering the results by
-              file size. There are two entries for minimum and maximum
-              size. Enter decimal numbers. You can use suffix multipliers:
-              <literal>k/K</literal>, <literal>m/M</literal>,
-              <literal>g/G</literal>, <literal>t/T</literal> for 1E3, 1E6,
-              1E9, 1E12 respectively.</para>
-            </listitem>
-
-            <listitem>   
-              <para>The next section allows filtering the results by their MIME
-              types, or MIME categories (ie: media/text/message/etc.).</para>
-              <para>You can transfer the types between two boxes, to define
-              which will be included or excluded by the search.</para>
-              <para>The state of the file type selection can be saved as
-              the default (the file type filter will not be activated at
-              program start-up, but the lists will be in the restored
-              state).</para> 
-            </listitem>
-
-            <listitem>
-              <para>The bottom section allows restricting the search results to a
-              sub-tree of the indexed area. You can use the
-              <guilabel>Invert</guilabel> checkbox to search for files not in
-              the sub-tree instead. If you use directory filtering often and on
-              big subsets of the file system, you may think of setting up
-              multiple indexes instead, as the performance may be
-              better.</para>
-              <para>You can use relative/partial paths for filtering. Ie,
-              entering <literal>dirA/dirB</literal> would match either
-              <filename>/dir1/dirA/dirB/myfile1</filename> or
-              <filename>/dir2/dirA/dirB/someother/myfile2</filename>.</para> 
-            </listitem>
-
+            <listitem><para>The first section allows filtering by dates of last
+              modification. You can specify both a minimum and a maximum date. The initial values
+              are set according to the oldest and newest documents found in the
+              index.</para></listitem>
+            <listitem><para>The next section allows filtering the results by file size. There are
+                two entries for minimum and maximum size. Enter decimal numbers. You can use suffix
+                multipliers: <literal>k/K</literal>, <literal>m/M</literal>, 
+                <literal>g/G</literal>, <literal>t/T</literal> for 10E3, 10E6, 10E9, 10E12
+                respectively.</para></listitem>
+            <listitem><para>The next section allows filtering the results by their MIME
+              types, or MIME categories (e.g.: media/text/message/etc.).</para> <para>You can
+              transfer the types between two boxes, to define which will be included or excluded by
+              the search.</para> <para>The state of the file type selection can be saved as the
+              default (the file type filter will not be activated at program start-up, but the lists
+              will be in the restored state).</para></listitem>
+            <listitem><para>The bottom section allows restricting the search results to a
+              sub-tree of the indexed area. You can use the <guilabel>Invert</guilabel> checkbox to
+              search for files not in the sub-tree instead. If you use directory filtering often and
+              on big subsets of the file system, you may think of setting up multiple indexes
+              instead, as the performance may be better.</para> <para>You can use relative/partial
+              paths for filtering. E.g., entering <literal>dirA/dirB</literal> would match
+              either <filename>/dir1/dirA/dirB/myfile1</filename>
+              or <filename>/dir2/dirA/dirB/someother/myfile2</filename>.</para></listitem>
           </itemizedlist>
 
         </sect3>
@@ -2769,32 +2769,28 @@ fs.inotify.max_user_watches=32768
       <sect2 id="RCL.SEARCH.GUI.TERMEXPLORER">
         <title>The term explorer tool</title>
 
-        <para>&RCL; automatically manages the expansion of search terms
-        to their derivatives (ie: plural/singular, verb
-        inflections). But there are other cases where the exact search
-        term is not known. For example, you may not remember the exact
-        spelling, or only know the beginning of the name.</para>
+        <para>&RCL; automatically manages the expansion of search terms to their derivatives (e.g.:
+          plural/singular, verb inflections). But there are other cases where the exact search term
+          is not known. For example, you may not remember the exact spelling, or only know the
+          beginning of the name.</para>
 
         <para>The search will only propose replacement terms with
-        spelling variations when no matching document were found. In some
-        cases, both proper spellings and mispellings are present in the
-        index, and it may be interesting to look for them explicitly.</para>
+          spelling variations when no matching document were found. In some cases, both proper
+          spellings and mispellings are present in the index, and it may be interesting to look for
+          them explicitly.</para>
 
         <para>The term explorer tool (started from the toolbar icon or
-        from the <guilabel>Term explorer</guilabel> entry of the
-        <guilabel>Tools</guilabel> menu) can be used to search the full index
-        terms list. It has three modes of operations:</para>
-        <variablelist>
+          from the <guilabel>Term explorer</guilabel> entry of the <guilabel>Tools</guilabel> menu)
+          can be used to search the full index terms list, or (later addition), display some
+          statistics or other index information. It has several modes of
+          operations:</para>
 
+        <variablelist>
           <varlistentry>
-            <term>Wildcard</term>
-            <listitem><para>In this mode of operation, you can enter a
-            search string with shell-like wildcards (*, ?, []). ie:
-            <replaceable>xapi*</replaceable> would display all index terms
-            beginning with <replaceable>xapi</replaceable>. (More
-            about wildcards
-            <link linkend="RCL.SEARCH.WILDCARDS">here</link>
-            ).</para></listitem> 
+            <term>Wildcard</term> <listitem><para>In this mode of operation, you can enter a search
+            string with shell-like wildcards (*, ?, []). e.g.: <replaceable>xapi*</replaceable>
+            would display all index terms beginning with <replaceable>xapi</replaceable>. (More
+            about wildcards <link linkend="RCL.SEARCH.WILDCARDS">here</link>).</para></listitem>
           </varlistentry>
 
           <varlistentry>
@@ -2802,7 +2798,7 @@ fs.inotify.max_user_watches=32768
             <listitem><para>This mode will accept a regular expression
             as input. Example:
             <replaceable>word[0-9]+</replaceable>. The expression is
-            implicitly anchored at the beginning. Ie:
+            implicitly anchored at the beginning. E.g.:
             <replaceable>press</replaceable> will match
             <replaceable>pression</replaceable> but not
             <replaceable>expression</replaceable>. You can use
@@ -2848,7 +2844,7 @@ fs.inotify.max_user_watches=32768
         </variablelist>
 
         <para>Note that in cases where &RCL; does not know the beginning
-        of the string to search for (ie a wildcard expression like
+        of the string to search for (e.g. a wildcard expression like
         <replaceable>*coll</replaceable>), the expansion can take quite
         a long time because the full index term list will have to be
         processed. The expansion is currently limited at 10000 results for
@@ -2870,12 +2866,11 @@ fs.inotify.max_user_watches=32768
         generalities. Only the aspects concerning the
         <command>recoll</command> GUI are described here.</para>
 
-        <para>A <command>recoll</command> program instance is always
-        associated with a specific index, which is the one to be updated
-        when requested from the <guimenu>File</guimenu> menu, but it can
-        use any number of &RCL; indexes for searching. The external
-        indexes can be selected through the <guilabel>external
-        indexes</guilabel> tab in the preferences dialog.</para>
+        <para>A <command>recoll</command> program instance is always associated with a main index,
+        which is the one to be updated when requested from the <guimenu>File</guimenu> menu, but it
+        can use any number of external &RCL; indexes for searching. The external indexes can be
+        selected through the <guilabel>external indexes</guilabel> tab in the preferences
+        dialog.</para>
 
         <para>Index selection is performed in two phases. A set of all usable
         indexes must first be defined, and then the subset of indexes to be
@@ -2900,7 +2895,7 @@ fs.inotify.max_user_watches=32768
         variable to provide an initial set. This might typically be
         set up by a system administrator so that every user does not
         have to do it. The variable should define a colon-separated list
-        of index  directories, ie: 
+        of index  directories, e.g.: 
         </para>
         <screen>export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</screen> 
 
@@ -2951,14 +2946,11 @@ fs.inotify.max_user_watches=32768
         <guilabel>Remember sort activation state</guilabel> option in
         the preferences.</para>
 
-        <para>It is also possible to hide duplicate entries inside
-        the result list (documents with the exact same contents as the
-        displayed one). The test of identity is based on an MD5 hash
-        of the document container, not only of the text contents (so
-        that ie, a text document with an image added will not be a
-        duplicate of the text only). Duplicates hiding is controlled
-        by an entry in the <guilabel>GUI configuration</guilabel>
-        dialog, and is off by default.</para>
+        <para>It is also possible to hide duplicate entries inside the result list (documents with
+        the exact same contents as the displayed one). The test of identity is based on an MD5 hash
+        of the document container, not only of the text contents (so that e.g., a text document with
+        an image added will not be a duplicate of the text only). Duplicates hiding is controlled by
+        an entry in the <guilabel>GUI configuration</guilabel> dialog, and is off by default.</para>
 
         <para>When a result document does have undisplayed duplicates,
           a <literal>Dups</literal> link will be shown with the result list
@@ -3242,7 +3234,7 @@ fs.inotify.max_user_watches=32768
               searches when looking for <literal>Any terms</literal>. This
               will not change radically the results, but will give a relevance
               boost to the results where the search terms appear as a
-              phrase. Ie: searching for <literal>virtual reality</literal>
+              phrase. E.g.: searching for <literal>virtual reality</literal>
               will still find all documents where either
               <literal>virtual</literal> or <literal>reality</literal> or 
               both appear, but those which contain
@@ -3260,7 +3252,7 @@ fs.inotify.max_user_watches=32768
             <para>Dotted abbreviations like
               <literal>I.B.M.</literal> are also automatically indexed as a
               word without the dots: <literal>IBM</literal>. Searching for
-              the word inside a phrase (ie: <literal>"the IBM
+              the word inside a phrase (e.g.: <literal>"the IBM
               company"</literal>) will only match the dotted abrreviation
               if you increase the phrase slack (using the advanced search
               panel control, or the <literal>o</literal> query language
@@ -3326,7 +3318,7 @@ fs.inotify.max_user_watches=32768
       </sect2>
 
       <sect2 id="RCL.SEARCH.SAVING">
-        <title>Saving and restoring queries (1.21 and later)</title>
+        <title>Saving and restoring queries</title>
 
         <para>Both simple and advanced query dialogs save recent
         history, but the amount is limited: old queries will eventually
@@ -3372,7 +3364,7 @@ fs.inotify.max_user_watches=32768
               <listitem><para><guilabel>Highlight color for query
               terms</guilabel>: Terms from the user query are highlighted in
               the result list samples and the preview window. The color can
-              be chosen here. Any Qt color string should work (ie
+              be chosen here. Any Qt color string should work (e.g.
               <literal>red</literal>, <literal>#ff0000</literal>). The
               default is <literal>blue</literal>.</para>
               </listitem>
@@ -3607,7 +3599,7 @@ fs.inotify.max_user_watches=32768
           <title>External indexes:</title> 
           <para>This panel will let you browse for additional indexes
           that you may want to search. External indexes are designated by
-          their database directory (ie:
+          their database directory (e.g.:
           <filename>/home/someothergui/.recoll/xapiandb</filename>,
           <filename>/usr/local/recollglobal/xapiandb</filename>).</para>
         </formalpara>
@@ -3878,21 +3870,16 @@ fs.inotify.max_user_watches=32768
       stream, without a graphical interface:</para>
       <itemizedlist>
         <listitem><para>By passing option <option>-t</option> to the
-        <command>recoll</command> program, or by calling it as
-        <command>recollq</command> (through a link).</para>
-        </listitem>
-        <listitem><para>By using the <command>recollq</command> program.</para>
-        </listitem>
-        <listitem><para>By writing a custom
-        <application>Python</application> program, using the 
-        <link linkend="RCL.PROGRAM.PYTHONAPI">Recoll Python API</link>.</para>
-        </listitem>
+            <command>recoll</command> program, or by calling it as
+            <command>recollq</command> (through a link).</para></listitem>
+        <listitem><para>By using the actual <command>recollq</command> program.</para></listitem> 
+        <listitem><para>By writing a custom <application>Python</application> program, using the
+            <link linkend="RCL.PROGRAM.PYTHONAPI">Recoll Python API</link>.</para></listitem>
       </itemizedlist>
 
-      <para>The first two methods work in the same way and accept/need the same
-      arguments (except for the additional <option>-t</option> to
-      <command>recoll</command>). The query to be executed is specified
-      as command line arguments.</para> 
+      <para>The first two methods work in the same way and accept/need the same arguments (except
+        for the additional <option>-t</option> to <command>recoll</command>). The query to be
+        executed is specified as command line arguments.</para>
 
       <para><command>recollq</command> is not always built by default. You
       can use the <filename>Makefile</filename> in the
@@ -3991,7 +3978,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <para>This would search for all documents with 
       <replaceable>John Doe</replaceable>
       appearing as a phrase in the author field (exactly what this is
-      would depend on the document type, ie: the
+      would depend on the document type, e.g.: the
       <literal>From:</literal> header, for an email message),
       and containing either <replaceable>beatles</replaceable> or
       <replaceable>lennon</replaceable> and either
@@ -4178,7 +4165,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           <para>You can also use <literal>OR</literal> conjunctions
             with <literal>dir:</literal> clauses.</para>
 
-        <para>A special aspect of <literal>dir</literal> clauses is
+        <para>On &LIN;, a special aspect of <literal>dir</literal> clauses is
           that the values in the index are not transcoded to UTF-8, and never lower-cased or
           unaccented, but stored as binary. This means that you need to enter the values in the
           exact lower or upper case, and that searches for names with diacritics may sometimes be
@@ -4239,8 +4226,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           2003 or older.</para>
           </listitem>
         </itemizedlist>
-        <para>Periods can also be specified with small letters (ie:
-        p2y).</para> 
+        <para>Periods can also be specified with small letters (e.g.: p2y).</para> 
         </listitem>
 
         <listitem><para><literal>mime</literal> or <literal>format</literal> for specifying the MIME
@@ -4426,7 +4412,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           term).</para></listitem> 
         </itemizedlist>
 
-        <sect3 id="RCL.SEARCH.WILDCARDS.PATH">
+        <simplesect id="RCL.SEARCH.WILDCARDS.PATH">
           <title>Wildcards and path filtering</title>
 
           <para>Due to the way that &RCL; processes wildcards
@@ -4449,7 +4435,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           the best we can do (and it may be actually more useful in
           some cases).</para>
 
-        </sect3>
+        </simplesect>
 
       </sect2> <!-- wildchars -->
 
@@ -4479,14 +4465,13 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         beginning of the text would be a match for
         <literal>"^my term"o5</literal>.</para>
 
-        <para>Anchored searches can be very useful for searches inside
-        somewhat structured documents like scientific articles, in case
-        explicit metadata has not been supplied (a most frequent case), for
-        example for looking for matches inside the abstract or the list of
-        authors (which occur at the top of the document).</para>
-
+        <para>Anchored searches can be very useful for searches inside somewhat structured documents
+          like scientific articles, in case explicit metadata has not been supplied, for example for
+          looking for matches inside the abstract or the list of authors (which occur at the top of
+          the document).</para>
 
       </sect2>
+
 
     </sect1> <!-- wildchars and anchors -->
 
@@ -4930,7 +4915,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         variable (values <literal>yes</literal>, <literal>no</literal>)
         tells the handler if the operation is for indexing or
         previewing. Some handlers use this to output a slightly different
-        format, for example stripping uninteresting repeated keywords (ie:
+        format, for example stripping uninteresting repeated keywords (e.g.:
         <literal>Subject:</literal> for email) when indexing. This is not
         essential.</para>
 
@@ -6429,7 +6414,7 @@ hasextract = False
             searches).</para>
           
           <para><option>--with-file-command</option> Specify
-            the version of the 'file' command to use (ie:
+            the version of the 'file' command to use (e.g.:
             --with-file-command=/usr/local/bin/file). Can be useful to
             enable the gnu version on systems where the native one is
             bad.</para> 
@@ -7045,7 +7030,7 @@ other = rclcat:other
 
         <para><filename>mimeview</filename> specifies which programs
         are started when you click on an <guilabel>Open</guilabel> link
-        in a result list. Ie: HTML is normally displayed using
+        in a result list. E.g.: HTML is normally displayed using
         <application>firefox</application>, but you may prefer
         <application>Konqueror</application>, your
         <application>openoffice.org</application> 
@@ -7087,7 +7072,7 @@ other = rclcat:other
         <para>The <varname>nouncompforviewmts</varname> entry, (placed at
         the top level, outside of the <literal>[view]</literal> section),
         holds a list of MIME types that should not be uncompressed before
-        starting the viewer (if they are found compressed, ie:
+        starting the viewer (if they are found compressed, e.g.:
         <replaceable>mydoc.doc.gz</replaceable>).</para>
 
         <para>The right side of each assignment holds a command to be
@@ -7102,7 +7087,7 @@ other = rclcat:other
 
           <listitem><formalpara><title>%f</title>
           <para>File name. This may be the name of a temporary file if
-          it was  necessary to create one (ie: to extract a subdocument
+          it was  necessary to create one (e.g.: to extract a subdocument
           from a  container).</para></formalpara>
           </listitem>
 
