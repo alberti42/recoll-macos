@@ -1,3 +1,21 @@
+recoll (1.32.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * GUI: added a collapsible side pane for quick filtering on dates or
+    directories.
+  * Showing duplicates now uses a spreadsheet like the result table for
+    easy access to the duplicate files.
+  * Fixed the temporary copy open dialog (again!).
+  * The default mimeview and mimeconf configuration files were
+    separated into generic and system-specific parts to avoid update
+    errors (no consequences for users).
+  * Renamed all Python input handler with a .py extension. This is
+    relied on Windows rather than listing an explicit python
+    interpreter.
+  * Added %l specification to viewer definitions for opening at a
+    specific line.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 11 Mar 2022 18:17:00 +0100
+
 recoll (1.31.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Almost no change: translation files update.

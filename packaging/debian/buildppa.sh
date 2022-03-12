@@ -7,28 +7,26 @@
 # Active series:
 # 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
-# 20.10    groovy 2021-07
-# 21.04    hirsute 2022-01
 # 21.10    impish
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.31.6
+RCLVERS=1.32.0
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.1
-PPAVERS=1
+PPAVERS=2
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
 SCOPESRC=/y/home/dockes/projets/fulltext/unity-scope-recoll
-GSSPSRC=/home/dockes/projets/fulltext/gssp-recoll
-RCLDOWNLOAD=/home/dockes/projets/lesbonscomptes/recoll
+GSSPSRC=/y/home/dockes/projets/fulltext/gssp-recoll
+RCLDOWNLOAD=/y/home/dockes/projets/lesbonscomptes/recoll
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-#PPANAME=recollexp-ppa
+# PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -49,8 +47,8 @@ check_recoll_orig()
 
 ####### QT
 debdir=debian
-series="bionic focal hirsute impish"
-#series=
+series="bionic focal impish jammy"
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -85,8 +83,8 @@ done
 
 
 ### KIO.
-#series="bionic focal hirsute impish"
-series=
+series="bionic focal impish jammy"
+series=jammy
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
