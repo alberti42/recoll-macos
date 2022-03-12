@@ -35,7 +35,7 @@
 #include <QDebug>
 #include <QUrl>
 #include <QStandardPaths>
-#include <KF5/kio_version.h>
+#include <kio_version.h>
 
 #include "kio_recoll.h"
 #include "pathut.h"
