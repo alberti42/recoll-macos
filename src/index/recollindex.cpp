@@ -761,7 +761,10 @@ int main(int argc, char *argv[])
 
     // Log something at LOGINFO to reset the trace file. Else at level
     // 3 it's not even truncated if all docs are up to date.
-    LOGINFO("recollindex: starting up\n");
+    {
+        time_t tt = time(nullptr);
+        LOGINFO("recollindex: starting up: " << ctime(&tt));
+    }
     setMyPriority(config);
 
     // Init status updater
@@ -920,5 +923,9 @@ int main(int argc, char *argv[])
     }
     statusUpdater()->update(DbIxStatus::DBIXS_DONE, "");
     flushIdxReasons();
+    {
+        time_t tt = time(nullptr);
+        LOGINFO("recollindex: exiting: " << ctime(&tt));
+    }
     return !status;
 }
