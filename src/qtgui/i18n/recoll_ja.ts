@@ -5,7 +5,7 @@
     <name>ActSearchDLG</name>
     <message>
         <source>Menu search</source>
-        <translation type="unfinished"></translation>
+        <translation>メニュー検索</translation>
     </message>
 </context>
 <context>
@@ -1624,11 +1624,11 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Show menu search dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>メニュー検索ダイアログを表示</translation>
     </message>
     <message>
         <source>Duplicates</source>
-        <translation type="unfinished"></translation>
+        <translation>繰り返し</translation>
     </message>
 </context>
 <context>
@@ -1927,19 +1927,19 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Start real time indexer</source>
-        <translation type="unfinished"></translation>
+        <translation>リアルタイムインデクサを開始</translation>
     </message>
     <message>
         <source>Query Language Filters</source>
-        <translation type="unfinished"></translation>
+        <translation>言語フィルター・クエリ</translation>
     </message>
     <message>
         <source>Filter dates</source>
-        <translation type="unfinished">日付でフィルター</translation>
+        <translation>日付でフィルター</translation>
     </message>
     <message>
         <source>Assisted complex search</source>
-        <translation type="unfinished"></translation>
+        <translation>複雑な検索支援</translation>
     </message>
 </context>
 <context>
@@ -2164,7 +2164,7 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Copy result text and quit</source>
-        <translation type="unfinished"></translation>
+        <translation>結果テキストをコピーして終了</translation>
     </message>
 </context>
 <context>
@@ -2367,11 +2367,11 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Simple search</source>
-        <translation type="unfinished"></translation>
+        <translation>単純検索</translation>
     </message>
     <message>
         <source>History</source>
-        <translation type="unfinished"></translation>
+        <translation>履歴</translation>
     </message>
 </context>
 <context>
