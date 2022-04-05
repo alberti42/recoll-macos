@@ -905,11 +905,17 @@ bool RclConfig::getGuiFilter(const string& catfiltername, string& frag) const
     return true;
 }
 
-bool RclConfig::valueSplitAttributes(const string& whole, string& value, 
-                                     ConfSimple& attrs)
+bool RclConfig::valueSplitAttributes(const string& whole, string& value, ConfSimple& attrs)
 {
-    /* There is currently no way to escape a semi-colon */
-    string::size_type semicol0 = whole.find_first_of(";");
+    bool inquote{false};
+    string::size_type semicol0;    
+    for (semicol0 = 0; semicol0 < whole.size(); semicol0++) {
+        if (whole[semicol0] == '"') {
+            inquote = !inquote;
+        } else if (whole[semicol0] == ';' && !inquote) {
+            break;
+        }
+    }
     value = whole.substr(0, semicol0);
     trimstring(value);
     string attrstr;

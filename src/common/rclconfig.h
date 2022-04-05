@@ -259,12 +259,18 @@ public:
     string getMimeHandlerDef(const string &mimetype, bool filtertypes=false,
                              const std::string& fn = std::string());
 
-    /** For lines like: "name = some value; attr1 = value1; attr2 = val2"
+    /** For lines like: [name = some value; attr1 = value1; attr2 = val2]
      * Separate the value and store the attributes in a ConfSimple 
-     * @param whole the raw value. No way to escape a semi-colon in there.
+     *
+     * In the value part, semi-colons inside double quotes are ignored, and double quotes are
+     * conserved. In the common case where the string is then processed by stringToStrings() to
+     * build a command line, this allows having semi-colons inside arguments. However, no backslash
+     * escaping is possible, so that, for example "bla\"1;2\"" would not work (the value part
+     * would stop at the semi-colon).
+     *
+     * @param whole the raw value.
      */
-    static bool valueSplitAttributes(const string& whole, string& value, 
-                                     ConfSimple& attrs) ;
+    static bool valueSplitAttributes(const string& whole, string& value, ConfSimple& attrs) ;
 
     /** Compute difference between 'base' and 'changed', as elements to be
      * added and substracted from base. Input and output strings are in
