@@ -310,8 +310,9 @@ string HighlightData::toString() const
                 }
                 out.append("}");
             }
-            out.append("} ");
+            out.append(" ");
             out.append(valToString(kindflags, tg.kind)).append("-").append(lltodecstr(tg.slack));
+            out.append(" }");
         }
     }
     out.append("\n");
