@@ -24,7 +24,8 @@
 xallexcepts = application/pdf application/postscript application/x-dvi \
  text/html|gnuinfo text/html|chm text/html|epub text/html|rclman \
  application/x-fsdirectory|parentopen inode/directory|parentopen \
- application/vnd.ms-visio.drawing application/x-ipynb+json
+ application/vnd.ms-visio.drawing application/x-ipynb+json \
+ text/x-orgmode text/x-orgmode-sub
 
 
 [view]
@@ -218,6 +219,8 @@ text/x-c++ = emacsclient --no-wait  %f
 text/x-csv = libreoffice %f
 text/x-html-sidux-man = konqueror %f
 text/x-html-aptosid-man = iceweasel %f
+text/x-orgmode-sub = emacsclient --no-wait  %F
+text/x-orgmode = emacsclient --no-wait  %f
 
 application/x-chm = kchmviewer %f
 # Html pages inside a chm have a chm rclaptg set by the filter. Kchmviewer

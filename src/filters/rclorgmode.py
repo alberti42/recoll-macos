@@ -13,7 +13,8 @@ class OrgModeExtractor:
         self.file = ""
         self.contents = []
         self.em = em
-
+        self.selftext = ""
+        
     def extractone(self, index):
         if index >= len(self.docs):
             return(False, "", "", True)
@@ -44,6 +45,9 @@ class OrgModeExtractor:
 
         res = rb'''^\* '''
         self.docs = re.compile(res, flags=re.MULTILINE).split(data)
+        # Note that there can be text before the first heading. This goes into the self doc,
+        # because it's not a proper entry.
+        self.selftext = self.docs[0]
         self.docs = self.docs[1:]
         #self.em.rclog("openfile: Entry count: %d" % len(self.docs))
         return True
@@ -68,7 +72,7 @@ class OrgModeExtractor:
                 eof = rclexecm.RclExecM.eofnext
             else:
                 eof = rclexecm.RclExecM.noteof
-            return (True, "", "", eof)
+            return (True, self.selftext, "", eof)
 
         if self.currentindex >= len(self.docs):
             self.em.rclog("getnext: EOF hit")
