@@ -179,12 +179,15 @@ bool matchGroup(const HighlightData& hldata,
 
     const auto& tg(hldata.index_term_groups[grpidx]);
     bool isphrase =  tg.kind == HighlightData::TermGroup::TGK_PHRASE;
+
+#ifdef DEBUGGROUPS
     string allplterms;
     for (const auto& entry:inplists) {
         allplterms += entry.first + " ";
     }
     LOGRP("matchGroup: isphrase " << isphrase << ". Have plists for [" << allplterms << "]\n");
     //LOGRP("matchGroup: hldata: " << hldata.toString() << std::endl);
+#endif
     
     int window = int(tg.orgroups.size() + tg.slack);
     // The position lists we are going to work with. We extract them from the 

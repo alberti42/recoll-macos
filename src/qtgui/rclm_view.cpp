@@ -264,8 +264,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm)
     // Get rid of the command name. lcmd is now argv[1...n]
     lcmd.erase(lcmd.begin());
 
-    // Process the command arguments to determine if we need to create
-    // a temporary file.
+    // Process the command arguments to determine if we need to create a temporary file.
 
     // If the command has a %i parameter it will manage the
     // un-embedding. Else if ipath is not empty, we need a temp file.
@@ -390,8 +389,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm)
             settings.value("/Recoll/prefs/showTempFileWarning").toInt();
     }
 
-    // If we are not called with a page number (which would happen for a call
-    // from the snippets window), see if we can compute a page number anyway.
+    // If we are not called with a page number (which would happen for a call from the snippets
+    // window), see if we can compute a page number anyway. 
     if (m_source && pagenum == -1 && (pagenumNeeded(cmd) || termNeeded(cmd)|| linenumNeeded(cmd))) {
         pagenum = m_source->getFirstMatchPage(doc, term);
         if (pagenum == -1)
@@ -436,23 +435,22 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm)
     execViewer(subs, enterHistory, execpath, lcmd, cmd, doc, execwflags);
 }
 
-void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
-                         const string& execpath,
-                         const vector<string>& _lcmd, const string& cmd,
-                         Rcl::Doc doc, int flags)
+void RclMain::execViewer(
+    const map<string, string>& subs, bool enterHistory, const string& execpath,
+    const vector<string>& _lcmd, const string& cmd, Rcl::Doc doc, int flags)
 {
-    string ncmd;
     vector<string> lcmd;
-    for (vector<string>::const_iterator it = _lcmd.begin(); 
-         it != _lcmd.end(); it++) {
-        pcSubst(*it, ncmd, subs);
-        LOGDEB(""  << *it << "->"  << (ncmd) << "\n" );
-        lcmd.push_back(ncmd);
+    for (const auto oparm : _lcmd) {
+        string nparm;
+        pcSubst(oparm, nparm, subs);
+        LOGDEB0("" << oparm << "->"  << nparm << "\n");
+        lcmd.push_back(nparm);
     }
 
-    // Also substitute inside the unsplit command line and display
-    // in status bar
+    // Also substitute inside the unsplit command line for display in status bar
+    string ncmd;
     pcSubst(cmd, ncmd, subs);
+
 #ifndef _WIN32
     ncmd += " &";
 #endif
@@ -465,8 +463,7 @@ void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
         string fcharset = theconfig->getDefCharset(true);
         transcode(ncmd, prcmd, fcharset, "UTF-8");
 #endif
-        QString msg = tr("Executing: [") + 
-            QString::fromUtf8(prcmd.c_str()) + "]";
+        QString msg = tr("Executing: [") + QString::fromUtf8(prcmd.c_str()) + "]";
         stb->showMessage(msg, 10000);
     }
 
