@@ -23,8 +23,6 @@
 #include <string>
 
 #include <QSettings>
-#define LOGGER_LOCAL_LOGINC 2
-
 
 #include "recoll.h"
 #include "smallut.h"
