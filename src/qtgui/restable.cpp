@@ -69,7 +69,6 @@ static const int TEXTINCELLVTRANS = -4;
 
 // Adjust font size from prefs, display is slightly different here
 static const int fsadjustdetail = 1;
-static const int fsadjusttable = 1;
 
 static PlainToRichQtReslist g_hiliter;
 
@@ -93,6 +92,8 @@ public:
     virtual string absSep() override {
         return (const char *)(prefs.abssep.toUtf8());}
     virtual string headerContent() override {
+        // Note: the detail area is a qtextbrowser which gets confused by the general Html
+        // header. So we manage it differently from the snippets or main result list.
         return qs2utf8s(prefs.darkreslistheadertext) + qs2utf8s(prefs.reslistheadertext);
     }
 private:
@@ -155,11 +156,7 @@ void ResTableDetailArea::createPopupMenu(const QPoint& pos)
 
 void ResTableDetailArea::setFont()
 {
-    int fs = prefs.reslistfontsize;
-    // fs shows slightly bigger in qtextbrowser? adjust.
-    if (prefs.reslistfontsize > fsadjustdetail) {
-        fs -= fsadjustdetail;
-    }
+    int fs = prefs.fontsize() - fsadjustdetail;
     if (prefs.reslistfontfamily != "") {
         QFont nfont(prefs.reslistfontfamily, fs);
         QTextBrowser::setFont(nfont);
@@ -392,15 +389,12 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
     // The font is actually set in the custom delegate, but we need
     // this to adjust the row height (there is probably a better way
     // to do it in the delegate?)
-    if (role == Qt::FontRole && prefs.reslistfontsize > 0) {
-        if (m_reslfntszforcached != prefs.reslistfontsize) {
-            m_reslfntszforcached = prefs.reslistfontsize;
+    if (role == Qt::FontRole && (prefs.reslistfontsize > 0 || prefs.wholeuiscale != 1.0)) {
+        if (m_reslfntszforcached != prefs.fontsize() - fsadjustdetail) {
+            m_reslfntszforcached = prefs.fontsize() - fsadjustdetail;
             m_table->setDefRowHeight();
             m_cachedfont = m_table->font();
-            int fs = prefs.reslistfontsize <= fsadjusttable ?
-                prefs.reslistfontsize: prefs.reslistfontsize - fsadjusttable;
-            if (fs > 0)
-                m_cachedfont.setPointSize(fs);
+            m_cachedfont.setPixelSize(m_reslfntszforcached);
         }
         return m_cachedfont;
     }
@@ -542,9 +536,8 @@ public:
         QString seltextcolor =
             opt.palette.color(QPalette::HighlightedText).name();
         QString fstyle;
-        if (prefs.reslistfontsize > 0) {
-            int fs = prefs.reslistfontsize <= fsadjusttable ?
-                prefs.reslistfontsize : prefs.reslistfontsize - fsadjusttable;
+        if (prefs.reslistfontsize > 0 || prefs.wholeuiscale != 1.0) {
+            int fs = prefs.fontsize() - fsadjustdetail;
             fstyle = QString("font-size: %1pt").arg(fs);
         }
         QString ntxt("<div style='");
@@ -581,8 +574,7 @@ void ResTable::setDefRowHeight()
 //        header->setSectionResizeMode(QHeaderView::ResizeToContents);
         // Compute ourselves instead, for one row.
         QFont font = tableView->font();
-        int fs = prefs.reslistfontsize <= fsadjusttable ?
-            prefs.reslistfontsize : prefs.reslistfontsize - fsadjusttable;
+        int fs = prefs.fontsize() - fsadjustdetail;
         if (fs > 0)
             font.setPointSize(fs);
         QFontMetrics fm(font);

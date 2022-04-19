@@ -19,6 +19,13 @@
 #include <algorithm>
 #include <cstdio>
 
+// Programs built with gcc 4.8.4 (e.g.: Ubuntu Trusty), crash at startup while initializing stdc++
+// regular expression objects (and also crash if we make them non-static).
+#if defined(__clang__) || defined(_WIN32) || __GNUC__ > 4
+#define USE_REGEX
+#include <regex>
+#endif
+
 #include "recoll.h"
 #include "log.h"
 #include "smallut.h"
@@ -31,6 +38,7 @@
 #include <QSettings>
 #include <QStringList>
 #ifdef BUILDING_RECOLLGUI
+#include <QWidget>
 #include <QFont>
 #endif
 
@@ -289,6 +297,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);
     SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);
     SETTING_RW(prefs.trayMessages, "/Recoll/prefs/trayMessages", Bool, false);
+    SETTING_RW(prefs.wholeuiscale, "/Recoll/ui/wholeuiscale", Double, 1.0);
     /*INSERTHERE*/
     
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
@@ -415,6 +424,83 @@ void rwSettings(bool writing)
         havereadsettings = true;
 }
 
+#ifdef USE_REGEX
+/* font-size: 10pt; */
+static const std::string fntsz_exp(
+    R"((\s*font-size\s*:\s*)([0-9]+)(p[tx]\s*;\s*))"
+    );
+
+static std::regex fntsz_regex(fntsz_exp);
+#endif // USE_REGEX
+
+std::string PrefsPack::scaleFonts(const std::string& style, float multiplier)
+{
+    //cerr << "scale_fonts: multiplier: " << multiplier << "\n";
+    std::vector<std::string> lines;
+    stringToTokens(style, lines, "\n");
+#ifdef USE_REGEX
+    for (unsigned int ln = 0; ln < lines.size(); ln++) {
+        const string& line = lines[ln];
+        std::smatch m;
+        //std::cerr << "LINE: " << line << "\n";
+        if (regex_match(line, m, fntsz_regex) && m.size() == 4) {
+            //std::cerr << "Got match (sz " << m.size() << ") for " << line << "\n";
+            int fs = atoi(m[2].str().c_str());
+            int nfs = round(fs * multiplier);
+            char buf[20];
+            snprintf(buf, 20, "%d", nfs);
+            lines[ln] = m[1].str() + buf + m[3].str();
+            //std::cerr << "New line: [" << lines[ln] << "]\n";
+        }
+    }
+#endif    
+    string nstyle = string();
+    for (auto& ln : lines) {
+        nstyle += ln + "\n";
+    }
+    return nstyle;
+}
+
+int PrefsPack::fontsize()
+{
+    // While building the kio, we don't really care about QT Gui
+    // defaults and referencing QFont introduces a useless dependency
+#ifdef BUILDING_RECOLLGUI
+    int fs;
+    if (prefs.reslistfontsize > 0) {
+        fs  = prefs.reslistfontsize;
+    } else {
+        fs = QWidget().font().pixelSize();
+    }
+    fs = round(fs * prefs.wholeuiscale);
+    return fs;
+#else
+    return 12;
+#endif
+}
+
+std::string PrefsPack::htmlHeaderContents()
+{
+    auto comfn = path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-common.css");
+    std::string comcss;
+    file_to_string(comfn, comcss);
+    std::ostringstream oss;
+    oss << comcss << "\n";
+    oss << "<style type=\"text/css\">\nhtml,body,form, fieldset,table,tr,td,img,select,input {\n";
+#ifdef SETFONT_WITH_HEADSTYLE
+    if (!prefs.reslistfontfamily.isEmpty()) {
+        oss << "font-family: \"" << qs2utf8s(prefs.reslistfontfamily) << "\";\n";
+    }
+    oss << "font-size: " <<  round(prefs.reslistfontsize * 1.2) << "px;\n";
+#endif
+    oss << "color: " << qs2utf8s(prefs.fontcolor) << ";\n";
+    oss << "}\n</style>\n";
+    oss << qs2utf8s(prefs.darkreslistheadertext) << qs2utf8s(prefs.reslistheadertext);
+
+    auto css = PrefsPack::scaleFonts(oss.str(), prefs.wholeuiscale);
+    return css;
+}
+
 void PrefsPack::setupDarkCSS()
 {
     if (!darkMode) {
@@ -424,8 +510,7 @@ void PrefsPack::setupDarkCSS()
     if (nullptr == theconfig) {
         return;
     }
-    string fn = path_cat(
-        path_cat(theconfig->getDatadir(), "examples"), "recoll-dark.css");
+    string fn = path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-dark.css");
     string data;
     string reason;
     if (!file_to_string(fn, data, &reason)) {

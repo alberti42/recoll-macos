@@ -5,6 +5,11 @@ VPATH = @srcdir@
 DEFINES += BUILDING_RECOLL
 DEFINES += BUILDING_RECOLLGUI
 
+# Decide if we set font family and style with a css section in the html <head> or with qwebsettings
+# setfont... calls.  We used to do it with websettings because it gave a faster redisplay, and the
+# css has a tendancy to not find some system fonts. We currently do it with css anyway.
+DEFINES += SETFONT_WITH_HEADSTYLE=1
+
 @QMAKE_ENABLE_WEBKIT@ QT += webkit
 @QMAKE_ENABLE_WEBKIT@ DEFINES += USING_WEBKIT
 

@@ -215,7 +215,7 @@ protected:
 
 private:
     void init(QStringList fields);
-
+    
     RecollModel   *m_model{nullptr};
     ResTablePager *m_pager{nullptr};
     ResTableDetailArea *m_detail{nullptr};

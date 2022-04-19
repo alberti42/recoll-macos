@@ -161,6 +161,7 @@ public:
     bool showTrayIcon{false};
     bool closeToTray{false};
     bool trayMessages{false};
+    double wholeuiscale{1.0};
     /*INSERTHERE*/
 
     // See widgets/qxtconfirmationmessage.
@@ -176,12 +177,20 @@ public:
     std::string stemlang();
 
     void setupDarkCSS();
+
+    // HTML Header contents for both the result list, the snippets window and others
+    std::string htmlHeaderContents();
     
     // MIME types for which we prefer to use stored text from preview
     // rather than extracting the possibly nicer HTML because the
     // extractor is very slow. This is compiled in and there is no UI
     // for now.
     std::set<std::string> preferStoredTextMimes{"application/x-hwp"};
+
+    // Scale font-sizes inside css or qss input and return changed sheet. The font-size statements
+    // need to be on their own line.
+    static std::string scaleFonts(const std::string& style, float multiplier);
+    int fontsize();
 };
 
 /** Global preferences record */

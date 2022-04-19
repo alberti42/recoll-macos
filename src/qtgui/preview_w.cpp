@@ -125,10 +125,13 @@ void Preview::init()
     }
 
     if (prefs.reslistfontfamily != "") {
-        m_font = QFont(prefs.reslistfontfamily, prefs.reslistfontsize);
+        m_font = QFont(prefs.reslistfontfamily);
     } else {
         m_font = QFont();
-        m_font.setPointSize(prefs.reslistfontsize);
+    }
+    if (prefs.reslistfontsize || prefs.wholeuiscale) {
+        int fs = prefs.reslistfontsize ? prefs.reslistfontsize : m_font.pixelSize();
+        m_font.setPixelSize(round(fs * prefs.wholeuiscale));
     }
 
     (void)new HelpClient(this);

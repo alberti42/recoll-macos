@@ -121,13 +121,6 @@ bool RclWebPage::acceptNavigationRequest(const QUrl& url,
 #endif // WEBENGINE
 
 
-// Decide if we set font family and style with a css section in the
-// html <head> or with qwebsettings setfont... calls.  We currently do
-// it with websettings because this gives an instant redisplay, and
-// the css has a tendancy to not find some system fonts. Otoh,
-// SetFontSize() needs a strange offset of 3, not needed with css.
-#undef SETFONT_WITH_HEADSTYLE
-
 class QtGuiResListPager : public ResListPager {
 public:
     QtGuiResListPager(ResList *p, int ps, bool alwayssnip) 
@@ -230,26 +223,7 @@ string QtGuiResListPager::prevUrl()
 
 string QtGuiResListPager::headerContent() 
 {
-    string out;
-
-    out = "<style type=\"text/css\">\nbody,table,select,input {\n";
-#ifdef SETFONT_WITH_HEADSTYLE
-    char ftsz[30];
-    sprintf(ftsz, "%d", prefs.reslistfontsize);
-    out += string("font-family: \"") + qs2utf8s(prefs.reslistfontfamily)
-        + "\";\n";
-    out += string("font-size: ") + ftsz + "pt;\n";
-#endif
-    out += string("color: ") + qs2utf8s(prefs.fontcolor) + ";\n";
-    out += string("}\n</style>\n");
-#if defined(USING_WEBENGINE)
-    out += "<script type=\"text/javascript\">\n";
-    out += locdetailscript;
-    out += "</script>\n";
-#endif
-    out += qs2utf8s(prefs.darkreslistheadertext);
-    out += qs2utf8s(prefs.reslistheadertext);
-    return out;
+    return prefs.htmlHeaderContents();
 }
 
 void QtGuiResListPager::suggest(const vector<string>uterms, 

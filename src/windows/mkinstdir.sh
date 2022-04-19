@@ -180,6 +180,7 @@ copyrecoll()
     chkcp $RCL/windows/mimeview           $DESTDIR/Share/examples/windows
     chkcp $RCL/sampleconf/recoll.conf     $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll.qss      $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/recoll-common.qss $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll-dark.qss $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll-dark.css $DESTDIR/Share/examples
 

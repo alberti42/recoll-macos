@@ -53,6 +53,7 @@
 #include "rclhelp.h"
 #include "plaintorich.h"
 #include "scbase.h"
+#include "readfile.h"
 
 using namespace std;
 
@@ -105,13 +106,13 @@ void SnippetsW::init()
     connect(browser, SIGNAL(linkClicked(const QUrl &)), this, SLOT(onLinkClicked(const QUrl &)));
     browser->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     browser->page()->currentFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
+#ifndef SETFONT_WITH_HEADSTYLE
     QWEBSETTINGS *ws = browser->page()->settings();
     if (prefs.reslistfontfamily != "") {
         ws->setFontFamily(QWEBSETTINGS::StandardFont, prefs.reslistfontfamily);
         ws->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize);
     }
-    if (!prefs.snipCssFile.isEmpty())
-        ws->setUserStyleSheetUrl(QUrl::fromLocalFile(prefs.snipCssFile));
+#endif
     browserw->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(browserw, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
@@ -119,11 +120,13 @@ void SnippetsW::init()
     browserw = new QWebEngineView(this);
     verticalLayout->insertWidget(0, browserw);
     browser->setPage(new SnipWebPage(this));
+#ifndef SETFONT_WITH_HEADSTYLE
     QWEBSETTINGS *ws = browser->page()->settings();
     if (prefs.reslistfontfamily != "") {
         ws->setFontFamily(QWEBSETTINGS::StandardFont, prefs.reslistfontfamily);
         ws->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize);
     }
+#endif
     // Stylesheet TBD
     browserw->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(browserw, SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -222,16 +225,15 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
     HighlightData hdata;
     source->getTerms(hdata);
 
+    std::string snipcss;
+    if (!prefs.snipCssFile.isEmpty()) {
+        file_to_string(qs2path(prefs.snipCssFile), snipcss);
+    }
     ostringstream oss;
-    oss << "<html><head>"
-        "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">";
-
-    oss << "<style type=\"text/css\">\nbody,table,select,input {\n";
-    oss << "color: " + qs2utf8s(prefs.fontcolor) + ";\n";
-    oss << "}\n</style>\n";
-    oss << qs2utf8s(prefs.darkreslistheadertext) << qs2utf8s(prefs.reslistheadertext);
-
-    oss << "</head><body><table class=\"snippets\">";
+    oss << "<html><head>\n"
+        "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n";
+    oss << prefs.htmlHeaderContents() << snipcss;
+    oss << "\n</head>\n<body>\n<table class=\"snippets\">";
 
     g_hiliter.set_inputhtml(false);
     bool nomatch = true;

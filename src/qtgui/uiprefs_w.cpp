@@ -163,6 +163,7 @@ void UIPrefsDialog::setFromPrefs()
     trayMessagesCB->setEnabled(showTrayIconCB->checkState());
     closeToTrayCB->setChecked(prefs.closeToTray);
     trayMessagesCB->setChecked(prefs.trayMessages);
+    wholeuiscaleSB->setValue(prefs.wholeuiscale);
     /*INSERTHERE_LOAD*/
 
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
@@ -439,6 +440,7 @@ void UIPrefsDialog::accept()
     m_mainWindow->enableTrayIcon(prefs.showTrayIcon);
     prefs.closeToTray = closeToTrayCB->isChecked();
     prefs.trayMessages = trayMessagesCB->isChecked();
+    prefs.wholeuiscale = wholeuiscaleSB->value();
     /*INSERTHERE_ACCEPT*/
 
     // -1 is the qxtconf... predefined value to show the dialog

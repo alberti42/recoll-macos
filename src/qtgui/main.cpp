@@ -161,17 +161,19 @@ static void recollCleanup()
     LOGDEB2("recollCleanup: done\n" );
 }
 
-void applyStyleSheet(const QString& ssfname)
+void applyStyleSheet(const QString& qssfn)
 {
-    const std::string cfname = qs2path(ssfname);
-    LOGDEB0("Applying style sheet: [" << cfname << "]\n");
-    if (!cfname.empty()) {
-        string stylesheet;
-        file_to_string(cfname, stylesheet);
-        qApp->setStyleSheet(QString::fromUtf8(stylesheet.c_str()));
-    } else {
-        qApp->setStyleSheet(QString());
+    auto comfn = path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-common.qss");
+    std::string qss;
+    file_to_string(comfn, qss);
+    if (!qssfn.isEmpty()) {
+        LOGDEB0("Using custom style sheet: [" << qs2path(qssfn) << "]\n");
+        string customqss;
+        file_to_string(qs2path(qssfn), customqss);
+        qss += customqss;
     }
+    qss = prefs.scaleFonts(qss, prefs.wholeuiscale);
+    qApp->setStyleSheet(u8s2qs(qss));
 }
 
 extern void qInitImages_recoll();
@@ -370,9 +372,8 @@ int main(int argc, char **argv)
     rwSettings(false);
     //    fprintf(stderr, "Settings done\n");
 
-    if (!prefs.qssFile.isEmpty()) {
-        applyStyleSheet(prefs.qssFile);
-    }
+    applyStyleSheet(prefs.qssFile);
+    
     QIcon icon;
     icon.addFile(QString::fromUtf8(":/images/recoll.png"));
     app.setWindowIcon(icon);

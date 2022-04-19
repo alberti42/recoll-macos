@@ -576,6 +576,7 @@ python/samples/recollqsd.py \
 sampleconf/fields sampleconf/fragment-buttons.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/macos/mimeview \
 sampleconf/recoll.conf sampleconf/recoll.qss \
+sampleconf/recoll-common.css sampleconf/recoll-common.qss \
 sampleconf/recoll-dark.qss sampleconf/recoll-dark.css \
 \
 testmains/Makefile.am \
@@ -660,17 +661,19 @@ defconfdir = $(pkgdatadir)/examples
 defconf_DATA = \
 desktop/recollindex.desktop \
 index/rclmon.sh \
-index/recollindex@.service \
 index/recollindex.service \
-sampleconf/fragment-buttons.xml \
+index/recollindex@.service \
 sampleconf/fields \
-sampleconf/recoll.conf \
+sampleconf/fragment-buttons.xml \
 sampleconf/mimeconf \
-sampleconf/recoll.qss \
-sampleconf/recoll-dark.qss \
-sampleconf/recoll-dark.css \
 sampleconf/mimemap \
-sampleconf/mimeview 
+sampleconf/mimeview \
+sampleconf/recoll-common.css \
+sampleconf/recoll-common.qss \
+sampleconf/recoll-dark.css \
+sampleconf/recoll-dark.qss \
+sampleconf/recoll.conf \
+sampleconf/recoll.qss
 
 filterdir = $(pkgdatadir)/filters
 dist_filter_DATA = \
