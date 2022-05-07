@@ -1892,6 +1892,10 @@ Sprawdź plik pulpitu</translation>
         <source>Duplicates</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Filter directories</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -4830,6 +4834,14 @@ Domyślna wartość to 2 (%).</translation>
     </message>
     <message>
         <source>Depth of side filter directory tree</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display scale (default 1.0):</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1890,6 +1890,10 @@ Merci de vérifier le fichier desktop </translation>
         <source>Duplicates</source>
         <translation>Doublons</translation>
     </message>
+    <message>
+        <source>Filter directories</source>
+        <translation>Filtrer par répertoire</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -4829,6 +4833,14 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Depth of side filter directory tree</source>
         <translation>Profondeur de l&apos;arbre du filtre de répertoires</translation>
+    </message>
+    <message>
+        <source>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</source>
+        <translation>Facteur de zoom pour l&apos;interface utilisateur. Utile si l&apos;affichage par défaut ne convient pas à votre résolution d&apos;écran.</translation>
+    </message>
+    <message>
+        <source>Display scale (default 1.0):</source>
+        <translation>Échelle d&apos;affichage (défaut 1.0):</translation>
     </message>
 </context>
 </TS>
