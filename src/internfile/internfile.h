@@ -37,7 +37,6 @@ class Doc;
 }
 
 class Uncomp;
-struct PathStat;
 
 /** Storage for missing helper program info. We want to keep this out of the 
  * FileInterner class, because the data will typically be accumulated by several

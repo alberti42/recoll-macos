@@ -39,7 +39,6 @@ public:
     DesktopDb::AppMap *m_appdefs;
 };
 
-struct PathStat;
 FsTreeWalker::Status FstCb::processone(
     const string& fn, const struct PathStat*, FsTreeWalker::CbFlag flg) 
 {

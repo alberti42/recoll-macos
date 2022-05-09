@@ -19,8 +19,9 @@
 
 #include <string>
 
+#include "pathut.h"
+
 class RclConfig;
-struct PathStat;
 
 /**
  * Try to determine a mime type for file. 

@@ -27,7 +27,6 @@
 #endif // IDX_THREADS
 
 class FIMissingStore;
-struct PathStat;
 
 class DbUpdTask;
 class InternfileTask;
