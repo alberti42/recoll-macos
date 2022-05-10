@@ -9,6 +9,7 @@
 #include "fstreewalk.h"
 #include "idxmodel.h"
 
+#undef USE_TREEWALK
 
 class WalkerCB : public FsTreeWalkerCB {
 public:
@@ -45,6 +46,7 @@ FsTreeWalker::Status WalkerCB::processone(
         return FsTreeWalker::FtwOk;
     }
     if (flg == FsTreeWalker::FtwDirEnter) {
+        //std::cerr << "ENTER: " << path << "\n";
         if (m_model->columnCount(m_indexes.top()) == 0) {
             if (!m_model->insertColumn(0, m_indexes.top()))
                 return FsTreeWalker::FtwError;
@@ -70,6 +72,7 @@ FsTreeWalker::Status WalkerCB::processone(
     return FsTreeWalker::FtwOk;
 }
 
+#ifdef USE_TREEWALK
 static void populateDir(RclConfig *config, const std::string& topstr, IdxTreeModel *model,
                         const QModelIndex& index, const std::string& path, int depth)
 {
@@ -81,19 +84,70 @@ static void populateDir(RclConfig *config, const std::string& topstr, IdxTreeMod
     walker.walk(path, cb);
 }
 
+#else
+
+// Assemble a path from its components up to lst
+std::string toksToPath(std::vector<std::string>& path, int lst)
+{
+    std::string out;
+    for (int i = 0; i <= lst; i++) {
+        out += "/" + path[i];
+    }
+    if (out.empty())
+        out = "/";
+    return out;
+}
+
+// Process a sorted list of directory paths, generating a sequence of enter/exit calls equivalent to
+// what would happen for a recursive tree walk of the original tree.
+static void treelist(const std::string& top, const std::vector<std::string>& lst, WalkerCB &cb)
+{
+    if (lst.empty()) {
+        return;
+    }
+    std::vector<std::string> curpath;
+    stringToTokens(top, curpath, "/");
+    std::cerr << "top " << top << " TOP len is " << curpath.size() << "\n";
+    for (const auto& dir : lst) {
+        // std::cerr << "DIR: " << dir << "\n";
+        std::vector<std::string> npath;
+        // Compute the new directory stack
+        stringToTokens(dir, npath, "/");
+        // Walk the stacks until we find a differing entry, and then unwind the old stack to the new
+        // base, and issue enter calls for new entries over the base.
+        int i = 0;
+        for (; i < int(std::min(curpath.size(), npath.size())); i++) {
+            if (npath[i] != curpath[i] && int(curpath.size()) > 0) {
+                // Differing at i, unwind old stack and break the main loop
+                for (int j = int(curpath.size()) - 1; j >= i; j--) {
+                    //std::cerr << "Exiting  " <<  toksToPath(curpath, j) << "\n";
+                    cb.processone(toksToPath(curpath, j), nullptr, FsTreeWalker::FtwDirReturn);
+                }
+                break;
+            }
+        }
+        // Callbacks for new entries above the base.
+        for (int j = i; j < int(npath.size()); j++) {
+            std::cerr << "Entering " << toksToPath(npath, j) << "\n";
+            cb.processone(toksToPath(npath, j), nullptr, FsTreeWalker::FtwDirEnter);
+        }
+        curpath.swap(npath);
+    }
+}
+#endif // USE_TREEWALK
+
 void IdxTreeModel::populate()
 {
     QModelIndex index = this->index(0,0);
-    auto topdirs = m_config->getTopdirs();
-
-    auto prefix = commonprefix(topdirs);
-
     if (this->columnCount(index) == 0) {
         if (!this->insertColumn(0, index))
             return;
     }
-
     int row = 0;
+
+#ifdef USE_TREEWALK
+    auto topdirs = m_config->getTopdirs();
+    auto prefix = commonprefix(topdirs);
     for (const auto& topdir : topdirs) {
         const QModelIndex child = this->index(row, 0, index);
         std::string topdisp;
@@ -106,4 +160,13 @@ void IdxTreeModel::populate()
         ++row;
     }
     sort(0, Qt::AscendingOrder);
+#else
+    std::vector<std::string> thedirs;
+    std::string prefix;
+    rcldb->dirlist(m_depth, prefix, thedirs);
+    const QModelIndex child = this->index(row, 0, index);
+    FsTreeWalker walker;
+    WalkerCB cb(m_config, prefix == "/" ? std::string() : prefix, walker, this, child);
+    treelist(path_getfather(prefix), thedirs, cb);
+#endif
 }

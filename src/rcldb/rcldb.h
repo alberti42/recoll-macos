@@ -433,6 +433,16 @@ public:
         usage. Inserts the types at the end of the parameter */
     bool getAllDbMimeTypes(std::vector<std::string>&);
 
+    /** Compute a list of all the directories containing indexed documents, down to a given depth
+
+        @param depth depth belowr a possible computed common prefix, that is, if all
+          directories are relative to /home/you, a depth of 2 would get you /home/you/1/2 but 
+          not /home/you/1/2/3
+        @param[out] commonprefix common prefix path for the list. May be "/".
+        @param[out] dirs the computed list (full paths including the prefix).
+    */
+    bool dirlist(int depth, std::string& commonprefix, std::vector<std::string>& dirs);
+
     /** Wildcard expansion specific to file names. Internal/sdata use only */
     bool filenameWildExp(const string& exp, vector<string>& names, int max);
 
