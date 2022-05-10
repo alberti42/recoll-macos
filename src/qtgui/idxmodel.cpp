@@ -107,7 +107,7 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
     }
     std::vector<std::string> curpath;
     stringToTokens(top, curpath, "/");
-    std::cerr << "top " << top << " TOP len is " << curpath.size() << "\n";
+    //std::cerr << "top " << top << " TOP len is " << curpath.size() << "\n";
     for (const auto& dir : lst) {
         // std::cerr << "DIR: " << dir << "\n";
         std::vector<std::string> npath;
@@ -128,7 +128,7 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
         }
         // Callbacks for new entries above the base.
         for (int j = i; j < int(npath.size()); j++) {
-            std::cerr << "Entering " << toksToPath(npath, j) << "\n";
+            //std::cerr << "Entering " << toksToPath(npath, j) << "\n";
             cb.processone(toksToPath(npath, j), nullptr, FsTreeWalker::FtwDirEnter);
         }
         curpath.swap(npath);

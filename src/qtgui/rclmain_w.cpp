@@ -1159,9 +1159,7 @@ void RclMain::setUIPrefs()
     if (!uiprefs)
         return;
     LOGDEB("Recollmain::setUIPrefs\n");
-    if (nullptr != m_idxtreemodel && m_idxtreemodel->getDepth() != prefs.idxFilterTreeDepth) {
-        populateSideFilters();
-    }
+    populateSideFilters();
     emit uiPrefsChanged();
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
     enbSynAction->setChecked(prefs.synFileEnable);
