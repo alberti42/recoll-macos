@@ -147,8 +147,7 @@ void RclMain::init()
     setupMenus();
 
     (void)new HelpClient(this);
-    HelpClient::installMap((const char *)this->objectName().toUtf8(),
-                           "RCL.SEARCH.GUI.SIMPLE");
+    HelpClient::installMap((const char *)this->objectName().toUtf8(), "RCL.SEARCH.GUI.SIMPLE");
 
     // Set the focus to the search terms entry:
     sSearch->takeFocus();
@@ -329,11 +328,9 @@ void RclMain::onNewShortcuts()
 
     SETSHORTCUT(sSearch, "main:347", tr("Main Window"), tr("Clear search"),
                 "Ctrl+S", m_clearsearchsc, clearAll);
-    SETSHORTCUT(sSearch, "main:349", tr("Main Window"),
-                tr("Move keyboard focus to search entry"),
+    SETSHORTCUT(sSearch, "main:349", tr("Main Window"), tr("Move keyboard focus to search entry"),
                 "Ctrl+L", m_focustosearchsc, takeFocus);
-    SETSHORTCUT(sSearch, "main:352", tr("Main Window"),
-                tr("Move keyboard focus to search, alt."),
+    SETSHORTCUT(sSearch, "main:352", tr("Main Window"), tr("Move keyboard focus to search, alt."),
                 "Ctrl+Shift+S", m_focustosearcholdsc, takeFocus);
     // We could set this as an action shortcut, but then, it would not
     // be editable
@@ -346,11 +343,9 @@ void RclMain::onNewShortcuts()
         delete m_focustotablesc;
         m_focustotablesc = new QShortcut(ks, this);
         if (displayingTable) {
-            connect(m_focustotablesc, SIGNAL(activated()), 
-                    restable, SLOT(takeFocus()));
+            connect(m_focustotablesc, SIGNAL(activated()), restable, SLOT(takeFocus()));
         } else {
-            disconnect(m_focustotablesc, SIGNAL(activated()),
-                       restable, SLOT(takeFocus()));
+            disconnect(m_focustotablesc, SIGNAL(activated()), restable, SLOT(takeFocus()));
         }
     }
 }
@@ -403,8 +398,7 @@ void RclMain::setupMenus()
         MenuBar->hide();
         sSearch->menuPB->show();
         butmenuSC = new QShortcut(QKeySequence("Alt+m"), this);
-        connect(butmenuSC, SIGNAL(activated()),
-                sSearch->menuPB, SLOT(showMenu()));
+        connect(butmenuSC, SIGNAL(activated()), sSearch->menuPB, SLOT(showMenu()));
     } else {
         MenuBar->show();
         sSearch->menuPB->hide();
@@ -418,8 +412,7 @@ void RclMain::enableTrayIcon(bool on)
     on =  on && QSystemTrayIcon::isSystemTrayAvailable();
     if (on) {
         if (nullptr == m_trayicon) {
-            m_trayicon = new RclTrayIcon(this, 
-                                         QIcon(QString(":/images/recoll.png")));
+            m_trayicon = new RclTrayIcon(this, QIcon(QString(":/images/recoll.png")));
         }
         m_trayicon->show();
     } else {
@@ -574,19 +567,15 @@ void RclMain::initDbOpen()
         nodb = true;
         if (maindberror) {
             FirstIdxDialog fidia(this);
-            connect(fidia.idxconfCLB, SIGNAL(clicked()), 
-                    this, SLOT(execIndexConfig()));
-            connect(fidia.idxschedCLB, SIGNAL(clicked()), 
-                    this, SLOT(execIndexSched()));
-            connect(fidia.runidxPB, SIGNAL(clicked()), 
-                    this, SLOT(rebuildIndex()));
+            connect(fidia.idxconfCLB, SIGNAL(clicked()), this, SLOT(execIndexConfig()));
+            connect(fidia.idxschedCLB, SIGNAL(clicked()), this, SLOT(execIndexSched()));
+            connect(fidia.runidxPB, SIGNAL(clicked()), this, SLOT(rebuildIndex()));
             fidia.exec();
             // Don't open adv search or run cmd line search in this case.
             return;
         } else {
-            QMessageBox::warning(0, "Recoll",
-                                 tr("Could not open external index. Db not "
-                                    "open. Check external indexes list."));
+            QMessageBox::warning(0, "Recoll", tr("Could not open external index. Db not "
+                                                 "open. Check external indexes list."));
         }
     }
 
@@ -631,8 +620,7 @@ void RclMain::setStemLang(QAction *id)
         lang = id->text();
     }
     prefs.queryStemLang = lang;
-    LOGDEB("RclMain::setStemLang(" << id << "): lang [" <<
-           qs2utf8s(prefs.queryStemLang) << "]\n");
+    LOGDEB("RclMain::setStemLang(" << id << "): lang [" << qs2utf8s(prefs.queryStemLang) << "]\n");
     rwSettings(true);
     emit stemLangChanged(lang);
 }
@@ -667,8 +655,7 @@ void RclMain::adjustPrefsMenu()
 void RclMain::showTrayMessage(const QString& text)
 {
     if (m_trayicon && prefs.trayMessages)
-        m_trayicon->showMessage("Recoll", text, 
-                                QSystemTrayIcon::Information, 2000);
+        m_trayicon->showMessage("Recoll", text, QSystemTrayIcon::Information, 2000);
 }
 
 void RclMain::closeEvent(QCloseEvent *ev)
@@ -755,8 +742,7 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
 
     if (prefs.synFileEnable && !prefs.synFile.isEmpty()) {
         if (!rcldb->setSynGroupsFile(qs2path(prefs.synFile))) {
-            QMessageBox::warning(0, "Recoll",
-                                 tr("Can't set synonyms file (parse error?)"));
+            QMessageBox::warning(0, "Recoll", tr("Can't set synonyms file (parse error?)"));
             return;
         }
     } else {
@@ -767,11 +753,9 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
     query->setCollapseDuplicates(prefs.collapseDuplicates);
 
     curPreview = 0;
-    DocSequenceDb *src = 
-        new DocSequenceDb(rcldb, std::shared_ptr<Rcl::Query>(query), 
-                          qs2utf8s(tr("Query results")), sdata);
-    src->setAbstractParams(prefs.queryBuildAbstract, 
-                           prefs.queryReplaceAbstract);
+    DocSequenceDb *src = new DocSequenceDb(rcldb, std::shared_ptr<Rcl::Query>(query), 
+                                           qs2utf8s(tr("Query results")), sdata);
+    src->setAbstractParams(prefs.queryBuildAbstract, prefs.queryReplaceAbstract);
     m_source = std::shared_ptr<DocSequence>(src);
 
     // If this is a file name search sort by mtype so that directories
@@ -782,25 +766,20 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
         m_sortspec.desc = false;
     }
     m_source->setSortSpec(m_sortspec);
-    m_source->setFiltSpec(m_filtspec);
-
+    setFiltSpec();
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
-    initiateQuery();
 }
 
 class QueryThread : public QThread {
     std::shared_ptr<DocSequence> m_source;
 public: 
     QueryThread(std::shared_ptr<DocSequence> source)
-        : m_source(source)
-        {
-        }
-    ~QueryThread() { }
-    virtual void run() 
-        {
-            cnt = m_source->getResCnt();
-        }
+        : m_source(source) {}
+    ~QueryThread() {}
+    virtual void run() {
+        cnt = m_source->getResCnt();
+    }
     int cnt;
 };
 
@@ -1006,9 +985,7 @@ void RclMain::saveDocToFile(Rcl::Doc doc)
     string tofile = qs2path(s);
     TempFile temp; // not used because tofile is set.
     if (!FileInterner::idocToFile(temp, tofile, theconfig, doc)) {
-        QMessageBox::warning(0, "Recoll",
-                             tr("Cannot extract document or create "
-                                "temporary file"));
+        QMessageBox::warning(0, "Recoll", tr("Cannot extract document or create temporary file"));
         return;
     }
 }
@@ -1058,8 +1035,7 @@ void RclMain::docExpand(Rcl::Doc doc)
     // rcldb->expand is set to keep the original query terms instead.
     QString text;// = sSearch->queryText->currentText();
     for (list<string>::iterator it = terms.begin(); it != terms.end(); it++) {
-        text += QString::fromLatin1(" \"") +
-            QString::fromUtf8((*it).c_str()) + QString::fromLatin1("\"");
+        text += u8s2qs(std::string(" \"") + *it + "\"");
     }
     // We need to insert item here, its not auto-done like when the user types
     // CR
@@ -1080,25 +1056,20 @@ void RclMain::showDocHistory()
         return;
     }
     // Construct a bogus SearchData structure
-    std::shared_ptr<Rcl::SearchData>searchdata = 
-        std::shared_ptr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND,
-                                                             cstr_null));
+    auto searchdata = std::make_shared<Rcl::SearchData>(Rcl::SCLT_AND, cstr_null);
     searchdata->setDescription((const char *)tr("History data").toUtf8());
 
 
     // If you change the title, also change it in eraseDocHistory()
-    DocSequenceHistory *src = 
-        new DocSequenceHistory(rcldb, g_dynconf, 
-                               string(tr("Document history").toUtf8()));
-    src->setDescription((const char *)tr("History data").toUtf8());
-    DocSource *source = new DocSource(theconfig,
-                                      std::shared_ptr<DocSequence>(src));
+    DocSequenceHistory *src =
+        new DocSequenceHistory(rcldb, g_dynconf, qs2utf8s(tr("Document history")));
+    src->setDescription(qs2utf8s(tr("History data")));
+    DocSource *source = new DocSource(theconfig, std::shared_ptr<DocSequence>(src));
     m_source = std::shared_ptr<DocSequence>(source);
     m_source->setSortSpec(m_sortspec);
-    m_source->setFiltSpec(m_filtspec);
+    setFiltSpec();
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
-    initiateQuery();
 }
 
 // Erase all memory of documents viewed
@@ -1116,9 +1087,8 @@ void RclMain::eraseDocHistory()
 void RclMain::eraseSearchHistory()
 {
     int rep = QMessageBox::warning(
-        0, tr("Confirm"), 
-        tr("Erasing simple and advanced search history lists, "
-           "please click Ok to confirm"),
+        0, tr("Confirm"),
+        tr("Erasing simple and advanced search history lists, please click Ok to confirm"),
         QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
     if (rep == QMessageBox::Ok) {
         prefs.ssearchHistory.clear();
@@ -1188,8 +1158,7 @@ QString RclMain::getQueryDescription()
 {
     if (!m_source)
         return "";
-    return m_queryDescription.isEmpty() ?
-        u8s2qs(m_source->getDescription()) : m_queryDescription;
+    return m_queryDescription.isEmpty() ? u8s2qs(m_source->getDescription()) : m_queryDescription;
 }
 
 // Set filter, action style
