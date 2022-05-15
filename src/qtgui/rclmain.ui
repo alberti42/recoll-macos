@@ -38,15 +38,11 @@
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <widget class="QWidget" name="layoutWidget">
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayoutsidefilt">
-          <item>
-           <widget class="Line" name="line3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
           <item>
            <widget class="QLabel" name="sideFilterLBL">
             <property name="text">
@@ -90,22 +86,26 @@
            </layout>
           </item>
           <item>
-           <widget class="QTreeView" name="idxTreeView"/>
+           <widget class="QTreeView" name="idxTreeView">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
         <widget class="QWidget" name="resultsLayoutWidget">
          <layout class="QHBoxLayout" name="resultsHLayout">
-           <item>
-            <widget class="ResList" name="reslist" native="true">
-             <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>2</horstretch>
-                 <verstretch>0</verstretch>
-               </sizepolicy>
-             </property>
-            </widget>
-           </item>
+          <item>
+           <widget class="ResList" name="reslist" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>2</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </widget>
@@ -121,7 +121,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <addaction name="separator"/>

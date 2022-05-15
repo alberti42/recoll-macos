@@ -166,6 +166,7 @@ void RclMain::periodic100()
             }
             string reason;
             maybeOpenDb(reason, 1);
+            populateSideFilters();
         } else {
             // update/show status even if the status file did not
             // change (else the status line goes blank during
