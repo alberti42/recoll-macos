@@ -897,6 +897,13 @@ script. Typical values: English, French... See the ABBYY documentation.
 <listitem><para>Path for the abbyy command The ABBY directory is usually not in the path, so you should set this.
 </para></listitem></varlistentry>
 </variablelist></sect3>
+<sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.MISCHANDLERPARAMS">
+<title>Parameters for specific handlers </title><variablelist>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ORGMODESUBDOCS">
+<term><varname>orgmodesubdocs</varname></term>
+<listitem><para>Index org-mode level 1 sections as separate sub-documents This is the default. If set to false, org-mode files will be indexed as plain text
+</para></listitem></varlistentry>
+</variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.SPECLOCATIONS">
 <title>Parameters set for specific locations </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MHMBOXQUIRKS">
