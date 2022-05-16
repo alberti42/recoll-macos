@@ -344,7 +344,12 @@ int main(int argc, char **argv)
     }
     QTranslator qt_trans(0);
     qt_trans.load(QString("qt_%1").arg(slang), 
-                  QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+                  QLibraryInfo::path
+#else
+                  QLibraryInfo::location
+#endif
+                      (QLibraryInfo::TranslationsPath));
     app.installTranslator(&qt_trans);
 
     // Translations for Recoll

@@ -80,10 +80,13 @@ QString QxtConfirmationMessagePrivate::key() const
 {
     QString value = overrideKey;
     if (value.isEmpty()) {
-        const QString all = qxt_p().windowTitle() + qxt_p().text() +
-            qxt_p().informativeText();
+        const QString all = qxt_p().windowTitle() + qxt_p().text() + qxt_p().informativeText();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        value = QString::number(qChecksum(all.toLocal8Bit()));
+#else
         const QByteArray data = all.toLocal8Bit();
         value = QString::number(qChecksum(data.constData(), data.length()));
+#endif
     }
     return value;
 }
