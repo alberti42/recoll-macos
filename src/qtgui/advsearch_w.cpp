@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes 
+/* Copyright (C) 2005-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -30,6 +30,7 @@
 #include <qwhatsthis.h>
 #include <qmessagebox.h>
 #include <QShortcut>
+#include <QRegularExpression>
 
 #include <string>
 #include <map>
@@ -180,10 +181,10 @@ void AdvSearch::listShortcuts()
 {
     LISTSHORTCUT(this,  "advsearch:171",
                  tr("Advanced Search"), tr("Load next stored search"),
-                "Up", m_histnextsc, slotHistoryNext);
+                 "Up", m_histnextsc, slotHistoryNext);
     LISTSHORTCUT(this, "advsearch:174",
                  tr("Advanced Search"), tr("Load previous stored search"),
-                "Down", m_histprevsc, slotHistoryPrev);
+                 "Down", m_histprevsc, slotHistoryPrev);
 }
 
 void AdvSearch::addClause(bool updsaved)
@@ -377,7 +378,7 @@ void AdvSearch::browsePB_clicked()
 size_t AdvSearch::stringToSize(QString qsize)
 {
     size_t size = size_t(-1);
-    qsize.replace(QRegExp("[\\s]+"), "");
+    qsize.replace(QRegularExpression("[\\s]+"), "");
     if (!qsize.isEmpty()) {
         string csize(qs2utf8s(qsize));
         char *cp;
@@ -389,8 +390,7 @@ size_t AdvSearch::stringToSize(QString qsize)
             case 'g': case 'G': size *= 1E9;break;
             case 't': case 'T': size *= 1E12;break;
             default: 
-                QMessageBox::warning(0, "Recoll", 
-                                     tr("Bad multiplier suffix in size filter"));
+                QMessageBox::warning(0, "Recoll", tr("Bad multiplier suffix in size filter"));
                 size = size_t(-1);
             }
         }
@@ -617,5 +617,3 @@ void AdvSearch::slotHistoryPrev()
         return;
     fromSearch(sd);
 }
-
-

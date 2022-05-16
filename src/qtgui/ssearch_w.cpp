@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes
+/* Copyright (C) 2006-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -39,6 +39,7 @@
 #include <QTimer>
 #include <QListView>
 #include <QShortcut>
+#include <QRegularExpression>
 
 #include "log.h"
 #include "guiutils.h"
@@ -683,11 +684,11 @@ void SSearch::onWordReplace(const QString& o, const QString& n)
     LOGDEB("SSearch::onWordReplace: o [" << qs2u8s(o) << "] n [" <<
            qs2u8s(n) << "]\n");
     QString txt = currentText();
-    QRegExp exp = QRegExp(QString("\\b") + o + QString("\\b"));
-    exp.setCaseSensitivity(Qt::CaseInsensitive);
+    QRegularExpression exp(QString("\\b") + o + QString("\\b"),
+                           QRegularExpression::CaseInsensitiveOption);
     txt.replace(exp, n);
     queryText->setText(txt);
-    Qt::KeyboardModifiers mods = QApplication::keyboardModifiers ();
+    Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
     if (mods == Qt::NoModifier)
         startSimpleSearch();
 }
