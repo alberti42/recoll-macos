@@ -28,7 +28,6 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 #include <QMessageBox>
-#include <QXmlDefaultHandler>
 
 #include "fragbuts.h"
 #include "pathut.h"

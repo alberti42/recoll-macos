@@ -248,13 +248,14 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm)
             .arg(mt).arg(path2qs(lcmd.front()));
 
         switch(QMessageBox::warning(0, "Recoll", message, 
-                                    "Yes", "No", 0, 0, 1)) {
-        case 0: 
+                                    QMessageBox::Yes|QMessageBox::No, QMessageBox::No)) {
+        case QMessageBox::Yes: 
             showUIPrefs();
             if (uiprefs)
                 uiprefs->showViewAction(mt);
             break;
-        case 1:
+        case QMessageBox::No:
+        default:
             break;
         }
         // The user will have to click on the link again to try the

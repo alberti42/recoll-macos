@@ -44,6 +44,7 @@
 #include <QSettings>
 #include <QToolTip>
 #include <QStandardItemModel>
+#include <QActionGroup>
 
 #include "recoll.h"
 #include "log.h"
@@ -1089,7 +1090,7 @@ void RclMain::eraseSearchHistory()
     int rep = QMessageBox::warning(
         0, tr("Confirm"),
         tr("Erasing simple and advanced search history lists, please click Ok to confirm"),
-        QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
+        QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::NoButton);
     if (rep == QMessageBox::Ok) {
         prefs.ssearchHistory.clear();
         if (sSearch)

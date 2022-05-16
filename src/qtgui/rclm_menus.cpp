@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QActionGroup>
 
 void RclMain::buildMenus()
 {

@@ -170,14 +170,15 @@ void ViewAction::editActions()
             except0 = except;
         } else {
             if ((action != action0 || except != except0) && dowarnmultiple) {
-                switch (QMessageBox::warning(0, "Recoll",
-                                             tr("Changing entries with "
-                                                "different current values"),
-                                             "Continue",
-                                             "Cancel",
-                                             0, 0, 1)) {
-                case 0: dowarnmultiple = false; break;
-                case 1: return;
+                switch (QMessageBox::warning(
+                            0, "Recoll", tr("Changing entries with different current values"),
+                            QMessageBox::Ignore | QMessageBox::Cancel, QMessageBox::Cancel)) {
+                case QMessageBox::Ignore:
+                    dowarnmultiple = false;
+                    break;
+                case QMessageBox::Cancel:
+                default:
+                    return;
                 }
             }
         }

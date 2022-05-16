@@ -3,11 +3,18 @@ QT       -= core gui
 TARGET = libxapian
 TEMPLATE = lib
 
-DEFINES += __WIN32__
-DEFINES += UNICODE
 DEFINES += HAVE_CONFIG_H
 
-XAPIANDIR = ../../../../recolldeps/msvc/xapian-core/
+windows {
+    XAPIANDIR = ../../../../recolldeps/msvc/xapian-core/
+    DEFINES += __WIN32__
+    DEFINES += UNICODE
+}
+mac {
+    XAPIANDIR = ../../../../xapian-core-1.4.18/
+    CONFIG += staticlib
+    QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
+}
 
 SOURCES += \
 $$XAPIANDIR/api/compactor.cc \

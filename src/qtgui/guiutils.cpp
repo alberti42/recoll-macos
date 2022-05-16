@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <sstream>
 
 // Programs built with gcc 4.8.4 (e.g.: Ubuntu Trusty), crash at startup while initializing stdc++
 // regular expression objects (and also crash if we make them non-static).

@@ -153,10 +153,10 @@ void SearchClauseW::setFromClause(SearchDataClauseSimple *cl)
     case SCLT_PHRASE: case SCLT_NEAR:
     if (!field.isEmpty()) {
         int idx = fldCMB->findText(field);
-        if (field >= 0) {
-        fldCMB->setCurrentIndex(idx);
+        if (idx >= 0) {
+            fldCMB->setCurrentIndex(idx);
         } else {
-        fldCMB->setEditText(field);
+            fldCMB->setEditText(field);
         }
     }
     /* FALLTHROUGH */

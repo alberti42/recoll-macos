@@ -22,7 +22,6 @@
 
 #include <qapplication.h>
 #include <qtranslator.h>
-#include <qtextcodec.h> 
 #include <qtimer.h>
 #include <qthread.h>
 #include <qmessagebox.h>
@@ -345,7 +344,7 @@ int main(int argc, char **argv)
     }
     QTranslator qt_trans(0);
     qt_trans.load(QString("qt_%1").arg(slang), 
-                  QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+                  QLibraryInfo::path(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qt_trans);
 
     // Translations for Recoll

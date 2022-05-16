@@ -58,6 +58,7 @@ windows {
 }
 
 mac {
+  QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
   QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
   SOURCES += \
     ../../utils/closefrom.cpp \
@@ -66,7 +67,7 @@ mac {
     ../../utils/rclionice.cpp
 
   LIBS += \
-     ../build-librecoll-Desktop_Qt_5_14_2_clang_64bit-Release/liblibrecoll.a \
-     ../../../../xapian-core-1.4.18/.libs/libxapian.a \
+     ../build-librecoll-Qt_6_2_4_for_macOS-Release/liblibrecoll.a \
+     ../build-libxapian-Qt_6_2_4_for_macOS-Release/liblibxapian.a \
      -lxslt -lxml2 -liconv -lz
 }

@@ -13,20 +13,20 @@ usage()
 # Adjustable things
 top=~/Recoll
 # The possibly bogus version we have in paths (may be harcoded in the .pro)
-qtpathversion=5.14.2
-# Will probably need adjustment on M1
-path_clang=clang_64
-# The real version for finding macdeployqt
-qtversion=5.15.2
+# qtpathversion=Desktop_Qt_5_15_2
+qtpathversion=Qt_6_2_4
+# path_clang=clang_64bit
+path_clang=for_macOS
+# qtversion=5.15.2
+qtversion=6.2.4
 
-deploy=~/Qt/${qtversion}/${path_clang}/bin/macdeployqt
-
-qt_ver_sion=`echo $qtpathversion | sed -e 's/\./_/g'`
+#deploy=~/Qt/${qtversion}/macos/clang_64bit/macdeployqt
+deploy=~/Qt/${qtversion}/macos/bin/macdeployqt
 
 toprecoll=$top/recoll/src
-appdir=$toprecoll/build-recoll-win-Desktop_Qt_${qt_ver_sion}_${path_clang}bit-Release/recoll.app
-rclindexdir=$toprecoll/windows/build-recollindex-Desktop_Qt_${qt_ver_sion}_${path_clang}bit-Release
-rclqdir=$toprecoll/windows/build-recollq-Desktop_Qt_${qt_ver_sion}_${path_clang}bit-Release
+appdir=$toprecoll/build-recoll-win-${qtpathversion}_${path_clang}-Release/recoll.app
+rclindexdir=$toprecoll/windows/build-recollindex-${qtpathversion}_${path_clang}-Release
+rclqdir=$toprecoll/windows/build-recollq-${qtpathversion}_${path_clang}-Release
 bindir=$appdir/Contents/MacOS
 datadir=$appdir/Contents/Resources
 
