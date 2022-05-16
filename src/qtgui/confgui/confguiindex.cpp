@@ -423,13 +423,12 @@ bool ConfIndexW::setupSearchPanel(int idx)
     return true;
 }
 
-ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
-                             RclConfig *rclconf)
+ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config, RclConfig *rclconf)
     : QWidget(parent), m_config(config)
 {
     QVBoxLayout *vboxLayout = new QVBoxLayout(this);
     vboxLayout->setSpacing(spacing);
-    vboxLayout->setMargin(margin);
+    vboxLayout->setContentsMargins(QMargins(margin,margin,margin,margin));
 
     m_subdirs = new ConfParamDNLW(
         "bogus00", this, ConfLink(new confgui::ConfLinkNullRep()), 
@@ -483,7 +482,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
 
     QGridLayout *gl1 = new QGridLayout(m_groupbox);
     gl1->setSpacing(spacing);
-    gl1->setMargin(margin);
+    gl1->setContentsMargins(QMargins(margin,margin,margin,margin));
     int gridy = 0;
 
     ConfParamSLW *eskn = new ConfParamSLW(
