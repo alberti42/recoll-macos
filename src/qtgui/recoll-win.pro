@@ -124,6 +124,7 @@ windows {
   DEFINES += __WIN32__
   DEFINES += UNICODE
   RC_FILE = recoll.rc
+  QCBUILDLOC = Desktop_Qt_5_14_2_MSVC2017_32bit
 
   HEADERS += \
     winschedtool.h
@@ -144,13 +145,13 @@ windows {
     RECOLLDEPS = ../../../recolldeps/msvc
     DEFINES += USING_STATIC_LIBICONV
     PRE_TARGETDEPS = \
-      ../windows/build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release/librecoll.lib
+      ../windows/build-librecoll-$$QCBUILDLOC-Release/release/librecoll.lib
     LIBS += \
-      -L../windows/build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibrecoll \
+      -L../windows/build-librecoll-$$QCBUILDLOC-Release/release -llibrecoll \
       $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
       $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
-      -L../windows/build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibxapian \
-      -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release -llibiconv \
+      -L../windows/build-libxapian-$$QCBUILDLOC-Release/release -llibxapian \
+      -L$$RECOLLDEPS/build-libiconv-$$QCBUILDLOC-Release/release -llibiconv \
       $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
       -lrpcrt4 -lws2_32 -luser32 -lshell32 -lshlwapi -lpsapi -lkernel32
   }
@@ -159,7 +160,8 @@ windows {
 mac {
   QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
   QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
-
+  QCBUILDLOC=Qt_6_2_4_for_macOS
+  
   HEADERS += \
     crontool.h \
     rtitool.h
@@ -177,8 +179,8 @@ mac {
     rtitool.ui
 
   LIBS += \
-    ../windows/build-librecoll-Qt_6_2_4_for_macOS-Release/liblibrecoll.a \
-    ../windows/build-libxapian-Qt_6_2_4_for_macOS-Release/liblibxapian.a \
+    ../windows/build-librecoll-$$QCBUILDLOC-Release/liblibrecoll.a \
+    ../windows/build-libxapian-$$QCBUILDLOC-Release/liblibxapian.a \
     -lxslt -lxml2 -liconv -lz
 
   ICON = images/recoll.icns

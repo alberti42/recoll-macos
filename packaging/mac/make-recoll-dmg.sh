@@ -13,10 +13,9 @@ usage()
 # Adjustable things
 top=~/Recoll
 # The possibly bogus version we have in paths (may be harcoded in the .pro)
-# qtpathversion=Desktop_Qt_5_15_2
-qtpathversion=Qt_6_2_4
-# path_clang=clang_64bit
-path_clang=for_macOS
+# qcbuildloc=Desktop_Qt_5_15_2_clang_64bit
+qcbuildloc=Qt_6_2_4_for_macOS
+
 # qtversion=5.15.2
 qtversion=6.2.4
 
@@ -24,9 +23,9 @@ qtversion=6.2.4
 deploy=~/Qt/${qtversion}/macos/bin/macdeployqt
 
 toprecoll=$top/recoll/src
-appdir=$toprecoll/build-recoll-win-${qtpathversion}_${path_clang}-Release/recoll.app
-rclindexdir=$toprecoll/windows/build-recollindex-${qtpathversion}_${path_clang}-Release
-rclqdir=$toprecoll/windows/build-recollq-${qtpathversion}_${path_clang}-Release
+appdir=$toprecoll/build-recoll-win-${qcbuildloc}-Release/recoll.app
+rclindexdir=$toprecoll/windows/build-recollindex-${qcbuildloc}-Release
+rclqdir=$toprecoll/windows/build-recollq-${qcbuildloc}-Release
 bindir=$appdir/Contents/MacOS
 datadir=$appdir/Contents/Resources
 
