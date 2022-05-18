@@ -4,10 +4,12 @@
 
 #include <QStandardItemModel>
 
+#include "idxmodel.h"
+
 #include "recoll.h"
 #include "rclconfig.h"
 #include "fstreewalk.h"
-#include "idxmodel.h"
+#include "log.h"
 
 #undef USE_TREEWALK
 
@@ -107,9 +109,9 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
     }
     std::vector<std::string> curpath;
     stringToTokens(top, curpath, "/");
-    //std::cerr << "top " << top << " TOP len is " << curpath.size() << "\n";
+    LOGDEB0("treelist: " << "top " << top << " TOP depth is " << curpath.size() << "\n");
     for (const auto& dir : lst) {
-        // std::cerr << "DIR: " << dir << "\n";
+        LOGDEB1("DIR: " << dir << "\n");
         std::vector<std::string> npath;
         // Compute the new directory stack
         stringToTokens(dir, npath, "/");
@@ -138,6 +140,7 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
 
 void IdxTreeModel::populate()
 {
+    LOGDEB0("IdxTreeModel::populate\n");
     QModelIndex index = this->index(0,0);
     if (this->columnCount(index) == 0) {
         if (!this->insertColumn(0, index))
@@ -164,9 +167,13 @@ void IdxTreeModel::populate()
     std::vector<std::string> thedirs;
     std::string prefix;
     rcldb->dirlist(m_depth, prefix, thedirs);
+    LOGDEB0("IdxTreeModel::populate: prefix [" << prefix << "] thedirs: " <<
+            stringsToString(thedirs) << "\n");
     const QModelIndex child = this->index(row, 0, index);
     FsTreeWalker walker;
     WalkerCB cb(m_config, prefix == "/" ? std::string() : prefix, walker, this, child);
+    if (prefix.empty())
+        prefix = "/";
     treelist(path_getfather(prefix), thedirs, cb);
 #endif
 }
