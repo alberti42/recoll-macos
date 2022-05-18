@@ -39,7 +39,7 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     $(DEFS)
 
 noinst_PROGRAMS = plaintorich textsplit fstreewalk rclconfig hldata unac mbox \
-    circache wipedir mimetype fileudi x11mon trqrstore ecrontab rcldb
+    circache wipedir mimetype fileudi x11mon trqrstore ecrontab rcldb rclutil
 
 ecrontab_SOURCES = trecrontab.cpp
 ecrontab_LDADD = ../librecoll.la
@@ -67,6 +67,9 @@ rclconfig_LDADD = ../librecoll.la
 
 rcldb_SOURCES = trrcldb.cpp
 rcldb_LDADD = ../librecoll.la
+
+rclutil_SOURCES = trrclutil.cpp
+rclutil_LDADD = ../librecoll.la
 
 textsplit_SOURCES = trtextsplit.cpp
 textsplit_LDADD = ../librecoll.la

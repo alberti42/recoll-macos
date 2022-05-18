@@ -213,22 +213,6 @@ bool path_utimes(const std::string& path, struct path_timeval times[2]);
  * @param mode is an std::fstream mode (ios::in etc.) */
 extern bool path_streamopen(const std::string& path, int mode, std::fstream& outstream);
 
-/// Encode according to rfc 1738
-extern std::string url_encode(const std::string& url, std::string::size_type offs = 0);
-extern std::string url_decode(const std::string& encoded);
-//// Convert to file path if url is like file://. This modifies the
-//// input (and returns a copy for convenience)
-extern std::string fileurltolocalpath(std::string url);
-/// Test for file:/// url
-extern bool urlisfileurl(const std::string& url);
-///
-extern std::string url_parentfolder(const std::string& url);
-/// Return the host+path part of an url. This is not a general
-/// routine, it does the right thing only in the recoll context
-extern std::string url_gpath(const std::string& url);
-/// Turn absolute path into file:// url
-extern std::string path_pathtofileurl(const std::string& path);
-
 /// URI parser, loosely from rfc2396.txt
 class ParsedUri {
 public:
