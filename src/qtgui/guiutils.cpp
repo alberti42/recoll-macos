@@ -47,6 +47,12 @@ RclDynConf *g_dynconf;
 AdvSearchHist *g_advshistory;
 RclConfig *theconfig;
 
+#ifdef _WIN32
+static const std::string dirlistsep{";"};
+#else
+static const std::string dirlistsep{":"};
+#endif
+
 // The table should not be necessary, but I found no css way to get
 // qt 4.6 qtextedit to clear the margins after the float img without 
 // introducing blank space.
@@ -314,7 +320,7 @@ void rwSettings(bool writing)
     // known dbs and active (searched) ones.
     // When starting up, we also add from the RECOLL_EXTRA_DBS environment
     // variable.
-    // This are stored inside the dynamic configuration file (aka: history), 
+    // These are stored inside the dynamic configuration file (aka: history), 
     // as they are likely to depend on RECOLL_CONFDIR.
     if (writing) {
         g_dynconf->eraseAll(allEdbsSk);
@@ -330,12 +336,11 @@ void rwSettings(bool writing)
         const char *cp;
         if ((cp = getenv("RECOLL_EXTRA_DBS")) != 0) {
             vector<string> dbl;
-            stringToTokens(cp, dbl, ":");
+            stringToTokens(cp, dbl, dirlistsep);
             for (const auto& path : dbl) {
                 string dbdir = path_canon(path);
                 path_catslash(dbdir);
-                if (std::find(prefs.allExtraDbs.begin(),
-                              prefs.allExtraDbs.end(), dbdir) != 
+                if (std::find(prefs.allExtraDbs.begin(), prefs.allExtraDbs.end(), dbdir) != 
                     prefs.allExtraDbs.end())
                     continue;
                 bool stripped;
@@ -344,14 +349,12 @@ void rwSettings(bool writing)
                     continue;
                 }
                 if (stripped != o_index_stripchars) {
-                    LOGERR("Incompatible character stripping: [" << dbdir <<
-                           "]\n");
+                    LOGERR("Incompatible character stripping: [" << dbdir << "]\n");
                     continue;
                 }
                 prefs.allExtraDbs.push_back(dbdir);
             }
         }
-
         // Get the remembered "active external indexes":
         prefs.activeExtraDbs = g_dynconf->getStringEntries<vector>(actEdbsSk);
 
@@ -375,19 +378,17 @@ void rwSettings(bool writing)
         const char *cp4Act;
         if ((cp4Act = getenv("RECOLL_ACTIVE_EXTRA_DBS")) != 0) {
             vector<string> dbl;
-            stringToTokens(cp4Act, dbl, ":");
+            stringToTokens(cp4Act, dbl, dirlistsep);
             for (const auto& path : dbl) {
                 string dbdir = path_canon(path);
                 path_catslash(dbdir);
-                if (std::find(prefs.activeExtraDbs.begin(),
-                              prefs.activeExtraDbs.end(), dbdir) !=
+                if (std::find(prefs.activeExtraDbs.begin(), prefs.activeExtraDbs.end(), dbdir) !=
                     prefs.activeExtraDbs.end())
                     continue;
                 bool strpd;
                 if (!Rcl::Db::testDbDir(dbdir, &strpd) || 
                     strpd != o_index_stripchars) {
-                    LOGERR("Not a Xapian dir or diff. char stripping: ["  <<
-                           dbdir << "]\n");
+                    LOGERR("Not a Xapian dir or diff. char stripping: ["  << dbdir << "]\n");
                     continue;
                 }
                 prefs.activeExtraDbs.push_back(dbdir);
