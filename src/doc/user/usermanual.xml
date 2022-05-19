@@ -2899,6 +2899,9 @@ fs.inotify.max_user_watches=32768
         </para>
         <screen>export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</screen> 
 
+        <para>On Windows, use semi-colons (<literal>;</literal>) as separators instead of
+        colons.</para> 
+
         <para>Another environment
         variable, <envar>RECOLL_ACTIVE_EXTRA_DBS</envar> allows adding to
         the active list of indexes. This variable was suggested and
