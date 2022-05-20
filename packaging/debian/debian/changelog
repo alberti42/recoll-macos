@@ -1,14 +1,17 @@
 recoll (1.32.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * GUI side panel filters: make sure the filter is applied even if
-    set before the query.
-  * GUI side panel directory filter: compute the tree from the index, not the file system, to allow
-    filtering data from external indexes. Update the tree when an indexing completes.
+  * GUI side panel filters: make sure the filter is applied even if set before
+    the query.
+  * GUI side panel directory filter: compute the tree from the index, not the
+    file system, to allow filtering data from external indexes. Update the tree
+    when an indexing completes.
   * Implement whole UI scaling factor (fonts only, no icons).
-  * Orgmode: add orgmodesubdocs configuration variable to decide if we index whole files or create
-    subdocuments for nodes. Also index text before the first heading.
+  * Orgmode: add orgmodesubdocs configuration variable to decide if we index
+    whole files or create subdocuments for nodes. Also index text before the
+    first heading.
+  * GUI: fix path translation for importing an index from Windows.
 
- -- Jean-Francois Dockes <jf@dockes.org>  Sun, 15 May 2022 08:07:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 20 May 2022 10:55:00 +0200
 
 recoll (1.32.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
