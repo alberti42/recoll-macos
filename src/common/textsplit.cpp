@@ -508,7 +508,7 @@ bool TextSplit::words_from_span(size_t bp)
 inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 {
     int bp = int(_bp);
-    LOGERR("TextSplit::doemit: sper " << spanerase << " bp " << bp <<
+    LOGDEB2("TextSplit::doemit: sper " << spanerase << " bp " << bp <<
             " spp " << m_spanpos << " spanwords " << m_words_in_span.size() <<
             " wS " << m_wordStart << " wL " << m_wordLen << " inn " <<
             m_inNumber << " span [" << m_span << "]\n");
