@@ -11,16 +11,18 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.32.0
+RCLVERS=1.32.1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.1
 PPAVERS=2
 
-# 
-RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
-SCOPESRC=/y/home/dockes/projets/fulltext/unity-scope-recoll
-GSSPSRC=/y/home/dockes/projets/fulltext/gssp-recoll
-RCLDOWNLOAD=/y/home/dockes/projets/lesbonscomptes/recoll
+#
+#Y=/y
+Y=
+RCLSRC=${Y}/home/dockes/projets/fulltext/recoll/src
+SCOPESRC=${Y}/home/dockes/projets/fulltext/unity-scope-recoll
+GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
+RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
@@ -84,7 +86,7 @@ done
 
 ### KIO.
 series="bionic focal impish jammy"
-series=jammy
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
