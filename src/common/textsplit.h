@@ -162,6 +162,7 @@ private:
     static bool o_deHyphenate; // false
     static unsigned int o_CJKNgramLen; // 2
     static int o_maxWordLength; // 40
+    static int o_maxWordsInSpan; // 6
 
     Flags         m_flags;
 

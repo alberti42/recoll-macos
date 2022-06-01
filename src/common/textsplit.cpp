@@ -81,6 +81,8 @@ unsigned int  TextSplit::o_CJKNgramLen{2};
 bool          TextSplit::o_noNumbers{false};
 bool          TextSplit::o_deHyphenate{false};
 int           TextSplit::o_maxWordLength{40};
+int           TextSplit::o_maxWordsInSpan{6};
+
 static const int o_CJKMaxNgramLen{5};
 bool o_exthangultagger{false};
 
@@ -90,6 +92,7 @@ static char underscoreatend = '_';
 void TextSplit::staticConfInit(RclConfig *config)
 {
     config->getConfParam("maxtermlength", &o_maxWordLength);
+    config->getConfParam("maxwordsinspan", &o_maxWordsInSpan);
 
     bool bvalue{false};
     if (config->getConfParam("nocjk", &bvalue) && bvalue == true) {
@@ -505,7 +508,7 @@ bool TextSplit::words_from_span(size_t bp)
 inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 {
     int bp = int(_bp);
-    LOGDEB2("TextSplit::doemit: sper " << spanerase << " bp " << bp <<
+    LOGERR("TextSplit::doemit: sper " << spanerase << " bp " << bp <<
             " spp " << m_spanpos << " spanwords " << m_words_in_span.size() <<
             " wS " << m_wordStart << " wL " << m_wordLen << " inn " <<
             m_inNumber << " span [" << m_span << "]\n");
@@ -513,7 +516,7 @@ inline bool TextSplit::doemit(bool spanerase, size_t _bp)
     if (m_wordLen) {
         // We have a current word. Remember it
 
-        if (m_words_in_span.size() >= 6) {
+        if (int(m_words_in_span.size()) >= o_maxWordsInSpan) {
             // Limit max span word count
             spanerase = true;
         }
