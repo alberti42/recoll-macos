@@ -254,8 +254,8 @@ RclConfig::RclConfig(const string *argcnf)
     // this is the default conf
     if (!autoconfdir && !isDefaultConfig()) {
         if (!path_exists(m_confdir)) {
-            m_reason = "Explicitly specified configuration "
-                "directory must exist (won't be automatically created). Use mkdir first";
+            m_reason = std::string("Explicitly specified configuration [") + m_confdir +
+                "] directory must exist (won't be automatically created). Use mkdir first";
             return;
         }
     }
