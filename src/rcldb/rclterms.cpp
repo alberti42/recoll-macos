@@ -529,7 +529,7 @@ bool Db::dirlist(int depth, std::string& root, std::vector<std::string>& dirs)
         break;
     }
     if (!m_reason.empty()) {
-        LOGERR("Db::dirlist: " << m_reason << "\n");
+        LOGERR("Db::dirlist: exception while accessing index: " << m_reason << "\n");
         return false;
     }
 

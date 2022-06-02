@@ -572,13 +572,20 @@ void RclMain::initDbOpen()
     if (!maybeOpenDb(reason, true, &maindberror)) {
         nodb = true;
         if (maindberror) {
-            FirstIdxDialog fidia(this);
-            connect(fidia.idxconfCLB, SIGNAL(clicked()), this, SLOT(execIndexConfig()));
-            connect(fidia.idxschedCLB, SIGNAL(clicked()), this, SLOT(execIndexSched()));
-            connect(fidia.runidxPB, SIGNAL(clicked()), this, SLOT(rebuildIndex()));
-            fidia.exec();
-            // Don't open adv search or run cmd line search in this case.
-            return;
+            if (theconfig && !path_exists(theconfig->getDbDir())) {
+                    FirstIdxDialog fidia(this);
+                    connect(fidia.idxconfCLB, SIGNAL(clicked()), this, SLOT(execIndexConfig()));
+                    connect(fidia.idxschedCLB, SIGNAL(clicked()), this, SLOT(execIndexSched()));
+                    connect(fidia.runidxPB, SIGNAL(clicked()), this, SLOT(rebuildIndex()));
+                    fidia.exec();
+                    // Don't open adv search or run cmd line search in this case.
+                    return;
+            } else {
+                QMessageBox::warning(
+                    0, "Recoll", tr("Main index open error: ") + u8s2qs(reason) + 
+                    tr(". The index may be corrupted. Maybe try to run xapian-check or "
+                       "rebuild the index ?."));
+            }
         } else {
             QMessageBox::warning(0, "Recoll", tr("Could not open external index. Db not "
                                                  "open. Check external indexes list."));
