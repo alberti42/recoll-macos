@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2020 J.F.Dockes
+/* Copyright (C) 2005-2022 J.F.Dockes
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -31,11 +31,11 @@
 #include "appformime.h"
 #include "rclmain_w.h"
 #include "utf8iter.h"
+#include "rclutil.h"
 
 namespace ResultPopup {
 
-QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
-              Rcl::Doc& doc)
+QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source, Rcl::Doc& doc)
 {
     QMenu *popup = new QMenu(me);
 
@@ -70,8 +70,7 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
                     act->setData(v);
                     sub->addAction(act);
                 }
-                sub->connect(sub, SIGNAL(triggered(QAction *)), me, 
-                             SLOT(menuOpenWith(QAction *)));
+                sub->connect(sub, SIGNAL(triggered(QAction *)), me, SLOT(menuOpenWith(QAction *)));
             }
         }
 
@@ -88,8 +87,7 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
                     act->setData(v);
                     sub->addAction(act);
                 }
-                sub->connect(sub, SIGNAL(triggered(QAction *)), me, 
-                             SLOT(menuOpenWith(QAction *)));
+                sub->connect(sub, SIGNAL(triggered(QAction *)), me, SLOT(menuOpenWith(QAction *)));
             }
         }
         delete ddb;
@@ -103,12 +101,10 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
     popup->addAction(QWidget::tr("Copy Text"), me, SLOT(menuCopyText()));
 
     if ((opts&showSaveOne) && !(isFsTop))
-        popup->addAction(QWidget::tr("&Write to File"), me,
-                         SLOT(menuSaveToFile()));
+        popup->addAction(QWidget::tr("&Write to File"), me, SLOT(menuSaveToFile()));
 
     if ((opts&showSaveSel))
-        popup->addAction(QWidget::tr("Save selection to files"), 
-                         me, SLOT(menuSaveSelection()));
+        popup->addAction(QWidget::tr("Save selection to files"), me, SLOT(menuSaveSelection()));
 
 
     // We now separate preview/open parent, which only makes sense for
@@ -117,25 +113,21 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source,
     Rcl::Doc pdoc;
     bool isEnclosed = source && source->getEnclosing(doc, pdoc);
     if (isEnclosed) {
-        popup->addAction(QWidget::tr("Preview P&arent document/folder"), 
+        popup->addAction(QWidget::tr("Preview P&arent document/folder"),
                          me, SLOT(menuPreviewParent()));
-        popup->addAction(QWidget::tr("&Open Parent document"), 
-                         me, SLOT(menuOpenParent()));
+        popup->addAction(QWidget::tr("&Open Parent document"), me, SLOT(menuOpenParent()));
     }
     if (doc.isFsFile())
-        popup->addAction(QWidget::tr("&Open Parent Folder"),
-                         me, SLOT(menuOpenFolder()));
+        popup->addAction(QWidget::tr("&Open Parent Folder"), me, SLOT(menuOpenFolder()));
 
     if (opts & showExpand)
-        popup->addAction(QWidget::tr("Find &similar documents"), 
-                         me, SLOT(menuExpand()));
+        popup->addAction(QWidget::tr("Find &similar documents"), me, SLOT(menuExpand()));
 
     if (doc.haspages && source && source->snippetsCapable()) 
-        popup->addAction(QWidget::tr("Open &Snippets window"), 
-                         me, SLOT(menuShowSnippets()));
+        popup->addAction(QWidget::tr("Open &Snippets window"), me, SLOT(menuShowSnippets()));
 
     if ((opts & showSubs) && rcldb && rcldb->hasSubDocs(doc)) 
-        popup->addAction(QWidget::tr("Show subdocuments / attachments"), 
+        popup->addAction(QWidget::tr("Show subdocuments / attachments"),
                          me, SLOT(menuShowSubDocs()));
 
     return popup;
@@ -163,13 +155,10 @@ Rcl::Doc getFolder(Rcl::Doc& doc)
 static const std::string twoslash{"//"};
 void copyPath(const Rcl::Doc &doc)
 {
-    auto pos = doc.url.find(twoslash);
-    std::string path;
-    if (pos == std::string::npos) {
-        path = doc.url; // ??
-    } else {
-        path = doc.url.substr(pos+2);
-    }
+    auto path = fileurltolocalpath(doc.url);
+#ifdef _WIN32
+    path_backslashize(path);
+#endif
     // Problem: setText expects a QString. Passing a (const char*) as
     // we used to do causes an implicit conversion from latin1. File
     // are binary and the right approach would be no conversion, but

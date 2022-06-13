@@ -224,11 +224,17 @@ string QtGuiResListPager::prevUrl()
 
 string QtGuiResListPager::headerContent() 
 {
-    return prefs.htmlHeaderContents();
+    string out;
+#if defined(USING_WEBENGINE)
+    out += "<script type=\"text/javascript\">\n";
+    out += locdetailscript;
+    out += "</script>\n";
+#endif
+
+    return out + prefs.htmlHeaderContents();
 }
 
-void QtGuiResListPager::suggest(const vector<string>uterms, 
-                                map<string, vector<string> >& sugg)
+void QtGuiResListPager::suggest(const vector<string>uterms, map<string, vector<string> >& sugg)
 {
     sugg.clear();
     bool issimple = m_reslist && m_reslist->m_rclmain && 
@@ -1106,7 +1112,7 @@ void ResList::onPopupJsDone(const QVariant &jr)
             QString nm = qsl[i].left(eq).trimmed();
             QString value = qsl[i].right(qsl[i].size() - (eq+1)).trimmed();
             if (!nm.compare("rcldocnum")) {
-                m_popDoc = pageFirstDocNum() + atoi(qs2utf8s(value).c_str());
+                m_popDoc = pageFirstDocNum() + value.toInt();
             } else {
                 LOGERR("onPopupJsDone: unknown key: " << qs2utf8s(nm) << "\n");
             }
