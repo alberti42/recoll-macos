@@ -837,13 +837,13 @@ void RclMain::initiateQuery()
 
         qApp->processEvents();
     }
-
+    progress.close();
+    
     int cnt = qthr.cnt;
     QString msg;
     if (cnt > 0) {
         QString str;
-        msg = tr("Result count (est.)") + ": " + 
-            str.setNum(cnt);
+        msg = tr("Result count (est.)") + ": " + str.setNum(cnt);
     } else {
         msg = tr("No results found");
     }

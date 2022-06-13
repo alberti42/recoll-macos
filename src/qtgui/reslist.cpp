@@ -36,6 +36,7 @@
 #include <qscrollbar.h>
 #include <QTextBlock>
 #include <QShortcut>
+#include <QProgressDialog>
 
 #include "log.h"
 #include "smallut.h"
@@ -779,11 +780,12 @@ void ResList::resultPageFor(int docnum)
 
 void ResList::append(const QString &text)
 {
-#if 0
-    std::cout << qs2utf8s(text) << "\n";
-#endif
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     m_text += text;
+    if (m_progress && text.startsWith("<div class=\"rclresult\"")) {
+        m_progress->setValue(m_residx++);
+    }
+    QApplication::processEvents();
 #else
     QTextBrowser::append(text);
 #endif
@@ -793,11 +795,24 @@ void ResList::displayPage()
 {
     resetView();
 
+#if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
+    QProgressDialog progress("Generating text snippets...", "", 0, prefs.respagesize, this);
+    m_residx = 0;
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setCancelButton(nullptr);
+    progress.setMinimumDuration(2000);
+    m_progress = &progress;
+#endif
+    
     m_pager->displayPage(theconfig);
 
 #if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
     // webengine from qt 5.15 on won't load local images if the base URL is
     // not set (previous versions worked with an empty one). Can't hurt anyway.
+    if (m_progress) {
+        m_progress->close();
+        m_progress = nullptr;
+    }
     const static QUrl baseUrl("file:///");
     setHtml(m_text, baseUrl);
 #endif
@@ -935,8 +950,7 @@ void ResList::onLinkClicked(const QUrl &qurl)
     // icons display which had stopped working). So the linkprefix
     // thing could probably go away. OTOH, we'd have to substract the
     // baseUrl because we receive links like baseUrl+P1 instead.
-    LOGDEB1("ResList::onLinkClicked: [" << strurl << "] prefix " <<
-            m_pager->linkPrefix() << "\n");
+    LOGDEB1("ResList::onLinkClicked: [" << strurl << "] prefix " << m_pager->linkPrefix() << "\n");
     if (m_pager->linkPrefix().size() > 0 &&
         (strurl.size() <= m_pager->linkPrefix().size() ||
          !beginswith(strurl, m_pager->linkPrefix()))) {
@@ -959,8 +973,7 @@ void ResList::onLinkClicked(const QUrl &qurl)
             if (getDoc(docnum, doc)) {
                 havedoc = true;
             } else {
-                LOGERR("ResList::onLinkClicked: can't get doc for "<<
-                       docnum << "\n");
+                LOGERR("ResList::onLinkClicked: can't get doc for "<< docnum << "\n");
             }
         }
     }

@@ -38,6 +38,7 @@
 class RclMain;
 class QtGuiResListPager;
 class QEvent;
+class QProgressDialog;
 namespace Rcl {
 class Doc;
 }
@@ -140,6 +141,8 @@ private:
     // Webview makes it more difficult to append text incrementally,
     // so we store the page and display it when done.
     QString    m_text;
+    QProgressDialog *m_progress{nullptr};
+    int m_residx{0}; // result index in page
 #else
     // Translate from textedit paragraph number to relative
     // docnum. Built while we insert text into the qtextedit
