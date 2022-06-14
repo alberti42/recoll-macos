@@ -1,3 +1,10 @@
+recoll (1.32.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Restore result list popup menu function when using webengine. This was broken in 1.32.1.
+  * Show progress dialog when result list abstracts generation takes too long
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 14 Jun 2022 07:51:00 +0200
+
 recoll (1.32.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * GUI side panel filters: make sure the filter is applied even if set before
