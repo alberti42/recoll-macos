@@ -516,11 +516,11 @@ class PDFExtractor:
 
 
     def extractone(self, ipath):
-        #self.em.rclog("extractone: [%s]" % ipath)
+        self.em.rclog("extractone: [%s]" % ipath)
         if not self.attextractdone:
             if not self.extractAttach():
                 return (False, "", "", rclexecm.RclExecM.eofnow)
-        path = os.path.join(tmpdir.getpath(), ipath)
+        path = os.path.join(tmpdir.getpath(), ipath.decode('utf-8'))
         if os.path.isfile(path):
             f = open(path, "rb")
             docdata = f.read();
