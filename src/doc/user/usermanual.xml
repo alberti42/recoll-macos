@@ -6276,68 +6276,90 @@ hasextract = False
         <title>Prerequisites</title>
 
         <para>The following prerequisites are described in broad terms and
-        not as specific package names (which will depend on the exact
-        platform). The dependencies should be available as packages on most
-        common Unix derivatives, and it should be quite uncommon that you
-        would have to build one of them.</para>
+          Debian package names. The dependencies should be available as packages on most common Unix
+          derivatives, and it should be quite uncommon that you would have to build one of them.
+          Finding the right package name for other systems is left to the sagacity of the
+          reader.</para>
 
         <para>If you do not need the GUI, you can avoid all GUI
-        dependencies by disabling its build. (See the configure section
-        further).</para>
+          dependencies by disabling its build. (See the configure section
+          further).</para>
         
-        <para>The shopping list:</para>
+        <para>The shopping list follows:</para>
+
         <itemizedlist>
 
-          <listitem><para>If you start from git code, you will need the
-          <command>autoconf</command>, <command>automake</command> and
-          <command>libtool</command> triad. They are not needed for
-          building from tar distributions.</para></listitem>
+          <listitem><para>If you start from git code, you will need the <command>git</command>
+              command (<literal>git</literal>), and
+              the <command>autoconf</command>, <command>automake</command>
+              and <command>libtool</command> triad
+              (<literal>autoconf</literal>, <literal>automake</literal>, <literal>libtool</literal>).
+              These are not needed for building from tar distributions.</para></listitem>
 
-          <listitem><para>C++ compiler. Recent versions require C++11
-          compatibility (1.23 and later).</para></listitem>
+          <listitem><para>The pkg-config command and gettext package are needed for configuring the
+              build (<literal>pkg-config</literal>, <literal>gettext</literal>).</para></listitem>
 
-          <listitem><para><command>bison</command> command (for &RCL; 1.21
-          and later).</para></listitem>
+          <listitem><para>The <command>make</command> command (<literal>make</literal> which will
+              actually install <application>GNU make</application> on Linux). If you get strange
+              error messages about dependency tracking from <command>configure</command>, you
+              probably forgot to install <command>make</command>.</para></listitem>
+
+          <listitem><para>A C++ compiler with at least C++11 compatibility (<literal>g++</literal>
+              or <literal>clang</literal>).</para></listitem>
+
+          <listitem><para>The <command>bison</command> command is not generally needed, but might be
+              if some file modification times are not right.</para></listitem>
+
+          <listitem><para>If you want to process CHM files, you will need libchm
+              (<literal>libchm-dev</literal>), else you can set
+              the <literal>--disable-python-chm</literal> option to the <command>configure</command>
+              command</para></listitem>
 
           <listitem><para>For building the documentation: the
-          <command>xsltproc</command> command, and the Docbook XML and
-          style sheet files. You can avoid this dependency by disabling
-          documentation building with the
-          <literal>--disable-userdoc</literal> <command>configure</command>
-          option.</para></listitem>
+              <command>xsltproc</command> command, and the Docbook XML and
+              style sheet files. You can avoid this dependency by disabling
+              documentation building with the
+              <literal>--disable-userdoc</literal> <command>configure</command>
+              option.</para></listitem>
           
           <listitem><para>Development files
-          for <ulink url="http://www.xapian.org"> <application>Xapian
-          core</application></ulink>.</para> 
+              for <ulink url="http://www.xapian.org"> <application>Xapian
+                  core</application></ulink> (<literal>libxapian-dev</literal>).</para> 
           <important>
             <para>If you are building Xapian for an older CPU (before Pentium 4 or Athlon 64), you
-            need to add the <option>--disable-sse</option> flag to the configure command. Else all
-            Xapian application will crash with an <literal>illegal instruction</literal>
+              need to add the <option>--disable-sse</option> flag to
+              the <command>configure</command> command. Else all Xapian applications will crash with
+              an <literal>illegal instruction</literal>
             error.</para>
           </important>
           </listitem>
 
-          <listitem> <para>Development files for 
-            <ulink url="http://qt-project.org/downloads"><application>Qt 5</application> </ulink>.
-            and its own dependencies (X11 etc.)</para> </listitem>
-
-          <listitem><para>Development files for libxslt</para></listitem>
+          <listitem><para>Development files for <application>libxslt</application>
+              (<literal>libxslt1-dev</literal>).</para></listitem> 
 
           <listitem><para>Development files for
-          <application>zlib</application>.</para> </listitem> 
+              <application>zlib</application> (<literal>zlib1g-dev</literal>).</para> </listitem>
+
+          <listitem><para>If you want to build the GUI: development files for 
+            <ulink url="http://qt-project.org/downloads"><application>Qt 5</application></ulink>.
+            Else give the <literal>--disable-qtgui</literal> option to
+            the <command>configure</command> command. I can never remember what package to install
+            to get this, but installing the Qt5 Webkit, (or Qt5 Webengine if you set
+            <literal>--enable-webengine</literal>) will bring the rest as dependencies
+            (<literal>libqt5webkit5-dev</literal>
+            or <literal>qtwebengine5dev</literal>).</para></listitem>
 
           <listitem><para>Development files for
-          <application>Python</application> (or use
-          <literal>--disable-python-module</literal>).</para></listitem>
+              <application>Python</application>
+              (<literal>python2-dev</literal>, <literal>python-setuptools</literal>, 
+              <literal>python3-all-dev</literal>, <literal>python3-setuptools</literal>). 
+              You can use the <literal>--disable-python-module</literal> option for disabling the
+              build of the Python extensions).</para></listitem>
 
-          <listitem><para>Development files for libchm</para></listitem>
-          
           <listitem><para>You may also need 
             <ulink url="http://www.gnu.org/software/libiconv/">libiconv</ulink>.
-
-            On <application>Linux</application> systems, the iconv
-            interface is part of libc and you should not need to do
-            anything special.</para></listitem>
+            On <application>Linux</application> systems, the iconv interface is part of libc and you
+            should not need to do anything special.</para></listitem>
 
         </itemizedlist>
 

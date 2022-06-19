@@ -8351,38 +8351,69 @@ hasextract = False
             </div>
           </div>
           <p>The following prerequisites are described in broad
-          terms and not as specific package names (which will
-          depend on the exact platform). The dependencies should be
-          available as packages on most common Unix derivatives,
+          terms and Debian package names. The dependencies should
+          be available as packages on most common Unix derivatives,
           and it should be quite uncommon that you would have to
-          build one of them.</p>
+          build one of them. Finding the right package name for
+          other systems is left to the sagacity of the reader.</p>
           <p>If you do not need the GUI, you can avoid all GUI
           dependencies by disabling its build. (See the configure
           section further).</p>
-          <p>The shopping list:</p>
+          <p>The shopping list follows:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
             "list-style-type: disc;">
               <li class="listitem">
                 <p>If you start from git code, you will need the
+                <span class="command"><strong>git</strong></span>
+                command (<code class="literal">git</code>), and the
                 <span class=
                 "command"><strong>autoconf</strong></span>,
                 <span class=
                 "command"><strong>automake</strong></span> and
                 <span class=
-                "command"><strong>libtool</strong></span> triad.
-                They are not needed for building from tar
-                distributions.</p>
+                "command"><strong>libtool</strong></span> triad
+                (<code class="literal">autoconf</code>,
+                <code class="literal">automake</code>, <code class=
+                "literal">libtool</code>). These are not needed for
+                building from tar distributions.</p>
               </li>
               <li class="listitem">
-                <p>C++ compiler. Recent versions require C++11
-                compatibility (1.23 and later).</p>
+                <p>The pkg-config command and gettext package are
+                needed for configuring the build (<code class=
+                "literal">pkg-config</code>, <code class=
+                "literal">gettext</code>).</p>
               </li>
               <li class="listitem">
-                <p><span class=
-                "command"><strong>bison</strong></span> command
-                (for <span class="application">Recoll</span> 1.21
-                and later).</p>
+                <p>The <span class=
+                "command"><strong>make</strong></span> command
+                (<code class="literal">make</code> which will
+                actually install <span class="application">GNU
+                make</span> on Linux). If you get strange error
+                messages about dependency tracking from
+                <span class="command"><strong>configure</strong></span>,
+                you probably forgot to install <span class=
+                "command"><strong>make</strong></span>.</p>
+              </li>
+              <li class="listitem">
+                <p>A C++ compiler with at least C++11 compatibility
+                (<code class="literal">g++</code> or <code class=
+                "literal">clang</code>).</p>
+              </li>
+              <li class="listitem">
+                <p>The <span class=
+                "command"><strong>bison</strong></span> command is
+                not generally needed, but might be if some file
+                modification times are not right.</p>
+              </li>
+              <li class="listitem">
+                <p>If you want to process CHM files, you will need
+                libchm (<code class="literal">libchm-dev</code>),
+                else you can set the <code class=
+                "literal">--disable-python-chm</code> option to the
+                <span class=
+                "command"><strong>configure</strong></span>
+                command</p>
               </li>
               <li class="listitem">
                 <p>For building the documentation: the <span class=
@@ -8397,38 +8428,58 @@ hasextract = False
               <li class="listitem">
                 <p>Development files for <a class="ulink" href=
                 "http://www.xapian.org" target="_top"><span class=
-                "application">Xapian core</span></a>.</p>
+                "application">Xapian core</span></a> (<code class=
+                "literal">libxapian-dev</code>).</p>
                 <div class="important" style=
                 "margin-left: 0.5in; margin-right: 0.5in;">
                   <h3 class="title">Important</h3>
                   <p>If you are building Xapian for an older CPU
                   (before Pentium 4 or Athlon 64), you need to add
                   the <code class="option">--disable-sse</code>
-                  flag to the configure command. Else all Xapian
-                  application will crash with an <code class=
-                  "literal">illegal instruction</code> error.</p>
+                  flag to the <span class=
+                  "command"><strong>configure</strong></span>
+                  command. Else all Xapian applications will crash
+                  with an <code class="literal">illegal
+                  instruction</code> error.</p>
                 </div>
               </li>
               <li class="listitem">
-                <p>Development files for <a class="ulink" href=
+                <p>Development files for <span class=
+                "application">libxslt</span> (<code class=
+                "literal">libxslt1-dev</code>).</p>
+              </li>
+              <li class="listitem">
+                <p>Development files for <span class=
+                "application">zlib</span> (<code class=
+                "literal">zlib1g-dev</code>).</p>
+              </li>
+              <li class="listitem">
+                <p>If you want to build the GUI: development files
+                for <a class="ulink" href=
                 "http://qt-project.org/downloads" target=
-                "_top"><span class="application">Qt 5</span></a> .
-                and its own dependencies (X11 etc.)</p>
-              </li>
-              <li class="listitem">
-                <p>Development files for libxslt</p>
+                "_top"><span class="application">Qt 5</span></a>.
+                Else give the <code class=
+                "literal">--disable-qtgui</code> option to the
+                <span class=
+                "command"><strong>configure</strong></span>
+                command. I can never remember what package to
+                install to get this, but installing the Qt5 Webkit,
+                (or Qt5 Webengine if you set <code class=
+                "literal">--enable-webengine</code>) will bring the
+                rest as dependencies (<code class=
+                "literal">libqt5webkit5-dev</code> or <code class=
+                "literal">qtwebengine5dev</code>).</p>
               </li>
               <li class="listitem">
                 <p>Development files for <span class=
-                "application">zlib</span>.</p>
-              </li>
-              <li class="listitem">
-                <p>Development files for <span class=
-                "application">Python</span> (or use <code class=
-                "literal">--disable-python-module</code>).</p>
-              </li>
-              <li class="listitem">
-                <p>Development files for libchm</p>
+                "application">Python</span> (<code class=
+                "literal">python2-dev</code>, <code class=
+                "literal">python-setuptools</code>, <code class=
+                "literal">python3-all-dev</code>, <code class=
+                "literal">python3-setuptools</code>). You can use
+                the <code class=
+                "literal">--disable-python-module</code> option for
+                disabling the build of the Python extensions).</p>
               </li>
               <li class="listitem">
                 <p>You may also need <a class="ulink" href=
