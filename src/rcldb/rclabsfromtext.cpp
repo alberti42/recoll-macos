@@ -94,13 +94,14 @@ struct MatchFragment {
     unsigned int hitpos;
     // "best term" for this match (e.g. for use as ext app search term)
     string term;
-        
+    int line;
+    
     MatchFragment(int sta, int sto, double c,
 #ifdef COMPUTE_HLZONES
                   vector<pair<int,int>>& hl,
 #endif
-                  unsigned int pos, string& trm) 
-        : start(sta), stop(sto), coef(c), hitpos(pos) {
+                  unsigned int pos, string& trm, int ln) 
+        : start(sta), stop(sto), coef(c), hitpos(pos), line(ln) {
 #ifdef COMPUTE_HLZONES
         hlzones.swap(hl);
 #endif
@@ -137,9 +138,13 @@ public:
         }
     }
 
+    virtual void newline(int) override {
+        m_line++;
+    }
+
     // Accept a word and its position. If the word is a matched term,
     // add/update fragment definition.
-    virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
+    virtual bool takeword(const std::string& term, int pos, int bts, int bte) override {
         LOGDEB1("takeword: [" << term << "] bytepos: "<<bts<<":"<<bte<<endl);
         // Limit time taken with monster documents. The resulting abstract will be incorrect or
         // inexistent, but this is better than taking forever (the default cutoff value comes from
@@ -189,6 +194,7 @@ public:
 #endif
                 m_curterm = term;
                 m_curtermcoef = coef;
+                m_curfragline = m_line;
             } else {
                 LOGDEB2("Extending current fragment: "<<m_remainingWords<<" -> "<<m_ctxwords<< "\n");
                 m_extcount++;
@@ -257,7 +263,8 @@ public:
                                                     m_curhlzones,
 #endif
                                                     m_curhitpos,
-                                                    m_curterm
+                                                    m_curterm,
+                                                    m_curfragline
                                           ));
                 m_totalcoef += m_curfragcoef;
                 m_curfragcoef = 0.0;
@@ -283,7 +290,7 @@ public:
 #ifdef COMPUTE_HLZONES
                               m_curhlzones,
 #endif
-                              m_curhitpos, m_curterm));
+                              m_curhitpos, m_curterm, m_curfragline));
                 m_totalcoef += m_curfragcoef;
                 m_curfragcoef = 0.0;
                 m_curtermcoef = 0.0;
@@ -358,6 +365,7 @@ private:
     deque<pair<int,int>>  m_prevterms;
     // Data about the fragment we are building
     pair<int,int> m_curfrag{0,0};
+    int m_curfragline{0};
     double m_curfragcoef{0.0};
     unsigned int m_remainingWords{0};
     unsigned int m_extcount{0};
@@ -372,6 +380,7 @@ private:
     // "best" term
     string m_curterm;
     double m_curtermcoef{0.0};
+    int m_line{1};
 
     // Group terms, extracted from m_hdata 
     unordered_set<string> m_gterms;
@@ -492,7 +501,7 @@ int Query::Native::abstractFromText(
                 page = 0;
         }
         LOGDEB0("=== FRAGMENT: p. " << page << " Coef: " << entry.coef << ": " << frag << endl);
-        vabs.push_back(Snippet(page, frag).setTerm(entry.term));
+        vabs.push_back(Snippet(page, frag, entry.line).setTerm(entry.term));
         if (count++ >= maxtotaloccs)
             break;
     }

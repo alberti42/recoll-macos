@@ -36,18 +36,19 @@ enum abstract_result {
     ABSRES_TERMMISS = 4
 };
 
-// Snippet entry for makeDocAbstract
+// Snippet data out of makeDocAbstract
 class Snippet {
 public:
-    Snippet(int page, const std::string& snip) 
-        : page(page), snippet(snip) {}
+    Snippet(int page, const std::string& snip, int ln = 0) 
+        : page(page), snippet(snip), line(ln) {}
     Snippet& setTerm(const std::string& trm) {
         term = trm;
         return *this;
     }
-    int page;
-    std::string term;
+    int page{0};
     std::string snippet;
+    int line{0};
+    std::string term;
 };
 
         
