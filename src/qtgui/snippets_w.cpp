@@ -253,6 +253,9 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
         if (snippet.page > 0) {
             oss << "<a href=\"http://h/P" << snippet.page << "T" << snippet.term << "\">" <<
                 "P.&nbsp;" << snippet.page << "</a>";
+        } else if (snippet.line > 0) {
+            oss << "<a href=\"http://h/L" << snippet.line << "T" << snippet.term << "\">" <<
+                "L.&nbsp;" << snippet.line << "</a>";
         }
         oss << "</td><td>" << lr.front().c_str() << "</td></tr>" << "\n";
     }
@@ -331,17 +334,23 @@ void SnippetsW::onLinkClicked(const QUrl &url)
     if (ascurl.size() > 3) {
         int what = ascurl[0];
         switch (what) {
-        case 'P': 
+        case 'P':
+        case 'L':
         {
             string::size_type numpos = ascurl.find_first_of("0123456789");
             if (numpos == string::npos)
                 return;
-            int page = atoi(ascurl.c_str() + numpos);
+            int page = -1, line = -1;
+            if (what == 'P') {
+                page = atoi(ascurl.c_str() + numpos);
+            } else {
+                line = atoi(ascurl.c_str() + numpos);
+            }
             string::size_type termpos = ascurl.find_first_of("T");
             string term;
             if (termpos != string::npos)
                 term = ascurl.substr(termpos+1);
-            emit startNativeViewer(m_doc, page, u8s2qs(term));
+            emit startNativeViewer(m_doc, page, u8s2qs(term), line);
             return;
         }
         }

@@ -169,7 +169,7 @@ static bool termNeeded(const std::string& cmd)
     return cmd.find("%s") != std::string::npos;
 }
 
-void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm)
+void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int linenum)
 {
     std::string term = qs2utf8s(qterm);
     string apptag;
@@ -401,12 +401,11 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm)
             pagenum = 1;
     }
 
-    int line = 1;
-    if (m_source && !term.empty() && linenumNeeded(cmd)) {
+    if (linenum < 1 && m_source && !term.empty() && linenumNeeded(cmd)) {
         if (doc.text.empty()) {
             rcldb->getDocRawText(doc);
         }
-        line = m_source->getFirstMatchLine(doc, term);
+        linenum = m_source->getFirstMatchLine(doc, term);
     }
 
     // Substitute %xx inside arguments
@@ -426,7 +425,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm)
     subs["f"] = fn;
     subs["F"] = fn;
     subs["i"] = FileInterner::getLastIpathElt(doc.ipath);
-    subs["l"] = ulltodecstr(line);
+    subs["l"] = ulltodecstr(linenum);
     subs["M"] = doc.mimetype;
     subs["p"] = ulltodecstr(pagenum);
     subs["s"] = term;

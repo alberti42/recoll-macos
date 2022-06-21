@@ -141,7 +141,8 @@ public slots:
     virtual void showActionsSearch();
     virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
-    virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, QString term = QString());
+    virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, QString term = QString(),
+                                   int line = -1);
     virtual void openWith(Rcl::Doc, string);
     virtual void saveDocToFile(Rcl::Doc);
     virtual void populateSideFilters(bool init = false);

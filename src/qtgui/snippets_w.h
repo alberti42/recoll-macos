@@ -60,7 +60,7 @@ protected slots:
     virtual void reloadByPage();
     
 signals:
-    void startNativeViewer(Rcl::Doc, int pagenum, QString term);
+    void startNativeViewer(Rcl::Doc, int pagenum, QString term, int line);
         
 private:
     void init();
