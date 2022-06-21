@@ -59,7 +59,7 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
 }
 
 string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
-                     int snipcount)
+                     int snipcount, bool showlines)
 {
     string abstract;
     if (asSnippets) {
@@ -67,7 +67,7 @@ string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
         std::ostringstream str;
         if (query.makeDocAbstract(doc, snippets, snipcount, -1, true)) {
             for (const auto& snippet : snippets) {
-                str << snippet.page << " : " << snippet.snippet << endl;
+                str << (showlines ? snippet.line : snippet.page) << " : " << snippet.snippet << endl;
             }
         }
         abstract = str.str();
@@ -80,7 +80,7 @@ string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
 
 void output_fields(vector<string> fields, Rcl::Doc& doc,
                    Rcl::Query& query, Rcl::Db&, bool printnames,
-                   bool asSnippets, int snipcnt)
+                   bool asSnippets, int snipcnt, bool showlines)
 {
     if (fields.empty()) {
         map<string,string>::const_iterator it;
@@ -88,25 +88,23 @@ void output_fields(vector<string> fields, Rcl::Doc& doc,
             fields.push_back(entry.first);
         }
     }
-    for (vector<string>::const_iterator it = fields.begin();
-         it != fields.end(); it++) {
+    for (const auto& fld : fields) {
         string out;
-        if (!it->compare("abstract")) {
-            base64_encode(make_abstract(doc, query, asSnippets, snipcnt), out);
-        } else if (!it->compare("xdocid")) {
+        if (fld == "abstract") {
+            base64_encode(make_abstract(doc, query, asSnippets, snipcnt, showlines), out);
+        } else if (fld == "xdocid") {
             char cdocid[30];
             sprintf(cdocid, "%lu", (unsigned long)doc.xdocid);
             base64_encode(cdocid, out);
         } else {
-            base64_encode(doc.meta[*it], out);
+            base64_encode(doc.meta[fld], out);
         }
         // Before printnames existed, recollq printed a single blank for empty
         // fields. This is a problem when printing names and using strtok, but
         // have to keep the old behaviour when printnames is not set.
         if (!(out.empty() && printnames)) {
             if (printnames)
-                cout << *it << " ";
-            cout << out << " ";
+                cout << fld << " " << out << " ";
         }
     }
     cout << endl;
@@ -138,6 +136,7 @@ static char usage [] =
 " -m : dump the whole document meta[] array for each result.\n"
 " -A : output the document abstracts.\n"
 "    -p <cnt> : show <cnt> snippets, with page numbers instead of the concatenated abstract.\n"
+"    -g <cnt> : show <cnt> snippets, with line numbers instead of the concatenated abstract.\n"
 " -S fld : sort by field <fld>.\n"
 "   -D : sort descending.\n"
 " -s stemlang : set stemming language to use (must exist in index...).\n"
@@ -176,31 +175,32 @@ static int     op_flags;
 #define OPT_d     0x40 
 #define OPT_e     0x80 
 #define OPT_F     0x100
+#define OPT_g     0x200
 // GUI: -f same
-#define OPT_f     0x200
+#define OPT_f     0x400
 // GUI uses -h for help. us: usage
-#define OPT_i     0x400
+#define OPT_i     0x800
 // GUI uses -L to set language of messages
-// GUI: -l same
-#define OPT_l     0x800
-#define OPT_m     0x1000
-#define OPT_N     0x2000
-#define OPT_n     0x4000
+// GUI: -l specifies query language, which is the default. Accept and ignore
+#define OPT_l     0x1000
+#define OPT_m     0x2000
+#define OPT_N     0x4000
+#define OPT_n     0x8000
 // GUI: -o same
-#define OPT_o     0x8000
-#define OPT_p     0x10000
-#define OPT_P     0x20000
-#define OPT_Q     0x40000
+#define OPT_o     0x10000
+#define OPT_p     0x20000
+#define OPT_P     0x40000
+#define OPT_Q     0x80000
 // GUI: -q same
-#define OPT_q     0x80000
-#define OPT_S     0x100000
-#define OPT_s     0x2000000
-#define OPT_T     0x4000000
+#define OPT_q     0x100000
+#define OPT_S     0x200000
+#define OPT_s     0x400000
+#define OPT_T     0x800000
 // GUI: -t use command line, us: ignored
-#define OPT_t     0x800000
+#define OPT_t     0x100000
 // GUI uses -v : show version. Us: usage
 // GUI uses -w : open minimized
-#define OPT_E     0x1000000
+#define OPT_E     0x200000
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -270,8 +270,13 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             case 'o':   op_flags |= OPT_o; break;
             case 'P':   op_flags |= OPT_P; break;
             case 'p':
-            {
                 op_flags |= OPT_p;
+                goto porg;
+            case 'g':
+                op_flags |= OPT_g;
+                goto porg;
+            {
+            porg:
                 if (argc < 2)
                     Usage();
                 const char *cp = *(++argv);
@@ -439,7 +444,7 @@ endopts:
 
         if (op_flags & OPT_F) {
             output_fields(fields, doc, query, rcldb,
-                          op_flags & OPT_N, op_flags & OPT_p, snipcnt);
+                          op_flags & OPT_N, op_flags & (OPT_p|OPT_g), snipcnt, op_flags & OPT_g);
             continue;
         }
 
@@ -472,8 +477,9 @@ endopts:
                 }
             }
             if (op_flags & OPT_A) {
-                bool asSnippets = (op_flags & OPT_p) != 0;
-                string abstract = make_abstract(doc, query, asSnippets, snipcnt);
+                bool asSnippets = (op_flags & (OPT_p|OPT_g)) != 0;
+                bool showlines = (op_flags & OPT_g) != 0;
+                string abstract = make_abstract(doc, query, asSnippets, snipcnt, showlines);
                 string marker = asSnippets ? "SNIPPETS" : "ABSTRACT";
                 if (!abstract.empty()) {
                     cout << marker << endl;

@@ -327,7 +327,11 @@ bool Query::makeDocAbstract(const Doc &doc, vector<string>& abstract)
         if (snippet.page > 0) {
             ostringstream ss;
             ss << snippet.page;
-            chunk += string(" [p ") + ss.str() + "] ";
+            chunk += string(" [P. ") + ss.str() + "] ";
+        } else if (snippet.line > 0) {
+            ostringstream ss;
+            ss << snippet.line;
+            chunk += string(" [L. ") + ss.str() + "] ";
         }
         chunk += snippet.snippet;
         abstract.push_back(chunk);
