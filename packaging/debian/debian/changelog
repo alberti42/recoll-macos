@@ -1,3 +1,10 @@
+recoll (1.32.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix issues when opening a file with %F (parent of subdocument): avoid creating a temporary file
+    when this can be avoided.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 21 Jun 2022 20:51:00 +0200
+
 recoll (1.32.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Restore result list popup menu function when using webengine. This was broken in 1.32.1.
