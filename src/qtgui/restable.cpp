@@ -67,8 +67,8 @@ static const QKeySequence closeKeySeq("Ctrl+w");
 static const int ROWHEIGHTPAD = 2;
 static const int TEXTINCELLVTRANS = -4;
 
-// Adjust font size from prefs, display is slightly different here
-static const int fsadjustdetail = 1;
+// Adjust font size from prefs, display is slightly different in the table??
+static const int fsadjustdetail = -1;
 
 static PlainToRichQtReslist g_hiliter;
 
@@ -92,9 +92,7 @@ public:
     virtual string absSep() override {
         return (const char *)(prefs.abssep.toUtf8());}
     virtual string headerContent() override {
-        // Note: the detail area is a qtextbrowser which gets confused by the general Html
-        // header. So we manage it differently from the snippets or main result list.
-        return qs2utf8s(prefs.darkreslistheadertext) + qs2utf8s(prefs.reslistheadertext);
+        return prefs.htmlHeaderContents();
     }
 private:
     ResTable *m_parent;
@@ -156,13 +154,13 @@ void ResTableDetailArea::createPopupMenu(const QPoint& pos)
 
 void ResTableDetailArea::setFont()
 {
-    int fs = prefs.fontsize() - fsadjustdetail;
+    int fs = m_table->fontsize();
     if (prefs.reslistfontfamily != "") {
         QFont nfont(prefs.reslistfontfamily, fs);
         QTextBrowser::setFont(nfont);
     } else {
         QFont font;
-        font.setPointSize(fs);
+        font.setPixelSize(fs);
         QTextBrowser::setFont(font);
     }
 }
@@ -390,8 +388,8 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
     // this to adjust the row height (there is probably a better way
     // to do it in the delegate?)
     if (role == Qt::FontRole && (prefs.reslistfontsize > 0 || prefs.wholeuiscale != 1.0)) {
-        if (m_reslfntszforcached != prefs.fontsize() - fsadjustdetail) {
-            m_reslfntszforcached = prefs.fontsize() - fsadjustdetail;
+        if (m_reslfntszforcached != m_table->fontsize() - fsadjustdetail) {
+            m_reslfntszforcached = m_table->fontsize() - fsadjustdetail;
             m_table->setDefRowHeight();
             m_cachedfont = m_table->font();
             m_cachedfont.setPixelSize(m_reslfntszforcached);
@@ -533,13 +531,11 @@ public:
         QString color = opt.palette.color(QPalette::Base).name();
         QString textcolor = opt.palette.color(QPalette::Text).name();
         QString selcolor = opt.palette.color(QPalette::Highlight).name();
-        QString seltextcolor =
-            opt.palette.color(QPalette::HighlightedText).name();
+        QString seltextcolor =  opt.palette.color(QPalette::HighlightedText).name();
         QString fstyle;
-        if (prefs.reslistfontsize > 0 || prefs.wholeuiscale != 1.0) {
-            int fs = prefs.fontsize() - fsadjustdetail;
-            fstyle = QString("font-size: %1pt").arg(fs);
-        }
+        QFont fnt = qvariant_cast<QFont>(index.data(Qt::FontRole));
+        int fs = fnt.pixelSize();
+        fstyle = QString("font-size: %1px").arg(fs) + ";";
         QString ntxt("<div style='");
         ntxt += " color:";
         ntxt += (opt.state & QStyle::State_Selected)? seltextcolor:textcolor;
@@ -550,7 +546,6 @@ public:
         ntxt += fstyle;
         ntxt += QString("'>") + text + QString("</div>");
         text.swap(ntxt);
-        
         painter->setClipRect(opt.rect);
         QPoint where = option.rect.topLeft();
         where.ry() += TEXTINCELLVTRANS;
@@ -561,6 +556,19 @@ public:
         painter->restore();
     }
 };
+
+
+int ResTable::fontsize()
+{
+    int fs;
+    if (prefs.reslistfontsize > 0) {
+        fs  = prefs.reslistfontsize;
+    } else {
+        fs = QWidget(this).font().pixelSize();
+    }
+    fs = round(fs * prefs.wholeuiscale);
+    return fs;
+}
 
 void ResTable::setDefRowHeight()
 {
@@ -574,9 +582,9 @@ void ResTable::setDefRowHeight()
 //        header->setSectionResizeMode(QHeaderView::ResizeToContents);
         // Compute ourselves instead, for one row.
         QFont font = tableView->font();
-        int fs = prefs.fontsize() - fsadjustdetail;
+        int fs = fontsize() - fsadjustdetail;
         if (fs > 0)
-            font.setPointSize(fs);
+            font.setPixelSize(fs);
         QFontMetrics fm(font);
         header->setDefaultSectionSize(fm.height() + ROWHEIGHTPAD);
         header->setSectionResizeMode(QHeaderView::Fixed);

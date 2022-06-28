@@ -106,13 +106,6 @@ void SnippetsW::init()
     connect(browser, SIGNAL(linkClicked(const QUrl &)), this, SLOT(onLinkClicked(const QUrl &)));
     browser->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     browser->page()->currentFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
-#ifndef SETFONT_WITH_HEADSTYLE
-    QWEBSETTINGS *ws = browser->page()->settings();
-    if (prefs.reslistfontfamily != "") {
-        ws->setFontFamily(QWEBSETTINGS::StandardFont, prefs.reslistfontfamily);
-        ws->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize);
-    }
-#endif
     browserw->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(browserw, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
@@ -120,13 +113,6 @@ void SnippetsW::init()
     browserw = new QWebEngineView(this);
     verticalLayout->insertWidget(0, browserw);
     browser->setPage(new SnipWebPage(this));
-#ifndef SETFONT_WITH_HEADSTYLE
-    QWEBSETTINGS *ws = browser->page()->settings();
-    if (prefs.reslistfontfamily != "") {
-        ws->setFontFamily(QWEBSETTINGS::StandardFont, prefs.reslistfontfamily);
-        ws->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize);
-    }
-#endif
     // Stylesheet TBD
     browserw->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(browserw, SIGNAL(customContextMenuRequested(const QPoint&)),

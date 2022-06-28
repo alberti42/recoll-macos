@@ -427,7 +427,7 @@ void rwSettings(bool writing)
 }
 
 #ifdef USE_REGEX
-/* font-size: 10pt; */
+/* font-size: 10px; */
 static const std::string fntsz_exp(
     R"((\s*font-size\s*:\s*)([0-9]+)(p[tx]\s*;\s*))"
     );
@@ -463,24 +463,6 @@ std::string PrefsPack::scaleFonts(const std::string& style, float multiplier)
     return nstyle;
 }
 
-int PrefsPack::fontsize()
-{
-    // While building the kio, we don't really care about QT Gui
-    // defaults and referencing QFont introduces a useless dependency
-#ifdef BUILDING_RECOLLGUI
-    int fs;
-    if (prefs.reslistfontsize > 0) {
-        fs  = prefs.reslistfontsize;
-    } else {
-        fs = QWidget().font().pixelSize();
-    }
-    fs = round(fs * prefs.wholeuiscale);
-    return fs;
-#else
-    return 12;
-#endif
-}
-
 std::string PrefsPack::htmlHeaderContents()
 {
     auto comfn = path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-common.css");
@@ -489,13 +471,10 @@ std::string PrefsPack::htmlHeaderContents()
     std::ostringstream oss;
     oss << comcss << "\n";
     oss << "<style type=\"text/css\">\nhtml,body,form, fieldset,table,tr,td,img,select,input {\n";
-#ifdef SETFONT_WITH_HEADSTYLE
     if (!prefs.reslistfontfamily.isEmpty()) {
         oss << "font-family: \"" << qs2utf8s(prefs.reslistfontfamily) << "\";\n";
     }
-    oss << "font-size: " <<  round(prefs.reslistfontsize * 1.2) << "px;\n";
-#endif
-    oss << "color: " << qs2utf8s(prefs.fontcolor) << ";\n";
+    oss << "font-size: " <<  round(prefs.reslistfontsize * 1.1) << "px;\n";
     oss << "}\n</style>\n";
     oss << qs2utf8s(prefs.darkreslistheadertext) << qs2utf8s(prefs.reslistheadertext);
 

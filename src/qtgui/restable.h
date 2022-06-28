@@ -139,9 +139,9 @@ class ResTable : public QWidget, public Ui::ResTable
 public:
     ResTable(QWidget* parent = 0, QStringList fields = QStringList()) 
         : QWidget(parent) {
-            setupUi(this);
-            init(fields);
-        }
+        setupUi(this);
+        init(fields);
+    }
     
     virtual ~ResTable() {}
     ResTable(const ResTable&) = delete;
@@ -152,6 +152,7 @@ public:
 
     void setRclMain(RclMain *m, bool ismain);
     void setDefRowHeight();
+    int fontsize();
 
 public slots:
     virtual void onTableView_currentChanged(const QModelIndex&);

@@ -409,23 +409,13 @@ void ResList::runJS(const QString& js)
 void ResList::onUiPrefsChanged()
 {
     setFont();
+    displayPage();
 }
 
 void ResList::setFont()
 {
-#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
-#ifndef SETFONT_WITH_HEADSTYLE
-    if (prefs.reslistfontfamily != "") {
-        // For some reason there is (12-2014) an offset of 3 between what
-        // we request from webkit and what we get.
-        settings()->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize + 3);
-        settings()->setFontFamily(QWEBSETTINGS::StandardFont,  prefs.reslistfontfamily);
-    } else {
-        settings()->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize + 3);
-        settings()->resetFontFamily(QWEBSETTINGS::StandardFont);
-    }
-#endif
-#else
+#if !defined(USING_WEBKIT) && !defined(USING_WEBENGINE)
+    // Using QTextBrowser
     if (prefs.reslistfontfamily != "") {
         QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
         QTextBrowser::setFont(nfont);

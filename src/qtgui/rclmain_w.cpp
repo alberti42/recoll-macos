@@ -318,7 +318,9 @@ void RclMain::zoomIn()
 }
 void RclMain::zoomOut()
 {
-    prefs.reslistfontsize--;
+    if (prefs.reslistfontsize > 1) {
+        prefs.reslistfontsize--;
+    }
     emit uiPrefsChanged();
 }
 

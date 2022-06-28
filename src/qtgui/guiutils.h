@@ -51,10 +51,6 @@ public:
     int maxhltextkbs;
     QString reslistfontfamily;
     int reslistfontsize;
-    // Not saved in prefs for now. Computed from qt defaults and used to
-    // set main character color for webkit/textbrowser reslist and
-    // snippets window.
-    QString fontcolor; 
     QString qtermstyle; // CSS style for query terms in reslist and other places
     // Result list format string
     QString reslistformat;
@@ -190,7 +186,6 @@ public:
     // Scale font-sizes inside css or qss input and return changed sheet. The font-size statements
     // need to be on their own line.
     static std::string scaleFonts(const std::string& style, float multiplier);
-    int fontsize();
 };
 
 /** Global preferences record */
