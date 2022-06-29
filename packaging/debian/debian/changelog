@@ -1,3 +1,11 @@
+recoll (1.32.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Try to improve font size consistency by using px sizes everywhere.
+  * Fix Increase/Decrease font size menu options.
+  * Allow displaying line numbers in snippets.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 29 Jun 2022 09:36:00 +0200
+
 recoll (1.32.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix issues when opening a file with %F (parent of subdocument): avoid creating a temporary file
