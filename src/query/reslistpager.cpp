@@ -198,8 +198,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     // Document date: either doc or file modification times
     string datebuf;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
-        time_t mtime = doc.dmtime.empty() ?
-            atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
+        time_t mtime = doc.dmtime.empty() ? atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
         struct tm *tm = localtime(&mtime);
         datebuf = utf8datestring(dateFormat(), tm);
     }
@@ -315,14 +314,8 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
 
     string formatted;
     pcSubst(parFormat(), formatted, subs);
-    chunk << formatted;
-
-    chunk << "</p>" << endl;
-    // This was to force qt 4.x to clear the margins (which it should do
-    // anyway because of the paragraph's style), but we finally took
-    // the table approach for 1.15 for now (in guiutils.cpp)
-//      chunk << "<br style='clear:both;height:0;line-height:0;'>" << endl;
-
+    chunk << formatted << "</p>\n";
+    
     LOGDEB2("Chunk: [" << chunk.rdbuf()->str() << "]\n");
     append(chunk.rdbuf()->str(), i, doc);
 }
@@ -359,11 +352,11 @@ void ResListPager::displayPage(RclConfig *config)
     // gets confused. Hence the use of the 'chunk' text
     // accumulator
     // Also note that there can be results beyond the estimated resCnt.
-    chunk << "<html><head>" << endl
+    chunk << "<html><head>\n"
           << "<meta http-equiv=\"content-type\""
-          << " content=\"text/html; charset=utf-8\">" << endl
+          << " content=\"text/html; charset=utf-8\">\n"
           << headerContent()
-          << "</head><body " << bodyAttrs() << ">" << endl
+          << "</head><body " << bodyAttrs() << ">\n"
           << pageTop()
           << "<p><span style=\"font-size:110%;\"><b>"
           << m_docSource->title()
@@ -373,8 +366,7 @@ void ResListPager::displayPage(RclConfig *config)
         chunk << trans("<p><b>No results found</b><br>");
         string reason = m_docSource->getReason();
         if (!reason.empty()) {
-            chunk << "<blockquote>" << escapeHtml(reason) << 
-                "</blockquote></p>";
+            chunk << "<blockquote>" << escapeHtml(reason) << "</blockquote></p>";
         } else {
             HighlightData hldata;
             m_docSource->getTerms(hldata);
@@ -384,13 +376,10 @@ void ResListPager::displayPage(RclConfig *config)
                 suggest(uterms, spellings);
                 if (!spellings.empty()) {
                     if (o_index_stripchars) {
-                        chunk << 
-                            trans("<p><i>Alternate spellings (accents suppressed): </i>")
+                        chunk << trans("<p><i>Alternate spellings (accents suppressed): </i>")
                               << "<br /><blockquote>";
                     } else {
-                        chunk << 
-                            trans("<p><i>Alternate spellings: </i>")
-                              << "<br /><blockquote>";
+                        chunk << trans("<p><i>Alternate spellings: </i>") << "<br /><blockquote>";
                     
                     }
 
@@ -432,7 +421,7 @@ void ResListPager::displayPage(RclConfig *config)
                   << "</b></a>";
         }
     }
-    chunk << "</p>" << endl;
+    chunk << "</p>\n";
 
     append(chunk.rdbuf()->str());
     chunk.rdbuf()->str("");
@@ -464,15 +453,14 @@ void ResListPager::displayPage(RclConfig *config)
                   << "</b></a>";
         }
     }
-    chunk << "</p>" << endl;
-    chunk << "</body></html>" << endl;
+    chunk << "</p>\n";
+    chunk << "</body></html>\n";
     append(chunk.rdbuf()->str());
     flush();
 }
 
-void ResListPager::displaySingleDoc(RclConfig *config, int idx,
-                                    Rcl::Doc& doc, 
-                                    const HighlightData& hdata)
+void ResListPager::displaySingleDoc(
+    RclConfig *config, int idx, Rcl::Doc& doc, const HighlightData& hdata)
 {
     ostringstream chunk;
 

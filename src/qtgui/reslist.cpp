@@ -164,16 +164,15 @@ private:
 // /// QtGuiResListPager methods:
 bool QtGuiResListPager::append(const string& data)
 {
-    m_reslist->append(QString::fromUtf8(data.c_str()));
+    m_reslist->append(u8s2qs(data));
     return true;
 }
 
 bool QtGuiResListPager::append(const string& data, int docnum, const Rcl::Doc&)
 {
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
-    QString sdoc = QString("<div class=\"rclresult\" id=\"%1\" rcldocnum=\"%1\">").arg(docnum);
-    m_reslist->append(sdoc);
-    m_reslist->append(QString::fromUtf8(data.c_str()));
+    m_reslist->append(QString("<div class=\"rclresult\" id=\"%1\" rcldocnum=\"%1\">").arg(docnum));
+    m_reslist->append(u8s2qs(data));
     m_reslist->append("</div>");
 #else
     int blkcnt0 = m_reslist->document()->blockCount();
@@ -192,7 +191,7 @@ bool QtGuiResListPager::append(const string& data, int docnum, const Rcl::Doc&)
 
 string QtGuiResListPager::trans(const string& in)
 {
-    return string((const char*)ResList::tr(in.c_str()).toUtf8());
+    return qs2utf8s(ResList::tr(in.c_str()));
 }
 
 string QtGuiResListPager::detailsLink()
@@ -810,6 +809,14 @@ void ResList::displayPage()
         m_progress = nullptr;
     }
     const static QUrl baseUrl("file:///");
+#if 0
+    auto fp = fopen("/tmp/recoll-reslist.html", "w");
+    if (fp) {
+        auto s = qs2utf8s(m_text);
+        fwrite(s.c_str(), 1, s.size(), fp);
+        fclose(fp);
+    }
+#endif
     setHtml(m_text, baseUrl);
 #endif
 
