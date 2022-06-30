@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2020 J.F.Dockes
+/* Copyright (C) 2005-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +19,7 @@
 
 #include <time.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <memory>
 
@@ -809,14 +810,18 @@ void ResList::displayPage()
         m_progress = nullptr;
     }
     const static QUrl baseUrl("file:///");
-#if 0
-    auto fp = fopen("/tmp/recoll-reslist.html", "w");
-    if (fp) {
-        auto s = qs2utf8s(m_text);
-        fwrite(s.c_str(), 1, s.size(), fp);
-        fclose(fp);
+
+    std::string dumpfile;
+    if (theconfig->getConfParam("reslisthtmldumpfile", dumpfile)) {
+        if (!dumpfile.empty() && !path_exists(dumpfile)) {
+            auto fp = fopen(dumpfile.c_str(), "w");
+            if (fp) {
+                auto s = qs2utf8s(m_text);
+                fwrite(s.c_str(), 1, s.size(), fp);
+                fclose(fp);
+            }
+        }
     }
-#endif
     setHtml(m_text, baseUrl);
 #endif
 
