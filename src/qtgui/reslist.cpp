@@ -787,6 +787,24 @@ void ResList::append(const QString &text)
 #endif
 }
 
+static void maybeDump(const QString& text)
+{
+    std::string dumpfile;
+    if (!theconfig->getConfParam("reslisthtmldumpfile", dumpfile) || dumpfile.empty()) {
+        return;
+    }
+    dumpfile = path_tildexpand(dumpfile);
+    if (path_exists(dumpfile)) {
+        return;
+    }
+    auto fp = fopen(dumpfile.c_str(), "w");
+    if (fp) {
+        auto s = qs2utf8s(text);
+        fwrite(s.c_str(), 1, s.size(), fp);
+        fclose(fp);
+    }
+}
+
 void ResList::displayPage()
 {
     resetView();
@@ -810,18 +828,7 @@ void ResList::displayPage()
         m_progress = nullptr;
     }
     const static QUrl baseUrl("file:///");
-
-    std::string dumpfile;
-    if (theconfig->getConfParam("reslisthtmldumpfile", dumpfile)) {
-        if (!dumpfile.empty() && !path_exists(dumpfile)) {
-            auto fp = fopen(dumpfile.c_str(), "w");
-            if (fp) {
-                auto s = qs2utf8s(m_text);
-                fwrite(s.c_str(), 1, s.size(), fp);
-                fclose(fp);
-            }
-        }
-    }
+    maybeDump(m_text);
     setHtml(m_text, baseUrl);
 #endif
 

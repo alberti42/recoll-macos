@@ -1,3 +1,9 @@
+recoll (1.32.5pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Experiments with webengine rendering
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 01 Jul 2022 09:36:00 +0200
+
 recoll (1.32.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Try to improve font size consistency by using px sizes everywhere.
