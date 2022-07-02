@@ -611,12 +611,11 @@ bool pcSubst(const string& in, string& out, const map<char, string>& subs)
                 out += '%';
                 continue;
             }
-            map<char, string>::const_iterator tr;
-            if ((tr = subs.find(*it)) != subs.end()) {
+            auto tr = subs.find(*it);
+            if (tr != subs.end()) {
                 out += tr->second;
             } else {
-                // We used to do "out += *it;" here but this does not make
-                // sense
+                out += std::string("%") + *it;
             }
         } else {
             out += *it;
@@ -648,7 +647,7 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs)
                 string::size_type j = in.find_first_of(')', i);
                 if (j == string::npos) {
                     // ??concatenate remaining part and stop
-                    out += in.substr(i - 2);
+                    out += std::string("%") + in.substr(i - 2);
                     break;
                 }
                 key = in.substr(i, j - i);
@@ -660,9 +659,7 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs)
             if ((tr = subs.find(key)) != subs.end()) {
                 out += tr->second;
             } else {
-                // Substitute to nothing, that's the reasonable thing to do
-                // instead of keeping the %(key)
-                // out += key.size()==1? key : string("(") + key + string(")");
+                out += std::string("%") + (key.size()==1? key : string("(") + key + string(")"));
             }
         } else {
             out += in[i];
