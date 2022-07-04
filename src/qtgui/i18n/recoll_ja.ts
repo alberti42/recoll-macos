@@ -1620,7 +1620,7 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Flushing</source>
-        <translation type="unfinished"></translation>
+        <translation>フラッシング</translation>
     </message>
     <message>
         <source>Show menu search dialog</source>
@@ -1629,10 +1629,6 @@ Please check the desktop file</translation>
     <message>
         <source>Duplicates</source>
         <translation>繰り返し</translation>
-    </message>
-    <message>
-        <source>Filter directories</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1715,7 +1711,7 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Next page</source>
-        <translation></translation>
+        <translation>次のページ</translation>
     </message>
     <message>
         <source>Next page of results</source>
@@ -1775,7 +1771,7 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Show Query Details</source>
-        <translation>クエリ詳細を表示</translation>
+        <translation>クエリ（照会）詳細を表示</translation>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
@@ -1839,7 +1835,7 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation>Query Fragments</translation>
+        <translation>クエリ（照会）フラグメント</translation>
     </message>
     <message>
         <source>    With failed files retrying</source>
@@ -1855,15 +1851,15 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Enable synonyms</source>
-        <translation>Enable synonyms</translation>
+        <translation>同義語を有効にする</translation>
     </message>
     <message>
         <source>Save last query</source>
-        <translation>最後のクエリを保存</translation>
+        <translation>最後のクエリ（照会）を保存</translation>
     </message>
     <message>
         <source>Load saved query</source>
-        <translation>保存されたクエリをロード</translation>
+        <translation>保存されたクエリ（照会）をロード</translation>
     </message>
     <message>
         <source>Special Indexing</source>
@@ -1895,7 +1891,7 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Trigger incremental pass</source>
-        <translation>Trigger incremental pass</translation>
+        <translation>増分パスをトリガー</translation>
     </message>
     <message>
         <source>E&amp;xport simple search history</source>
@@ -2036,7 +2032,7 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>(show query)</source>
-        <translation>(show query)</translation>
+        <translation>(クエリ表示)</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -2187,7 +2183,7 @@ Please check the desktop file</translation>
     </message>
     <message>
         <source>Query language</source>
-        <translation>クエリ言語</translation>
+        <translation>クエリ（照会）言語</translation>
     </message>
     <message>
         <source>Bad query string</source>
@@ -3442,23 +3438,15 @@ The default value is 2 (percent). </translation>
     </message>
     <message>
         <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="unfinished"></translation>
+        <translation>アンカーテキストの前にスペースを挿入して、タミルQTBUG-78923を回避します</translation>
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
-        <translation type="unfinished"></translation>
+        <translation>このバグにより、強調表示されたタミル語の中に奇妙な円の文字が表示されます。 回避策は、問題を修正するように見える追加のスペース文字を挿入します。</translation>
     </message>
     <message>
         <source>Depth of side filter directory tree</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display scale (default 1.0):</source>
-        <translation type="unfinished"></translation>
+        <translation>サイドフィルターディレクトリツリーの深さ</translation>
     </message>
 </context>
 </TS>
