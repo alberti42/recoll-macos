@@ -1,8 +1,11 @@
-recoll (1.32.5pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.32.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * Experiments with webengine rendering
+  * GUI: switch to using Qt-Webengine instead of Qt-Webkit because of CSS support issues in Webkit.
+  * GUI: result list paragraph format. Preserve unquoted % characters if there is no matching
+    translation. USer manual: document the need to quote % as %% anyway.
+  * GUI: result list devel/debug. Add parameter to dump the HTML sent to the engine.
   
- -- Jean-Francois Dockes <jf@dockes.org>  Fri, 01 Jul 2022 09:36:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 05 Jul 2022 09:56:00 +0200
 
 recoll (1.32.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
