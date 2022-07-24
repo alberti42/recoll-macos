@@ -962,8 +962,15 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
         prevPageAction->setEnabled(false);
         firstPageAction->setEnabled(false);
         if (m_focustotablesc)
-            connect(m_focustotablesc, SIGNAL(activated()), 
-                    restable, SLOT(takeFocus()));
+            connect(m_focustotablesc, SIGNAL(activated()), restable, SLOT(takeFocus()));
+
+        // This should not be necessary, but it fixes a display issue with qt 5.12/5.15
+        // (focal/jammy) at least, where the restable area is not fully painted (but gets updated if
+        // you move the pointer around or resize / move the window, depending). The problem is
+        // slightly random or timing-dependant (not occurring every time). The hide/show does not
+        // seem to hurt performance visibly.
+        restable->hide();
+        restable->show();
     }
 }
 
