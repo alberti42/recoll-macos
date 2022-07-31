@@ -51,6 +51,12 @@ _css_classes = {
     _TEXT:              'text',
 }
 
+# python3.8 token.py sends an ENCODING token which we ignore
+try:
+    token_encoding_type = token.ENCODING
+except:
+    token_encoding_type = 62
+    
 _HTML_HEADER = """\
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
@@ -146,16 +152,20 @@ class Parser:
     def __call__(self, toktype, toktext, startpos, endpos, line):
         """ Token handler.
         """
+        srow, scol = startpos
+        erow, ecol = endpos
         if 0:
             print("type %s %s text %s start %s %s end %s %s<br>\n" % \
                   (toktype, token.tok_name[toktype], toktext, \
-                   srow, scol,erow,ecol))
-        srow, scol = startpos
-        erow, ecol = endpos
+                   srow, scol,erow,ecol), file=sys.stderr)
+
         # calculate new positions
         oldpos = self.pos
         newpos = self.lines[srow] + scol
         self.pos = newpos + len(toktext)
+
+        if toktype == token_encoding_type:
+            return
 
         # handle newlines
         if toktype in [token.NEWLINE, tokenize.NL]:
