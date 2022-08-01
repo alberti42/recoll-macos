@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""A python version of the command line query tool recollq (a bit simplified)
+"""A Python simplified equivalent of the command line query tool recollq
 The input string is always interpreted as a query language string.
 This could actually be useful for something after some customization
 """
@@ -8,11 +8,6 @@ This could actually be useful for something after some customization
 import sys
 import locale
 from getopt import getopt
-
-if sys.version_info[0] >= 3:
-    ISP3 = True
-else:
-    ISP3 = False
 
 from recoll import recoll, rclextract
 
@@ -43,12 +38,6 @@ def extractofile(doc, outfilename=""):
                                        ofilename=outfilename)
     return outfilename
 
-def utf8string(s):
-    if ISP3:
-        return s
-    else:
-        return s.encode('utf8')
-    
 def doquery(db, q):
     # Get query object
     query = db.query()
@@ -57,7 +46,7 @@ def doquery(db, q):
     # Parse/run input query string
     nres = query.execute(q, stemming = 0, stemlang="english")
     qs = "Xapian query: [%s]" % query.getxquery()
-    print(utf8string(qs))
+    print(f"{qs}")
     groups = query.getgroups()
     m = ptrmeths(groups)
 
@@ -73,23 +62,24 @@ def doquery(db, q):
         rownum = query.next if type(query.next) == int else \
                  query.rownumber
         print("%d:"%(rownum,))
+
         #for k,v in doc.items().items():
-        #print "KEY:", utf8string(k), "VALUE", utf8string(v)
+        #    print(f"KEY: {k} VALUE: {v}")
         #continue
-        #outfile = extractofile(doc)
-        #print "outfile:", outfile, "url", utf8string(doc.url)
+
+        #outfile = extractofile(doc) ; print(f"outfile: {outfile} url: {doc.url}")
+
         for k in ("title", "mtime", "author"):
             value = getattr(doc, k)
-#            value = doc.get(k)
+            #value = doc.get(k)
             if value is None:
-                print("%s: (None)"%(k,))
+                print(f"{k}: (None)")
             else:
-                print("%s : %s"%(k, utf8string(value)))
+                print(f"{k} : {value}")
         #doc.setbinurl(bytearray("toto"))
         #burl = doc.getbinurl(); print("Bin URL : [%s]"%(doc.getbinurl(),))
         abs = query.makedocabstract(doc, methods=m)
-        print(utf8string(abs))
-        print('')
+        print(f"{abs}\n")
 #        fulldoc = extract(doc)
 #        print("FULLDOC MIMETYPE %s TEXT: %s" % (fulldoc.mimetype,fulldoc.text))
 
@@ -106,7 +96,11 @@ extra_dbs = []
 maxchars = 120
 contextwords = 4
 # Process options: [-c confdir] [-i extra_db [-i extra_db] ...]
-options, args = getopt(sys.argv[1:], "c:i:")
+try:
+    options, args = getopt(sys.argv[1:], "c:i:")
+except Exception as ex:
+    print(f"{ex}")
+    sys.exit(1)
 for opt,val in options:
     if opt == "-c":
         confdir = val
@@ -124,7 +118,7 @@ q = ''
 for word in args:
     q += word + ' '
 
-print("QUERY: [%s]"%(q,))
+print(f"QUERY: [{q}]")
 db = recoll.connect(confdir=confdir, extra_dbs=extra_dbs)
 db.setAbstractParams(maxchars=maxchars, contextwords=contextwords)
 
