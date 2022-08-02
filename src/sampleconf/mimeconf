@@ -164,7 +164,7 @@ application/x-awk = internal text/plain
 application/x-chm = execm rclchm.py
 application/x-dia-diagram = execm rcldia.py;mimetype=text/plain
 application/x-dvi = exec rcldvi
-application/x-flac = execm rclaudio.py
+audio/flac =  execm rclaudio.py
 application/x-gnote = execm rclxml.py
 application/x-gnuinfo = execm rclinfo.py
 application/x-gnumeric = internal xsltproc gnumeric.xsl
@@ -297,6 +297,8 @@ application/x-chm = book
 application/x-dia-diagram = drawing
 application/x-dvi = document
 application/x-flac = sownd
+audio/x-flac = sownd
+audio/flac = sownd
 application/x-fsdirectory = folder
 application/x-gnote = document
 application/x-gnuinfo = book
