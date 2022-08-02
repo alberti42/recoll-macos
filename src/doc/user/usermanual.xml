@@ -2692,24 +2692,29 @@ fs.inotify.max_user_watches=32768
           Stemming and wildcard expansion will be performed as for simple
           search. </para>
 
-          <formalpara><title>Phrases and Proximity searches</title>
-          <para>These two clauses work in similar ways, with the difference
-          that proximity searches do not impose an order on the words. In
-          both cases, an adjustable number (slack) of non-matched words may
-          be accepted between the searched ones (use the counter on the
-          left to adjust this count). For phrases, the default count is
-          zero (exact match). For proximity it is ten (meaning that two
-          search terms, would be matched if found within a window of twelve
-          words). Examples: a phrase search for
-          <literal>quick fox</literal> with a slack of 0 will match
-          <literal>quick fox</literal> but not
-          <literal>quick brown fox</literal>. With
-          a slack of 1 it will match the latter, but not
-          <literal>fox quick</literal>. A proximity search for
-          <literal>quick fox</literal> with the default slack will 
-          match the latter, and also
-          <literal>a fox is a cunning and quick animal</literal>.</para> 
-          </formalpara>
+          <sect4 id="RCL.SEARCH.GUI.COMPLEX.PHRASEANDPROX">
+            <title>Phrase and Proximity searches</title>
+            <para>These two clauses look for a group of terms in
+              specified relative positions. They differ in the sense that the order of input terms
+              is significant for <literal>phrase</literal> searches, but not
+              for <literal>proximity</literal> searches. The latter do not impose an order on the
+              words. In both cases, an adjustable number (slack) of non-matched words may be
+              accepted between the searched ones. For <literal>phrase</literal> searches, the
+              default count is zero (exact match). For <literal>proximity</literal> searches it is
+              ten (meaning that two search terms, would be matched if found within a window of
+              twelve words). </para>
+            <para>Examples: a phrase search for
+              <literal>quick fox</literal> with a slack of 0 will match
+              <literal>quick fox</literal> but not
+              <literal>quick brown fox</literal>. With
+              a slack of 1 it will match the latter, but not
+              <literal>fox quick</literal>. A proximity search for
+              <literal>quick fox</literal> with the default slack will 
+              match the latter, and also
+              <literal>a fox is a cunning and quick animal</literal>.</para>
+            <para>The slack can be adjusted with the counter to the left of the
+              input area</para>
+          </sect4>
 
         </sect3>
 
@@ -4030,10 +4035,12 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <para>An element preceded by a <literal>-</literal> specifies a
         term that should <emphasis>not</emphasis> appear.</para>
 
-      <para>As usual, words inside quotes define a phrase (the order of words is significant), so
-      that <replaceable>title:"prejudice pride"</replaceable> is not the same
-      as <replaceable>title:prejudice title:pride</replaceable>, and is unlikely to find a
-      result.</para>
+      <para>By default, words inside double-quotes define a <literal>phrase</literal> search (the
+        order of words is significant), so
+        that <replaceable>title:"prejudice pride"</replaceable> is not the same
+        as <replaceable>title:prejudice title:pride</replaceable>, and is unlikely to find a
+        result. This can be changed by
+        using <link linkend="RCL.SEARCH.LANG.MODIFIERS">modifiers</link>. </para>
 
       <para>Words inside phrases and capitalized words are not stem-expanded. Wildcards may be used
       anywhere inside a term.  Specifying a wildcard on the left of a term can produce a very slow
@@ -4323,16 +4330,21 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           &RCL; 1.22 and later).</para>
           </listitem>
 
-          <listitem><para><literal>o</literal> can be used to specify a
-          "slack" for phrase and proximity searches: the number of
-          additional terms that may be found between the specified
-          ones. If <literal>o</literal> is followed by an integer number,
-          this is the slack, else the default is 10.</para>
+          <listitem><para><literal>p</literal> can be used to turn an ordered
+              <literal>phrase</literal> search into an unordered <literal>proximity</literal>
+              one. Example: <literal>"order any in"p</literal>. You can find a little more detail
+                about <literal>phrase</literal> and <literal>proximity</literal> searches 
+                <link linkend="RCL.SEARCH.GUI.COMPLEX.PHRASEANDPROX">here</link>.</para>
           </listitem>
 
-          <listitem><para><literal>p</literal> can be used to turn the
-          default phrase search into a proximity one
-          (unordered). Example: <literal>"order any in"p</literal></para>
+          <listitem><para><literal>o</literal> can be used to specify a
+              "slack" for both <literal>phrase</literal> and <literal>proximity</literal> searches:
+              the number of
+              additional terms that may be found between the specified
+              ones. If <literal>o</literal> is followed by an integer number,
+              this is the slack, else the default is 10. The default slack (with
+              no <literal>o</literal>) is 0 for <literal>phrase</literal> searches and 10 for
+              <literal>proximity</literal> searches.</para>
           </listitem>
 
           <listitem><para><literal>C</literal> will turn on case

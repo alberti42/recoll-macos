@@ -430,7 +430,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1526">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1532">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -3804,25 +3804,44 @@ fs.inotify.max_user_watches=32768
             accept a mix of single words and phrases enclosed in
             double quotes. Stemming and wildcard expansion will be
             performed as for simple search.</p>
-            <p><b>Phrases and Proximity searches.&nbsp;</b>These
-            two clauses work in similar ways, with the difference
-            that proximity searches do not impose an order on the
-            words. In both cases, an adjustable number (slack) of
-            non-matched words may be accepted between the searched
-            ones (use the counter on the left to adjust this
-            count). For phrases, the default count is zero (exact
-            match). For proximity it is ten (meaning that two
-            search terms, would be matched if found within a window
-            of twelve words). Examples: a phrase search for
-            <code class="literal">quick fox</code> with a slack of
-            0 will match <code class="literal">quick fox</code> but
-            not <code class="literal">quick brown fox</code>. With
-            a slack of 1 it will match the latter, but not
-            <code class="literal">fox quick</code>. A proximity
-            search for <code class="literal">quick fox</code> with
-            the default slack will match the latter, and also
-            <code class="literal">a fox is a cunning and quick
-            animal</code>.</p>
+            <div class="sect4">
+              <div class="titlepage">
+                <div>
+                  <div>
+                    <h5 class="title"><a name=
+                    "RCL.SEARCH.GUI.COMPLEX.PHRASEANDPROX" id=
+                    "RCL.SEARCH.GUI.COMPLEX.PHRASEANDPROX"></a>Phrase
+                    and Proximity searches</h5>
+                  </div>
+                </div>
+              </div>
+              <p>These two clauses look for a group of terms in
+              specified relative positions. They differ in the
+              sense that the order of input terms is significant
+              for <code class="literal">phrase</code> searches, but
+              not for <code class="literal">proximity</code>
+              searches. The latter do not impose an order on the
+              words. In both cases, an adjustable number (slack) of
+              non-matched words may be accepted between the
+              searched ones. For <code class=
+              "literal">phrase</code> searches, the default count
+              is zero (exact match). For <code class=
+              "literal">proximity</code> searches it is ten
+              (meaning that two search terms, would be matched if
+              found within a window of twelve words).</p>
+              <p>Examples: a phrase search for <code class=
+              "literal">quick fox</code> with a slack of 0 will
+              match <code class="literal">quick fox</code> but not
+              <code class="literal">quick brown fox</code>. With a
+              slack of 1 it will match the latter, but not
+              <code class="literal">fox quick</code>. A proximity
+              search for <code class="literal">quick fox</code>
+              with the default slack will match the latter, and
+              also <code class="literal">a fox is a cunning and
+              quick animal</code>.</p>
+              <p>The slack can be adjusted with the counter to the
+              left of the input area</p>
+            </div>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -4188,7 +4207,7 @@ fs.inotify.max_user_watches=32768
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1526" id="idm1526"></a>
+            <a name="idm1532" id="idm1532"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -5449,13 +5468,16 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           <p>An element preceded by a <code class=
           "literal">-</code> specifies a term that should
           <span class="emphasis"><em>not</em></span> appear.</p>
-          <p>As usual, words inside quotes define a phrase (the
-          order of words is significant), so that <em class=
+          <p>By default, words inside double-quotes define a
+          <code class="literal">phrase</code> search (the order of
+          words is significant), so that <em class=
           "replaceable"><code>title:"prejudice pride"</code></em>
           is not the same as <em class=
           "replaceable"><code>title:prejudice
           title:pride</code></em>, and is unlikely to find a
-          result.</p>
+          result. This can be changed by using <a class="link"
+          href="#RCL.SEARCH.LANG.MODIFIERS" title=
+          "3.5.4.&nbsp;Modifiers">modifiers</a>.</p>
           <p>Words inside phrases and capitalized words are not
           stem-expanded. Wildcards may be used anywhere inside a
           term. Specifying a wildcard on the left of a term can
@@ -5860,19 +5882,30 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
                 "application">Recoll</span> 1.22 and later).</p>
               </li>
               <li class="listitem">
-                <p><code class="literal">o</code> can be used to
-                specify a "slack" for phrase and proximity
-                searches: the number of additional terms that may
-                be found between the specified ones. If
-                <code class="literal">o</code> is followed by an
-                integer number, this is the slack, else the default
-                is 10.</p>
+                <p><code class="literal">p</code> can be used to
+                turn an ordered <code class="literal">phrase</code>
+                search into an unordered <code class=
+                "literal">proximity</code> one. Example:
+                <code class="literal">"order any in"p</code>. You
+                can find a little more detail about <code class=
+                "literal">phrase</code> and <code class=
+                "literal">proximity</code> searches <a class="link"
+                href="#RCL.SEARCH.GUI.COMPLEX.PHRASEANDPROX" title=
+                "Phrase and Proximity searches">here</a>.</p>
               </li>
               <li class="listitem">
-                <p><code class="literal">p</code> can be used to
-                turn the default phrase search into a proximity one
-                (unordered). Example: <code class="literal">"order
-                any in"p</code></p>
+                <p><code class="literal">o</code> can be used to
+                specify a "slack" for both <code class=
+                "literal">phrase</code> and <code class=
+                "literal">proximity</code> searches: the number of
+                additional terms that may be found between the
+                specified ones. If <code class="literal">o</code>
+                is followed by an integer number, this is the
+                slack, else the default is 10. The default slack
+                (with no <code class="literal">o</code>) is 0 for
+                <code class="literal">phrase</code> searches and 10
+                for <code class="literal">proximity</code>
+                searches.</p>
               </li>
               <li class="listitem">
                 <p><code class="literal">C</code> will turn on case
