@@ -238,7 +238,7 @@ class AudioTagExtractor(RclBaseHandler):
                 if tagname.startswith('APIC:'):
                     #self.em.rclog("mp3 img: %s" % mutf[tagname].mime)
                     return 'jpg' if mutf[tagname].mime == 'image/jpeg' else 'png'
-        elif 'flac' in mime:
+        elif 'audio/flac' in mime:
             if mutf.pictures:
                 return 'jpg' if mutf.pictures[0].mime == 'image/jpeg' else 'png'
         elif 'audio/mp4' in mime:
