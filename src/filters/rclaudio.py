@@ -351,6 +351,11 @@ class AudioTagExtractor(RclBaseHandler):
         # Metadata tags. The names vary depending on the file type. We
         # just have a big translation dictionary for all
         for tag,val in mutf.items():
+            #print(f"TAG {tag} VAL {val}", file=sys.stderr)
+            # Mutagen sends out COMM==eng= with tag COMM::eng We don't know what to do with the
+            # language (or possible other attributes), so get rid of it for now:
+            if tag.find("COMM::") == 0:
+                tag = "COMM"
             if tag.find('TXXX:') == 0:
                 tag = tag[5:].upper()
             elif tag.find('TXX:') == 0:
