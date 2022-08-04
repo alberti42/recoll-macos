@@ -316,8 +316,7 @@ def main(proto, extract):
     # Not running the main loop: either acting as single filter (when called
     # from other filter for example), or debugging
     def usage():
-        print("Usage: rclexecm.py [-d] [-s] [-i ipath] <filename>",
-              file=sys.stderr)
+        print("Usage: rclexecm.py [-d] [-f] [-h] [-i ipath] [-s] <filename>", file=sys.stderr)
         print("       rclexecm.py -w <prog>", file=sys.stderr)
         sys.exit(1)
         
