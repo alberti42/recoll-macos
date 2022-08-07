@@ -11,7 +11,7 @@
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.32.5
+RCLVERS=1.32.6
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.1
 PPAVERS=1
@@ -50,7 +50,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series="bionic focal impish jammy"
-#series="focal jammy"
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -86,7 +86,7 @@ done
 
 ### KIO.
 series="bionic focal impish jammy"
-series=
+series=jammy
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
