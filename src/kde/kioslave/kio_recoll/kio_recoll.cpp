@@ -45,6 +45,12 @@
 using namespace KIO;
 using namespace std;
 
+class KIOPluginForMetaData : public QObject
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.recoll.kio.slave.recoll" FILE "recoll.json")
+};
+
 RclConfig *RecollProtocol::o_rclconfig;
 
 RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
@@ -356,19 +362,25 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     return true;
 }
 
-int kdemain(int argc, char **argv)
+extern "C"
 {
-    QCoreApplication::setApplicationName("kio_recoll");
-    qDebug() << "*** starting kio_recoll ";
+    Q_DECL_EXPORT int kdemain(int argc, char **argv)
+    {
+         QCoreApplication app(argc, argv);
+         app.setApplicationName("kio_recoll");
+         qDebug() << "*** starting kio_recoll ";
 
-    if (argc != 4)  {
-        qDebug() << "Usage: kio_recoll proto dom-socket1 dom-socket2\n";
-        exit(-1);
+        if (argc != 4)  {
+            qDebug() << "Usage: kio_recoll proto dom-socket1 dom-socket2\n";
+            exit(-1);
+        }
+
+        RecollProtocol slave(argv[2], argv[3]);
+        slave.dispatchLoop();
+
+        qDebug() << "kio_recoll Done";
+        return 0;
     }
-
-    RecollProtocol slave(argv[2], argv[3]);
-    slave.dispatchLoop();
-
-    qDebug() << "kio_recoll Done";
-    return 0;
 }
+#include "kio_recoll.moc"
+

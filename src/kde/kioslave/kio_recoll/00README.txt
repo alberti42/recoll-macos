@@ -49,7 +49,8 @@ Recipe:
 
 mkdir builddir
 cd builddir
-cmake .. -DCMAKE_INSTALL_PREFIX=/usr 
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+
 make
 sudo make install
 
