@@ -1,4 +1,4 @@
-kio-recoll (1.32.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+kio-recoll (1.32.7-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Updated kio_recoll to work with newer kf5 versions (it seems that 5.96 broke it at least on
     arch).

@@ -336,8 +336,6 @@ recollq_LDADD = librecoll.la
 xadump_SOURCES = query/xadump.cpp
 xadump_LDADD = librecoll.la $(LIBXAPIAN) $(LIBICONV)
 
-# Note: I'd prefer the generated query parser files not to be distributed
-# at all, but failed to achieve this
 EXTRA_DIST = \
 bincimapmime/00README.recoll bincimapmime/AUTHORS bincimapmime/COPYING \
 \
@@ -369,9 +367,10 @@ kde/kioslave/kio_recoll/dirif.cpp \
 kde/kioslave/kio_recoll/htmlif.cpp \
 kde/kioslave/kio_recoll/kio_recoll.cpp \
 kde/kioslave/kio_recoll/kio_recoll.h \
+kde/kioslave/kio_recoll/recoll.json \
+kde/kioslave/kio_recoll/recoll.protocol \
 kde/kioslave/kio_recoll/recollf.protocol \
 kde/kioslave/kio_recoll/recollnolist.protocol \
-kde/kioslave/kio_recoll/recoll.protocol \
 \
 kde/kioslave/kio_recoll-kde4/00README.txt \
 kde/kioslave/kio_recoll-kde4/CMakeLists.txt \
