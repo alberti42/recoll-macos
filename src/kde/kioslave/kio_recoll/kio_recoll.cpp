@@ -54,7 +54,7 @@ class KIOPluginForMetaData : public QObject
 RclConfig *RecollProtocol::o_rclconfig;
 
 RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
-    : SlaveBase("recoll", pool, app), m_initok(false), m_alwaysdir(false)
+    : SlaveBase("recoll", pool, app), m_initok(false), m_alwaysdir(true)
 {
     qDebug() << "RecollProtocol::RecollProtocol()";
     if (o_rclconfig == 0) {
@@ -86,7 +86,9 @@ RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
     if (cp) {
         m_alwaysdir = stringToBool(cp);
     } else {
-        o_rclconfig->getConfParam("kio_always_dir", &m_alwaysdir);
+        bool cfval;
+        if (o_rclconfig->getConfParam("kio_always_dir", &cfval))
+            m_alwaysdir = cfval;
     }
 
     cp = getenv("RECOLL_KIO_STEMLANG");
@@ -129,11 +131,10 @@ void RecollProtocol::mimetype(const QUrl& url)
 }
 
 UrlIngester::UrlIngester(RecollProtocol *p, const QUrl& url)
-    : m_parent(p), m_slashend(false), m_alwaysdir(false),
+    : m_parent(p), m_slashend(false), m_alwaysdir(!url.scheme().compare("recollf")),
       m_retType(UIRET_NONE), m_resnum(0), m_type(UIMT_NONE)
 {
     qDebug() << "UrlIngester::UrlIngester: Url: " << url;
-    m_alwaysdir = !url.scheme().compare("recollf");
     QString path = url.path();
     if (url.host().isEmpty()) {
         if (path.isEmpty() || !path.compare("/")) {
@@ -165,8 +166,7 @@ UrlIngester::UrlIngester(RecollProtocol *p, const QUrl& url)
     } else {
         // Non empty host, url must be something like :
         //      //search/query?q=query&param=value...
-        qDebug() << "UrlIngester::UrlIngester: host " <<
-                 url.host() << " path " << url.path();
+        qDebug() << "UrlIngester::UrlIngester: host " << url.host() << " path " << url.path();
         if (url.host().compare("search") || url.path().compare("/query")) {
             return;
         }
@@ -250,8 +250,7 @@ void RecollProtocol::get(const QUrl& url)
         switch (rettp) {
         case UrlIngester::UIRET_HELP: {
             QString location =
-                QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                       "kio_recoll/help.html");
+                QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kio_recoll/help.html");
             redirection(QUrl::fromLocalFile(location));
         }
         goto out;
@@ -289,17 +288,6 @@ void RecollProtocol::get(const QUrl& url)
             goto out;
         }
     } else if (ingest.isQuery(&qd)) {
-#if 0
-// Do we need this ?
-        if (host.isEmpty()) {
-            char cpage[20];
-            sprintf(cpage, "%d", page);
-            QString nurl = QString::fromAscii("recoll://search/query?q=") +
-                           query + "&qtp=" + opt + "&p=" + cpage;
-            redirection(QUrl(nurl));
-            goto out;
-        }
-#endif
         // htmlDoSearch does the search syncing (needs to know about changes).
         htmlDoSearch(qd);
         goto out;
@@ -324,8 +312,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
         if (opt == 'f') {
             clp = new Rcl::SearchDataClauseFilename(qs);
         } else {
-            clp = new Rcl::SearchDataClauseSimple(opt == 'o' ? Rcl::SCLT_OR :
-                                                  Rcl::SCLT_AND, qs);
+            clp = new Rcl::SearchDataClauseSimple(opt == 'o' ? Rcl::SCLT_OR : Rcl::SCLT_AND, qs);
         }
         sdata = std::make_shared<Rcl::SearchData>(Rcl::SCLT_OR, m_stemlang);
         if (sdata && clp) {
@@ -349,8 +336,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     }
 
     DocSequenceDb *src =
-        new DocSequenceDb(m_rcldb, std::shared_ptr<Rcl::Query>(query),
-                          "Query results", sdata);
+        new DocSequenceDb(m_rcldb, std::shared_ptr<Rcl::Query>(query), "Query results", sdata);
     if (src == 0) {
         error(KIO::ERR_SLAVE_DEFINED, u8s2qs("Can't build result sequence"));
         return false;

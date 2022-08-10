@@ -7,14 +7,15 @@
 # Active series:
 # 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
-# 21.10    impish
+# 22.04LTS jammy  2027-04
+SERIES="bionic focal jammy"
 
 PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.32.7
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.1
-PPAVERS=1
+PPAVERS=2
 
 #
 #Y=/y
@@ -28,7 +29,7 @@ case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp2-ppa
+#PPANAME=recollexp2-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -49,8 +50,8 @@ check_recoll_orig()
 
 ####### QT
 debdir=debian
-series="bionic focal impish jammy"
-series=
+series=$SERIES
+series=bionic
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -85,8 +86,8 @@ done
 
 
 ### KIO.
-series="bionic focal impish jammy"
-series=jammy
+series=$SERIES
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -125,7 +126,7 @@ for svers in $series ; do
 done
 
 ### GSSP
-series="bionic focal groovy hirsute impish"
+series=$SERIES
 series=
 
 debdir=debiangssp

@@ -189,14 +189,12 @@ static void createGoHomeEntry(KIO::UDSEntry& entry)
 static void createGoHelpEntry(KIO::UDSEntry& entry)
 {
     QString location =
-        QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                               "kio_recoll/help.html");
+        QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kio_recoll/help.html");
     entry.clear();
     entry.fastInsert(KIO::UDSEntry::UDS_NAME, "help");
     entry.fastInsert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll help (click me first)");
     entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
-    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, QString("file://") +
-                 location);
+    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, QString("file://") + location);
     entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, 0500);
     entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
     entry.fastInsert(KIO::UDSEntry::UDS_ICON_NAME, "help");
@@ -292,8 +290,10 @@ void RecollProtocol::listDir(const QUrl& url)
             KIO::UDSEntry entry;
             createRootEntry(entry);
             entries.append(entry);
-            createGoHomeEntry(entry);
-            entries.append(entry);
+            if (!m_alwaysdir) {
+                createGoHomeEntry(entry);
+                entries.append(entry);
+            }
             createGoHelpEntry(entry);
             entries.append(entry);
             listEntries(entries);
@@ -310,8 +310,7 @@ void RecollProtocol::listDir(const QUrl& url)
         // which offers an opportunity to not perform it.
         if (ingest.endSlashQuery()) {
             qDebug() << "RecollProtocol::listDir: Ends With /";
-            error(ERR_SLAVE_DEFINED,
-                  QString::fromUtf8("Autocompletion search aborted"));
+            error(ERR_SLAVE_DEFINED, QString::fromUtf8("Autocompletion search aborted"));
             return;
         }
         if (!syncSearch(qd)) {

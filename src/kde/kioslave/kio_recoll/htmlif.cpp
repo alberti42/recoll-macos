@@ -146,12 +146,10 @@ void RecollProtocol::searchPage()
     mimeType("text/html");
     if (welcomedata.empty()) {
         QString location =
-            QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                   "kio_recoll/welcome.html");
+            QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kio_recoll/welcome.html");
         string reason;
         if (location.isEmpty() ||
-                !file_to_string((const char *)location.toUtf8(),
-                                welcomedata, &reason)) {
+            !file_to_string((const char *)location.toUtf8(), welcomedata, &reason)) {
             welcomedata = "<html><head><title>Recoll Error</title></head>"
                           "<body><p>Could not locate Recoll welcome.html file: ";
             welcomedata += reason;
