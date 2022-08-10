@@ -3807,68 +3807,15 @@ fs.inotify.max_user_watches=32768
     <sect1 id="RCL.SEARCH.KIO">
       <title>Searching with the KDE KIO slave</title>
 
-      <sect2 id="RCL.SEARCH.KIO.INTRO">
-        <title>What's this</title>
+      <para>The &RCL; KIO slave allows performing a &RCL; search by entering an appropriate URL in a
+        KDE open dialog, or a <command>Dolphin</command> URL. The results are displayed as
+        directory entries.</para>
 
-        <para>The &RCL; KIO slave allows performing a &RCL; search
-        by entering an appropriate URL in a KDE open dialog, or with an
-        HTML-based interface displayed in
-        <command>Konqueror</command>.</para>  
+        <para>The instructions for building this module are located in the source
+          tree. See: <filename>kde/kio/recoll/00README.txt</filename>. Some Linux distributions do
+          package the kio-recoll module, so check before diving into the build process, maybe it's
+          already out there ready for one-click installation.</para>
 
-        <para>The HTML-based interface is similar to the Qt-based
-        interface, but slightly less powerful for now. Its advantage is
-        that you can perform your search while staying fully within the
-        KDE framework: drag and drop from the result list works normally
-        and you have your normal choice of applications for opening
-        files.</para>
-
-        <para>The alternative interface uses a directory view of search
-        results. Due to limitations in the current KIO slave interface,
-        it is currently not obviously useful (to me).</para>
-
-        <para>The interface is described in more detail inside a help
-        file which you can access by entering
-        <filename>recoll:/</filename> inside the
-        <command>konqueror</command> URL line (this works only if the
-        recoll KIO slave has been previously installed).</para>
-
-
-        <para>The instructions for building this module are located in the
-        source tree. See:
-        <filename>kde/kio/recoll/00README.txt</filename>. Some Linux
-        distributions do package the kio-recoll module, so check before
-        diving into the build process, maybe it's already out there ready for
-        one-click installation.</para>
-      </sect2>
-
-
-      <sect2 id="RCL.SEARCH.KIO.SEARCHABLEDOCS">
-        <title>Searchable documents</title>
-
-        <para>As a sample application, the &RCL; KIO slave could allow
-        preparing a set of HTML documents (for example a manual) so that
-        they become their own search interface inside
-        <command>konqueror</command>.</para>
-
-        <para>This can be done by either explicitly inserting
-        <literal><![CDATA[<a href="recoll://...">]]></literal> links 
-        around some document areas, or automatically by adding a
-        very small <application>javascript</application> program to the
-        documents, like the following example, which would initiate a search by
-        double-clicking any term:</para>
-        
-        <programlisting>&lt;script language="JavaScript">
-        function recollsearch() {
-        var t = document.getSelection();
-        window.location.href = 'recoll://search/query?qtp=a&amp;p=0&amp;q=' +
-        encodeURIComponent(t);
-        }
-        &lt;/script>
-        ....
-        &lt;body ondblclick="recollsearch()">
-
-        </programlisting>
-      </sect2>
     </sect1>
 
 
