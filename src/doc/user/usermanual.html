@@ -242,15 +242,6 @@ alink="#0000FF">
             <dt><span class="sect1">3.3. <a href=
             "#RCL.SEARCH.KIO">Searching with the KDE KIO
             slave</a></span></dt>
-            <dd>
-              <dl>
-                <dt><span class="sect2">3.3.1. <a href=
-                "#RCL.SEARCH.KIO.INTRO">What's this</a></span></dt>
-                <dt><span class="sect2">3.3.2. <a href=
-                "#RCL.SEARCH.KIO.SEARCHABLEDOCS">Searchable
-                documents</a></span></dt>
-              </dl>
-            </dd>
             <dt><span class="sect1">3.4. <a href=
             "#RCL.SEARCH.COMMANDLINE">Searching on the command
             line</a></span></dt>
@@ -5180,82 +5171,17 @@ fs.inotify.max_user_watches=32768
             </div>
           </div>
         </div>
-        <div class="sect2">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name="RCL.SEARCH.KIO.INTRO"
-                id="RCL.SEARCH.KIO.INTRO"></a>3.3.1.&nbsp;What's
-                this</h3>
-              </div>
-            </div>
-          </div>
-          <p>The <span class="application">Recoll</span> KIO slave
-          allows performing a <span class=
-          "application">Recoll</span> search by entering an
-          appropriate URL in a KDE open dialog, or with an
-          HTML-based interface displayed in <span class=
-          "command"><strong>Konqueror</strong></span>.</p>
-          <p>The HTML-based interface is similar to the Qt-based
-          interface, but slightly less powerful for now. Its
-          advantage is that you can perform your search while
-          staying fully within the KDE framework: drag and drop
-          from the result list works normally and you have your
-          normal choice of applications for opening files.</p>
-          <p>The alternative interface uses a directory view of
-          search results. Due to limitations in the current KIO
-          slave interface, it is currently not obviously useful (to
-          me).</p>
-          <p>The interface is described in more detail inside a
-          help file which you can access by entering <code class=
-          "filename">recoll:/</code> inside the <span class=
-          "command"><strong>konqueror</strong></span> URL line
-          (this works only if the recoll KIO slave has been
-          previously installed).</p>
-          <p>The instructions for building this module are located
-          in the source tree. See: <code class=
-          "filename">kde/kio/recoll/00README.txt</code>. Some Linux
-          distributions do package the kio-recoll module, so check
-          before diving into the build process, maybe it's already
-          out there ready for one-click installation.</p>
-        </div>
-        <div class="sect2">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name=
-                "RCL.SEARCH.KIO.SEARCHABLEDOCS" id=
-                "RCL.SEARCH.KIO.SEARCHABLEDOCS"></a>3.3.2.&nbsp;Searchable
-                documents</h3>
-              </div>
-            </div>
-          </div>
-          <p>As a sample application, the <span class=
-          "application">Recoll</span> KIO slave could allow
-          preparing a set of HTML documents (for example a manual)
-          so that they become their own search interface inside
-          <span class=
-          "command"><strong>konqueror</strong></span>.</p>
-          <p>This can be done by either explicitly inserting
-          <code class="literal">&lt;a
-          href="recoll://..."&gt;</code> links around some document
-          areas, or automatically by adding a very small
-          <span class="application">javascript</span> program to
-          the documents, like the following example, which would
-          initiate a search by double-clicking any term:</p>
-          <pre class=
-          "programlisting">&lt;script language="JavaScript"&gt;
-        function recollsearch() {
-        var t = document.getSelection();
-        window.location.href = 'recoll://search/query?qtp=a&amp;p=0&amp;q=' +
-        encodeURIComponent(t);
-        }
-        &lt;/script&gt;
-        ....
-        &lt;body ondblclick="recollsearch()"&gt;
-
-        </pre>
-        </div>
+        <p>The <span class="application">Recoll</span> KIO slave
+        allows performing a <span class="application">Recoll</span>
+        search by entering an appropriate URL in a KDE open dialog,
+        or a <span class="command"><strong>Dolphin</strong></span>
+        URL. The results are displayed as directory entries.</p>
+        <p>The instructions for building this module are located in
+        the source tree. See: <code class=
+        "filename">kde/kio/recoll/00README.txt</code>. Some Linux
+        distributions do package the kio-recoll module, so check
+        before diving into the build process, maybe it's already
+        out there ready for one-click installation.</p>
       </div>
       <div class="sect1">
         <div class="titlepage">
