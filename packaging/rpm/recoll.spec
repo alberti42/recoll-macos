@@ -3,7 +3,7 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.31.4
+Version:        1.32.7
 Release:        2%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
@@ -13,15 +13,25 @@ Source10:       qmake-qt5.sh
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
-# kio
-BuildRequires:  kdelibs4-devel
+
+#BuildRequires:  kdelibs4-devel
+
+# Fedora
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtwebkit-devel
-BuildRequires:  extra-cmake-modules
-BuildRequires:  kf5-kio-devel
-BuildRequires:  python2-devel
 BuildRequires:  python3-devel
 BuildRequires:  xapian-core-devel
+BuildRequires:  kf5-kio-devel
+
+# Opensuse
+#BuildRequires:  libQt5Gui-devel
+#BuildRequires:  libqt5-qtwebengine-devel
+#BuildRequires:  python310-devel
+#BuildRequires:  libxapian-devel
+#BuildRequires:  kio-devel
+
+BuildRequires:  extra-cmake-modules
+BuildRequires:  python2-devel
 BuildRequires:  zlib-devel
 BuildRequires:  chmlib-devel
 BuildRequires:  libxslt-devel
@@ -55,7 +65,7 @@ LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 install -m755 -D %{SOURCE10} qmake-qt5.sh
 export QMAKE=qmake-qt5
 
-%configure
+%configure --enable-webengine
 make %{?_smp_mflags}
 
 %install
@@ -70,7 +80,7 @@ rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
 
 # kio_recoll -kde5
 (
-mkdir kde/kioslave/kio_recoll/build && pushd kde/kioslave/kio_recoll/build
+#mkdir kde/kioslave/kio_recoll/build && pushd kde/kioslave/kio_recoll/build
 %cmake ..
 make %{?_smp_mflags} VERBOSE=1
 make install DESTDIR=%{buildroot}
