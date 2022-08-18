@@ -125,9 +125,10 @@ public slots:
     virtual void onLinkClicked(const QUrl &);
     virtual void onPopupJsDone(const QVariant&);
     void runJS(const QString& js);
-    void runStoredJS();
 protected slots:
     virtual void languageChange();
+    void runStoredJS(bool);
+    void setupArrows();
 
 private:
     QtGuiResListPager  *m_pager{0};
@@ -150,7 +151,10 @@ private:
     virtual int docnumfromparnum(int);
     virtual std::pair<int,int> parnumfromdocnum(int);
 #endif
+    // Running js after page load. Sometimes we don't want to do it on the first event (which may be
+    // a reset), hence the countdown.
     QString m_js;
+    int m_js_countdown{0};
     RclMain   *m_rclmain{0};
     bool m_ismainres{true};
 
@@ -160,7 +164,6 @@ private:
     void resetView();
     bool scrollIsAtTop();
     bool scrollIsAtBottom();
-    void setupArrows();
 };
 
 #ifdef USING_WEBENGINE

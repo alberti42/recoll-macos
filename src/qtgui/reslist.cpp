@@ -106,9 +106,7 @@ function saveLoc(ev)
 }
 )raw");
 
-bool RclWebPage::acceptNavigationRequest(const QUrl& url, 
-                                         NavigationType tp, 
-                                         bool isMainFrame)
+bool RclWebPage::acceptNavigationRequest(const QUrl& url, NavigationType tp, bool isMainFrame)
 { 
     Q_UNUSED(isMainFrame);
     LOGDEB0("QWebEnginePage::acceptNavigationRequest. Type: " <<
@@ -315,6 +313,7 @@ ResList::ResList(QWidget* parent, const char* name)
             this, SLOT(onLinkClicked(const QUrl &)));
 #else
     LOGDEB("Reslist: using Webengine\n");
+    connect(page(), SIGNAL(loadFinished(bool)), this, SLOT(runStoredJS(bool)));
 #endif
     settings()->setAttribute(QWEBSETTINGS::JavascriptEnabled, true);
 #else
@@ -389,8 +388,17 @@ void ResList::setRclMain(RclMain *m, bool ismain)
     }
 }
 
-void ResList::runStoredJS()
+void ResList::runStoredJS(bool res)
 {
+    if (m_js.isEmpty()) {
+        return;
+    }
+    LOGDEB0("ResList::runStoredJS: res " << res << " cnt " << m_js_countdown <<
+           " m_js [" << qs2utf8s(m_js) << "]\n");
+    if (m_js_countdown > 0) {
+        m_js_countdown--;
+        return;
+    }
     runJS(m_js);
     m_js.clear();
 }
@@ -633,19 +641,23 @@ void ResList::resPageUpOrBack()
 #if defined(USING_WEBKIT)
     if (scrollIsAtTop()) {
         resultPageBack();
+        runJS("window.scrollBy(0,50000);");
     } else {
         page()->mainFrame()->scroll(0, -int(0.9*geometry().height()));
     }
     setupArrows();
 #elif defined(USING_WEBENGINE)
     if (scrollIsAtTop()) {
+        // Displaypage first calls resetview() which causes a page load event. We want to run the js
+        // on the second event.
+        m_js_countdown = 1;
+        m_js = "window.scrollBy(0,50000);";
         resultPageBack();
-        runJS("window.scrollBy(0,50000);");
     } else {
         QString js = QString("window.scrollBy(%1, %2);").arg(0).arg(-int(0.9*geometry().height()));
         runJS(js);
     }
-    setupArrows();
+    QTimer::singleShot(50, this, SLOT(setupArrows()));
 #else
     int vpos = verticalScrollBar()->value();
     verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
@@ -666,12 +678,11 @@ void ResList::resPageDownOrNext()
 #elif defined(USING_WEBENGINE)
     if (scrollIsAtBottom()) {
         resultPageNext();
-        runJS("window.scrollTo(0, 0);");
     } else {
         QString js = QString("window.scrollBy(%1, %2);").arg(0).arg(int(0.9*geometry().height()));
         runJS(js);
     }
-    setupArrows();
+    QTimer::singleShot(50, this, SLOT(setupArrows()));
 #else
     int vpos = verticalScrollBar()->value();
     verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepAdd);
@@ -747,6 +758,9 @@ void ResList::resultPageBack()
     if (m_pager->hasPrev()) {
         m_pager->resultPageBack();
         displayPage();
+#ifdef USING_WEBENGINE
+        runJS("window.scrollTo(0,0);");
+#endif
     }
 }
 
@@ -757,6 +771,9 @@ void ResList::resultPageFirst()
     m_pager->setPageSize(prefs.respagesize);
     m_pager->resultPageFirst();
     displayPage();
+#ifdef USING_WEBENGINE
+    runJS("window.scrollTo(0,0);");
+#endif
 }
 
 // Fill up result list window with next screen of hits
@@ -765,6 +782,9 @@ void ResList::resultPageNext()
     if (m_pager->hasNext()) {
         m_pager->resultPageNext();
         displayPage();
+#ifdef USING_WEBENGINE
+        runJS("window.scrollTo(0,0);");
+#endif
     }
 }
 
@@ -835,7 +855,7 @@ void ResList::displayPage()
     LOGDEB0("ResList::displayPg: hasNext " << m_pager->hasNext() <<
             " atBot " << scrollIsAtBottom() << " hasPrev " <<
             m_pager->hasPrev() << " at Top " << scrollIsAtTop() << " \n");
-    setupArrows();
+    QTimer::singleShot(100, this, SLOT(setupArrows()));
 
     // Possibly color paragraph of current preview if any
     previewExposed(m_curPvDoc);
