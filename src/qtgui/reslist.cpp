@@ -149,7 +149,7 @@ public:
     // Now also set for webkit because, as we set baseURL to file://,
     // the relative links we set in the list will also be prefixed (by
     // the HTML engine)
-    virtual string linkPrefix() override {return "file:///";}
+    virtual string linkPrefix() override {return "file:///recoll-links/";}
     virtual string bodyAttrs() override {
         return "onload=\"addEventListener('contextmenu', saveLoc)\"";
     }
@@ -305,17 +305,21 @@ ResList::ResList(QWidget* parent, const char* name)
     
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
     setPage(new RclWebPage(this));
+    settings()->setAttribute(QWEBSETTINGS::JavascriptEnabled, true);
 #ifdef USING_WEBKIT
     LOGDEB("Reslist: using Webkit\n");
     page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     // signals and slots connections
-    connect(this, SIGNAL(linkClicked(const QUrl &)), 
-            this, SLOT(onLinkClicked(const QUrl &)));
+    connect(this, SIGNAL(linkClicked(const QUrl &)), this, SLOT(onLinkClicked(const QUrl &)));
 #else
     LOGDEB("Reslist: using Webengine\n");
     connect(page(), SIGNAL(loadFinished(bool)), this, SLOT(runStoredJS(bool)));
+    // These appear to get randomly disconnected or never connected.
+    connect(page(), SIGNAL(scrollPositionChanged(const QPointF &)),
+            this, SLOT(onPageScrollPositionChanged(const QPointF &)));
+    connect(page(), SIGNAL(contentsSizeChanged(const QSizeF &)),
+            this, SLOT(onPageContentsSizeChanged(const QSizeF &)));
 #endif
-    settings()->setAttribute(QWEBSETTINGS::JavascriptEnabled, true);
 #else
     LOGDEB("Reslist: using QTextBrowser\n");
     setReadOnly(true);
@@ -323,8 +327,7 @@ ResList::ResList(QWidget* parent, const char* name)
     setOpenLinks(false);
     setTabChangesFocus(true);
     // signals and slots connections
-    connect(this, SIGNAL(anchorClicked(const QUrl &)), 
-            this, SLOT(onLinkClicked(const QUrl &)));
+    connect(this, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(onLinkClicked(const QUrl &)));
 #endif
 
     setFont();
@@ -388,6 +391,20 @@ void ResList::setRclMain(RclMain *m, bool ismain)
     }
 }
 
+#if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
+
+void ResList::runJS(const QString& js)
+{
+    LOGDEB("runJS: " << qs2utf8s(js) << "\n");
+#if defined(USING_WEBKIT)
+    page()->mainFrame()->evaluateJavaScript(js);
+#elif defined(USING_WEBENGINE)
+        page()->runJavaScript(js);
+//    page()->runJavaScript(js, [](const QVariant &v) {qDebug() << v.toString();});
+#endif
+}
+
+#if defined(USING_WEBENGINE)
 void ResList::runStoredJS(bool res)
 {
     if (m_js.isEmpty()) {
@@ -403,16 +420,38 @@ void ResList::runStoredJS(bool res)
     m_js.clear();
 }
 
-void ResList::runJS(const QString& js)
+void ResList::onPageScrollPositionChanged(const QPointF &position)
 {
-#if defined(USING_WEBKIT)
-    page()->mainFrame()->evaluateJavaScript(js);
-#elif defined(USING_WEBENGINE)
-    page()->runJavaScript(js);
-#else
-    Q_UNUSED(js);
-#endif
+    LOGDEB0("ResList::onPageScrollPositionChanged: y : " << position.y() << "\n");
+    m_scrollpos = position;
 }
+
+void ResList::onPageContentsSizeChanged(const QSizeF &size)
+{
+    LOGDEB0("ResList::onPageContentsSizeChanged: y : " << size.height() << "\n");
+    m_contentsize = size;
+}
+#endif // WEBENGINE
+
+static void maybeDump(const QString& text)
+{
+    std::string dumpfile;
+    if (!theconfig->getConfParam("reslisthtmldumpfile", dumpfile) || dumpfile.empty()) {
+        return;
+    }
+    dumpfile = path_tildexpand(dumpfile);
+    if (path_exists(dumpfile)) {
+        return;
+    }
+    auto fp = fopen(dumpfile.c_str(), "w");
+    if (fp) {
+        auto s = qs2utf8s(text);
+        fwrite(s.c_str(), 1, s.size(), fp);
+        fclose(fp);
+    }
+}
+
+#endif // WEBKIT or WEBENGINE
 
 void ResList::onUiPrefsChanged()
 {
@@ -454,7 +493,7 @@ void ResList::setDocSource(std::shared_ptr<DocSequence> nsource)
 void ResList::readDocSource()
 {
     LOGDEB("ResList::readDocSource()\n");
-    resetView();
+    m_curPvDoc = -1;
     if (!m_source)
         return;
     m_listId = newListId();
@@ -648,9 +687,9 @@ void ResList::resPageUpOrBack()
     setupArrows();
 #elif defined(USING_WEBENGINE)
     if (scrollIsAtTop()) {
-        // Displaypage first calls resetview() which causes a page load event. We want to run the js
-        // on the second event.
-        m_js_countdown = 1;
+        // Displaypage used to call resetview() which caused a page load event. We wanted to run the
+        // js on the second event, with countdown = 1. Not needed any more, but kept around.
+        m_js_countdown = 0;
         m_js = "window.scrollBy(0,50000);";
         resultPageBack();
     } else {
@@ -677,8 +716,10 @@ void ResList::resPageDownOrNext()
     setupArrows();
 #elif defined(USING_WEBENGINE)
     if (scrollIsAtBottom()) {
+        LOGDEB0("downOrNext: at bottom: call resultPageNext\n");
         resultPageNext();
     } else {
+        LOGDEB0("downOrNext: scroll\n");
         QString js = QString("window.scrollBy(%1, %2);").arg(0).arg(int(0.9*geometry().height()));
         runJS(js);
     }
@@ -691,12 +732,6 @@ void ResList::resPageDownOrNext()
     if (vpos == verticalScrollBar()->value()) 
         resultPageNext();
 #endif
-}
-
-void ResList::setupArrows()
-{
-    emit prevPageAvailable(m_pager->hasPrev() || !scrollIsAtTop());
-    emit nextPageAvailable(m_pager->hasNext() || !scrollIsAtBottom());
 }
 
 bool ResList::scrollIsAtBottom()
@@ -715,10 +750,20 @@ bool ResList::scrollIsAtBottom()
     LOGDEB2("scrollIsAtBottom: returning " << ret << "\n");
     return ret;
 #elif defined(USING_WEBENGINE)
-    QSize css = page()->contentsSize().toSize();
+    // TLDR: Could not find any way whatsoever to reliably get the page contents size or position
+    // with either signals or direct calls. No obvious way to get this from javascript either. This
+    // used to work, with direct calls and broke down around qt 5.15
+
     QSize wss = size();
-    QPoint sp = page()->scrollPosition().toPoint();
-    LOGDEB1("atBottom: contents W " << css.width() << " H " << css.height() << 
+
+    //QSize css = page()->contentsSize().toSize();
+    QSize css = m_contentsize.toSize();
+    // Does not work with recent (2022) qt releases: always 0
+    //auto spf = page()->scrollPosition();
+    // Found no easy way to block waiting for the js output
+    //runJS("document.body.scrollTop", [](const QVariant &v) {qDebug() << v.toInt();});
+    QPoint sp = m_scrollpos.toPoint();
+    LOGDEB0("atBottom: contents W " << css.width() << " H " << css.height() << 
             " widget W " << wss.width() << " Y " << wss.height() << 
             " scroll X " << sp.x() << " Y " << sp.y() << "\n");
     // This seems to work but it's mysterious as points and pixels
@@ -728,6 +773,7 @@ bool ResList::scrollIsAtBottom()
     return false;
 #endif
 }
+
 
 bool ResList::scrollIsAtTop()
 {
@@ -745,11 +791,20 @@ bool ResList::scrollIsAtTop()
     LOGDEB2("scrollIsAtTop: returning " << ret << "\n");
     return ret;
 #elif defined(USING_WEBENGINE)
-    return page()->scrollPosition().toPoint().ry() == 0;
+    //return page()->scrollPosition().toPoint().ry() == 0;
+    return m_scrollpos.y() == 0;
 #else
     return false;
 #endif
 }
+
+
+void ResList::setupArrows()
+{
+    emit prevPageAvailable(m_pager->hasPrev() || !scrollIsAtTop());
+    emit nextPageAvailable(m_pager->hasNext() || !scrollIsAtBottom());
+}
+
 
 // Show previous page of results. We just set the current number back
 // 2 pages and show next page.
@@ -807,35 +862,18 @@ void ResList::append(const QString &text)
 #endif
 }
 
-static void maybeDump(const QString& text)
-{
-    std::string dumpfile;
-    if (!theconfig->getConfParam("reslisthtmldumpfile", dumpfile) || dumpfile.empty()) {
-        return;
-    }
-    dumpfile = path_tildexpand(dumpfile);
-    if (path_exists(dumpfile)) {
-        return;
-    }
-    auto fp = fopen(dumpfile.c_str(), "w");
-    if (fp) {
-        auto s = qs2utf8s(text);
-        fwrite(s.c_str(), 1, s.size(), fp);
-        fclose(fp);
-    }
-}
-
 void ResList::displayPage()
 {
-    resetView();
-
 #if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
+    const static QUrl baseUrl("file:///");
+
     QProgressDialog progress("Generating text snippets...", "", 0, prefs.respagesize, this);
     m_residx = 0;
     progress.setWindowModality(Qt::WindowModal);
     progress.setCancelButton(nullptr);
     progress.setMinimumDuration(2000);
     m_progress = &progress;
+    m_text = "";
 #endif
     
     m_pager->displayPage(theconfig);
@@ -847,9 +885,11 @@ void ResList::displayPage()
         m_progress->close();
         m_progress = nullptr;
     }
-    const static QUrl baseUrl("file:///");
+    if (m_lasttext == m_text)
+        return;
     maybeDump(m_text);
     setHtml(m_text, baseUrl);
+    m_lasttext = m_text;
 #endif
 
     LOGDEB0("ResList::displayPg: hasNext " << m_pager->hasNext() <<
@@ -867,7 +907,7 @@ void ResList::previewExposed(int docnum)
     LOGDEB("ResList::previewExposed: doc " << docnum << "\n");
 
     // Possibly erase old one to white
-    if (m_curPvDoc != -1) {
+    if (m_curPvDoc > -1) {
 #if defined(USING_WEBKIT)
         QString sel = 
             QString("div[rcldocnum=\"%1\"]").arg(m_curPvDoc - pageFirstDocNum());
@@ -901,12 +941,14 @@ void ResList::previewExposed(int docnum)
         m_curPvDoc = -1;
     }
 
-    // Set background for active preview's doc entry
-    m_curPvDoc = docnum;
+    if ((m_curPvDoc = docnum) < 0) {
+        return;
+    }
 
+    // Set background for active preview's doc entry
+    
 #if defined(USING_WEBKIT)
-    QString sel = 
-        QString("div[rcldocnum=\"%1\"]").arg(docnum - pageFirstDocNum());
+    QString sel = QString("div[rcldocnum=\"%1\"]").arg(docnum - pageFirstDocNum());
     LOGDEB2("Searching for element, selector: [" << qs2utf8s(sel) << "]\n");
     QWebElement elt = page()->mainFrame()->findFirstElement(sel);
     if (!elt.isNull()) {
