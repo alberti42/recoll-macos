@@ -298,6 +298,7 @@ private:
     virtual bool containerUpToDate(Rcl::Doc& doc);
     virtual bool checkIdxPaths();
     virtual std::vector<std::string> idxTreeGetDirs();
+    virtual void resultsSetFixedGeometry();
 };
 
 #endif // RCLMAIN_W_H

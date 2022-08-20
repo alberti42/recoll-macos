@@ -45,6 +45,7 @@
 #include <QToolTip>
 #include <QStandardItemModel>
 #include <QActionGroup>
+#include <QScrollArea>
 
 #include "recoll.h"
 #include "log.h"
@@ -131,6 +132,10 @@ void RclMain::init()
     setWindowTitle(configToTitle());
 
     buildMenus();
+
+    if (getenv("RECOLL_RESULTS_GEOMETRY")) {
+        resultsSetFixedGeometry();
+    }
 
     periodictimer = new QTimer(this);
 
@@ -1304,4 +1309,39 @@ void RclMain::applyStyleSheet()
     } else {
         resetSearch();
     }
+}
+
+void RclMain::resultsSetFixedGeometry()
+{
+    const char *cp = getenv("RECOLL_RESULTS_GEOMETRY");
+    if (nullptr == cp)
+        return;
+    std::vector<std::string> swh;
+    stringToTokens(cp, swh, "xX");
+    if (swh.size() != 2) {
+        LOGERR("Bad RECOLL_RESULTS_GEOMETRY: " << cp);
+        return;
+    }
+    int w = atoi(swh[0].c_str());
+    int h = atoi(swh[1].c_str());
+    if (w <= 0 || h <= 0) {
+        LOGERR("Bad RECOLL_RESULTS_GEOMETRY: " << cp);
+        return;
+    }
+    resultsLayoutWidget->setParent(nullptr);
+    auto scrollArea = new QScrollArea(sideFiltersSPLT);
+    scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
+    scrollArea->setWidgetResizable(true);
+
+    reslist->setGeometry(QRect(0, 0, w, h));
+    QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    sizePolicy2.setHorizontalStretch(0);
+    sizePolicy2.setVerticalStretch(0);
+    sizePolicy2.setHeightForWidth(reslist->sizePolicy().hasHeightForWidth());
+    reslist->setSizePolicy(sizePolicy2);
+    reslist->setMinimumSize(QSize(w, h));
+    reslist->setMaximumSize(QSize(w, h));
+    scrollArea->setWidget(resultsLayoutWidget);
+
+    sideFiltersSPLT->replaceWidget(1, scrollArea);
 }
