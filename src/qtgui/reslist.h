@@ -148,11 +148,11 @@ private:
     QString    m_text;
     QProgressDialog *m_progress{nullptr};
     int m_residx{0}; // result index in page
+    QString    m_lasttext;
     void runJS(const QString& js);
 #if defined(USING_WEBENGINE)
     // Webengine local image display appears to break randomly (for some versions and platforms,
     // circa 2022) when we display the same data multiple times. Detect and avoid.
-    QString    m_lasttext;
     QPointF m_scrollpos{0,0};
     QSizeF m_contentsize{0,0};
 #endif // WEBENGINE    
