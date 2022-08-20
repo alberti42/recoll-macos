@@ -19,6 +19,7 @@ BuildRequires:  desktop-file-utils
 # Fedora
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtwebkit-devel
+#BuildRequires: qt5-qtwebengine-devel
 BuildRequires:  python3-devel
 BuildRequires:  xapian-core-devel
 BuildRequires:  kf5-kio-devel
