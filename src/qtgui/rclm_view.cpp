@@ -443,7 +443,7 @@ void RclMain::execViewer(
     const vector<string>& _lcmd, const string& cmd, Rcl::Doc doc, int flags)
 {
     vector<string> lcmd;
-    for (const auto oparm : _lcmd) {
+    for (const auto& oparm : _lcmd) {
         string nparm;
         pcSubst(oparm, nparm, subs);
         LOGDEB0("" << oparm << "->"  << nparm << "\n");
