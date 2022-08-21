@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -18,7 +18,7 @@
 #define _SEARCHDATA_H_INCLUDED_
 
 /** 
- * Structures to hold data coming almost directly from the gui
+ * Structures to hold data coming almost directly from the GUI
  * and handle its translation to Xapian queries.
  * This is not generic code, it reflects the choices made for the user 
  * interface, and it also knows some specific of recoll's usage of Xapian 
@@ -27,9 +27,9 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include <memory>
 
 #include "rcldb.h"
-#include <memory>
 #include "smallut.h"
 #include "cstr.h"
 #include "hldata.h"
@@ -238,6 +238,7 @@ public:
                    // Aargh special case. pathelts are case/diac-sensitive
                    // even in a stripped index
                    SDCM_PATHELT = 0x80, 
+                   SDCM_FILTER = 0x100, 
     };
     enum Relation {REL_CONTAINS, REL_EQUALS, REL_LT, REL_LTE, REL_GT, REL_GTE};
 
@@ -285,7 +286,7 @@ public:
     virtual void addModifier(Modifier mod) {
         m_modifiers = m_modifiers | mod;
     }
-    virtual unsigned int getmodifiers() {
+    virtual unsigned int getModifiers() {
         return m_modifiers;
     }
     virtual void setWeight(float w) {
@@ -419,6 +420,7 @@ public:
         : SearchDataClauseSimple(txt, SCLT_FILENAME) {
         // File name searches don't count when looking for wild cards.
         m_haveWildCards = false;
+        addModifier(SDCM_FILTER);
     }
 
     virtual ~SearchDataClauseFilename() {}
@@ -454,6 +456,7 @@ public:
         : SearchDataClauseSimple(SCLT_PATH, txt, "dir") {
         m_exclude = excl;
         m_haveWildCards = false;
+        addModifier(SDCM_FILTER);
     }
 
     virtual ~SearchDataClausePath() {}

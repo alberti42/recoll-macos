@@ -65,7 +65,6 @@ bool SearchData::expandFileTypes(Db &db, vector<string>& tps)
         return false;
     }
     vector<string> exptps;
-
     for (const auto& mtype : tps) {
         if (cfg->isMimeCategory(mtype)) {
             vector<string> ctps;
@@ -106,6 +105,14 @@ bool SearchData::clausesToQuery(
 {
     Xapian::Query xq;
     for (auto& clausep : query) {
+#if 0        
+        string txt;
+        auto clp = dynamic_cast<SearchDataClauseSimple*>(clausep);
+        if (clp)
+            txt = clp->gettext();
+        LOGINF("Clause: tp: " << clausep->getTp() << " txt: [" << txt << "] mods: " <<
+                std::hex << clausep->getModifiers() << std::dec << "\n");
+#endif
         Xapian::Query nq;
         if (!clausep->toNativeQuery(db, &nq)) {
             LOGERR("SearchData::clausesToQuery: toNativeQuery failed: "
@@ -114,7 +121,7 @@ bool SearchData::clausesToQuery(
             return false;
         }       
         if (nq.empty()) {
-            LOGDEB("SearchData::clausesToQuery: skipping empty clause\n");
+            LOGDEB0("SearchData::clausesToQuery: skipping empty clause\n");
             continue;
         }
         // If this structure is an AND list, must use AND_NOT for excl clauses.
@@ -125,7 +132,11 @@ bool SearchData::clausesToQuery(
             if (clausep->getexclude()) {
                 op =  Xapian::Query::OP_AND_NOT;
             } else {
-                op =  Xapian::Query::OP_AND;
+                if (clausep->getModifiers() & SearchDataClause::SDCM_FILTER) {
+                    op =  Xapian::Query::OP_FILTER;
+                } else {
+                    op =  Xapian::Query::OP_AND;
+                }
             }
         } else {
             op = Xapian::Query::OP_OR;
@@ -166,12 +177,12 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     db.getConf()->getConfParam("autocasesens", &m_autocasesens);
     db.getConf()->getConfParam("autodiacsens", &m_autodiacsens);
 
+    simplify();
     // Walk the clause list translating each in turn and building the 
     // Xapian query tree
     Xapian::Query xq;
     if (!clausesToQuery(db, m_tp, m_query, m_reason, &xq)) {
-        LOGERR("SearchData::toNativeQuery: clausesToQuery failed. reason: "
-               << m_reason << "\n");
+        LOGERR("SearchData::toNativeQuery: clausesToQuery failed. reason: " << m_reason << "\n");
         return false;
     }
 
@@ -231,8 +242,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
             leftzeropad(minvalue, 12);
             string maxvalue(max);
             leftzeropad(maxvalue, 12);
-            sq = Xapian::Query(Xapian::Query::OP_VALUE_RANGE, VALUE_SIZE, 
-                               minvalue, maxvalue);
+            sq = Xapian::Query(Xapian::Query::OP_VALUE_RANGE, VALUE_SIZE, minvalue, maxvalue);
         }
         
         // If no probabilistic query is provided then promote the
@@ -249,8 +259,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     if (m_autophrase) {
         Xapian::Query apq;
         if (m_autophrase->toNativeQuery(db, &apq)) {
-            xq = xq.empty() ? apq : 
-                Xapian::Query(Xapian::Query::OP_AND_MAYBE, xq, apq);
+            xq = xq.empty() ? apq : Xapian::Query(Xapian::Query::OP_AND_MAYBE, xq, apq);
         }
     }
 
