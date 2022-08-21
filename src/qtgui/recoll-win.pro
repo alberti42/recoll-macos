@@ -144,6 +144,7 @@ windows {
     # MSVC
     RECOLLDEPS = ../../../recolldeps/msvc
     DEFINES += USING_STATIC_LIBICONV
+    SOURCES += ../windows/getopt.cc
     PRE_TARGETDEPS = \
       ../windows/build-librecoll-$$QCBUILDLOC-Release/release/librecoll.lib
     LIBS += \

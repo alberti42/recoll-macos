@@ -29,6 +29,7 @@ windows {
   contains(QMAKE_CC, cl){
     # Visual Studio
     RECOLLDEPS = ../../../../recolldeps/msvc
+    SOURCES += ../getopt.cc
     PRE_TARGETDEPS = \
       ../build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release/librecoll.lib
     LIBS += \
