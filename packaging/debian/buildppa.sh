@@ -25,11 +25,10 @@ SCOPESRC=${Y}/home/dockes/projets/fulltext/unity-scope-recoll
 GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
 RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
 
-case $RCLVERS in
-    [23]*) PPANAME=recollexp-ppa;;
-    *)     PPANAME=recoll15-ppa;;
-esac
+PPANAME=recoll15-ppa;;
 #PPANAME=recollexp1-ppa
+#PPANAME=recoll-webengine-ppa
+
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 

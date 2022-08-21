@@ -25,6 +25,7 @@ endif
 
 override_dh_auto_configure:
 	dh_auto_configure -- --enable-recollq --enable-xadump --enable-webkit
+#	dh_auto_configure -- --enable-recollq --enable-xadump --enable-webengine
 
 build3vers := $(shell py3versions -sv)
 
