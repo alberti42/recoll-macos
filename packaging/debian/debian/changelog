@@ -1,3 +1,13 @@
+recoll (1.32.8-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Add environment variable RECOLL_RESULTS_GEOMETRY for forcing a fixed geometry to the results
+    list viewport.
+  * Fix result list Qt Webengine icon display issue.
+  * Improve result list paging behaviour. Only fully works with Qt Webkit.
+  * recollq: add option to extract result document to a file.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 21 Aug 2022 07:59:00 +0200
+
 recoll (1.32.7-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * kio_recoll: updated to work with newer kf5 versions (it seems that 5.96 broke it at least on
