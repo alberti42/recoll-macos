@@ -379,9 +379,12 @@ void RclMain::rebuildIndex()
             LOGERR("RclMain::rebuildIndex: current indexer exec not null\n" );
             return;
         }
-        int rep = QMessageBox::warning(
-            0, tr("Erasing index"), tr("Reset the index and start from scratch ?"),
-            QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
+        int rep = QMessageBox::Ok;
+        if (path_exists(theconfig->getDbDir())) {
+            rep = QMessageBox::warning(
+                0, tr("Erasing index"), tr("Reset the index and start from scratch ?"),
+                QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
+        }
         if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
             // Under windows, it is necessary to close the db here,
