@@ -65,7 +65,6 @@ bool runWebFilesMoverScript(RclConfig *config)
     }
     vector<string> cmdvec;
     config->pythonCmd("recoll-we-move-files.py", cmdvec);
-    cmdvec.push_back(downloadsdir);
     
     /* Arrange to not actually run the script if the directory did not change */
     static time_t dirmtime;
@@ -85,6 +84,7 @@ bool runWebFilesMoverScript(RclConfig *config)
            are created during the run. */
         dirmtime = ndirmtime;
         ExecCmd cmd;
+        cmd.putenv("RECOLL_CONFDIR", config->getConfDir());
         int status = cmd.doexec1(cmdvec);
         return status == 0;
     }
