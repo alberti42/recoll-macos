@@ -95,27 +95,27 @@ def list_all_files(dir):
 
 #######################
 def usage():
-    print("Usage: recoll-we-move-files.py [<downloaddir>]", file=sys.stderr)
+    print("Usage: recoll-we-move-files.py [<downloadsdir>]", file=sys.stderr)
     sys.exit(1)
 
 config = rclconfig.RclConfig()
 
-# Source dir is parameter, else from config else default Downloads directory
-downloadsdir = config.getConfParam("webdownloadsdir")
-if not downloadsdir:
-    downloadsdir = "~/Downloads"
-downloadsdir = os.path.expanduser(downloadsdir)
-
+# The directory where we find the files created by the browser extension is given as parameter, else
+# comes from the configuration else we use the default Downloads directory:
 if len(sys.argv) == 2:
-    mydir = sys.argv[1]
+    downloadsdir = sys.argv[1]
 elif len(sys.argv) == 1:
-    mydir = downloadsdir
+    downloadsdir = config.getConfParam("webdownloadsdir")
+    if not downloadsdir:
+        downloadsdir = "~/Downloads"
+    downloadsdir = os.path.expanduser(downloadsdir)
 else:
     usage()
-if not os.path.isdir(mydir):
+
+if not os.path.isdir(downloadsdir):
     usage()
 
-# Get target webqueue recoll directory from recoll configuration
+# Get the target webqueue recoll directory from the recoll configuration
 webqueuedir = config.getConfParam("webqueuedir")
 if not webqueuedir:
     if _mswindows:
@@ -128,7 +128,7 @@ os.makedirs(webqueuedir, exist_ok = True)
 # logdeb("webqueuedir is %s" % webqueuedir)
 
 # Get the lists of all files created by the browser addon
-mfiles, cfiles = list_all_files(mydir)
+mfiles, cfiles = list_all_files(downloadsdir)
 
 # Only keep the last version
 mfiles = delete_previous_instances(mfiles, downloadsdir)
