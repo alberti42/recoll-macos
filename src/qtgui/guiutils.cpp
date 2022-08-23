@@ -416,7 +416,7 @@ void rwSettings(bool writing)
     } else {
         vector<string> tl = g_dynconf->getStringEntries<vector>(asbdSk);
         for (const auto& dbd: tl) {
-            prefs.asearchSubdirHist.push_back(u8s2qs(dbd.c_str()));
+            prefs.asearchSubdirHist.push_back(u8s2qs(dbd));
         }
     }
     if (!writing) {
