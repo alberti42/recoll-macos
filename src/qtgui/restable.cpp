@@ -35,7 +35,6 @@
 #include <QStyledItemDelegate>
 #include <QTextDocument>
 #include <QPainter>
-#include <QSplitter>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTimer>

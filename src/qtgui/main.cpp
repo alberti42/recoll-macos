@@ -26,12 +26,10 @@
 #include <qthread.h>
 #include <qmessagebox.h>
 #include <qcheckbox.h>
-#include <qcombobox.h>
 #include <QLocale>
 #include <QLibraryInfo>
 #include <QFileDialog>
 #include <QUrl>
-#include <QSettings>
 #include <memory>
 
 #include "rcldb.h"
