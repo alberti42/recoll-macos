@@ -610,7 +610,6 @@ bool SSearch::fromXML(const SSearchDef& fxml)
 
 
     if (!checkExtIndexes(fxml.extindexes)) {
-        std::string asString;
         stringsToString(fxml.extindexes, asString);
         QMessageBox::warning(
             0, "Recoll",
