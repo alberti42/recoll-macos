@@ -54,7 +54,7 @@ inline std::string qs2u8s(const QString& qs)
 {
     return std::string((const char *)qs.toUtf8());
 }
-inline QString u8s2qs(const std::string us)
+inline QString u8s2qs(const std::string& us)
 {
     return QString::fromUtf8(us.c_str());
 }
