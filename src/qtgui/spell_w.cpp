@@ -218,8 +218,8 @@ void SpellW::doExpand()
         resTW->setItem(0, 0, new QTableWidgetItem(tr("No expansion found")));
     } else {
         int row = 0;
-
-        if (maxexpand > 0 && int(res.entries.size()) >= maxexpand) {
+        // maxexpand is static const, thus guaranteed to be >0
+        if (int(res.entries.size()) >= maxexpand) {
             resTW->setRowCount(row + 1);
             resTW->setSpan(row, 0, 1, 2);
             resTW->setItem(row++, 0, 

@@ -488,7 +488,7 @@ void RecollModel::sort(int column, Qt::SortOrder order)
         if (!stringlowercmp("date", spec.field) ||
             !stringlowercmp("datetime", spec.field))
             spec.field = "mtime";
-        spec.desc = order == Qt::AscendingOrder ? false : true;
+        spec.desc = (order != Qt::AscendingOrder);
     }
     emit sortDataChanged(spec);
 }
