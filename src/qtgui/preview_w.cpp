@@ -782,8 +782,9 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     connect(&lthr, SIGNAL(finished()), &loop, SLOT(quit()));
 
     bool canGetRawText = rcldb && rcldb->storesDocText();
-    auto it = prefs.preferStoredTextMimes.find(idoc.mimetype);
-    bool preferStoredText = (it != prefs.preferStoredTextMimes.end());
+    bool preferStoredText = std::find(prefs.preferStoredTextMimes.begin(),
+                                      prefs.preferStoredTextMimes.end(),
+                                      idoc.mimetype) != prefs.preferStoredTextMimes.end();
     bool loadok{false};
 
     if (!preferStoredText || !canGetRawText) {
