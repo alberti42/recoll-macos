@@ -22,6 +22,7 @@
 
 #include <QMessageBox>
 #include <QSettings>
+#include <memory>
 
 #include "qxtconfirmationmessage.h"
 
@@ -75,7 +76,7 @@ void RclMain::viewUrl()
     Rcl::Query *query = new Rcl::Query(rcldb.get());
     DocSequenceDb *src = new DocSequenceDb(
         rcldb, std::shared_ptr<Rcl::Query>(query), "", 
-        std::shared_ptr<Rcl::SearchData>(new Rcl::SearchData));
+        std::make_shared<Rcl::SearchData>());
     m_source = std::shared_ptr<DocSequence>(src);
 
 
