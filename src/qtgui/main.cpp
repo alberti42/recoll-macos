@@ -26,12 +26,11 @@
 #include <qthread.h>
 #include <qmessagebox.h>
 #include <qcheckbox.h>
-#include <qcombobox.h>
 #include <QLocale>
 #include <QLibraryInfo>
 #include <QFileDialog>
 #include <QUrl>
-#include <QSettings>
+#include <memory>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -100,7 +99,7 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
     LOGDEB1("maybeOpenDb: force " << force << "\n");
 
     if (force || nullptr == rcldb) {
-        rcldb = std::shared_ptr<Rcl::Db>(new Rcl::Db(theconfig));
+        rcldb = std::make_shared<Rcl::Db>(theconfig);
     }
     rcldb->rmQueryDb("");
     auto edbs = &prefs.activeExtraDbs;

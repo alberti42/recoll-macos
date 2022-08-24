@@ -50,7 +50,7 @@ bool StopList::setFile(const string &filename)
 // faster than find() in this case.
 bool StopList::isStop(const string &term) const
 {
-    return m_stops.empty() ? false : m_stops.find(term) != m_stops.end();
+    return !m_stops.empty() && m_stops.find(term) != m_stops.end();
 }
 
 }

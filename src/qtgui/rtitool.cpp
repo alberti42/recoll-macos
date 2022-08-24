@@ -24,7 +24,6 @@
 
 #include <string>
 
-#include <QCheckBox>
 #include <QMessageBox>
 
 #include "recoll.h"

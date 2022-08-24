@@ -22,6 +22,8 @@
 #include "guiutils.h"
 #include "log.h"
 #include "xmltosd.h"
+
+#include <memory>
 #include "smallut.h"
 #include "recoll.h"
 #include "picoxml.h"
@@ -51,7 +53,7 @@ public:
             }
             resetTemps();
             // A new search descriptor. Allocate data structure
-            sd = std::shared_ptr<SearchData>(new SearchData);
+            sd = std::make_shared<SearchData>();
             if (!sd) {
                 LOGERR("SDHXMLHandler::startElement: out of memory\n");
                 contentsOk = false;
