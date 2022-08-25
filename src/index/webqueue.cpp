@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -22,6 +22,9 @@
 #include <errno.h>
 #include "safeunistd.h"
 
+#include <vector>
+#include <fstream>
+
 #include "cstr.h"
 #include "pathut.h"
 #include "rclutil.h"
@@ -39,9 +42,6 @@
 #include "transcode.h"
 #include "cancelcheck.h"
 
-#include <vector>
-#include <fstream>
-
 using namespace std;
 
 #define DOTFILEPREFIX "_"
@@ -53,8 +53,7 @@ using namespace std;
 class WebQueueDotFile {
 public:
     WebQueueDotFile(RclConfig *conf, const string& fn)
-        : m_conf(conf), m_fn(fn)
-        {}
+        : m_conf(conf), m_fn(fn) {}
 
     // Read input line, strip it of eol and return as c++ string
     bool readLine(ifstream& input, string& line) {
@@ -103,8 +102,8 @@ public:
             return false;
         doc.mimetype = line;
 
-        // We set the bookmarks mtype as html (the text is empty
-        // anyway), so that the html viewer will be called on 'Open'
+        // We set the bookmarks mtype as html (the text is empty anyway), so that the HTML viewer
+        // will be called on 'Open'
         bool isbookmark = false;
         if (!stringlowercmp("bookmark", doc.meta[Rcl::Doc::keybght])) {
             isbookmark = true;
@@ -113,10 +112,8 @@ public:
 
         string confstr;
         string ss(" ");
-        // Read the rest: fields and keywords. We do a little
-        // massaging of the input lines, then use a ConfSimple to
-        // parse, and finally insert the key/value pairs into the doc
-        // meta[] array
+        // Read the rest: fields and keywords. We do a little massaging of the input lines, then use
+        // a ConfSimple to parse, and finally insert the key/value pairs into the doc meta[] array
         for (;;) {
             if (!readLine(input, line)) {
                 // Eof hopefully
@@ -129,10 +126,9 @@ public:
         }
         ConfSimple fields(confstr, 1);
         vector<string> names = fields.getNames(cstr_null);
-        for (vector<string>::iterator it = names.begin();
-             it != names.end(); it++) {
+        for (const auto& name : names) {
             string value;
-            fields.get(*it, value, cstr_null);
+            fields.get(name, value, cstr_null);
             if (!value.compare("undefined") || !value.compare("null"))
                 continue;
 
@@ -147,7 +143,7 @@ public:
                 valuep = &cvalue;
             }
                 
-            string caname = m_conf->fieldCanon(*it);
+            string caname = m_conf->fieldCanon(name);
             doc.meta[caname].append(ss + *valuep);
         }
 
@@ -262,11 +258,10 @@ bool WebQueueIndexer::index()
 {
     if (!m_db)
         return false;
-    LOGDEB("WebQueueIndexer::processqueue: [" << m_queuedir << "]\n");
+    LOGDEB("WebQueueIndexer::index: [" << m_queuedir << "]\n");
     m_config->setKeyDir(m_queuedir);
     if (!path_makepath(m_queuedir, 0700)) {
-        LOGERR("WebQueueIndexer:: can't create queuedir [" << m_queuedir <<
-               "] errno " << errno << "\n");
+        LOGSYSERR("WebQueueIndexer", "create queuedir", m_queuedir);
         return false;
     }
     if (!m_cache || !m_cache->cc()) {
@@ -278,35 +273,37 @@ bool WebQueueIndexer::index()
     // this actually does work, else it sets the existence flags (avoid
     // purging). We don't do this when called from indexFiles
     if (!m_nocacheindex) {
-        bool eof;
+        bool eof{false};
         if (!cc->rewind(eof)) {
-            // rewind can return eof if the cache is empty
+            // rewind can return false/eof if the cache is empty, normal case.
             if (!eof)
                 return false;
         }
         int nentries = 0;
-        do {
-            string udi;
-            if (!cc->getCurrentUdi(udi)) {
-                LOGERR("WebQueueIndexer:: cache file damaged\n");
-                break;
-            }
-            if (udi.empty())
-                continue;
-            if (m_db->needUpdate(udi, cstr_null)) {
-                try {
-                    // indexFromCache does a CirCache::get(). We could
-                    // arrange to use a getCurrent() instead, would be more 
-                    // efficient
-                    indexFromCache(udi);
-                    updstatus(udi);
-                } catch (CancelExcept) {
-                    LOGERR("WebQueueIndexer: interrupted\n");
-                    return false;
+        if (!eof) do {
+                string udi;
+                if (!cc->getCurrentUdi(udi)) {
+                    if (!eof) {
+                        LOGERR("WebQueueIndexer:: cache file damaged\n");
+                    }
+                    break;
                 }
-            }
-            nentries++;
-        } while (cc->next(eof));
+                if (udi.empty())
+                    continue;
+                if (m_db->needUpdate(udi, cstr_null)) {
+                    try {
+                        // indexFromCache does a CirCache::get(). We could
+                        // arrange to use a getCurrent() instead, would be more 
+                        // efficient
+                        indexFromCache(udi);
+                        updstatus(udi);
+                    } catch (CancelExcept) {
+                        LOGERR("WebQueueIndexer: interrupted\n");
+                        return false;
+                    }
+                }
+                nentries++;
+            } while (cc->next(eof));
     }
 
     // Finally index the queue
@@ -406,13 +403,15 @@ WebQueueIndexer::processone(
         return FsTreeWalker::FtwOk;
 
     string dotpath = path_cat(path_getfather(path), string(DOTFILEPREFIX) + path_getsimple(path));
-    LOGDEB("WebQueueIndexer: prc1: [" << path << "]\n");
+    LOGDEB("WebQueueIndexer::processone: [" << path << "]\n");
 
     WebQueueDotFile dotfile(m_config, dotpath);
     Rcl::Doc dotdoc;
     string udi, udipath;
-    if (!dotfile.toDoc(dotdoc))
+    if (!dotfile.toDoc(dotdoc)) {
+        LOGERR("WebQueueIndexer::processone: could not convert dotfile " << dotpath << "\n");
         goto out;
+    }
     //dotdoc.dump(1);
 
     // Have to use the hit type for the udi, because the same url can
@@ -429,15 +428,14 @@ WebQueueIndexer::processone(
     default: break;
     }
 
-    std::cerr << "UDI: " << udipath << "\n";
+    LOGDEB("WebQueueIndexer::processone: UDI: " << udipath << "\n");
     make_udi(udipath, cstr_null, udi);
 
-    LOGDEB("WebQueueIndexer: prc1: udi [" << udi << "]\n");
+    LOGDEB("WebQueueIndexer::processone: udi [" << udi << "]\n");
     ascdate = lltodecstr(stp->pst_mtime);
 
     if (!stringlowercmp("bookmark", dotdoc.meta[Rcl::Doc::keybght])) {
-        // For bookmarks, we just index the doc that was built from the
-        // metadata.
+        // For bookmarks, we just index the doc that was built from the metadata.
         if (dotdoc.fmtime.empty())
             dotdoc.fmtime = ascdate;
 
@@ -456,8 +454,7 @@ WebQueueIndexer::processone(
         // to use fields generated by the browser plugin like inurl
         doc.meta = dotdoc.meta;
 
-        FileInterner interner(path, stp, m_config,
-                              FileInterner::FIF_doUseInputMimetype,
+        FileInterner interner(path, stp, m_config, FileInterner::FIF_doUseInputMimetype,
                               &dotdoc.mimetype);
         FileInterner::Status fis;
         try {
@@ -479,7 +476,7 @@ WebQueueIndexer::processone(
             doc.fmtime = ascdate;
         dotdoc.fmtime = doc.fmtime;
 
-	dotdoc.pcbytes = doc.pcbytes = lltodecstr(stp->pst_size);
+        dotdoc.pcbytes = doc.pcbytes = lltodecstr(stp->pst_size);
         // Document signature for up to date checks: none. 
         doc.sig.clear();
         doc.url = dotdoc.url;
@@ -504,8 +501,7 @@ WebQueueIndexer::processone(
             goto out;
         }
         if (!m_cache->cc()->put(udi, &dotfile.m_fields, fdata, 0)) {
-            LOGERR("WebQueueIndexer::prc1: cache_put failed; " <<
-                   m_cache->cc()->getReason() << "\n");
+            LOGERR("WebQueueIndexer::prc1: cache_put failed; "<<m_cache->cc()->getReason() << "\n");
             goto out;
         }
     }
