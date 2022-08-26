@@ -63,9 +63,6 @@ bool runWebFilesMoverScript(RclConfig *config)
         }
         downloadsdir = path_tildexpand(downloadsdir);
     }
-    vector<string> cmdvec;
-    config->pythonCmd("recoll-we-move-files.py", cmdvec);
-    
     /* Arrange to not actually run the script if the directory did not change */
     static time_t dirmtime;
     time_t ndirmtime = 0;
@@ -73,16 +70,15 @@ bool runWebFilesMoverScript(RclConfig *config)
     if (path_fileprops(downloadsdir.c_str(), &st) == 0) {
         ndirmtime = st.pst_mtime;
     }
-    /* If stat fails, presumably Downloads does not exist or is not
-       accessible, dirmtime and mdirmtime stay at 0, and we never
-       execute the script, which is the right thing. */
+    // If stat fails, presumably Downloads does not exist or is not accessible, dirmtime and
+    // mdirmtime stay at 0, and we never execute the script, which is the right thing.
     if (dirmtime != ndirmtime) {
-        /* The script is going to change the directory, so updating
-           dirmtime before it runs means that we are going to execute
-           it one time too many (it will run without doing anything),
-           but we can't set the mtime to after the run in case files
-           are created during the run. */
+        // The script is going to change the directory, so updating dirmtime before it runs means
+        // that we are going to execute it one time too many (it will run without doing anything),
+        // but we can't set the mtime to after the run in case files are created during the run.
         dirmtime = ndirmtime;
+        vector<string> cmdvec;
+        config->pythonCmd("recoll-we-move-files.py", cmdvec);
         ExecCmd cmd;
         cmd.putenv("RECOLL_CONFDIR", config->getConfDir());
         int status = cmd.doexec1(cmdvec);
