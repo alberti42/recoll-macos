@@ -8752,20 +8752,24 @@ hasextract = False
         The GUI tool will try to respect your formatting and
         comments as much as possible, so it is quite possible to
         use both approaches on the same configuration.</p>
-        <p>The most accurate documentation for the configuration
-        parameters is given by comments inside the default files,
-        and we will just give a general overview here.</p>
         <p>For each index, there are at least two sets of
         configuration files. System-wide configuration files are
         kept in a directory named like <code class=
         "filename">/usr/share/recoll/examples</code>, and define
-        default values, shared by all indexes. For each index, a
+        default values, shared by all indexes (the values in these
+        files are often commented out, and just present to indicate
+        the default coded in the program). For each index, a
         parallel set of files defines the customized
         parameters.</p>
-        <p>The default location of the customized configuration is
-        the <code class="filename">.recoll</code> directory in your
-        home. Most people will only use this directory.</p>
-        <p>This location can be changed, or others can be added
+        <p>On <span class="application">Unix</span>-like systems,
+        the default location of the customized configuration is the
+        <code class="filename">.recoll</code> directory in your
+        home. On <span class="application">Windows</span> it is
+        <code class=
+        "filename">C:/Users/[you]/AppData/Local/Recoll</code>. Most
+        people will only use this directory.</p>
+        <p>The default location for the configuration directory can
+        be changed, or others can be added for separate indexes
         with the <code class="envar">RECOLL_CONFDIR</code>
         environment variable or the <code class="option">-c</code>
         option parameter to <span class=
@@ -8789,9 +8793,9 @@ hasextract = False
         probably be interpreted as colon-separated lists in the
         future: do not use colon characters inside the directory
         paths.</p>
-        <p>If the <code class="filename">.recoll</code> directory
-        does not exist when <span class=
-        "command"><strong>recoll</strong></span> or <span class=
+        <p>If the default configuration directory does not exist
+        when <span class="command"><strong>recoll</strong></span>
+        or <span class=
         "command"><strong>recollindex</strong></span> are started,
         it will be created with a set of empty configuration files.
         <span class="command"><strong>recoll</strong></span> will
@@ -8870,6 +8874,16 @@ hasextract = False
         <p>Parameters which are not part of string lists can't be
         quoted, and leading and trailing space characters are
         stripped before the value is used.</p>
+        <div class="important" style=
+        "margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">Important</h3>
+          <p>Quotes processing is ONLY applied to parameter values
+          which are lists. Double quoting a single value like, e.g.
+          <code class="literal">dbdir</code> will result in an
+          incorrect value, with quotes included. This is quite
+          confusing, and may have been a design mistake but it is
+          much too late to fix.</p>
+        </div>
         <p><b>Encoding issues.&nbsp;</b>Most of the configuration
         parameters are plain ASCII. Two particular sets of values
         may cause encoding issues:</p>
