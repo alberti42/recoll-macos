@@ -1630,6 +1630,18 @@ Please check the desktop file</translation>
         <source>Duplicates</source>
         <translation>繰り返し</translation>
     </message>
+    <message>
+        <source>Filter directories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main index open error: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -3447,6 +3459,14 @@ The default value is 2 (percent). </translation>
     <message>
         <source>Depth of side filter directory tree</source>
         <translation>サイドフィルターディレクトリツリーの深さ</translation>
+    </message>
+    <message>
+        <source>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display scale (default 1.0):</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

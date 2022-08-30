@@ -12,76 +12,76 @@
 <context>
     <name>AdvSearch</name>
     <message>
-        <location filename="../advsearch_w.cpp" line="87"/>
+        <location filename="../advsearch_w.cpp" line="88"/>
         <source>All clauses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="88"/>
+        <location filename="../advsearch_w.cpp" line="89"/>
         <source>Any clause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="141"/>
+        <location filename="../advsearch_w.cpp" line="142"/>
         <source>text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="142"/>
+        <location filename="../advsearch_w.cpp" line="143"/>
         <source>texts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="144"/>
+        <location filename="../advsearch_w.cpp" line="145"/>
         <source>spreadsheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="145"/>
+        <location filename="../advsearch_w.cpp" line="146"/>
         <source>spreadsheets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="147"/>
         <location filename="../advsearch_w.cpp" line="148"/>
+        <location filename="../advsearch_w.cpp" line="149"/>
         <source>presentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="150"/>
         <location filename="../advsearch_w.cpp" line="151"/>
+        <location filename="../advsearch_w.cpp" line="152"/>
         <source>media</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="153"/>
         <location filename="../advsearch_w.cpp" line="154"/>
+        <location filename="../advsearch_w.cpp" line="155"/>
         <source>message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="156"/>
         <location filename="../advsearch_w.cpp" line="157"/>
+        <location filename="../advsearch_w.cpp" line="158"/>
         <source>other</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="172"/>
-        <location filename="../advsearch_w.cpp" line="175"/>
-        <location filename="../advsearch_w.cpp" line="182"/>
-        <location filename="../advsearch_w.cpp" line="185"/>
+        <location filename="../advsearch_w.cpp" line="173"/>
+        <location filename="../advsearch_w.cpp" line="176"/>
+        <location filename="../advsearch_w.cpp" line="183"/>
+        <location filename="../advsearch_w.cpp" line="186"/>
         <source>Advanced Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="172"/>
-        <location filename="../advsearch_w.cpp" line="182"/>
+        <location filename="../advsearch_w.cpp" line="173"/>
+        <location filename="../advsearch_w.cpp" line="183"/>
         <source>Load next stored search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../advsearch_w.cpp" line="175"/>
-        <location filename="../advsearch_w.cpp" line="185"/>
+        <location filename="../advsearch_w.cpp" line="176"/>
+        <location filename="../advsearch_w.cpp" line="186"/>
         <source>Load previous stored search</source>
         <translation type="unfinished"></translation>
     </message>
@@ -506,70 +506,70 @@
 <context>
     <name>ConfSubPanelW</name>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="511"/>
+        <location filename="../confgui/confguiindex.cpp" line="510"/>
         <source>Only mime types</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="512"/>
+        <location filename="../confgui/confguiindex.cpp" line="511"/>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="521"/>
+        <location filename="../confgui/confguiindex.cpp" line="520"/>
         <source>Exclude mime types</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="522"/>
+        <location filename="../confgui/confguiindex.cpp" line="521"/>
         <source>Mime types not to be indexed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="598"/>
+        <location filename="../confgui/confguiindex.cpp" line="597"/>
         <source>Max. compressed file size (KB)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="599"/>
+        <location filename="../confgui/confguiindex.cpp" line="598"/>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="609"/>
+        <location filename="../confgui/confguiindex.cpp" line="608"/>
         <source>Max. text file size (MB)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="610"/>
+        <location filename="../confgui/confguiindex.cpp" line="609"/>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="621"/>
+        <location filename="../confgui/confguiindex.cpp" line="620"/>
         <source>Text file page size (KB)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="622"/>
+        <location filename="../confgui/confguiindex.cpp" line="621"/>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="633"/>
+        <location filename="../confgui/confguiindex.cpp" line="632"/>
         <source>Max. filter exec. time (s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="634"/>
+        <location filename="../confgui/confguiindex.cpp" line="633"/>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="669"/>
+        <location filename="../confgui/confguiindex.cpp" line="668"/>
         <source>Global</source>
         <translation type="unfinished"></translation>
     </message>
@@ -657,17 +657,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../ptrans_w.cpp" line="55"/>
-        <location filename="../ptrans_w.cpp" line="112"/>
+        <location filename="../ptrans_w.cpp" line="111"/>
         <source>Local path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ptrans_w.cpp" line="86"/>
+        <location filename="../ptrans_w.cpp" line="85"/>
         <source>Config error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ptrans_w.cpp" line="111"/>
+        <location filename="../ptrans_w.cpp" line="110"/>
         <source>Original path</source>
         <translation type="unfinished"></translation>
     </message>
@@ -759,18 +759,18 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>FragButs</name>
     <message>
-        <location filename="../fragbuts.cpp" line="142"/>
+        <location filename="../fragbuts.cpp" line="141"/>
         <source>%1 not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fragbuts.cpp" line="148"/>
+        <location filename="../fragbuts.cpp" line="147"/>
         <source>%1:
  %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fragbuts.cpp" line="155"/>
+        <location filename="../fragbuts.cpp" line="154"/>
         <source>Query Fragments</source>
         <translation type="unfinished"></translation>
     </message>
@@ -831,12 +831,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="363"/>
+        <location filename="../main.cpp" line="365"/>
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="389"/>
+        <location filename="../main.cpp" line="391"/>
         <source>No db directory in configuration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -988,17 +988,17 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="799"/>
+        <location filename="../preview_w.cpp" line="800"/>
         <source>Could not fetch stored text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="850"/>
+        <location filename="../preview_w.cpp" line="851"/>
         <source>Creating preview text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="915"/>
+        <location filename="../preview_w.cpp" line="916"/>
         <source>Loading preview text into editor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1006,60 +1006,60 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PreviewTextEdit</name>
     <message>
-        <location filename="../preview_w.cpp" line="1044"/>
-        <location filename="../preview_w.cpp" line="1055"/>
+        <location filename="../preview_w.cpp" line="1045"/>
+        <location filename="../preview_w.cpp" line="1056"/>
         <source>Show fields</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1046"/>
-        <location filename="../preview_w.cpp" line="1051"/>
+        <location filename="../preview_w.cpp" line="1047"/>
+        <location filename="../preview_w.cpp" line="1052"/>
         <source>Show image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1049"/>
-        <location filename="../preview_w.cpp" line="1056"/>
+        <location filename="../preview_w.cpp" line="1050"/>
+        <location filename="../preview_w.cpp" line="1057"/>
         <source>Show main text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1059"/>
+        <location filename="../preview_w.cpp" line="1060"/>
         <source>Select All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1060"/>
+        <location filename="../preview_w.cpp" line="1061"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1061"/>
+        <location filename="../preview_w.cpp" line="1062"/>
         <source>Print</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1063"/>
+        <location filename="../preview_w.cpp" line="1064"/>
         <source>Fold lines</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1065"/>
+        <location filename="../preview_w.cpp" line="1066"/>
         <source>Preserve indentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1069"/>
+        <location filename="../preview_w.cpp" line="1070"/>
         <source>Save document to file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1072"/>
+        <location filename="../preview_w.cpp" line="1073"/>
         <source>Open document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="1164"/>
+        <location filename="../preview_w.cpp" line="1165"/>
         <source>Print Current Preview</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1067,68 +1067,68 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="436"/>
+        <location filename="../confgui/confguiindex.cpp" line="435"/>
         <source>&lt;b&gt;Customised subtrees</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="437"/>
+        <location filename="../confgui/confguiindex.cpp" line="436"/>
         <source>The list of subdirectories in the indexed hierarchy &lt;br&gt;where some parameters need to be redefined. Default: empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="471"/>
+        <location filename="../confgui/confguiindex.cpp" line="470"/>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="494"/>
+        <location filename="../confgui/confguiindex.cpp" line="493"/>
         <source>Skipped names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="495"/>
+        <location filename="../confgui/confguiindex.cpp" line="494"/>
         <source>These are patterns for file or directory  names which should not be indexed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="532"/>
+        <location filename="../confgui/confguiindex.cpp" line="531"/>
         <source>Ignored endings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="533"/>
+        <location filename="../confgui/confguiindex.cpp" line="532"/>
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="562"/>
+        <location filename="../confgui/confguiindex.cpp" line="561"/>
         <source>Default&lt;br&gt;character set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="563"/>
+        <location filename="../confgui/confguiindex.cpp" line="562"/>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="576"/>
+        <location filename="../confgui/confguiindex.cpp" line="575"/>
         <source>Follow symbolic links</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="577"/>
+        <location filename="../confgui/confguiindex.cpp" line="576"/>
         <source>Follow symbolic links while indexing. The default is no, to avoid duplicate indexing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="587"/>
+        <location filename="../confgui/confguiindex.cpp" line="586"/>
         <source>Index all file names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../confgui/confguiindex.cpp" line="588"/>
+        <location filename="../confgui/confguiindex.cpp" line="587"/>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1176,67 +1176,67 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="83"/>
+        <location filename="../respopup.cpp" line="82"/>
         <source>Run Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="99"/>
+        <location filename="../respopup.cpp" line="97"/>
         <source>Copy &amp;File Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="101"/>
+        <location filename="../respopup.cpp" line="99"/>
         <source>Copy &amp;URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="102"/>
+        <location filename="../respopup.cpp" line="100"/>
         <source>Copy File Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="103"/>
+        <location filename="../respopup.cpp" line="101"/>
         <source>Copy Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="106"/>
+        <location filename="../respopup.cpp" line="104"/>
         <source>&amp;Write to File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="110"/>
+        <location filename="../respopup.cpp" line="107"/>
         <source>Save selection to files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="120"/>
+        <location filename="../respopup.cpp" line="116"/>
         <source>Preview P&amp;arent document/folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="122"/>
+        <location filename="../respopup.cpp" line="118"/>
         <source>&amp;Open Parent document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="126"/>
+        <location filename="../respopup.cpp" line="121"/>
         <source>&amp;Open Parent Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="130"/>
+        <location filename="../respopup.cpp" line="124"/>
         <source>Find &amp;similar documents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="134"/>
+        <location filename="../respopup.cpp" line="127"/>
         <source>Open &amp;Snippets window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../respopup.cpp" line="138"/>
+        <location filename="../respopup.cpp" line="130"/>
         <source>Show subdocuments / attachments</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1277,48 +1277,48 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rtitool.cpp" line="87"/>
+        <location filename="../rtitool.cpp" line="86"/>
         <source>Replacing: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rtitool.cpp" line="90"/>
+        <location filename="../rtitool.cpp" line="89"/>
         <source>Replacing file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rtitool.cpp" line="117"/>
+        <location filename="../rtitool.cpp" line="116"/>
         <source>Can&apos;t create: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rtitool.cpp" line="118"/>
-        <location filename="../rtitool.cpp" line="132"/>
+        <location filename="../rtitool.cpp" line="117"/>
+        <location filename="../rtitool.cpp" line="131"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rtitool.cpp" line="133"/>
+        <location filename="../rtitool.cpp" line="132"/>
         <source>Could not execute recollindex</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rtitool.cpp" line="143"/>
+        <location filename="../rtitool.cpp" line="142"/>
         <source>Deleting: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rtitool.cpp" line="146"/>
+        <location filename="../rtitool.cpp" line="145"/>
         <source>Deleting file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rtitool.cpp" line="157"/>
+        <location filename="../rtitool.cpp" line="156"/>
         <source>Removing autostart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rtitool.cpp" line="158"/>
+        <location filename="../rtitool.cpp" line="157"/>
         <source>Autostart file deleted. Kill current process too ?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1431,60 +1431,60 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="181"/>
-        <location filename="../rclm_idx.cpp" line="214"/>
+        <location filename="../rclm_idx.cpp" line="182"/>
+        <location filename="../rclm_idx.cpp" line="215"/>
         <source>Stop &amp;Indexing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="195"/>
+        <location filename="../rclm_idx.cpp" line="196"/>
         <source>Index locked</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="204"/>
+        <location filename="../rclm_idx.cpp" line="205"/>
         <source>Update &amp;Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="232"/>
+        <location filename="../rclm_idx.cpp" line="233"/>
         <source>Indexing done</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="254"/>
+        <location filename="../rclm_idx.cpp" line="255"/>
         <source>Bad paths</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="255"/>
+        <location filename="../rclm_idx.cpp" line="256"/>
         <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="382"/>
+        <location filename="../rclm_idx.cpp" line="385"/>
         <source>Erasing index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="382"/>
+        <location filename="../rclm_idx.cpp" line="385"/>
         <source>Reset the index and start from scratch ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="548"/>
+        <location filename="../rclm_idx.cpp" line="552"/>
         <source>Selection patterns need topdir</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="549"/>
+        <location filename="../rclm_idx.cpp" line="553"/>
         <source>Selection patterns can only be used with a start directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="571"/>
-        <location filename="../rclm_idx.cpp" line="590"/>
+        <location filename="../rclm_idx.cpp" line="575"/>
+        <location filename="../rclm_idx.cpp" line="594"/>
         <location filename="../rclm_preview.cpp" line="121"/>
         <location filename="../rclm_preview.cpp" line="165"/>
         <location filename="../rclm_preview.cpp" line="204"/>
@@ -1492,63 +1492,63 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="572"/>
+        <location filename="../rclm_idx.cpp" line="576"/>
         <source>Can&apos;t update index: indexer running</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="591"/>
+        <location filename="../rclm_idx.cpp" line="595"/>
         <source>Can&apos;t update index: internal error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="88"/>
+        <location filename="../rclm_menus.cpp" line="89"/>
         <source>Simple search type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="90"/>
+        <location filename="../rclm_menus.cpp" line="91"/>
         <source>Any term</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="96"/>
+        <location filename="../rclm_menus.cpp" line="97"/>
         <source>All terms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="101"/>
+        <location filename="../rclm_menus.cpp" line="102"/>
         <source>File name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="106"/>
+        <location filename="../rclm_menus.cpp" line="107"/>
         <source>Query language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="119"/>
+        <location filename="../rclm_menus.cpp" line="120"/>
         <source>Stemming language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="121"/>
+        <location filename="../rclm_menus.cpp" line="122"/>
         <source>(no stemming)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="122"/>
+        <location filename="../rclm_menus.cpp" line="123"/>
         <source>(all languages)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="136"/>
+        <location filename="../rclm_menus.cpp" line="137"/>
         <source>error retrieving stemming languages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../rclm_preview.cpp" line="70"/>
-        <location filename="../rclm_view.cpp" line="359"/>
+        <location filename="../rclm_view.cpp" line="364"/>
         <source>Can&apos;t access file: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -1655,66 +1655,66 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="132"/>
+        <location filename="../rclm_view.cpp" line="133"/>
         <source>Bad desktop app spec for %1: [%2]
 Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="187"/>
+        <location filename="../rclm_view.cpp" line="188"/>
         <source>No external viewer configured for mime type [</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="211"/>
+        <location filename="../rclm_view.cpp" line="212"/>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="245"/>
+        <location filename="../rclm_view.cpp" line="246"/>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="289"/>
+        <location filename="../rclm_view.cpp" line="291"/>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="296"/>
+        <location filename="../rclm_view.cpp" line="298"/>
         <source>Viewer command line for %1 specifies both file and parent file value: unsupported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="311"/>
+        <location filename="../rclm_view.cpp" line="313"/>
         <source>Cannot find parent document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="343"/>
-        <location filename="../rclmain_w.cpp" line="1010"/>
+        <location filename="../rclm_view.cpp" line="348"/>
+        <location filename="../rclmain_w.cpp" line="1015"/>
         <source>Cannot extract document or create temporary file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="366"/>
+        <location filename="../rclm_view.cpp" line="371"/>
         <source>Can&apos;t uncompress file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="381"/>
+        <location filename="../rclm_view.cpp" line="386"/>
         <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="383"/>
+        <location filename="../rclm_view.cpp" line="388"/>
         <source>Do not show this warning next time (use GUI preferences to restore).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_view.cpp" line="466"/>
+        <location filename="../rclm_view.cpp" line="470"/>
         <source>Executing: [</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1806,132 +1806,142 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="330"/>
-        <location filename="../rclmain_w.cpp" line="332"/>
-        <location filename="../rclmain_w.cpp" line="335"/>
-        <location filename="../rclmain_w.cpp" line="340"/>
-        <location filename="../rclmain_w.cpp" line="342"/>
-        <location filename="../rclmain_w.cpp" line="344"/>
+        <location filename="../rclmain_w.cpp" line="337"/>
+        <location filename="../rclmain_w.cpp" line="339"/>
+        <location filename="../rclmain_w.cpp" line="341"/>
+        <location filename="../rclmain_w.cpp" line="345"/>
+        <location filename="../rclmain_w.cpp" line="347"/>
+        <location filename="../rclmain_w.cpp" line="349"/>
         <source>Main Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="330"/>
+        <location filename="../rclmain_w.cpp" line="337"/>
         <source>Clear search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="333"/>
+        <location filename="../rclmain_w.cpp" line="339"/>
         <source>Move keyboard focus to search entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="336"/>
+        <location filename="../rclmain_w.cpp" line="341"/>
         <source>Move keyboard focus to search, alt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="340"/>
+        <location filename="../rclmain_w.cpp" line="345"/>
         <source>Toggle tabular display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="342"/>
+        <location filename="../rclmain_w.cpp" line="347"/>
         <source>Show menu search dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="344"/>
+        <location filename="../rclmain_w.cpp" line="349"/>
         <source>Move keyboard focus to table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="361"/>
+        <location filename="../rclmain_w.cpp" line="364"/>
         <source>Tools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="378"/>
+        <location filename="../rclmain_w.cpp" line="381"/>
         <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="434"/>
-        <location filename="../rclmain_w.cpp" line="443"/>
-        <location filename="../rclmain_w.cpp" line="459"/>
-        <location filename="../rclmain_w.cpp" line="474"/>
+        <location filename="../rclmain_w.cpp" line="435"/>
+        <location filename="../rclmain_w.cpp" line="444"/>
+        <location filename="../rclmain_w.cpp" line="460"/>
+        <location filename="../rclmain_w.cpp" line="475"/>
         <source>All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="434"/>
+        <location filename="../rclmain_w.cpp" line="435"/>
         <source>media</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="434"/>
+        <location filename="../rclmain_w.cpp" line="435"/>
         <source>message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="435"/>
+        <location filename="../rclmain_w.cpp" line="436"/>
         <source>other</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="435"/>
+        <location filename="../rclmain_w.cpp" line="436"/>
         <source>presentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="436"/>
+        <location filename="../rclmain_w.cpp" line="437"/>
         <source>spreadsheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="436"/>
+        <location filename="../rclmain_w.cpp" line="437"/>
         <source>text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="437"/>
-        <location filename="../rclmain_w.cpp" line="932"/>
+        <location filename="../rclmain_w.cpp" line="438"/>
+        <location filename="../rclmain_w.cpp" line="931"/>
         <source>sorted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="437"/>
-        <location filename="../rclmain_w.cpp" line="934"/>
+        <location filename="../rclmain_w.cpp" line="438"/>
+        <location filename="../rclmain_w.cpp" line="933"/>
         <source>filtered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="444"/>
+        <location filename="../rclmain_w.cpp" line="445"/>
         <source>Document filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="471"/>
+        <location filename="../rclmain_w.cpp" line="472"/>
         <source>F&amp;ilter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="588"/>
+        <location filename="../rclmain_w.cpp" line="592"/>
+        <source>Main index open error: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="593"/>
+        <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="597"/>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="759"/>
+        <location filename="../rclmain_w.cpp" line="765"/>
         <source>Can&apos;t set synonyms file (parse error?)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="772"/>
+        <location filename="../rclmain_w.cpp" line="777"/>
         <source>Query results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="822"/>
+        <location filename="../rclmain_w.cpp" line="821"/>
         <source>Query in progress.&lt;br&gt;Due to limitations of the indexing library,&lt;br&gt;cancelling will exit the program</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1941,23 +1951,23 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="856"/>
+        <location filename="../rclmain_w.cpp" line="855"/>
         <source>No results found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1005"/>
+        <location filename="../rclmain_w.cpp" line="1011"/>
         <source>Save file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1031"/>
-        <location filename="../rclmain_w.cpp" line="1032"/>
+        <location filename="../rclmain_w.cpp" line="1035"/>
+        <location filename="../rclmain_w.cpp" line="1036"/>
         <source>Sub-documents and attachments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1086"/>
+        <location filename="../rclmain_w.cpp" line="1087"/>
         <location filename="../rclmain_w.cpp" line="1093"/>
         <source>History data</source>
         <translation type="unfinished"></translation>
@@ -1968,17 +1978,17 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1119"/>
+        <location filename="../rclmain_w.cpp" line="1117"/>
         <source>Confirm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1120"/>
+        <location filename="../rclmain_w.cpp" line="1118"/>
         <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1147"/>
+        <location filename="../rclmain_w.cpp" line="1144"/>
         <source>Could not open/create file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1991,12 +2001,12 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain.ui" line="53"/>
+        <location filename="../rclmain.ui" line="49"/>
         <source>Query Language Filters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain.ui" line="67"/>
+        <location filename="../rclmain.ui" line="63"/>
         <source>Filter dates</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2322,37 +2332,37 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="31"/>
+        <location filename="../rclm_menus.cpp" line="32"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="34"/>
+        <location filename="../rclm_menus.cpp" line="35"/>
         <source>&amp;View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="37"/>
+        <location filename="../rclm_menus.cpp" line="38"/>
         <source>&amp;Tools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="40"/>
+        <location filename="../rclm_menus.cpp" line="41"/>
         <source>&amp;Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="44"/>
+        <location filename="../rclm_menus.cpp" line="45"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="47"/>
+        <location filename="../rclm_menus.cpp" line="48"/>
         <source>&amp;Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_menus.cpp" line="50"/>
+        <location filename="../rclm_menus.cpp" line="51"/>
         <source>&amp;Query</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2373,88 +2383,88 @@ Do you want to start the  preferences dialog ?</source>
 <context>
     <name>RecollModel</name>
     <message>
-        <location filename="../restable.cpp" line="254"/>
+        <location filename="../restable.cpp" line="251"/>
         <source>Abstract</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="255"/>
+        <location filename="../restable.cpp" line="252"/>
         <source>Author</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="256"/>
+        <location filename="../restable.cpp" line="253"/>
         <source>Document size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="257"/>
+        <location filename="../restable.cpp" line="254"/>
         <source>Document date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="258"/>
+        <location filename="../restable.cpp" line="255"/>
         <source>File size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="259"/>
+        <location filename="../restable.cpp" line="256"/>
         <source>File name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="260"/>
+        <location filename="../restable.cpp" line="257"/>
         <source>File date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="261"/>
+        <location filename="../restable.cpp" line="258"/>
         <source>Ipath</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="262"/>
+        <location filename="../restable.cpp" line="259"/>
         <source>Keywords</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="263"/>
+        <location filename="../restable.cpp" line="260"/>
         <source>MIME type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="264"/>
+        <location filename="../restable.cpp" line="261"/>
         <source>Original character set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="265"/>
+        <location filename="../restable.cpp" line="262"/>
         <source>Relevancy rating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="266"/>
+        <location filename="../restable.cpp" line="263"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="267"/>
+        <location filename="../restable.cpp" line="264"/>
         <source>URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="268"/>
-        <location filename="../restable.cpp" line="269"/>
+        <location filename="../restable.cpp" line="265"/>
+        <location filename="../restable.cpp" line="266"/>
         <source>Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="270"/>
+        <location filename="../restable.cpp" line="267"/>
         <source>Date and time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="486"/>
+        <location filename="../restable.cpp" line="483"/>
         <source>Can&apos;t sort by inverse relevance</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2462,88 +2472,88 @@ Do you want to start the  preferences dialog ?</source>
 <context>
     <name>ResList</name>
     <message>
-        <location filename="../reslist.cpp" line="351"/>
+        <location filename="../reslist.cpp" line="360"/>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="352"/>
+        <location filename="../reslist.cpp" line="361"/>
         <source>Documents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="353"/>
+        <location filename="../reslist.cpp" line="362"/>
         <source>out of at least</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="354"/>
+        <location filename="../reslist.cpp" line="363"/>
         <source>for</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="355"/>
+        <location filename="../reslist.cpp" line="364"/>
         <source>Previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="356"/>
+        <location filename="../reslist.cpp" line="365"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="357"/>
+        <location filename="../reslist.cpp" line="366"/>
         <source>Unavailable document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="358"/>
+        <location filename="../reslist.cpp" line="367"/>
         <source>Preview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="359"/>
+        <location filename="../reslist.cpp" line="368"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="360"/>
+        <location filename="../reslist.cpp" line="369"/>
         <source>Snippets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="361"/>
+        <location filename="../reslist.cpp" line="370"/>
         <source>(show query)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="362"/>
+        <location filename="../reslist.cpp" line="371"/>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings (accents suppressed): &lt;/i&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="363"/>
+        <location filename="../reslist.cpp" line="372"/>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="498"/>
+        <location filename="../reslist.cpp" line="542"/>
         <source>Document history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="506"/>
+        <location filename="../reslist.cpp" line="550"/>
         <source>Result list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="918"/>
+        <location filename="../reslist.cpp" line="1010"/>
         <source>Result count (est.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="920"/>
-        <location filename="../reslist.cpp" line="921"/>
+        <location filename="../reslist.cpp" line="1012"/>
+        <location filename="../reslist.cpp" line="1013"/>
         <source>Query details</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2551,94 +2561,94 @@ Do you want to start the  preferences dialog ?</source>
 <context>
     <name>ResTable</name>
     <message>
-        <location filename="../restable.cpp" line="113"/>
+        <location filename="../restable.cpp" line="110"/>
         <source>Use Shift+click to display the text instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="719"/>
-        <location filename="../restable.cpp" line="721"/>
-        <location filename="../restable.cpp" line="724"/>
         <location filename="../restable.cpp" line="726"/>
         <location filename="../restable.cpp" line="728"/>
-        <location filename="../restable.cpp" line="730"/>
+        <location filename="../restable.cpp" line="731"/>
         <location filename="../restable.cpp" line="733"/>
-        <location filename="../restable.cpp" line="736"/>
+        <location filename="../restable.cpp" line="735"/>
+        <location filename="../restable.cpp" line="737"/>
+        <location filename="../restable.cpp" line="740"/>
+        <location filename="../restable.cpp" line="743"/>
         <source>Result Table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="720"/>
+        <location filename="../restable.cpp" line="727"/>
         <source>Open current result document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="722"/>
+        <location filename="../restable.cpp" line="729"/>
         <source>Open current result and quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="724"/>
+        <location filename="../restable.cpp" line="731"/>
         <source>Preview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="726"/>
+        <location filename="../restable.cpp" line="733"/>
         <source>Show snippets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="728"/>
+        <location filename="../restable.cpp" line="735"/>
         <source>Show header</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="731"/>
+        <location filename="../restable.cpp" line="738"/>
         <source>Show vertical header</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="734"/>
+        <location filename="../restable.cpp" line="741"/>
         <source>Copy current result text to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="737"/>
+        <location filename="../restable.cpp" line="744"/>
         <source>Copy result text and quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="1011"/>
+        <location filename="../restable.cpp" line="1018"/>
         <source>Save table to CSV file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="1018"/>
+        <location filename="../restable.cpp" line="1025"/>
         <source>Can&apos;t open/create file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="1324"/>
+        <location filename="../restable.cpp" line="1331"/>
         <source>%1 bytes copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="1388"/>
+        <location filename="../restable.cpp" line="1395"/>
         <source>&amp;Reset sort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="1391"/>
+        <location filename="../restable.cpp" line="1398"/>
         <source>&amp;Save as CSV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="1394"/>
+        <location filename="../restable.cpp" line="1401"/>
         <source>&amp;Delete column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../restable.cpp" line="1401"/>
+        <location filename="../restable.cpp" line="1408"/>
         <source>Add &quot;%1&quot; column</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2646,234 +2656,234 @@ Do you want to start the  preferences dialog ?</source>
 <context>
     <name>SSearch</name>
     <message>
-        <location filename="../ssearch_w.cpp" line="158"/>
+        <location filename="../ssearch_w.cpp" line="159"/>
         <source>Any term</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="159"/>
+        <location filename="../ssearch_w.cpp" line="160"/>
         <source>All terms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="160"/>
+        <location filename="../ssearch_w.cpp" line="161"/>
         <source>File name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="161"/>
+        <location filename="../ssearch_w.cpp" line="162"/>
         <source>Query language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="194"/>
+        <location filename="../ssearch_w.cpp" line="195"/>
         <source>Simple search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="194"/>
+        <location filename="../ssearch_w.cpp" line="195"/>
         <source>History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="404"/>
+        <location filename="../ssearch_w.cpp" line="405"/>
         <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="405"/>
+        <location filename="../ssearch_w.cpp" line="406"/>
         <source>table, th, td {</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="406"/>
+        <location filename="../ssearch_w.cpp" line="407"/>
         <source>border: 1px solid black;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="407"/>
+        <location filename="../ssearch_w.cpp" line="408"/>
         <source>border-collapse: collapse;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="408"/>
-        <location filename="../ssearch_w.cpp" line="411"/>
+        <location filename="../ssearch_w.cpp" line="409"/>
+        <location filename="../ssearch_w.cpp" line="412"/>
         <source>}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="409"/>
+        <location filename="../ssearch_w.cpp" line="410"/>
         <source>th,td {</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="410"/>
+        <location filename="../ssearch_w.cpp" line="411"/>
         <source>text-align: center;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="412"/>
+        <location filename="../ssearch_w.cpp" line="413"/>
         <source>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="413"/>
+        <location filename="../ssearch_w.cpp" line="414"/>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="414"/>
+        <location filename="../ssearch_w.cpp" line="415"/>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="415"/>
+        <location filename="../ssearch_w.cpp" line="416"/>
         <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="416"/>
+        <location filename="../ssearch_w.cpp" line="417"/>
         <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="417"/>
+        <location filename="../ssearch_w.cpp" line="418"/>
         <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="418"/>
+        <location filename="../ssearch_w.cpp" line="419"/>
         <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="419"/>
+        <location filename="../ssearch_w.cpp" line="420"/>
         <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="420"/>
+        <location filename="../ssearch_w.cpp" line="421"/>
         <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="421"/>
+        <location filename="../ssearch_w.cpp" line="422"/>
         <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="422"/>
+        <location filename="../ssearch_w.cpp" line="423"/>
         <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="423"/>
+        <location filename="../ssearch_w.cpp" line="424"/>
         <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="424"/>
+        <location filename="../ssearch_w.cpp" line="425"/>
         <source>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="425"/>
+        <location filename="../ssearch_w.cpp" line="426"/>
         <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="426"/>
+        <location filename="../ssearch_w.cpp" line="427"/>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="427"/>
+        <location filename="../ssearch_w.cpp" line="428"/>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="428"/>
+        <location filename="../ssearch_w.cpp" line="429"/>
         <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="429"/>
+        <location filename="../ssearch_w.cpp" line="430"/>
         <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="430"/>
+        <location filename="../ssearch_w.cpp" line="431"/>
         <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="431"/>
+        <location filename="../ssearch_w.cpp" line="432"/>
         <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="432"/>
+        <location filename="../ssearch_w.cpp" line="433"/>
         <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="433"/>
+        <location filename="../ssearch_w.cpp" line="434"/>
         <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="434"/>
+        <location filename="../ssearch_w.cpp" line="435"/>
         <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="435"/>
+        <location filename="../ssearch_w.cpp" line="436"/>
         <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="436"/>
+        <location filename="../ssearch_w.cpp" line="437"/>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="440"/>
+        <location filename="../ssearch_w.cpp" line="441"/>
         <source>Enter file name wildcard expression.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="445"/>
+        <location filename="../ssearch_w.cpp" line="446"/>
         <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="517"/>
+        <location filename="../ssearch_w.cpp" line="518"/>
         <source>Bad query string</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="524"/>
+        <location filename="../ssearch_w.cpp" line="525"/>
         <source>Out of memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="570"/>
+        <location filename="../ssearch_w.cpp" line="571"/>
         <source>Can&apos;t open index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="594"/>
+        <location filename="../ssearch_w.cpp" line="595"/>
         <source>Stemming languages for stored query: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="596"/>
-        <location filename="../ssearch_w.cpp" line="607"/>
+        <location filename="../ssearch_w.cpp" line="597"/>
+        <location filename="../ssearch_w.cpp" line="608"/>
         <source> differ from current preferences (kept)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="605"/>
+        <location filename="../ssearch_w.cpp" line="606"/>
         <source>Auto suffixes for stored query: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -3025,61 +3035,61 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../snippets_w.cpp" line="139"/>
+        <location filename="../snippets_w.cpp" line="141"/>
+        <location filename="../snippets_w.cpp" line="143"/>
+        <location filename="../snippets_w.cpp" line="145"/>
+        <location filename="../snippets_w.cpp" line="147"/>
         <location filename="../snippets_w.cpp" line="153"/>
         <location filename="../snippets_w.cpp" line="155"/>
         <location filename="../snippets_w.cpp" line="157"/>
         <location filename="../snippets_w.cpp" line="159"/>
         <location filename="../snippets_w.cpp" line="161"/>
-        <location filename="../snippets_w.cpp" line="167"/>
-        <location filename="../snippets_w.cpp" line="169"/>
-        <location filename="../snippets_w.cpp" line="171"/>
-        <location filename="../snippets_w.cpp" line="173"/>
-        <location filename="../snippets_w.cpp" line="175"/>
         <source>Snippets Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../snippets_w.cpp" line="139"/>
         <location filename="../snippets_w.cpp" line="153"/>
-        <location filename="../snippets_w.cpp" line="167"/>
         <source>Find</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../snippets_w.cpp" line="141"/>
         <location filename="../snippets_w.cpp" line="155"/>
-        <location filename="../snippets_w.cpp" line="169"/>
         <source>Find (alt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../snippets_w.cpp" line="143"/>
         <location filename="../snippets_w.cpp" line="157"/>
-        <location filename="../snippets_w.cpp" line="171"/>
         <source>Find next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../snippets_w.cpp" line="145"/>
         <location filename="../snippets_w.cpp" line="159"/>
-        <location filename="../snippets_w.cpp" line="173"/>
         <source>Find previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../snippets_w.cpp" line="147"/>
         <location filename="../snippets_w.cpp" line="161"/>
-        <location filename="../snippets_w.cpp" line="175"/>
         <source>Close window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets_w.cpp" line="183"/>
+        <location filename="../snippets_w.cpp" line="169"/>
         <source>Sort By Relevance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets_w.cpp" line="185"/>
+        <location filename="../snippets_w.cpp" line="171"/>
         <source>Sort By Page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets_w.cpp" line="262"/>
+        <location filename="../snippets_w.cpp" line="251"/>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3138,12 +3148,12 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="430"/>
+        <location filename="../rclm_idx.cpp" line="434"/>
         <source>Top indexed entity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_idx.cpp" line="436"/>
+        <location filename="../rclm_idx.cpp" line="440"/>
         <source>Diagnostics file</source>
         <translation type="unfinished"></translation>
     </message>

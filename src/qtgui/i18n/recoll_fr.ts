@@ -1894,6 +1894,14 @@ Merci de vérifier le fichier desktop </translation>
         <source>Filter directories</source>
         <translation>Filtrer par répertoire</translation>
     </message>
+    <message>
+        <source>Main index open error: </source>
+        <translation>Erreur d&apos;ouverture de l&apos;index principal:</translation>
+    </message>
+    <message>
+        <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation>L&apos;index est peut-être corrompu. Essayer d&apos;exécuter xapian-check, ou reconstruire l&apos;index.</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>

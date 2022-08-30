@@ -1892,6 +1892,14 @@ Por favor, compruebe el archivo de escritorio</translation>
         <source>Filter directories</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Main index open error: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
