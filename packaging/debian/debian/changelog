@@ -1,3 +1,19 @@
+recoll (1.33.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Query processing: simplify queries a bit more before sending to Xapian, allows using OP_FILTER
+    for path filtering. -> Medium version bump.
+  * GUI: allow specifying a fixed geometry for the results list viewport by setting
+    RECOLL_RESULTS_GEOMETRY=widthxheight . For people with fixed-width result formats CSS.
+  * recollq: add option to extract a result document into a file.
+  * Replace application/x-flac with audio/flac for FLAC audio files.
+  * Fix web queue processing for non-default configuration directories.
+  * Fix encoding issue in pdf attachment extraction.
+  * GUI: result list: fix issue with webengine builds not displaying Icons. Paging still not working
+    right with webengine (QTBUG-105842). Main builds revert/remain to webkit.
+  * Misc. small adjustments.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 30 Aug 2022 10:59:00 +0200
+
 recoll (1.32.8-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Add environment variable RECOLL_RESULTS_GEOMETRY for forcing a fixed geometry to the results

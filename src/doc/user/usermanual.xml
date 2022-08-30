@@ -5,7 +5,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='https://www.lesbonscomptes.com/recoll/pages/features.html#doctypes'>http://www.recoll.org/pages/features.html</ulink>">
-<!ENTITY RCLVERSION "1.32">
+<!ENTITY RCLVERSION "1.33">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
