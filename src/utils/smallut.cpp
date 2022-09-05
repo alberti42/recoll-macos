@@ -33,6 +33,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <functional>
 
 #ifdef _WIN32
 #define strncasecmp _strnicmp
@@ -52,6 +53,7 @@
 #endif
 
 using namespace std;
+using namespace std::placeholders;
 
 namespace MedocUtils {
 
@@ -62,7 +64,7 @@ int stringicmp(const string& s1, const string& s2)
 
 void stringtolower(string& io)
 {
-    std::transform(io.begin(), io.end(), io.begin(), [](unsigned char c) { return std::tolower(c); });
+    std::transform(io.begin(), io.end(), io.begin(), [](unsigned char c) {return std::tolower(c);});
 }
 
 string stringtolower(const string& i)
@@ -624,7 +626,8 @@ bool pcSubst(const string& in, string& out, const map<char, string>& subs)
     return true;
 }
 
-bool pcSubst(const string& in, string& out, const map<string, string>& subs)
+bool pcSubst(const std::string& in, std::string& out,
+             std::function<std::string(const std::string&)> mapper)
 {
     out.erase();
     string::size_type i;
@@ -647,7 +650,7 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs)
                 string::size_type j = in.find_first_of(')', i);
                 if (j == string::npos) {
                     // ??concatenate remaining part and stop
-                    out += std::string("%") + in.substr(i - 2);
+                    out += in.substr(i - 2);
                     break;
                 }
                 key = in.substr(i, j - i);
@@ -655,17 +658,32 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs)
             } else {
                 key = in[i];
             }
-            map<string, string>::const_iterator tr;
-            if ((tr = subs.find(key)) != subs.end()) {
-                out += tr->second;
-            } else {
-                out += std::string("%") + (key.size()==1? key : string("(") + key + string(")"));
-            }
+            out += mapper(key);
         } else {
             out += in[i];
         }
     }
     return true;
+}
+
+class PcSubstMapMapper {
+public:
+    PcSubstMapMapper(const std::map<std::string, std::string>& subs)
+        : m_subs(subs) {}
+    std::string domap(const std::string& key) {
+        auto it = m_subs.find(key);
+        if (it != m_subs.end())
+            return it->second;
+        return std::string("%") + (key.size() == 1 ? key : string("(") + key + string(")"));
+    }
+    const std::map<std::string, std::string>& m_subs;
+};
+
+bool pcSubst(const std::string& in, std::string& out,
+             const std::map<std::string, std::string>& subs)
+{
+    PcSubstMapMapper mapper(subs);
+    return pcSubst(in, out, std::bind(&PcSubstMapMapper::domap, &mapper, _1));
 }
 
 void ulltodecstr(uint64_t val, string& buf)
@@ -1208,8 +1226,7 @@ std::string SimpleRegexp::simpleSub(
     if (!ok()) {
         return std::string();
     }
-    return regex_replace(
-        in, m->expr, repl, std::regex_constants::format_first_only);
+    return regex_replace(in, m->expr, repl, std::regex_constants::format_first_only);
 }
 
 string SimpleRegexp::getMatch(const string&, int i) const
@@ -1224,9 +1241,9 @@ public:
     Internal(const string& exp, int flags, int nm) : nmatch(nm) {
         ok = regcomp(&expr, exp.c_str(), REG_EXTENDED |
 
-                         ((flags & SRE_ICASE) ? REG_ICASE : 0) |
+                     ((flags & SRE_ICASE) ? REG_ICASE : 0) |
 
-                         ((flags & SRE_NOSUB) ? REG_NOSUB : 0)) == 0;
+                     ((flags & SRE_NOSUB) ? REG_NOSUB : 0)) == 0;
         matches.resize(nmatch+1);
     }
     ~Internal() {
