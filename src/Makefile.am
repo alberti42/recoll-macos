@@ -306,7 +306,7 @@ PicStatic: $(librecoll_la_OBJECTS)
 	$(LIBTOOL) --tag=LD --mode=link gcc -g -O -o librecoll.la \
 		$(librecoll_la_OBJECTS)
 
-bin_PROGRAMS = recollindex
+bin_PROGRAMS = recollindex rclgrep
 if MAKECMDLINE
     bin_PROGRAMS += recollq
 endif
@@ -329,6 +329,11 @@ recollindex_SOURCES = \
     index/webqueue.h
 
 recollindex_LDADD = librecoll.la 
+
+rclgrep_SOURCES = \
+    index/rclgrep.cpp
+
+rclgrep_LDADD = librecoll.la 
 
 recollq_SOURCES = query/recollqmain.cpp
 recollq_LDADD = librecoll.la
