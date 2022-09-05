@@ -17,8 +17,6 @@
 
 # Recoll handler for iPython / Jupyter notebook files.
 
-from __future__ import print_function
-
 import os
 import sys
 import json

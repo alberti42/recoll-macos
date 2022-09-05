@@ -18,8 +18,6 @@
 
 # Zip file extractor for Recoll
 
-from __future__ import print_function
-
 import os
 import posixpath
 import fnmatch
@@ -155,14 +153,11 @@ class ZipExtractor:
             if skipped is not None:
                 self.skiplist += conftree.stringToStrings(skipped)
         try:
-            if rclexecm.PY3:
-                # Note: py3 ZipFile wants an str file name, which
-                # is wrong: file names are binary. But it accepts an
-                # open file, and open() has no such restriction
-                self.f = open(filename, 'rb')
-                self.zip = ZipFile(self.f)
-            else:
-                self.zip = ZipFile(filename)
+            # Note: py3 ZipFile wants an str file name, which
+            # is wrong: file names are binary. But it accepts an
+            # open file, and open() has no such restriction
+            self.f = open(filename, 'rb')
+            self.zip = ZipFile(self.f)
             return True
         except Exception as err:
             self.em.rclog("openfile: failed: [%s]" % err)

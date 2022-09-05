@@ -2,7 +2,6 @@
 """Index text lines as document (execm handler sample). This exists
 to demonstrate the execm interface and is not meant to be useful or
 efficient"""
-from __future__ import print_function
 
 import sys
 import os

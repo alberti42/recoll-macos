@@ -13,12 +13,7 @@ epsilon with dasia (in unicode but not iso). Can this be replaced by either epsi
 with acute accent ?
 """
 
-from __future__ import print_function
-
 import sys
-PY3 = sys.version > '3'
-if not PY3:
-    import string
 import glob
 import os
 import os.path
@@ -38,10 +33,7 @@ class European8859TextClassifier:
         # Table to translate from punctuation to spaces
         self.punct = b'''0123456789<>/*?[].@+-,#_$%&={};.,:!"''' + b"'\n\r"
         spaces = len(self.punct) * b' '
-        if PY3:
-            self.spacetable = bytes.maketrans(self.punct, spaces)
-        else:
-            self.spacetable = string.maketrans(self.punct, spaces)
+        self.spacetable = bytes.maketrans(self.punct, spaces)
 
     def readlanguages(self, langzip):
         """Extract the stop words lists from the zip file.

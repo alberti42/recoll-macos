@@ -18,8 +18,6 @@
 # Base for extractor classes. With some common generic implementations
 # for the boilerplate functions.
 
-from __future__ import print_function
-
 import os
 import sys
 import rclexecm

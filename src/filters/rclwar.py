@@ -2,8 +2,6 @@
 
 # WAR web archive filter for recoll. War file are gzipped tar files
 
-from __future__ import print_function
-
 import rclexecm
 import tarfile
 

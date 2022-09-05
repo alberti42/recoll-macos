@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 # Read a .kar midi karaoke file and translate to recoll indexable format
-# This does not work with Python3 yet because python:midi doesn't 
-from __future__ import print_function
 
 import rclexecm
 import sys
@@ -46,11 +44,7 @@ htmltemplate = '''
 
 nlbytes = b'\n'
 bsbytes = b'\\'
-PY3 = sys.version > '3'
-if PY3:
-    nullchar = 0
-else:
-    nullchar = chr(0)
+nullchar = 0
     
 class KarTextExtractor(RclBaseHandler):
     # Afaik, the only charset encodings with null bytes are variations on

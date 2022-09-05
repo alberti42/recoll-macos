@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 
 # dia (http://live.gnome.org/Dia) file filter for recoll
 # stefan.friedel@iwr.uni-heidelberg.de 2012

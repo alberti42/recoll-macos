@@ -18,8 +18,6 @@
 # Wrapping a text file. Recoll does it internally in most cases, but
 # this is for use by another filter.
 
-from __future__ import print_function
-
 import rclexecm
 import sys
 from rclbasehandler import RclBaseHandler

@@ -26,8 +26,6 @@
 # this would be to slow. So this helps implementing a permanent script
 # to repeatedly execute single commands.
 
-from __future__ import print_function
-
 import subprocess
 import rclexecm
 from rclbasehandler import RclBaseHandler

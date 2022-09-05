@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Extract Html content from an EPUB file (.chm), concatenating all sections"""
-from __future__ import print_function
 
 import sys
 import os

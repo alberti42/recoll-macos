@@ -20,8 +20,6 @@
 # All data is binary. This is important for Python3
 # All parameter names are converted to and processed as str/unicode
 
-from __future__ import print_function
-
 import sys
 import os
 import tempfile
@@ -30,7 +28,6 @@ import getopt
 import rclconfig
 import cmdtalk
 
-PY3 = (sys.version > '3')
 _g_mswindows = (sys.platform == "win32")
 _g_execdir = os.path.dirname(sys.argv[0])
 
@@ -62,12 +59,11 @@ def makebytes(data):
 # Possibly decode binary file name for use as subprocess argument,
 # depending on platform.
 def subprocfile(fn):
-    # On Windows PY3 the list2cmdline() method in subprocess assumes that
-    # all args are str, and we receive file names as UTF-8. So we need
-    # to convert.
-    # On Unix all list elements get converted to bytes in the C
-    # _posixsubprocess module, nothing to do.
-    if PY3 and _g_mswindows and type(fn) != type(''):
+    # On Windows Python 3 the list2cmdline() method in subprocess assumes that all args are str, and
+    # we receive file names as UTF-8. So we need to convert.
+    # On Unix all list elements get converted to bytes in the C _posixsubprocess module, nothing to
+    # do.
+    if _g_mswindows and type(fn) != type(''):
         return fn.decode('UTF-8')
     else:
         return fn
@@ -383,10 +379,7 @@ def main(proto, extract):
         print("Open error", file=sys.stderr)
         sys.exit(1)
 
-    if PY3:
-        ioout = sys.stdout.buffer
-    else:
-        ioout = sys.stdout
+    ioout = sys.stdout.buffer
     if ipath != b"" or actAsSingle:
         params['ipath'] = ipath
         ok, data, ipath, eof = extract.getipath(params)

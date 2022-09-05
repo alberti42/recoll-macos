@@ -2,8 +2,6 @@
 
 # Recoll PPT text extractor
 
-from __future__ import print_function
-
 import rclexecm
 import rclexec1
 import re

@@ -6,8 +6,6 @@
 # It works not only for tar-files, but automatically for gzipped and
 # bzipped tar-files at well.
 
-from __future__ import print_function
-
 import rclexecm
 
 try:

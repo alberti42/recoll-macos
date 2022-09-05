@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import print_function
 
 # Read an ICS file, break it into "documents" which are events, todos,
 # or journal entries, and interface with recoll execm

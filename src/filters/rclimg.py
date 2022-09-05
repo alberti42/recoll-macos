@@ -6,7 +6,6 @@
 #
 # Uses pyexiv2. Also tried Pillow, found it useless for tags.
 #
-from __future__ import print_function
 
 import sys
 import os

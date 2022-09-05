@@ -3,8 +3,6 @@
 # Read a file in GNU info format and output its nodes as subdocs,
 # interfacing with recoll execm
 
-from __future__ import print_function
-
 import rclexecm
 import sys
 import os
