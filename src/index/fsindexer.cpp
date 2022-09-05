@@ -377,7 +377,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
     FsTreeWalker walker;
     walker.setSkippedPaths(m_config->getSkippedPaths());
 
-    for (list<string>::iterator it = files.begin(); it != files.end(); ) {
+    for (auto it = files.begin(); it != files.end(); ) {
         LOGDEB2("FsIndexer::indexFiles: [" << *it << "]\n");
 
         m_config->setKeyDir(path_getfather(*it));
@@ -426,11 +426,9 @@ out:
     // Purge possible orphan documents
     if (ret == true) {
         LOGDEB("Indexfiles: purging orphans\n");
-        const vector<string>& purgecandidates = m_purgeCandidates.getCandidates();
-        for (vector<string>::const_iterator it = purgecandidates.begin();
-             it != purgecandidates.end(); it++) {
-            LOGDEB("Indexfiles: purging orphans for " << *it << "\n");
-            m_db->purgeOrphans(*it);
+        for (const auto& udi : m_purgeCandidates.getCandidates()) {
+            LOGDEB("Indexfiles: purging orphans for " << udi << "\n");
+            m_db->purgeOrphans(udi);
         }
 #ifdef IDX_THREADS
         m_db->waitUpdIdle();
@@ -494,10 +492,9 @@ void FsIndexer::localfieldsfromconf()
     ConfSimple attrs;
     m_config->valueSplitAttributes(sfields, value, attrs);
     vector<string> nmlst = attrs.getNames(cstr_null);
-    for (vector<string>::const_iterator it = nmlst.begin();
-         it != nmlst.end(); it++) {
-        string nm = m_config->fieldCanon(*it);
-        attrs.get(*it, m_localfields[nm]);
+    for (const auto& anm : nmlst) {
+        string nm = m_config->fieldCanon(anm);
+        attrs.get(anm, m_localfields[nm]);
         LOGDEB2("FsIndexer::localfieldsfromconf: [" << nm << "]->[" <<
                 m_localfields[nm] << "]\n");
     }
@@ -505,12 +502,11 @@ void FsIndexer::localfieldsfromconf()
 
 void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
 {
-    for (map<string, string>::const_iterator it = fields.begin();
-         it != fields.end(); it++) {
+    for (const auto& field : fields) {
         // Being chosen by the user, localfields override values from
         // the filter. The key is already canonic (see
         // localfieldsfromconf())
-        doc.meta[it->first] = it->second;
+        doc.meta[field.first] = field.second;
     }
 }
 
@@ -846,9 +842,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
             }
         }
 #if defined(HAVE_POSIX_FADVISE) && defined(POSIX_FADV_DONTNEED)
-        // See framagit issue 26. If this appears to be a good idea
-        // after all (not sure), we'll need a command line switch to
-        // control it. For now it's compile-time only.
+        // See framagit issue 26. This is off by default and controlled by a command line switch.
         if (m_cleancache) {
             int fd = open(fn.c_str(), O_RDONLY);
             if (fd >= 0) {
