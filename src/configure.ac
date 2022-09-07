@@ -206,6 +206,11 @@ AC_ARG_ENABLE(testmains,
         buildtestmains=$enableval, buildtestmains=no)
 AM_CONDITIONAL([COND_TESTMAINS], [test "$buildtestmains" = yes])
 
+AC_ARG_ENABLE(rclgrep,
+    AS_HELP_STRING([--enable-rclgrep],[Enable building the index-less search tool.]),
+        buildrclgrep=$enableval, buildrclgrep=no)
+AM_CONDITIONAL([COND_RCLGREP], [test "$buildrclgrep" = yes])
+
 # Enable CamelCase word splitting. This is optional because it causes 
 # problems with phrases: with camelcase enabled, "MySQL manual"
 # will be matched by "MySQL manual" and "my sql manual" but not 
@@ -557,6 +562,9 @@ AC_CONFIG_FILES([Makefile python/recoll/setup.py
 
 if test X$buildtestmains = Xyes ; then
    AC_CONFIG_FILES([testmains/Makefile])
+fi
+if test X$buildrclgrep = Xyes ; then
+   AC_CONFIG_FILES([rclgrep/Makefile])
 fi
 
 AC_OUTPUT

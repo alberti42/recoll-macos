@@ -96,6 +96,12 @@ int g_reflags = SimpleRegexp::SRE_NOSUB;
 
 static RclConfig *config;
 
+namespace Rcl {
+std::string version_string()
+{
+    return string("rclgrep ") + string(PACKAGE_VERSION);
+}
+}
 // Working directory before we change: it's simpler to change early
 // but some options need the original for computing absolute paths.
 static std::string orig_cwd;

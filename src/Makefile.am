@@ -4,7 +4,11 @@
 if COND_TESTMAINS
   MAYBE_TESTMAINS = testmains
 endif
-SUBDIRS = . $(MAYBE_TESTMAINS)
+if COND_RCLGREP
+  MAYBE_RCLGREP = rclgrep
+endif
+SUBDIRS = . $(MAYBE_TESTMAINS) $(MAYBE_RCLGREP)
+
 DIST_SUBDIRS = .
 
 CXXFLAGS ?= @CXXFLAGS@
@@ -306,7 +310,7 @@ PicStatic: $(librecoll_la_OBJECTS)
 	$(LIBTOOL) --tag=LD --mode=link gcc -g -O -o librecoll.la \
 		$(librecoll_la_OBJECTS)
 
-bin_PROGRAMS = recollindex rclgrep
+bin_PROGRAMS = recollindex
 if MAKECMDLINE
     bin_PROGRAMS += recollq
 endif
@@ -329,11 +333,6 @@ recollindex_SOURCES = \
     index/webqueue.h
 
 recollindex_LDADD = librecoll.la 
-
-rclgrep_SOURCES = \
-    index/rclgrep.cpp
-
-rclgrep_LDADD = librecoll.la 
 
 recollq_SOURCES = query/recollqmain.cpp
 recollq_LDADD = librecoll.la
