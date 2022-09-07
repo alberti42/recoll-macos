@@ -119,14 +119,22 @@ void grepit(const Rcl::Doc& doc)
         ppath += doc.ipath + "::";
     }
     int lnum = 0;
+    int idx;
     std::string ln;
     bool inmatch{false};
     for (const auto& line: lines) {
+        idx = lnum;
         ++lnum;
         //std::cout << "LINE:[" << line << "]\n";
         for (const auto e_p : g_expressions) {
             auto match = e_p->simpleMatch(line);
-            if (((op_flags & OPT_v) && match) || (!(op_flags&OPT_v) && !match)) {
+            if (((op_flags & OPT_v) && match) || (!(op_flags & OPT_v) && !match)) {
+                if (inmatch && aftercontext && !(op_flags&OPT_c) && idx < int(lines.size())) {
+                    for (int i = idx; i < std::min(int(lines.size()), idx + aftercontext); i++) {
+                        std::cout << ppath << ln << lines[i] << "\n";
+                    }
+                    std::cout << "--\n";
+                }
                 inmatch = false;
                 goto nextline;
             }
@@ -137,19 +145,13 @@ void grepit(const Rcl::Doc& doc)
             if (op_flags & OPT_n) {
                 ln = ulltodecstr(lnum) + ":";
             }
-            int idx = lnum -1;
-            if (beforecontext) {
+            if (!inmatch && !(op_flags&OPT_c) && beforecontext) {
                 for (int i = std::max(0, idx - beforecontext); i < idx; i++) {
                     std::cout << ppath << ln << lines[i] << "\n";
                 }
             }
+            inmatch=true;
             std::cout << ppath << ln << line << "\n";
-            if (aftercontext && idx < int(lines.size() - 1)) {
-                for (int i = idx + 1; i < std::min(int(lines.size()), idx + aftercontext + 1); i++) {
-                    std::cout << ppath << ln << lines[i] << "\n";
-                }
-                std::cout << "--\n";
-            }
         }
     nextline:
         continue;
