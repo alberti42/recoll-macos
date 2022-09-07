@@ -31,11 +31,12 @@
 #include <getopt.h>
 
 #include <iostream>
+#include <sstream>
 #include <list>
 #include <string>
 #include <cstdlib>
+#include <deque>
 
-using namespace std;
 
 #include "log.h"
 #include "rclinit.h"
@@ -109,58 +110,98 @@ static std::string current_topdir;
 static int beforecontext;
 static int aftercontext;
 
-void grepit(const Rcl::Doc& doc)
+static void dequeshift(std::deque<std::string>& q, int n, const std::string& ln)
 {
-    std::vector<std::string> lines;
-    int matchcount = 0;
-    stringToTokens(doc.text, lines, "\n");
-
+    if (n <= 0)
+        return;
+    if (q.size() >= unsigned(n)) {
+        q.pop_front();
+    }
+    q.push_back(ln);
+}
+static void dequeprint(std::deque<std::string>& q)
+{
+    for (const auto& ln : q) {
+        std::cout << ln;
+    }
+}
+void grepit(std::istream& instream, const Rcl::Doc& doc)
+{
     std::string ppath;
+    std::string indic;
+    std::string nindic;
     if (op_flags & OPT_H) {
         ppath = fileurltolocalpath(doc.url);
-        if (ppath.size() > current_topdir.size()) {
+        if (path_isabsolute(ppath) && ppath.size() > current_topdir.size()) {
             ppath = ppath.substr(current_topdir.size());
         }
         ppath += ":";
-        ppath += doc.ipath + "::";
+        ppath += doc.ipath;
+        indic = "::";
+        nindic = "--";
     }
+
+    int matchcount = 0;
+    std::deque<std::string> beflines;
     int lnum = 0;
     int idx;
     std::string ln;
     bool inmatch{false};
-    for (const auto& line: lines) {
+    int aftercount = 0;
+    for (;;) {
+        std::string line;
+        getline(instream, line, '\n');
+        if (!instream.good()) {
+            break;
+        }
+
         idx = lnum;
         ++lnum;
-        //std::cout << "LINE:[" << line << "]\n";
+        if ((op_flags & OPT_n) && !(op_flags & OPT_c)) {
+            ln = ulltodecstr(lnum) + ":";
+        }
+
+        bool ismatch = true;
         for (const auto e_p : g_expressions) {
             auto match = e_p->simpleMatch(line);
             if (((op_flags & OPT_v) && match) || (!(op_flags & OPT_v) && !match)) {
-                if (inmatch && aftercontext && !(op_flags&OPT_c) && idx < int(lines.size())) {
-                    for (int i = idx; i < std::min(int(lines.size()), idx + aftercontext); i++) {
-                        std::cout << ppath << ln << lines[i] << "\n";
-                    }
-                    std::cout << "--\n";
-                }
-                inmatch = false;
-                goto nextline;
+                ismatch = false;
+                break;
             }
         }
-        if (op_flags & OPT_c) {
-            matchcount++;
+
+        if (ismatch) {
+            // We have a winner line.
+            if (op_flags & OPT_c) {
+                matchcount++;
+            } else {
+                // Stop printing after-context
+                aftercount = 0;
+                // If this is the beginning/first matching line, possibly output the before context
+                if (!inmatch && beforecontext) {
+                    dequeprint(beflines);
+                }
+                inmatch=true;
+                std::cout << ppath << indic << ln << line << "\n";
+                if (beforecontext && !beflines.empty()) {
+                    beflines.pop_front();
+                }
+            }
         } else {
-            if (op_flags & OPT_n) {
-                ln = ulltodecstr(lnum) + ":";
+            // Non-matching line.
+            if (inmatch && aftercontext && !(op_flags&OPT_c)) {
+                aftercount = aftercontext;
             }
-            if (!inmatch && !(op_flags&OPT_c) && beforecontext) {
-                for (int i = std::max(0, idx - beforecontext); i < idx; i++) {
-                    std::cout << ppath << ln << lines[i] << "\n";
-                }
+            inmatch = false;
+            if (aftercount) {
+                std::cout << ppath << nindic << ln << line << "\n";
+                aftercount--;
+                if (aftercount == 0)
+                    std::cout << "--\n";
+            } else if (beforecontext) {
+                dequeshift(beflines, beforecontext, ppath + nindic + ln + line + "\n");
             }
-            inmatch=true;
-            std::cout << ppath << ln << line << "\n";
-        }
-    nextline:
-        continue;
+        } 
     }
     if (op_flags & OPT_L) {
         if (matchcount == 0) {
@@ -171,58 +212,65 @@ void grepit(const Rcl::Doc& doc)
             std::cout << ppath << "\n";
         }
     } else if (op_flags & OPT_c) {
-        std::cout << ppath << matchcount << "\n";
+        std::cout << ppath << "::" << matchcount << "\n";
     }
 }
 
 bool processpath(RclConfig *config, const std::string& path)
 {
     LOGINF("processpath: [" << path << "]\n");
-    struct PathStat st;
-    if (path_fileprops(path, &st, false) < 0) {
-        std::cerr << path << " : ";
-        perror("stat");
-        return false;
-    }
-    
-    config->setKeyDir(path_getfather(path));
-    
-    string mimetype;
-
-    FileInterner interner(path, &st, config, FileInterner::FIF_none);
-    if (!interner.ok()) {
-        return false;
-    }
-    mimetype = interner.getMimetype();
-
-    FileInterner::Status fis = FileInterner::FIAgain;
-    bool hadNonNullIpath = false;
-    Rcl::Doc doc;
-    while (fis == FileInterner::FIAgain) {
-        doc.erase();
-        try {
-            fis = interner.internfile(doc);
-        } catch (CancelExcept) {
-            LOGERR("fsIndexer::processone: interrupted\n");
+    if (path.empty()) {
+        // stdin
+        Rcl::Doc doc;
+        doc.url = std::string("file://") + "(standard input)";
+        grepit(std::cin, doc);
+    } else {
+        struct PathStat st;
+        if (path_fileprops(path, &st, false) < 0) {
+            std::cerr << path << " : ";
+            perror("stat");
             return false;
         }
-        if (fis == FileInterner::FIError) {
+    
+        config->setKeyDir(path_getfather(path));
+    
+        string mimetype;
+
+        FileInterner interner(path, &st, config, FileInterner::FIF_none);
+        if (!interner.ok()) {
             return false;
         }
+        mimetype = interner.getMimetype();
+
+        FileInterner::Status fis = FileInterner::FIAgain;
+        bool hadNonNullIpath = false;
+        Rcl::Doc doc;
+        while (fis == FileInterner::FIAgain) {
+            doc.erase();
+            try {
+                fis = interner.internfile(doc);
+            } catch (CancelExcept) {
+                LOGERR("fsIndexer::processone: interrupted\n");
+                return false;
+            }
+            if (fis == FileInterner::FIError) {
+                return false;
+            }
             
-        if (doc.url.empty())
-            doc.url = path_pathtofileurl(path);
+            if (doc.url.empty())
+                doc.url = path_pathtofileurl(path);
 
-        grepit(doc);
+            std::istringstream str(doc.text);
+            grepit(str, doc);
+        }
     }
-
     return true;
 }
 
 
 class WalkerCB : public FsTreeWalkerCB {
 public:
-    WalkerCB(list<string>& files, const vector<string>& selpats, RclConfig *config)
+    WalkerCB(std::list<std::string>& files, const vector<string>& selpats, RclConfig *config)
         : m_files(files), m_pats(selpats), m_config(config) {}
     virtual FsTreeWalker::Status processone(
         const string& fn, const struct PathStat *, FsTreeWalker::CbFlag flg) {
@@ -240,14 +288,14 @@ public:
         }
         return FsTreeWalker::FtwOk;
     }
-    list<string>& m_files;
+    std::list<std::string>& m_files;
     const vector<string>& m_pats;
     RclConfig *m_config{nullptr};
 };
 
 bool recursive_grep(RclConfig *config, const string& top, const vector<string>& selpats)
 {
-    list<string> files;
+    std::list<std::string> files;
     WalkerCB cb(files, selpats, config);
     FsTreeWalker walker;
     current_topdir = top;
@@ -409,6 +457,7 @@ int main(int argc, char *argv[])
     std::vector<std::string> paths;
     if (aremain == 0) {
         // Read from stdin
+        processpath(config, std::string());
     } else {
         while (aremain--) {
             paths.push_back(argv[optind++]);
