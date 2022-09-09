@@ -39,6 +39,7 @@
 .bas = text/plain 
 .cpp = text/x-c
 .h   = text/x-c
+.hpp = text/x-c++
 .c   = text/x-c
 .cc  = text/x-c
 .cxx = text/x-c

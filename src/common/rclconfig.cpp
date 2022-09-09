@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes 
+/* Copyright (C) 2004-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -33,14 +33,11 @@
 #endif
 
 #include <algorithm>
-#include <list>
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>
-#include <iterator>
 
 #include "cstr.h"
 #include "pathut.h"
@@ -848,12 +845,19 @@ string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes, const
         if (!m_excludeMTypes.empty() && m_excludeMTypes.count(stringtolower(mtype))) {
             IdxDiags::theDiags().record(IdxDiags::ExcludedMime, fn, mtype);
             LOGDEB1("RclConfig::getMimeHandlerDef: " << mtype << " in excluded mime list (fn " <<
-                   fn << ")\n");
+                    fn << ")\n");
             return hs;
         }
     }
 
     if (!mimeconf->get(mtype, hs, "index")) {
+        if (mtype.find("text/") == 0) {
+            bool alltext{false};
+            getConfParam("textunknownasplain", &alltext);
+            if (alltext && mimeconf->get("text/plain", hs, "index")) {
+                return hs;
+            }
+        }
         if (mtype != "inode/directory") {
             IdxDiags::theDiags().record(IdxDiags::NoHandler, fn, mtype);
             LOGDEB1("getMimeHandlerDef: no handler for '" << mtype << "' (fn " << fn << ")\n");
@@ -1233,6 +1237,16 @@ string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag, bo
 
     if (apptag.empty() || !mimeview->get(mtype + string("|") + apptag, hs, "view"))
         mimeview->get(mtype, hs, "view");
+
+    // Last try for text/xxx if alltext is set
+    if (hs.empty() && mtype.find("text/") == 0 && mtype != "text/plain") {
+        bool alltext{false};
+        getConfParam("textunknownasplain", &alltext);
+        if (alltext) {
+            return getMimeViewerDef("text/plain", apptag, useall);
+        }
+    }
+        
     return hs;
 }
 
@@ -1425,7 +1439,7 @@ string RclConfig::getPidfile() const
 #endif // ! _WIN32
     
         fn = path_cat(getCacheDir(), "index.pid");
-out:
+    out:
         LOGINF("RclConfig: pid/lock file: " << fn << "\n");
     }
     return fn;

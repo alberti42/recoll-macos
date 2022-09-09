@@ -178,11 +178,12 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mimeOrParams,
         MD5String("MimeHandlerNull", id);
         return nobuild ? 0 : new MimeHandlerNull(config, id);
     } else if (lmime.find("text/") == 0) {
-        // Try to handle unknown text/xx as text/plain. This
-        // only happen if the text/xx was defined as "internal" in
-        // mimeconf, not at random. For programs, for example this
-        // allows indexing and previewing as text/plain (no filter
-        // exec) but still opening with a specific editor.
+        // Try to handle unknown text/xx as text/plain. This only happen if the text/xx was defined
+        // as "internal" in mimeconf.
+        // This is historic, because the natural way with the current code would be to specify
+        // "internal text/plain" instead of just "internal"...
+        // Also see rclconfig for the textunknownisplain configuration variable which allows
+        // processing all unknown text/* as text/plain.
         LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerText(x)\n");
         MD5String("MimeHandlerText", id);
         return nobuild ? 0 : new MimeHandlerText(config, id);
