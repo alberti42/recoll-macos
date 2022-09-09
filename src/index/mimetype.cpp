@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -18,8 +18,13 @@
 #include "autoconfig.h"
 
 #include <ctype.h>
+
 #include <string>
 #include <list>
+
+#ifdef ENABLE_LIBMAGIC
+#include <magic.h>
+#endif
 
 #include "mimetype.h"
 #include "log.h"
@@ -53,6 +58,18 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
     // First try the internal identifying routine
     string mime = idFile(fn.c_str());
 
+#ifdef ENABLE_LIBMAGIC
+    if (usfc && mime.empty()) {
+        // Caching the open mgtoken would slightly improve performance but we'd need locking because
+        // libmagic is not thread-safe
+        auto mgtoken = magic_open(MAGIC_MIME_TYPE);
+        if (mgtoken) {
+            magic_load(mgtoken, nullptr);
+            mime = magic_file(mgtoken, fn.c_str());
+            magic_close(mgtoken);
+        }
+    }
+#else
 #ifdef USE_SYSTEM_FILE_COMMAND
     if (usfc && mime.empty()) {
         // Last resort: use "file -i", or its configured replacement.
@@ -132,7 +149,7 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
             mime.clear();
     }
 #endif //USE_SYSTEM_FILE_COMMAND
-
+#endif // Not libmagic
     return mime;
 }
 
@@ -161,6 +178,11 @@ string mimetype(const string &fn, const struct PathStat *stp,
 
     string mtype;
 
+    if (cfg && cfg->inStopSuffixes(fn)) {
+        LOGDEB("mimetype: fn [" << fn << "] in stopsuffixes\n");
+        return mtype;
+    }
+
     // Extended attribute has priority on everything, as per:
     // http://freedesktop.org/wiki/CommonExtendedAttributes
     if (pxattr::get(fn, "mime_type", &mtype)) {
@@ -174,11 +196,6 @@ string mimetype(const string &fn, const struct PathStat *stp,
 
     if (cfg == 0)  {
         LOGERR("Mimetype: null config ??\n");
-        return mtype;
-    }
-
-    if (cfg->inStopSuffixes(fn)) {
-        LOGDEB("mimetype: fn [" << fn << "] in stopsuffixes\n");
         return mtype;
     }
 

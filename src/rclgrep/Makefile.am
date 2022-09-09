@@ -25,6 +25,7 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     -DRECOLL_DATADIR=\"${pkgdatadir}\" \
     -DREADFILE_ENABLE_ZLIB -DREADFILE_ENABLE_MINIZ -DREADFILE_ENABLE_MD5 \
     -D_GNU_SOURCE \
+    -DENABLE_LIBMAGIC \
     $(DEFS)
 
 bin_PROGRAMS = rclgrep
@@ -92,4 +93,4 @@ rclgrep_SOURCES = \
     ../utils/wipedir.cpp \
     ../utils/zlibut.cpp
     
-rclgrep_LDADD = $(XSLT_LIBS) $(LIBICONV) $(LIBTHREADS)
+rclgrep_LDADD = $(XSLT_LIBS) $(LIBICONV) -lmagic $(LIBTHREADS)

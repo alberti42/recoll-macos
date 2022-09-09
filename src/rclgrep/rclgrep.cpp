@@ -68,9 +68,9 @@ static int     op_flags;
 #define OPT_A 0x1000
 #define OPT_B 0x2000
 #define OPT_C 0x4000
+#define OPT_r 0x8000
 
-#define OPTVAL_RECOLL_CONFIG 1000
-#define OPTVAL_HELP 1001
+enum OptVal {OPTVAL_RECOLL_CONFIG=1000, OPTVAL_HELP, OPTVAL_INCLUDE,};
 
 static struct option long_options[] = {
     {"regexp", required_argument, 0, 'e'},
@@ -89,6 +89,8 @@ static struct option long_options[] = {
     {"after-context", required_argument, 0, 'A'},
     {"before-context", required_argument, 0, 'B'},
     {"context", required_argument, 0, 'C'},
+    {"recurse", 0, 0, 'r'},
+    {"include", required_argument, 0, OPTVAL_INCLUDE},
     {0, 0, 0, 0}
 };
 
@@ -211,14 +213,15 @@ void grepit(std::istream& instream, const Rcl::Doc& doc)
         if (matchcount) {
             std::cout << ppath << "\n";
         }
-    } else if (op_flags & OPT_c) {
+    } else if ((op_flags & OPT_c) && matchcount) {
         std::cout << ppath << "::" << matchcount << "\n";
     }
 }
 
 bool processpath(RclConfig *config, const std::string& path)
 {
-    LOGINF("processpath: [" << path << "]\n");
+//    LOGINF("processpath: [" << path << "]\n");
+//    std::cerr << "processpath: [" << path << "]\n";
     if (path.empty()) {
         // stdin
         Rcl::Doc doc;
@@ -270,8 +273,8 @@ bool processpath(RclConfig *config, const std::string& path)
 
 class WalkerCB : public FsTreeWalkerCB {
 public:
-    WalkerCB(std::list<std::string>& files, const vector<string>& selpats, RclConfig *config)
-        : m_files(files), m_pats(selpats), m_config(config) {}
+    WalkerCB(const vector<string>& selpats, RclConfig *config)
+        : m_pats(selpats), m_config(config) {}
     virtual FsTreeWalker::Status processone(
         const string& fn, const struct PathStat *, FsTreeWalker::CbFlag flg) {
         if (flg == FsTreeWalker::FtwRegular) {
@@ -288,15 +291,14 @@ public:
         }
         return FsTreeWalker::FtwOk;
     }
-    std::list<std::string>& m_files;
     const vector<string>& m_pats;
     RclConfig *m_config{nullptr};
 };
 
 bool recursive_grep(RclConfig *config, const string& top, const vector<string>& selpats)
 {
-    std::list<std::string> files;
-    WalkerCB cb(files, selpats, config);
+//    std::cerr << "recursive_grep: top : [" << top << "]\n";
+    WalkerCB cb(selpats, config);
     FsTreeWalker walker;
     current_topdir = top;
     if (path_isdir(top)) {
@@ -392,7 +394,7 @@ int main(int argc, char *argv[])
     std::string a_config;
     vector<string> selpatterns;
     
-    while ((ret = getopt_long(argc, argv, "A:B:C:ce:f:hHiLlnp:vx", long_options, NULL)) != -1) {
+    while ((ret = getopt_long(argc, argv, "A:B:C:ce:f:hHiLlnp:rvx", long_options, NULL)) != -1) {
         switch (ret) {
         case 'A': op_flags |= OPT_A; aftercontext = atoi(optarg); break;
         case 'B': op_flags |= OPT_B; beforecontext = atoi(optarg); break;
@@ -407,10 +409,12 @@ int main(int argc, char *argv[])
         case 'l': op_flags |= OPT_l|OPT_c; break;
         case 'n': op_flags |= OPT_n; break;
         case 'p': op_flags |= OPT_p; selpatterns.push_back(optarg); break;
+        case 'r': op_flags |= OPT_r|OPT_H; break;
         case 'v': op_flags |= OPT_v; break;
         case 'x': op_flags |= OPT_x; break;
         case OPTVAL_RECOLL_CONFIG: a_config = optarg; break;
         case OPTVAL_HELP: Usage(stdout); break;
+        case OPTVAL_INCLUDE: selpatterns.push_back(optarg); break;
         default: Usage(); break;
         }
     }
@@ -455,12 +459,16 @@ int main(int argc, char *argv[])
         }
     }
     std::vector<std::string> paths;
-    if (aremain == 0) {
+    if (aremain == 0 && !(op_flags & OPT_r)) {
         // Read from stdin
         processpath(config, std::string());
     } else {
-        while (aremain--) {
-            paths.push_back(argv[optind++]);
+        if (aremain == 0) {
+            paths.push_back(".");
+        } else {
+            while (aremain--) {
+                paths.push_back(argv[optind++]);
+            }
         }
     }
 
