@@ -337,6 +337,38 @@ bool processpaths(RclConfig *config, const std::vector<std::string> &_paths,
     return true;
 }
 
+std::string make_config()
+{
+    std::string confdir;
+    const char *cp = nullptr;
+    cp = getenv("XDG_CONFIG_HOME");
+    if (nullptr != cp) {
+        confdir = cp;
+    } else {
+        confdir = path_cat(path_home(), ".config");
+    }
+    confdir = path_cat(confdir, "rclgrep");
+    if (!path_makepath(confdir, 0755)) {
+        std::cerr << "Could not create configuration directory " << confdir << " : ";
+        perror("");
+        exit(1);
+    }
+    std::string mainconf = path_cat(confdir, "recoll.conf");
+    if (!path_exists(mainconf)) {
+        FILE *fp = fopen(mainconf.c_str(), "w");
+        if (nullptr == fp) {
+            std::cerr << "Could not create configuration file " << mainconf << " : ";
+            perror("");
+            exit(1);
+        }
+        fprintf(fp, "# rclgrep default configuration. Will only be created by the program if it\n");
+        fprintf(fp, "# does not exist, you can add your own customisations in here\n");
+        fprintf(fp, "helperlogfilename = /dev/null\n");
+        fprintf(fp, "loglevel = 1\n");
+        fclose(fp);
+    }
+    return confdir;
+}
 
 std::string thisprog;
 
@@ -435,6 +467,9 @@ int main(int argc, char *argv[])
         op_flags |= OPT_H;
     }
     
+    if (a_config.empty()) {
+        a_config = make_config();
+    }
     string reason;
     int flags = 0;
     config = recollinit(flags, nullptr, nullptr, reason, &a_config);
