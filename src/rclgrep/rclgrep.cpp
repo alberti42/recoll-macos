@@ -53,30 +53,41 @@
 
 // Command line options
 static int     op_flags;
-#define OPT_H 0x1
-#define OPT_L 0x2
-#define OPT_c 0x4
-#define OPT_e 0x8
-#define OPT_f 0x10    
-#define OPT_h 0x20
-#define OPT_i 0x40
-#define OPT_l 0x80
-#define OPT_p 0x100
-#define OPT_v 0x200
-#define OPT_x 0x400
-#define OPT_n 0x800
-#define OPT_A 0x1000
-#define OPT_B 0x2000
-#define OPT_C 0x4000
-#define OPT_r 0x8000
+#define OPT_A 0x1      
+#define OPT_B 0x2      
+#define OPT_C 0x4      
+#define OPT_H 0x8      
+#define OPT_L 0x10     
+#define OPT_R 0x20     
+#define OPT_T 0x40     
+#define OPT_V 0x80     
+#define OPT_Z 0x100    
+#define OPT_a 0x200    
+#define OPT_c 0x400    
+#define OPT_e 0x800    
+#define OPT_f 0x1000   
+#define OPT_h 0x2000   
+#define OPT_i 0x4000   
+#define OPT_l 0x8000   
+#define OPT_n 0x10000  
+#define OPT_p 0x20000  
+#define OPT_q 0x40000  
+#define OPT_r 0x80000  
+#define OPT_s 0x100000 
+#define OPT_u 0x200000 
+#define OPT_v 0x400000 
+#define OPT_w 0x800000 
+#define OPT_x 0x1000000
 
-enum OptVal {OPTVAL_RECOLL_CONFIG=1000, OPTVAL_HELP, OPTVAL_INCLUDE,};
+
+enum OptVal {OPTVAL_RECOLL_CONFIG=1000, OPTVAL_HELP, OPTVAL_INCLUDE, OPTVAL_EXCLUDE,
+             OPTVAL_EXCLUDEFROM};
 
 static struct option long_options[] = {
     {"regexp", required_argument, 0, 'e'},
     {"file", required_argument, 0, 'f'},
     {"invert-match", required_argument, 0, 'v'},
-    {"word-regexp", 0, 0, 'w'}, // Unimplemented
+    {"word-regexp", 0, 0, 'w'}, 
     {"line-regexp", 0, 0, 'x'},
     {"config", required_argument, 0, OPTVAL_RECOLL_CONFIG},
     {"count", 0, 0, 'c'},
@@ -91,6 +102,15 @@ static struct option long_options[] = {
     {"context", required_argument, 0, 'C'},
     {"recurse", 0, 0, 'r'},
     {"include", required_argument, 0, OPTVAL_INCLUDE},
+    {"version", 0, 0, 'V'},
+    {"word-regexp", 0, 0, 'w'},
+    {"silent", 0, 0, 'q'},
+    {"quiet", 0, 0, 'q'},
+    {"no-messages", 0, 0, 's'},
+    {"dereference-recursive", 0, 0, 'R'},
+    {"text", 0, 0, 'a'}, //not implemented
+    {"exclude", required_argument, 0, OPTVAL_EXCLUDE},
+    {"exclude-from", required_argument, 0, OPTVAL_EXCLUDEFROM},
     {0, 0, 0, 0}
 };
 
@@ -100,6 +120,7 @@ int g_reflags = SimpleRegexp::SRE_NOSUB;
 static RclConfig *config;
 
 namespace Rcl {
+// This is needed to satisfy a reference from one of the recoll files.
 std::string version_string()
 {
     return string("rclgrep ") + string(PACKAGE_VERSION);
@@ -109,9 +130,12 @@ std::string version_string()
 // but some options need the original for computing absolute paths.
 static std::string orig_cwd;
 static std::string current_topdir;
-static int beforecontext;
-static int aftercontext;
 
+// Context management. We need to store the last seen lines in case we need to print them as
+// context.
+static int beforecontext; // Lines of context before match
+static int aftercontext;  // Lines of context after match
+// Store line for before-context
 static void dequeshift(std::deque<std::string>& q, int n, const std::string& ln)
 {
     if (n <= 0)
@@ -121,12 +145,14 @@ static void dequeshift(std::deque<std::string>& q, int n, const std::string& ln)
     }
     q.push_back(ln);
 }
+// Show context lines before the match
 static void dequeprint(std::deque<std::string>& q)
 {
     for (const auto& ln : q) {
         std::cout << ln;
     }
 }
+
 void grepit(std::istream& instream, const Rcl::Doc& doc)
 {
     std::string ppath;
@@ -163,16 +189,19 @@ void grepit(std::istream& instream, const Rcl::Doc& doc)
             ln = ulltodecstr(lnum) + ":";
         }
 
-        bool ismatch = true;
+        bool ismatch = false;
         for (const auto e_p : g_expressions) {
             auto match = e_p->simpleMatch(line);
-            if (((op_flags & OPT_v) && match) || (!(op_flags & OPT_v) && !match)) {
-                ismatch = false;
+            if (((op_flags & OPT_v) ^ match)) {
+                ismatch = true;
                 break;
             }
         }
 
         if (ismatch) {
+            if (op_flags&OPT_q) {
+                exit(0);
+            }
             // We have a winner line.
             if (op_flags & OPT_c) {
                 matchcount++;
@@ -190,6 +219,9 @@ void grepit(std::istream& instream, const Rcl::Doc& doc)
                 }
             }
         } else {
+            if (op_flags&OPT_q) {
+                continue;
+            }
             // Non-matching line.
             if (inmatch && aftercontext && !(op_flags&OPT_c)) {
                 aftercount = aftercontext;
@@ -295,11 +327,17 @@ public:
     RclConfig *m_config{nullptr};
 };
 
-bool recursive_grep(RclConfig *config, const string& top, const vector<string>& selpats)
+bool recursive_grep(RclConfig *config, const string& top, const vector<string>& selpats,
+                    const vector<string>& exclpats)
 {
 //    std::cerr << "recursive_grep: top : [" << top << "]\n";
     WalkerCB cb(selpats, config);
-    FsTreeWalker walker;
+    int opts = FsTreeWalker::FtwTravNatural;
+    if (op_flags & OPT_R) {
+        opts |= FsTreeWalker::FtwFollow;
+    }
+    FsTreeWalker walker(opts);
+    walker.setSkippedNames(exclpats);
     current_topdir = top;
     if (path_isdir(top)) {
         path_catslash(current_topdir);
@@ -309,7 +347,7 @@ bool recursive_grep(RclConfig *config, const string& top, const vector<string>& 
 }
 
 bool processpaths(RclConfig *config, const std::vector<std::string> &_paths,
-                  const std::vector<std::string>& selpats)
+                  const std::vector<std::string>& selpats, const std::vector<std::string>& exclpats)
 {
     if (_paths.empty())
         return true;
@@ -325,10 +363,12 @@ bool processpaths(RclConfig *config, const std::vector<std::string> &_paths,
     for (const auto& path : paths) {
         LOGDEB("processpaths: " << path << "\n");
         if (path_isdir(path)) {
-            recursive_grep(config, path, selpats);
+            recursive_grep(config, path, selpats, exclpats);
         } else {
             if (!path_readable(path)) {
-                std::cerr << "Can't read: " << path << "\n";
+                if (!(op_flags & OPT_s)) {
+                    std::cerr << "Can't read: " << path << "\n";
+                }
                 continue;
             }
             processpath(config, path);
@@ -364,6 +404,7 @@ std::string make_config()
         fprintf(fp, "# rclgrep default configuration. Will only be created by the program if it\n");
         fprintf(fp, "# does not exist, you can add your own customisations in here\n");
         fprintf(fp, "helperlogfilename = /dev/null\n");
+        fprintf(fp, "textunknownasplain = 1\n");
         fprintf(fp, "loglevel = 1\n");
         fclose(fp);
     }
@@ -378,7 +419,7 @@ static const char usage [] =
 "    Print help\n"
 "rclgrep [-f] [<path [path ...]>]\n"
 "    Search files.\n"
-"    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+"    --config <configdir> : specify configuration directory (default ~/.config/rclgrep)\n"
 "  -e PATTERNS, --regexp=PATTERNS patterns to search for. Can be given multiple times\n"
 ;
 
@@ -395,6 +436,9 @@ static void add_expressions(const std::string& exps)
     for (const auto& pattern : vexps) {
         if (op_flags & OPT_x) {
             auto newpat = std::string("^(") + pattern + ")$";
+            g_expressions.push_back(new SimpleRegexp(newpat, g_reflags));
+        } else if (op_flags & OPT_w) {
+            auto newpat = std::string("(^|[^a-zA-Z0-9_])(") + pattern + ")([^a-zA-Z0-9_]|$)";
             g_expressions.push_back(new SimpleRegexp(newpat, g_reflags));
         } else {            
             g_expressions.push_back(new SimpleRegexp(pattern, g_reflags));
@@ -420,33 +464,66 @@ static void exps_from_file(const std::string& fn)
     g_expstrings.push_back(data);
 }
 
+std::vector<std::string> g_excludestrings;
+static void excludes_from_file(const std::string& fn)
+{
+    std::string data;
+    std::string reason;
+    if (!file_to_string(fn, data, -1, -1, &reason)) {
+        std::cerr << "Could not read " << fn << " : " << reason << "\n";
+        exit(1);
+    }
+    g_excludestrings.push_back(data);
+}
+
+static std::vector<std::string> buildexcludes()
+{
+    std::vector<std::string> ret;
+    for (const auto& lst : g_excludestrings) {
+        std::vector<std::string> v;
+        stringToTokens(lst, v, "\n");
+        for (const auto& s : v) {
+            ret.push_back(s);
+        }
+    }
+    return ret;
+}
+    
 int main(int argc, char *argv[])
 {
     int ret;
     std::string a_config;
     vector<string> selpatterns;
     
-    while ((ret = getopt_long(argc, argv, "A:B:C:ce:f:hHiLlnp:rvx", long_options, NULL)) != -1) {
+    while ((ret = getopt_long(argc, argv, "A:B:C:HLRVce:f:hilnp:qrsvwx",
+                              long_options, NULL)) != -1) {
         switch (ret) {
         case 'A': op_flags |= OPT_A; aftercontext = atoi(optarg); break;
         case 'B': op_flags |= OPT_B; beforecontext = atoi(optarg); break;
         case 'C': op_flags |= OPT_C; aftercontext = beforecontext = atoi(optarg); break;
+        case 'H': op_flags |= OPT_H; break;
+        case 'L': op_flags |= OPT_L|OPT_c; break;
+        case 'R': op_flags |= OPT_R; break;
+        case 'V': std::cout << Rcl::version_string() << "\n"; return 0;
         case 'c': op_flags |= OPT_c; break;
         case 'e': op_flags |= OPT_e; g_expstrings.push_back(optarg); break;
         case 'f': op_flags |= OPT_f; exps_from_file(optarg);break;
         case 'h': op_flags |= OPT_h; break;
-        case 'H': op_flags |= OPT_H; break;
         case 'i': op_flags |= OPT_i; g_reflags |= SimpleRegexp::SRE_ICASE; break;
-        case 'L': op_flags |= OPT_L|OPT_c; break;
         case 'l': op_flags |= OPT_l|OPT_c; break;
         case 'n': op_flags |= OPT_n; break;
         case 'p': op_flags |= OPT_p; selpatterns.push_back(optarg); break;
+        case 'q': op_flags |= OPT_q; break;
         case 'r': op_flags |= OPT_r|OPT_H; break;
+        case 's': op_flags |= OPT_s; break;
         case 'v': op_flags |= OPT_v; break;
+        case 'w': op_flags |= OPT_w; break;
         case 'x': op_flags |= OPT_x; break;
         case OPTVAL_RECOLL_CONFIG: a_config = optarg; break;
         case OPTVAL_HELP: Usage(stdout); break;
         case OPTVAL_INCLUDE: selpatterns.push_back(optarg); break;
+        case OPTVAL_EXCLUDE: g_excludestrings.push_back(optarg); break;
+        case OPTVAL_EXCLUDEFROM: excludes_from_file(optarg); break;
         default: Usage(); break;
         }
     }
@@ -507,6 +584,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    bool status = processpaths(config, paths, selpatterns);
+    auto excludes = buildexcludes();
+    bool status = processpaths(config, paths, selpatterns, excludes);
+    if (op_flags&OPT_q) {
+        exit(1);
+    }
     return status ? 0 : 1;
 }

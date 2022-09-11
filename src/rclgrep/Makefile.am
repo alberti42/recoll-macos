@@ -6,7 +6,6 @@ INCICONV=@INCICONV@
 DEFS=@DEFS@
 
 COMMONCPPFLAGS = -I. \
-    -I$(top_srcdir)/aspell \
     -I$(top_srcdir)/bincimapmime \
     -I$(top_srcdir)/common \
     -I$(top_srcdir)/index \
