@@ -1,0 +1,7 @@
+rclgrep (1.33.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * 1st version of rclgrep: a non-indexed search program using recoll
+    data extraction modules to effect grep-like function.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 11 Sep 2022 10:59:00 +0200
+
