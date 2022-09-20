@@ -141,7 +141,7 @@ unix {
     LIBS += -Wl,-rpath=@libdir@/recoll
   }
 
-  LIBS +=  @LIBXAPIAN@ $(LIBXAPIANSTATICEXTRA) \
+  LIBS +=  @XAPIAN_LIBS@ \
        @LIBICONV@ $(BDYNAMIC) @LIBQZEITGEIST@ -lz
 
   INCLUDEPATH += ../common @srcdir@/../common @srcdir@/../index \

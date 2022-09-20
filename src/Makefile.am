@@ -12,8 +12,8 @@ SUBDIRS = . $(MAYBE_TESTMAINS) $(MAYBE_RCLGREP)
 DIST_SUBDIRS = .
 
 CXXFLAGS ?= @CXXFLAGS@
-LIBXAPIAN=@LIBXAPIAN@
-XAPIANCXXFLAGS=@XAPIANCXXFLAGS@
+XAPIAN_LIBS=@XAPIAN_LIBS@
+XAPIAN_CFLAGS=@XAPIAN_CFLAGS@
 XSLT_CFLAGS=@XSLT_CFLAGS@
 XSLT_LIBS=@XSLT_LIBS@
 LIBICONV=@LIBICONV@
@@ -42,7 +42,7 @@ COMMONCPPFLAGS = -I. \
 AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     $(COMMONCPPFLAGS) \
     $(INCICONV) \
-    $(XAPIANCXXFLAGS) \
+    $(XAPIAN_CFLAGS) \
     $(XSLT_CFLAGS) \
     $(X_CFLAGS) \
     -DRECOLL_DATADIR=\"${pkgdatadir}\" \
@@ -294,7 +294,7 @@ AM_YFLAGS = -d
 # need it
 librecoll_la_LDFLAGS = -release $(VERSION) -no-undefined @NO_UNDEF_LINK_FLAG@
 
-librecoll_la_LIBADD = $(XSLT_LIBS) $(LIBXAPIAN) $(LIBICONV) $(X_LIBX11) $(LIBTHREADS)
+librecoll_la_LIBADD = $(XSLT_LIBS) $(XAPIAN_LIBS) $(LIBICONV) $(X_LIBX11) -lmagic $(LIBTHREADS)
 
 # There is probably a better way to do this. The KIO needs to be linked
 # with librecoll, but librecoll is installed into a non-standard place
@@ -344,7 +344,7 @@ recollq_SOURCES = query/recollqmain.cpp
 recollq_LDADD = librecoll.la
 
 xadump_SOURCES = query/xadump.cpp
-xadump_LDADD = librecoll.la $(LIBXAPIAN) $(LIBICONV)
+xadump_LDADD = librecoll.la $(XAPIAN_LIBS) $(LIBICONV)
 
 EXTRA_DIST = \
 bincimapmime/00README.recoll bincimapmime/AUTHORS bincimapmime/COPYING \

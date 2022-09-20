@@ -68,6 +68,31 @@ AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h malloc.h mall
 
 AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf malloc_trim posix_fadvise])
 
+AC_CHECK_FUNCS(mkdtemp)
+AC_CHECK_LIB([pthread], [pthread_create], [], [])
+AC_SEARCH_LIBS([dlopen], [dl], [], [])
+if test X$ac_cv_search_function != Xno ; then
+   AC_DEFINE(HAVE_DLOPEN, 1, [dlopen function is available])
+fi   
+AC_CHECK_LIB([z], [zlibVersion], [], [])
+
+############# Putenv
+AC_MSG_CHECKING(for type of string parameter to putenv)
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+    #include <stdlib.h>
+  ]], [[
+    putenv((const char *)0);
+  ]])],[rcl_putenv_string_const="1"],[rcl_putenv_string_const="0"])
+if test X$rcl_putenv_string_const = X1 ; then
+  AC_DEFINE(PUTENV_ARG_CONST, 1, [putenv parameter is const])
+fi
+AC_LANG_POP([C++])
+
+
+PKG_CHECK_MODULES([XSLT], [libxslt], [], AC_MSG_ERROR([libxslt]))
+
+
 # Use specific 'file' command ? (Useful on solaris to specify
 # /usr/local/bin/file instead of the system's which doesn't understand '-i'
 AC_ARG_WITH(file-command, 
@@ -201,6 +226,25 @@ if test X$idxthreadsEnabled = Xyes ; then
   AC_DEFINE(IDX_THREADS, 1, [Use multiple threads for indexing])
 fi
 
+# Enable CamelCase word splitting. This is optional because it causes 
+# problems with phrases: with camelcase enabled, "MySQL manual"
+# will be matched by "MySQL manual" and "my sql manual" but not 
+# "mysql manual" (which would need increased slack as manual is now at pos
+# 2 instead of 1
+AC_ARG_ENABLE(camelcase,
+    AS_HELP_STRING([--enable-camelcase],
+    [Enable splitting camelCase words. This is not enabled by default as
+   it makes phrase matches more difficult: you need to use matching
+   case in the phrase query to get a match. Ie querying for 
+   "MySQL manual" and "my sql manual" are the same, but not the same as
+   "mysql manual" (in phrases only and you could raise the phrase slack to
+   get a match).]),
+        camelcaseEnabled=$enableval, camelcaseEnabled=no)
+if test X$camelcaseEnabled = Xyes ; then
+  AC_DEFINE(RCL_SPLIT_CAMELCASE, 1, [Split camelCase words])
+fi
+
+
 AC_ARG_ENABLE(testmains,
     AS_HELP_STRING([--enable-testmains],[Enable building small test drivers. These are not unit tests.]),
         buildtestmains=$enableval, buildtestmains=no)
@@ -211,114 +255,22 @@ AC_ARG_ENABLE(rclgrep,
         buildrclgrep=$enableval, buildrclgrep=no)
 AM_CONDITIONAL([COND_RCLGREP], [test "$buildrclgrep" = yes])
 
-# Enable CamelCase word splitting. This is optional because it causes 
-# problems with phrases: with camelcase enabled, "MySQL manual"
-# will be matched by "MySQL manual" and "my sql manual" but not 
-# "mysql manual" (which would need increased slack as manual is now at pos
-# 2 instead of 1
-AC_ARG_ENABLE(camelcase,
-    AS_HELP_STRING([--enable-camelcase],[Enable splitting camelCase words. This is not enabled by default as
-   this makes phrase matches more difficult: you need to use matching
-   case in the phrase query to get a match. Ie querying for 
-   "MySQL manual" and "my sql manual" are the same, but not the same as
-   "mysql manual" (in phrases only and you could raise the phrase slack to
-   get a match).]),
-        camelcaseEnabled=$enableval, camelcaseEnabled=no)
-if test X$camelcaseEnabled = Xyes ; then
-  AC_DEFINE(RCL_SPLIT_CAMELCASE, 1, [Split camelCase words])
-fi
-
 # Disable building the python module.
 AC_ARG_ENABLE(python-module,
     AS_HELP_STRING([--disable-python-module],[Do not build the Python module.]),
         pythonEnabled=$enableval, pythonEnabled=yes)
-
 AM_CONDITIONAL(MAKEPYTHON, [test X$pythonEnabled = Xyes])
 
 # Disable building the libchm python wrapper
-AC_ARG_ENABLE(python-chm, AS_HELP_STRING([--disable-python-chm],[Do not build the libchm Python wrapper.]),
+AC_ARG_ENABLE(python-chm,
+    AS_HELP_STRING([--disable-python-chm], [Do not build the libchm Python wrapper.]),
     pythonChmEnabled=$enableval, pythonChmEnabled=yes)
-
 if test X$pythonChmEnabled = Xyes; then
    AC_CHECK_LIB([chm], [chm_resolve_object], [],
    [AC_MSG_ERROR([--enable-python-chm is set but libchm is not found])])
 fi
-
 AM_CONDITIONAL(MAKEPYTHONCHM, [test X$pythonChmEnabled = Xyes])
 
-
-AC_CHECK_FUNCS(mkdtemp)
-AC_CHECK_LIB([pthread], [pthread_create], [], [])
-AC_SEARCH_LIBS([dlopen], [dl], [], [])
-if test X$ac_cv_search_function != Xno ; then
-   AC_DEFINE(HAVE_DLOPEN, 1, [dlopen function is available])
-fi   
-AC_CHECK_LIB([z], [zlibVersion], [], [])
-
-############# Putenv
-AC_MSG_CHECKING(for type of string parameter to putenv)
-AC_LANG_PUSH([C++])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-    #include <stdlib.h>
-  ]], [[
-    putenv((const char *)0);
-  ]])],[rcl_putenv_string_const="1"],[rcl_putenv_string_const="0"])
-if test X$rcl_putenv_string_const = X1 ; then
-  AC_DEFINE(PUTENV_ARG_CONST, 1, [putenv parameter is const])
-fi
-AC_LANG_POP([C++])
-
-
-#### Look for Xapian. Done in a strange way to work around autoconf
-# cache
-XAPIAN_CONFIG=${XAPIAN_CONFIG:-no}
-if test "$XAPIAN_CONFIG" = "no"; then 
-    AC_PATH_PROG(XAPIAN_CONFIG0, [xapian-config], no)
-    XAPIAN_CONFIG=$XAPIAN_CONFIG0
-fi
-if test "$XAPIAN_CONFIG" = "no"; then 
-   AC_PATH_PROG(XAPIAN_CONFIG1, [xapian-config-1.3], no)
-   XAPIAN_CONFIG=$XAPIAN_CONFIG1
-fi
-if test "$XAPIAN_CONFIG" = "no"; then 
-   AC_PATH_PROG(XAPIAN_CONFIG2, [xapian-config-1.1], no)
-   XAPIAN_CONFIG=$XAPIAN_CONFIG2
-fi
-
-if test "$XAPIAN_CONFIG" = "no" ; then
-   AC_MSG_ERROR([Cannot find xapian-config command in $PATH. Is
-xapian-core installed ?])
-   exit 1
-fi
-LIBXAPIAN=`$XAPIAN_CONFIG --libs`
-# The --static thing fails with older Xapians. Happily enough they don't
-# need it either (because there are no needed libraries (no uuid and we
-# deal explicitly with libz)
-LIBXAPIANSTATICEXTRA=`$XAPIAN_CONFIG --static --libs 2> /dev/null`
-# Workaround for problem in xapian-config in some versions: wrongly lists
-# libstdc++.la in the lib list
-for i in $LIBXAPIAN ; do
-    case $i in
-    *stdc++*|-lm|-lgcc_s|-lc);;
-    *) tmpxaplib="$tmpxaplib $i";;
-    esac
-done
-LIBXAPIAN=$tmpxaplib
-LIBXAPIANDIR=`$XAPIAN_CONFIG --libs | awk '{print $1}'`
-case A"$LIBXAPIANDIR" in
-  A-L*) LIBXAPIANDIR=`echo $LIBXAPIANDIR | sed -e 's/-L//'`;;
-  *) LIBXAPIANDIR="";;
-esac
-XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
-
-#echo XAPIAN_CONFIG: $XAPIAN_CONFIG 
-#echo LIBXAPIAN: $LIBXAPIAN
-#echo LIBXAPIANDIR: $LIBXAPIANDIR
-#echo LIBXAPIANSTATICEXTRA: $LIBXAPIANSTATICEXTRA
-#echo XAPIANCXXFLAGS: $XAPIANCXXFLAGS
-
-
-PKG_CHECK_MODULES([XSLT], [libxslt], [], AC_MSG_ERROR([libxslt]))
 
 AC_ARG_ENABLE(indexer, 
     AS_HELP_STRING([--disable-indexer],[Disable building the recollindex indexer.]),
@@ -502,11 +454,15 @@ AC_ARG_ENABLE(x11mon,
     AS_HELP_STRING([--disable-x11mon],[Disable recollindex support for X11 session monitoring.]),
         enableX11mon=$enableval, enableX11mon="yes")
 
-if test X$withInotify = Xno -a X$withFam = Xno ; then
+if test X$enableINDEXER = Xno ; then 
   enableX11mon=no
+else
+  if test X$withInotify = Xno -a X$withFam = Xno ; then
+    enableX11mon=no
+  fi
 fi
 
-if test "$enableX11mon" = "yes" ; then
+if test "$enableX11mon" = yes ; then
   AC_PATH_XTRA
   X_LIBX11=-lX11
 else
@@ -516,9 +472,16 @@ fi
 #echo X_CFLAGS "'$X_CFLAGS'" X_PRE_LIBS "'$X_PRE_LIBS'" X_LIBS \
 #      "'$X_LIBS'" X_LIBX11 "'$X_LIBX11'" X_EXTRA_LIBS "'$X_EXTRA_LIBS'"
 
-
-AM_CONDITIONAL([MAKE_RECOLL_LIB], [test X$buildtestmains = Xno -a X$pythonEnabled = Xno
-  -a X$enableINDEXER = Xno -a X$enableXADUMP = Xno -a X$enableQT = Xno -a X$enableRECOLLQ = Xno])
+# Check if anything needs Xapian. We also need to build the shared lib if this is the case.
+xapian_needed=yes
+if test X$buildtestmains = Xno -a X$pythonEnabled = Xno -a X$enableINDEXER = Xno \
+   -a X$enableXADUMP = Xno -a X$enableQT = Xno -a X$enableRECOLLQ = Xno ; then
+   xapian_needed=no
+fi
+if test X$xapian_needed = Xyes; then
+   PKG_CHECK_MODULES([XAPIAN], xapian-core, [], AC_MSG_ERROR([libxapian]))
+fi
+AM_CONDITIONAL([MAKE_RECOLL_LIB], [test X$xapian_needed = Xyes])
    
 # For communicating the value of RECOLL_DATADIR to non-make-based
 # subpackages like python-recoll, we have to expand prefix in here, because
@@ -543,13 +506,11 @@ AC_SUBST(X_LIBX11)
 AC_SUBST(X_EXTRA_LIBS)
 AC_SUBST(INCICONV)
 AC_SUBST(LIBICONV)
-AC_SUBST(LIBXAPIAN)
-AC_SUBST(LIBXAPIANDIR)
-AC_SUBST(LIBXAPIANSTATICEXTRA)
+AC_SUBST(XAPIAN_LIBS)
+AC_SUBST(XAPIAN_CFLAGS)
 AC_SUBST(LIBFAM)
 AC_SUBST(QMAKE)
 AC_SUBST(QTGUI)
-AC_SUBST(XAPIANCXXFLAGS)
 AC_SUBST(QMAKE_ENABLE_WEBKIT)
 AC_SUBST(QMAKE_DISABLE_WEBKIT)
 AC_SUBST(QMAKE_ENABLE_WEBENGINE)
