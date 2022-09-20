@@ -59,7 +59,10 @@ else
 endif
 
 librcldir = $(libdir)/recoll
-librcl_LTLIBRARIES = librecoll.la
+librcl_LTLIBRARIES =
+if MAKE_RECOLL_LIB
+librcl_LTLIBRARIES += librecoll.la
+endif
 
 librecoll_la_SOURCES = \
 aspell/rclaspell.cpp \
@@ -310,7 +313,10 @@ PicStatic: $(librecoll_la_OBJECTS)
 	$(LIBTOOL) --tag=LD --mode=link gcc -g -O -o librecoll.la \
 		$(librecoll_la_OBJECTS)
 
-bin_PROGRAMS = recollindex
+bin_PROGRAMS =
+if MAKEINDEXER
+    bin_PROGRAMS += recollindex
+endif
 if MAKECMDLINE
     bin_PROGRAMS += recollq
 endif
@@ -628,13 +634,13 @@ install-exec-local:: rclpychm-install
 clean-local:: rclpychm-clean
 rclpychm:
 	(cd python/pychm; set -x; \
-        for v in 2 3;do \
+        for v in 3;do \
         test -n "`which python$${v}`" && python$${v} setup.py build;\
         done \
         )
 rclpychm-install:
 	(cd python/pychm; set -x; \
-        for v in 2 3;do test -n "`which python$${v}`" && \
+        for v in 3;do test -n "`which python$${v}`" && \
         python$${v} setup.py install \
          --prefix=${prefix} --root=$${DESTDIR:-/} $(OPTSFORPYTHON); \
         done \
@@ -787,7 +793,7 @@ doc/user/usermanual.html: doc/user/usermanual.xml
 endif
 
 dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 \
-               doc/man/recollindex.1 doc/man/xadump.1
+               doc/man/recollindex.1 doc/man/xadump.1 doc/man/rclgrep.1
 dist_man5_MANS = doc/man/recoll.conf.5
 
 dist-hook:

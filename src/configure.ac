@@ -320,6 +320,11 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 
 PKG_CHECK_MODULES([XSLT], [libxslt], [], AC_MSG_ERROR([libxslt]))
 
+AC_ARG_ENABLE(indexer, 
+    AS_HELP_STRING([--disable-indexer],[Disable building the recollindex indexer.]),
+        enableINDEXER=$enableval, enableINDEXER="yes")
+AM_CONDITIONAL(MAKEINDEXER, [test X$enableINDEXER = Xyes])
+
 AC_ARG_ENABLE(xadump, 
     AS_HELP_STRING([--enable-xadump],[Enable building the xadump low level Xapian access program.]),
         enableXADUMP=$enableval, enableXADUMP="no")
@@ -511,6 +516,10 @@ fi
 #echo X_CFLAGS "'$X_CFLAGS'" X_PRE_LIBS "'$X_PRE_LIBS'" X_LIBS \
 #      "'$X_LIBS'" X_LIBX11 "'$X_LIBX11'" X_EXTRA_LIBS "'$X_EXTRA_LIBS'"
 
+
+AM_CONDITIONAL([MAKE_RECOLL_LIB], [test X$buildtestmains = Xno -a X$pythonEnabled = Xno
+  -a X$enableINDEXER = Xno -a X$enableXADUMP = Xno -a X$enableQT = Xno -a X$enableRECOLLQ = Xno])
+   
 # For communicating the value of RECOLL_DATADIR to non-make-based
 # subpackages like python-recoll, we have to expand prefix in here, because
 # things like "datadir = ${prefix}/share" (which is what we'd get by
