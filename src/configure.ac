@@ -442,7 +442,7 @@ AC_ARG_WITH([user-unit-dir],
     [SYSTEMD_USER_UNIT_DIR="$withval"],
     [PKG_CHECK_VAR([SYSTEMD_USER_UNIT_DIR], [systemd], [systemduserunitdir])])
 
-if test "x$SYSTEMD_SYSTEM_UNIT_DIR" = "x" -o \
+if test X$enableINDEXER = Xno -o "x$SYSTEMD_SYSTEM_UNIT_DIR" = "x" -o \
         "x$SYSTEMD_USER_UNIT_DIR" = "x"; then
     with_systemd="no"
 fi

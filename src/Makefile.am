@@ -582,6 +582,9 @@ python/samples/recollgui/rclmain.ui \
 python/samples/recollq.py \
 python/samples/recollqsd.py \
 \
+rclgrep/Makefile.am \
+rclgrep/rclgrep.cpp \
+\
 sampleconf/fields sampleconf/fragment-buttons.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/macos/mimeview \
 sampleconf/recoll.conf sampleconf/recoll.qss \
