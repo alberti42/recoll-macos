@@ -808,9 +808,8 @@ bool SearchDataClauseSimple::processUserString(
             if (o_index_stripchars)
                 nxt = &tpprep;
 
-            TextSplitQ splitter(TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
-                                                 TextSplit::TXTS_KEEPWILD), 
-                                nxt);
+            TextSplitQ splitter(TextSplit::Flags(
+                                    TextSplit::TXTS_ONLYSPANS | TextSplit::TXTS_KEEPWILD), nxt);
             tpq.setTSQ(&splitter);
             splitter.text_to_words(wordorphrase);
 
@@ -1074,6 +1073,11 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
     }
     string s = cstr_dquote + m_text + cstr_dquote;
     bool useNear = (m_tp == SCLT_NEAR);
+    if (!useNear) {
+        // We are a phrase query. Make sure to disable stemming explicitely in case this is a single
+        // quoted word because processUserString won't see it as a phrase by itself.
+        m_modifiers |= SDCM_NOSTEMMING;
+    }
     if (!processUserString(db, s, m_reason, &pqueries, m_slack, useNear))
         return false;
     if (pqueries.empty()) {
