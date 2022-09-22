@@ -1,6 +1,6 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
-/* Copyright (C) 2006-2021 J.F.Dockes 
+/* Copyright (C) 2006-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -44,7 +44,6 @@
  * http://code.google.com/p/simplefilewatcher/ also MIT licensed.
  */
 
-
 #include "autoconfig.h"
 
 #include <errno.h>
@@ -69,7 +68,7 @@ public:
     RclMonitor() {}
     virtual ~RclMonitor() {}
 
-    virtual bool addWatch(const string& path, bool isDir) = 0;
+    virtual bool addWatch(const string& path, bool isDir, bool follow = false) = 0;
     virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
     virtual bool ok() const = 0;
     // Does this monitor generate 'exist' events at startup?
@@ -106,6 +105,10 @@ public:
         MONDEB("walkerCB: processone " << fn <<  " m_mon " << m_mon <<
                " m_mon->ok " << (m_mon ? m_mon->ok() : false) << "\n");
 
+        // We set the watch follow links flag for the topdir only.
+        bool initfollow = m_initfollow;
+        m_initfollow = false;
+            
         if (flg == FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwDirReturn) {
             m_config->setKeyDir(fn);
             // Set up skipped patterns for this subtree. 
@@ -128,7 +131,7 @@ public:
             if (!m_mon || !m_mon->ok())
                 return FsTreeWalker::FtwError;
             // We do nothing special if addWatch fails for a reasonable reason
-            if (!m_mon->isRecursive() && !m_mon->addWatch(fn, true)) {
+            if (!m_mon->isRecursive() && !m_mon->addWatch(fn, true, initfollow)) {
                 if (m_mon->saved_errno != EACCES && m_mon->saved_errno != ENOENT) {
                     LOGINF("walkerCB: addWatch failed\n");
                     return FsTreeWalker::FtwError;
@@ -160,6 +163,7 @@ private:
     RclMonitor        *m_mon;
     RclMonEventQueue  *m_queue;
     FsTreeWalker&      m_walker;
+    bool m_initfollow{true};
 };
 
 static bool rclMonAddTopWatches(
@@ -185,11 +189,12 @@ static bool rclMonAddTopWatches(
         } else {
             walker.setOpts(FsTreeWalker::FtwOptNone);
         }
-        if (path_isdir(dir, follow)) {
-            LOGDEB("rclMonRcvRun: walking "  << dir << "\n");
+        // We always follow links for the topdirs members, and only use the config for subdirs
+        if (path_isdir(dir, true)) {
+            LOGDEB("rclMonRcvRun: walking " << dir << " monrecurs " << mon->isRecursive() << "\n");
             // If the fs watcher is recursive, we add the watches for the topdirs here, and walk the
             // tree just for generating initial events.
-            if (mon->isRecursive() && !mon->addWatch(dir, true)) {
+            if (mon->isRecursive() && !mon->addWatch(dir, true, true)) {
                 if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT) {
                     LOGERR("rclMonAddTopWatches: addWatch failed for [" << dir << "]\n");
                     return false;
@@ -205,7 +210,8 @@ static bool rclMonAddTopWatches(
         } else {
             // We have to special-case regular files which are part of the topdirs list because the
             // tree walker only adds watches for directories
-            if (!mon->addWatch(dir, false)) {
+            MONDEB("rclMonRcvRun: adding watch for non dir topdir " << dir << "\n");
+            if (!mon->addWatch(dir, false, true)) {
                 LOGSYSERR("rclMonRcvRun", "addWatch", dir);
             }
         }
@@ -349,10 +355,10 @@ class RclFAM : public RclMonitor {
 public:
     RclFAM();
     virtual ~RclFAM();
-    virtual bool addWatch(const string& path, bool isdir);
-    virtual bool getEvent(RclMonEvent& ev, int msecs = -1);
-    bool ok() const {return m_ok;}
-    virtual bool generatesExist() const {return true;}
+    virtual bool addWatch(const string& path, bool isdir, bool follow) override;
+    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) override;
+    bool ok() override const {return m_ok;}
+    virtual bool generatesExist() override const {return true;}
 
 private:
     bool m_ok;
@@ -410,7 +416,7 @@ static void onalrm(int sig)
 {
     longjmp(jbuf, 1);
 }
-bool RclFAM::addWatch(const string& path, bool isdir)
+bool RclFAM::addWatch(const string& path, bool isdir, bool)
 {
     if (!ok())
         return false;
@@ -579,9 +585,9 @@ public:
         close();
     }
 
-    virtual bool addWatch(const string& path, bool isdir);
-    virtual bool getEvent(RclMonEvent& ev, int msecs = -1);
-    bool ok() const {return m_ok;}
+    virtual bool addWatch(const string& path, bool isdir, bool follow) override;
+    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) override;
+    bool ok() const override {return m_ok;}
 
 private:
     bool m_ok;
@@ -630,11 +636,12 @@ const char *RclIntf::event_name(int code)
     };
 }
 
-bool RclIntf::addWatch(const string& path, bool)
+bool RclIntf::addWatch(const string& path, bool, bool follow)
 {
-    if (!ok())
+    if (!ok()) {
         return false;
-    MONDEB("RclIntf::addWatch: adding " << path << "\n");
+    }
+    MONDEB("RclIntf::addWatch: adding " << path << " follow " << follow << "\n");
     // CLOSE_WRITE is covered through MODIFY. CREATE is needed for mkdirs
     uint32_t mask = IN_MODIFY | IN_CREATE
         | IN_MOVED_FROM | IN_MOVED_TO | IN_DELETE
@@ -643,7 +650,7 @@ bool RclIntf::addWatch(const string& path, bool)
         // set, and now it is...
         | IN_ATTRIB
 #ifdef IN_DONT_FOLLOW
-        | IN_DONT_FOLLOW
+        | (follow ? 0 : IN_DONT_FOLLOW)
 #endif
 #ifdef IN_EXCL_UNLINK
         | IN_EXCL_UNLINK
@@ -652,8 +659,7 @@ bool RclIntf::addWatch(const string& path, bool)
     int wd;
     if ((wd = inotify_add_watch(m_fd, path.c_str(), mask)) < 0) {
         saved_errno = errno;
-        LOGERR("RclIntf::addWatch: inotify_add_watch failed. errno " <<
-               saved_errno << "\n");
+        LOGSYSERR("RclIntf::addWatch", "inotify_add_watch", path);
         if (errno == ENOSPC) {
             LOGERR("RclIntf::addWatch: ENOSPC error may mean that you should "
                    "increase the inotify kernel constants. See inotify(7)\n");
@@ -820,7 +826,7 @@ public:
     FileWatchListener *Listener{nullptr};
     bool Recursive;
     std::string DirName;
-    std::string	OldFileName;
+    std::string OldFileName;
 
     HANDLE DirHandle{nullptr};
     // do NOT make this bigger than 64K because it will fail if the folder being watched is on the
@@ -871,12 +877,12 @@ class RclMonitorWin32 : public RclMonitor, public FileWatchListener {
 public:
     virtual ~RclMonitorWin32() {}
 
-    virtual bool addWatch(const string& path, bool /*isDir*/) override {
+    virtual bool addWatch(const string& path, bool /*isDir*/, bool /*follow*/) override {
         MONDEB("RclMonitorWin32::addWatch: " << path << "\n");
         return m_fswatcher.addWatch(path, this, true) != -1;
     }
 
-    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) {
+    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) override {
         PRETEND_USE(msecs);
         if (!m_events.empty()) {
             ev = m_events.front();
