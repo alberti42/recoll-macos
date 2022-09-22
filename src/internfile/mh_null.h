@@ -33,11 +33,10 @@
 /// Associated to application/x-zerosize, so use the following in mimeconf:
 ///    <mimetype> = internal application/x-zerosize
 class MimeHandlerNull : public RecollFilter {
- public:
+public:
     MimeHandlerNull(RclConfig *cnf, const std::string& id) 
-    : RecollFilter(cnf, id) {
-    }
-    virtual ~MimeHandlerNull() {}
+        : RecollFilter(cnf, id) {}
+    virtual ~MimeHandlerNull() = default;
     MimeHandlerNull(const MimeHandlerNull&) = delete;
     MimeHandlerNull& operator=(const MimeHandlerNull&) = delete;
 
@@ -45,14 +44,13 @@ class MimeHandlerNull : public RecollFilter {
         return true;
     }
     
-    virtual bool next_document() 
-    {
-    if (m_havedoc == false)
-        return false;
-    m_havedoc = false; 
-    m_metaData[cstr_dj_keycontent] = cstr_null;
-    m_metaData[cstr_dj_keymt] = cstr_textplain;
-    return true;
+    virtual bool next_document() {
+        if (m_havedoc == false)
+            return false;
+        m_havedoc = false; 
+        m_metaData[cstr_dj_keycontent] = cstr_null;
+        m_metaData[cstr_dj_keymt] = cstr_textplain;
+        return true;
     }
 };
 

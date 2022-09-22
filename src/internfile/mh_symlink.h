@@ -36,9 +36,8 @@
 class MimeHandlerSymlink : public RecollFilter {
 public:
     MimeHandlerSymlink(RclConfig *cnf, const std::string& id) 
-        : RecollFilter(cnf, id) {
-    }
-    virtual ~MimeHandlerSymlink() {}
+        : RecollFilter(cnf, id) {}
+    virtual ~MimeHandlerSymlink() = default;
     MimeHandlerSymlink(const MimeHandlerSymlink&) = delete;
     MimeHandlerSymlink& operator=(const MimeHandlerSymlink&) = delete;
 

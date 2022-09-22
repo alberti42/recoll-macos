@@ -39,8 +39,7 @@ public:
     virtual void clear_impl() override;
 
 protected:
-    virtual bool set_document_file_impl(const std::string&,
-                                        const std::string&) override;
+    virtual bool set_document_file_impl(const std::string&, const std::string&) override;
 
     class Internal;
 private:
