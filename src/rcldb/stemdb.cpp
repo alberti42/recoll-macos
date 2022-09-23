@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes 
+/* Copyright (C) 2005-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,8 +16,7 @@
  */
 
 /**
- * Management of the auxiliary databases listing stems and their expansion 
- * terms
+ * Management of the auxiliary databases listing stems and their expansion terms
  */
 
 #include "autoconfig.h"
@@ -44,48 +43,42 @@ namespace Rcl {
 /**
  * Expand for one or several languages
  */
-bool StemDb::stemExpand(const std::string& langs, const std::string& _term,
-            vector<string>& result)
+bool StemDb::stemExpand(const std::string& langs, const std::string& _term, vector<string>& result)
 {
     vector<string> llangs;
     stringToStrings(langs, llangs);
     
-    // The stemdb keys may have kept their diacritics or not but they
-    // are always lower-case. It would be more logical for the term
-    // transformers to perform before doing the stemming, but this
-    // would be inefficient when there are several stemming languages
+    // The stemdb keys may have kept their diacritics or not but they are always lower-case. It
+    // would be more logical for the term transformers to perform before doing the stemming, but
+    // this would be inefficient when there are several stemming languages
     string term;
     unacmaybefold(_term, term, "UTF-8", UNACOP_FOLD);
 
-    for (vector<string>::const_iterator it = llangs.begin();
-     it != llangs.end(); it++) {
-    SynTermTransStem stemmer(*it);
-    XapComputableSynFamMember expander(getdb(), synFamStem, *it, &stemmer);
-    (void)expander.synExpand(term, result);
+    for (const auto& lang : llangs) {
+        SynTermTransStem stemmer(lang);
+        XapComputableSynFamMember expander(getdb(), synFamStem, lang, &stemmer);
+        (void)expander.synExpand(term, result);
     }
 
     if (!o_index_stripchars) {
-    string unac;
-    unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
-    // Expand the unaccented stem, using the unaccented stem
-    // db. Because it's a different db, We need to do it even if
-    // the input has no accent (unac == term)
-    for (vector<string>::const_iterator it = llangs.begin();
-         it != llangs.end(); it++) {
-        SynTermTransStem stemmer(*it);
-        XapComputableSynFamMember expander(getdb(), synFamStemUnac, 
-                           *it, &stemmer);
-        (void)expander.synExpand(unac, result);
-    }
+        string unac;
+        unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
+        // Expand the unaccented stem, using the unaccented stem db. Because it's a different db, We
+        // need to do it even if the input has no accent (unac == term)
+        for (const auto& lang : llangs) {
+            SynTermTransStem stemmer(lang);
+            XapComputableSynFamMember expander(getdb(), synFamStemUnac, lang, &stemmer);
+            (void)expander.synExpand(unac, result);
+        }
     }
 
     if (result.empty())
-    result.push_back(term);
+        result.push_back(term);
 
     sort(result.begin(), result.end());
-    vector<string>::iterator uit = unique(result.begin(), result.end());
+    auto uit = unique(result.begin(), result.end());
     result.resize(uit - result.begin());
-    LOGDEB1("stemExpand:"  << (langs) << ": "  << (term) << " ->  "  << (stringsToString(result)) << "\n" );
+    LOGDEB1("stemExpand:" << langs << ": " << term << " ->  " << stringsToString(result) << "\n");
     return true;
 }
 
