@@ -1,4 +1,4 @@
-/* Copyright (C) 2004-2018 J.F.Dockes
+/* Copyright (C) 2004-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -869,6 +869,7 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
 /* Rcl::Db methods ///////////////////////////////// */
 
 bool Db::o_inPlaceReset;
+bool Db::o_nospell_chars[256];
 
 Db::Db(const RclConfig *cfp)
 {
@@ -884,6 +885,10 @@ Db::Db(const RclConfig *cfp)
         } else {
             start_of_field_term = "XXST/";
             end_of_field_term = "XXND/";
+        }
+        memset(o_nospell_chars, 0, sizeof(o_nospell_chars));
+        for (unsigned char c : " !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") {
+            o_nospell_chars[(unsigned int)c] = 1;
         }
     }
     m_ndb = new Native(this);

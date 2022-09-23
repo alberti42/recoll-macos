@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -259,22 +259,26 @@ public:
             return false;
 #endif
         }
-        if (term.find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") 
-            != string::npos)
-            return false;
+
+        // Most punctuation chars inhibate stemming. We accept one dash. See o_nospell_chars init in
+        // the rcldb constructor.
+        int ccnt = 0;
+        for (unsigned char c : term) {
+            if (o_nospell_chars[(unsigned int)c] && (c != '-' || ++ccnt > 1))
+                return false;
+        }
+
         return true;
     }
 
     /** Return spelling suggestion */
-    bool getSpellingSuggestions(const string& word,
-                                std::vector<std::string>& suggs);
+    bool getSpellingSuggestions(const string& word, std::vector<std::string>& suggs);
 
     /* The next two, only for searchdata, should be somehow hidden */
     /* Return configured stop words */
     const StopList& getStopList() const {return m_stops;}
     /* Field name to prefix translation (ie: author -> 'A') */
-    bool fieldToTraits(const string& fldname, const FieldTraits **ftpp,
-                       bool isquery = false);
+    bool fieldToTraits(const string& fldname, const FieldTraits **ftpp, bool isquery = false);
 
     /* Update-related methods ******************************************/
 
@@ -422,9 +426,8 @@ public:
     int matchTypeTp(int tp) {
         return tp & 7;
     }
-    bool termMatch(int typ_sens, const string &lang, const string &term, 
-                   TermMatchResult& result, int max = -1,
-                   const string& field = "", vector<string> *multiwords = 0);
+    bool termMatch(int typ_sens, const string &lang, const string &term, TermMatchResult& result,
+                   int max = -1, const string& field = "", vector<string> *multiwords = 0);
     bool dbStats(DbStats& stats, bool listFailed);
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);
@@ -521,8 +524,7 @@ public:
     /** Test term existence */
     bool termExists(const string& term);
     /** Test if terms stem to different roots. */
-    bool stemDiffers(const string& lang, const string& term, 
-                     const string& base);
+    bool stemDiffers(const string& lang, const string& term, const string& base);
 
     const RclConfig *getConf() {return m_config;}
 
@@ -620,6 +622,7 @@ private:
     // beginning, with the advantage that, for small index formats updates, 
     // between releases the index remains available while being recreated.
     static bool o_inPlaceReset;
+    static bool o_nospell_chars[256];
     /******* End logical constnesss */
 
 #ifdef IDX_THREADS
