@@ -99,6 +99,8 @@ sub main {
 	    && !(hex $code_value >= 0xa8e0 && hex $code_value <= 0xa8ff)
             # Bengali
 	    && !(hex $code_value >= 0x0980 && hex $code_value <= 0x09ff)
+            # Tamil
+	    && !(hex $code_value >= 0x0b80 && hex $code_value <= 0x0bff)
 	    ) {
 	    # If a decomposition exists, record it
 	    if($character_decomposition_mapping =~ /(<.*>)?\s*(.+)/) {

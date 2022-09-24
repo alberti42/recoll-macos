@@ -22,12 +22,6 @@
 man_MANS = unaccent.1 unac.3
 AM_CPPFLAGS = -DUNAC_VERSION=\"$(VERSION)\"
 
-#
-# Support programs
-#
-noinst_HEADERS = \
-	getopt.h
-
 bin_PROGRAMS = unaccent
 unaccent_SOURCES = unaccent.c 
 unaccent_LDFLAGS = $(PROFILING)

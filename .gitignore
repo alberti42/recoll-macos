@@ -103,6 +103,7 @@ tests/indexedmimetypes/missing
 tests/indexedmimetypes/recoll.conf
 tests/indexedmimetypes/xapiandb
 tests/xattr/mimeview
+unac/autom4te.cache
 website/faqsandhowtos/*.html
 website/idxthreads/forkingRecoll.html
 website/idxthreads/xapDocCopyCrash.html

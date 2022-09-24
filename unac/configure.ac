@@ -33,7 +33,7 @@ AC_PROG_MAKE_SET
 dnl
 dnl Unicode version used by unac, as published at http://www.unicode.org/Public/
 dnl
-UNICODE_VERSION=6.3.0
+UNICODE_VERSION=14.0.0
 AC_SUBST(UNICODE_VERSION)
 
 AC_PROG_CC
@@ -55,8 +55,5 @@ AM_ICONV
 #ftp://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.8.tar.gz]))
 
 AC_CHECK_FUNCS(vsnprintf)
-
-AC_LIBSOURCES(getopt.c)
-AC_CHECK_FUNCS(getopt_long,,[AC_LIBOBJ(getopt)])
 
 AC_OUTPUT(Makefile unac.pc unac.spec t_unac builder, chmod +x t_unac)
