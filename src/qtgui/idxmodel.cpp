@@ -1,3 +1,22 @@
+/* Copyright (C) 2022 J.F.Dockes
+ *
+ * License: GPL 2.1
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 #include <string>
 #include <iostream>
 #include <stack>
@@ -11,6 +30,10 @@
 #include "fstreewalk.h"
 #include "log.h"
 
+// Note: we originally used a file system tree walk to populate the tree, but this was wrong
+// because the file system may have changed since the index was created.
+// We now build a directory tree directly from index data, but still use the previous tree
+// walk callback. The old code has been kept around to explain how we arrived there.
 #undef USE_TREEWALK
 
 class WalkerCB : public FsTreeWalkerCB {
@@ -91,12 +114,24 @@ static void populateDir(RclConfig *config, const std::string& topstr, IdxTreeMod
 // Assemble a path from its components up to lst
 std::string toksToPath(std::vector<std::string>& path, int lst)
 {
-    std::string out;
-    for (int i = 0; i <= lst; i++) {
+    if (path.empty()) {
+        // ??
+#ifdef _WIN32
+        return "C:/";
+#else
+        return "/";
+#endif
+    }
+    std::string out{
+#ifdef _WIN32
+        path[0]
+#else
+        "/" + path[0]
+#endif
+    };
+    for (int i = 1; i <= lst; i++) {
         out += "/" + path[i];
     }
-    if (out.empty())
-        out = "/";
     return out;
 }
 
