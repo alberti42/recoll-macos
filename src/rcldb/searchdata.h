@@ -100,7 +100,7 @@ public:
     bool toNativeQuery(Rcl::Db &db, void *);
 
     /** We become the owner of cl and will delete it */
-    bool addClause(SearchDataClause* cl);
+    bool addClause(SearchDataClause *cl);
 
     /** If this is a simple query (one field only, no distance clauses),
      * add phrase made of query terms to query, so that docs containing the
@@ -246,10 +246,11 @@ public:
         : m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
           m_modifiers(SDCM_NONE), m_weight(1.0), m_exclude(false), 
           m_rel(REL_CONTAINS) {}
-    virtual ~SearchDataClause() {}
+    virtual ~SearchDataClause() = default;
     SearchDataClause(const SearchDataClause &) = default;
     SearchDataClause& operator=(const SearchDataClause&) = default;
-
+    virtual SearchDataClause* clone() = 0;
+    
     virtual bool toNativeQuery(Rcl::Db &db, void *) = 0;
     bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
     virtual std::string getReason() const {return m_reason;}
@@ -336,8 +337,10 @@ public:
         m_haveWildCards = 
             (txt.find_first_of(cstr_minwilds) != std::string::npos);
     }
-
-    virtual ~SearchDataClauseSimple() {}
+    virtual ~SearchDataClauseSimple() = default;
+    virtual SearchDataClauseSimple *clone() override{
+        return new SearchDataClauseSimple(*this);
+    }
 
     /** Translate to Xapian query */
     virtual bool toNativeQuery(Rcl::Db &, void *) override;
@@ -394,7 +397,10 @@ public:
         m_text = t1;
         m_t2 = t2;
     }
-    virtual ~SearchDataClauseRange() {}
+    virtual ~SearchDataClauseRange() = default;
+    virtual SearchDataClauseRange *clone() override {
+        return new SearchDataClauseRange(*this);
+    }
 
     virtual void dump(std::ostream& o) const override;
     virtual const std::string& gettext2() const {
@@ -423,7 +429,10 @@ public:
         addModifier(SDCM_FILTER);
     }
 
-    virtual ~SearchDataClauseFilename() {}
+    virtual ~SearchDataClauseFilename() = default;
+    virtual SearchDataClauseFilename *clone() override {
+        return new SearchDataClauseFilename(*this);
+    }
 
     virtual bool toNativeQuery(Rcl::Db &, void *) override;
     virtual void dump(std::ostream& o) const override;
@@ -458,8 +467,10 @@ public:
         m_haveWildCards = false;
         addModifier(SDCM_FILTER);
     }
-
-    virtual ~SearchDataClausePath() {}
+    virtual ~SearchDataClausePath() = default;
+    virtual SearchDataClausePath *clone() override {
+        return new SearchDataClausePath(*this);
+    }
 
     virtual bool toNativeQuery(Rcl::Db &, void *) override;
     virtual void dump(std::ostream& o) const override;
@@ -475,8 +486,10 @@ public:
                          const std::string& fld = std::string())
         : SearchDataClauseSimple(tp, txt, fld), m_slack(slack) {}
 
-    virtual ~SearchDataClauseDist() {}
-
+    virtual ~SearchDataClauseDist() = default;
+    virtual SearchDataClauseDist *clone() override {
+        return new SearchDataClauseDist(*this);
+    }
     virtual bool toNativeQuery(Rcl::Db &, void *) override;
     virtual int getslack() const {
         return m_slack;
@@ -494,6 +507,12 @@ class SearchDataClauseSub : public SearchDataClause {
 public:
     SearchDataClauseSub(std::shared_ptr<SearchData> sub) 
         : SearchDataClause(SCLT_SUB), m_sub(sub) {}
+    virtual ~SearchDataClauseSub() = default;
+
+    virtual SearchDataClauseSub *clone() override {
+        return new SearchDataClauseSub(*this);
+    }
+
     virtual bool toNativeQuery(Rcl::Db &db, void *p) override {
         bool ret = m_sub->toNativeQuery(db, p);
         if (!ret) 

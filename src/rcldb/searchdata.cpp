@@ -64,9 +64,8 @@ SearchData::~SearchData()
 bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 {
     LOGDEB0("SearchData::maybeAddAutoPhrase()\n");
-    // cerr << "BEFORE SIMPLIFY\n"; dump(cerr);
+
     simplify();
-    // cerr << "AFTER SIMPLIFY\n"; dump(cerr);
 
     if (m_query.empty()) {
         LOGDEB2("SearchData::maybeAddAutoPhrase: empty query\n");
@@ -176,6 +175,7 @@ bool SearchData::fileNameOnly()
 void SearchData::simplify()
 {
     LOGDEB0("SearchData::simplify()\n");
+    //std::cerr << "SIMPLIFY BEFORE: "; dump(std::cerr);
     for (unsigned int i = 0; i < m_query.size(); i++) {
         if (m_query[i]->m_tp != SCLT_SUB)
             continue;
@@ -201,8 +201,10 @@ void SearchData::simplify()
             clsubp->getSub()->m_maxSize != -1 ||
             clsubp->getSub()->m_minSize != -1 ||
             clsubp->getSub()->m_haveWildCards) {
-            if (!clsubp->getSub()->m_query.empty())
+            if (!clsubp->getSub()->m_query.empty()) {
+                LOGDEB0("Not simplifying because sub has special attributes and non-empty query\n");
                 continue;
+            }
             m_filetypes.insert(m_filetypes.end(),
                                clsubp->getSub()->m_filetypes.begin(),
                                clsubp->getSub()->m_filetypes.end());
@@ -221,21 +223,15 @@ void SearchData::simplify()
             // none anyway, we will just delete the subquery.
         }
         
-
         // Delete the clause_sub, and insert the queries from its searchdata in its place
         m_query.erase(m_query.begin() + i);
-        m_query.insert(m_query.begin() + i, clsubp->getSub()->m_query.begin(),
-                       clsubp->getSub()->m_query.end());
-        for (unsigned int j = i; j < i + clsubp->getSub()->m_query.size(); j++) {
-            m_query[j]->setParent(this);
+        for (unsigned int j = 0; j < clsubp->getSub()->m_query.size(); j++) {
+            m_query.insert(m_query.begin() + i + j, clsubp->getSub()->m_query[j]->clone());
+            m_query[i+j]->setParent(this);
         }
         i += int(clsubp->getSub()->m_query.size()) - 1;
-
-        // We don't want the clauses to be deleted when the parent is, as we
-        // know own them.
-        clsubp->getSub()->m_query.clear();
-        delete clsubp;
     }
+    //std::cerr << "SIMPLIFY AFTER: "; dump(std::cerr);
 }
 
 // Extract terms and groups for highlighting
