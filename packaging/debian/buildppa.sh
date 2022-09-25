@@ -12,7 +12,7 @@ SERIES="bionic focal jammy kinetic"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.33.0
+RCLVERS=1.33.1
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.1
 PPAVERS=1
@@ -25,8 +25,8 @@ SCOPESRC=${Y}/home/dockes/projets/fulltext/unity-scope-recoll
 GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
 RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
 
-PPANAME=recoll15-ppa;;
-#PPANAME=recollexp1-ppa
+PPANAME=recoll15-ppa
+PPANAME=recollexp1-ppa
 #PPANAME=recoll-webengine-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"

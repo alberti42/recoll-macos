@@ -1,5 +1,20 @@
 recoll (1.33.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
+  * Small updates to the build files to accomodate the new rclgrep utility.
+  * New textunknownasplain configuration variable to index all files with no known association
+    but identified as text/xxx by the "file" or "xdg-mime" command.
+  * Make sure that a single double-quoted word is not  stem-expanded (act as if it was
+    capitalized). Expanding a quoted term is unexpected.
+  * Apply stemming to terms containing a single dash. These were not expanded before.
+  * Linux real time: fix monitoring under topdirs members which are symbolic links.
+  * Fix the GUI simple search which was broken in 1.33.0 when switching filters on/off
+  * Exclude Tamil characters from unac processing (experimental for now).
+  * Windows GUI directory side filters: the computed paths were wrong on Windows.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 25 Sep 2022 19:19:00 +0200
+
+recoll (1.33.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
   * Query processing: simplify queries a bit more before sending to Xapian, allows using OP_FILTER
     for path filtering. -> Medium version bump.
   * GUI: allow specifying a fixed geometry for the results list viewport by setting

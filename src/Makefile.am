@@ -294,7 +294,7 @@ AM_YFLAGS = -d
 # need it
 librecoll_la_LDFLAGS = -release $(VERSION) -no-undefined @NO_UNDEF_LINK_FLAG@
 
-librecoll_la_LIBADD = $(XSLT_LIBS) $(XAPIAN_LIBS) $(LIBICONV) $(X_LIBX11) -lmagic $(LIBTHREADS)
+librecoll_la_LIBADD = $(XSLT_LIBS) $(XAPIAN_LIBS) $(LIBICONV) $(X_LIBX11) $(LIBTHREADS)
 
 # There is probably a better way to do this. The KIO needs to be linked
 # with librecoll, but librecoll is installed into a non-standard place
