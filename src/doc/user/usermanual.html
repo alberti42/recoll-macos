@@ -421,7 +421,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1532">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1540">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -2076,9 +2076,30 @@ recollindex -c "$confdir"
         is removed from the name.</p>
         <p>The name translation can be configured more precisely,
         also inside the <a class="link" href=
-        "#RCL.INSTALL.CONFIG.FIELDS" title=
-        "5.4.3.&nbsp;The fields file"><code class=
+        "#RCL.INSTALL.CONFIG.FIELDS.XATTR" title=
+        "Extended attributes in the fields file"><code class=
         "filename">fields</code> configuration file</a>.</p>
+        <div class="note" style=
+        "margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">Setting the document
+          modification/creation date</h3>
+          <p>Date fields are processed specially by <span class=
+          "application">Recoll</span>. For obscure and
+          uninteresting reasons, you should use <code class=
+          "literal">modificationdate</code> as extended attribute
+          name for setting this value. Also, the date string should
+          be an ASCII integer representing the Unix time (seconds
+          since the epoch). An example Linux command line for
+          setting this particular field follow. The substituted
+          <span class="command"><strong>date</strong></span> prints
+          the example date parameter in Unix time format (seconds
+          since the epoch).</p>
+          <pre class="programlisting">
+            setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/file
+          </pre>The date substitution will then be automatic, you
+do not need to customize the <code class="filename">fields</code>
+file.
+        </div>
       </div>
       <div class="sect1">
         <div class="titlepage">
@@ -4198,7 +4219,7 @@ fs.inotify.max_user_watches=32768
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1532" id="idm1532"></a>
+            <a name="idm1540" id="idm1540"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
