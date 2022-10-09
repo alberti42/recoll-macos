@@ -58,19 +58,31 @@ string  PlainToRichQtPreview::PlainToRichQtPreview::header()
     if (m_inputhtml) {
         return cstr_null;
     }
+    std::string fontstyle;
+    if (prefs.reslistfontfamily != "") {
+        fontstyle = std::string("font-family: ") + qs2utf8s(prefs.reslistfontfamily);
+    }
+    std::string ret{"<qt><head><title></title></head><body>"};
     switch (prefs.previewPlainPre) {
     case PrefsPack::PP_BR:
         m_eolbr = true;
-        return "<qt><head><title></title></head><body>";
+        break;
     case PrefsPack::PP_PRE:
         m_eolbr = false;
-        return "<qt><head><title></title></head><body><pre>";
+        ret += std::string("<pre");
+        if (!fontstyle.empty()) {
+            ret += std::string(" ") + "style=\"" + fontstyle;
+        }
+        ret += "\">";
+        break;
     case PrefsPack::PP_PREWRAP:
     default:
         m_eolbr = false;
-        return "<qt><head><title></title></head><body>"
-            "<pre style=\"white-space: pre-wrap\">";
+        ret += std::string("<pre style=\"white-space: pre-wrap;");
+        ret += fontstyle;
+        ret += "\">";
     }
+    return ret;
 }
 
 string PlainToRichQtPreview::startMatch(unsigned int grpidx)
