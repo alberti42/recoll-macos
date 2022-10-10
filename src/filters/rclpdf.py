@@ -321,7 +321,7 @@ class PDFExtractor:
         all = subprocess.check_output([self.pdfinfo, "-meta", self.filename])
         res = self.re_xmlpacket.search(all)
         xml = res.group(1) if res else ''
-        # self.em.rclog("extrameta: XML: [%s]" % xml)
+        #self.em.rclog(f"extrameta: XML: [{xml}]")
         if not xml:
             return html
 
@@ -330,14 +330,21 @@ class PDFExtractor:
         # the stackoverflow ref above. Maybe we'd be better off just
         # walking the full tree and building the namespaces dict.
         root = ET.fromstring(xml)
-        #self.em.rclog("NSMAP: %s"% root.nsmap)
+        #self.em.rclog(f"root nsmap: {root.nsmap}")
         namespaces = {'rdf' : "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
-        rdf = root.find("rdf:RDF", namespaces)
-        #self.em.rclog("RDF NSMAP: %s"% rdf.nsmap)
+        RDFROOTTAG = "{" + namespaces["rdf"] + "}RDF"
+
+        if root.tag == RDFROOTTAG:
+            rdf = root
+        else:
+            rdf = root.find("rdf:RDF", namespaces)
         if rdf is None:
+            #self.em.rclog(f"_setextrameta: rdf is none")
             return html
+        #self.em.rclog("rdf nsmap: %s"% rdf.nsmap)
         rdfdesclist = rdf.findall("rdf:Description", rdf.nsmap)
         for metanm,rclnm in self.extrameta:
+            #self.em.rclog(f"_setextrameta: metanm {metanm} rclnm {rclnm}")
             for rdfdesc in rdfdesclist:
                 try:
                     elts = rdfdesc.findall(metanm, rdfdesc.nsmap)
@@ -386,6 +393,7 @@ class PDFExtractor:
                             pass
                         metaheaders.append((rclnm, text))
         if metaheaders:
+            #self.em.rclog(f"extrameta: {metaheaders}")
             if emf:
                 try:
                     emf.wrapup(metaheaders)
