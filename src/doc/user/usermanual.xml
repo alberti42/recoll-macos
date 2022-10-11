@@ -1497,9 +1497,9 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
         metadata as parameter, as an array of '(nm, val)' pairs, allowing
         an alternate approach for editing or adding/deleting fields.</para>
         
-        <!-- <para> There is a <ulink url="&FAQS;PDFXMP.wiki">complete example of XMP
-             tags setup</ulink>, including a  nice result list paragraph format in the 
-             &RCL; Wiki </para> -->
+        <para>See 
+          <ulink url="https://www.lesbonscomptes.com/recoll/pages/recoll_XMP/index.html">this
+            page</ulink> for a more detailed discussion about indexing PDF XMP properties.</para>
         
 
       </sect2>
