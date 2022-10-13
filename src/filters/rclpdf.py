@@ -278,7 +278,6 @@ class PDFExtractor:
         fields = {}
         if self.pdfinfoversion > 211000:
             fields = self._customfields()
-        self.em.rclog(f"Custom fields: {fields}")
         for line in input.split(b'\n'):
             if re.search(b'</head>', line):
                 inheader = False

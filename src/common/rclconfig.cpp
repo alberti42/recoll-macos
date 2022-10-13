@@ -991,7 +991,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
         ft.pfxonly = attrs.getBool("pfxonly", false);
         ft.noterms = attrs.getBool("noterms", false);
         m_fldtotraits[stringtolower(fieldname)] = ft;
-        LOGDEB2("readFieldsConfig: ["  << fieldname << "] -> ["  << ft.pfx <<
+        LOGDEB2("readFieldsConfig: ["  << stringtolower(fieldname) << "] -> ["  << ft.pfx <<
                 "] " << ft.wdfinc << " " << ft.boost << "\n");
     }
 
@@ -1050,13 +1050,15 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
             ft = pit->second;
         }
         string aliases;
-        m_fields->get(canonic, aliases, "aliases");
+        m_fields->get(fieldname, aliases, "aliases");
+        LOGDEB2("readFieldsConfig: " << canonic << " -> " << aliases << "\n");
         vector<string> l;
         stringToStrings(aliases, l);
         for (const auto& alias : l) {
+            auto canonicalias = stringtolower(alias);
             if (pit != m_fldtotraits.end())
-                m_fldtotraits[stringtolower(alias)] = ft;
-            m_aliastocanon[stringtolower(alias)] = canonic;
+                m_fldtotraits[canonicalias] = ft;
+            m_aliastocanon[canonicalias] = canonic;
         }
     }
 
@@ -1065,7 +1067,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
     for (const auto& entry: tps) {
         string canonic = stringtolower(entry); // canonic name
         string aliases;
-        m_fields->get(canonic, aliases, "queryaliases");
+        m_fields->get(entry, aliases, "queryaliases");
         vector<string> l;
         stringToStrings(aliases, l);
         for (const auto& alias : l) {
