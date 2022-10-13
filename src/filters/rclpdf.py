@@ -96,10 +96,16 @@ class PDFExtractor:
     def __init__(self, em):
         self.currentindex = 0
         self.pdftotext = None
+        self.pdftotextversion = 0
         self.pdfinfo = None
+        self.pdfinfoversion = 0
         self.pdftk = None
         self.em = em
         self.tesseract = None
+        self.extrameta = None
+
+        self.config = rclconfig.RclConfig()
+        self.confdir = self.config.getConfDir()
 
         # Avoid picking up a default version on Windows, we want ours
         if not _mswindows:
@@ -110,31 +116,28 @@ class PDFExtractor:
                 # No need for anything else. openfile() will return an
                 # error at once
                 return
+        self.pdftotextversion = self._popplerutilversion(self.pdftotext)
+        # Check if we need to escape portions of text: old versions of pdftotext output raw
+        # HTML special characters. Don't know exactly when this changed but it's fixed in 0.26.5
+        if self.pdftotextversion >= 2605:
+            self.needescape = False
+        else:
+            self.needescape = True
 
-        self.config = rclconfig.RclConfig()
-        self.confdir = self.config.getConfDir()
-        # The user can set a list of meta tags to be extracted from
-        # the XMP metadata packet. These are specified as
-        # (xmltag,rcltag) pairs
-        self.extrameta = self.config.getConfParam("pdfextrameta")
-        if self.extrameta:
-            self.extrametafix = self.config.getConfParam("pdfextrametafix")
-            self._initextrameta()
+        if not _mswindows:
+            self.pdfinfo = rclexecm.which("pdfinfo")
+        if not self.pdfinfo:
+            self.pdfinfo = rclexecm.which("poppler/pdfinfo")
+        if self.pdfinfo:
+            self.pdfinfoversion = self._popplerutilversion(self.pdfinfo)
+            # The user can set a list of meta tags to be extracted from the XMP metadata
+            # packet. These are specified as (xmltag,rcltag) pairs
+            self.extrameta = self.config.getConfParam("pdfextrameta")
+            if self.extrameta:
+                self.extrametafix = self.config.getConfParam("pdfextrametafix")
+                self._initextrameta()
+        #self.em.rclog(f"PDFINFOVERSION {self.pdfinfoversion}")
 
-        # Check if we need to escape portions of text where old
-        # versions of pdftotext output raw HTML special characters.
-        self.needescape = True
-        try:
-            version = subprocess.check_output([self.pdftotext, "-v"],
-                                              stderr=subprocess.STDOUT)
-            major,minor,rev = version.split()[2].split('.')
-            # Don't know exactly when this changed but it's fixed in
-            # jessie 0.26.5
-            if int(major) > 0 or int(minor) >= 26:
-                self.needescape = False
-        except:
-            pass
-        
         # Pdftk is optionally used to extract attachments. This takes
         # a hit on performance even in the absence of any attachments,
         # so it can be disabled in the configuration.
@@ -147,15 +150,21 @@ class PDFExtractor:
         if self.pdftk:
             self.maybemaketmpdir()
 
+    def _popplerutilversion(self, tool):
+        try:
+            output = subprocess.check_output([tool, "-v"], stderr=subprocess.STDOUT)
+            l1 = output.split(b"\n")[0]
+            v = l1.split()[2]
+            M,m,r = v.split(b".")
+            version = int(M) * 10000 + int(m) * 100 + int(r)
+        except:
+            version = 0
+        return version
+    
     def _initextrameta(self):
-        if not _mswindows:
-            self.pdfinfo = rclexecm.which("pdfinfo")
         if not self.pdfinfo:
-            self.pdfinfo = rclexecm.which("poppler/pdfinfo")
-        if not self.pdfinfo:
-            self.extrameta = None
             return
-
+        
         # extrameta is like "metanm|rclnm ...", where |rclnm maybe absent (keep
         # original name). Parse into a list of pairs.
         l = self.extrameta.split()
@@ -201,6 +210,7 @@ class PDFExtractor:
                 EMF = None
                 pass
 
+
     # Extract all attachments if any into temporary directory
     def extractAttach(self):
         if self.attextractdone:
@@ -231,6 +241,29 @@ class PDFExtractor:
             # Return true anyway, pdf attachments are no big deal
             return True
 
+
+    # Extract PDF custom properties into a dict. Only works with newer pdfinfo versions
+    def _customfields(self):
+        if not self.pdfinfo or self.pdfinfoversion < 211000:
+            return {}
+        try:
+            fields = {}
+            output = subprocess.check_output([self.pdfinfo, "-custom", self.filename],
+                                             stderr=subprocess.STDOUT)
+            output = output.decode("utf-8")
+            for line in output.split("\n"):
+                colon = line.find(":")
+                if colon > 0:
+                    fld = line[:colon].strip()
+                    value = line[colon+1:].strip()
+                    if fld not in ("Author", "CreationDate", "Creator", "ModDate",
+                                   "Producer", "Subject", "Title"):
+                        fields[fld] = value
+            return fields
+        except:
+            return {}
+        
+
     # pdftotext (used to?) badly escape text inside the header
     # fields. We do it here. This is not an html parser, and depends a
     # lot on the actual format output by pdftotext.
@@ -242,6 +275,10 @@ class PDFExtractor:
         didcs = False
         output = []
         isempty = True
+        fields = {}
+        if self.pdfinfoversion > 211000:
+            fields = self._customfields()
+        self.em.rclog(f"Custom fields: {fields}")
         for line in input.split(b'\n'):
             if re.search(b'</head>', line):
                 inheader = False
@@ -251,6 +288,8 @@ class PDFExtractor:
                 if not didcs:
                     output.append(b'<meta http-equiv="Content-Type"' + \
                               b'content="text/html; charset=UTF-8">\n')
+                    for fld,val in fields.items():
+                        output.append(self._metatag(fld, val))
                     didcs = True
                 if self.needescape:
                     m = re.search(b'''(.*<title>)(.*)(<\/title>.*)''', line)
@@ -283,9 +322,11 @@ class PDFExtractor:
 
         return b'\n'.join(output), isempty
 
+
     def _metatag(self, nm, val):
         return b"<meta name=\"" + rclexecm.makebytes(nm) + b"\" content=\"" + \
                rclexecm.htmlescape(rclexecm.makebytes(val)) + b"\">"
+
 
     # metaheaders is a list of (nm, value) pairs
     def _injectmeta(self, html, metaheaders):
