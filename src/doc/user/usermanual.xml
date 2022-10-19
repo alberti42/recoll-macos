@@ -4287,15 +4287,17 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         can be a single term of course. Supported modifiers:
 
         <itemizedlist>
-          <listitem><para><literal>l</literal> can be used to turn off
-          stemming (mostly makes sense with <literal>p</literal> because
-          stemming is off by default for phrases).</para>
+          <listitem><para><literal>l</literal> can be used to turn off stemming (mostly makes sense
+              with <literal>p</literal> because stemming is off by default for phrases).</para>
           </listitem>
 
-          <listitem><para><literal>s</literal> can be used to turn off
-          synonym expansion, if a synonyms file is in place (only for
-          &RCL; 1.22 and later).</para>
-          </listitem>
+          <listitem><para><literal>o</literal> can be used to specify a "slack" for
+              both <literal>phrase</literal> and <literal>proximity</literal> searches: the number
+              of additional terms that may be found between the specified
+              ones. If <literal>o</literal> is followed by an integer number, this is the slack,
+              else the default is 10. The default slack (with no <literal>o</literal>) is 0
+              for <literal>phrase</literal> searches and 10 for
+              <literal>proximity</literal> searches.</para></listitem>
 
           <listitem><para><literal>p</literal> can be used to turn an ordered
               <literal>phrase</literal> search into an unordered <literal>proximity</literal>
@@ -4304,26 +4306,29 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
                 <link linkend="RCL.SEARCH.GUI.COMPLEX.PHRASEANDPROX">here</link>.</para>
           </listitem>
 
-          <listitem><para><literal>o</literal> can be used to specify a
-              "slack" for both <literal>phrase</literal> and <literal>proximity</literal> searches:
-              the number of
-              additional terms that may be found between the specified
-              ones. If <literal>o</literal> is followed by an integer number,
-              this is the slack, else the default is 10. The default slack (with
-              no <literal>o</literal>) is 0 for <literal>phrase</literal> searches and 10 for
-              <literal>proximity</literal> searches.</para>
-          </listitem>
+          <listitem><para><literal>s</literal> (1.22) can be used to turn off synonym expansion, if a
+              synonyms file is in place.</para></listitem>
 
-          <listitem><para><literal>C</literal> will turn on case
-          sensitivity (if the index supports it).</para></listitem>
+          <listitem><para><literal>x</literal> (1.33.2) will enable the expansion of terms inside a
+              phrase search (the defaults is for phrases to be searched verbatim).</para></listitem>
 
-          <listitem><para><literal>D</literal> will turn on diacritics
-          sensitivity (if the index supports it).</para></listitem>
+          <listitem><para>A weight can be specified for a query element by specifying a decimal
+              value at the start of the
+              modifiers. Example: <literal>"Important"2.5</literal>.</para></listitem>
 
-          <listitem><para>A weight can be specified for a query element
-          by specifying a decimal value at the start of the
-          modifiers. Example: <literal>"Important"2.5</literal>.</para>
-          </listitem>
+        </itemizedlist>
+        </para>
+        
+        <para>The following only make sense on indexes which are capable of case and diacritics
+          sensitivity (not the default):
+          <itemizedlist>
+            <listitem><para><literal>C</literal> will turn on case sensitivity.</para></listitem>
+
+          <listitem><para><literal>D</literal> will turn on diacritics sensitivity (if the index
+          supports it).</para></listitem>
+
+          <listitem><para><literal>e</literal> (explicit) will turn on diacritics
+          sensitivity and case sensitivity, and prevent stem expansion.</para></listitem>
         </itemizedlist>
         </para>
 

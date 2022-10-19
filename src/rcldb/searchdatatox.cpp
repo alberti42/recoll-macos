@@ -484,8 +484,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 
         // If we are sensitive to case or diacritics turn stemming off
         if (diac_sensitive || case_sensitive) {
-            LOGDEB0("expandTerm: diac or case sens set -> stemexpand and "
-                    "synonyms off\n");
+            LOGDEB0("expandTerm: diac or case sens set -> stemexpand and synonyms off\n");
             nostemexp = true;
             synonyms = false;
         }
@@ -650,7 +649,8 @@ void SearchDataClauseSimple::processPhraseOrNear(
     for (auto it = splitData->terms().begin(); it != splitData->terms().end(); it++, nxit++) {
         LOGDEB0("ProcessPhrase: processing [" << *it << "]\n");
         // Adjust when we do stem expansion. Not if disabled by caller, not inside phrases.
-        bool nostemexp = *nxit || (op == Xapian::Query::OP_PHRASE);
+        bool nostemexp = *nxit ||
+            (op == Xapian::Query::OP_PHRASE && !(mods & Rcl::SearchDataClause::SDCM_EXPANDPHRASE));
         int lmods = mods;
         if (nostemexp)
             lmods |= SearchDataClause::SDCM_NOSTEMMING;
@@ -1073,7 +1073,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
     }
     string s = cstr_dquote + m_text + cstr_dquote;
     bool useNear = (m_tp == SCLT_NEAR);
-    if (!useNear) {
+    if (!useNear && !(m_modifiers & SDCM_EXPANDPHRASE)) {
         // We are a phrase query. Make sure to disable stemming explicitely in case this is a single
         // quoted word because processUserString won't see it as a phrase by itself.
         m_modifiers |= SDCM_NOSTEMMING;

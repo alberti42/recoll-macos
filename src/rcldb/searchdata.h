@@ -238,7 +238,9 @@ public:
                    // Aargh special case. pathelts are case/diac-sensitive
                    // even in a stripped index
                    SDCM_PATHELT = 0x80, 
-                   SDCM_FILTER = 0x100, 
+                   SDCM_FILTER = 0x100,
+                   // Terms inside phrases are not expanded if this is not set (by 'x' modifier)
+                   SDCM_EXPANDPHRASE = 0x200, 
     };
     enum Relation {REL_CONTAINS, REL_EQUALS, REL_LT, REL_LTE, REL_GT, REL_GTE};
 
