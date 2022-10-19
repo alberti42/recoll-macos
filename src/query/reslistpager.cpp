@@ -226,6 +226,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
         m_hiliter->set_inputhtml(false);
 
         for (const auto& snippet : snippets) {
+            bool ret = false;
             if (!snippet.empty()) {
                 // No need to call escapeHtml(), plaintorich handles it
                 list<string> lr;
@@ -234,16 +235,18 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
                 if (pagenumre.simpleMatch(snippet)) {
                     string pagenum = pagenumre.getMatch(snippet, 0);
                     if (!pagenum.empty()) {
-                        m_hiliter->plaintorich(snippet.substr(pagenum.size()), lr, hdata);
+                        ret = m_hiliter->plaintorich(snippet.substr(pagenum.size()), lr, hdata);
                         lr.front() = snippet.substr(0, pagenum.size()) + lr.front();
                     } else {
-                        m_hiliter->plaintorich(snippet, lr, hdata);
+                        ret = m_hiliter->plaintorich(snippet, lr, hdata);
                     }
                 } else {
-                    m_hiliter->plaintorich(snippet, lr, hdata);
+                    ret = m_hiliter->plaintorich(snippet, lr, hdata);
                 }
-                richabst += lr.front();
-                richabst += absSep();
+                if (ret) {
+                    richabst += lr.front();
+                    richabst += absSep();
+                }
             }
         }
     }
