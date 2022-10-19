@@ -1,4 +1,4 @@
-/* Copyright (C) 2004-2017 J.F.Dockes
+/* Copyright (C) 2004-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -145,13 +145,12 @@ public:
     // Accept a word and its position. If the word is a matched term,
     // add/update fragment definition.
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) override {
-        LOGDEB1("takeword: [" << term << "] bytepos: "<<bts<<":"<<bte<<endl);
+        LOGDEB1("takeword: [" << term << "] bytepos: "<< bts << ":" << bte << "\n");
         // Limit time taken with monster documents. The resulting abstract will be incorrect or
         // inexistent, but this is better than taking forever (the default cutoff value comes from
         // the snippetMaxPosWalk configuration parameter, and is 10E6)
         if (maxtermcount && termcount++ > maxtermcount) {
-            LOGINF("Rclabsfromtext: stopping because maxtermcount reached: "<<
-                   maxtermcount << endl);
+            LOGINF("Rclabsfromtext: stopping because maxtermcount reached: "<<maxtermcount << "\n");
             retflags |= ABSRES_TRUNC;
             return false;
         }
@@ -181,8 +180,8 @@ public:
             PRETEND_USE(m_rawtext);
             // This word is a search term. Extend or create fragment
             LOGDEB1("match: [" << dumb << "] pos " << pos << " bpos " << bts <<
-                   ":" << bte << " remainingWords " << m_remainingWords << endl);
-            LOGDEB1("Match text " << m_rawtext.substr(bts, bte - bts) << endl);
+                    ":" << bte << " remainingWords " << m_remainingWords << "\n");
+            LOGDEB1("Match text " << m_rawtext.substr(bts, bte - bts) << "\n");
             double coef = m_wordcoefs[dumb];
             if (!m_remainingWords) {
                 // No current fragment. Start one
@@ -223,8 +222,7 @@ public:
                 m_extcount = 0;
             }
 
-            // If the term is part of a near/phrase group, update its
-            // positions list
+            // If the term is part of a near/phrase group, update its positions list
             if (m_gterms.find(dumb) != m_gterms.end()) {
                 // Term group (phrase/near) handling
                 m_plists[dumb].push_back(pos);
@@ -246,7 +244,7 @@ public:
             m_curfrag.second = bte;
             if (m_remainingWords == 0) {
                 LOGDEB1("FRAGMENT: from byte " << m_curfrag.first <<
-                        " to  byte " << m_curfrag.second << endl);
+                        " to  byte " << m_curfrag.second << "\n");
                 LOGDEB1("FRAGMENT TEXT [" << m_rawtext.substr(
                             m_curfrag.first, m_curfrag.second-m_curfrag.first) << "]\n");
                 // We used to not push weak fragments if we had a lot already. This can cause
@@ -256,16 +254,11 @@ public:
                 // test was if (m_totalcoef < 5.0 || m_curfragcoef >= 1.0) We now just avoid
                 // creating a monster by testing the current fragments count at the top of the
                 // function
-                m_fragments.push_back(MatchFragment(m_curfrag.first,
-                                                    m_curfrag.second,
-                                                    m_curfragcoef,
+                m_fragments.push_back(MatchFragment(m_curfrag.first, m_curfrag.second, m_curfragcoef,
 #ifdef COMPUTE_HLZONES
                                                     m_curhlzones,
 #endif
-                                                    m_curhitpos,
-                                                    m_curterm,
-                                                    m_curfragline
-                                          ));
+                                                    m_curhitpos, m_curterm, m_curfragline));
                 m_totalcoef += m_curfragcoef;
                 m_curfragcoef = 0.0;
                 m_curtermcoef = 0.0;
@@ -285,26 +278,23 @@ public:
         // Possibly store current incomplete fragment (if match was
         // close to the end of the text, so we did not close it):
         if (m_curtermcoef != 0.0) {
-            m_fragments.push_back(
-                MatchFragment(m_curfrag.first, m_curfrag.second, m_curfragcoef,
+            m_fragments.push_back(MatchFragment(m_curfrag.first, m_curfrag.second, m_curfragcoef,
 #ifdef COMPUTE_HLZONES
-                              m_curhlzones,
+                                                m_curhlzones,
 #endif
-                              m_curhitpos, m_curterm, m_curfragline));
-                m_totalcoef += m_curfragcoef;
-                m_curfragcoef = 0.0;
-                m_curtermcoef = 0.0;
+                                                m_curhitpos, m_curterm, m_curfragline));
+            m_totalcoef += m_curfragcoef;
+            m_curfragcoef = 0.0;
+            m_curtermcoef = 0.0;
         }
 
-        LOGDEB("TextSplitABS: stored total " << m_fragments.size() << " fragments" << endl);
+        LOGDEB("TextSplitABS: stored total " << m_fragments.size() << " fragments" << "\n");
         vector<GroupMatchEntry> tboffs;
 
-        // Look for matches to PHRASE and NEAR term groups and finalize
-        // the matched regions list (sort it by increasing start then
-        // decreasing length). We process all groups as NEAR (ignore order).
+        // Look for matches to PHRASE and NEAR term groups and finalize the matched regions list
+        // (sort it by increasing start then decreasing length).
         for (unsigned int i = 0; i < m_hdata.index_term_groups.size(); i++) {
-            if (m_hdata.index_term_groups[i].kind !=
-                HighlightData::TermGroup::TGK_TERM) {
+            if (m_hdata.index_term_groups[i].kind != HighlightData::TermGroup::TGK_TERM) {
                 matchGroup(m_hdata, i, m_plists, m_gpostobytes, tboffs);
             }
         }
@@ -328,10 +318,9 @@ public:
                   }
             );
 
-        // Give a boost to fragments which contain a group match
-        // (phrase/near), they are dear to the user's heart. Lists are
-        // sorted, so we never go back in the fragment list (can
-        // always start the search where we previously stopped).
+        // Give a boost to fragments which contain a group match (phrase/near), they are dear to the
+        // user's heart. Lists are sorted, so we never go back in the fragment list (can always
+        // start the search where we previously stopped).
         if (m_fragments.empty()) {
             return;
         }
@@ -345,8 +334,7 @@ public:
                     return;
                 }
             }
-            if (fragit->start <= grpmatch.offs.first &&
-                fragit->stop >= grpmatch.offs.second) {
+            if (fragit->start <= grpmatch.offs.first && fragit->stop >= grpmatch.offs.second) {
                 // grp in frag
                 fragit->coef += 10.0;
             }
@@ -500,7 +488,7 @@ int Query::Native::abstractFromText(
             if (page < 0)
                 page = 0;
         }
-        LOGDEB0("=== FRAGMENT: p. " << page << " Coef: " << entry.coef << ": " << frag << endl);
+        LOGDEB0("=== FRAGMENT: p. " << page << " Coef: " << entry.coef << ": " << frag << "\n");
         vabs.push_back(Snippet(page, frag, entry.line).setTerm(entry.term));
         if (count++ >= maxtotaloccs)
             break;
