@@ -765,6 +765,7 @@ filters/rclzip.py \
 filters/recoll-we-move-files.py \
 filters/recollepub.zip \
 filters/svg.xsl \
+filters/thunderbird-open-message.sh \
 filters/xls-dump.py \
 filters/xlsxmltocsv.py \
 filters/xml.xsl \
@@ -782,6 +783,7 @@ install-data-hook:
 	(cd $(DESTDIR)/$(filterdir); \
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
 	chmod a+x recoll-we-move-files.py ../examples/rclmon.sh kosplitter.py; \
+	chmod a+x thunderbird-open-message.sh; \
 	chmod 0644 msodump.zip recollepub.zip rclexecm.py rcllatinstops.zip \
         rclconfig.py conftree.py rclmidi.py rclexec1.py rcluncomp.py rclxslt.py)
 
