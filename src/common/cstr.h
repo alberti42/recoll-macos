@@ -89,7 +89,6 @@ DEF_CSTR(dj_keymt, "mimetype");
 // in internfile.
 DEF_CSTR(dj_keytitle, "title");
 DEF_CSTR(dj_keyrecipient, "recipient");
-DEF_CSTR(dj_keymsgid, "msgid");
 DEF_CSTR(dj_keymd5, "md5");
 
 

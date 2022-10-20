@@ -353,12 +353,15 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
             m_metaData[cstr_dj_keyrecipient] += " " + decoded;
         }
     }
+#if 0 // 2022-10: this does not appear to be used anywhere
+// cstr.h DEF_CSTR(dj_keymsgid, "msgid");
     if (doc->h.getFirstHeader("Message-Id", hi)) {
         if (depth == 1) {
             m_metaData[cstr_dj_keymsgid] =  hi.getValue();
             trimstring(m_metaData[cstr_dj_keymsgid], "<>");
         }
     }
+#endif
     if (doc->h.getFirstHeader("Date", hi)) {
         rfc2047_decode(hi.getValue(), decoded);
         if (depth == 1) {
