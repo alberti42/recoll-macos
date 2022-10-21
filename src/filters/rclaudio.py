@@ -354,34 +354,36 @@ class AudioTagExtractor(RclBaseHandler):
             #print(f"TAG {tag} VAL {val}", file=sys.stderr)
             # Mutagen sends out COMM==eng= with tag COMM::eng We don't know what to do with the
             # language (or possible other attributes), so get rid of it for now:
-            if tag.find("COMM::") == 0:
+            # Also possible: {COMM:ID3v1 Comment:eng}
+            if tag.find("COMM:") == 0:
                 tag = "COMM"
-            if tag.find('TXXX:') == 0:
+            elif tag.find('TXXX:') == 0:
                 tag = tag[5:].upper()
             elif tag.find('TXX:') == 0:
                 tag = tag[4:].upper()
             elif tag.upper() in tagdict:
                 tag = tag.upper()
             if tag in tagdict:
-                #self.em.rclog("Original tag: <%s>, type0 %s val <%s>" %
-                #              (tag, type(val), val))
+                #self.em.rclog("Original tag: <%s>, type0 %s val <%s>" % (tag, type(val), val))
+                ntag = tagdict[tag].lower()
+                #self.em.rclog("New tag: %s" % ntag)
+            else:
+                if not tag.isalnum():
+                    continue
+                ntag = tag.lower()
+                #self.em.rclog(f"Processing unexpected tag: {tag}, value {val}")
+
+            try:
                 # Some file types return lists of value (e.g. FLAC)
                 try:
                     val = " ".join(val)
-                    #self.em.rclog("Joined tag: <%s>, type0 %s val <%s>" %
-                    #              (tag, type(val), val))
+                    #self.em.rclog("Joined tag: <%s>, type0 %s val <%s>" % (tag, type(val), val))
                 except:
                     pass
-                ntag = tagdict[tag].lower()
-                #self.em.rclog("New tag: %s" % ntag)
-                try:
-                    minf[ntag] = tobytes(val)
-                    #self.em.rclog("Tag %s -> %s" % (ntag, val))
-                except Exception as err:
-                    self.em.rclog("Error while extracting tag: %s"%err)
-            else:
-                #self.em.rclog("Unprocessed tag: %s, value %s"%(tag,val))
-                pass
+                minf[ntag] = tobytes(val)
+                #self.em.rclog(f"Tag <{ntag}> -> <{val}>")
+            except Exception as err:
+                self.em.rclog(f"Error while extracting tag: {tag} : {err}")
 
         self._fixrating(minf)
         
