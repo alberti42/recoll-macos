@@ -4288,7 +4288,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
         <itemizedlist>
           <listitem><para><literal>l</literal> can be used to turn off stemming (mostly makes sense
-              with <literal>p</literal> because stemming is off by default for phrases).</para>
+              with <literal>p</literal> because stemming is off by default for phrases, but see also
+              <literal>x</literal> further down).</para>
           </listitem>
 
           <listitem><para><literal>o</literal> can be used to specify a "slack" for
@@ -4310,7 +4311,10 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               synonyms file is in place.</para></listitem>
 
           <listitem><para><literal>x</literal> (1.33.2) will enable the expansion of terms inside a
-              phrase search (the defaults is for phrases to be searched verbatim).</para></listitem>
+              phrase search (the default is for phrases to be searched verbatim). Also see
+              the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES">
+                <literal>stemexpandphrases</literal></link> in the configuration
+                section, for changing the default behaviour.</para></listitem> 
 
           <listitem><para>A weight can be specified for a query element by specifying a decimal
               value at the start of the

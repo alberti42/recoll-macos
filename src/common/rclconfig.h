@@ -479,4 +479,10 @@ extern bool o_index_storedoctext;
 // in addition to other issues. See recoll.conf comments. 
 extern bool o_uptodate_test_use_mtime;
 
+// Up to version 1.33.x recoll never stem-expanded terms inside phrase searches. There was actually
+// no obvious reasons for this. The default was not changed, but a modifier was added (x) to allow
+// for on-request phrase expansion. Setting the following to true will change the default behaviour
+// (use 'l' to disable for a specific instance)
+extern bool o_expand_phrases;
+
 #endif /* _RCLCONFIG_H_INCLUDED_ */

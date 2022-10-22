@@ -5831,7 +5831,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
                 <p><code class="literal">l</code> can be used to
                 turn off stemming (mostly makes sense with
                 <code class="literal">p</code> because stemming is
-                off by default for phrases).</p>
+                off by default for phrases, but see also
+                <code class="literal">x</code> further down).</p>
               </li>
               <li class="listitem">
                 <p><code class="literal">o</code> can be used to
@@ -5867,8 +5868,11 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               <li class="listitem">
                 <p><code class="literal">x</code> (1.33.2) will
                 enable the expansion of terms inside a phrase
-                search (the defaults is for phrases to be searched
-                verbatim).</p>
+                search (the default is for phrases to be searched
+                verbatim). Also see the <a class="link" href=
+                "#RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES"><code class="literal">
+                stemexpandphrases</code></a> in the configuration
+                section, for changing the default behaviour.</p>
               </li>
               <li class="listitem">
                 <p>A weight can be specified for a query element by
@@ -10199,6 +10203,19 @@ hasextract = False
                   terms, which in turn is only useful if you want
                   to perform proximity searches with such
                   terms.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES"></a><span class="term"><code class="varname">stemexpandphrases</code></span></dt>
+                <dd>
+                  <p>Default to applying stem expansion to phrase
+                  terms. Recoll normally does not apply stem
+                  expansion to terms inside phrase searches.
+                  Setting this parameter will change the default
+                  behaviour to expanding terms inside phrases. If
+                  set, you can use a 'l' modifier to disable
+                  expansion for a specific instance.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE" id=

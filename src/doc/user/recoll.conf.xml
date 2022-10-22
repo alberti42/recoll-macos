@@ -715,6 +715,13 @@ space issues.
 which in turn is only useful if you want to perform proximity searches
 with such terms.
 </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES">
+<term><varname>stemexpandphrases</varname></term>
+<listitem><para>Default to applying stem expansion to phrase terms. Recoll normally does not apply stem expansion to terms inside phrase searches.
+Setting this parameter will change the default behaviour to expanding terms inside
+phrases. If set, you can use a 'l' modifier to disable expansion for a specific
+instance.
+</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE">
 <term><varname>aspellLanguage</varname></term>
 <listitem><para>Language definitions to use when creating the aspell

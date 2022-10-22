@@ -78,6 +78,8 @@ bool o_index_storedoctext = true;
 
 bool o_uptodate_test_use_mtime = false;
 
+bool o_expand_phrases = false;
+
 string RclConfig::o_localecharset; 
 string RclConfig::o_origcwd; 
 
@@ -420,6 +422,7 @@ bool RclConfig::updateMainConfig()
         getConfParam("indexStripChars", &o_index_stripchars);
         getConfParam("indexStoreDocText", &o_index_storedoctext);
         getConfParam("testmodifusemtime", &o_uptodate_test_use_mtime);
+        getConfParam("stemexpandphrases", &o_expand_phrases);
         m_index_stripchars_init = 1;
     }
 

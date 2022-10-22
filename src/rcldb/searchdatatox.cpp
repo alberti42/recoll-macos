@@ -26,7 +26,6 @@
 #include <algorithm>
 #include <sstream>
 #include <iostream>
-using namespace std;
 
 #include "xapian.h"
 
@@ -48,6 +47,8 @@ using namespace std;
 #include "base64.h"
 #include "daterange.h"
 #include "rclvalues.h"
+
+using namespace std;
 
 namespace Rcl {
 
@@ -650,7 +651,8 @@ void SearchDataClauseSimple::processPhraseOrNear(
         LOGDEB0("ProcessPhrase: processing [" << *it << "]\n");
         // Adjust when we do stem expansion. Not if disabled by caller, not inside phrases.
         bool nostemexp = *nxit ||
-            (op == Xapian::Query::OP_PHRASE && !(mods & Rcl::SearchDataClause::SDCM_EXPANDPHRASE));
+            (op == Xapian::Query::OP_PHRASE && !o_expand_phrases &&
+             !(mods & Rcl::SearchDataClause::SDCM_EXPANDPHRASE));
         int lmods = mods;
         if (nostemexp)
             lmods |= SearchDataClause::SDCM_NOSTEMMING;
@@ -1073,7 +1075,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
     }
     string s = cstr_dquote + m_text + cstr_dquote;
     bool useNear = (m_tp == SCLT_NEAR);
-    if (!useNear && !(m_modifiers & SDCM_EXPANDPHRASE)) {
+    if (!useNear  && !o_expand_phrases && !(m_modifiers & SDCM_EXPANDPHRASE)) {
         // We are a phrase query. Make sure to disable stemming explicitely in case this is a single
         // quoted word because processUserString won't see it as a phrase by itself.
         m_modifiers |= SDCM_NOSTEMMING;
@@ -1094,4 +1096,3 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
 }
 
 } // Namespace Rcl
-
