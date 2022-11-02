@@ -200,6 +200,7 @@ void SearchData::simplify()
             clsubp->getSub()->m_haveDates || 
             clsubp->getSub()->m_maxSize != -1 ||
             clsubp->getSub()->m_minSize != -1 ||
+            clsubp->getSub()->m_subspec != SUBDOC_ANY ||
             clsubp->getSub()->m_haveWildCards) {
             if (!clsubp->getSub()->m_query.empty()) {
                 LOGDEB0("Not simplifying because sub has special attributes and non-empty query\n");
@@ -213,11 +214,14 @@ void SearchData::simplify()
                                 clsubp->getSub()->m_nfiletypes.end());
             if (clsubp->getSub()->m_haveDates && !m_haveDates) {
                 m_dates = clsubp->getSub()->m_dates;
+                m_haveDates = 1;
             }
             if (m_maxSize == -1)
                 m_maxSize = clsubp->getSub()->m_maxSize;
             if (m_minSize == -1)
                 m_minSize = clsubp->getSub()->m_minSize;
+            if (m_subspec == SUBDOC_ANY)
+                m_subspec = clsubp->getSub()->m_subspec;
             m_haveWildCards = m_haveWildCards || clsubp->getSub()->m_haveWildCards;
             // And then let the clauses processing go on, there are
             // none anyway, we will just delete the subquery.
@@ -267,7 +271,7 @@ void SearchData::dump(ostream& o) const
         "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
         " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
         " hd " << m_haveDates << " maxs " << m_maxSize << " mins " << 
-        m_minSize << " wc " << m_haveWildCards << "\n";
+        m_minSize << " wc " << m_haveWildCards << " subsp " << m_subspec << "\n";
     for (const auto& clausep : m_query) {
         o << dumptabs;
         clausep->dump(o);

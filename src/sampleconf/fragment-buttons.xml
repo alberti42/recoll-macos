@@ -26,6 +26,22 @@
 
   </radiobuttons>
 
+  <radiobuttons>
+    <!-- Standalone/embedded switch -->
+    <fragbutton>
+      <label>Include embedded documents</label>
+      <frag></frag>
+    </fragbutton>
+    <fragbutton>
+      <label>Only standalone documents</label>
+      <frag>issub:0</frag>
+    </fragbutton>
+    <fragbutton>
+      <label>Only embedded documents</label>
+      <frag>issub:1</frag>
+    </fragbutton>
+  </radiobuttons>
+
   <buttons>
 
     <fragbutton>
