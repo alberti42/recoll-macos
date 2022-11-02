@@ -55,11 +55,9 @@ void RclMain::showAdvSearchDialog()
         connect(new QShortcut(quitKeySeq, asearchform), SIGNAL (activated()), 
                 this, SLOT (fileExit()));
 
-        connect(asearchform, 
-                SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
+        connect(asearchform, SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
                 this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
-        connect(asearchform, SIGNAL(setDescription(QString)), 
-                this, SLOT(onSetDescription(QString)));
+        connect(asearchform, SIGNAL(setDescription(QString)), this, SLOT(onSetDescription(QString)));
         asearchform->show();
     } else {
         // Close and reopen, in hope that makes us visible...
@@ -145,8 +143,9 @@ void RclMain::showFragButs()
         fragbuts = new FragButs(0);
         if (fragbuts->ok()) {
             fragbuts->show();
-            connect(fragbuts, SIGNAL(fragmentsChanged()),
-                    this, SLOT(onFragmentsChanged()));
+            connect(new QShortcut(quitKeySeq, fragbuts), SIGNAL (activated()),
+                    this, SLOT (fileExit()));
+            connect(fragbuts, SIGNAL(fragmentsChanged()), this, SLOT(onFragmentsChanged()));
         } else {
             deleteZ(fragbuts);
         }
