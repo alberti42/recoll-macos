@@ -75,16 +75,19 @@ public:
             }
             m_prevphase = status.phase;
             m_chron.restart();
-            m_file.holdWrites(true);
-            m_file.set("phase", int(status.phase));
-            m_file.set("docsdone", status.docsdone);
-            m_file.set("filesdone", status.filesdone);
-            m_file.set("fileerrors", status.fileerrors);
-            m_file.set("dbtotdocs", status.dbtotdocs);
-            m_file.set("totfiles", status.totfiles);
-            m_file.set("fn", status.fn);
-            m_file.set("hasmonitor", status.hasmonitor);
-            m_file.holdWrites(false);
+            if (status != prevstatus) {
+                m_file.holdWrites(true);
+                m_file.set("phase", int(status.phase));
+                m_file.set("docsdone", status.docsdone);
+                m_file.set("filesdone", status.filesdone);
+                m_file.set("fileerrors", status.fileerrors);
+                m_file.set("dbtotdocs", status.dbtotdocs);
+                m_file.set("totfiles", status.totfiles);
+                m_file.set("fn", status.fn);
+                m_file.set("hasmonitor", status.hasmonitor);
+                m_file.holdWrites(false);
+                prevstatus = status;
+            }
         }
         if (path_exists(m_stopfilename)) {
             LOGINF("recollindex: asking indexer to stop because " << m_stopfilename << " exists\n");
@@ -110,6 +113,7 @@ public:
     }
 
     DbIxStatus status;
+    DbIxStatus prevstatus;
     ConfSimple m_file;
     string m_stopfilename;
     Chrono m_chron;

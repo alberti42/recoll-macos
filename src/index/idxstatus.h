@@ -46,6 +46,19 @@ public:
         docsdone = filesdone = fileerrors = dbtotdocs = totfiles = 0;
     }
     DbIxStatus() {reset();}
+    bool operator==(const DbIxStatus& other) {
+        return
+            phase == other.phase &&
+            fn == other.fn &&
+            docsdone == other.docsdone &&
+            filesdone == other.filesdone &&
+            fileerrors == other.fileerrors &&
+            dbtotdocs == other.dbtotdocs &&
+            totfiles == other.totfiles;
+    }
+    bool operator!=(const DbIxStatus& other) {
+        return !operator==(other);
+    }
 };
 
 class RclConfig;
