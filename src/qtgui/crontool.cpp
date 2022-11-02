@@ -82,13 +82,16 @@ void CronToolW::changeCron(bool enable)
 
     string id = idstring(theconfig->getConfDir());
     string cmd("recollindex");
+    
 #if defined(MACPORTS) || defined(HOMEBREW)
+///    // TBD: check that this this needed. The PATH is supposedly set in rclinit////////////
+    
     // The MACPORTS and HOMEBREW flags are set by the resp. portfile
     // and recipee. Adjust the path for finding recollindex accordingly
 #if defined(MACPORTS)
     cmd = string("PATH=/opt/local/bin/:$PATH ") + cmd;
 #elif defined(HOMEBREW)
-    cmd = string("PATH=/usr/local/bin/:$PATH ") + cmd;
+    cmd = string("PATH=/opt/homebrew/bin:/usr/local/bin/:$PATH ") + cmd;
 #endif
 #endif
 

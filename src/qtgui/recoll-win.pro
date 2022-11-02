@@ -162,6 +162,8 @@ mac {
   QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
   QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
   QCBUILDLOC=Qt_6_2_4_for_macOS
+
+  DEFINES += RECOLL_AS_MAC_BUNDLE
   
   HEADERS += \
     crontool.h \

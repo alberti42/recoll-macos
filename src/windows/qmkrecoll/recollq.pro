@@ -48,6 +48,7 @@ windows {
 mac {
   QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
   QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
+  DEFINES += RECOLL_AS_MAC_BUNDLE
   SOURCES += \
     ../../utils/closefrom.cpp \
     ../../utils/execmd.cpp \

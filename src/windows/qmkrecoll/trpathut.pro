@@ -45,3 +45,8 @@ windows {
 
   INCLUDEPATH += ../../windows
 }
+
+mac {
+# Never built on mac. Just in case, don't forget:
+  DEFINES += RECOLL_AS_MAC_BUNDLE
+}

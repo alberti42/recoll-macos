@@ -279,7 +279,10 @@ const string& path_pkgdatadir()
         "a subfolder of the installation directory. \n"
         "Please set the RECOLL_DATADIR environment variable to point to it\n"
         "(e.g. setx RECOLL_DATADIR \"C:/Program Files (X86)/Recoll/Share)\"\n";
-#elif defined(__APPLE__) && !defined(MACPORTS) && !defined(HOMEBREW)
+#elif defined(__APPLE__) && defined(RECOLL_AS_MAC_BUNDLE)
+    // The package manager builds (Macports, Homebrew, Nixpkgs ...) all arrange to set a proper
+    // compiled value for RECOLL_DATADIR. We can't do this when building a native bundle with
+    // QCreator, in which case we use the executable location.
     uint32_t size = 0;
     _NSGetExecutablePath(nullptr, &size);
     char *path= (char*)malloc(size+1);

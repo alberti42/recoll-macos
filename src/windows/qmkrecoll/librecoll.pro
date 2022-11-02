@@ -176,6 +176,7 @@ unix:!mac {
 
 mac {
     CONFIG += staticlib
+    DEFINES += RECOLL_AS_MAC_BUNDLE
     QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
     # This is necessary to avoid an undefined impl__xmlFree.
     # See comment in libxml/xmlexports.h
