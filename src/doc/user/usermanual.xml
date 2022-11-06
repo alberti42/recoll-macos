@@ -251,28 +251,27 @@
       appropriate hardware resources are available, and can perform multiple tasks in parallel for
       text extraction, segmentation and index updates.</para>
 
-      <para><link linkend="RCL.SEARCH">Searches</link> are usually
-      performed inside the <command>recoll</command> GUI, which has many
-      options to help you find what you are looking for. However, there
-      are other ways to query the index:
-      <itemizedlist>
-        <listitem><para>A
-            <link linkend="RCL.SEARCH.COMMANDLINE">command line interface</link>.</para></listitem>
-        <listitem><para>A
-            <ulink url="https://framagit.org/medoc92/recollwebui">Web interface</ulink>.
-        </para></listitem>
-        <listitem><para>A Gnome Shell
-            <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Search Provider
-            </ulink>.</para></listitem>
-        <listitem><para>A
-            <link linkend="RCL.PROGRAM.PYTHONAPI"><application>Python</application> programming
-              interface</link></para></listitem>
-        <listitem><para>A <link linkend="RCL.SEARCH.KIO"><application>KDE</application> KIO slave
-              module</link>.</para></listitem> 
-        <listitem><para>A Ubuntu Unity
-            <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Scope</ulink>
-            module.</para></listitem>
-      </itemizedlist>
+      <para><link linkend="RCL.SEARCH">Searches</link> are usually performed inside
+        the <command>recoll</command> GUI, which has many options to help you find what you are
+        looking for. However, there are other ways to query the index:
+        <itemizedlist>
+          <listitem><para>A
+              <link linkend="RCL.SEARCH.COMMANDLINE">command line interface</link>.</para></listitem>
+          <listitem><para>A
+              <ulink url="https://framagit.org/medoc92/recollwebui">Recoll WebUI</ulink>.
+          </para></listitem>
+          <listitem><para>A Gnome Shell
+              <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Search Provider
+              </ulink>.</para></listitem>
+          <listitem><para>A
+              <link linkend="RCL.PROGRAM.PYTHONAPI"><application>Python</application> programming
+                interface</link></para></listitem>
+          <listitem><para>A <link linkend="RCL.SEARCH.KIO"><application>KDE</application> KIO slave
+                module</link>.</para></listitem> 
+          <listitem><para>A Ubuntu Unity
+              <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Scope</ulink>
+              module.</para></listitem>
+        </itemizedlist>
       </para>
 
     </sect1>
@@ -6505,13 +6504,10 @@ hasextract = False
         <title>Installing</title>
         
         <para>Use <userinput>make install</userinput>
-        in the root 
-        of the source tree. This will copy the commands to
-        <filename><replaceable>prefix</replaceable>/bin</filename>
-        and the sample configuration files, scripts and other shared
-        data to
-        <filename><replaceable>prefix</replaceable>/share/recoll</filename>.
-        </para>
+          in the root of the source tree. This will copy the commands to
+          <filename><replaceable>prefix</replaceable>/bin</filename> and the sample configuration
+          files, scripts and other shared data
+          to <filename><replaceable>prefix</replaceable>/share/recoll</filename>.</para>
 
       </sect2>
 
@@ -6521,19 +6517,14 @@ hasextract = False
         <para>The Python interface can be found in the source tree,
         under the <filename>python/recoll</filename> directory.</para>
 
-        <para>As of &RCL; 1.19, the module can be compiled for
-        Python3.</para>
-
         <para>The normal &RCL; build procedure (see above) installs the API
-        package for the default system version (python) along with the main
-        code. The package for other Python versions (e.g. python3 if the
-        system default is python2) must be explicitly built and
-        installed.</para>
+          package for both Python2 and Python3. The Python2 version will probably go away in the
+          near future.</para>
 
         <para>The <filename>python/recoll/</filename> directory contains
-        the usual <filename>setup.py</filename>. After configuring and
-        building the main &RCL; code, you can use the script to build and
-        install the Python module:
+          the usual <filename>setup.py</filename>. After configuring and
+          building the main &RCL; code, you can use the script to build and
+          install the Python module for a non-standard Python version.
         <screen>
           <userinput>cd recoll-xxx/python/recoll</userinput>
           <userinput>pythonX setup.py build</userinput>
@@ -6541,19 +6532,6 @@ hasextract = False
         </screen>
         </para> 
 
-      </sect2>
-
-      <sect2 id="RCL.INSTALL.BUILDING.SOLARIS">
-        <title>Building on Solaris</title>
-
-        <para>We did not test building the GUI on Solaris for recent
-        versions. You will need at least Qt 4.4. There are some hints
-        on <ulink url="http://www.recoll.org/download-1.14.html">an old
-        web site page</ulink>, they may still be valid.</para>
-
-        <para>Someone did test the 1.19 indexer and Python module build,
-        they do work, with a few minor glitches. Be sure to use
-        GNU <command>make</command> and <command>install</command>.</para> 
       </sect2>
 
     </sect1>
