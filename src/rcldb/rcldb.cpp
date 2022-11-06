@@ -551,7 +551,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
                                 Doc &doc, bool fetchtext)
 {
     LOGDEB2("Db::dbDataToRclDoc: data:\n" << data << "\n");
-    ConfSimple parms(data);
+    ConfSimple parms(data, 1, false, false);
     if (!parms.ok())
         return false;
 
