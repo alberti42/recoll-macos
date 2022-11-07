@@ -436,8 +436,8 @@ class AudioTagExtractor(RclBaseHandler):
                             val = " | ".join(val)
                         else:
                             # Usually mp4.MP4Cover: ignore
-                            self.em.rclog(f"Got value for {ntag} which is list of "
-                                          f"non-strings: {type(val[0])}")
+                            #self.em.rclog(f"Got value for {ntag} which is list of "
+                            #              f"non-strings: {type(val[0])}")
                             continue
                 except Exception as err:
                     self.em.rclog(f"Trying list join: {err} for {filename}")

@@ -1,3 +1,29 @@
+recoll (1.33.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * New `x` modifier to trigger term expansion in a phrase search. Previously, phrase searches were
+    always verbatim, with no way to adjust.
+  * New `stemexpandphrases` configuration  parameter to default to expanding phrase terms.
+  * Fix handling or file or directory names with white space at the end: an URL ending with such a
+    name would be stripped of the space/tab characters, making it impossible to open the document.
+  * Fixed document field aliasing not working if the alias name was not all lower case.
+  * GUI: result list: do not display snippets without a highlight area. This could occur before when
+    searching for a phrase or group, and the snippet contained the search terms, but not the
+    phrase/proximity match.
+  * GUI: fixed query processing losing some filtering information (e.g. dates, subspec) in some
+    cases. Would esp. interfere with the use of the query fragments tool.
+  * GUI: the preview window font was sometimes not adjusted in function of the result list one.
+  * GUI: add thunderbird-open-message.sh script to help thunderbird open arbitrary message/rf822
+    files, even if their name extension is not `.eml`.
+  * GUI: make Ctrl+Q work in the fragments window.
+  * PDF: fixed XMP metadata extraction in some case where the XML structure was unexpected.
+  * PDF: take advantage of newer poppler pdfinfo versions to extract custom properties
+    (`pdfinfo{nbsp}-custom`).
+  * rclaudio: allow outputting custom, non-standard tags. Better processing of multiple values.
+  * Indexer: only update the status file if it actually changed: will avoid a lot of gratuitous disk
+    writes.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 07 Nov 2022 18:42:00 +0100
+
 recoll (1.33.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Small updates to the build files to accomodate the new rclgrep utility.
