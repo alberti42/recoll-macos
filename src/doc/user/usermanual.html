@@ -379,9 +379,6 @@ alink="#0000FF">
                 <dt><span class="sect2">5.3.4. <a href=
                 "#RCL.INSTALL.BUILDING.PYTHON">Python API
                 package</a></span></dt>
-                <dt><span class="sect2">5.3.5. <a href=
-                "#RCL.INSTALL.BUILDING.SOLARIS">Building on
-                Solaris</a></span></dt>
               </dl>
             </dd>
             <dt><span class="sect1">5.4. <a href=
@@ -422,7 +419,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1542">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1550">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -698,7 +695,7 @@ alink="#0000FF">
             <li class="listitem">
               <p>A <a class="ulink" href=
               "https://framagit.org/medoc92/recollwebui" target=
-              "_top">Web interface</a>.</p>
+              "_top">Recoll WebUI</a>.</p>
             </li>
             <li class="listitem">
               <p>A Gnome Shell <a class="ulink" href=
@@ -2318,10 +2315,38 @@ metadatacmds = ; <em class=
             </div>
           </div>
         </div>
-        <p>This is new in <span class="application">Recoll</span>
-        1.26.5. Older versions had a more limited, non-caching
-        capability to execute an external OCR program in the PDF
-        handler. The new function has the following features:</p>
+        <p>The <span class="application">Recoll</span> PDF handler
+        has the ability to call an external OCR program if the
+        processed file has no text content. The OCR data is stored
+        in a cache of separate files, avoiding any modification of
+        the originals.</p>
+        <p>It must be noted that, if modifying the files (or a
+        copy) is acceptable, then running something like <a class=
+        "ulink" href=
+        "https://ocrmypdf.readthedocs.io/en/latest/index.html"
+        target="_top">OCRmyPDF</a> to add a text layer to the PDF
+        itself is a better solution (e.g. allowing <span class=
+        "application">Recoll</span> to position the PDF viewer on
+        the search target when opening the document, and permitting
+        secondary search in the native tool).</p>
+        <p>To enable the <span class="application">Recoll</span>
+        OCR feature, you need to install one of the supported OCR
+        applications (<span class="application">tesseract</span> or
+        <span class="application">ABBYY</span>), enable OCR in the
+        PDF handler (by setting <code class="literal">pdfocr</code>
+        to <code class="literal">1</code> in the index
+        configuration file), and tell <span class=
+        "application">Recoll</span> how to run the OCR by setting
+        <a class="link" href="#RCL.INSTALL.CONFIG.RECOLLCONF.OCR"
+        title="Parameters for OCR processing">configuration
+        variables</a>. All parameters can be localized in
+        subdirectories through the usual main configuration
+        mechanism (path sections).</p>
+        <p>This facility got a major update in <span class=
+        "application">Recoll</span> 1.26.5. Older versions had a
+        more limited, non-caching capability to execute an external
+        OCR program in the PDF handler. The new function has the
+        following features:</p>
         <div class="itemizedlist">
           <ul class="itemizedlist" style="list-style-type: disc;">
             <li class="listitem">
@@ -2356,17 +2381,6 @@ metadatacmds = ; <em class=
             </li>
           </ul>
         </div>
-        <p>To enable this feature, you need to install one of the
-        supported OCR applications (<span class=
-        "application">tesseract</span> or <span class=
-        "application">ABBYY</span>), enable OCR in the PDF handler,
-        and tell <span class="application">Recoll</span> where the
-        appropriate command resides. The last parts are done by
-        setting configuration variables. See the <a class="link"
-        href="#RCL.INSTALL.CONFIG.RECOLLCONF.OCR" title=
-        "Parameters for OCR processing">relevant section</a>. All
-        parameters can be localized in subdirectories through the
-        usual main configuration mechanism (path sections).</p>
       </div>
       <div class="sect1">
         <div class="titlepage">
@@ -4224,7 +4238,7 @@ fs.inotify.max_user_watches=32768
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1542" id="idm1542"></a>
+            <a name="idm1550" id="idm1550"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -8725,20 +8739,16 @@ hasextract = False
           <p>The Python interface can be found in the source tree,
           under the <code class="filename">python/recoll</code>
           directory.</p>
-          <p>As of <span class="application">Recoll</span> 1.19,
-          the module can be compiled for Python3.</p>
           <p>The normal <span class="application">Recoll</span>
           build procedure (see above) installs the API package for
-          the default system version (python) along with the main
-          code. The package for other Python versions (e.g. python3
-          if the system default is python2) must be explicitly
-          built and installed.</p>
+          both Python2 and Python3. The Python2 version will
+          probably go away in the near future.</p>
           <p>The <code class="filename">python/recoll/</code>
           directory contains the usual <code class=
           "filename">setup.py</code>. After configuring and
           building the main <span class="application">Recoll</span>
           code, you can use the script to build and install the
-          Python module:</p>
+          Python module for a non-standard Python version.</p>
           <pre class="screen">
           <strong class=
 "userinput"><code>cd recoll-xxx/python/recoll</code></strong>
@@ -8747,29 +8757,6 @@ hasextract = False
           <strong class=
 "userinput"><code>sudo pythonX setup.py install</code></strong>
         </pre>
-        </div>
-        <div class="sect2">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name=
-                "RCL.INSTALL.BUILDING.SOLARIS" id=
-                "RCL.INSTALL.BUILDING.SOLARIS"></a>5.3.5.&nbsp;Building
-                on Solaris</h3>
-              </div>
-            </div>
-          </div>
-          <p>We did not test building the GUI on Solaris for recent
-          versions. You will need at least Qt 4.4. There are some
-          hints on <a class="ulink" href=
-          "http://www.recoll.org/download-1.14.html" target=
-          "_top">an old web site page</a>, they may still be
-          valid.</p>
-          <p>Someone did test the 1.19 indexer and Python module
-          build, they do work, with a few minor glitches. Be sure
-          to use GNU <span class=
-          "command"><strong>make</strong></span> and <span class=
-          "command"><strong>install</strong></span>.</p>
         </div>
       </div>
       <div class="sect1">
