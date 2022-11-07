@@ -21,7 +21,7 @@ except:
     sys.exit(1);
 
 
-re_pairnum = re.compile(b'''[([]*([0-9]+),\s*([0-9]+)''')
+re_pairnum = re.compile('''[([]*([0-9]+),\s*([0-9]+)''')
 
 # The 'Easy' mutagen tags conversions are incomplete. We do it ourselves.
 # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
@@ -182,7 +182,7 @@ tagdict = {
 def tobytes(s):
     if type(s) == type(b''):
         return s
-    if type(s) != type(u''):
+    if type(s) != type(''):
         s = str(s)
     return s.encode('utf-8', errors='replace')
     
@@ -203,7 +203,7 @@ class AudioTagExtractor(RclBaseHandler):
                 self.tagfix = d['tagfix']
                 self.tagfix()
             except Exception as ex:
-                #self.em.rclog("tagfix script import failed: %s" % ex)
+                self.em.rclog("tagfix script import failed: %s" % ex)
                 pass
             
     def _showMutaInfo(self, mutf):
@@ -273,54 +273,16 @@ class AudioTagExtractor(RclBaseHandler):
             elif len(l) == 3:
                 pdt = datetime.datetime.strptime(dt, "%Y-%m-%d")
             val = time.mktime(pdt.timetuple())
-            return "%d" % val
+            return b"%d" % val
         except:
-            return 0
+            return b"0"
 
-
-    def html_text(self, filename):
-        if not self.inputmimetype:
-            raise Exception("html_text: input MIME type not set")
-        mimetype = self.inputmimetype
-
-        # We actually output text/plain
-        self.outputmimetype = 'text/plain'
-
-        mutf = None
-        msg = ''
-        strex = ''
-        try:
-            mutf = File(filename)
-        except Exception as ex:
-            strex = str(ex)
-            try:
-                mutf = ID3(filename)
-            except Exception as ex:
-                strex += str(ex)
-
-        if not mutf:
-            # Note: mutagen will fail the open (and raise) for a valid
-            # file with no tags. Maybe we should just return an empty
-            # text in this case? We seem to get an empty str(ex) in
-            # this case, and a non empty one for, e.g. permission
-            # denied, but I am not sure that the emptiness will be
-            # consistent for all file types. The point of detecting
-            # this would be to avoid error messages and useless
-            # retries.
-            if not strex:
-                return b''
-            else:
-                raise Exception("Open failed: %s" % strex)
-        
-        #self._showMutaInfo(mutf)
-
-        ###################
-        # Extract audio parameters. Not all file types supply all or
-        # even use the same property names...
-        # minf has natural str keys, and encoded values
-        minf = {}
-        for prop,dflt in [('sample_rate', 44100), ('channels', 2),
-                          ('length', 0), ('bitrate', 0)]:
+    ###################
+    # Extract audio parameters from mutagen output. Not all file types supply all or even use the
+    # same property names. Translate to consistent str keys and encoded values into our
+    # fields dict
+    def _extractaudioparams(self, filename, minf, mutf):
+        for prop,dflt in [('sample_rate', 44100), ('channels', 2), ('length', 0), ('bitrate', 0)]:
             try:
                 minf[prop] = getattr(mutf.info, prop)
             except Exception as e:
@@ -346,77 +308,164 @@ class AudioTagExtractor(RclBaseHandler):
 
         for tag,val in minf.items():
             minf[tag] = tobytes(val)
-            
-        ####################
-        # Metadata tags. The names vary depending on the file type. We
-        # just have a big translation dictionary for all
-        for tag,val in mutf.items():
-            #print(f"TAG {tag} VAL {val}", file=sys.stderr)
-            # Mutagen sends out COMM==eng= with tag COMM::eng We don't know what to do with the
-            # language (or possible other attributes), so get rid of it for now:
-            # Also possible: {COMM:ID3v1 Comment:eng}
-            if tag.find("COMM:") == 0:
-                tag = "COMM"
-            elif tag.find('TXXX:') == 0:
-                tag = tag[5:].upper()
-            elif tag.find('TXX:') == 0:
-                tag = tag[4:].upper()
-            elif tag.upper() in tagdict:
-                tag = tag.upper()
-            if tag in tagdict:
-                #self.em.rclog("Original tag: <%s>, type0 %s val <%s>" % (tag, type(val), val))
-                ntag = tagdict[tag].lower()
-                #self.em.rclog("New tag: %s" % ntag)
+        
+
+    # Translate native tag name to our filetype-independant ones. Mostly uses the big tagdict
+    # dictionary, with other adjustments.
+    def _fixtagname(self, tag):
+        # Variations on the COMM tag:
+        #   - "COMM::eng" We don't know what to do with the language (or possible other attributes),
+        #     so get rid of it for now.
+        #   - Also possible: "COMM:ID3v1 Comment:eng" "COMM:iTunNORM:eng" "COMM:Performers:eng"
+        if tag.find("COMM:") == 0:
+            tag = "COMM"
+        #     TXXX:TOTALTRACKS TXXX:ORCHESTRA
+        elif tag.find('TXXX:') == 0:
+            tag = tag[5:]
+        elif tag.find('TXX:') == 0:
+            tag = tag[4:]
+
+        if tag.upper() in tagdict:
+            tag = tag.upper()
+
+        if tag in tagdict:
+            #self.em.rclog("Original tag: <%s>, type0 %s val <%s>" % (tag, type(val), val))
+            ntag = tagdict[tag].lower()
+            #self.em.rclog("New tag: %s" % ntag)
+        else:
+            if not tag.isalnum():
+                return None
+            ntag = tag.lower()
+            #self.em.rclog(f"Processing unexpected tag: {tag}, value {val}")
+        return ntag
+
+
+    # Disc and track numbers are special, and output in varying ways.
+    def _processdiscortracknumber(self, minf, ntag, val):
+        # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
+        # TRCK,TRK,trkn TRACKNUMBER/TOTALTRACKS
+        for what in ("disc", "track"):
+            k = what + "number"
+            if ntag == k:
+                if isinstance(val, list):
+                    val = val[0]
+                if not isinstance(val, tuple):
+                    val = str(val)
+                    mo = re_pairnum.match(val)
+                    if mo:
+                        val = (mo.group(1), mo.group(2))
+                    else:
+                        val = val.split('/')
+                else:
+                    #self.em.rclog(f"{k} : tuple: {val} tp1 {type(val[0])} tp2 {type(val[1])}")
+                    pass
+                minf[k] = tobytes(val[0])
+                if len(val) == 2 and val[1] != 0:
+                    k1 = "total" + what + "s"
+                    #self.em.rclog(f"Setting {k1} : {val[1]}")
+                    minf[k1] = tobytes(val[1])
+                #self.em.rclog(f"{k} finally: {minf[k]}")
+                return True
+        return False
+    
+
+    def html_text(self, filename):
+        #self.em.rclog(f"processing {filename}")
+        if not self.inputmimetype:
+            raise Exception("html_text: input MIME type not set")
+        mimetype = self.inputmimetype
+
+        # We actually output text/plain
+        self.outputmimetype = 'text/plain'
+
+        mutf = None
+        strex = ""
+        try:
+            mutf = File(filename)
+        except Exception as ex:
+            strex = str(ex)
+            try:
+                mutf = ID3(filename)
+            except Exception as ex:
+                strex += str(ex)
+        if not mutf:
+            # Note: mutagen will fail the open (and raise) for a valid
+            # file with no tags. Maybe we should just return an empty
+            # text in this case? We seem to get an empty str(ex) in
+            # this case, and a non empty one for, e.g. permission
+            # denied, but I am not sure that the emptiness will be
+            # consistent for all file types. The point of detecting
+            # this would be to avoid error messages and useless
+            # retries.
+            if not strex:
+                return b''
             else:
-                if not tag.isalnum():
-                    continue
-                ntag = tag.lower()
-                #self.em.rclog(f"Processing unexpected tag: {tag}, value {val}")
+                raise Exception("Open failed: %s" % strex)
+        
+        #self._showMutaInfo(mutf)
+
+        # The field storage dictionary
+        minf = {}
+        self._extractaudioparams(filename, minf, mutf)
+        
+        ####################
+        # Metadata tags. 
+        for tag,val in mutf.items():
+            #self.em.rclog(f"TAG <{tag}> VALUE <{val}>")
+            # The names vary depending on the file type. Make them consistant
+            ntag = self._fixtagname(tag)
+            if not ntag:
+                continue
+            #self.em.rclog(f"Translated tag: <{ntag}>")
+
+            if self._processdiscortracknumber(minf, ntag, val):
+                continue
 
             try:
-                # Some file types return lists of value (e.g. FLAC)
+                # id3v2.4 can send multiple values as 0-separated strings. Change this to a
+                # list. mutagen should probably do this for us... Some file types do return lists
+                # of values, e.g. FLAC.
+                if not isinstance(val, (list, tuple)):
+                    val = str(val)
+                    val = val.split("\x00")
+
+                # Change list to string for sending up to recoll. 
                 try:
-                    val = " ".join(val)
-                    #self.em.rclog("Joined tag: <%s>, type0 %s val <%s>" % (tag, type(val), val))
-                except:
-                    pass
-                minf[ntag] = tobytes(val)
+                    if isinstance(val, (list, tuple,)):
+                        if isinstance(val[0], str):
+                            val = " | ".join(val)
+                        else:
+                            # Usually mp4.MP4Cover: ignore
+                            self.em.rclog(f"Got value for {ntag} which is list of "
+                                          f"non-strings: {type(val[0])}")
+                            continue
+                except Exception as err:
+                    self.em.rclog(f"Trying list join: {err} for {filename}")
+
+                #self.em.rclog(f"VAL NOW <{val}>")
+                val =  tobytes(val)
+
+                if ntag in minf:
+                    # Note that it would be nicer to use proper CSV quoting
+                    minf[ntag] += b"," + val
+                else:
+                    minf[ntag] = val
                 #self.em.rclog(f"Tag <{ntag}> -> <{val}>")
+
             except Exception as err:
-                self.em.rclog(f"Error while extracting tag: {tag} : {err}")
+                self.em.rclog(f"tag: {tag} {minf[ntag]}: {err}. fn {filename}")
 
         self._fixrating(minf)
         
         #self.em.rclog("minf after extract %s\n" % minf)
 
-        # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
-        # TRCK,TRK,trkn TRACKNUMBER/TOTALTRACKS
-        for what in ('disc', 'track'):
-            k = what + 'number'
-            if k in minf:
-                l = minf[k]
-                if not isinstance(l, tuple):
-                    mo = re_pairnum.match(l)
-                    if mo:
-                        l = (mo.group(1), mo.group(2))
-                    else:
-                        l = l.split(b'/')
-                else:
-                    self.em.rclog("l is tuple: %s tp1 %s tp2 %S" %
-                                  (l, type(l[0]), type(l[1])))
-                if len(l) == 2:
-                    minf[k] = l[0]
-                    #self.em.rclog("minf[%s] = %s" % (k, minf[k]))
-                    if l[1] != 0:
-                        minf['total' + what + 's'] = l[1]
-                #self.em.rclog("%s finally: %s" %(k,minf[k]))
 
         if 'orchestra' in minf:
             val = minf['orchestra']
             if val.startswith(b'orchestra='):
                 minf['orchestra'] = val[10:]
                 
-        #self.em.rclog("minf after tags %s\n" % minf)
+        #self.em.rclog(f"minf after tags {minf}")
 
         # Check for embedded image. We just set a flag.
         embdimg = self._embeddedImageFormat(mutf)
@@ -424,7 +473,7 @@ class AudioTagExtractor(RclBaseHandler):
             #self.em.rclog("Embedded image format: %s" % embdimg)
             minf['embdimg'] = tobytes(embdimg)
         
-        self.em.setfield("charset", 'utf-8')
+        self.em.setfield("charset", b'utf-8')
         if self.tagfix:
             self.tagfix(minf)
 
@@ -440,6 +489,10 @@ class AudioTagExtractor(RclBaseHandler):
             if tag == 'artist':
                 self.em.setfield('author', val)    
 
+        #################
+        # Document text: use the mutagen pprint function. The values may be somewhat
+        # different from what is in the metadata above because of the corrections we apply or
+        # different format choices.
         try:
             docdata = tobytes(mutf.pprint())
         except Exception as err:
