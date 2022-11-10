@@ -12,10 +12,10 @@ SERIES="bionic focal jammy kinetic"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.33.1
+RCLVERS=1.33.2
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.1.1
-PPAVERS=1
+PPAVERS=2
 
 #
 #Y=/y
@@ -26,7 +26,7 @@ GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
 RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
 
 PPANAME=recoll15-ppa
-PPANAME=recollexp1-ppa
+#PPANAME=recollexp-ppa
 #PPANAME=recoll-webengine-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
@@ -50,7 +50,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series=$SERIES
-#series=bionic
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -86,7 +86,7 @@ done
 
 ### KIO.
 series=$SERIES
-series=
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -165,51 +165,5 @@ for series in $series ; do
 
   dput $PPANAME \
       gssp-recoll_${GSSPVERS}-1~ppa${PPAVERS}~${series}1_source.changes
-
-done
-
-
-### Unity Scope
-series="bionic"
-series=
-
-debdir=debianunityscope
-if test ! -d ${debdir}/ ; then
-    rm -f ${debdir}
-    ln -s ${SCOPESRC}/debian $debdir
-fi
-topdir=unity-scope-recoll-${SCOPEVERS}
-if test "X$series" != X ; then
-    if test ! -f unity-scope-recoll_${SCOPEVERS}.orig.tar.gz ; then 
-        if test -f unity-scope-recoll-${SCOPEVERS}.tar.gz ; then
-            mv unity-scope-recoll-${SCOPEVERS}.tar.gz \
-                unity-scope-recoll_${SCOPEVERS}.orig.tar.gz
-        else
-            if test -f $RCLDOWNLOAD/unity-scope-recoll-${SCOPEVERS}.tar.gz;then
-                cp -p $RCLDOWNLOAD/unity-scope-recoll-${SCOPEVERS}.tar.gz \
-                   unity-scope-recoll_${SCOPEVERS}.orig.tar.gz || fatal copy
-            else
-                fatal "Can find neither " \
-                      "unity-scope-recoll_${SCOPEVERS}.orig.tar.gz nor " \
-                      "$RCLDOWNLOAD/unity-scope-recoll-${SCOPEVERS}.tar.gz"
-            fi
-        fi
-    fi
-    test -d $topdir ||  tar xzf unity-scope-recoll_${SCOPEVERS}.orig.tar.gz \
-        || exit 1
-fi
-for series in $series ; do
-
-   rm -rf $topdir/debian
-   cp -rp ${debdir}/ $topdir/debian || exit 1
-
-  sed -e s/SERIES/$series/g \
-      -e s/PPAVERS/${PPAVERS}/g \
-          < ${debdir}/changelog > $topdir/debian/changelog ;
-
-  (cd $topdir;debuild -k$PPA_KEYID -S -sa) || break
-
-  dput $PPANAME \
-      unity-scope-recoll_${SCOPEVERS}-1~ppa${PPAVERS}~${series}1_source.changes
 
 done
