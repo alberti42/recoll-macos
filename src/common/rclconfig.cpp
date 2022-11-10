@@ -38,6 +38,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>
+#include <iterator>
 
 #include "cstr.h"
 #include "pathut.h"
