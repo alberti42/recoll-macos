@@ -2,10 +2,12 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Recoll"
-#define MyAppVersion "1.30.2-20200421-f1808df5"
+#define MyAppVersion "1.32.9-20220924-1e11a04a"
 #define MyAppPublisher "Recoll.org"
 #define MyAppURL "http://www.recoll.org"
 #define MyAppExeName "recoll.exe"
+#define IdxAppName "Recollindex background indexer"
+#define IdxAppExeName "recollindex.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -30,7 +32,7 @@ SolidCompression=yes
 ;PrivilegesRequired=lowest
 ;DefaultDirName={userpf}\{#MyAppName}
 PrivilegesRequired=admin
-DefaultDirName={pf}\{#MyAppName}
+DefaultDirName={commonpf}\{#MyAppName}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -45,6 +47,7 @@ Source: "C:\install\recoll\*"; DestDir: "{app}"; Flags: ignoreversion recursesub
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{#IdxAppName}"; Filename: "{app}\{#IdxAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"; Parameters: "-m -w 0"; Flags: runminimized preventpinning
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
