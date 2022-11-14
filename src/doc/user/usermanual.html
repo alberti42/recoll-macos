@@ -419,7 +419,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1550">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1565">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -1374,10 +1374,10 @@ alink="#0000FF">
           </div>
           <p>Multiple <span class="application">Recoll</span>
           indexes can be created by using several configuration
-          directories which are typically set to index different
-          areas of the file system.</p>
-          <p>A specific index can be selected by setting the
-          <code class="envar">RECOLL_CONFDIR</code> environment
+          directories which would typically be set to index
+          different areas of the file system.</p>
+          <p>A specific configuration can be selected by setting
+          the <code class="envar">RECOLL_CONFDIR</code> environment
           variable or giving the <code class="option">-c</code>
           option to <span class=
           "command"><strong>recoll</strong></span> and <span class=
@@ -1394,10 +1394,10 @@ alink="#0000FF">
           API, etc.) operate with a main configuration, from which
           both configuration and index data are used, and can also
           query data from multiple additional indexes. Only the
-          index data from the latter is used, their configuration
-          parameters are ignored. This implies that some parameters
-          should be consistent among index configurations which are
-          to be used together.</p>
+          index data from additional indexes is used, their
+          configuration parameters are ignored. This implies that
+          some parameters should be consistent among index
+          configurations which are to be used together.</p>
           <p>When searching, the current main index (defined by
           <code class="envar">RECOLL_CONFDIR</code> or <code class=
           "option">-c</code>) is always active. If this is
@@ -1485,16 +1485,24 @@ recoll -c <em class=
             entry will be inactive if the GUI was started with a
             non-default <code class="literal">-c</code>
             option).</p>
-            <p>The new index can be queried alone with</p>
+            <p>The new index can be queried alone with:</p>
             <pre class="programlisting">
 recoll -c <em class=
 "replaceable"><code>/path/to/my/new/config</code></em></pre>
             <p>Or, in parallel with the default index, by starting
             <span class="command"><strong>recoll</strong></span>
             without a <code class="literal">-c</code> option, and
-            using the <span class="guimenu">Preferences</span> →
-            <span class="guimenuitem">External Index Dialog</span>
-            menu.</p>
+            using the <span class="guilabel">External
+            Indexes</span> tab in the preferences dialog, which can
+            be reached either trough: <span class=
+            "guimenu">Preferences</span> → <span class=
+            "guimenuitem">GUI Configuration</span> → <span class=
+            "guimenuitem">External Index Dialog</span> or
+            <span class="guimenu">Query</span> → <span class=
+            "guimenuitem">External index dialog</span>. See the
+            <a class="link" href="#RCL.SEARCH.GUI.MULTIDB" title=
+            "3.2.11.&nbsp;Multiple indexes">GUI external indexes
+            section</a> for more details.</p>
           </div>
         </div>
         <div class="sect2">
@@ -4102,8 +4110,13 @@ fs.inotify.max_user_watches=32768
           any number of external <span class=
           "application">Recoll</span> indexes for searching. The
           external indexes can be selected through the <span class=
-          "guilabel">external indexes</span> tab in the preferences
-          dialog.</p>
+          "guilabel">External Indexes</span> tab in the preferences
+          dialog, which can be reached either trough: <span class=
+          "guimenu">Preferences</span> → <span class=
+          "guimenuitem">GUI Configuration</span> → <span class=
+          "guimenuitem">External Index Dialog</span> or
+          <span class="guimenu">Query</span> → <span class=
+          "guimenuitem">External index dialog</span>.</p>
           <p>Index selection is performed in two phases. A set of
           all usable indexes must first be defined, and then the
           subset of indexes to be used for searching. These
@@ -4123,6 +4136,14 @@ fs.inotify.max_user_watches=32768
           case, the <span class="application">Xapian</span> index
           directory will be obtained from the selected
           configuration.</p>
+          <p>If the external index is actually located on a volume
+          mounted from another machine, and references remote
+          files, there may be a need to adjust the result paths so
+          that they match the locally mounted ones (for opening
+          documents). This can be done by using the <a class="link"
+          href="#RCL.SEARCH.PTRANS" title=
+          "3.8.&nbsp;Path translations">path translation
+          facility</a>.</p>
           <p>As building the set of all indexes can be a little
           tedious when done through the user interface, you can use
           the <code class="envar">RECOLL_EXTRA_DBS</code>
@@ -4238,7 +4259,7 @@ fs.inotify.max_user_watches=32768
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1550" id="idm1550"></a>
+            <a name="idm1565" id="idm1565"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -6219,7 +6240,9 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               with the documents on the removable disk, but it may
               happen that the disk is not mounted at the same place
               so that the documents paths from the index are
-              invalid.</p>
+              invalid. In some case, the path adjustments <a class=
+              "link" href="#RCL.INDEXING.REMOVABLE.SELF" title=
+              "Self contained volumes">can be automated</a>.</p>
             </li>
             <li class="listitem">
               <p>As a last example, one could imagine that a big
@@ -6232,9 +6255,6 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         for rewriting access paths when extracting the data from
         the index. The translations can be defined for the main
         index and for any additional query index.</p>
-        <p>The path translation facility will be useful whenever
-        the documents paths seen by the indexer are not the same as
-        the ones which should be used at query time.</p>
         <p>In the above NFS example, <span class=
         "application">Recoll</span> could be instructed to rewrite
         any <code class="filename">file:///home/me</code> URL from
@@ -6250,13 +6270,29 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         "guimenu">Preferences</span> → <span class=
         "guimenuitem">External index dialog</span>, then click the
         <span class="guilabel">Paths translations</span> button on
-        the right below the index list.</p>
+        the right below the index list: translations will be set
+        for the main index if no external index is currently
+        selected in the list, or else for the currently selected
+        index.</p>
+        <p><b>Example entry from a <code class=
+        "filename">ptrans</code> file:&nbsp;</b></p>
+        <pre class="programlisting">[/path/to/external/xapiandb]
+/some/index/path = /some/local/path</pre>
+        <p>This would decide that, for the index stored in
+        <code class="literal">/path/to/external/xapiandb</code>,
+        any occurence of <code class=
+        "literal">/some/index/path</code> should be replaced with
+        <code class="literal">/some/local/path</code> when
+        presenting a result.</p>
         <div class="note" style=
         "margin-left: 0.5in; margin-right: 0.5in;">
-          <h3 class="title">Note</h3>
-          <p>Due to a current bug, the GUI must be restarted after
-          changing the <code class="filename">ptrans</code> values
-          (even when they were changed from the GUI).</p>
+          <h3 class="title">Windows note</h3>
+          <p>At the moment, the path comparisons done for path
+          translation under MS Windows are case sensitive (this
+          will be fixed at some point). Use the natural character
+          case as displayed in the file explorer. Example:</p>
+          <pre class="programlisting">[Z:/some/mounted/xapiandb]
+C: = Z:</pre>
         </div>
       </div>
       <div class="sect1">

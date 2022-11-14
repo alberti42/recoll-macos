@@ -365,17 +365,16 @@
         <title>Configurations, multiple indexes</title>
 
         <para>&RCL; supports defining multiple indexes, each defined by its
-        own configuration directory. A configuration directory contains
-        <link linkend="RCL.INDEXING.CONFIG">several files</link> which
-        describe what should be indexed and how.</para>
+          own configuration directory. A configuration directory contains
+          <link linkend="RCL.INDEXING.CONFIG">several files</link> which
+          describe what should be indexed and how.</para>
 
         <para>When <command>recoll</command> or
-        <command>recollindex</command> is first executed, it creates a
-        default configuration directory. This configuration is the one used
-        for indexing and querying when no specific configuration is
-        specified. It is located in <filename>$HOME/.recoll/</filename> for
-        &LIN; and <filename>%LOCALAPPDATA%/Recoll</filename> on &WIN;
-        (typically <filename>C:/Users/[me]/Appdata/Local/Recoll</filename>).</para> 
+          <command>recollindex</command> is first executed, it creates a default configuration
+          directory. This configuration is the one used for indexing and querying when no specific
+          configuration is specified. It is located in <filename>$HOME/.recoll/</filename> for &LIN;
+          and <filename>%LOCALAPPDATA%/Recoll</filename> on &WIN;
+          (typically <filename>C:/Users/[me]/Appdata/Local/Recoll</filename>).</para>
 
         <para>All configuration parameters have defaults, defined in
         system-wide files. Without further customisation, the default
@@ -384,47 +383,42 @@
         different area of the file system, select files in different ways,
         and many other things.</para>
 
-        <para>In some cases, it may be useful to create additional
-        configuration directories, for example, to separate personal and
-        shared indexes, or to take advantage of the organization of your
-        data to improve search precision.</para>
+        <para>In some cases, it may be useful to create additional configuration directories, for
+          example, to separate personal and shared indexes, or to take advantage of the organization
+          of your data to improve search precision.</para>
 
         <para>In order to do this, you would create an empty directory in a
-        location of your choice, and then instruct
-        <command>recoll</command> or <command>recollindex</command> to use
-        it by setting either a command line option (<literal>-c</literal>
-        <replaceable>/some/directory</replaceable>), or an environment
-        variable
-        (<envar>RECOLL_CONFDIR</envar>=<replaceable>/some/directory</replaceable>).
-        Any modification performed by the commands (e.g. configuration
-        customisation or searches by <command>recoll</command> or index
-        creation by <command>recollindex</command>) would then apply to the
-        new directory and not to the default one.</para>
+          location of your choice, and then instruct
+          <command>recoll</command> or <command>recollindex</command> to use
+          it by setting either a command line option (<literal>-c</literal>
+          <replaceable>/some/directory</replaceable>), or an environment variable
+          (<envar>RECOLL_CONFDIR</envar>=<replaceable>/some/directory</replaceable>).  Any
+          modification performed by the commands (e.g. configuration customisation or searches
+          by <command>recoll</command> or index creation by <command>recollindex</command>) would
+          then apply to the new directory and not to the default one.</para>
 
         <para>Once multiple indexes are created, you can use each of them
-        separately by setting the <literal>-c</literal> option or the
-        <envar>RECOLL_CONFDIR</envar> environment variable when starting a
-        command, to select the desired index.</para>
+          separately by setting the <literal>-c</literal> option or the
+          <envar>RECOLL_CONFDIR</envar> environment variable when starting a
+          command, to select the desired index.</para>
 
         <para>It is also possible to instruct one configuration to
-        query one or several other indexes in addition to its own, by using
-        the <guimenuitem>External index</guimenuitem> function in the
-        <command>recoll</command> GUI, or some other functions in the
-        command line and programming tools.</para>
+          query one or several other indexes in addition to its own, by using
+          the <guimenuitem>External index</guimenuitem> function in the
+          <command>recoll</command> GUI, or some other functions in the
+          command line and programming tools.</para>
         
         <para>A plausible usage scenario for the multiple index feature would be for a system
-        administrator to set up a central index for shared data, that you choose to search or not in
-        addition to your personal data. Of course, there are other possibilities. for example, there
-        are many cases where you know the subset of files that should be searched, and where
-        narrowing the search can improve the results. You can achieve approximately the same effect
-        by using a directory filter clause in a search, but multiple indexes may have better
-        performance and may be worth the trouble in some cases.</para>
+          administrator to set up a central index for shared data, that you choose to search or not
+          in addition to your personal data. Of course, there are other possibilities. for example,
+          there are many cases where you know the subset of files that should be searched, and where
+          narrowing the search can improve the results. You can achieve approximately the same
+          effect by using a directory filter clause in a search, but multiple indexes may have
+          better performance and may be worth the trouble in some cases.</para>
 
-        <para>A more advanced use case would be to use multiple indexes to
-        improve indexing performance, by updating several indexes in
-        parallel (using multiple CPU cores and disks, or possibly several
-        machines), and then merging them, or querying them in
-        parallel.</para>
+        <para>A more advanced use case would be to use multiple indexes to improve indexing
+          performance, by updating several indexes in parallel (using multiple CPU cores and disks,
+          or possibly several machines), and then merging them, or querying them in parallel.</para>
 
         <para>See the section about
         <link linkend="RCL.INDEXING.CONFIG.MULTIPLE">configuring multiple indexes</link>
@@ -767,60 +761,52 @@
       <sect2 id="RCL.INDEXING.CONFIG.MULTIPLE">
         <title>Multiple indexes</title>
 
-        <para>Multiple &RCL; indexes can be created by using several
-        configuration directories which are typically set to index
-        different areas of the file system.</para>
+        <para>Multiple &RCL; indexes can be created by using several configuration directories which
+          would typically be set to index different areas of the file system.</para>
 
-        <para>A specific index can be selected by setting the
-        <envar>RECOLL_CONFDIR</envar> environment variable or giving the
-        <option>-c</option> option to <command>recoll</command> and
-        <command>recollindex</command>.</para>
+        <para>A specific configuration can be selected by setting the
+          <envar>RECOLL_CONFDIR</envar> environment variable or giving the
+          <option>-c</option> option to <command>recoll</command> and
+          <command>recollindex</command>.</para>
 
-        <para>The <command>recollindex</command> program, used for creating
-        or updating indexes, always works on a single index. The different
-        configurations are entirely independent (no parameters are ever
-        shared between configurations when indexing). </para>
+        <para>The <command>recollindex</command> program, used for creating or updating indexes,
+          always works on a single index. The different configurations are entirely independent (no
+          parameters are ever shared between configurations when indexing). </para>
 
         <para>All the search interfaces (<command>recoll</command>,
-        <command>recollq</command>, the Python API, etc.) operate with a
-        main configuration, from which both configuration and index data
-        are used, and can also query data from multiple additional
-        indexes. Only the index data from the latter is used, their
-        configuration parameters are ignored. This implies that some
-        parameters should be consistent among index configurations which
-        are to be used together.</para>
+          <command>recollq</command>, the Python API, etc.) operate with a main configuration, from
+          which both configuration and index data are used, and can also query data from multiple
+          additional indexes. Only the index data from additional indexes is used, their
+          configuration parameters are ignored. This implies that some parameters should be
+          consistent among index configurations which are to be used together.</para>
 
         <para>When searching, the current main index (defined by
-        <envar>RECOLL_CONFDIR</envar> or <option>-c</option>) is always
-        active. If this is undesirable, you can set up your base
-        configuration to index an empty directory.</para>
+          <envar>RECOLL_CONFDIR</envar> or <option>-c</option>) is always active. If this is
+          undesirable, you can set up your base configuration to index an empty directory.</para>
 
         <para>Index configuration parameters can be set either by using a
-        text editor on the files, or, for most parameters, by using the
-        <link linkend="RCL.INDEXING.CONFIG.GUI"><command>recoll</command> index configuration GUI</link>.
-        In the latter case, the configuration directory for which
-        parameters are modified is the one which was selected by
-        <envar>RECOLL_CONFDIR</envar> or the <option>-c</option> parameter,
-        and there is no way to switch configurations within the GUI.</para>
+          text editor on the files, or, for most parameters, by using the
+          <link linkend="RCL.INDEXING.CONFIG.GUI"><command>recoll</command> index configuration
+          GUI</link>. In the latter case, the configuration directory for which parameters are
+          modified is the one which was selected by
+          <envar>RECOLL_CONFDIR</envar> or the <option>-c</option> parameter, and there is no way to
+          switch configurations within the GUI.</para>
 
         <para>See the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration section</link>
-        for a detailed description of the parameters</para>
+          for a detailed description of the parameters</para>
 
         <para>Some configuration parameters must be consistent among a set
-        of multiple indexes used together for searches.  Most importantly,
-        all indexes to be queried concurrently must have the same option
-        concerning character case and diacritics stripping, but there are
-        other constraints. Most of the relevant parameters affect the
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TERMS">term generation</link>.
-        </para>
+          of multiple indexes used together for searches. Most importantly,
+          all indexes to be queried concurrently must have the same option
+          concerning character case and diacritics stripping, but there are
+          other constraints. Most of the relevant parameters affect the
+          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TERMS">term generation</link>.</para>
 
-        <para>Using multiple configurations implies a small
-        level of command line or file manager usage. The user must
-        explicitly create additional configuration directories, the GUI
-        will not do it. This is to avoid mistakenly creating additional
-        directories when an argument is mistyped. Also, the GUI or the
-        indexer must be launched with a specific option or environment to
-        work on the right configuration.</para>
+        <para>Using multiple configurations implies a small level of command line or file manager
+          usage. The user must explicitly create additional configuration directories, the GUI will
+          not do it. This is to avoid mistakenly creating additional directories when an argument is
+          mistyped. Also, the GUI or the indexer must be launched with a specific option or
+          environment to work on the right configuration.</para>
 
         <simplesect>
           <title>In practise: creating and using an additional index</title>
@@ -856,21 +842,28 @@ or from the File menu of a GUI launched with the same option
 (<command>recoll</command>, see above).</para>
 
           <para>The same GUI would also let you set up batch indexing for
-          the new index. Real time indexing can only be set up from the GUI
-          for the default index (the menu entry will be inactive if the GUI
-          was started with a non-default <literal>-c</literal>
-          option).</para>
+            the new index. Real time indexing can only be set up from the GUI
+            for the default index (the menu entry will be inactive if the GUI
+            was started with a non-default <literal>-c</literal> option).</para>
 
-          <para>The new index can be queried alone with<programlisting>
+          <para>The new index can be queried alone with: <programlisting>
 recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
-          Or, in parallel with the default index, by starting
-          <command>recoll</command> without a <literal>-c</literal> option,
-          and using the 
-        <menuchoice>
-          <guimenu>Preferences</guimenu>
-          <guimenuitem>External Index Dialog</guimenuitem> 
-        </menuchoice> menu.</para> 
-      </simplesect>
+            Or, in parallel with the default index, by starting
+            <command>recoll</command> without a <literal>-c</literal> option, and using
+            the <guilabel>External Indexes</guilabel> tab in the preferences dialog, which can be
+            reached either trough:
+            <menuchoice>
+              <guimenu>Preferences</guimenu>
+              <guimenuitem>GUI Configuration</guimenuitem>
+              <guimenuitem>External Index Dialog</guimenuitem>
+            </menuchoice> or
+            <menuchoice>
+              <guimenu>Query</guimenu>
+              <guimenuitem>External index dialog</guimenuitem>
+            </menuchoice>.  See the <link linkend="RCL.SEARCH.GUI.MULTIDB">GUI external indexes
+            section</link> for more details.</para>
+        </simplesect>
+
       </sect2>
 
 
@@ -2890,51 +2883,57 @@ fs.inotify.max_user_watches=32768
         <command>recoll</command> GUI are described here.</para>
 
         <para>A <command>recoll</command> program instance is always associated with a main index,
-        which is the one to be updated when requested from the <guimenu>File</guimenu> menu, but it
-        can use any number of external &RCL; indexes for searching. The external indexes can be
-        selected through the <guilabel>external indexes</guilabel> tab in the preferences
-        dialog.</para>
+          which is the one to be updated when requested from the <guimenu>File</guimenu> menu, but it
+          can use any number of external &RCL; indexes for searching. The external indexes can be
+          selected through the <guilabel>External Indexes</guilabel> tab in the preferences
+          dialog, which can be reached either trough:
+        <menuchoice>
+          <guimenu>Preferences</guimenu>
+          <guimenuitem>GUI Configuration</guimenuitem>
+          <guimenuitem>External Index Dialog</guimenuitem> 
+        </menuchoice> or 
+        <menuchoice>
+          <guimenu>Query</guimenu>
+          <guimenuitem>External index dialog</guimenuitem>
+        </menuchoice>.</para>
 
-        <para>Index selection is performed in two phases. A set of all usable
-        indexes must first be defined, and then the subset of indexes to be
-        used for searching. These parameters are retained across program
-        executions (there are kept separately for each &RCL;
-        configuration). The set of all indexes is usually quite stable, while
-        the active ones might typically be adjusted quite frequently.</para>
+        <para>Index selection is performed in two phases. A set of all usable indexes must first be
+          defined, and then the subset of indexes to be used for searching. These parameters are
+          retained across program executions (there are kept separately for each &RCL;
+          configuration). The set of all indexes is usually quite stable, while the active ones
+          might typically be adjusted quite frequently.</para>
 
-        <para>The main index (defined by
-        <envar>RECOLL_CONFDIR</envar>) is always active. If this is
-        undesirable, you can set up your base configuration to index
-        an empty directory.</para>
+        <para>The main index (defined by <envar>RECOLL_CONFDIR</envar>) is always active. If this is
+          undesirable, you can set up your base configuration to index an empty directory.</para>
 
-        <para>When adding a new index to the set, you can select either
-        a &RCL; configuration directory, or directly a &XAP; index
-        directory. In the first case, the &XAP; index directory will
-        be obtained from the selected configuration.</para>
+        <para>When adding a new index to the set, you can select either a &RCL; configuration
+          directory, or directly a &XAP; index directory. In the first case, the &XAP; index
+          directory will be obtained from the selected configuration.</para>
 
+        <para>If the external index is actually located on a volume mounted from another machine,
+          and references remote files, there may be a need to adjust the result paths
+          so that they match the locally mounted ones (for opening documents). This can be done
+          by using the <link linkend="RCL.SEARCH.PTRANS">path translation facility</link>.</para>
+        
         <para>As building the set of all indexes can be a little tedious
-        when done through the user interface, you can use the
-        <envar>RECOLL_EXTRA_DBS</envar> environment
-        variable to provide an initial set. This might typically be
-        set up by a system administrator so that every user does not
-        have to do it. The variable should define a colon-separated list
-        of index  directories, e.g.: 
-        </para>
+          when done through the user interface, you can use the
+          <envar>RECOLL_EXTRA_DBS</envar> environment variable to provide an initial set. This might
+          typically be set up by a system administrator so that every user does not have to do
+          it. The variable should define a colon-separated list of index directories, e.g.:</para>
         <screen>export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</screen> 
 
         <para>On Windows, use semi-colons (<literal>;</literal>) as separators instead of
-        colons.</para> 
+          colons.</para> 
 
-        <para>Another environment
-        variable, <envar>RECOLL_ACTIVE_EXTRA_DBS</envar> allows adding to
-        the active list of indexes. This variable was suggested and
-        implemented by a &RCL; user. It is mostly useful if you use scripts
-        to mount external volumes with &RCL; indexes. By
-        using <envar>RECOLL_EXTRA_DBS</envar>
-        and <envar>RECOLL_ACTIVE_EXTRA_DBS</envar>, you can add and
-        activate the index for the mounted volume when
-        starting <command>recoll</command>. Unreachable indexes will 
-        automatically be deactivated  when starting up.</para>
+        <para>Another environment variable, <envar>RECOLL_ACTIVE_EXTRA_DBS</envar> allows adding to
+          the active list of indexes. This variable was suggested and 
+          implemented by a &RCL; user. It is mostly useful if you use scripts
+          to mount external volumes with &RCL; indexes. By
+          using <envar>RECOLL_EXTRA_DBS</envar>
+          and <envar>RECOLL_ACTIVE_EXTRA_DBS</envar>, you can add and
+          activate the index for the mounted volume when
+          starting <command>recoll</command>. Unreachable indexes will 
+          automatically be deactivated  when starting up.</para>
 
       </sect2>
 
@@ -4554,42 +4553,33 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
     <sect1 id="RCL.SEARCH.PTRANS">
       <title>Path translations</title>
       
-      <para>In some cases, the document paths stored inside the index do
-      not match the actual ones, so that document
-      previews and accesses will fail. This can occur in a number of
-      circumstances:</para>
-      <itemizedlist>
-        <listitem><para>When using multiple indexes it is a relatively common
-        occurrence that some will actually reside on a remote volume, for
-        example mounted via NFS. In this case, the paths used to access
-        the documents on the local machine are not necessarily the same
-        than the ones used while indexing on the remote machine. For
-        example, <filename>/home/me</filename> may have been used as
-        a <literal>topdirs</literal> elements while indexing, but the
-        directory might be mounted
-        as <filename>/net/server/home/me</filename> on the local
-        machine.</para></listitem>
+      <para>In some cases, the document paths stored inside the index do not match the actual ones,
+        so that document previews and accesses will fail. This can occur in a number of
+        circumstances:</para>
 
-        <listitem><para>The case may also occur with removable
-        disks. It is perfectly possible to configure an index to
-        live with the documents on the removable disk, but it may
-        happen that the disk is not mounted at the same place so
-        that the documents paths from the index are
-        invalid.</para></listitem>
+      <itemizedlist>
+        <listitem><para>When using multiple indexes it is a relatively common occurrence that some
+            will actually reside on a remote volume, for example mounted via NFS. In this case, the
+            paths used to access the documents on the local machine are not necessarily the same
+            than the ones used while indexing on the remote machine. For
+            example, <filename>/home/me</filename> may have been used as
+            a <literal>topdirs</literal> elements while indexing, but the directory might be mounted
+            as <filename>/net/server/home/me</filename> on the local machine.</para></listitem>
+
+        <listitem><para>The case may also occur with removable disks. It is perfectly possible to
+            configure an index to live with the documents on the removable disk, but it may happen
+            that the disk is not mounted at the same place so that the documents paths from the
+            index are invalid. In some case, the path adjustments
+            <link linkend="RCL.INDEXING.REMOVABLE.SELF">can be automated</link>.</para></listitem>
         
-        <listitem><para>As a last example, one could imagine that a big
-        directory has been moved, but that it is currently
-        inconvenient to run the indexer.</para></listitem>
+        <listitem><para>As a last example, one could imagine that a big directory has been moved,
+            but that it is currently inconvenient to run the indexer.</para></listitem>
       </itemizedlist>
 
       <para>&RCL; has a facility for rewriting access paths when
-      extracting the data from the index. The translations can be
-      defined for the main index and for any additional query
-      index.</para>
-
-      <para>The path translation facility will be useful
-      whenever the documents paths seen by the indexer are not the same
-      as the ones which should be used at query time.</para>
+        extracting the data from the index. The translations can be
+        defined for the main index and for any additional query
+        index.</para>
 
       <para>In the above NFS example, &RCL; could be instructed to
       rewrite any <filename>file:///home/me</filename> URL from the
@@ -4597,19 +4587,28 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       allowing accesses from the client.</para>
 
       <para>The translations are defined in the 
-      <link linkend="RCL.INSTALL.CONFIG.PTRANS"><filename>ptrans</filename></link>
-      configuration file, which
-        can be edited by hand or from the GUI external indexes
-        configuration dialog: <menuchoice>
-        <guimenu>Preferences</guimenu>
-        <guimenuitem>External index dialog</guimenuitem>
-        </menuchoice>, then click the <guilabel>Paths
-        translations</guilabel> button on the right below the index
-      list.</para>
+        <link linkend="RCL.INSTALL.CONFIG.PTRANS"><filename>ptrans</filename></link> configuration
+        file, which can be edited by hand or from the GUI external indexes configuration
+        dialog: <menuchoice><guimenu>Preferences</guimenu><guimenuitem>External index
+            dialog</guimenuitem></menuchoice>, then click the <guilabel>Paths
+          translations</guilabel> button on the right below the index list: translations will be set
+        for the main index if no external index is currently selected in
+        the list, or else for the currently selected index.</para>
 
-      <note><para>Due to a current bug, the GUI must be restarted
-      after changing the <filename>ptrans</filename> values (even when they
-      were changed from the GUI).</para></note>
+
+      <formalpara><title>Example entry from a <filename>ptrans</filename> file:</title>
+        <programlisting>[/path/to/external/xapiandb]
+/some/index/path = /some/local/path</programlisting>
+        This would decide that, for the index stored
+        in <literal>/path/to/external/xapiandb</literal>, any occurence
+        of <literal>/some/index/path</literal> should be replaced
+        with <literal>/some/local/path</literal> when presenting a result.</formalpara>
+
+      <note><title>Windows note</title><para>At the moment, the path comparisons done for path
+          translation under MS Windows are case sensitive (this will be fixed at some point). Use
+          the natural character case as displayed in the file explorer. Example:
+          <programlisting>[Z:/some/mounted/xapiandb]
+C: = Z:</programlisting></para></note>
     </sect1>
 
     <sect1 id="RCL.SEARCH.CASEDIAC">
