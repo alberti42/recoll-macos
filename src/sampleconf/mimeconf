@@ -98,11 +98,13 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  internal xsltproc meta docProps/core.xml openxml-meta.xsl \
  body word/document.xml openxml-word-body.xsl \
  body word/footnotes.xml openxml-word-body.xsl \
+ body word/comments.xml openxml-word-body.xsl \
  body word/endnotes.xml openxml-word-body.xsl 
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
  internal xsltproc meta docProps/core.xml openxml-meta.xsl \
  body word/document.xml openxml-word-body.xsl \
  body word/footnotes.xml openxml-word-body.xsl \
+ body word/comments.xml openxml-word-body.xsl \
  body word/endnotes.xml openxml-word-body.xsl 
 application/vnd.openxmlformats-officedocument.presentationml.template = \
  execm rclopxml.py
