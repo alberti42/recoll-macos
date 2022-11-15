@@ -2544,13 +2544,15 @@ fs.inotify.max_user_watches=32768
       <sect2 id="RCL.SEARCH.GUI.FRAGBUTS">
         <title>The Query Fragments window</title>
 
+        <para>The Query Fragments window can be used to control filtering query language elements
+          modifying the current query, simply by clicking a button. This can be useful to save
+          typing, or avoid memorizing, simple clauses of common usage (e.g. selecting only
+          standalone documents or attachments, or filtering out WEB results, selecting a file system
+          subtree, a file type, etc.).</para>
+        
         <para>Selecting the <menuchoice><guimenu>Tools</guimenu> <guimenuitem>Query
-        Fragments</guimenuitem></menuchoice> menu entry will open a window with radio- and
-        check-buttons which can be used to filter the current query with user-defined query language
-        fragments. This can be useful if you have frequent reusable selectors, not covered by the
-        standard category selectors, for example, filtering on alternate directories, or searching
-        just one category of files. In practise, the query fragments are joined to the current
-        query as an AND clause.</para>
+              Fragments</guimenuitem></menuchoice> menu entry will open the dialog.</para>
+
 
         <para>The contents of the window are entirely customizable, and defined by the contents of a
           XML text file, named <filename>fragment-buttons.xml</filename> and which will be looked
@@ -2558,8 +2560,8 @@ fs.inotify.max_user_watches=32768
           contains a number of example filters. This will be automatically copied to the
           configuration directory if the file does not exist in there
           (e.g. <filename>~/.recoll/fragment-buttons.xml</filename> under Linux and Mac
-          OS, <filename>$HOME/AppData/Local/Recoll</filename> for Windows). Editing the copy will
-          allow you to configure the tool for your needs .</para>
+          OS, <filename>$HOME/AppData/Local/Recoll/fragment-buttons.xml</filename> for
+          Windows). Editing the copy will allow you to configure the tool for your needs .</para>
 
       <note><para>
           The <filename>fragment-buttons.xml</filename> file was
@@ -2570,62 +2572,89 @@ fs.inotify.max_user_watches=32768
           performed.</para>
       </note>
 
-        <para>Here follows an example:
+      <para>Here follows an example window:</para>
+      <para><imagedata fileref="frag-sample.png"></imagedata></para>
+
+      <para>And the corresponding configuration file:
         <programlisting><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <fragbuttons version="1.0">
 
   <radiobuttons>
-    <!-- Actually useful: toggle Web queue results inclusion -->
+    <!-- Toggle WEB queue results inclusion -->
     <fragbutton>
       <label>Include Web Results</label>
       <frag></frag>
     </fragbutton>
-
     <fragbutton>
       <label>Exclude Web Results</label>
       <frag>-rclbes:BGL</frag>
     </fragbutton>
-
     <fragbutton>
       <label>Only Web Results</label>
       <frag>rclbes:BGL</frag>
     </fragbutton>
+  </radiobuttons>
 
+  <radiobuttons>
+    <!-- Standalone vs embedded switch -->
+    <fragbutton>
+      <label>Include embedded documents</label>
+      <frag></frag>
+    </fragbutton>
+    <fragbutton>
+      <label>Only standalone documents</label>
+      <frag>issub:0</frag>
+    </fragbutton>
+    <fragbutton>
+      <label>Only embedded documents</label>
+      <frag>issub:1</frag>
+    </fragbutton>
   </radiobuttons>
 
   <buttons>
-
     <fragbutton>
       <label>Example: Year 2010</label>
       <frag>date:2010-01-01/2010-12-31</frag>
     </fragbutton>
-
     <fragbutton>
       <label>Example: c++ files</label>
       <frag>ext:cpp OR ext:cxx</frag>
     </fragbutton>
-
     <fragbutton>
       <label>Example: My Great Directory</label>
       <frag>dir:/my/great/directory</frag>
     </fragbutton>
-
   </buttons>
-
 </fragbuttons>
         ]]></programlisting>
         </para>
         
-        <para>Each <literal>radiobuttons</literal> or <literal>buttons</literal> section defines a
-        line of checkbuttons or radiobuttons inside the window. Any number
-        of <literal>buttons</literal> can be selected, but the <literal>radiobuttons</literal> in a
-        line are exclusive.</para>
-        
-        <para>Each <literal>fragbutton</literal> section defines the label
-          for a button, and the Query Language fragment which will be added (as an AND filter)
-          before performing the query if the button is active.</para>
+        <para>There are two types of groupings <literal>radiobuttons</literal>
+          and <literal>buttons</literal>, each defining a
+          line of checkbuttons or radiobuttons inside the window. Any number
+          of <literal>buttons</literal> can be selected, but the <literal>radiobuttons</literal> in a
+          line are exclusive.</para>
 
+        <para>Buttons are defined by a <literal>fragbutton</literal> section, which provides the
+          label for a button, and the <literal>Query Language</literal> fragment which will be added
+          (as an AND filter) before performing the query if the button is active.</para>
+
+        <para>It is also possible to add <literal>message</literal> elements inside the groups, for
+          documenting the behaviour. <literal>message</literal> elements have
+          a <literal>label</literal> but no <literal>frag</literal> element. Example:
+        <programlisting><![CDATA[
+  <buttons>
+    <message>
+      <label>This is a message</label> 
+    </message>
+  </buttons>
+  ]]></programlisting></para>
+
+        <para>The <literal>label</literal> contents are interpreted as HTML. Take care to replace
+          opening <literal>&lt;</literal> characters with the <literal>&amp;lt;</literal> entity
+          if you use tags.</para>
+        
         <para>The only thing that you need to know about XML for editing this file is that any
           opening tag like <replaceable>&lt;label&gt;</replaceable> needs to be matched by a closing
           tag after the value: <replaceable>&lt;/label&gt;</replaceable>.</para>

@@ -419,7 +419,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1565">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1580">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -3640,16 +3640,16 @@ fs.inotify.max_user_watches=32768
               </div>
             </div>
           </div>
+          <p>The Query Fragments window can be used to control
+          filtering query language elements modifying the current
+          query, simply by clicking a button. This can be useful to
+          save typing, or avoid memorizing, simple clauses of
+          common usage (e.g. selecting only standalone documents or
+          attachments, or filtering out WEB results, selecting a
+          file system subtree, a file type, etc.).</p>
           <p>Selecting the <span class="guimenu">Tools</span> →
           <span class="guimenuitem">Query Fragments</span> menu
-          entry will open a window with radio- and check-buttons
-          which can be used to filter the current query with
-          user-defined query language fragments. This can be useful
-          if you have frequent reusable selectors, not covered by
-          the standard category selectors, for example, filtering
-          on alternate directories, or searching just one category
-          of files. In practise, the query fragments are joined to
-          the current query as an AND clause.</p>
+          entry will open the dialog.</p>
           <p>The contents of the window are entirely customizable,
           and defined by the contents of a XML text file, named
           <code class="filename">fragment-buttons.xml</code> and
@@ -3661,9 +3661,9 @@ fs.inotify.max_user_watches=32768
           there (e.g. <code class=
           "filename">~/.recoll/fragment-buttons.xml</code> under
           Linux and Mac OS, <code class=
-          "filename">$HOME/AppData/Local/Recoll</code> for
-          Windows). Editing the copy will allow you to configure
-          the tool for your needs .</p>
+          "filename">$HOME/AppData/Local/Recoll/fragment-buttons.xml</code>
+          for Windows). Editing the copy will allow you to
+          configure the tool for your needs .</p>
           <div class="note" style=
           "margin-left: 0.5in; margin-right: 0.5in;">
             <h3 class="title">Note</h3>
@@ -3678,62 +3678,93 @@ fs.inotify.max_user_watches=32768
             "filename">fragment-buttons.xml</code> does not exist.
             No automatic renaming will be performed.</p>
           </div>
-          <p>Here follows an example:</p>
+          <p>Here follows an example window:</p>
+          <p><img src="frag-sample.png"></p>
+          <p>And the corresponding configuration file:</p>
           <pre class="programlisting">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;fragbuttons version="1.0"&gt;
 
   &lt;radiobuttons&gt;
-    &lt;!-- Actually useful: toggle Web queue results inclusion --&gt;
+    &lt;!-- Toggle WEB queue results inclusion --&gt;
     &lt;fragbutton&gt;
       &lt;label&gt;Include Web Results&lt;/label&gt;
       &lt;frag&gt;&lt;/frag&gt;
     &lt;/fragbutton&gt;
-
     &lt;fragbutton&gt;
       &lt;label&gt;Exclude Web Results&lt;/label&gt;
       &lt;frag&gt;-rclbes:BGL&lt;/frag&gt;
     &lt;/fragbutton&gt;
-
     &lt;fragbutton&gt;
       &lt;label&gt;Only Web Results&lt;/label&gt;
       &lt;frag&gt;rclbes:BGL&lt;/frag&gt;
     &lt;/fragbutton&gt;
+  &lt;/radiobuttons&gt;
 
+  &lt;radiobuttons&gt;
+    &lt;!-- Standalone vs embedded switch --&gt;
+    &lt;fragbutton&gt;
+      &lt;label&gt;Include embedded documents&lt;/label&gt;
+      &lt;frag&gt;&lt;/frag&gt;
+    &lt;/fragbutton&gt;
+    &lt;fragbutton&gt;
+      &lt;label&gt;Only standalone documents&lt;/label&gt;
+      &lt;frag&gt;issub:0&lt;/frag&gt;
+    &lt;/fragbutton&gt;
+    &lt;fragbutton&gt;
+      &lt;label&gt;Only embedded documents&lt;/label&gt;
+      &lt;frag&gt;issub:1&lt;/frag&gt;
+    &lt;/fragbutton&gt;
   &lt;/radiobuttons&gt;
 
   &lt;buttons&gt;
-
     &lt;fragbutton&gt;
       &lt;label&gt;Example: Year 2010&lt;/label&gt;
       &lt;frag&gt;date:2010-01-01/2010-12-31&lt;/frag&gt;
     &lt;/fragbutton&gt;
-
     &lt;fragbutton&gt;
       &lt;label&gt;Example: c++ files&lt;/label&gt;
       &lt;frag&gt;ext:cpp OR ext:cxx&lt;/frag&gt;
     &lt;/fragbutton&gt;
-
     &lt;fragbutton&gt;
       &lt;label&gt;Example: My Great Directory&lt;/label&gt;
       &lt;frag&gt;dir:/my/great/directory&lt;/frag&gt;
     &lt;/fragbutton&gt;
-
   &lt;/buttons&gt;
-
 &lt;/fragbuttons&gt;
         </pre>
-          <p>Each <code class="literal">radiobuttons</code> or
-          <code class="literal">buttons</code> section defines a
-          line of checkbuttons or radiobuttons inside the window.
-          Any number of <code class="literal">buttons</code> can be
+          <p>There are two types of groupings <code class=
+          "literal">radiobuttons</code> and <code class=
+          "literal">buttons</code>, each defining a line of
+          checkbuttons or radiobuttons inside the window. Any
+          number of <code class="literal">buttons</code> can be
           selected, but the <code class=
           "literal">radiobuttons</code> in a line are
           exclusive.</p>
-          <p>Each <code class="literal">fragbutton</code> section
-          defines the label for a button, and the Query Language
-          fragment which will be added (as an AND filter) before
-          performing the query if the button is active.</p>
+          <p>Buttons are defined by a <code class=
+          "literal">fragbutton</code> section, which provides the
+          label for a button, and the <code class="literal">Query
+          Language</code> fragment which will be added (as an AND
+          filter) before performing the query if the button is
+          active.</p>
+          <p>It is also possible to add <code class=
+          "literal">message</code> elements inside the groups, for
+          documenting the behaviour. <code class=
+          "literal">message</code> elements have a <code class=
+          "literal">label</code> but no <code class=
+          "literal">frag</code> element. Example:</p>
+          <pre class="programlisting">
+  &lt;buttons&gt;
+    &lt;message&gt;
+      &lt;label&gt;This is a message&lt;/label&gt; 
+    &lt;/message&gt;
+  &lt;/buttons&gt;
+  </pre>
+          <p>The <code class="literal">label</code> contents are
+          interpreted as HTML. Take care to replace opening
+          <code class="literal">&lt;</code> characters with the
+          <code class="literal">&amp;lt;</code> entity if you use
+          tags.</p>
           <p>The only thing that you need to know about XML for
           editing this file is that any opening tag like <em class=
           "replaceable"><code>&lt;label&gt;</code></em> needs to be
@@ -4259,7 +4290,7 @@ fs.inotify.max_user_watches=32768
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1565" id="idm1565"></a>
+            <a name="idm1580" id="idm1580"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">

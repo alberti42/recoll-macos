@@ -145,6 +145,8 @@ void RclMain::showFragButs()
             fragbuts->show();
             connect(new QShortcut(quitKeySeq, fragbuts), SIGNAL (activated()),
                     this, SLOT (fileExit()));
+            connect(new QShortcut(closeKeySeq, fragbuts), SIGNAL (activated()),
+                    fragbuts, SLOT(close()));
             connect(fragbuts, SIGNAL(fragmentsChanged()), this, SLOT(onFragmentsChanged()));
         } else {
             deleteZ(fragbuts);

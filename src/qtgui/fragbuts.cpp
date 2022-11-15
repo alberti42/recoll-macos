@@ -28,6 +28,7 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 #include <QMessageBox>
+#include <QLabel>
 
 #include "fragbuts.h"
 #include "pathut.h"
@@ -59,10 +60,9 @@ public:
             bg = new QButtonGroup(parent);
             hl = new QHBoxLayout();
         } else if (nm == "label" || nm == "frag" || nm == "fragbuts" || nm == "fragbuttons" ||
-                   nm == "fragbut" || nm == "fragbutton") {
+                   nm == "fragbut" || nm == "fragbutton" || nm == "message") {
         } else {
-            QMessageBox::warning(
-                0, "Recoll", QString("Bad element name: [%1]").arg(nm.c_str()));
+            QMessageBox::warning(0, "Recoll", QString("Bad element name: [%1]").arg(nm.c_str()));
         }
     }        
     void endElement(const std::string& nm) override {
@@ -90,6 +90,12 @@ public:
             abut->setToolTip(u8s2qs(currentText));
             buttons.push_back(FragButs::ButFrag(abut, frag));
             hl->addWidget(abut);
+        } else if (nm == "message") {
+            string slab = qs2utf8s(label);
+            trimstring(slab, " \t\n\t");
+            label = u8s2qs(slab.c_str());
+            QLabel *lbl = new QLabel(label, parent);
+            hl->addWidget(lbl);
         } else if (nm == "buttons" || nm == "radiobuttons") {
             vl->addLayout(hl);
             hl = 0;
