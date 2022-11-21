@@ -61,8 +61,7 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
     }
 
     TermMatchResult result;
-    if (!idxTermMatch(ET_WILD, string(), pattern, result, max,
-                      unsplitFilenameFieldName))
+    if (!idxTermMatch(ET_WILD, pattern, result, max, unsplitFilenameFieldName))
         return false;
     for (const auto& entry : result.entries) {
         names.push_back(entry.term);
@@ -82,7 +81,7 @@ bool Db::maxYearSpan(int *minyear, int *maxyear)
     *minyear = 1000000; 
     *maxyear = -1000000;
     TermMatchResult result;
-    if (!idxTermMatch(ET_WILD, string(), "*", result, -1, "xapyear")) {
+    if (!idxTermMatch(ET_WILD, "*", result, -1, "xapyear")) {
         LOGINFO("Rcl::Db:maxYearSpan: termMatch failed\n");
         return false;
     }
@@ -101,7 +100,7 @@ bool Db::maxYearSpan(int *minyear, int *maxyear)
 bool Db::getAllDbMimeTypes(std::vector<std::string>& exp)
 {
     Rcl::TermMatchResult res;
-    if (!idxTermMatch(Rcl::Db::ET_WILD, "", "*", res, -1, "mtype")) {
+    if (!idxTermMatch(ET_WILD, "*", res, -1, "mtype")) {
         return false;
     }
     for (const auto& entry : res.entries) {
@@ -173,7 +172,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             field << "] stripped " << o_index_stripchars << " init res.size "
             << res.entries.size() << "\n");
 
-    // If index is stripped, no case or diac expansion can be needed:
+    // If the index is stripped, no case or diac expansion can be needed:
     // for the processing inside this routine, everything looks like
     // we're all-sensitive: no use of expansion db.
     // Also, convert input to lowercase and strip its accents.
@@ -191,11 +190,11 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     XapComputableSynFamMember synac(xrdb, synFamDiCa, "all", &unacfoldtrans);
 
     if (matchtyp == ET_WILD || matchtyp == ET_REGEXP) {
-        std::shared_ptr<StrMatcher> matcher;
-        if (matchtyp == ET_WILD) {
-            matcher = std::shared_ptr<StrMatcher>(new StrWildMatcher(term));
+        std::unique_ptr<StrMatcher> matcher;
+        if (matchtyp == ET_REGEXP) {
+            matcher = std::make_unique<StrRegexpMatcher>(term);
         } else {
-            matcher = std::shared_ptr<StrMatcher>(new StrRegexpMatcher(term));
+            matcher = std::make_unique<StrWildMatcher>(term);
         }
         if (!diac_sensitive || !case_sensitive) {
             // Perform case/diac expansion on the exp as appropriate and
@@ -215,21 +214,19 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             }
             // Retrieve additional info and filter against the index itself
             for (const auto& term : exp) {
-                idxTermMatch(ET_NONE, "", term, res, max, field);
+                idxTermMatch(ET_NONE, term, res, max, field);
             }
             // And also expand the original expression against the
             // main index: for the common case where the expression
             // had no case/diac expansion (no entry in the exp db if
             // the original term is lowercase and without accents).
-            idxTermMatch(typ_sens, lang, term, res, max, field);
+            idxTermMatch(typ_sens, term, res, max, field);
         } else {
-            idxTermMatch(typ_sens, lang, term, res, max, field);
+            idxTermMatch(typ_sens, term, res, max, field);
         }
 
     } else {
-        // Expansion is STEM or NONE (which may still need synonyms
-        // and case/diac exp)
-
+        // match_typ is either ET_STEM or ET_NONE (which may still need synonyms and case/diac exp)
         vector<string> lexp;
         if (diac_sensitive && case_sensitive) {
             // No case/diac expansion
@@ -270,8 +267,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
                 exp1.swap(lexp);
                 sort(lexp.begin(), lexp.end());
                 lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
-                LOGDEB("Db::TermMatch: stemexp: " << stringsToString(lexp)
-                       << "\n");
+                LOGDEB("Db::TermMatch: stemexp: " << stringsToString(lexp) << "\n");
             }
 
             if (m_syngroups.ok() && (typ_sens & ET_SYNEXP)) {
@@ -309,20 +305,37 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
         }
 
-        // Filter the result against the index and get the stats,
-        // possibly add prefixes.
-        LOGDEB("Db::TermMatch: final lexp before idx filter: " <<
-               stringsToString(lexp) << "\n");
+        // Filter the result against the index and get the stats, possibly add prefixes.
+        LOGDEB("Db::TermMatch: final lexp before idx filter: " << stringsToString(lexp) << "\n");
         for (const auto& term : lexp) {
-            idxTermMatch(Rcl::Db::ET_WILD, "", term, res, max, field);
+            idxTermMatch(Rcl::Db::ET_NONE, term, res, max, field);
+        }
+
+        if (res.entries.size() == 0 && (m_usingSpellFuzz)) {
+            // If the expansion list is empty, the term is not in the index. Maybe try to use aspell
+            // for a close one ?
+            vector<string> suggs;
+            if (getSpellingSuggestions(term, suggs) && !suggs.empty()) {
+                LOGDEB("Db::TermMatch: spelling suggestions for [" << term << "] : [" <<
+                       stringsToString(suggs) << "]\n");
+                for (int i = 0; i < int(suggs.size()) && i < 6;i++) {
+                    auto d = u8DLDistance(suggs[i], term);
+                    LOGDEB0("Db::TermMatch: spell: " << term << " -> " << suggs[i] << 
+                            " distance " << d << " (max " << m_maxSpellDistance << ")\n");
+                    if (d <= m_maxSpellDistance) {
+                        idxTermMatch(Rcl::Db::ET_NONE, suggs[i], res, max, field);
+                    }
+                }
+            } else {
+                LOGDEB("Db::TermMatch: failed getting spelling suggestions\n");
+            }
         }
     }
 
     TermMatchCmpByTerm tcmp;
     sort(res.entries.begin(), res.entries.end(), tcmp);
     TermMatchTermEqual teq;
-    vector<TermMatchEntry>::iterator uit = 
-        unique(res.entries.begin(), res.entries.end(), teq);
+    vector<TermMatchEntry>::iterator uit = unique(res.entries.begin(), res.entries.end(), teq);
     res.entries.resize(uit - res.entries.begin());
     TermMatchCmpByWcf wcmp;
     sort(res.entries.begin(), res.entries.end(), wcmp);
@@ -334,7 +347,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 }
 
 bool Db::Native::idxTermMatch_p(
-    int typ, const string&, const string& root,
+    int typ, const string& root,
     std::function<bool(const string& term,
                        Xapian::termcount colfreq,
                        Xapian::doccount termfreq)> client,
@@ -342,67 +355,67 @@ bool Db::Native::idxTermMatch_p(
 {
     Xapian::Database xdb = xrdb;
 
-    std::shared_ptr<StrMatcher> matcher;
+    std::unique_ptr<StrMatcher> matcher;
     if (typ == ET_REGEXP) {
-        matcher = std::shared_ptr<StrMatcher>(new StrRegexpMatcher(root));
+        matcher = std::make_unique<StrRegexpMatcher>(root);
         if (!matcher->ok()) {
             LOGERR("termMatch: regcomp failed: " << matcher->getreason());
             return false;
         }
     } else if (typ == ET_WILD) {
-        matcher = std::shared_ptr<StrMatcher>(new StrWildMatcher(root));
-    }
-
-    // Find the initial section before any special char
-    string::size_type es = string::npos;
-    if (matcher) {
-        es = matcher->baseprefixlen();
+        matcher = std::make_unique<StrWildMatcher>(root);
     }
 
     // Initial section: the part of the prefix+expr before the
     // first wildcard character. We only scan the part of the
     // index where this matches
     string is;
-    if (es == string::npos) {
-        is = prefix + root;
-    } else if (es == 0) {
-        is = prefix;
-    } else {
+    if (matcher) {
+        string::size_type es = matcher->baseprefixlen();
         is = prefix + root.substr(0, es);
+    } else {
+        is = prefix + root;
     }
-    LOGDEB2("termMatch: initsec: [" << is << "]\n");
+    LOGDEB2("termMatch: initial section: [" << is << "]\n");
 
     for (int tries = 0; tries < 2; tries++) { 
         try {
             Xapian::TermIterator it = xdb.allterms_begin(); 
             if (!is.empty())
-                it.skip_to(is.c_str());
+                it.skip_to(is);
             for (; it != xdb.allterms_end(); it++) {
                 const string ixterm{*it};
-                // If we're beyond the terms matching the initial
-                // section, end
-                if (!is.empty() && ixterm.find(is) != 0)
+                LOGDEB1("idxTermMatch_p: term at skip [" << ixterm << "]\n");
+                // If we're beyond the terms matching the initial section, end
+                if (!is.empty() && ixterm.find(is) != 0) {
+                    LOGDEB1("idxTermMatch_p: initial section mismatch: stop\n");
                     break;
-
-                // Else try to match the term. The matcher content
-                // is without prefix, so we remove this if any. We
-                // just checked that the index term did begin with
-                // the prefix.
+                }
+                // Else try to match the term. The matcher content is without prefix, so we remove
+                // this if any. We just checked that the index term did begin with the prefix.
                 string term;
                 if (!prefix.empty()) {
                     term = ixterm.substr(prefix.length());
                 } else {
                     if (has_prefix(ixterm)) {
+                        // This is possible with a left-side wildcard which would have is empty and
+                        // we're scanning the whole term list.
                         continue;
                     }
                     term = ixterm;
                 }
 
-                if (matcher && !matcher->match(term))
+                // If matching an expanding expression, a mismatch does not stop us. Else we want
+                // equality
+                if (matcher && !matcher->match(term)) {
                     continue;
+                } else if (term != root) {
+                    break;
+                }
 
-                if (!client(ixterm, xdb.get_collection_freq(ixterm),
-                            it.get_termfreq())) {
+                if (!client(ixterm, xdb.get_collection_freq(ixterm), it.get_termfreq()) ||
+                    !matcher) {
+                    // If the client tells us or this is an exact search, stop.
                     break;
                 }
             }
@@ -426,13 +439,12 @@ bool Db::Native::idxTermMatch_p(
 
 // Second phase of wildcard/regexp term expansion after case/diac
 // expansion: expand against main index terms
-bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
+bool Db::idxTermMatch(int typ_sens, const string &root,
                       TermMatchResult& res, int max,  const string& field)
 {
     int typ = matchTypeTp(typ_sens);
-    LOGDEB1("Db::idxTermMatch: typ " << tmtptostr(typ) << " lang [" <<
-            lang << "] term [" << root << "] max "  << max << " field [" <<
-            field << "] init res.size " << res.entries.size() << "\n");
+    LOGDEB1("Db::idxTermMatch: typ " << tmtptostr(typ) << "] term [" << root << "] max "  <<
+            max << " field [" << field << "] init res.size " << res.entries.size() << "\n");
 
     if (typ == ET_STEM) {
         LOGFATAL("RCLDB: internal error: idxTermMatch called with ET_STEM\n");
@@ -442,8 +454,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     if (!field.empty()) {
         const FieldTraits *ftp = nullptr;
         if (!fieldToTraits(field, &ftp, true) || ftp->pfx.empty()) {
-            LOGDEB("Db::termMatch: field is not indexed (no prefix): [" <<
-                   field << "]\n");
+            LOGDEB("Db::termMatch: field is not indexed (no prefix): [" << field << "]\n");
         } else {
             prefix = wrap_prefix(ftp->pfx);
         }
@@ -452,7 +463,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
 
     int rcnt = 0;
     bool ret = m_ndb->idxTermMatch_p(
-        typ, lang, root,
+        typ, root,
         [&res, &rcnt, max](const string& term,
                     Xapian::termcount cf, Xapian::doccount tf) {
             res.entries.push_back(TermMatchEntry(term, cf, tf));

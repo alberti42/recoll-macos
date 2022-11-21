@@ -513,8 +513,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
         termmatchsens |= Db::ET_SYNEXP;
     if (pathelt) 
         termmatchsens |= Db::ET_PATHELT;
-    Db::MatchType mtyp = haswild ? Db::ET_WILD : 
-        nostemexp ? Db::ET_NONE : Db::ET_STEM;
+    Db::MatchType mtyp = haswild ? Db::ET_WILD : nostemexp ? Db::ET_NONE : Db::ET_STEM;
     TermMatchResult res;
     if (!db.termMatch(mtyp | termmatchsens, getStemLang(), 
                       term, res, maxexpand,  m_field, multiwords)) {

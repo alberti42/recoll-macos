@@ -40,7 +40,7 @@ COMMONCPPFLAGS = -I. \
     -I$(top_srcdir)/xaposix \
     -DBUILDING_RECOLL
 
-AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
+AM_CPPFLAGS = -Wall -Wno-unused -std=c++14 \
     $(COMMONCPPFLAGS) \
     $(INCICONV) \
     $(XAPIAN_CFLAGS) \

@@ -1469,8 +1469,7 @@ bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
 #endif
     } else {
 #ifdef TESTING_XAPIAN_SPELL
-        // Was not aspell candidate (e.g.: katakana). Maybe use Xapian
-        // speller?
+        // Was not aspell candidate (e.g.: katakana). Maybe use Xapian speller?
         if (isSpellingCandidate(term, false)) {
             if (!o_index_stripchars) {
                 if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
@@ -2682,7 +2681,7 @@ bool Db::udiTreeMarkExisting(const string& udi)
 #endif
 
     bool ret = m_ndb->idxTermMatch_p(
-        int(ET_WILD), cstr_null, expr,
+        int(ET_WILD), expr,
         [this, &udi](const string& term, Xapian::termcount, Xapian::doccount) {
             Xapian::PostingIterator docid;
             XAPTRY(docid = m_ndb->xrdb.postlist_begin(term), m_ndb->xrdb,

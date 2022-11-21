@@ -146,4 +146,6 @@ extern std::string localelang();
 // Divine 8bit charset from language
 extern std::string langtocode(const std::string& lang);
 
+extern int u8DLDistance(const std::string& str1, const std::string str2);
+
 #endif /* _RCLUTIL_H_INCLUDED_ */
