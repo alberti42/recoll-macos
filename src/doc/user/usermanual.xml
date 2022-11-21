@@ -2631,14 +2631,20 @@ fs.inotify.max_user_watches=32768
         </para>
         
         <para>There are two types of groupings <literal>radiobuttons</literal>
-          and <literal>buttons</literal>, each defining a
-          line of checkbuttons or radiobuttons inside the window. Any number
-          of <literal>buttons</literal> can be selected, but the <literal>radiobuttons</literal> in a
-          line are exclusive.</para>
+          and <literal>buttons</literal>, each defining a line of checkbuttons or radiobuttons
+          inside the window. Any number of <literal>buttons</literal> can be selected, but
+          the <literal>radiobuttons</literal> in a line are exclusive.</para>
 
         <para>Buttons are defined by a <literal>fragbutton</literal> section, which provides the
           label for a button, and the <literal>Query Language</literal> fragment which will be added
-          (as an AND filter) before performing the query if the button is active.</para>
+          (as an AND filter) before performing the query if the button is active.
+          <programlisting><![CDATA[
+    <fragbutton>
+      <label>Example: My Great Directory</label>
+      <frag>dir:/my/great/directory</frag>
+    </fragbutton>
+  ]]></programlisting></para>
+
 
         <para>It is also possible to add <literal>message</literal> elements inside the groups, for
           documenting the behaviour. <literal>message</literal> elements have
