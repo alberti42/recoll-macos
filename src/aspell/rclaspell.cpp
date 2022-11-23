@@ -35,7 +35,8 @@ using namespace std;
 // Private rclaspell data
 class AspellData {
 public:
-    string m_exec;
+    string m_execbuild;
+    string m_execspell;
     ExecCmd m_speller;
 #ifdef _WIN32
     string m_datadir;
@@ -94,26 +95,32 @@ bool Aspell::init(string &reason)
     
     const char *aspell_prog_from_env = getenv("ASPELL_PROG");
     if (aspell_prog_from_env && access(aspell_prog_from_env, X_OK) == 0) {
-        m_data->m_exec = aspell_prog_from_env;
+        m_data->m_execbuild = aspell_prog_from_env;
     }
 #ifdef ASPELL_PROG
-    if (m_data->m_exec.empty()) {
+    if (m_data->m_execbuild.empty()) {
         string cmd = m_config->findFilter(ASPELL_PROG);
         LOGDEB("rclaspell::init: findFilter returns " << cmd << endl);
         if (path_isabsolute(cmd)) {
-            m_data->m_exec.swap(cmd);
+            m_data->m_execbuild.swap(cmd);
         }
     }
 #endif // ASPELL_PROG
-    if (m_data->m_exec.empty()) {
-        ExecCmd::which("aspell", m_data->m_exec);
+    if (m_data->m_execbuild.empty()) {
+        ExecCmd::which("aspell", m_data->m_execbuild);
     }
-    if (m_data->m_exec.empty()) {
+    if (m_data->m_execbuild.empty()) {
         reason = "aspell program not found or not executable";
         deleteZ(m_data);
         return false;
     }
 
+    m_data->m_execspell = m_config->findFilter("rclaspell-sugg.py");
+    if (m_data->m_execspell.empty()) {
+        reason = "rclaspell-sugg.py program not found or not executable";
+        deleteZ(m_data);
+        return false;
+    }
     return true;
 }
 
@@ -178,7 +185,7 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
 
     // We create the dictionary by executing the aspell command:
     // aspell --lang=[lang] create master [dictApath]
-    string cmdstring(m_data->m_exec);
+    string cmdstring(m_data->m_execbuild);
     ExecCmd aspell;
     vector<string> args;
     args.push_back(string("--lang=")+ m_lang);
@@ -216,13 +223,13 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
     AspExecPv pv(&termbuf, tit, db);
     aspell.setProvide(&pv);
     
-    if (aspell.doexec(m_data->m_exec, args, &termbuf)) {
+    if (aspell.doexec(m_data->m_execbuild, args, &termbuf)) {
         ExecCmd cmd;
         args.clear();
         args.push_back("dicts");
         string dicts;
         bool hasdict = false;
-        if (cmd.doexec(m_data->m_exec, args, nullptr, &dicts)) {
+        if (cmd.doexec(m_data->m_execbuild, args, nullptr, &dicts)) {
             vector<string> vdicts;
             stringToTokens(dicts, vdicts, "\n\r\t ");
             if (find(vdicts.begin(), vdicts.end(), m_lang) != vdicts.end()) {
@@ -259,8 +266,7 @@ bool Aspell::make_speller(string& reason)
 
     // aspell --lang=[lang] --encoding=utf-8 --master=[dicPath()] --sug-mode=fast --mode=none pipe
 
-    m_data->m_exec = "/home/dockes/bin/rclaspell-sugg.py";
-    string cmdstring(m_data->m_exec);
+    string cmdstring(m_data->m_execspell);
 
     ExecCmd aspell;
     vector<string> args;
@@ -294,7 +300,7 @@ bool Aspell::make_speller(string& reason)
     cmdstring += string(" ") + args.back();
                    
     LOGDEB("Starting aspell command [" << cmdstring << "]\n");
-    if (m_data->m_speller.startExec(m_data->m_exec, args, true, true) != 0) {
+    if (m_data->m_speller.startExec(m_data->m_execspell, args, true, true) != 0) {
         reason += "Can't start aspell: " + cmdstring;
         return false;
     }

@@ -271,6 +271,19 @@ if test X$pythonChmEnabled = Xyes; then
 fi
 AM_CONDITIONAL(MAKEPYTHONCHM, [test X$pythonChmEnabled = Xyes])
 
+# Disable building the aspell python wrapper. This DISABLES aspell usage in recoll. The default
+# aspell "pipe" interface is inadequate for recoll use because it does not list suggestions for
+# words which are part of the dictionary, which is usually the case for common mispellings (which
+# are bound to be found somewhere in the document set).
+AC_ARG_ENABLE(python-aspell,
+    AS_HELP_STRING([--disable-python-aspell], [Do not build the aspell Python wrapper.]),
+    pythonAspellEnabled=$enableval, pythonAspellEnabled=yes)
+if test X$pythonAspellEnabled = Xyes; then
+   AC_CHECK_LIB([aspell], [aspell_speller_suggest], [],
+   [AC_MSG_ERROR([--enable-python-aspell is set but libaspell is not found])])
+fi
+AM_CONDITIONAL(MAKEPYTHONASPELL, [test X$pythonAspellEnabled = Xyes])
+
 
 AC_ARG_ENABLE(indexer, 
     AS_HELP_STRING([--disable-indexer],[Disable building the recollindex indexer.]),
@@ -528,7 +541,7 @@ AC_SUBST([SYSTEMD_SYSTEM_UNIT_DIR])
 AC_SUBST([SYSTEMD_USER_UNIT_DIR])
 
 AC_CONFIG_FILES([Makefile python/recoll/setup.py
- python/pychm/setup.py])
+ python/pychm/setup.py python/pyaspell/setup.py])
 
 if test X$buildtestmains = Xyes ; then
    AC_CONFIG_FILES([testmains/Makefile])
