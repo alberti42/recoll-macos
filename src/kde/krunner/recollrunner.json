@@ -1,0 +1,17 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "jfd@recoll.org",
+                "Name": "Jean-Francois Dockes"
+            }
+        ],
+        "Description": "A KRunner plugin for using Recoll searches",
+        "EnabledByDefault": true,
+        "Icon": "user-home",
+        "License": "GPL",
+        "Name": "Recoll",
+        "Version": "0.1",
+        "Website": "http://www.recoll.org/"
+    }
+}
