@@ -66,11 +66,12 @@ RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
     }
     if (o_rclconfig->getDbDir().empty()) {
         // Note: this will have to be replaced by a call to a
-        // configuration building dialog for initial configuration? Or
-        // do we assume that the QT GUO is always used for this ?
+        // configuration building dialog for initial configuration ?
+        // For now we assume that the QT GUI is always used for this.
         m_reason = "No db directory in configuration ??";
         return;
     }
+    o_rclconfig->getConfParam("kioshowsubdocs", &m_showSubdocs);
     rwSettings(false);
 
     m_rcldb = std::shared_ptr<Rcl::Db>(new Rcl::Db(o_rclconfig));
@@ -326,7 +327,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
         error(KIO::ERR_SLAVE_DEFINED, u8s2qs(m_reason));
         return false;
     }
-
+    sdata->setSubSpec(m_showSubdocs ? Rcl::SearchData::SUBDOC_ANY: Rcl::SearchData::SUBDOC_NO);
     std::shared_ptr<Rcl::Query>query(new Rcl::Query(m_rcldb.get()));
     query->setCollapseDuplicates(prefs.collapseDuplicates);
     if (!query->setQuery(sdata)) {

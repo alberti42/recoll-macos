@@ -194,6 +194,9 @@ private:
     std::shared_ptr<DocSequence> m_source;
     // Note: page here is not used, current page always comes from m_pager.
     QueryDesc      m_query;
+    // Display results from embedded documents. The KIO does not know what to do
+    // with them. This can be disabled from recoll.conf with kio_showsubdocs = 0
+    bool m_showSubdocs{true};
 };
 
 extern "C" {
