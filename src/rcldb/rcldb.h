@@ -659,7 +659,8 @@ private:
     bool docExists(const string& uniterm);
 
     bool getDoc(const std::string& udi, int idxi, Doc& doc);
-
+    void spellExpand(const std::string& term, const std::string& field,
+                     std::vector<std::string>& expansion);
 };
 
 // This has to go somewhere, and as it needs the Xapian version, this is

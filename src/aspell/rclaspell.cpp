@@ -259,6 +259,7 @@ bool Aspell::make_speller(string& reason)
 
     // aspell --lang=[lang] --encoding=utf-8 --master=[dicPath()] --sug-mode=fast --mode=none pipe
 
+    m_data->m_exec = "/home/dockes/bin/rclaspell-sugg.py";
     string cmdstring(m_data->m_exec);
 
     ExecCmd aspell;

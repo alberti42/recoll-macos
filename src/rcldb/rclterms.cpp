@@ -259,8 +259,15 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
 
             if (matchtyp == ET_STEM) {
-                StemDb sdb(xrdb);
                 vector<string> exp1;
+                if (m_usingSpellFuzz) {
+                    spellExpand(term, field, exp1);
+                    lexp.insert(lexp.end(), exp1.begin(), exp1.end());
+                    sort(lexp.begin(), lexp.end());
+                    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
+                    exp1.clear();
+                }
+                StemDb sdb(xrdb);
                 for (const auto& term : lexp) {
                     sdb.stemExpand(lang, term, exp1);
                 }
@@ -306,29 +313,9 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
         }
 
         // Filter the result against the index and get the stats, possibly add prefixes.
-        LOGDEB("Db::TermMatch: final lexp before idx filter: " << stringsToString(lexp) << "\n");
+        LOGDEB0("Db::TermMatch: final lexp before idx filter: " << stringsToString(lexp) << "\n");
         for (const auto& term : lexp) {
             idxTermMatch(Rcl::Db::ET_NONE, term, res, max, field);
-        }
-
-        if (res.entries.size() == 0 && (m_usingSpellFuzz)) {
-            // If the expansion list is empty, the term is not in the index. Maybe try to use aspell
-            // for a close one ?
-            vector<string> suggs;
-            if (getSpellingSuggestions(term, suggs) && !suggs.empty()) {
-                LOGDEB("Db::TermMatch: spelling suggestions for [" << term << "] : [" <<
-                       stringsToString(suggs) << "]\n");
-                for (int i = 0; i < int(suggs.size()) && i < 6;i++) {
-                    auto d = u8DLDistance(suggs[i], term);
-                    LOGDEB0("Db::TermMatch: spell: " << term << " -> " << suggs[i] << 
-                            " distance " << d << " (max " << m_maxSpellDistance << ")\n");
-                    if (d <= m_maxSpellDistance) {
-                        idxTermMatch(Rcl::Db::ET_NONE, suggs[i], res, max, field);
-                    }
-                }
-            } else {
-                LOGDEB("Db::TermMatch: failed getting spelling suggestions\n");
-            }
         }
     }
 
@@ -346,8 +333,76 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     return true;
 }
 
+void Db::spellExpand(
+    const std::string& term, const std::string& field, std::vector<std::string>& neighbours)
+{
+    TermMatchResult matchResult;
+    idxTermMatch(Rcl::Db::ET_NONE, term, matchResult, 1);
+    if (!matchResult.entries.empty()) {
+        // Term exists in db. If it is rare and a spell neighbour is much more frequent,
+        // expand query.
+        // Total collection length in terms.
+        auto totlen = m_ndb->xrdb.get_total_length();
+        auto wcf = matchResult.entries[0].wcf;
+        if (wcf == 0) // ??
+            ++wcf;
+        double rareness = double(totlen) / double(wcf);
+        LOGDEB0("RARENESS FOR " << term << " " << rareness << "\n");
+        if (rareness < 200000) {
+            LOGDEB0("Db::spellExpand: [" << term << "] is not rare.\n");
+            return;
+        }
+        vector<string> suggs;
+        TermMatchResult locres1;
+        if (getSpellingSuggestions(term, suggs) && !suggs.empty()) {
+            LOGDEB("Db::TermMatch: spelling suggestions for [" << term << "] : [" <<
+                   stringsToString(suggs) << "]\n");
+            for (int i = 0; i < int(suggs.size()) && i < 300;i++) {
+                auto d = u8DLDistance(suggs[i], term);
+                LOGDEB0("Db::TermMatch: spell: " << term << " -> " << suggs[i] << 
+                       " distance " << d << " (max " << m_maxSpellDistance << ")\n");
+                if (d <= m_maxSpellDistance) {
+                  idxTermMatch(Rcl::Db::ET_NONE, suggs[i], locres1, 1);
+                }
+            }
+            if (!locres1.entries.empty()) {
+                TermMatchCmpByWcf wcmp;
+                sort(locres1.entries.begin(), locres1.entries.end(), wcmp);
+                LOGDEB("SUGGWCF/WCF: for [" << locres1.entries[0].term << "] : " <<
+                       locres1.entries[0].wcf / wcf <<"\n");
+                if (locres1.entries[0].wcf > 20 * wcf) {
+                    LOGDEB("SUGG SELECTED\n");
+                    neighbours.push_back(locres1.entries[0].term);
+                }
+            }
+        } else {
+            LOGDEB("Db::spellExpand: no spelling suggestions for [" << term << "]\n");
+        }
+
+    } else {
+        // If the expansion list is empty, the term is not in the index. Maybe try to use aspell
+        // for a close one ?
+        vector<string> suggs;
+        if (getSpellingSuggestions(term, suggs) && !suggs.empty()) {
+            LOGDEB0("Db::TermMatch: spelling suggestions for [" << term << "] : [" <<
+                   stringsToString(suggs) << "]\n");
+            for (int i = 0; i < int(suggs.size()) && i < 300;i++) {
+                auto d = u8DLDistance(suggs[i], term);
+                LOGDEB0("Db::TermMatch: spell: " << term << " -> " << suggs[i] << 
+                       " distance " << d << " (max " << m_maxSpellDistance << ")\n");
+                if (d <= m_maxSpellDistance) {
+                    neighbours.push_back(suggs[i]);
+                }
+            }
+        } else {
+            LOGDEB0("Db::spellExpand: no spelling suggestions for [" << term << "]\n");
+        }
+    }
+}
+
+
 bool Db::Native::idxTermMatch_p(
-    int typ, const string& root,
+    int typ, const string& expr,
     std::function<bool(const string& term,
                        Xapian::termcount colfreq,
                        Xapian::doccount termfreq)> client,
@@ -357,13 +412,13 @@ bool Db::Native::idxTermMatch_p(
 
     std::unique_ptr<StrMatcher> matcher;
     if (typ == ET_REGEXP) {
-        matcher = std::make_unique<StrRegexpMatcher>(root);
+        matcher = std::make_unique<StrRegexpMatcher>(expr);
         if (!matcher->ok()) {
             LOGERR("termMatch: regcomp failed: " << matcher->getreason());
             return false;
         }
     } else if (typ == ET_WILD) {
-        matcher = std::make_unique<StrWildMatcher>(root);
+        matcher = std::make_unique<StrWildMatcher>(expr);
     }
 
     // Initial section: the part of the prefix+expr before the
@@ -372,62 +427,48 @@ bool Db::Native::idxTermMatch_p(
     string is;
     if (matcher) {
         string::size_type es = matcher->baseprefixlen();
-        is = prefix + root.substr(0, es);
+        is = prefix + expr.substr(0, es);
     } else {
-        is = prefix + root;
+        is = prefix + expr;
     }
     LOGDEB2("termMatch: initial section: [" << is << "]\n");
 
-    for (int tries = 0; tries < 2; tries++) { 
-        try {
-            Xapian::TermIterator it = xdb.allterms_begin(); 
-            if (!is.empty())
-                it.skip_to(is);
-            for (; it != xdb.allterms_end(); it++) {
-                const string ixterm{*it};
-                LOGDEB1("idxTermMatch_p: term at skip [" << ixterm << "]\n");
-                // If we're beyond the terms matching the initial section, end
-                if (!is.empty() && ixterm.find(is) != 0) {
-                    LOGDEB1("idxTermMatch_p: initial section mismatch: stop\n");
-                    break;
-                }
-                // Else try to match the term. The matcher content is without prefix, so we remove
-                // this if any. We just checked that the index term did begin with the prefix.
-                string term;
-                if (!prefix.empty()) {
-                    term = ixterm.substr(prefix.length());
-                } else {
-                    if (has_prefix(ixterm)) {
-                        // This is possible with a left-side wildcard which would have is empty and
-                        // we're scanning the whole term list.
-                        continue;
-                    }
-                    term = ixterm;
-                }
-
-                // If matching an expanding expression, a mismatch does not stop us. Else we want
-                // equality
-                if (matcher && !matcher->match(term)) {
-                    continue;
-                } else if (term != root) {
-                    break;
-                }
-
-                if (!client(ixterm, xdb.get_collection_freq(ixterm), it.get_termfreq()) ||
-                    !matcher) {
-                    // If the client tells us or this is an exact search, stop.
-                    break;
-                }
+    XAPTRY(
+        Xapian::TermIterator it = xdb.allterms_begin(is);
+        for (; it != xdb.allterms_end(); it++) {
+            const string ixterm{*it};
+            LOGDEB1("idxTermMatch_p: term at skip [" << ixterm << "]\n");
+            // If we're beyond the terms matching the initial section, end.
+            if (!is.empty() && ixterm.find(is) != 0) {
+                LOGDEB1("idxTermMatch_p: initial section mismatch: stop\n");
+                break;
             }
-            m_rcldb->m_reason.erase();
-            break;
-        } catch (const Xapian::DatabaseModifiedError &e) {
-            m_rcldb->m_reason = e.get_msg();
-            xdb.reopen();
-            continue;
-        } XCATCHERROR(m_rcldb->m_reason);
-        break;
-    }
+            // Else try to match the term. The matcher content is prefix-less.
+            string term;
+            if (!prefix.empty()) {
+                term = ixterm.substr(prefix.length());
+            } else {
+                if (has_prefix(ixterm)) {
+                    // This is possible with a left-side wildcard which would have an empty
+                    // initial section so that we're scanning the whole term list.
+                    continue;
+                }
+                term = ixterm;
+            }
+
+            // If matching an expanding expression, a mismatch does not stop us. Else we want
+            // equality
+            if (matcher && !matcher->match(term)) {
+                continue;
+            } else if (term != expr) {
+                break;
+            }
+
+            if (!client(ixterm,xdb.get_collection_freq(ixterm), it.get_termfreq()) ||!matcher) {
+                // If the client tells us or this is an exact search, stop.
+                break;
+            }
+        }, xdb, m_rcldb->m_reason);
     if (!m_rcldb->m_reason.empty()) {
         LOGERR("termMatch: " << m_rcldb->m_reason << "\n");
         return false;
@@ -439,11 +480,11 @@ bool Db::Native::idxTermMatch_p(
 
 // Second phase of wildcard/regexp term expansion after case/diac
 // expansion: expand against main index terms
-bool Db::idxTermMatch(int typ_sens, const string &root,
+bool Db::idxTermMatch(int typ_sens, const string &expr,
                       TermMatchResult& res, int max,  const string& field)
 {
     int typ = matchTypeTp(typ_sens);
-    LOGDEB1("Db::idxTermMatch: typ " << tmtptostr(typ) << "] term [" << root << "] max "  <<
+    LOGDEB1("Db::idxTermMatch: typ " << tmtptostr(typ) << "] expr [" << expr << "] max "  <<
             max << " field [" << field << "] init res.size " << res.entries.size() << "\n");
 
     if (typ == ET_STEM) {
@@ -463,7 +504,7 @@ bool Db::idxTermMatch(int typ_sens, const string &root,
 
     int rcnt = 0;
     bool ret = m_ndb->idxTermMatch_p(
-        typ, root,
+        typ, expr,
         [&res, &rcnt, max](const string& term,
                     Xapian::termcount cf, Xapian::doccount tf) {
             res.entries.push_back(TermMatchEntry(term, cf, tf));
