@@ -191,8 +191,12 @@ static int     op_flags;
 #define OPT_E 0x80000
 
 static struct option long_options[] = {
-    #define OPTION_EXTRACT 1000
-    {"extract-to", required_argument, nullptr, OPTION_EXTRACT},
+#define OPTION_EXTRACT 1000
+#define OPTION_AUTOSPELL 1001
+#define OPTION_AUTOSPELLMAXDIST 1002
+    {"extract-to", required_argument, 0, OPTION_EXTRACT},
+    {"autospell", no_argument, nullptr, OPTION_AUTOSPELL},
+    {"autospell-max-distance", required_argument, 0, OPTION_AUTOSPELLMAXDIST},
     {nullptr, 0, nullptr, 0}
 };
 
@@ -210,6 +214,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     int maxcount = 2000;
     int snipcnt = -1;
     std::string extractfile;
+    bool autospell{false};
+    int autospellmaxdist{1};
     
     int ret;
     while ((ret = getopt_long(argc, argv, "+AabCc:DdEefF:hi:lmNn:oPp:g:QqS:s:tT:v",
@@ -280,7 +286,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             // GUI: -v same
         case 'v': std::cout << Rcl::version_string() << "\n"; return 0;
             // GUI uses -w : open minimized
-        case OPTION_EXTRACT: extractfile=optarg;break;
+        case OPTION_EXTRACT: extractfile = optarg;break;
+        case OPTION_AUTOSPELL: autospell = true; break;
+        case OPTION_AUTOSPELLMAXDIST: autospellmaxdist = atoi(optarg); break;
         }
     }
 
@@ -316,6 +324,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             exit(1);
         }
     }
+    rcldb.setUseSpellFuzz(autospell);
+    rcldb.setMaxSpellDist(autospellmaxdist);
     
     if (!rcldb.open(Rcl::Db::DbRO)) {
         cerr << "Cant open database in " << rclconfig->getDbDir() << 
