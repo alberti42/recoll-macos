@@ -140,8 +140,7 @@ void RecollRunner::match(Plasma::RunnerContext &context)
         m_reason = "Query execute failed. Invalid query or syntax error?";
         return;
     }
-    int cnt = rclq->getResCnt();
-    //std::cerr << "RecollRunner::match: got " << cnt << " results\n";
+    // int cnt = rclq->getResCnt();std::cerr << "RecollRunner::match: got " << cnt << " results\n";
     QList<Plasma::QueryMatch> matches;
     int i = 0;
     for (;i < 100;i++) {
@@ -151,7 +150,7 @@ void RecollRunner::match(Plasma::RunnerContext &context)
         }
         Plasma::QueryMatch match(this);
         std::string title;
-        if (!doc.getmeta(Rcl::Doc::keytt, &title)) {
+        if (!doc.getmeta(Rcl::Doc::keytt, &title) || title.empty()) {
             doc.getmeta(Rcl::Doc::keyfn, &title);
         }
         match.setText(u8s2qs(title));
