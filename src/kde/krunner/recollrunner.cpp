@@ -143,7 +143,7 @@ void RecollRunner::match(Plasma::RunnerContext &context)
     // int cnt = rclq->getResCnt();std::cerr << "RecollRunner::match: got " << cnt << " results\n";
     QList<Plasma::QueryMatch> matches;
     int i = 0;
-    for (;i < 100;i++) {
+    for (;i < 50;i++) {
         Rcl::Doc doc;
         if (!rclq->getDoc(i, doc, false)) {
             break;
