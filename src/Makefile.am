@@ -395,6 +395,11 @@ kde/kioslave/kio_recoll-kde4/recollf.protocol \
 kde/kioslave/kio_recoll-kde4/recollnolist.protocol \
 kde/kioslave/kio_recoll-kde4/recoll.protocol \
 \
+kde/krunner/recollrunner.json \
+kde/krunner/recollrunner.h \
+kde/krunner/recollrunner.cpp \
+kde/krunner/CMakeLists.txt \
+\
 query/location.hh  query/position.hh  query/stack.hh \
 \
 qtgui/actsearch.ui \
