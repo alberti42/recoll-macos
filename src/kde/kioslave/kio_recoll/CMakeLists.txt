@@ -19,8 +19,7 @@ include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
 # CoreAddons?
-find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS
-    KIO)
+find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS KIO)
 
 add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
