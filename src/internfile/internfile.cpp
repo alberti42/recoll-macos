@@ -317,6 +317,7 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
     for (unsigned int i = 0; i < MAXHANDLERS; i++)
         m_tmpflgs[i] = false;
     m_targetMType = cstr_textplain;
+    m_noxattrs = false;
     m_cfg->getConfParam("noxattrfields", &m_noxattrs);
     m_direct = false;
 }

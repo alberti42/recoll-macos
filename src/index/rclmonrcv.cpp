@@ -183,7 +183,7 @@ static bool rclMonAddTopWatches(
     for (const auto& dir : tdl) {
         lconfig.setKeyDir(dir);
         // Adjust the follow symlinks options
-        bool follow;
+        bool follow{false};
         if (lconfig.getConfParam("followLinks", &follow) && follow) {
             walker.setOpts(FsTreeWalker::FtwFollow);
         } else {
@@ -217,7 +217,7 @@ static bool rclMonAddTopWatches(
         }
     }
 
-    bool doweb = false;
+    bool doweb{false};
     lconfig.getConfParam("processwebqueue", &doweb);
     if (doweb) {
         string webqueuedir = lconfig.getWebQueueDir();

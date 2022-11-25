@@ -175,7 +175,9 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 
     db.getConf()->getConfParam("maxTermExpand", &m_maxexp);
     db.getConf()->getConfParam("maxXapianClauses", &m_maxcl);
+    m_autocasesens = true;
     db.getConf()->getConfParam("autocasesens", &m_autocasesens);
+    m_autodiacsens = false;
     db.getConf()->getConfParam("autodiacsens", &m_autodiacsens);
 
     simplify();

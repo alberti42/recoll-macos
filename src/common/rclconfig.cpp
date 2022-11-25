@@ -462,44 +462,35 @@ void RclConfig::setKeyDir(const string &dir)
 bool RclConfig::getConfParam(const string &name, int *ivp, bool shallow) const
 {
     string value;
-    if (!getConfParam(name, value, shallow))
+    if (!ivp || !getConfParam(name, value, shallow))
         return false;
     errno = 0;
     long lval = strtol(value.c_str(), 0, 0);
     if (lval == 0 && errno)
         return 0;
-    if (ivp)
-        *ivp = int(lval);
+    *ivp = int(lval);
     return true;
 }
 
 bool RclConfig::getConfParam(const string &name, bool *bvp, bool shallow) const
 {
-    if (!bvp) 
-        return false;
-
-    *bvp = false;
     string s;
-    if (!getConfParam(name, s, shallow))
+    if (!bvp || !getConfParam(name, s, shallow))
         return false;
     *bvp = stringToBool(s);
     return true;
 }
 
-bool RclConfig::getConfParam(const string &name, vector<string> *svvp,
-                             bool shallow) const
+bool RclConfig::getConfParam(const string &name, vector<string> *svvp, bool shallow) const
 {
-    if (!svvp) 
+    string s;
+    if (!svvp ||!getConfParam(name, s, shallow))
         return false;
     svvp->clear();
-    string s;
-    if (!getConfParam(name, s, shallow))
-        return false;
     return stringToStrings(s, *svvp);
 }
 
-bool RclConfig::getConfParam(const string &name, unordered_set<string> *out,
-                             bool shallow) const
+bool RclConfig::getConfParam(const string &name, unordered_set<string> *out, bool shallow) const
 {
     vector<string> v;
     if (!out || !getConfParam(name, &v, shallow)) {
@@ -510,8 +501,7 @@ bool RclConfig::getConfParam(const string &name, unordered_set<string> *out,
     return true;
 }
 
-bool RclConfig::getConfParam(const string &name, vector<int> *vip,
-                             bool shallow) const
+bool RclConfig::getConfParam(const string &name, vector<int> *vip, bool shallow) const
 {
     if (!vip) 
         return false;
@@ -536,8 +526,8 @@ void RclConfig::initThrConf()
     // Default is no threading
     m_thrConf = {{-1, 0}, {-1, 0}, {-1, 0}};
 
-    vector<int> vq;
     vector<int> vt;
+    vector<int> vq;
     if (!getConfParam("thrQSizes", &vq)) {
         LOGINFO("RclConfig::initThrConf: no thread info (queues)\n");
         goto out;

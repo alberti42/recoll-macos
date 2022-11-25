@@ -284,7 +284,7 @@ private:
 
     Uncomp                 *m_uncomp{nullptr};
 
-    bool                   m_noxattrs; // disable xattrs usage
+    bool                   m_noxattrs{false}; // disable xattrs usage
     bool                   m_direct; // External app did the extraction
     
     // Pseudo-constructors

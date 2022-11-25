@@ -14,6 +14,10 @@
 *.sdf
 *.tlog
 *~
+**/Makefile.in
+.ccls
+.ccls-cache/*
+.ccls-root
 .deps
 .dirstamp
 .libs
@@ -24,15 +28,16 @@ build-*-Debug
 build-*-Release
 libtool
 ptrans
-**/Makefile.in
+src/.cache/
+src/.clangd
 src/Makefile
-src/rclgrep/Makefile
 src/TAGS
 src/aclocal.m4
 src/autom4te.cache
 src/common/autoconfig.h
 src/common/rclversion.h
 src/compile
+src/compile_commands.json
 src/config.guess
 src/config.log
 src/config.status
@@ -73,6 +78,7 @@ src/qtgui/qrc_recoll.cpp
 src/qtgui/recoll
 src/qtgui/recoll.app
 src/qtgui/recoll.pro
+src/rclgrep/Makefile
 src/recollindex
 src/recollq
 src/sampleconf/rclmon.sh
@@ -93,8 +99,8 @@ tests/config/idxstatus.txt
 tests/config/index.pid
 tests/config/missing
 tests/config/ocrcache
-tests/config/xapiandb
 tests/config/recoll.conf
+tests/config/xapiandb
 tests/indexedmimetypes/aspdict.en.rws
 tests/indexedmimetypes/idxstatus.txt
 tests/indexedmimetypes/index.pid 
@@ -112,4 +118,3 @@ website/pages/recoll-webui-install-wsgi.html
 website/pages/recoll-windows-faq.html
 website/pages/recoll-windows.html
 website/usermanual/*
-

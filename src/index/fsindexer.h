@@ -136,7 +136,7 @@ private:
     bool         m_detectxattronly;
 
     // No retry of previously failed files
-    bool         m_noretryfailed;
+    bool m_noretryfailed;
     // use FADV_DONTNEED if available
     bool         m_cleancache{false};
     

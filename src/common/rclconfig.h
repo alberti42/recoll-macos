@@ -141,8 +141,7 @@ public:
     string getKeyDir() const {return m_keydir;}
 
     /** Get generic configuration parameter according to current keydir */
-    bool getConfParam(const string& name, string& value, 
-                      bool shallow=false) const {
+    bool getConfParam(const string& name, string& value, bool shallow=false) const {
             if (m_conf == 0)
                 return false;
             return m_conf->get(name, value, m_keydir, shallow);
@@ -153,15 +152,13 @@ public:
     bool getConfParam(const string &name, bool *value, bool shallow=false) const;
     /** Variant with conversion to vector<string>
      *  (stringToStrings). Can fail if the string is malformed. */
-    bool getConfParam(const string &name, vector<string> *value, 
-                      bool shallow=false) const;
+    bool getConfParam(const string &name, vector<string> *value, bool shallow=false) const;
     /** Variant with conversion to unordered_set<string>
      *  (stringToStrings). Can fail if the string is malformed. */
     bool getConfParam(const string &name, std::unordered_set<std::string> *v, 
                       bool shallow=false) const;
     /** Variant with conversion to vector<int> */
-    bool getConfParam(const string &name, vector<int> *value, 
-                      bool shallow=false) const;
+    bool getConfParam(const string &name, vector<int> *value, bool shallow=false) const;
 
     enum ThrStage {ThrIntern=0, ThrSplit=1, ThrDbWrite=2};
     pair<int, int> getThrConf(ThrStage who) const;

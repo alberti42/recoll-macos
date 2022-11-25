@@ -213,7 +213,7 @@ bool FsIndexer::index(int flags)
         m_config->setKeyDir(topdir);
 
         // Adjust the "follow symlinks" option
-        bool follow;
+        bool follow{false};
         int opts = m_walker.getOpts();
         if (m_config->getConfParam("followLinks", &follow) && follow) {
             opts |= FsTreeWalker::FtwFollow;
@@ -384,7 +384,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
         if (m_havelocalfields)
             localfieldsfromconf();
 
-        bool follow = false;
+        bool follow{false};
         m_config->getConfParam("followLinks", &follow);
 
         walker.setOnlyNames(m_config->getOnlyNames());

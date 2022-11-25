@@ -417,7 +417,7 @@ RclConfig *recollinit(int flags,
         config->initThrConf();
     }
 
-    bool novfork;
+    bool novfork{false};
     config->getConfParam("novfork", &novfork);
     if (novfork) {
         LOGDEB0("rclinit: will use fork() for starting commands\n" );
