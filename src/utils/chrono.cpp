@@ -113,7 +113,7 @@ static void gettime(int
     ts->tv_nsec = mts.tv_nsec;
 #else
     struct timeval tv;
-    gettimeofday(&tv, 0);
+    gettimeofday(&tv, nullptr);
     ts->tv_sec = tv.tv_sec;
     ts->tv_nsec = tv.tv_usec * 1000;
 #endif

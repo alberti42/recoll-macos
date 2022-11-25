@@ -89,7 +89,7 @@ public:
      *           inside history)
      * @return true if ok, false for error or end of data
      */
-    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) = 0;
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = nullptr) = 0;
 
     /** Get next page of documents. This accumulates entries into the result
      *  list parameter (doesn't reset it). */
@@ -244,7 +244,7 @@ public:
 protected:
     virtual std::shared_ptr<Rcl::Db> getDb() override {
         if (!m_seq)
-            return 0;
+            return nullptr;
         return m_seq->getDb();
     }
 
@@ -264,7 +264,7 @@ public:
     virtual bool canSort() override {return true;}
     virtual bool setFiltSpec(const DocSeqFiltSpec &) override;
     virtual bool setSortSpec(const DocSeqSortSpec &) override;
-    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) override {
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = nullptr) override {
         if (!m_seq)
             return false;
         return m_seq->getDoc(num, doc, sh);

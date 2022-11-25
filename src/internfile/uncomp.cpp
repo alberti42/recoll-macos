@@ -50,7 +50,7 @@ bool Uncomp::uncompressfile(const string& ifn,
             m_dir = o_cache.m_dir;
             m_tfile = tfile = o_cache.m_tfile;
             m_srcpath = ifn;
-            o_cache.m_dir = 0;
+            o_cache.m_dir = nullptr;
             o_cache.m_srcpath.clear();
             return true;
         }
@@ -58,7 +58,7 @@ bool Uncomp::uncompressfile(const string& ifn,
 
     m_srcpath.clear();
     m_tfile.clear();
-    if (m_dir == 0) {
+    if (nullptr == m_dir) {
         m_dir = new TempDir;
     }
     // Make sure tmp dir is empty. we guarantee this to filters
@@ -116,7 +116,7 @@ bool Uncomp::uncompressfile(const string& ifn,
 
     // Execute command and retrieve output file name, check that it exists
     ExecCmd ex;
-    int status = ex.doexec(cmd, args, 0, &tfile);
+    int status = ex.doexec(cmd, args, nullptr, &tfile);
     if (status || tfile.empty()) {
         LOGERR("uncompressfile: doexec: " << cmd << " " <<
                stringsToString(args) << " failed for [" <<
@@ -152,7 +152,7 @@ void Uncomp::clearcache()
     LOGDEB0("Uncomp::clearcache\n");
     std::unique_lock<std::mutex> lock(o_cache.m_lock);
     delete o_cache.m_dir;
-    o_cache.m_dir = 0;
+    o_cache.m_dir = nullptr;
     o_cache.m_tfile.clear();
     o_cache.m_srcpath.clear();
 }

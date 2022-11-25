@@ -156,7 +156,7 @@ public:
 
 void RclEQData::readDelayPats(int dfltsecs)
 {
-    if (m_config == 0)
+    if (nullptr == m_config)
         return;
     string patstring;
     if (!m_config->getConfParam("mondelaypatterns", patstring) || 
@@ -259,7 +259,7 @@ RclConfig *RclMonEventQueue::getConfig()
 
 bool RclMonEventQueue::ok()
 {
-    if (m_data == 0) {
+    if (nullptr == m_data) {
         LOGINFO("RclMonEventQueue: not ok: bad state\n" );
         return false;
     }
@@ -285,7 +285,7 @@ void RclMonEventQueue::setTerminate()
 // Must be called with the queue locked
 bool RclMonEventQueue::empty()
 {
-    if (m_data == 0) {
+    if (nullptr == m_data) {
         MONDEB("RclMonEventQueue::empty(): true (m_data==0)\n");
         return true;
     }
@@ -300,7 +300,7 @@ bool RclMonEventQueue::empty()
     // Only dqueue has events. Have to check the delays (only the
     // first, earliest one):
     queue_type::iterator qit = *(m_data->m_delays.begin());
-    if (qit->second.m_minclock > time(0)) {
+    if (qit->second.m_minclock > time(nullptr)) {
         MONDEB("RclMonEventQueue::empty(): true (no delay ready " <<
                qit->second.m_minclock << ")\n");
         return true;
@@ -314,7 +314,7 @@ bool RclMonEventQueue::empty()
 // Must be called with the queue locked
 RclMonEvent RclMonEventQueue::pop()
 {
-    time_t now = time(0);
+    time_t now = time(nullptr);
     MONDEB("RclMonEventQueue::pop(), now " << now << "\n");
 
     // Look at the delayed events, get rid of the expired/unactive
@@ -327,7 +327,7 @@ RclMonEvent RclMonEventQueue::pop()
         if (qit->second.m_minclock <= now) {
             if (qit->second.m_needidx) {
                 RclMonEvent ev = qit->second;
-                qit->second.m_minclock = time(0) + qit->second.m_itvsecs;
+                qit->second.m_minclock = time(nullptr) + qit->second.m_itvsecs;
                 qit->second.m_needidx = false;
                 m_data->m_delays.erase(dit);
                 m_data->delayInsert(qit);
@@ -376,7 +376,7 @@ bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
             // Set the time to next index to "now" as it has not been
             // indexed recently (otherwise it would still be in the
             // queue), and add the iterator to the delay queue.
-            qit->second.m_minclock = time(0);
+            qit->second.m_minclock = time(nullptr);
             qit->second.m_needidx = true;
             qit->second.m_itvsecs = pat.seconds;
             m_data->delayInsert(qit);
@@ -454,7 +454,7 @@ bool startMonitor(RclConfig *conf, int opts)
     LOGDEB("start_monitoring: entering main loop\n" );
 
     bool timedout;
-    time_t lastauxtime = time(0);
+    time_t lastauxtime = time(nullptr);
     time_t lastixtime = lastauxtime;
     time_t lastmovetime = 0;
     bool didsomething = false;
@@ -462,7 +462,7 @@ bool startMonitor(RclConfig *conf, int opts)
     list<string> deleted;
 
     while (true) {
-        time_t now = time(0);
+        time_t now = time(nullptr);
 #ifndef DISABLE_WEB_INDEXER
         if (doweb && (now - lastmovetime > ixinterval)) {
             lastmovetime = now;
@@ -527,7 +527,7 @@ bool startMonitor(RclConfig *conf, int opts)
             }
         }
 
-        now = time(0);
+        now = time(nullptr);
         // Process. We don't do this every time but let the lists accumulate
         // a little, this saves processing. Start at once if list is big.
         if (expeditedIndexingRequested(conf) ||
@@ -555,7 +555,7 @@ bool startMonitor(RclConfig *conf, int opts)
         }
 
         // Recreate the auxiliary dbs every hour at most.
-        now = time(0);
+        now = time(nullptr);
         if (didsomething && now - lastauxtime > auxinterval) {
             lastauxtime = now;
             didsomething = false;

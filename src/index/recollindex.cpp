@@ -96,11 +96,11 @@ static int     op_flags;
 #define OPTVAL_DIAGS_DIAGSFILE 1003
 
 static struct option long_options[] = {
-    {"webcache-compact", 0, 0, OPTVAL_WEBCACHE_COMPACT},
-    {"webcache-burst", required_argument, 0, OPTVAL_WEBCACHE_BURST},
-    {"notindexed", 0, 0, OPTVAL_DIAGS_NOTINDEXED},
-    {"diagsfile", required_argument, 0, OPTVAL_DIAGS_DIAGSFILE},
-    {0, 0, 0, 0}
+    {"webcache-compact", 0, nullptr, OPTVAL_WEBCACHE_COMPACT},
+    {"webcache-burst", required_argument, nullptr, OPTVAL_WEBCACHE_BURST},
+    {"notindexed", 0, nullptr, OPTVAL_DIAGS_NOTINDEXED},
+    {"diagsfile", required_argument, nullptr, OPTVAL_DIAGS_DIAGSFILE},
+    {nullptr, 0, nullptr, 0}
 };
 
 ReExec *o_reexec;
@@ -527,7 +527,7 @@ static vector<const char*> argstovector(int argc, char **argv, vector<string>& s
         storage[i] = WARGTOSTRING(argv[i]);
         args[i] = storage[i].c_str();
     }
-    args[argc] = 0;
+    args[argc] = nullptr;
     return args;
 }
 
@@ -638,7 +638,7 @@ int main(int argc, char *argv[])
         flags |= RCLINIT_DAEMON;
     }
     config = recollinit(flags, cleanup, sigcleanup, reason, &a_config);
-    if (config == 0 || !config->ok()) {
+    if (nullptr == config || !config->ok()) {
         addIdxReason("init", reason);
         flushIdxReasons();
         std::cerr << "Configuration problem: " << reason << endl;

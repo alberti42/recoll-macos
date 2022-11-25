@@ -192,8 +192,8 @@ static int     op_flags;
 
 static struct option long_options[] = {
     #define OPTION_EXTRACT 1000
-    {"extract-to", required_argument, 0, OPTION_EXTRACT},
-    {0, 0, 0, 0}
+    {"extract-to", required_argument, nullptr, OPTION_EXTRACT},
+    {nullptr, 0, nullptr, 0}
 };
 
 int recollq(RclConfig **cfp, int argc, char **argv)
@@ -285,7 +285,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     }
 
     string reason;
-    *cfp = recollinit(0, 0, 0, reason, &a_config);
+    *cfp = recollinit(0, nullptr, nullptr, reason, &a_config);
     RclConfig *rclconfig = *cfp;
     if (!rclconfig || !rclconfig->ok()) {
         std::cerr << "Recoll init failed: " << reason << "\n";

@@ -86,7 +86,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
             return false;
         }
         auto clp = dynamic_cast<SearchDataClauseSimple*>(clausep);
-        if (clp == 0) {
+        if (clp == nullptr) {
             LOGDEB2("SearchData::maybeAddAutoPhrase: other than clauseSimple in query.\n");
             return false;
         }

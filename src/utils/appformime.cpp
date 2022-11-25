@@ -89,12 +89,12 @@ FsTreeWalker::Status FstCb::processone(
 
 DesktopDb* DesktopDb::getDb()
 {
-    if (theDb == 0) {
+    if (nullptr == theDb) {
         theDb = new DesktopDb();
     }
     if (theDb && theDb->m_ok)
         return theDb;
-    return 0;
+    return nullptr;
 }
 
 void DesktopDb::build(const string& dir)

@@ -545,7 +545,7 @@ void *FsIndexerInternfileWorker(void * fsp)
     WorkQueue<InternfileTask*> *tqp = &fip->m_iwqueue;
     RclConfig myconf(*(fip->m_stableconfig));
 
-    InternfileTask *tsk = 0;
+    InternfileTask *tsk{nullptr};
     for (;;) {
         if (!tqp->take(&tsk)) {
             tqp->workerExit();
@@ -661,7 +661,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
     if (m_noretryfailed) {
         needupdate = m_db->needUpdate(udi, sig, &existingDoc, &oldsig);
     } else {
-        needupdate = m_db->needUpdate(udi, sig, &existingDoc, 0);
+        needupdate = m_db->needUpdate(udi, sig, &existingDoc, nullptr);
     }
 
     // If ctime (which we use for the sig) differs from mtime, then at most
@@ -773,7 +773,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
                 doc.fmtime = ascdate;
             if (doc.url.empty())
                 doc.url = path_pathtofileurl(fn);
-            const string *fnp = 0;
+            const string *fnp{nullptr};
             if (doc.ipath.empty()) {
                 if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
                     doc.meta[Rcl::Doc::keyfn] = utf8fn;

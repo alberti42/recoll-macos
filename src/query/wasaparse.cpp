@@ -676,7 +676,7 @@ namespace yy {
     // date filter was set, no terms). Allocate an empty query so that we
     // have something to set the global criteria on (this will yield a
     // Xapian search like <alldocuments> FILTER xxx
-    if ((yystack_[0].value.sd) == 0)
+    if ((yystack_[0].value.sd) == nullptr)
         d->m_result = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
     else
         d->m_result = (yystack_[0].value.sd);
@@ -688,7 +688,7 @@ namespace yy {
 #line 87 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp"
 {
     LOGP("q: query query\n");
-    Rcl::SearchData *sd = 0;
+    Rcl::SearchData *sd = nullptr;
     if ((yystack_[1].value.sd) || (yystack_[0].value.sd)) {
         sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
         addSubQuery(d, sd, (yystack_[1].value.sd));
@@ -703,7 +703,7 @@ namespace yy {
 #line 98 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp"
 {
     LOGP("q: query AND query\n");
-    Rcl::SearchData *sd = 0;
+    Rcl::SearchData *sd = nullptr;
     if ((yystack_[2].value.sd) || (yystack_[0].value.sd)) {
         sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
         addSubQuery(d, sd, (yystack_[2].value.sd));
@@ -718,7 +718,7 @@ namespace yy {
 #line 109 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp"
 {
     LOGP("query: query OR query\n");
-    Rcl::SearchData *top = 0;
+    Rcl::SearchData *top = nullptr;
     if ((yystack_[2].value.sd) || (yystack_[0].value.sd)) {
        top = new Rcl::SearchData(Rcl::SCLT_OR, d->m_stemlang);
        addSubQuery(d, top, (yystack_[2].value.sd));
@@ -747,7 +747,7 @@ namespace yy {
         (yylhs.value.sd) = sd;
     } else {
         delete sd;
-        (yylhs.value.sd) = 0;
+        (yylhs.value.sd) = nullptr;
     }
 }
 #line 754 "y.tab.c"

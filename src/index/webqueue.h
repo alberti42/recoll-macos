@@ -63,7 +63,7 @@ public:
     /** Called when indexing data from the cache, and from internfile for
      * search result preview */
     bool getFromCache(const std::string& udi, Rcl::Doc &doc, std::string& data,
-                      std::string *hittype = 0);
+                      std::string *hittype = nullptr);
 private:
     RclConfig *m_config{nullptr};
     Rcl::Db   *m_db{nullptr};

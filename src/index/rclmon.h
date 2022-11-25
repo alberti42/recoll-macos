@@ -82,7 +82,7 @@ public:
     RclMonEventQueue(const RclMonEventQueue&) = delete;
     RclMonEventQueue& operator=(const RclMonEventQueue&) = delete;
     /** Wait for event or timeout. Returns with the queue locked */
-    std::unique_lock<std::mutex> wait(int secs = -1, bool *timedout = 0);
+    std::unique_lock<std::mutex> wait(int secs = -1, bool *timedout = nullptr);
     /** Add event. */
     bool pushEvent(const RclMonEvent &ev);
     /** To all threads: end processing */

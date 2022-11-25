@@ -365,7 +365,7 @@ bool WebQueueIndexer::indexFiles(list<string>& files)
 
 static std::string date_string(const char *fmt)
 {
-    time_t now = time(0);
+    time_t now = time(nullptr);
     struct tm tmb;
     localtime_r(&now, &tmb);
     char buf[200];

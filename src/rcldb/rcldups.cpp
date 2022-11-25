@@ -38,7 +38,7 @@ namespace Rcl {
  * because we use the xdocid. We get the md5 from this, then the dups */
 bool Db::docDups(const Doc& idoc, vector<Doc>& odocs)
 {
-    if (m_ndb == 0) {
+    if (nullptr == m_ndb) {
         LOGERR("Db::docDups: no db\n");
         return false;
     }

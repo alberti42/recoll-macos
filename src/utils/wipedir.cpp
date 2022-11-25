@@ -46,7 +46,7 @@ int wipedir(const std::string& dir, bool selfalso, bool recurse)
     }
     int remaining = 0;
     const struct PathDirContents::Entry *ent;
-    while ((ent = dc.readdir()) != 0) {
+    while ((ent = dc.readdir()) != nullptr) {
         const std::string& dname{ent->d_name};
         if (dname == "." || dname == "..")
             continue;

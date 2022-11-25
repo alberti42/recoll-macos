@@ -327,7 +327,7 @@ private:
 
 class TermProcQ : public TermProc {
 public:
-    TermProcQ() : TermProc(0), m_alltermcount(0), m_lastpos(0), m_ts(0) {}
+    TermProcQ() : TermProc(nullptr), m_alltermcount(0), m_lastpos(0), m_ts(nullptr) {}
 
     // We need a ref to the splitter (only it knows about orig term
     // capitalization for controlling stemming. The ref can't be set
@@ -598,7 +598,7 @@ void SearchDataClauseSimple::processSimpleSpan(
     // no need to do it if there was no expansion.
     bool doBoostUserTerm = 
         (m_parentSearch && !m_parentSearch->haveWildCards()) || 
-        (m_parentSearch == 0 && !m_haveWildCards);
+        (nullptr == m_parentSearch && !m_haveWildCards);
     if (exp.size() > 1 && doBoostUserTerm && !sterm.empty()) {
         xq = Xapian::Query(Xapian::Query::OP_OR, xq, 
                            Xapian::Query(prefix+sterm, 

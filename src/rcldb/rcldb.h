@@ -213,7 +213,7 @@ public:
         return mode == DbUpd || mode == DbTrunc;
     }
     enum OpenError {DbOpenNoError, DbOpenMainDb, DbOpenExtraDb};
-    bool open(OpenMode mode, OpenError *error = 0);
+    bool open(OpenMode mode, OpenError *error = nullptr);
     bool close();
     bool isopen();
 
@@ -303,7 +303,7 @@ public:
      * @param osig[output] old signature.
      */
     bool needUpdate(const string &udi, const string& sig, 
-                    unsigned int *xdocid = 0, std::string *osig = 0);
+                    unsigned int *xdocid = nullptr, std::string *osig = nullptr);
 
     /** Set the existance flags for the document and its eventual subdocuments
      * 
@@ -344,7 +344,7 @@ public:
 #endif
 
     /** Delete document(s) for given UDI, including subdocs */
-    bool purgeFile(const string &udi, bool *existed = 0);
+    bool purgeFile(const string &udi, bool *existed = nullptr);
     /** Delete subdocs with an out of date sig. We do this to purge
         obsolete subdocs during a partial update where no general purge
         will be done */
@@ -401,7 +401,7 @@ public:
     std::string whatIndexForResultDoc(const Doc& doc);
     
     /** Tell if directory seems to hold xapian db */
-    static bool testDbDir(const string &dir, bool *stripped = 0);
+    static bool testDbDir(const string &dir, bool *stripped = nullptr);
 
     /** Return the index terms that match the input string
      * Expansion is performed either with either wildcard or regexp processing
@@ -427,7 +427,7 @@ public:
         return tp & 7;
     }
     bool termMatch(int typ_sens, const string &lang, const string &term, TermMatchResult& result,
-                   int max = -1, const string& field = "", vector<string> *multiwords = 0);
+                   int max = -1, const string& field = "", vector<string> *multiwords = nullptr);
     bool dbStats(DbStats& stats, bool listFailed);
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);

@@ -180,7 +180,7 @@ void *DbUpdWorker(void* vdbp)
     Db::Native *ndbp = (Db::Native *)vdbp;
     WorkQueue<DbUpdTask*> *tqp = &(ndbp->m_wqueue);
 
-    DbUpdTask *tsk = 0;
+    DbUpdTask *tsk = nullptr;
     for (;;) {
         size_t qsz = -1;
         if (!tqp->take(&tsk, &qsz)) {
@@ -920,7 +920,7 @@ bool Db::open(OpenMode mode, OpenError *error)
     if (error)
         *error = DbOpenMainDb;
 
-    if (m_ndb == 0 || m_config == 0) {
+    if (nullptr == m_ndb || m_config == nullptr) {
         m_reason = "Null configuration or Xapian Db";
         return false;
     }
@@ -1024,7 +1024,7 @@ bool Db::close()
 }
 bool Db::i_close(bool final)
 {
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return false;
     LOGDEB("Db::i_close(" << final << "): m_isopen " << m_ndb->m_isopen <<
            " m_iswritable " << m_ndb->m_iswritable << "\n");
@@ -1248,7 +1248,7 @@ bool Db::testDbDir(const string &dir, bool *stripped_p)
 
 bool Db::isopen()
 {
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return false;
     return m_ndb->m_isopen;
 }
@@ -1260,7 +1260,7 @@ bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp,
     if (m_config && m_config->getFieldTraits(fld, ftpp, isquery))
         return true;
 
-    *ftpp = 0;
+    *ftpp = nullptr;
     return false;
 }
 
@@ -1338,7 +1338,7 @@ private:
 
 class TermProcIdx : public TermProc {
 public:
-    TermProcIdx() : TermProc(0), m_ts(0), m_lastpagepos(0), m_pageincr(0) {}
+    TermProcIdx() : TermProc(nullptr), m_ts(nullptr), m_lastpagepos(0), m_pageincr(0) {}
     void setTSD(TextSplitDb *ts) {m_ts = ts;}
 
     bool takeword(const std::string &term, int pos, int, int)
@@ -1451,7 +1451,7 @@ bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
                 if (!m_aspell->ok()) {
                     LOGDEB("Aspell speller init failed: " << reason << endl);
                     delete m_aspell;
-                    m_aspell = 0;
+                    m_aspell = nullptr;
                 }
             }
         }
@@ -1517,7 +1517,7 @@ static const string cstr_nc("\n\r\x0c\\");
 bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 {
     LOGDEB("Db::add: udi [" << udi << "] parent [" << parent_udi << "]\n");
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return false;
 
     // This document is potentially going to be passed to the index
@@ -1846,7 +1846,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         // after indexing because we don't want search matches on
         // this, but the filename is often useful for display
         // purposes.
-        const string *fnp = 0;
+        const string *fnp = nullptr;
         if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty()) {
             if (doc.peekmeta(Rcl::Doc::keyctfn, &fnp) && !fnp->empty()) {
                 string value = neutchars(truncate_to_word(*fnp, m_idxMetaStoredLen), cstr_nc);
@@ -1956,7 +1956,7 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
     for (set<string>::const_iterator it = stored.begin();
          it != stored.end(); it++) {
         string nm = m_rcldb->m_config->fieldCanon(*it);
-        if (doc.getmeta(nm, 0)) {
+        if (doc.getmeta(nm, nullptr)) {
             string value = neutchars(
                 truncate_to_word(doc.meta[nm], m_rcldb->m_idxMetaStoredLen), 
                 cstr_nc);
@@ -2091,7 +2091,7 @@ void Db::i_setExistingFlags(const string& udi, unsigned int docid)
 bool Db::needUpdate(const string &udi, const string& sig, 
                     unsigned int *docidp, string *osigp)
 {
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return false;
 
     if (osigp)
@@ -2177,7 +2177,7 @@ vector<string> Db::getStemLangs()
 {
     LOGDEB("Db::getStemLang\n");
     vector<string> langs;
-    if (m_ndb == 0 || m_ndb->m_isopen == false)
+    if (nullptr == m_ndb || m_ndb->m_isopen == false)
         return langs;
     StemDb db(m_ndb->xrdb);
     db.getMembers(langs);
@@ -2190,7 +2190,7 @@ vector<string> Db::getStemLangs()
 bool Db::deleteStemDb(const string& lang)
 {
     LOGDEB("Db::deleteStemDb(" << lang << ")\n");
-    if (m_ndb == 0 || m_ndb->m_isopen == false || !m_ndb->m_iswritable)
+    if (nullptr == m_ndb || m_ndb->m_isopen == false || !m_ndb->m_iswritable)
         return false;
     XapWritableSynFamily db(m_ndb->xwdb, synFamStem);
     return db.deleteMember(lang);
@@ -2205,7 +2205,7 @@ bool Db::deleteStemDb(const string& lang)
 bool Db::createStemDbs(const vector<string>& langs)
 {
     LOGDEB("Db::createStemDbs\n");
-    if (m_ndb == 0 || m_ndb->m_isopen == false || !m_ndb->m_iswritable) {
+    if (nullptr == m_ndb || m_ndb->m_isopen == false || !m_ndb->m_iswritable) {
         LOGERR("createStemDb: db not open or not writable\n");
         return false;
     }
@@ -2222,7 +2222,7 @@ bool Db::createStemDbs(const vector<string>& langs)
 bool Db::purge()
 {
     LOGDEB("Db::purge\n");
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return false;
     LOGDEB("Db::purge: m_isopen " << m_ndb->m_isopen << " m_iswritable " <<
            m_ndb->m_iswritable << "\n");
@@ -2335,7 +2335,7 @@ bool Db::docExists(const string& uniterm)
 bool Db::purgeFile(const string &udi, bool *existed)
 {
     LOGDEB("Db:purgeFile: [" << udi << "]\n");
-    if (m_ndb == 0 || !m_ndb->m_iswritable)
+    if (nullptr == m_ndb || !m_ndb->m_iswritable)
         return false;
 
     string uniterm = make_uniterm(udi);
@@ -2349,7 +2349,7 @@ bool Db::purgeFile(const string &udi, bool *existed)
     if (m_ndb->m_havewriteq) {
         string rztxt;
         DbUpdTask *tp = new DbUpdTask(DbUpdTask::Delete, udi, uniterm, 
-                                      0, (size_t)-1, rztxt);
+                                      nullptr, (size_t)-1, rztxt);
         if (!m_ndb->m_wqueue.put(tp)) {
             LOGERR("Db::purgeFile:Cant queue task\n");
             return false;
@@ -2368,7 +2368,7 @@ bool Db::purgeFile(const string &udi, bool *existed)
 bool Db::purgeOrphans(const string &udi)
 {
     LOGDEB("Db:purgeOrphans: [" << udi << "]\n");
-    if (m_ndb == 0 || !m_ndb->m_iswritable)
+    if (nullptr == m_ndb || !m_ndb->m_iswritable)
         return false;
 
     string uniterm = make_uniterm(udi);
@@ -2377,7 +2377,7 @@ bool Db::purgeOrphans(const string &udi)
     if (m_ndb->m_havewriteq) {
         string rztxt;
         DbUpdTask *tp = new DbUpdTask(DbUpdTask::PurgeOrphans, udi, uniterm, 
-                                      0, (size_t)-1, rztxt);
+                                      nullptr, (size_t)-1, rztxt);
         if (!m_ndb->m_wqueue.put(tp)) {
             LOGERR("Db::purgeFile:Cant queue task\n");
             return false;
@@ -2482,7 +2482,7 @@ bool Db::getDoc(const string& udi, int idxi, Doc& doc)
 {
     // Initialize what we can in any case. If this is history, caller
     // will make partial display in case of error
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return false;
     doc.meta[Rcl::Doc::keyrr] = "100%";
     doc.pc = 100;
@@ -2505,7 +2505,7 @@ bool Db::getDoc(const string& udi, int idxi, Doc& doc)
 
 bool Db::hasSubDocs(const Doc &idoc)
 {
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return false;
     string inudi;
     if (!idoc.getmeta(Doc::keyudi, &inudi) || inudi.empty()) {
@@ -2538,7 +2538,7 @@ bool Db::hasSubDocs(const Doc &idoc)
 // one (in which case, we have to retrieve this first, then filter the ipaths)
 bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 {
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return false;
 
     string inudi;
@@ -2622,7 +2622,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 
 bool Db::getContainerDoc(const Doc &idoc, Doc& ctdoc)
 {
-    if (m_ndb == 0)
+    if (nullptr == m_ndb)
         return false;
 
     string inudi;

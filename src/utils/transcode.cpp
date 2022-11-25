@@ -140,7 +140,7 @@ error:
         iconv_close(ic);
 #else
         // Just reset conversion
-        iconv(ic, 0, 0, 0, 0);
+        iconv(ic, nullptr, nullptr, nullptr, nullptr);
 #endif
     }
 

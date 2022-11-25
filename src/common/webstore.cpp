@@ -36,7 +36,7 @@ WebStore::WebStore(RclConfig *cnf)
 
     int maxmbs = 40;
     cnf->getConfParam("webcachemaxmbs", &maxmbs);
-    if ((m_cache = new CirCache(ccdir)) == 0) {
+    if ((m_cache = new CirCache(ccdir)) == nullptr) {
         LOGERR("WebStore: cant create CirCache object\n" );
         return;
     }
@@ -44,7 +44,7 @@ WebStore::WebStore(RclConfig *cnf)
         LOGERR("WebStore: cache file creation failed: " <<
                m_cache->getReason() << "\n");
         delete m_cache;
-        m_cache = 0;
+        m_cache = nullptr;
         return;
     }
 }
@@ -61,7 +61,7 @@ bool WebStore::getFromCache(const string& udi, Rcl::Doc &dotdoc,
 {
     string dict;
 
-    if (m_cache == 0) {
+    if (nullptr == m_cache) {
         LOGERR("WebStore::getFromCache: cache is null\n");
         return false;
     }

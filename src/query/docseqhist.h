@@ -57,7 +57,7 @@ class DocSequenceHistory : public DocSequence {
     DocSequenceHistory(const DocSequenceHistory&) = delete;
     DocSequenceHistory& operator=(const DocSequenceHistory&) = delete;
 
-    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0);
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = nullptr);
     virtual int getResCnt();
     virtual std::string getDescription() {return m_description;}
     void setDescription(const std::string& desc) {m_description = desc;}

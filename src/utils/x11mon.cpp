@@ -45,7 +45,7 @@ static int ioErrorHandler(Display *)
 {
     LOGERR("x11mon: error handler: Got X11 IO error\n");
     m_ok = false;
-    m_display = 0;
+    m_display = nullptr;
     longjmp(env, 1);
 }
 
@@ -57,11 +57,11 @@ bool x11IsAlive()
         LOGDEB("x11IsAlive: got long jump: X11 error\n");
         return false;
     }
-    if (m_display == 0) {
+    if (nullptr == m_display) {
         signal(SIGPIPE, SIG_IGN);
         XSetErrorHandler(errorHandler);
         XSetIOErrorHandler(ioErrorHandler);
-        if ((m_display = XOpenDisplay(0)) == 0) {
+        if ((m_display = XOpenDisplay(nullptr)) == nullptr) {
             LOGERR("x11IsAlive: cant connect\n");
             m_ok = false;
             return false;

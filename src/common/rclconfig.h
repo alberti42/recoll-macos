@@ -95,7 +95,7 @@ public:
     // Constructor: we normally look for a configuration file, except
     // if this was specified on the command line and passed through
     // argcnf
-    RclConfig(const string *argcnf = 0);
+    RclConfig(const string *argcnf = nullptr);
 
     RclConfig(const RclConfig &r);
 
@@ -142,7 +142,7 @@ public:
 
     /** Get generic configuration parameter according to current keydir */
     bool getConfParam(const string& name, string& value, bool shallow=false) const {
-            if (m_conf == 0)
+            if (nullptr == m_conf)
                 return false;
             return m_conf->get(name, value, m_keydir, shallow);
     }
@@ -167,7 +167,7 @@ public:
      * Get list of config names under current sk, with possible 
      * wildcard filtering 
      */
-    vector<string> getConfNames(const char *pattern = 0) const {
+    vector<string> getConfNames(const char *pattern = nullptr) const {
         return m_conf->getNames(m_keydir, pattern);
     }
 
@@ -316,7 +316,7 @@ public:
      * use this (ie: mh_mail). The information specific to a given filter
      * is typically stored in a separate section(ie: [mail]) 
      */
-    vector<string> getFieldSectNames(const string &sk, const char* = 0) const;
+    vector<string> getFieldSectNames(const string &sk, const char* = nullptr) const;
     bool getFieldConfParam(const string &name, const string &sk, string &value)
         const;
 

@@ -133,12 +133,12 @@ public:
      * expansion when only either case or diac expansion is desired.
      */
     bool synExpand(const std::string& term, std::vector<std::string>& result,
-                   SynTermTrans *filtertrans = 0);
+                   SynTermTrans *filtertrans = nullptr);
     
     /** Same with also wildcard/regexp expansion of entry against the keys.
      * The input matcher will be modified to fit our key format. */
     bool synKeyExpand(StrMatcher* in, std::vector<std::string>& result,
-                      SynTermTrans *filtertrans = 0);
+                      SynTermTrans *filtertrans = nullptr);
 
 private:
     XapSynFamily m_family;

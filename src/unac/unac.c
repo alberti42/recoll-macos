@@ -14474,7 +14474,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
 
     out = *outp;
     out = (char*)realloc(out, out_size + 1);
-    if(out == 0) {
+    if (nullptr == out) {
         if(debug_level >= UNAC_DEBUG_LOW)
             DEBUG("realloc %d bytes failed\n", out_size+1);
         /* *outp is still valid. Let the caller free it */
@@ -14507,7 +14507,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
             is_except_char(c, trans)) {
             if (what == UNAC_UNAC) {
                 // Unaccent only. Do nothing
-                p = 0;
+                p = nullptr;
                 l = 0;
             } else {
                 // Has to be UNAC_UNACFOLD: use table

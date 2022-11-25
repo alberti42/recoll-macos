@@ -208,7 +208,7 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
         aspell.setStderr("/dev/null");
 
     Rcl::TermIter *tit = db.termWalkOpen();
-    if (tit == 0) {
+    if (nullptr == tit) {
         reason = "termWalkOpen failed\n";
         return false;
     }
@@ -222,7 +222,7 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
         args.push_back("dicts");
         string dicts;
         bool hasdict = false;
-        if (cmd.doexec(m_data->m_exec, args, 0, &dicts)) {
+        if (cmd.doexec(m_data->m_exec, args, nullptr, &dicts)) {
             vector<string> vdicts;
             stringToTokens(dicts, vdicts, "\n\r\t ");
             if (find(vdicts.begin(), vdicts.end(), m_lang) != vdicts.end()) {

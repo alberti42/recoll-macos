@@ -61,7 +61,7 @@ bool Logger::reopen(const std::string& fn)
 
 const char *Logger::datestring()
 {
-    time_t clk = time(0);
+    time_t clk = time(nullptr);
     struct tm tmb;
     localtime_r(&clk, &tmb);
     if (strftime(m_datebuf, LOGGER_DATESIZE, m_datefmt.c_str(), &tmb)) {
@@ -74,7 +74,7 @@ static Logger *theLog;
 
 Logger *Logger::getTheLog(const string& fn)
 {
-    if (theLog == 0)
+    if (nullptr == theLog)
         theLog = new Logger(fn);
     return theLog;
 }

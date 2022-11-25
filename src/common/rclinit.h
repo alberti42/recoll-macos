@@ -51,7 +51,7 @@ enum RclSigKind {
                  
 extern RclConfig *recollinit(int flags,
                              void (*cleanup)(void), void (*sigcleanup)(int),
-                             std::string& reason, const std::string *argcnf = 0);
+                             std::string& reason, const std::string *argcnf = nullptr);
 
 // Threads need to call this to block signals.
 // The main thread handles all signals.

@@ -30,14 +30,14 @@ static void *allocmem(
     int  min,    /* Number to allocate the first time */
     int  maxinc) /* Maximum increment */
 {
-    if (cp == 0) {
+    if (nullptr == cp) {
         cp = malloc(min * sz);
         *np = cp ? min : 0;
         return cp;
     }
 
     int inc = (*np > maxinc) ?  maxinc : *np;
-    if ((cp = realloc(cp, (*np + inc) * sz)) != 0) {
+    if ((cp = realloc(cp, (*np + inc) * sz)) != nullptr) {
         *np += inc;
     }
     return cp;
@@ -102,7 +102,7 @@ bool inflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf)
     d_stream.opaque = (voidpf)0;
     d_stream.next_in  = (Bytef*)inp;
     d_stream.avail_in = inlen;
-    d_stream.next_out = 0;
+    d_stream.next_out = nullptr;
     d_stream.avail_out = 0;
 
     int err;

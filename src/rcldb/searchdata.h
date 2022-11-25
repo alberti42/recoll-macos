@@ -245,7 +245,7 @@ public:
     enum Relation {REL_CONTAINS, REL_EQUALS, REL_LT, REL_LTE, REL_GT, REL_GTE};
 
     SearchDataClause(SClType tp) 
-        : m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
+        : m_tp(tp), m_parentSearch(nullptr), m_haveWildCards(0), 
           m_modifiers(SDCM_NONE), m_weight(1.0), m_exclude(false), 
           m_rel(REL_CONTAINS) {}
     virtual ~SearchDataClause() = default;
@@ -268,7 +268,7 @@ public:
         m_parentSearch = p;
     }
     string getStemLang() {
-        return (m_modifiers & SDCM_NOSTEMMING) || m_parentSearch == 0 ? 
+        return (m_modifiers & SDCM_NOSTEMMING) || nullptr == m_parentSearch ? 
             cstr_null : m_parentSearch->getStemLang();
     }
     bool getAutoDiac() {
@@ -375,7 +375,7 @@ protected:
                     const std::string& term, 
                     std::vector<std::string>& exp, 
                     std::string& sterm, const std::string& prefix,
-                    std::vector<std::string>* multiwords = 0);
+                    std::vector<std::string>* multiwords = nullptr);
     // After splitting entry on whitespace: process non-phrase element
     void processSimpleSpan(Rcl::Db &db, string& ermsg, const string& span, 
                            int mods, void *pq);

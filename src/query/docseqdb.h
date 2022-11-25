@@ -32,7 +32,7 @@ public:
     virtual ~DocSequenceDb() {}
     DocSequenceDb(const DocSequenceDb&) = delete;
     DocSequenceDb& operator=(const DocSequenceDb&) = delete;
-    virtual bool getDoc(int num, Rcl::Doc &doc, std::string * = 0) override;
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string * = nullptr) override;
     virtual int getResCnt() override;
     virtual void getTerms(HighlightData& hld) override;
 

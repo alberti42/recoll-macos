@@ -272,10 +272,10 @@ void *rclMonRcvRun(void *q)
 
     // Create the fam/whatever interface object
     RclMonitor *mon;
-    if ((mon = makeMonitor()) == 0) {
+    if ((mon = makeMonitor()) == nullptr) {
         LOGERR("rclMonRcvRun: makeMonitor failed\n");
         queue->setTerminate();
-        return 0;
+        return nullptr;
     }
 
     FsTreeWalker walker;
@@ -316,7 +316,7 @@ void *rclMonRcvRun(void *q)
 terminate:
     queue->setTerminate();
     LOGINFO("rclMonRcvRun: monrcv thread routine returning\n");
-    return 0;
+    return nullptr;
 }
 
 // Utility routine used by both the fam/gamin and inotify versions to get 
@@ -574,7 +574,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 class RclIntf : public RclMonitor {
 public:
     RclIntf()
-        : m_ok(false), m_fd(-1), m_evp(0), m_ep(0) {
+        : m_ok(false), m_fd(-1), m_evp(nullptr), m_ep(nullptr) {
         if ((m_fd = inotify_init()) < 0) {
             LOGERR("RclIntf:: inotify_init failed, errno " << errno << "\n");
             return;
@@ -679,7 +679,7 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
     ev.m_etyp = RclMonEvent::RCLEVT_NONE;
     MONDEB("RclIntf::getEvent:\n");
 
-    if (m_evp == 0) {
+    if (nullptr == m_evp) {
         fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(m_fd, &readfds);
@@ -690,7 +690,8 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
         }
         int ret;
         MONDEB("RclIntf::getEvent: select\n");
-        if ((ret = select(m_fd + 1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0)) < 0) {
+        if ((ret = select(m_fd + 1, &readfds, nullptr, nullptr,
+                          msecs >= 0 ? &timeout : nullptr)) < 0) {
             LOGSYSERR("RclIntf::getEvent", "select", "");
             close();
             return false;
@@ -718,7 +719,7 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
     if (evp->len > 0)
         m_evp += evp->len;
     if (m_evp >= m_ep)
-        m_evp = m_ep = 0;
+        m_evp = m_ep = nullptr;
     
     map<int,string>::const_iterator it;
     if ((it = m_idtopath.find(evp->wd)) == m_idtopath.end()) {
@@ -1241,7 +1242,7 @@ static RclMonitor *makeMonitor()
 #endif
     LOGINFO("RclMonitor: neither Inotify nor Fam was compiled as file system "
             "change notification interface\n");
-    return 0;
+    return nullptr;
 }
 
 #endif // RCL_MONITOR

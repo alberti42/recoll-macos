@@ -167,7 +167,7 @@ public:
     Doc() { }
 
     /** Get value for named field. If value pointer is 0, just test existence */
-    bool getmeta(const std::string& nm, std::string *value = 0) const {
+    bool getmeta(const std::string& nm, std::string *value = nullptr) const {
         const auto it = meta.find(nm);
         if (it != meta.end()) {
             if (value)
@@ -179,7 +179,7 @@ public:
     }
 
     /** Nocopy getvalue. sets pointer to entry value if exists */
-    bool peekmeta(const std::string& nm, const std::string **value = 0) const {
+    bool peekmeta(const std::string& nm, const std::string **value = nullptr) const {
         const auto it = meta.find(nm);
         if (it != meta.end()) {
             if (value)

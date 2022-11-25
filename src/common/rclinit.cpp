@@ -83,7 +83,7 @@ void initAsyncSigs(void (*sigcleanup)(int))
         sigemptyset(&action.sa_mask);
         for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
             if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN) {
-                if (sigaction(catchedSigs[i], &action, 0) < 0) {
+                if (sigaction(catchedSigs[i], &action, nullptr) < 0) {
                     perror("Sigaction failed");
                 }
             }
@@ -96,7 +96,7 @@ void initAsyncSigs(void (*sigcleanup)(int))
         action.sa_flags = 0;
         sigemptyset(&action.sa_mask);
         if (signal(SIGHUP, SIG_IGN) != SIG_IGN) {
-            if (sigaction(SIGHUP, &action, 0) < 0) {
+            if (sigaction(SIGHUP, &action, nullptr) < 0) {
                 perror("Sigaction failed");
             }
         }
@@ -289,7 +289,7 @@ RclConfig *recollinit(int flags,
             reason += config->getReason();
         else
             reason += "Out of memory ?";
-        return 0;
+        return nullptr;
     }
 
 #ifdef __APPLE__
@@ -454,7 +454,7 @@ void recoll_threadinit()
     for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
         sigaddset(&sset, catchedSigs[i]);
     sigaddset(&sset, SIGHUP);
-    pthread_sigmask(SIG_BLOCK, &sset, 0);
+    pthread_sigmask(SIG_BLOCK, &sset, nullptr);
 #else
     // Not sure that this is needed at all or correct under windows.
     for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++) {

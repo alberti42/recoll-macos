@@ -304,7 +304,7 @@ bool Binc::MimePart::skipUntilBoundary(const string &delimiter,
                        unsigned int *nlines, bool *eof)
 {
   string::size_type endpos = delimiter.length();
-  char *delimiterqueue = 0;
+  char *delimiterqueue = nullptr;
   string::size_type delimiterpos = 0;
   const char *delimiterStr = delimiter.c_str();
   if (delimiter != "") {
@@ -344,7 +344,7 @@ bool Binc::MimePart::skipUntilBoundary(const string &delimiter,
   }
 
   delete [] delimiterqueue;
-  delimiterqueue = 0;
+  delimiterqueue = nullptr;
 
   return foundBoundary;
 }
@@ -524,7 +524,7 @@ void Binc::MimePart::parseSinglePart(const string &toboundary,
   //  if (skipUntilBoundary(_toboundary, nlines, eof))
   //    *boundarysize = _toboundary.length();
 
-  char *boundaryqueue = 0;
+  char *boundaryqueue = nullptr;
   size_t endpos = _toboundary.length();
   if (toboundary != "") {
     boundaryqueue = new char[endpos];

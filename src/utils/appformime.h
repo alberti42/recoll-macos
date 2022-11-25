@@ -59,7 +59,7 @@ public:
      *   problem was detected.
      */
     bool appForMime(const std::string& mime, vector<AppDef> *apps, 
-                    std::string *reason = 0);
+                    std::string *reason = nullptr);
 
     /**
      * Get all applications defs:

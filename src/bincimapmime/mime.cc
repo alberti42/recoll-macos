@@ -47,14 +47,14 @@ Binc::MimeDocument::MimeDocument(void)
 {
   allIsParsed = false;
   headerIsParsed = false;
-  doc_mimeSource = 0;
+  doc_mimeSource = nullptr;
 }
 
 //------------------------------------------------------------------------
 Binc::MimeDocument::~MimeDocument(void)
 {
   delete doc_mimeSource;
-  doc_mimeSource = 0;
+  doc_mimeSource = nullptr;
 }
 
 //------------------------------------------------------------------------
@@ -65,7 +65,7 @@ void Binc::MimeDocument::clear(void)
   headerIsParsed = false;
   allIsParsed = false;
   delete doc_mimeSource;
-  doc_mimeSource = 0;
+  doc_mimeSource = nullptr;
 }
 
 //------------------------------------------------------------------------
@@ -73,7 +73,7 @@ void Binc::MimePart::clear(void)
 {
   members.clear();
   h.clear();
-  mimeSource = 0;
+  mimeSource = nullptr;
 }
 
 //------------------------------------------------------------------------
@@ -85,7 +85,7 @@ Binc::MimePart::MimePart(void)
 
   nlines = 0;
   nbodylines = 0;
-  mimeSource = 0;
+  mimeSource = nullptr;
 }
 
 //------------------------------------------------------------------------

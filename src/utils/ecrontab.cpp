@@ -35,7 +35,7 @@ static bool eCrontabGetLines(vector<string>& lines)
     // crontab exists, and is not fatal, but we return a different
     // status than for an empty one
     args.push_back("-l");
-    if ((status = croncmd.doexec("crontab", args, 0, &crontab))) {
+    if ((status = croncmd.doexec("crontab", args, nullptr, &crontab))) {
         lines.clear();
         return false;
     }
@@ -58,7 +58,7 @@ static bool eCrontabWriteFile(const vector<string>& lines, string& reason)
     }
 
     args.push_back("-");
-    if ((status = croncmd.doexec("crontab", args, &crontab, 0))) {
+    if ((status = croncmd.doexec("crontab", args, &crontab, nullptr))) {
         char nbuf[30]; 
         sprintf(nbuf, "0x%x", status);
         reason = string("Exec crontab -l failed: status: ") + nbuf;

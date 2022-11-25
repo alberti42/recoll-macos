@@ -86,16 +86,16 @@ namespace pxattr {
 class AutoBuf {
 public:
     char *buf;
-    AutoBuf() : buf(0) {}
-    ~AutoBuf() {if (buf) free(buf); buf = 0;}
+    AutoBuf() : buf(nullptr) {}
+    ~AutoBuf() {if (buf) free(buf); buf = nullptr;}
     bool alloc(int n) 
         {
             if (buf) {
                 free(buf);
-                buf = 0;
+                buf = nullptr;
             }
             buf = (char *)malloc(n); 
-            return buf != 0;
+            return buf != nullptr;
         }
 };
 
@@ -140,12 +140,12 @@ get(int fd, const string& path, const string& _name, string *value,
 #elif defined(PXALINUX)
     if (fd < 0) {
         if (flags & PXATTR_NOFOLLOW) {
-            ret = lgetxattr(path.c_str(), name.c_str(), 0, 0);
+            ret = lgetxattr(path.c_str(), name.c_str(), nullptr, 0);
         } else {
-            ret = getxattr(path.c_str(), name.c_str(), 0, 0);
+            ret = getxattr(path.c_str(), name.c_str(), nullptr, 0);
         }
     } else {
-        ret = fgetxattr(fd, name.c_str(), 0, 0);
+        ret = fgetxattr(fd, name.c_str(), nullptr, 0);
     }
     if (ret < 0)
         return false;
@@ -379,12 +379,12 @@ list(int fd, const string& path, vector<string>* names, flags flags, nspace dom)
 #elif defined(PXALINUX)
     if (fd < 0) {
         if (flags & PXATTR_NOFOLLOW) {
-            ret = llistxattr(path.c_str(), 0, 0);
+            ret = llistxattr(path.c_str(), nullptr, 0);
         } else {
-            ret = listxattr(path.c_str(), 0, 0);
+            ret = listxattr(path.c_str(), nullptr, 0);
         }
     } else {
-        ret = flistxattr(fd, 0, 0);
+        ret = flistxattr(fd, nullptr, 0);
     }
     if (ret < 0) 
         return false;

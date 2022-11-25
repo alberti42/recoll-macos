@@ -73,7 +73,7 @@ public:
     // Set data to 0 if you just want the header
     // instance == -1 means get latest. Otherwise specify from 1+
     virtual bool get(const std::string& udi, std::string& dic,
-                     std::string *data = 0, int instance = -1);
+                     std::string *data = nullptr, int instance = -1);
 
     // Note: the dicp MUST have an udi entry
     enum PutFlags {
@@ -94,7 +94,7 @@ public:
     virtual bool rewind(bool& eof);
     /** Get entry under cursor */
     virtual bool getCurrent(std::string& udi, std::string& dic,
-                            std::string *data = 0);
+                            std::string *data = nullptr);
     /** Get current entry udi only. Udi can be empty (erased empty), caller
      * should call again */
     virtual bool getCurrentUdi(std::string& udi);
@@ -123,19 +123,20 @@ public:
      * @ret number of entries copied or -a
      */
     static int appendCC(const std::string& ddir, const std::string& sdir,
-                        std::string *reason = 0);
+                        std::string *reason = nullptr);
 
     /* Rewrite the cache so that the space wasted to erased
      * entries is recovered. This may need to use temporarily twice
      * the current cache disk space.
      */
-    static bool compact(const std::string& dir, std::string *reason = 0);
+    static bool compact(const std::string& dir, std::string *reason = nullptr);
 
     /* Extract all entries as metadata/data file pairs */
-    static bool burst(const std::string& ccdir, const std::string destdir, std::string *reason = 0);
+    static bool burst(
+        const std::string& ccdir, const std::string destdir, std::string *reason = nullptr);
     
 protected:
-    CirCacheInternal *m_d;
+    CirCacheInternal *m_d{nullptr};
     std::string m_dir;
 };
 

@@ -440,7 +440,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     }
     string prefix;
     if (!field.empty()) {
-        const FieldTraits *ftp = 0;
+        const FieldTraits *ftp = nullptr;
         if (!fieldToTraits(field, &ftp, true) || ftp->pfx.empty()) {
             LOGDEB("Db::termMatch: field is not indexed (no prefix): [" <<
                    field << "]\n");
@@ -563,14 +563,14 @@ public:
 TermIter *Db::termWalkOpen()
 {
     if (!m_ndb || !m_ndb->m_isopen)
-        return 0;
+        return nullptr;
     TermIter *tit = new TermIter;
     if (tit) {
         tit->db = m_ndb->xrdb;
         XAPTRY(tit->it = tit->db.allterms_begin(), tit->db, m_reason);
         if (!m_reason.empty()) {
             LOGERR("Db::termWalkOpen: xapian error: " << m_reason << "\n");
-            return 0;
+            return nullptr;
         }
     }
     return tit;

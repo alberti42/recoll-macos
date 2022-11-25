@@ -38,7 +38,7 @@ public:
     WebStore& operator=(const WebStore&) = delete;
 
     bool getFromCache(const std::string& udi, Rcl::Doc &doc, std::string& data,
-                      std::string *hittype = 0);
+                      std::string *hittype = nullptr);
     // We could write proxies for all the circache ops, but why bother?
     CirCache *cc() {return m_cache;}
 

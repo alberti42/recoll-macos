@@ -540,18 +540,18 @@ const string& tmplocation()
         /* Don't use these under windows because they will return
          * non-ascii non-unicode stuff (would have to call _wgetenv()
          * instead. path_wingetrcltmpdir() will manage */
-        if (tmpdir == 0) {
+        if (tmpdir == nullptr) {
             tmpdir = getenv("TMPDIR");
         }
-        if (tmpdir == 0) {
+        if (tmpdir == nullptr) {
             tmpdir = getenv("TMP");
         }
-        if (tmpdir == 0) {
+        if (tmpdir == nullptr) {
             tmpdir = getenv("TEMP");
         }
 #endif
 
-        if (tmpdir == 0) {
+        if (tmpdir == nullptr) {
 #ifdef _WIN32
             stmpdir = path_wingetrcltmpdir();
 #else
@@ -779,7 +779,7 @@ static const string& xdgcachedir()
     static string xdgcache;
     if (xdgcache.empty()) {
         const char *cp = getenv("XDG_CACHE_HOME");
-        if (cp == 0) {
+        if (nullptr == cp) {
             xdgcache = path_cat(path_home(), ".cache");
         } else {
             xdgcache = string(cp);

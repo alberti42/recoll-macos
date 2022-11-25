@@ -115,7 +115,7 @@ public:
      *   mime type for the uncompressed version.
      */
     FileInterner(const string &fn, const struct PathStat *stp, 
-                 RclConfig *cnf, int flags, const string *mtype = 0);
+                 RclConfig *cnf, int flags, const string *mtype = nullptr);
     
     /** 
      * Alternate constructor for the case where the data is in memory.
@@ -289,7 +289,7 @@ private:
     
     // Pseudo-constructors
     void init(const string &fn, const struct PathStat *stp, 
-              RclConfig *cnf, int flags, const string *mtype = 0);
+              RclConfig *cnf, int flags, const string *mtype = nullptr);
     void init(const string &data, RclConfig *cnf, int flags, 
               const string& mtype);
     void initcommon(RclConfig *cnf, int flags);

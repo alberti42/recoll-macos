@@ -107,7 +107,7 @@ bool historyEnterDoc(Rcl::Db *db, RclDynConf *dncf, const Rcl::Doc& doc)
         std::string dbdir =  db->whatIndexForResultDoc(doc);
         LOGDEB("historyEnterDoc: [" << udi << ", " << dbdir << "] into " <<
                dncf->getFilename() << "\n");
-        RclDHistoryEntry ne(time(0), udi, dbdir);
+        RclDHistoryEntry ne(time(nullptr), udi, dbdir);
         RclDHistoryEntry scratch;
         return dncf->insertNew(docHistSubKey, ne, scratch, 200);
     } else {

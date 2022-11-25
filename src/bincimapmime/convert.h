@@ -99,12 +99,12 @@ namespace Binc {
       unsigned char d = *(i + 1);
       
       const char *t;
-      if ((t = strchr(hexchars, c)) == 0)
+      if ((t = strchr(hexchars, c)) == nullptr)
     return "out of range";
       n = (t - hexchars) << 4;
       
       
-      if ((t = strchr(hexchars, d)) == 0)
+      if ((t = strchr(hexchars, d)) == nullptr)
     return "out of range";
       n += (t - hexchars);
       

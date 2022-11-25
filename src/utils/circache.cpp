@@ -306,7 +306,7 @@ public:
     CirCacheInternal()
         : m_fd(-1), m_maxsize(-1), m_oheadoffs(-1),
           m_nheadoffs(0), m_npadsize(0), m_uniquentries(false),
-          m_buffer(0), m_bufsiz(0), m_ofskhcplt(false) {
+          m_buffer(nullptr), m_bufsiz(0), m_ofskhcplt(false) {
     }
 
     ~CirCacheInternal() {
@@ -507,7 +507,7 @@ public:
             if (d.dicsize) {
                 // d.dicsize is 0 for erased entries
                 char *bf;
-                if ((bf = buf(d.dicsize + 1)) == 0) {
+                if ((bf = buf(d.dicsize + 1)) == nullptr) {
                     return CCScanHook::Error;
                 }
                 bf[d.dicsize] = 0;
@@ -545,7 +545,7 @@ public:
             return false;
         }
         string dic;
-        if (!readDicData(hoffs, d, dic, 0)) {
+        if (!readDicData(hoffs, d, dic, nullptr)) {
             return false;
         }
         if (d.dicsize == 0) {
@@ -570,10 +570,10 @@ public:
             m_reason << "CirCache::get: lseek(" << offs << ") failed: " << errno;
             return false;
         }
-        char *bf = 0;
+        char *bf = nullptr;
         if (hd.dicsize) {
             bf = buf(hd.dicsize);
-            if (bf == 0) {
+            if (nullptr == bf) {
                 return false;
             }
             if (read(m_fd, bf, hd.dicsize) != int(hd.dicsize)) {
@@ -584,13 +584,13 @@ public:
         } else {
             dic.erase();
         }
-        if (data == 0) {
+        if (nullptr == data) {
             return true;
         }
 
         if (hd.datasize) {
             bf = buf(hd.datasize);
-            if (bf == 0) {
+            if (nullptr == bf) {
                 return false;
             }
             if (read(m_fd, bf, hd.datasize) != int(hd.datasize)) {
@@ -628,7 +628,7 @@ CirCache::CirCache(const string& dir)
 CirCache::~CirCache()
 {
     delete m_d;
-    m_d = 0;
+    m_d = nullptr;
 }
 
 string CirCache::getReason()
@@ -665,7 +665,7 @@ bool CirCache::create(int64_t maxsize, int flags)
 {
     LOGDEB("CirCache::create: [" << m_dir << "] maxsz " << maxsize <<
            " flags 0x" << std::hex << flags <<std::dec<<"\n");
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::create: null data\n");
         return false;
     }
@@ -738,7 +738,7 @@ bool CirCache::create(int64_t maxsize, int flags)
 
 bool CirCache::open(OpMode mode)
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::open: null data\n");
         return false;
     }
@@ -759,7 +759,7 @@ bool CirCache::open(OpMode mode)
 
 int64_t CirCache::size()
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::open: null data\n");
         return -1;
     }
@@ -782,7 +782,7 @@ int64_t CirCache::size()
 
 int64_t CirCache::maxsize()
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::open: null data\n");
         return -1;
     }
@@ -791,7 +791,7 @@ int64_t CirCache::maxsize()
 
 int64_t CirCache::writepos()
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::open: null data\n");
         return -1;
     }
@@ -800,7 +800,7 @@ int64_t CirCache::writepos()
 
 bool CirCache::uniquentries()
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::open: null data\n");
         return false;
     }
@@ -948,7 +948,7 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
 // offset+sizes == oheadoffs
 bool CirCache::erase(const string& udi, bool reallyclear)
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::erase: null data\n");
         return false;
     }
@@ -1031,7 +1031,7 @@ public:
 bool CirCache::put(const string& udi, const ConfSimple *iconf,
                    const string& data, unsigned int iflags)
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::put: null data\n");
         return false;
     }
@@ -1199,7 +1199,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
 
 bool CirCache::rewind(bool& eof)
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::rewind: null data\n");
         return false;
     }
@@ -1234,7 +1234,7 @@ bool CirCache::rewind(bool& eof)
 
 bool CirCache::next(bool& eof)
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::next: null data\n");
         return false;
     }
@@ -1271,7 +1271,7 @@ bool CirCache::next(bool& eof)
 
 bool CirCache::getCurrentUdi(string& udi)
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::getCurrentUdi: null data\n");
         return false;
     }
@@ -1284,7 +1284,7 @@ bool CirCache::getCurrentUdi(string& udi)
 
 bool CirCache::getCurrent(string& udi, string& dic, string *data)
 {
-    if (m_d == 0) {
+    if (nullptr == m_d) {
         LOGERR("CirCache::getCurrent: null data\n");
         return false;
     }

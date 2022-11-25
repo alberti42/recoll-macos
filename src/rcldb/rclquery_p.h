@@ -45,7 +45,7 @@ public:
     Xapian::MatchDecider *subdecider{nullptr};
     
     Native(Query *q)
-        : m_q(q), xenquire(0) {}
+        : m_q(q), xenquire(nullptr) {}
     ~Native() {
         clear();
     }

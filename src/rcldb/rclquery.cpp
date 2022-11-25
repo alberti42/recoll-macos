@@ -163,7 +163,7 @@ Query::~Query()
     deleteZ(m_nq);
     if (m_sorter) {
         delete (QSorter*)m_sorter;
-        m_sorter = 0;
+        m_sorter = nullptr;
     }
 }
 
@@ -241,7 +241,7 @@ bool Query::setQuery(std::shared_ptr<SearchData> sdata)
                 stringlowercmp("relevancyrating", m_sortField)) {
                 if (m_sorter) {
                     delete (QSorter*)m_sorter;
-                    m_sorter = 0;
+                    m_sorter = nullptr;
                 }
                 m_sorter = new QSorter(m_sortField);
                 // It really seems there is a xapian bug about sort order, we 
@@ -390,7 +390,7 @@ int Query::getResCnt(int checkatleast, bool useestimate)
         XAPTRY(if (checkatleast == -1)
                    checkatleast = m_db->docCnt();
                m_nq->xmset = m_nq->xenquire->get_mset(
-                   0, qquantum, checkatleast, 0, m_nq->subdecider),
+                   0, qquantum, checkatleast, nullptr, m_nq->subdecider),
                m_db->m_ndb->xrdb, m_reason);
         if (!m_reason.empty()) {
             LOGERR("xenquire->get_mset: exception: " << m_reason << "\n");

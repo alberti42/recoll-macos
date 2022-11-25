@@ -61,7 +61,7 @@ extern "C" {
     (l) = unac_positions[index][position + 1]            \
         - unac_positions[index][position];                \
     if((l) == 1 && *(p) == 0xFFFF) {                \
-        (p) = 0;                            \
+        (p) = nullptr;                            \
         (l) = 0;                            \
     }                                \
     }
