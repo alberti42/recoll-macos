@@ -18,7 +18,7 @@
 %define rname recoll
 
 Name:           kio_recoll
-Version:        1.21.6
+Version:        1.33.3
 Release:        0
 Summary:        Extended Search
 License:        GPL-2.0+
@@ -26,10 +26,7 @@ Summary:        KIO slave for the Recoll full text search tool
 Group:          Productivity/Text/Utilities
 Url:            http://www.lesbonscomptes.com/recoll/
 Source:         http://www.lesbonscomptes.com/recoll/%{rname}-%{version}.tar.gz
-BuildRequires:  libkde4-devel
 BuildRequires:  kio-devel
-BuildRequires:  libxapian-devel
-BuildRequires:  recoll = %{version}
 Requires:       recoll = %{version}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
@@ -44,31 +41,20 @@ This package provides the kio-slave
 
 %build
 pushd kde/kioslave/kio_recoll
-%cmake_kde4 -d build
+%cmake_kf5 -d build
 %make_jobs
 popd
-pushd kde/kioslave/kio_recoll-kde4
-%cmake_kde4 -d build
-%make_jobs
 
 %install
 pushd kde/kioslave/kio_recoll
-%kde4_makeinstall -C build
+%kf5_makeinstall -C build
 popd
-pushd kde/kioslave/kio_recoll-kde4
-%kde4_makeinstall -C build
 
 
 %files
 %defattr(-,root,root)
-%{_libdir}/qt5/plugins/kio_recoll.so
+%{_libdir}/qt5/plugins/kf5/kio/kio_recoll.so
 %{_datadir}/kio_recoll/
-%{_datadir}/kservices5/*.protocol
-%{_libdir}/kde4/kio_recoll.so
-%{_datadir}/kde4/apps/kio_recoll/help.html
-%{_datadir}/kde4/apps/kio_recoll/welcome.html
-%{_datadir}/kde4/services/recoll.protocol
-%{_datadir}/kde4/services/recollf.protocol
 
 %changelog
 * Tue Apr 05 2016 Jean-Francois Dockes <jfd@recoll.org> 1.21.6-0
