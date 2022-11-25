@@ -3,7 +3,7 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.32.7
+Version:        1.33.3
 Release:        2%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
@@ -17,19 +17,17 @@ BuildRequires:  desktop-file-utils
 #BuildRequires:  kdelibs4-devel
 
 # Fedora
-BuildRequires:  qt5-qtbase-devel
-BuildRequires:  qt5-qtwebkit-devel
-#BuildRequires: qt5-qtwebengine-devel
-BuildRequires:  python3-devel
-BuildRequires:  xapian-core-devel
-BuildRequires:  kf5-kio-devel
+#BuildRequires:  qt5-qtbase-devel
+#BuildRequires:  qt5-qtwebkit-devel
+#BuildRequires:  python3-devel
+#BuildRequires:  xapian-core-devel
+#BuildRequires:  kf5-kio-devel
 
 # Opensuse
-#BuildRequires:  libQt5Gui-devel
-#BuildRequires:  libqt5-qtwebengine-devel
-#BuildRequires:  python310-devel
-#BuildRequires:  libxapian-devel
-#BuildRequires:  kio-devel
+BuildRequires:  libQt5Gui-devel
+BuildRequires:  libqt5-qtwebengine-devel
+BuildRequires:  python310-devel
+BuildRequires:  libxapian-devel
 
 BuildRequires:  extra-cmake-modules
 BuildRequires:  python2-devel
@@ -44,15 +42,6 @@ other Unix systems. It is based on the powerful Xapian backend, for
 which it provides an easy to use, feature-rich, easy administration
 interface.
 
-%package       kio
-Summary:       KIO support for recoll
-Group:         Applications/Databases
-Requires:      %{name} = %{version}-%{release}
-
-%description   kio
-The recoll KIO slave allows performing a recoll search by entering an
-appropriate URL in a KDE open dialog, or with an HTML-based interface
-displayed in Konqueror.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -78,15 +67,11 @@ desktop-file-install --delete-original \
 
 # use /usr/bin/xdg-open
 rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
+rm -f %{buildroot}/usr/lib/systemd/system/recollindex@.service
+rm -f %{buildroot}/usr/lib/systemd/user/recollindex.service
+rm -f %{buildroot}/usr/share/man/man1/rclgrep.1
+rm -f %{buildroot}/usr/share/man/man1/rclgrep.1.gz
 
-# kio_recoll -kde5
-(
-#mkdir kde/kioslave/kio_recoll/build && pushd kde/kioslave/kio_recoll/build
-%cmake ..
-make %{?_smp_mflags} VERBOSE=1
-make install DESTDIR=%{buildroot}
-popd
-)
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
 echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
@@ -107,11 +92,7 @@ py3_byte_compile () {
 py2_byte_compile %{buildroot}%{python2_sitearch}/recoll
 
 for py in %{buildroot}%{_datadir}/%{name}/filters/*.py; do
-    if [ "$(basename $py)" = "recoll-we-move-files.py" ]; then
 	py3_byte_compile $py
-    else
-	py2_byte_compile $py
-    fi
 done
 
 %post
@@ -152,8 +133,6 @@ exit 0
 %{python2_sitearch}/Recoll*.egg-info
 %{python3_sitearch}/recoll
 %{python3_sitearch}/Recoll*.egg-info
-%{python2_sitearch}/recollchm
-%{python2_sitearch}/recollchm*.egg-info
 %{python3_sitearch}/recollchm
 %{python3_sitearch}/recollchm*.egg-info
 %{_mandir}/man1/%{name}.1*
@@ -162,13 +141,6 @@ exit 0
 %{_mandir}/man1/xadump.1*
 %{_mandir}/man5/%{name}.conf.5*
 
-%files kio
-%license COPYING
-%{_libdir}/qt5/plugins/kio_recoll.so
-%{_datadir}/kio_recoll/help.html
-%{_datadir}/kio_recoll/welcome.html
-%{_datadir}/kservices5/recoll.protocol
-%{_datadir}/kservices5/recollf.protocol
 
 %changelog
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.23.7-2
