@@ -26,10 +26,16 @@
 
 void RclMain::populateSideFilters(bool init)
 {
+    auto old_idxtreemodel = idxTreeView->model();
+
     m_idxtreemodel = new IdxTreeModel(theconfig, prefs.idxFilterTreeDepth, idxTreeView);
     m_idxtreemodel->populate();
     m_idxtreemodel->setHeaderData(0, Qt::Horizontal, QVariant(tr("Filter directories")));
     idxTreeView->setModel(m_idxtreemodel);
+
+    if (nullptr != old_idxtreemodel)
+        old_idxtreemodel->deleteLater();
+
     if (init) {
         idxTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
         idxTreeView->setSelectionMode(QAbstractItemView::MultiSelection);
