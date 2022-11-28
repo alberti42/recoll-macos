@@ -26,21 +26,17 @@
 #include "idxmodel.h"
 
 #include "recoll.h"
-#include "rclconfig.h"
 #include "fstreewalk.h"
 #include "log.h"
 
-// Note: we originally used a file system tree walk to populate the tree, but this was wrong
+// Note: we originally used a file system tree walk to populate the tree. This was wrong
 // because the file system may have changed since the index was created.
-// We now build a directory tree directly from index data, but still use the previous tree
-// walk callback. The old code has been kept around to explain how we arrived there.
-#undef USE_TREEWALK
-
+// We now build a directory tree directly from the index data, but still use the previous tree walk
+// callback. In case you need an explanation of how we got here, look at the git history.
 class WalkerCB : public FsTreeWalkerCB {
 public:
-    WalkerCB(RclConfig *config, const std::string& topstring, FsTreeWalker& walker,
-             IdxTreeModel *model, const QModelIndex& index)
-        : m_config(config), m_topstring(topstring), m_walker(walker), m_model(model)
+    WalkerCB(const std::string& topstring, IdxTreeModel *model, const QModelIndex& index)
+        : m_topstring(topstring), m_model(model)
     {
         m_indexes.push(index);
         m_rows.push(0);
@@ -48,9 +44,7 @@ public:
     virtual FsTreeWalker::Status processone(
         const std::string& path, const struct PathStat *, FsTreeWalker::CbFlag flg) override;
 
-    RclConfig *m_config;
     std::string m_topstring;
-    FsTreeWalker& m_walker;
     IdxTreeModel *m_model;
     std::stack<QModelIndex> m_indexes;
     std::stack<int> m_rows;
@@ -59,12 +53,6 @@ public:
 FsTreeWalker::Status WalkerCB::processone(
     const std::string& path, const struct PathStat *, FsTreeWalker::CbFlag flg)
 {
-    if (flg == FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwDirReturn) {
-        m_config->setKeyDir(path);
-        // Set up filter/skipped patterns for this subtree. 
-        m_walker.setOnlyNames(m_config->getOnlyNames());
-        m_walker.setSkippedNames(m_config->getSkippedNames());
-    }
     if (flg == FsTreeWalker::FtwDirReturn) {
         m_indexes.pop();
         m_rows.pop();
@@ -96,20 +84,6 @@ FsTreeWalker::Status WalkerCB::processone(
     }
     return FsTreeWalker::FtwOk;
 }
-
-#ifdef USE_TREEWALK
-static void populateDir(RclConfig *config, const std::string& topstr, IdxTreeModel *model,
-                        const QModelIndex& index, const std::string& path, int depth)
-{
-    FsTreeWalker walker;
-    walker.setSkippedPaths(config->getSkippedPaths());
-//  walker.setOpts(walker.getOpts() | FsTreeWalker::FtwSkipDotFiles);
-    walker.setMaxDepth(depth);
-    WalkerCB cb(config, topstr, walker, model, index);
-    walker.walk(path, cb);
-}
-
-#else
 
 // Assemble a path from its components up to lst
 std::string toksToPath(std::vector<std::string>& path, int lst)
@@ -171,7 +145,6 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
         curpath.swap(npath);
     }
 }
-#endif // USE_TREEWALK
 
 void IdxTreeModel::populate()
 {
@@ -182,33 +155,14 @@ void IdxTreeModel::populate()
             return;
     }
     int row = 0;
-
-#ifdef USE_TREEWALK
-    auto topdirs = m_config->getTopdirs();
-    auto prefix = commonprefix(topdirs);
-    for (const auto& topdir : topdirs) {
-        const QModelIndex child = this->index(row, 0, index);
-        std::string topdisp;
-        if (prefix.size() > 1) {
-            topdisp = topdir.substr(prefix.size());
-        } else {
-            topdisp = topdir;
-        }
-        populateDir(m_config, topdisp, this, child, topdir, m_depth);
-        ++row;
-    }
-    sort(0, Qt::AscendingOrder);
-#else
     std::vector<std::string> thedirs;
     std::string prefix;
     rcldb->dirlist(m_depth, prefix, thedirs);
     LOGDEB0("IdxTreeModel::populate: prefix [" << prefix << "] thedirs: " <<
             stringsToString(thedirs) << "\n");
     const QModelIndex child = this->index(row, 0, index);
-    FsTreeWalker walker;
-    WalkerCB cb(m_config, prefix == "/" ? std::string() : prefix, walker, this, child);
+    WalkerCB cb(prefix == "/" ? std::string() : prefix, this, child);
     if (prefix.empty())
         prefix = "/";
     treelist(path_getfather(prefix), thedirs, cb);
-#endif
 }

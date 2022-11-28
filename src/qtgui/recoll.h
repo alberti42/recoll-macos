@@ -30,6 +30,7 @@
 
 // Open the database if needed. We now force a close/open by default
 extern bool maybeOpenDb(std::string &reason, bool force, bool *maindberror = 0);
+extern const std::vector<std::string> *getCurrentExtraDbs();
 
 /** Retrieve configured stemming languages */
 bool getStemLangs(vector<string>& langs);

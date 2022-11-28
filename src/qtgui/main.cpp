@@ -94,6 +94,15 @@ void startManual(const string& helpindex)
         mainWindow->startManual(helpindex);
 }
 
+const vector<string> *getCurrentExtraDbs()
+{
+    auto edbs = &prefs.activeExtraDbs;
+    if (prefs.useTmpActiveExtraDbs) {
+        edbs = &prefs.tmpActiveExtraDbs;
+    }
+    return edbs;
+}
+
 bool maybeOpenDb(string &reason, bool force, bool *maindberror)
 {
     LOGDEB1("maybeOpenDb: force " << force << "\n");
@@ -102,10 +111,7 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
         rcldb = std::make_shared<Rcl::Db>(theconfig);
     }
     rcldb->rmQueryDb("");
-    auto edbs = &prefs.activeExtraDbs;
-    if (prefs.useTmpActiveExtraDbs) {
-        edbs = &prefs.tmpActiveExtraDbs;
-    }
+    auto edbs = getCurrentExtraDbs();
     if (!edbs->empty()) {
         rcldb->setExtraQueryDbs(*edbs);
     }

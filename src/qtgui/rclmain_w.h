@@ -98,6 +98,7 @@ public:
     void buildMenus();
     void setupMenus();
     void setupCategoryFiltering();
+    enum SideFilterUpdateReason{SFUR_INIT, SFUR_USERCONFIG, SFUR_INDEXCONTENTS};
                                  
 public slots:
     virtual void fileExit();
@@ -145,7 +146,7 @@ public slots:
                                    int line = -1);
     virtual void openWith(Rcl::Doc, string);
     virtual void saveDocToFile(Rcl::Doc);
-    virtual void populateSideFilters(bool init = false);
+    virtual void populateSideFilters(SideFilterUpdateReason);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
     virtual void previewPrevInTab(Preview *, int sid, int docnum);
     virtual void previewExposed(Preview *, int sid, int docnum);
@@ -262,7 +263,7 @@ private:
     // preview (if no ext app set)
     QString          m_urltoview;
     RclTrayIcon     *m_trayicon{0};
-    // We sometimes take the indexer lock (e.g.: when editing the webcache)
+   // We sometimes take the indexer lock (e.g.: when editing the webcache)
     Pidfile         *m_pidfile{0};
     IdxTreeModel    *m_idxtreemodel{nullptr};
     

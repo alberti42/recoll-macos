@@ -299,7 +299,7 @@ void RclMain::init()
     sideFiltersSPLT->setStretchFactor(0, 0);
     sideFiltersSPLT->setStretchFactor(1, 1);
 
-    populateSideFilters(true);
+    populateSideFilters(SFUR_INIT);
 
     enableTrayIcon(prefs.showTrayIcon);
 
@@ -1156,7 +1156,7 @@ void RclMain::setUIPrefs()
     if (!uiprefs)
         return;
     LOGDEB("Recollmain::setUIPrefs\n");
-    populateSideFilters();
+    populateSideFilters(SFUR_USERCONFIG);
     emit uiPrefsChanged();
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
     enbSynAction->setChecked(prefs.synFileEnable);

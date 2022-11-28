@@ -21,22 +21,22 @@
 #ifndef _IDXMODEL_H
 #define _IDXMODEL_H
 
+#include <vector>
+#include <string>
 #include <QStandardItemModel>
-
-class RclConfig;
 
 class IdxTreeModel : public QStandardItemModel {
     Q_OBJECT;
 public:
-    IdxTreeModel(RclConfig *config, int depth, QWidget *parent = nullptr)
-        : QStandardItemModel(0, 0, (QObject*)parent), m_config(config), m_depth(depth) {
-    }
+    IdxTreeModel(int depth, const std::vector<std::string>& edbs, QWidget *parent = nullptr)
+        : QStandardItemModel(0, 0, (QObject*)parent), m_depth(depth), m_extradbs(edbs) {}
     ~IdxTreeModel() {}
     void populate();
     int getDepth() {return m_depth;}
-private:
-    RclConfig *m_config{nullptr};
+    const std::vector<std::string> &getEDbs() {return m_extradbs;}
+  private:
     int m_depth;
+    std::vector<std::string> m_extradbs;
 };
 
 #endif // _IDXMODEL_H

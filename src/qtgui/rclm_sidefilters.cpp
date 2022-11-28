@@ -24,19 +24,31 @@
 #include "idxmodel.h"
 #include "guiutils.h"
 
-void RclMain::populateSideFilters(bool init)
+void RclMain::populateSideFilters(SideFilterUpdateReason reason)
 {
-    auto old_idxtreemodel = idxTreeView->model();
+    if (m_idxtreemodel && reason == SFUR_USERCONFIG &&
+        (m_idxtreemodel->getDepth() == prefs.idxFilterTreeDepth &&
+         m_idxtreemodel->getEDbs() == *getCurrentExtraDbs())) {
+        // The filter depths and set of external indexes are the only things which may impact us
+        // after the user has changed the GUI preferences. So no need to lose the current user
+        // selections if these did not change.
+        return;
+    }
 
-    m_idxtreemodel = new IdxTreeModel(theconfig, prefs.idxFilterTreeDepth, idxTreeView);
+    auto old_idxtreemodel = m_idxtreemodel;
+
+    m_idxtreemodel = new IdxTreeModel(prefs.idxFilterTreeDepth, *getCurrentExtraDbs(), idxTreeView);
     m_idxtreemodel->populate();
     m_idxtreemodel->setHeaderData(0, Qt::Horizontal, QVariant(tr("Filter directories")));
     idxTreeView->setModel(m_idxtreemodel);
 
+    // Reset the current filter spec, the selection is gone.
+    setFiltSpec();
+    
     if (nullptr != old_idxtreemodel)
         old_idxtreemodel->deleteLater();
 
-    if (init) {
+    if (reason == SFUR_INIT) {
         idxTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
         idxTreeView->setSelectionMode(QAbstractItemView::MultiSelection);
         connect(idxTreeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(setFiltSpec()));
