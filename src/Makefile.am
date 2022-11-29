@@ -6,6 +6,7 @@ if COND_TESTMAINS
 endif
 if COND_RCLGREP
   MAYBE_RCLGREP = rclgrep
+  rclgrep_man1_MANS = doc/man/rclgrep.1
 endif
 SUBDIRS = . $(MAYBE_TESTMAINS) $(MAYBE_RCLGREP)
 
@@ -323,6 +324,7 @@ endif
 
 if MAKEXADUMP
    bin_PROGRAMS += xadump
+   xadump_man1_MANS = doc/man/xadump.1
 endif
 
 recollindex_SOURCES = \
@@ -338,7 +340,7 @@ recollindex_SOURCES = \
     index/webqueue.cpp \
     index/webqueue.h
 
-recollindex_LDADD = librecoll.la 
+recollindex_LDADD = librecoll.la
 
 recollq_SOURCES = query/recollqmain.cpp
 recollq_LDADD = librecoll.la
@@ -355,6 +357,10 @@ desktop/recollindex.desktop \
 desktop/recoll_index_on_ac.sh \
 desktop/recoll-searchgui.desktop \
 desktop/recoll.png desktop/recoll.svg desktop/recoll.xcf \
+\
+doc/man/recoll.1  doc/man/recollq.1 \
+doc/man/recollindex.1 doc/man/rclgrep.1 \
+doc/man/xadump.1 doc/man/recoll.conf.5 \
 \
 doc/prog/Makefile doc/prog/Doxyfile doc/prog/filters.txt doc/prog/top.txt \
 \
@@ -604,8 +610,8 @@ RECOLL-VERSION.txt
 
 # EXTRA_DIST: The Php Code does not build anymore. No need to ship it until
 # someone fixes it:
-# php/00README.txt php/recoll/config.m4 php/recoll/make.sh 
-# php/recoll/php_recoll.h php/recoll/recoll.cpp php/sample/shell.php 
+# php/00README.txt php/recoll/config.m4 php/recoll/make.sh
+# php/recoll/php_recoll.h php/recoll/recoll.cpp php/sample/shell.php
 
 OPTSFORPYTHON = $(shell test -f /etc/debian_version && echo --install-layout=deb)
 
@@ -775,7 +781,7 @@ filters/xls-dump.py \
 filters/xlsxmltocsv.py \
 filters/xml.xsl \
 python/recoll/recoll/conftree.py \
-python/recoll/recoll/rclconfig.py 
+python/recoll/recoll/rclconfig.py
 
 if INSTALL_SYSTEMD_UNITS
 systemd_system_unitdir = @SYSTEMD_SYSTEM_UNIT_DIR@
@@ -784,7 +790,7 @@ systemd_system_unit_DATA = index/recollindex@.service
 systemd_user_unit_DATA = index/recollindex.service
 endif
 
-install-data-hook: 
+install-data-hook:
 	(cd $(DESTDIR)/$(filterdir); \
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
 	chmod a+x recoll-we-move-files.py ../examples/rclmon.sh kosplitter.py; \
@@ -794,7 +800,7 @@ install-data-hook:
 
 if MAKEUSERDOC
 rdocdir = $(pkgdatadir)/doc
-rdoc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css 
+rdoc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css
 doc/user/usermanual.html: doc/user/usermanual.xml
 	mkdir -p doc/user
 	test -f doc/user/Makefile  || \
@@ -803,7 +809,8 @@ doc/user/usermanual.html: doc/user/usermanual.xml
 endif
 
 dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 \
-               doc/man/recollindex.1 doc/man/xadump.1 doc/man/rclgrep.1
+                 doc/man/recollindex.1 $(rclgrep_man1_MANS) \
+                 $(xadump_man1_MANS)
 dist_man5_MANS = doc/man/recoll.conf.5
 
 dist-hook:
