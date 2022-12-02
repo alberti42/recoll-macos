@@ -1,0 +1,27 @@
+Source: krunner-recoll
+Section: kde
+Priority: optional
+Maintainer: Jean-Francois Dockes <jfd@recoll.org>
+Build-Depends: cdbs, 
+               cmake,
+               libtool,
+               pkg-config,
+               debhelper (>= 7), 
+               bison,
+               libkf5package-dev,
+               libkf5notifications-dev,
+               libkf5i18n-dev,
+               libkf5runner-dev,
+               extra-cmake-modules,
+               pkg-kde-tools (>= 0.4.0), 
+               libxapian-dev, 
+               libxslt1-dev,
+               libz-dev
+Standards-Version: 3.9.7
+Homepage: http://www.recoll.org/
+
+Package: krunner-recoll
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, recoll
+Description: Recoll KDE Krunner plugin
+ Recoll KDE krunner plugin, allows displaying Recoll search results in krunner.

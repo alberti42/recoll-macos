@@ -1,0 +1,5 @@
+krunner-recoll (1.33.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * New package recoll krunner plugin.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 02 Dec 2022 17:43:00 +0100
