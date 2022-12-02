@@ -14,16 +14,6 @@ BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
 
-#BuildRequires:  kdelibs4-devel
-
-# Fedora
-#BuildRequires:  qt5-qtbase-devel
-#BuildRequires:  qt5-qtwebkit-devel
-#BuildRequires:  python3-devel
-#BuildRequires:  xapian-core-devel
-#BuildRequires:  kf5-kio-devel
-
-# Opensuse
 BuildRequires:  libQt5Gui-devel
 BuildRequires:  libqt5-qtwebengine-devel
 BuildRequires:  python310-devel
