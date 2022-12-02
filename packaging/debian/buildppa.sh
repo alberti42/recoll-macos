@@ -105,23 +105,53 @@ if test "X$series" != X ; then
     fi
 fi
 for svers in $series ; do
-
   rm -rf $topdir/debian
   cp -rp ${debdir}/ $topdir/debian || exit 1
-
   if test -f $debdir/control-$svers ; then
       cp -f -p $debdir/control-$svers $topdir/debian/control
   else 
       cp -f -p $debdir/control $topdir/debian/control
   fi
-
   sed -e s/SERIES/$svers/g \
       -e s/PPAVERS/${PPAVERS}/g \
           < ${debdir}/changelog > $topdir/debian/changelog ;
   (cd $topdir;debuild -k$PPA_KEYID -S -sa) || exit 1
-
   dput $PPANAME kio-recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
+done
 
+### Krunner plugin
+series=$SERIES
+series=
+
+debdir=debiankrunner
+topdir=krunner-recoll-${RCLVERS}
+if test "X$series" != X ; then
+    check_recoll_orig
+    if test ! -f krunner-recoll_${RCLVERS}.orig.tar.gz ; then
+        cp -p recoll_${RCLVERS}.orig.tar.gz \
+            krunner-recoll_${RCLVERS}.orig.tar.gz || exit 1
+    fi
+    if test ! -d $topdir ; then 
+        mkdir temp
+        cd temp
+        tar xzf ../recoll_${RCLVERS}.orig.tar.gz || exit 1
+        mv recoll-${RCLVERS} ../$topdir || exit 1
+        cd ..
+    fi
+fi
+for svers in $series ; do
+  rm -rf $topdir/debian
+  cp -rp ${debdir}/ $topdir/debian || exit 1
+  if test -f $debdir/control-$svers ; then
+      cp -f -p $debdir/control-$svers $topdir/debian/control
+  else 
+      cp -f -p $debdir/control $topdir/debian/control
+  fi
+  sed -e s/SERIES/$svers/g \
+      -e s/PPAVERS/${PPAVERS}/g \
+          < ${debdir}/changelog > $topdir/debian/changelog ;
+  (cd $topdir;debuild -k$PPA_KEYID -S -sa) || exit 1
+  dput $PPANAME krunner-recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
 done
 
 ### GSSP
