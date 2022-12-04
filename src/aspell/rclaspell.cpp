@@ -278,10 +278,7 @@ bool Aspell::make_speller(string& reason)
         return true;
 
     LOGDEB("Starting aspell command [" << stringsToString(m_data->m_execspell) << "]\n");
-    // startexec does not have a single vector interface as doexec, so separate cmd and args
-    string cmd = m_data->m_execspell.front();
-    vector<string>myparams(m_data->m_execspell.begin() + 1, m_data->m_execspell.end());
-    if (m_data->m_speller.startExec(cmd, myparams, true, true) != 0) {
+    if (m_data->m_speller.startExec(m_data->m_execspell, true, true) != 0) {
         reason += "Can't start aspell: " + stringsToString(m_data->m_execspell);
         return false;
     }

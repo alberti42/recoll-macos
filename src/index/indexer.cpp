@@ -81,7 +81,7 @@ bool runWebFilesMoverScript(RclConfig *config)
         config->pythonCmd("recoll-we-move-files.py", cmdvec);
         ExecCmd cmd;
         cmd.putenv("RECOLL_CONFDIR", config->getConfDir());
-        int status = cmd.doexec1(cmdvec);
+        int status = cmd.doexec(cmdvec);
         return status == 0;
     }
     return true;
