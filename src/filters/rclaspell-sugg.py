@@ -8,12 +8,13 @@ def deb(s):
     
 def Usage(f=sys.stderr):
     print("Usage: rclaspell-sugg.py --lang=lang --encoding=encoding "
-          "--master=pathtodict --sug-mode=mode pipe", file=f)
+          "--master=pathtodict --sug-mode=mode --data-dir=dir --local-data-dir=dir pipe", file=f)
     sys.exit(1)
     
 options=[]
 opts, args = getopt.getopt(sys.argv[1:], "h",
-                           ["help", "lang=", "encoding=", "master=", "sug-mode=", "mode="])
+                           ["help", "lang=", "encoding=", "master=", "sug-mode=", "mode=",
+                            "data-dir=", "local-data-dir="])
 for opt, arg in opts:
     if opt in ['-h', '--help']:
         Usage(sys.stdout)
@@ -27,6 +28,10 @@ for opt, arg in opts:
         options.append(("sug-mode", arg))
     elif opt in ['--mode']:
         options.append(("mode", arg))
+    elif opt in ['--data-dir']:
+        options.append(("data-dir", arg))
+    elif opt in ['--local-data-dir']:
+        options.append(("local-data-dir", arg))
     else:
         print(f"Unknown option {opt}", file=sys.stderr)
         Usage()
