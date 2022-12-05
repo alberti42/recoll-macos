@@ -408,6 +408,8 @@ bool Db::Native::idxTermMatch_p(
                        Xapian::doccount termfreq)> client,
     const string& prefix)
 {
+    LOGDEB1("idxTermMatch_p: input expr: [" << expr << "] prefix [" << prefix << "]\n");
+
     Xapian::Database xdb = xrdb;
 
     std::unique_ptr<StrMatcher> matcher;
@@ -431,7 +433,7 @@ bool Db::Native::idxTermMatch_p(
     } else {
         is = prefix + expr;
     }
-    LOGDEB2("termMatch: initial section: [" << is << "]\n");
+    LOGDEB1("idxTermMatch_p: initial section: [" << is << "]\n");
 
     XAPTRY(
         Xapian::TermIterator it = xdb.allterms_begin(is);
@@ -458,13 +460,15 @@ bool Db::Native::idxTermMatch_p(
 
             // If matching an expanding expression, a mismatch does not stop us. Else we want
             // equality
-            if (matcher && !matcher->match(term)) {
-                continue;
+            if (matcher) {
+                if (!matcher->match(term)) {
+                    continue;
+                }
             } else if (term != expr) {
                 break;
             }
 
-            if (!client(ixterm,xdb.get_collection_freq(ixterm), it.get_termfreq()) ||!matcher) {
+            if (!client(ixterm, xdb.get_collection_freq(ixterm), it.get_termfreq()) || !matcher) {
                 // If the client tells us or this is an exact search, stop.
                 break;
             }

@@ -32,7 +32,7 @@ using namespace std;
 
 bool StrWildMatcher::match(const string& val) const
 {
-    LOGDEB2("StrWildMatcher::match ["<< m_sexp<< "] against [" << val << "]\n");
+    LOGDEB2("StrWildMatcher::match: in: ["<< val << "] expr: [" << m_sexp << "]\n");
     int ret = fnmatch(m_sexp.c_str(), val.c_str(), FNM_NOESCAPE);
     switch (ret) {
     case 0: return true;
