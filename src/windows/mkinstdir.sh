@@ -71,7 +71,6 @@ RCLIDX=$RCLW/build-recollindex-${QTA}/${qtsdir}/recollindex.exe
 RCLQ=$RCLW/build-recollq-${QTA}/${qtsdir}/recollq.exe
 RCLS=$RCLW/build-rclstartw-${QTA}/${qtsdir}/rclstartw.exe
 XAPC=$RCLW/build-xapian-check-${QTA}/xapian-check.exe
-#PYTHON=${RCLDEPS}py-python3
 PYTHON=${RCLDEPS}python-3.7.9-embed-win32
 UNRTF=${RCLDEPS}unrtf
 ANTIWORD=${RCLDEPS}antiword
@@ -137,7 +136,7 @@ copyqt()
     fi
 }
 
-# Note that pychm and pyhwp are pre-copied into the py-python3 python
+# Note that pychm and pyhwp are pre-copied into the python
 # distribution directory. The latter also needs olefile and six (also
 # copied to the python tree
 copypython()
@@ -317,17 +316,27 @@ copyaspell()
 copypyrecoll()
 {
     # e.g. build: "/c/Program Files (x86)/Python39-32/python" setup-win.py bdist_wheel
+
+    # NOTE: the python 3.10 build outputs logging error messages
+    # (ValueError: underlying buffer has been detached), but this does
+    # not seem to affect the build
     if test $BUILD = MSVC ; then
         DEST=${DESTDIR}/Share/dist
         test -d $DEST || mkdir $DEST || fatal cant create $DEST
-        rm -f ${DEST}/*
-        for v in 37;do
-            PYRCLWHEEL=${PYRECOLL}/dist/Recoll-${VERSION}-cp${v}-cp${v}m-win32.whl
-            chkcp ${PYRCLWHEEL} $DEST
-        done
-        for v in 38 39;do
-            PYRCLWHEEL=${PYRECOLL}/dist/Recoll-${VERSION}-cp${v}-cp${v}-win32.whl
-            chkcp ${PYRCLWHEEL} $DEST
+        rm -f ${DEST}/Recoll*.egg ${DEST}/Recoll*.whl
+        for v in 7 8 9 10 11;do
+            if test ${v} = "7" ; then
+                m=m
+            else
+                m=""
+            fi
+            PYRCLDIST=${PYRECOLL}/dist/Recoll-${VERSION}-cp3${v}-cp3${v}${m}-win32.whl
+            if test ! -f ${PYRCLDIST}; then
+                pushd ${PYRECOLL}
+                "/c/Program Files (x86)/Python3${v}-32/python" setup-win.py bdist_wheel
+                popd
+            fi
+            chkcp ${PYRCLDIST} $DEST
         done
     fi
 }

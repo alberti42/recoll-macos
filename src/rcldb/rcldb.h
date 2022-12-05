@@ -79,12 +79,11 @@ class Query;
 /** Used for returning result lists for index terms matching some criteria */
 class TermMatchEntry {
 public:
-    TermMatchEntry() 
-        : wcf(0) {}
+    TermMatchEntry() {}
     TermMatchEntry(const string& t, int f, int d)
         : term(t), wcf(f), docs(d) {}
     TermMatchEntry(const string& t)
-        : term(t), wcf(0) {}
+        : term(t) {}
     bool operator==(const TermMatchEntry &o) const { 
         return term == o.term;
     }
@@ -93,8 +92,8 @@ public:
     }
 
     string term;
-    int    wcf; // Total count of occurrences within collection.
-    int    docs; // Number of documents countaining term.
+    int    wcf{0}; // Total count of occurrences within collection.
+    int    docs{0}; // Number of documents countaining term.
 };
 
 /** Term match result list header: statistics and global info */
@@ -422,7 +421,7 @@ public:
      *        in the TermMatchResult header
      */
     enum MatchType {ET_NONE=0, ET_WILD=1, ET_REGEXP=2, ET_STEM=3, 
-                    ET_DIACSENS=8, ET_CASESENS=16, ET_SYNEXP=32, ET_PATHELT=64};
+        ET_DIACSENS=8, ET_CASESENS=16, ET_SYNEXP=32, ET_PATHELT=64};
     int matchTypeTp(int tp) {
         return tp & 7;
     }
@@ -458,6 +457,15 @@ public:
         return m_synthAbsLen;
     }
 
+    void setUseSpellFuzz(bool onoff) {
+        m_usingSpellFuzz = onoff;
+    }
+    void setMaxSpellDist(int max) {
+        m_maxSpellDistance = max;
+    }
+    int getMaxSpellDist() {
+        return m_maxSpellDistance;
+    }
     /** Get document for given udi and db index
      *
      * Used to retrieve ancestor documents.
@@ -581,7 +589,7 @@ private:
     int         m_occFirstCheck{1};
 
     // Synonym groups. There is no strict reason that this has to be
-    // an Rcl::Db member, as it is only used when building each It
+    // an Rcl::Db member, as it is only used when building each query. It
     // could be a SearchData member, or even a parameter to
     // Query::setQuery(). Otoh, building the syngroups structure from
     // a file may be expensive and it's unlikely to change with every
@@ -615,6 +623,11 @@ private:
     int          m_flushMb{-1};
     // Maximum file system occupation percentage
     int          m_maxFsOccupPc{0};
+    // Using spelling approximation?
+    bool m_usingSpellFuzz{true};
+    // Maximum dam-lev distance when considering terms for spelling fuzz
+    int m_maxSpellDistance{1};
+    
     // Database directory
     string       m_basedir;
     // When this is set, all documents are considered as needing a reindex.
@@ -634,17 +647,20 @@ private:
     // Internal form of close, can be called during destruction
     bool i_close(bool final);
     // Reinitialize when adding/removing additional dbs
-    bool adjustdbs(); 
-    bool idxTermMatch(int typ_sens, const string &lang, const string &term, 
-                      TermMatchResult& result, int max = -1, 
-                      const string& field = cstr_null);
+    bool adjustdbs();
+    // Match the input term (which must be in index form, diacase stripped as needed) and actual
+    // index contents, possibly using wildcard or regexp matching. If typ_sens is ET_NONE, this is
+    // just an index lookup. Accumulate the results in the TermMatchResult mutable input.
+    bool idxTermMatch(int typ_sens, const string &term, TermMatchResult& result,
+                      int max = -1, const string& field = cstr_null);
 
     // Flush when idxflushmb is reached
     bool maybeflush(int64_t moretext);
     bool docExists(const string& uniterm);
 
     bool getDoc(const std::string& udi, int idxi, Doc& doc);
-
+    void spellExpand(const std::string& term, const std::string& field,
+                     std::vector<std::string>& expansion);
 };
 
 // This has to go somewhere, and as it needs the Xapian version, this is

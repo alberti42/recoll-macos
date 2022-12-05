@@ -36,18 +36,18 @@
         MSG = std::string("Caught unknown exception??");                \
     }
 
-#define XAPTRY(STMTTOTRY, XAPDB, ERSTR)                 \
-    for (int tries = 0; tries < 2; tries++) {           \
-    try {                                               \
-            STMTTOTRY;                                  \
-            ERSTR.erase();                              \
-            break;                                      \
-    } catch (const Xapian::DatabaseModifiedError &e) {  \
-            ERSTR = e.get_msg();                        \
-        XAPDB.reopen();                                 \
-            continue;                                   \
-    } XCATCHERROR(ERSTR);                               \
-        break;                                          \
+#define XAPTRY(STMTTOTRY, XAPDB, ERSTR)                         \
+    for (int tries = 0; tries < 2; tries++) {                   \
+        try {                                                   \
+            STMTTOTRY;                                          \
+            ERSTR.erase();                                      \
+            break;                                              \
+        } catch (const Xapian::DatabaseModifiedError &e) {      \
+            ERSTR = e.get_msg();                                \
+            XAPDB.reopen();                                     \
+            continue;                                           \
+        } XCATCHERROR(ERSTR);                                   \
+        break;                                                  \
     }
 
 #endif

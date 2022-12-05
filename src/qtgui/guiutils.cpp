@@ -305,6 +305,8 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);
     SETTING_RW(prefs.trayMessages, "/Recoll/prefs/trayMessages", Bool, false);
     SETTING_RW(prefs.wholeuiscale, "/Recoll/ui/wholeuiscale", Double, 1.0);
+    SETTING_RW(prefs.autoSpell, "/Recoll/search/autoSpell", Bool, false)
+    SETTING_RW(prefs.autoSpellMaxDist, "/Recoll/search/autoSpellMaxDist", Int, 1)
     /*INSERTHERE*/
     
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.

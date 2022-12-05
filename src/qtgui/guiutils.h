@@ -158,6 +158,8 @@ public:
     bool closeToTray{false};
     bool trayMessages{false};
     double wholeuiscale{1.0};
+    bool autoSpell{false};
+    int autoSpellMaxDist{1};
     /*INSERTHERE*/
 
     // See widgets/qxtconfirmationmessage.

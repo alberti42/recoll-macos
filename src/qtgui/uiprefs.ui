@@ -544,52 +544,52 @@
          </item>
         </layout>
        </item>
+       <item>
+        <layout class="QHBoxLayout" stretch="0,0,1">
          <item>
-          <layout class="QHBoxLayout" stretch="0,0,1">
-           <item>
-            <widget class="QLabel" name="wuiscaleLBL">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>1</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</string>
-             </property>
-             <property name="text">
-              <string>Display scale (default 1.0):</string>
-             </property>
-             <property name="wordWrap">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="wholeuiscaleSB">
-             <property name="singleStep">
-              <double>0.100000000000000</double>
-             </property>
-             <property name="value">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="wholeuiscaleHSPC">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QLabel" name="wuiscaleLBL">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</string>
+           </property>
+           <property name="text">
+            <string>Display scale (default 1.0):</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="wholeuiscaleSB">
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="wholeuiscaleHSPC">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
        <item>
         <layout class="QHBoxLayout">
          <item>
@@ -1434,6 +1434,50 @@ May be slow for big documents.</string>
             <enum>QFrame::Sunken</enum>
            </property>
           </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" stretch="0,0,0,1">
+           <item>
+            <widget class="QCheckBox" name="autoSpellCB">
+             <property name="toolTip">
+              <string>Enable spelling approximations for terms not found in the index.</string>
+             </property>
+             <property name="text">
+              <string>Automatic spelling approximation.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="autoSpellLBL">
+             <property name="text">
+              <string>Max spelling distance</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="autoSpellMaxDistSB">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="value">
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_9">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </item>
          <item>
           <layout class="QHBoxLayout" stretch="0,0,0,1">

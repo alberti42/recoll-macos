@@ -126,6 +126,8 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
         return false;
     }
     rcldb->setAbstractParams(-1, prefs.syntAbsLen, prefs.syntAbsCtx);
+    rcldb->setUseSpellFuzz(prefs.autoSpell);
+    rcldb->setMaxSpellDist(prefs.autoSpellMaxDist);
     return true;
 }
 

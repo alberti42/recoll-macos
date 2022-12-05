@@ -45,7 +45,7 @@ public:
         args.push_back(udi);
         args.push_back(idoc.url);
         args.push_back(idoc.ipath);
-        int status = ecmd.doexec1(args, 0, &out);
+        int status = ecmd.doexec(args, 0, &out);
         if (status == 0) {
             LOGDEB("EXEDocFetcher::Internal: got [" << out << "]\n");
             return true;

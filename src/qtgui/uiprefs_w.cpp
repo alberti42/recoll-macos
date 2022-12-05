@@ -91,6 +91,7 @@ void UIPrefsDialog::init()
     connect(buttonOk, SIGNAL(clicked()), this, SLOT(accept()));
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(buildAbsCB, SIGNAL(toggled(bool)), replAbsCB, SLOT(setEnabled(bool)));
+    connect(autoSpellCB, SIGNAL(toggled(bool)), autoSpellMaxDistSB, SLOT(setEnabled(bool)));
     connect(ssNoCompleteCB, SIGNAL(toggled(bool)), ssSearchOnCompleteCB, SLOT(setDisabled(bool)));
     connect(resetscPB, SIGNAL(clicked()), this, SLOT(resetShortcuts()));
 
@@ -164,6 +165,9 @@ void UIPrefsDialog::setFromPrefs()
     closeToTrayCB->setChecked(prefs.closeToTray);
     trayMessagesCB->setChecked(prefs.trayMessages);
     wholeuiscaleSB->setValue(prefs.wholeuiscale);
+    autoSpellCB->setChecked(prefs.autoSpell);
+    autoSpellMaxDistSB->setValue(prefs.autoSpellMaxDist);
+    autoSpellMaxDistSB->setEnabled(prefs.autoSpell);
     /*INSERTHERE_LOAD*/
 
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
@@ -441,6 +445,8 @@ void UIPrefsDialog::accept()
     prefs.closeToTray = closeToTrayCB->isChecked();
     prefs.trayMessages = trayMessagesCB->isChecked();
     prefs.wholeuiscale = wholeuiscaleSB->value();
+    prefs.autoSpell = autoSpellCB->isChecked();
+    prefs.autoSpellMaxDist = autoSpellMaxDistSB->value();
     /*INSERTHERE_ACCEPT*/
 
     // -1 is the qxtconf... predefined value to show the dialog

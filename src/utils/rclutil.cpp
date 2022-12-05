@@ -54,6 +54,8 @@
 #include "log.h"
 #include "smallut.h"
 #include "rclconfig.h"
+#include "damlev.h"
+#include "utf8iter.h"
 
 using namespace std;
 
@@ -926,6 +928,62 @@ string localelang()
         return locale;
     }
     return locale.substr(0, under);
+}
+
+class IntString {
+public:
+    IntString(const std::string& utf8) {
+        m_len = utf8len(utf8);
+        m_vec = (int*)malloc(m_len * sizeof(int));
+        Utf8Iter it(utf8);
+        int i = 0;
+        for (; !it.eof(); it++) {
+            if (it.error()) {
+                LOGERR("IntString: Illegal seq at byte position " << it.getBpos()  <<"\n");
+                goto error;
+            }
+            unsigned int value = *it;
+            if (value == (unsigned int)-1) {
+                LOGERR("IntString: Conversion error\n");
+                goto error;
+            }
+            if (i >= m_len) {
+                LOGFAT("IntString:: OVERFLOW!?!\n");
+                abort();
+            }
+            m_vec[i++] = value;
+        }
+        return;
+    error:
+        if (m_vec) {
+            free(m_vec);
+            m_vec = nullptr;
+        }
+        m_len = 0;
+    }
+    ~IntString() {
+        if (m_vec)
+            free(m_vec);
+    }
+    int size() const {
+        return m_len;
+    }
+    const int& operator[](int i) const {
+        return m_vec[i];
+    }
+private:
+    int *m_vec{nullptr};
+    int m_len{0};
+};
+
+int u8DLDistance(const std::string& str1, const std::string str2)
+{
+    IntString istr1(str1);
+    IntString istr2(str2);
+    if ((str1.size() && istr1.size() == 0) || (str2.size() && istr2.size() == 0)) {
+        return -1;
+    }
+    return DLDistance(istr1, istr2);
 }
 
 void rclutil_init_mt()
