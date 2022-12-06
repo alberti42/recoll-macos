@@ -763,7 +763,8 @@ int main(int argc, char *argv[])
     // 3 it's not even truncated if all docs are up to date.
     {
         time_t tt = time(nullptr);
-        LOGINFO("recollindex: starting up: " << ctime(&tt));
+        LOGINFO("recollindex: starting up. Cmdline: [" << stringsToString(astore)
+                << "] now: " << ctime(&tt));
     }
     setMyPriority(config);
 

@@ -39,7 +39,7 @@ using namespace std;
 
 bool MimeHandlerExecMultiple::startCmd()
 {
-    LOGDEB("MimeHandlerExecMultiple::startCmd\n");
+    LOGDEB1("MimeHandlerExecMultiple::startCmd\n");
     if (params.empty()) {
         // Hu ho
         LOGERR("MHExecMultiple::startCmd: empty params\n");
@@ -57,8 +57,7 @@ bool MimeHandlerExecMultiple::startCmd()
     m_cmd.putenv(oss.str());
 
     m_cmd.putenv("RECOLL_CONFDIR", m_config->getConfDir());
-    m_cmd.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
-                 "RECOLL_FILTER_FORPREVIEW=no");
+    m_cmd.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" : "RECOLL_FILTER_FORPREVIEW=no");
 
     m_cmd.setrlimit_as(m_filtermaxmbytes);
     m_adv.setmaxsecs(m_filtermaxseconds);
@@ -156,13 +155,11 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     // Read element data
     datap->erase();
     if (len > 0 && m_cmd.receive(*datap, len) != len) {
-        LOGERR("MHExecMultiple: expected " << len << " bytes of data, got " <<
-               datap->length() << "\n");
+        LOGERR("MHExecMultiple: expected " << len << " data bytes, got " << datap->length() << "\n");
         return false;
     }
     LOGDEB1("MHExecMe:rdDtElt got: name [" << name << "] len " << len <<
-            "value [" << (datap->size() > 100 ? 
-                          (datap->substr(0, 100) + " ...") : *datap) << endl);
+            "value [" << (datap->size() > 100 ? (datap->substr(0, 100) + " ...") : *datap) << "\n");
     return true;
 }
 
@@ -198,8 +195,7 @@ bool MimeHandlerExecMultiple::next_document()
             if (MD5File(m_fn, md5, &reason)) {
                 file_md5 = MD5HexPrint(md5, xmd5);
             } else {
-                LOGERR("MimeHandlerExecM: cant compute md5 for [" << m_fn <<
-                       "]: " << reason << "\n");
+                LOGERR("MimeHandlerExecM: cant compute md5 for [" << m_fn <<"]: " << reason << "\n");
             }
         }
         obuf << "filename: " << m_fn.length() << "\n" << m_fn;
@@ -209,13 +205,11 @@ bool MimeHandlerExecMultiple::next_document()
         obuf << "filename: " << 0 << "\n";
     }
     if (!m_ipath.empty()) {
-        LOGDEB("next_doc: sending ipath " << m_ipath.length() << " val [" <<
-               m_ipath << "]\n");
+        LOGDEB("next_doc: sending ipath " << m_ipath.length() << " val [" << m_ipath << "]\n");
         obuf << "ipath: " << m_ipath.length() << "\n" << m_ipath;
     }
     if (!m_dfltInputCharset.empty()) {
-        obuf << "dflincs: " << m_dfltInputCharset.length() << "\n" 
-             << m_dfltInputCharset;
+        obuf << "dflincs: " << m_dfltInputCharset.length() << "\n" << m_dfltInputCharset;
     }
     obuf << "mimetype: " << m_mimeType.length() << "\n" << m_mimeType;
     obuf << "\n";
@@ -255,30 +249,30 @@ bool MimeHandlerExecMultiple::next_document()
         if (name.empty())
             break;
         if (!stringlowercmp("eofnext:", name)) {
-            LOGDEB("MHExecMultiple: got EOFNEXT\n");
+            LOGDEB0("MHExecMultiple: got EOFNEXT\n");
             eofnext_received = true;
         } else if (!stringlowercmp("eofnow:", name)) {
-            LOGDEB("MHExecMultiple: got EOFNOW\n");
+            LOGDEB0("MHExecMultiple: got EOFNOW\n");
             eofnow_received = true;
         } else if (!stringlowercmp("fileerror:", name)) {
-            LOGDEB("MHExecMultiple: got FILEERROR\n");
+            LOGDEB0("MHExecMultiple: got FILEERROR\n");
             fileerror_received = true;
         } else if (!stringlowercmp("subdocerror:", name)) {
-            LOGDEB("MHExecMultiple: got SUBDOCERROR\n");
+            LOGDEB0("MHExecMultiple: got SUBDOCERROR\n");
             subdocerror_received = true;
         } else if (!stringlowercmp("ipath:", name)) {
             ipath = data;
-            LOGDEB("MHExecMultiple: got ipath [" << data << "]\n");
+            LOGDEB0("MHExecMultiple: got ipath [" << data << "]\n");
         } else if (!stringlowercmp("charset:", name)) {
             charset = data;
-            LOGDEB("MHExecMultiple: got charset [" << data << "]\n");
+            LOGDEB0("MHExecMultiple: got charset [" << data << "]\n");
         } else if (!stringlowercmp("mimetype:", name)) {
             mtype = data;
-            LOGDEB("MHExecMultiple: got mimetype [" << data << "]\n");
+            LOGDEB0("MHExecMultiple: got mimetype [" << data << "]\n");
         } else {
             string nm = stringtolower((const string&)name);
             trimstring(nm, ":");
-            LOGDEB("MHExecMultiple: got [" << nm << "] -> [" << data << "]\n");
+            LOGDEB0("MHExecMultiple: got [" << nm << "] -> [" << data << "]\n");
             addmeta(m_metaData, nm, data);
         }
         if (loop == 200) {
@@ -301,8 +295,7 @@ bool MimeHandlerExecMultiple::next_document()
     // this was wrong. Empty documents can be found ie in zip files and should 
     // not be interpreted as eof.
     if (m_metaData[cstr_dj_keycontent].empty()) {
-        LOGDEB0("MHExecMultiple: got empty document inside [" << m_fn <<
-                "]: [" << ipath << "]\n");
+        LOGDEB0("MHExecMultiple: got empty document inside [" << m_fn << "]: [" << ipath << "]\n");
     }
 
     if (!ipath.empty()) {
@@ -312,8 +305,7 @@ bool MimeHandlerExecMultiple::next_document()
         // string which we can use to compute a mime type
         m_metaData[cstr_dj_keyipath] = ipath;
         if (mtype.empty()) {
-            LOGDEB0("MHExecMultiple: no mime type from filter, using ipath "
-                    "for a guess\n");
+            LOGDEB0("MHExecMultiple: no mime type from filter, using ipath for a guess\n");
             mtype = mimetype(ipath, 0, m_config, false);
             if (mtype.empty()) {
                 // mimetype() won't call idFile when there is no file. Do it
@@ -356,8 +348,7 @@ bool MimeHandlerExecMultiple::next_document()
     if (eofnext_received)
         m_havedoc = false;
 
-    LOGDEB0("MHExecMultiple: returning " <<
-            m_metaData[cstr_dj_keycontent].size() <<
+    LOGDEB0("MHExecMultiple: returning " << m_metaData[cstr_dj_keycontent].size() <<
             " bytes of content, mtype [" << m_metaData[cstr_dj_keymt] <<
             "] charset [" << m_metaData[cstr_dj_keycharset] << "]\n");
     LOGDEB2("MHExecMultiple: metadata: \n" << metadataAsString());
