@@ -401,12 +401,9 @@ void Db::spellExpand(
 }
 
 
-bool Db::Native::idxTermMatch_p(
-    int typ, const string& expr,
-    std::function<bool(const string& term,
-                       Xapian::termcount colfreq,
-                       Xapian::doccount termfreq)> client,
-    const string& prefix)
+bool Db::Native::idxTermMatch_p(int typ, const string& expr, const std::string& prefix,
+                                std::function<bool(const string& term, Xapian::termcount colfreq,
+                                                   Xapian::doccount termfreq)> client)
 {
     LOGDEB1("idxTermMatch_p: input expr: [" << expr << "] prefix [" << prefix << "]\n");
 
@@ -508,19 +505,16 @@ bool Db::idxTermMatch(int typ_sens, const string &expr,
 
     int rcnt = 0;
     bool ret = m_ndb->idxTermMatch_p(
-        typ, expr,
-        [&res, &rcnt, max](const string& term,
-                    Xapian::termcount cf, Xapian::doccount tf) {
+        typ, expr, prefix,
+        [&res, &rcnt, max](const string& term, Xapian::termcount cf, Xapian::doccount tf) {
             res.entries.push_back(TermMatchEntry(term, cf, tf));
-            // The problem with truncating here is that this is done
-            // alphabetically and we may not keep the most frequent 
-            // terms. OTOH, not doing it may stall the program if
-            // we are walking the whole term list. We compromise
-            // by cutting at 2*max
+            // The problem with truncating here is that this is done alphabetically and we may not
+            // keep the most frequent terms. OTOH, not doing it may stall the program if we are
+            // walking the whole term list. We compromise by cutting at 2*max
             if (max > 0 && ++rcnt >= 2*max)
                 return false;
             return true;
-        }, prefix);
+        });
 
     return ret;
 }

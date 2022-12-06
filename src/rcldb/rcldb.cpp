@@ -2673,7 +2673,7 @@ bool Db::getContainerDoc(const Doc &idoc, Doc& ctdoc)
 bool Db::udiTreeMarkExisting(const string& udi)
 {
     LOGDEB("Db::udiTreeMarkExisting: " << udi << endl);
-    string wrapd = wrap_prefix(udi_prefix);
+    string prefix = wrap_prefix(udi_prefix);
     string expr = udi + "*";
 
 #ifdef IDX_THREADS
@@ -2681,14 +2681,12 @@ bool Db::udiTreeMarkExisting(const string& udi)
 #endif
 
     bool ret = m_ndb->idxTermMatch_p(
-        int(ET_WILD), expr,
+        int(ET_WILD), expr, prefix,
         [this, &udi](const string& term, Xapian::termcount, Xapian::doccount) {
             Xapian::PostingIterator docid;
-            XAPTRY(docid = m_ndb->xrdb.postlist_begin(term), m_ndb->xrdb,
-                   m_reason);
+            XAPTRY(docid = m_ndb->xrdb.postlist_begin(term), m_ndb->xrdb, m_reason);
             if (!m_reason.empty()) {
-                LOGERR("Db::udiTreeWalk: xapian::postlist_begin failed: " <<
-                       m_reason << "\n");
+                LOGERR("Db::udiTreeWalk: xapian::postlist_begin failed: " << m_reason << "\n");
                 return false;
             }
             if (docid == m_ndb->xrdb.postlist_end(term)) {
@@ -2696,9 +2694,9 @@ bool Db::udiTreeMarkExisting(const string& udi)
                 return false;
             }
             i_setExistingFlags(udi, *docid);
-            LOGDEB0("Db::udiTreeWalk: uniterm: " << term << endl);
+            LOGDEB0("Db::udiTreeWalk: uniterm: " << term << "\n");
             return true;
-        }, wrapd);
+        });
     return ret;
 }
 
