@@ -19,34 +19,27 @@
 
 /** Stem database code
  * 
- * Stem databases list stems and the set of index terms they expand to. They 
- * are computed from index data by stemming each term and regrouping those 
- * that stem to the same value.
+ * Stem databases are key-data stores where the keys are the word stems and the data records are the
+ * sets of index terms they expand to.
  *
- * Stem databases are stored as separate Xapian databases, in
- * subdirectories of the index (e.g.: stem_french, stem_german2)
+ * Stem databases are stored as prefixed subtrees inside the Xapian synonyms table (other segments
+ * in the table are used for separate term expansions, e.g. accenting and case). See synfamily.h
  *
- * The stem database is generated at the end of an indexing session by
- * walking the whole index term list, computing the stem for each
- * term, and building a stem->terms map.
+ * It would probably be possible to store the expansions in the document term list instead (using a
+ * prefix to distinguish the stem term). I tried this (chert, 08-2012) and the stem db creation is
+ * very slightly slower than with the record approach, and the result is 50% bigger.
+ *
+ * For future reference, I also tried to store the map in a gdbm file and the result is bigger and
+ * takes more time to create than the Xapian version.
+ *
+ * Stem databases are generated at the end of an indexing session by walking the whole index term
+ * list, computing the stem for each term, and building a stem->terms map.
+ *
+ * Another possible approach would be to update the stem map as we index.  This would probably be be
+ * less efficient for a full index pass because each term would be seen and stemmed many times, but
+ * it might be more efficient for an incremental pass with a limited number of updated
+ * documents. For a small update, the stem building part often dominates the indexing time.
  * 
- * The map is then stored as a Xapian index where each stem is the
- * unique term indexing a document, and the list of expansions is stored
- * as the document data record. It would probably be possible to store
- * the expansions as the document term list instead (using a prefix to
- * distinguish the stem term). I tried this (chert, 08-2012) and the stem
- * db creation is very slightly slower than with the record approach, and
- * the result is 50% bigger.
- *
- * Another possible approach would be to update the stem map as we index. 
- * This would probably be be less efficient for a full index pass because
- * each term would be seen and stemmed many times, but it might be
- * more efficient for an incremental pass with a limited number of
- * updated documents. For a small update, the stem building part often
- * dominates the indexing time.
- * 
- * For future reference, I did try to store the map in a gdbm file and
- * the result is bigger and takes more time to create than the Xapian version.
  */
 
 #include <vector>
