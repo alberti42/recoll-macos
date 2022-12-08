@@ -457,15 +457,18 @@ public:
         return m_synthAbsLen;
     }
 
+    /** Decide if we expand queries to more common terms which spell almost like the user term */
     void setUseSpellFuzz(bool onoff) {
         m_usingSpellFuzz = onoff;
     }
+    /** Set maximum spelling distance when considering terms for spelling expansion */
     void setMaxSpellDist(int max) {
         m_maxSpellDistance = max;
     }
     int getMaxSpellDist() {
         return m_maxSpellDistance;
     }
+
     /** Get document for given udi and db index
      *
      * Used to retrieve ancestor documents.
@@ -627,6 +630,8 @@ private:
     bool m_usingSpellFuzz{true};
     // Maximum dam-lev distance when considering terms for spelling fuzz
     int m_maxSpellDistance{1};
+    int m_autoSpellRarityThreshold{200000};
+    int m_autoSpellSelectionThreshold{20};
     
     // Database directory
     string       m_basedir;

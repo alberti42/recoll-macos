@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -339,24 +339,23 @@ void Db::spellExpand(
     TermMatchResult matchResult;
     idxTermMatch(Rcl::Db::ET_NONE, term, matchResult, 1);
     if (!matchResult.entries.empty()) {
-        // Term exists in db. If it is rare and a spell neighbour is much more frequent,
-        // expand query.
-        // Total collection length in terms.
+        // Term exists. If it is very rare, try to expand query.
         auto totlen = m_ndb->xrdb.get_total_length();
         auto wcf = matchResult.entries[0].wcf;
         if (wcf == 0) // ??
-            ++wcf;
-        double rareness = double(totlen) / double(wcf);
-        LOGDEB0("RARENESS FOR " << term << " " << rareness << "\n");
-        if (rareness < 200000) {
+            wcf += 1;
+        auto rarity = totlen / wcf;
+        LOGDEB0("RARITY FOR " << term << " " << rarity << "\n");
+        if (rarity < m_autoSpellRarityThreshold) {
             LOGDEB0("Db::spellExpand: [" << term << "] is not rare.\n");
             return;
         }
         vector<string> suggs;
         TermMatchResult locres1;
         if (getSpellingSuggestions(term, suggs) && !suggs.empty()) {
-            LOGDEB("Db::TermMatch: spelling suggestions for [" << term << "] : [" <<
+            LOGDEB0("Db::TermMatch: spelling suggestions for [" << term << "] : [" <<
                    stringsToString(suggs) << "]\n");
+            // Only use spelling suggestions up to the chosen maximum distance
             for (int i = 0; i < int(suggs.size()) && i < 300;i++) {
                 auto d = u8DLDistance(suggs[i], term);
                 LOGDEB0("Db::TermMatch: spell: " << term << " -> " << suggs[i] << 
@@ -365,13 +364,14 @@ void Db::spellExpand(
                   idxTermMatch(Rcl::Db::ET_NONE, suggs[i], locres1, 1);
                 }
             }
+            // Only use spelling suggestions which are more frequent than the term by a set ratio
             if (!locres1.entries.empty()) {
                 TermMatchCmpByWcf wcmp;
                 sort(locres1.entries.begin(), locres1.entries.end(), wcmp);
-                LOGDEB("SUGGWCF/WCF: for [" << locres1.entries[0].term << "] : " <<
-                       locres1.entries[0].wcf / wcf <<"\n");
-                if (locres1.entries[0].wcf > 20 * wcf) {
-                    LOGDEB("SUGG SELECTED\n");
+                LOGDEB1("SUGGWCF/WCF: for [" << locres1.entries[0].term << "] : " <<
+                        locres1.entries[0].wcf / wcf <<"\n");
+                if (locres1.entries[0].wcf > m_autoSpellSelectionThreshold * wcf) {
+                    LOGDEB1("SUGG SELECTED\n");
                     neighbours.push_back(locres1.entries[0].term);
                 }
             }

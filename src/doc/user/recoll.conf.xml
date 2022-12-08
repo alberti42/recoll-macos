@@ -722,33 +722,38 @@ Setting this parameter will change the default behaviour to expanding terms insi
 phrases. If set, you can use a 'l' modifier to disable expansion for a specific
 instance.
 </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL">
+<term><varname>noaspell</varname></term>
+<listitem><para>Disable aspell use. The aspell dictionary generation takes time, and some combinations of aspell version,
+language, and local terms, result in aspell crashing, so it sometimes makes sense to just disable
+the thing.
+</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE">
 <term><varname>aspellLanguage</varname></term>
-<listitem><para>Language definitions to use when creating the aspell
-dictionary. The value must match a set of aspell language
-definition files. You can type "aspell dicts" to see a list The default
-if this is not set is to use the NLS environment to guess the value. The
+<listitem><para>Language definitions to use when creating the aspell dictionary. The value must match a set of aspell language definition files. You can type "aspell dicts"
+to see a list The default if this is not set is to use the NLS environment to guess the value. The
 values are the 2-letter language codes (e.g. 'en', 'fr'...)
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLADDCREATEPARAM">
 <term><varname>aspellAddCreateParam</varname></term>
-<listitem><para>Additional option and parameter to aspell dictionary creation
-command. Some aspell packages may need an additional option
-(e.g. on Debian Jessie: --local-data-dir=/usr/lib/aspell). See Debian bug
-772415.
+<listitem><para>Additional option and parameter to aspell dictionary creation command. Some aspell packages may need an additional option (e.g. on Debian Jessie:
+--local-data-dir=/usr/lib/aspell). See Debian bug 772415.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLKEEPSTDERR">
 <term><varname>aspellKeepStderr</varname></term>
-<listitem><para>Set this to have a look at aspell dictionary creation
-errors. There are always many, so this is mostly for
-debugging.
+<listitem><para>Set this to have a look at aspell dictionary creation errors. There are always many, so this is mostly for debugging.
 </para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL">
-<term><varname>noaspell</varname></term>
-<listitem><para>Disable aspell use. The aspell dictionary generation
-takes time, and some combinations of aspell version, language, and local
-terms, result in aspell crashing, so it sometimes makes sense to just
-disable the thing.
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLRARITYTHRESHOLD">
+<term><varname>autoSpellRarityThreshold</varname></term>
+<listitem><para>Inverse of the ratio of term occurrence to total db terms over which we look for spell
+neighbours for automatic query expansion When a term is very uncommon, we may (depending on user choice) look for spelling
+variations which would be more common and possibly add them to the query.
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLSELECTIONTHRESHOLD">
+<term><varname>autoSpellSelectionThreshold</varname></term>
+<listitem><para>Ratio of spell neighbour frequency over user input term frequency beyond which we include
+the neighbour in the query. When a term has been selected for spelling expansion because of its rarity, we only include
+spelling neighbours which are more common by this ratio.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MONAUXINTERVAL">
 <term><varname>monauxinterval</varname></term>
@@ -916,6 +921,12 @@ script. Typical values: English, French... See the ABBYY documentation.
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ORGMODESUBDOCS">
 <term><varname>orgmodesubdocs</varname></term>
 <listitem><para>Index org-mode level 1 sections as separate sub-documents This is the default. If set to false, org-mode files will be indexed as plain text
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.KIOSHOWSUBDOCS">
+<term><varname>kioshowsubdocs</varname></term>
+<listitem><para>Show embedded document results in KDE dolphin/kio and krunner Embedded documents may clutter the results and are not always easily usable from the kio or
+krunner environment. Setting this variable will restrict the results to standalone
+documents.
 </para></listitem></varlistentry>
 </variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.SPECLOCATIONS">

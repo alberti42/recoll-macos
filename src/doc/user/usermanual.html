@@ -10278,6 +10278,16 @@ hasextract = False
                   expansion for a specific instance.</p>
                 </dd>
                 <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL"></a><span class="term"><code class="varname">noaspell</code></span></dt>
+                <dd>
+                  <p>Disable aspell use. The aspell dictionary
+                  generation takes time, and some combinations of
+                  aspell version, language, and local terms, result
+                  in aspell crashing, so it sometimes makes sense
+                  to just disable the thing.</p>
+                </dd>
+                <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE"></a><span class="term"><code class="varname">aspellLanguage</code></span></dt>
                 <dd>
@@ -10313,14 +10323,33 @@ hasextract = False
                   is mostly for debugging.</p>
                 </dd>
                 <dt><a name=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL" id=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL"></a><span class="term"><code class="varname">noaspell</code></span></dt>
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLRARITYTHRESHOLD"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLRARITYTHRESHOLD">
+                </a><span class="term"><code class=
+                "varname">autoSpellRarityThreshold</code></span></dt>
                 <dd>
-                  <p>Disable aspell use. The aspell dictionary
-                  generation takes time, and some combinations of
-                  aspell version, language, and local terms, result
-                  in aspell crashing, so it sometimes makes sense
-                  to just disable the thing.</p>
+                  <p>Inverse of the ratio of term occurrence to
+                  total db terms over which we look for spell
+                  neighbours for automatic query expansion When a
+                  term is very uncommon, we may (depending on user
+                  choice) look for spelling variations which would
+                  be more common and possibly add them to the
+                  query.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLSELECTIONTHRESHOLD"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLSELECTIONTHRESHOLD">
+                </a><span class="term"><code class=
+                "varname">autoSpellSelectionThreshold</code></span></dt>
+                <dd>
+                  <p>Ratio of spell neighbour frequency over user
+                  input term frequency beyond which we include the
+                  neighbour in the query. When a term has been
+                  selected for spelling expansion because of its
+                  rarity, we only include spelling neighbours which
+                  are more common by this ratio.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.MONAUXINTERVAL" id=
@@ -10630,6 +10659,17 @@ hasextract = False
                   sub-documents This is the default. If set to
                   false, org-mode files will be indexed as plain
                   text</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.KIOSHOWSUBDOCS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.KIOSHOWSUBDOCS"></a><span class="term"><code class="varname">kioshowsubdocs</code></span></dt>
+                <dd>
+                  <p>Show embedded document results in KDE
+                  dolphin/kio and krunner Embedded documents may
+                  clutter the results and are not always easily
+                  usable from the kio or krunner environment.
+                  Setting this variable will restrict the results
+                  to standalone documents.</p>
                 </dd>
               </dl>
             </div>

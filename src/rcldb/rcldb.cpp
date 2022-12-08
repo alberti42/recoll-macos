@@ -878,6 +878,8 @@ Db::Db(const RclConfig *cfp)
     m_config->getConfParam("idxflushmb", &m_flushMb);
     m_config->getConfParam("idxmetastoredlen", &m_idxMetaStoredLen);
     m_config->getConfParam("idxtexttruncatelen", &m_idxTextTruncateLen);
+    m_config->getConfParam("autoSpellRarityThreshold", &m_autoSpellRarityThreshold);
+    m_config->getConfParam("autoSpellSelectionThreshold", &m_autoSpellSelectionThreshold);
     if (start_of_field_term.empty()) {
         if (o_index_stripchars) {
             start_of_field_term = "XXST";
@@ -1423,8 +1425,8 @@ public:
 };
 
 
-// At the moment, we normally use the Xapian speller for Katakana and
-// aspell for everything else
+// At the moment, we only use aspell. The xapian speller code part is only for testing and normally
+// not compiled in.
 bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
 {
     LOGDEB("Db::getSpellingSuggestions:[" << word << "]\n");
@@ -1473,8 +1475,7 @@ bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
         if (isSpellingCandidate(term, false)) {
             if (!o_index_stripchars) {
                 if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
-                    LOGINFO("Db::getSpelling: unac failed for [" << word <<
-                            "]\n");
+                    LOGINFO("Db::getSpelling: unac failed for [" << word << "]\n");
                     return false;
                 }
             }
