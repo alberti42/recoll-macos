@@ -56,8 +56,8 @@ public:
     /** Retrieve all members of this family (e.g: french english german...) */
     virtual bool getMembers(std::vector<std::string>&);
 
-    /** debug: list map for one member to stdout */
-    virtual bool listMap(const std::string& fam); 
+    /** Debug: list map for one member to stdout */
+    virtual bool listMap(const std::string& membername); 
 
     /** Expand term to list of synonyms for given member */
     bool synExpand(const std::string& membername, 
@@ -111,7 +111,7 @@ protected:
 class SynTermTrans {
 public:
     virtual std::string operator()(const std::string&) = 0;
-    virtual std::string name() { return "SynTermTrans: unknown";}
+    virtual std::string name() {return "SynTermTrans: unknown";}
 };
 
 /** A member (set of root-synonyms associations) of a SynFamily for
