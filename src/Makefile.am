@@ -561,11 +561,11 @@ qtgui/xmltosd.cpp \
 qtgui/xmltosd.h \
 \
 python/README.txt \
-pyaspell/aspell.c \
-pyaspell/LICENSE \
-pyaspell/pyaspell.py \
-pyaspell/README.rst \
-pyaspell/setup.py.in \
+python/pyaspell/aspell.c \
+python/pyaspell/LICENSE \
+python/pyaspell/pyaspell.py \
+python/pyaspell/README.rst \
+python/pyaspell/setup.py.in \
 python/pychm/AUTHORS \
 python/pychm/COPYING \
 python/pychm/MANIFEST.in \

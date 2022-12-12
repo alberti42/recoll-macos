@@ -65,6 +65,7 @@ src/m4/ltoptions.m4
 src/m4/ltsugar.m4
 src/m4/ltversion.m4
 src/m4/lt~obsolete.m4
+src/python/pyaspell/setup.py
 src/python/pychm/recollchm.egg-info
 src/python/pychm/setup.py
 src/python/recoll/Recoll.egg-info
