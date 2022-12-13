@@ -12,21 +12,19 @@ SERIES="bionic focal jammy kinetic"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.33.2
-SCOPEVERS=1.20.2.4
+RCLVERS=1.34.0pre2
 GSSPVERS=1.1.1
-PPAVERS=2
+PPAVERS=1
 
 #
 #Y=/y
 Y=
 RCLSRC=${Y}/home/dockes/projets/fulltext/recoll/src
-SCOPESRC=${Y}/home/dockes/projets/fulltext/unity-scope-recoll
 GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
 RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
 
-PPANAME=recoll15-ppa
-#PPANAME=recollexp-ppa
+#PPANAME=recoll15-ppa
+PPANAME=recollexp-ppa
 #PPANAME=recoll-webengine-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
@@ -50,7 +48,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series=$SERIES
-series=
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -86,7 +84,7 @@ done
 
 ### KIO.
 series=$SERIES
-#series=
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -119,8 +117,10 @@ for svers in $series ; do
   dput $PPANAME kio-recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
 done
 
-### Krunner plugin
-series=$SERIES
+### Krunner plugin. Does not build on focal and bionic because of the
+### 5.90 min version requested in the CMakeLists.txt. Did not try to
+### work around.
+series="jammy kinetic"
 series=
 
 debdir=debiankrunner

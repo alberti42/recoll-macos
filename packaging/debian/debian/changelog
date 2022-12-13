@@ -1,3 +1,22 @@
+recoll (1.34.0pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Index configuration parameters are not case-sensitive any more.
+  * Add option to complement queries having rare words with possible mispellings with the common
+    spellings.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 12 Dec 2022 10:22:00 +0100
+
+recoll (1.33.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * New KDE Krunner plugin: get recoll search results in krunner. No changes needed to main recoll
+    code, allowing this to appear in a minor release.
+  * GUI: Fixed memory leak when opening / closing the side filter panel. Also, avoid rebuilding it
+    in somes cases where it was not needed.
+  * Extract comments from MS-office docx documents
+  * Add recoll.ini to skippedNames to avoid hits on terms from previously failed searches.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 12 Dec 2022 10:22:00 +0100
+
 recoll (1.33.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * New `x` modifier to trigger term expansion in a phrase search. Previously, phrase searches were
