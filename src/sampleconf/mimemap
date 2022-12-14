@@ -198,6 +198,8 @@
 # Note: file -i says audio/x-midi, but soft karaoke files are special.
 .aac = audio/aac
 .ape = audio/ape
+.dsf = audio/x-dsf
+.dff = audio/x-dff
 .flac = audio/flac
 .kar = audio/x-karaoke
 .m4a = audio/mp4
