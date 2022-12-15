@@ -231,14 +231,16 @@ class AudioTagExtractor(RclBaseHandler):
             # This fails if we're passed a mutagen.ID3 instead of File
             mime = mutf.mime
         except:
-            return ''
+            mime = []
 
-        if 'audio/mp3' in mime:
-            for tagname in mutf.keys():
-                if tagname.startswith('APIC:'):
-                    #self.em.rclog("mp3 img: %s" % mutf[tagname].mime)
-                    return 'jpg' if mutf[tagname].mime == 'image/jpeg' else 'png'
-        elif 'audio/flac' in mime:
+        # First pretend that this is an ID3. These can come inside multiple file formats, so don't
+        # try to select on mime.
+        for tagname in mutf.keys():
+            if tagname.startswith('APIC:'):
+                #self.em.rclog("mp3 img: %s" % mutf[tagname].mime)
+                return 'jpg' if mutf[tagname].mime == 'image/jpeg' else 'png'
+
+        if 'audio/flac' in mime:
             if mutf.pictures:
                 return 'jpg' if mutf.pictures[0].mime == 'image/jpeg' else 'png'
         elif 'audio/mp4' in mime:
@@ -385,6 +387,8 @@ class AudioTagExtractor(RclBaseHandler):
         except Exception as ex:
             strex = str(ex)
             try:
+                # Note: this would work only in the off chance that the file format is not
+                # recognized, but the file does begin with an ID3 tag.
                 mutf = ID3(filename)
             except Exception as ex:
                 strex += str(ex)
