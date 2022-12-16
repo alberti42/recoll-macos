@@ -80,11 +80,23 @@ umask 77
 # Try to detect encoding
 encoding=`egrep '\usepackage\[.*\]{inputenc}' "$infile" | \
                 sed -e 's/.*\[//' -e 's/\].*//'`
-if test "X$encoding" = X ; then
-    encoding=latin1
-fi
 if test "X$encoding" = Xutf8x ; then
     encoding=utf8
+fi
+# Found no usepackage directive to specify encoding. Have the system have a guess at it:
+if test "X$encoding" = X ; then
+    encoding=$(file -i "$infile" | awk -Fcharset= '{print $2}')
+    if test "X$encoding" = "Xus-ascii" -o "X$encoding" = X; then
+        # 'file' only reads the beginning of the text, which could still have some 8bit
+        # chars later-on. utf-8 is self-identifying, so do a full test for it. This is
+        # expensive, but important, and a common case these days. Finally, default to
+        # extended latin1
+        if iconv -s -f utf-8 -t utf-8 < "$infile" > /dev/null; then
+            encoding=utf8
+        else
+            encoding=windows-1252
+        fi
+    fi
 fi
 
 if iscmd detex ; then
@@ -108,5 +120,4 @@ $CMD "$infile" | \
 
 echo '</pre></body></html>'
 
-# exit normally
 exit 0
