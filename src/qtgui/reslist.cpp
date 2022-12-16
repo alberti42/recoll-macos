@@ -370,6 +370,8 @@ ResList::~ResList()
         QT_TR_NOOP("(show query)"),
         QT_TR_NOOP("<p><i>Alternate spellings (accents suppressed): </i>"),
         QT_TR_NOOP("<p><i>Alternate spellings: </i>"),
+        QT_TR_NOOP("This spelling guess was added to the search:"),
+        QT_TR_NOOP("These spelling guesses were added to the search:"),
     };
 }
 

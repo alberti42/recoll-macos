@@ -398,6 +398,18 @@ void ResListPager::displayPage(RclConfig *config)
             }
         }
     } else {
+        HighlightData hldata;
+        m_docSource->getTerms(hldata);
+        if (!hldata.spellexpands.empty()) {
+            string msg;
+            if (hldata.spellexpands.size() == 1) {
+                msg = trans("This spelling guess was added to the search:");
+            } else {
+                msg = trans("These spelling guesses were added to the search:");
+            }
+            chunk << "<br><i>" << msg << "</i> " <<
+                stringsToString(hldata.spellexpands) << "<br/>\n";
+        }
         unsigned int resCnt = m_docSource->getResCnt();
         if (m_winfirst + m_respage.size() < resCnt) {
             chunk << trans("Documents") << " <b>" << m_winfirst + 1

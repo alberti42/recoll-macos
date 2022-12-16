@@ -515,7 +515,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
         termmatchsens |= Db::ET_PATHELT;
     Db::MatchType mtyp = haswild ? Db::ET_WILD : nostemexp ? Db::ET_NONE : Db::ET_STEM;
     TermMatchResult res;
-    if (!db.termMatch(mtyp | termmatchsens, getStemLang(), 
+    if (!db.termMatch(mtyp | termmatchsens, getStemLang(),
                       term, res, maxexpand,  m_field, multiwords)) {
         // Let it go through
     }
@@ -541,6 +541,9 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
             m_hldata.terms[strip_prefix(entry)] = term;
         }
     }
+    // Remember the terms generated trough spelling approximation
+    m_hldata.spellexpands.insert(m_hldata.spellexpands.end(),
+                                 res.fromspelling.begin(), res.fromspelling.end());
     LOGDEB("ExpandTerm: final: " << stringsToString(oexp) << "\n");
     return true;
 }

@@ -261,7 +261,10 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             if (matchtyp == ET_STEM) {
                 vector<string> exp1;
                 if (m_usingSpellFuzz) {
+                    // Apply spell expansion to the input term
                     spellExpand(term, field, exp1);
+                    // Remember the generated terms. This is for informing the user.
+                    res.fromspelling.insert(res.fromspelling.end(), exp1.begin(), exp1.end());
                     lexp.insert(lexp.end(), exp1.begin(), exp1.end());
                     sort(lexp.begin(), lexp.end());
                     lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());

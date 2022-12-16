@@ -246,6 +246,9 @@ void SearchData::getTerms(HighlightData &hld) const
             clausep->getTerms(hld);
         }
     }
+    sort(hld.spellexpands.begin(), hld.spellexpands.end());
+    hld.spellexpands.erase(
+        unique(hld.spellexpands.begin(), hld.spellexpands.end()), hld.spellexpands.end());
     return;
 }
 
