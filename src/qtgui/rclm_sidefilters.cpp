@@ -43,7 +43,7 @@ void RclMain::populateSideFilters(SideFilterUpdateReason reason)
     idxTreeView->setModel(m_idxtreemodel);
 
     // Reset the current filter spec, the selection is gone.
-    setFiltSpec();
+    sideFilterChanged();
     
     if (nullptr != old_idxtreemodel)
         old_idxtreemodel->deleteLater();
@@ -51,18 +51,26 @@ void RclMain::populateSideFilters(SideFilterUpdateReason reason)
     if (reason == SFUR_INIT) {
         idxTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
         idxTreeView->setSelectionMode(QAbstractItemView::MultiSelection);
-        connect(idxTreeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(setFiltSpec()));
+        connect(idxTreeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(sideFilterChanged()));
 
         minDateFilterDTEDT->setCalendarPopup(true);
         maxDateFilterDTEDT->setCalendarPopup(true);
         minDateFilterDTEDT->setDate(QDate::currentDate());
         maxDateFilterDTEDT->setDate(QDate::currentDate());
-        connect(minDateFilterDTEDT, SIGNAL(dateChanged(const QDate &)), this, SLOT(setFiltSpec()));
-        connect(maxDateFilterDTEDT, SIGNAL(dateChanged(const QDate &)), this, SLOT(setFiltSpec()));
-        connect(dateFilterCB, SIGNAL(toggled(bool)), this, SLOT(setFiltSpec()));
+        connect(minDateFilterDTEDT, SIGNAL(dateChanged(const QDate&)),
+                this, SLOT(sideFilterChanged()));
+        connect(maxDateFilterDTEDT, SIGNAL(dateChanged(const QDate&)),
+                this, SLOT(sideFilterChanged()));
+        connect(dateFilterCB, SIGNAL(toggled(bool)), this, SLOT(sideFilterChanged()));
         connect(dateFilterCB, SIGNAL(toggled(bool)), minDateFilterDTEDT, SLOT(setEnabled(bool)));
         connect(dateFilterCB, SIGNAL(toggled(bool)), maxDateFilterDTEDT, SLOT(setEnabled(bool)));
     }
+}
+
+void RclMain::sideFilterChanged()
+{
+    setFiltSpec();
+    initiateQuery();
 }
 
 void RclMain::enableSideFilters(bool enable)

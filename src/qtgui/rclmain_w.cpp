@@ -789,6 +789,7 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
     setFiltSpec();
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
+    initiateQuery();
 }
 
 class QueryThread : public QThread {
@@ -900,7 +901,6 @@ void RclMain::onSortCtlChanged()
     if (m_source)
         m_source->setSortSpec(m_sortspec);
     emit sortDataChanged(m_sortspec);
-    initiateQuery();
 }
 
 void RclMain::onSortDataChanged(DocSeqSortSpec spec)
@@ -931,7 +931,6 @@ void RclMain::onSortDataChanged(DocSeqSortSpec spec)
         qs2utf8s(tr("sorted")) + ": " + fld +
         (m_sortspec.desc?" &darr;":" &uarr;"),
         qs2utf8s(tr("filtered")));
-    initiateQuery();
 }
 
 // Needed only because an action is not a widget, so can't be used
@@ -990,6 +989,7 @@ void RclMain::on_actionSortByDateAsc_toggled(bool on)
         }
     }
     onSortCtlChanged();
+    initiateQuery();
 }
 
 void RclMain::on_actionSortByDateDesc_toggled(bool on)
@@ -1003,6 +1003,7 @@ void RclMain::on_actionSortByDateDesc_toggled(bool on)
         }
     }
     onSortCtlChanged();
+    initiateQuery();
 }
 
 void RclMain::saveDocToFile(Rcl::Doc doc)
@@ -1097,6 +1098,7 @@ void RclMain::showDocHistory()
     setFiltSpec();
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
+    initiateQuery();
 }
 
 // Erase all memory of documents viewed
@@ -1220,6 +1222,7 @@ void RclMain::catgFilter(int id)
 
     m_catgbutvecidx = id;
     setFiltSpec();
+    initiateQuery();
 }
 
 void RclMain::setFiltSpec()
@@ -1279,12 +1282,12 @@ void RclMain::setFiltSpec()
     }
 
     m_source->setFiltSpec(m_filtspec);
-    initiateQuery();
 }
 
 void RclMain::onFragmentsChanged()
 {
     setFiltSpec();
+    initiateQuery();
 }
 
 void RclMain::toggleFullScreen()

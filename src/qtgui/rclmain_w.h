@@ -186,6 +186,7 @@ private slots:
     virtual void onWebcacheDestroyed(QObject *);
     virtual void onSSTypMenu(QAction *act);
     virtual void onSSTypCMB(int);
+    virtual void sideFilterChanged();
     
 signals:
     void docSourceChanged(std::shared_ptr<DocSequence>);
