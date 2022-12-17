@@ -93,7 +93,7 @@ size_t ZLibUtBuf::getCnt()
 
 bool inflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf)
 {
-    LOGDEB0("inflateToBuf: inlen " << inlen << "\n");
+    LOGDEB1("inflateToBuf: inlen " << inlen << "\n");
 
     z_stream d_stream; /* decompression stream */
 

@@ -1157,6 +1157,7 @@ void RclMain::setUIPrefs()
         return;
     LOGDEB("Recollmain::setUIPrefs\n");
     populateSideFilters(SFUR_USERCONFIG);
+    ::applyStyleSheet(prefs.qssFile);
     emit uiPrefsChanged();
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
     enbSynAction->setChecked(prefs.synFileEnable);
@@ -1300,16 +1301,6 @@ void RclMain::showEvent(QShowEvent *ev)
     QMainWindow::showEvent(ev);
 }
 
-void RclMain::applyStyleSheet()
-{
-    ::applyStyleSheet(prefs.qssFile);
-    if (m_source) {
-        emit docSourceChanged(m_source);
-        emit sortDataChanged(m_sortspec);
-    } else {
-        resetSearch();
-    }
-}
 
 void RclMain::resultsSetFixedGeometry()
 {

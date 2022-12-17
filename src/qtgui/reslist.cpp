@@ -858,7 +858,6 @@ void ResList::append(const QString &text)
     if (m_progress && text.startsWith("<div class=\"rclresult\"")) {
         m_progress->setValue(m_residx++);
     }
-    QApplication::processEvents();
 #else
     QTextBrowser::append(text);
 #endif

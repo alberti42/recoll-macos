@@ -396,7 +396,6 @@ void UIPrefsDialog::accept()
     prefs.darkMode = darkMode;
     prefs.setupDarkCSS();
     prefs.qssFile = qssFile;
-    QTimer::singleShot(0, m_mainWindow, SLOT(applyStyleSheet()));
     prefs.snipCssFile = snipCssFile;
     prefs.reslistformat =  paraFormat;
     prefs.reslistheadertext =  headerText;

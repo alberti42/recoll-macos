@@ -168,7 +168,6 @@ public slots:
     virtual void on_actionShowResultsAsTable_toggled(bool on);
     virtual void onSortDataChanged(DocSeqSortSpec);
     virtual void resultCount(int);
-    virtual void applyStyleSheet();
     virtual void setFilterCtlStyle(int stl);
     virtual void showTrayMessage(const QString& text);
     virtual void onSetDescription(QString);
