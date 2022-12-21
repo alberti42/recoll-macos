@@ -60,7 +60,7 @@ using namespace std;
 // E.g. /usr/share/recoll/examples/windows
 #ifdef _WIN32
 static const string confsysdir{"windows"};
-#elif defined(_APPLE__)
+#elif defined(__APPLE__)
 static const string confsysdir{"macos"};
 #else
 static const string confsysdir;
