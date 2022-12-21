@@ -45,6 +45,11 @@
 #include "base64.h"
 #include "rclutil.h"
 #include "internfile.h"
+#include "plaintorich.h"
+#include "hldata.h"
+
+static PlainToRich g_hiliter;
+static const string cstr_ellipsis("...");
 
 using namespace std;
 
@@ -62,28 +67,34 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
 }
 
 string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
-                     int snipcount, bool showlines)
+                     int snipcount, bool showlines, HighlightData& hldata)
 {
-    string abstract;
-    if (asSnippets) {
-        std::vector<Rcl::Snippet> snippets;
-        std::ostringstream str;
-        if (query.makeDocAbstract(doc, snippets, snipcount, -1, true)) {
-            for (const auto& snippet : snippets) {
-                str << (showlines ? snippet.line : snippet.page) << " : " << snippet.snippet << "\n";
+    std::vector<Rcl::Snippet> snippets;
+    std::ostringstream str;
+    int cnt = 0;
+    if (query.makeDocAbstract(doc, snippets, 0, -1, true)) {
+        for (const auto& snippet : snippets) {
+            if (++cnt > snipcount)
+                break;
+            list<string> lr;
+            // We are only using the highlighter to filter out snippets which have search terms
+            // but don't match the group search (if any).
+            if (g_hiliter.plaintorich(snippet.snippet, lr, hldata)) {
+                if (asSnippets) {
+                    str << (showlines ? snippet.line : snippet.page) << " : "
+                        << snippet.snippet << "\n";
+                } else {
+                    str << snippet.snippet << cstr_ellipsis;
+                }
             }
         }
-        abstract = str.str();
-    } else {
-        query.makeDocAbstract(doc, abstract);
-        abstract += "\n";
     }
-    return abstract;
+    return str.str();
 }
 
 void output_fields(vector<string> fields, Rcl::Doc& doc,
                    Rcl::Query& query, Rcl::Db&, bool printnames,
-                   bool asSnippets, int snipcnt, bool showlines)
+                   bool asSnippets, int snipcnt, bool showlines, HighlightData& hldata)
 {
     if (fields.empty()) {
         for (const auto& entry : doc.meta) {
@@ -93,7 +104,7 @@ void output_fields(vector<string> fields, Rcl::Doc& doc,
     for (const auto& fld : fields) {
         string out;
         if (fld == "abstract") {
-            base64_encode(make_abstract(doc, query, asSnippets, snipcnt, showlines), out);
+            base64_encode(make_abstract(doc, query, asSnippets, snipcnt, showlines, hldata), out);
         } else if (fld == "xdocid") {
             char cdocid[30];
             sprintf(cdocid, "%lu", (unsigned long)doc.xdocid);
@@ -401,6 +412,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         std::cerr << "Query setup failed: " << query.getReason() << "\n";
         return 1;
     }
+    HighlightData hldata;
+    sd->getTerms(hldata);
     int cnt;
     if (op_flags & OPT_E) {
         cnt = query.getResCnt(-1, true);
@@ -440,8 +453,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         }
         
         if (op_flags & OPT_F) {
-            output_fields(fields, doc, query, rcldb,
-                          op_flags & OPT_N, op_flags & (OPT_p|OPT_g), snipcnt, op_flags & OPT_g);
+            output_fields(fields, doc, query, rcldb, op_flags & OPT_N, op_flags & (OPT_p|OPT_g),
+                          snipcnt, op_flags & OPT_g, hldata);
             continue;
         }
 
@@ -476,7 +489,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             if (op_flags & OPT_A) {
                 bool asSnippets = (op_flags & (OPT_p|OPT_g)) != 0;
                 bool showlines = (op_flags & OPT_g) != 0;
-                string abstract = make_abstract(doc, query, asSnippets, snipcnt, showlines);
+                string abstract = make_abstract(doc, query, asSnippets, snipcnt, showlines, hldata);
                 string marker = asSnippets ? "SNIPPETS" : "ABSTRACT";
                 if (!abstract.empty()) {
                     cout << marker << "\n";
