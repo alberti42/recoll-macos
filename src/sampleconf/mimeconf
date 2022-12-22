@@ -195,6 +195,7 @@ audio/x-dsf = execm rclaudio.py
 audio/x-dff = execm rclaudio.py
 audio/x-karaoke = execm rclkar.py
 audio/x-musepack = execm rclaudio.py
+audio/x-wav = execm rclaudio.py
 audio/x-wavpack = execm rclaudio.py
 image/gif = execm rclimg
 image/jp2 = execm rclimg
