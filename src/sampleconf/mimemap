@@ -196,6 +196,8 @@
 .wpd = application/vnd.wordperfect
 
 # Note: file -i says audio/x-midi, but soft karaoke files are special.
+.aiff = audio/x-aiff
+.aif = audio/x-aiff
 .aac = audio/aac
 .ape = audio/ape
 .dsf = audio/x-dsf

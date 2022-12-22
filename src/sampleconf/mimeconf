@@ -190,6 +190,7 @@ audio/ape = execm rclaudio.py
 audio/mp4 = execm rclaudio.py
 audio/mpeg = execm rclaudio.py
 audio/ogg = execm rclaudio.py
+audio/x-aiff = execm rclaudio.py
 audio/x-dsf = execm rclaudio.py
 audio/x-dff = execm rclaudio.py
 audio/x-karaoke = execm rclkar.py
