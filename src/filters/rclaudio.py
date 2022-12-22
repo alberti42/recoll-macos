@@ -324,6 +324,8 @@ class AudioTagExtractor(RclBaseHandler):
         #     TXXX:TOTALTRACKS TXXX:ORCHESTRA
         elif tag.find('TXXX:') == 0:
             tag = tag[5:]
+            if tag.startswith("QuodLibet::"):
+                tag = tag[11:]
         elif tag.find('TXX:') == 0:
             tag = tag[4:]
 
