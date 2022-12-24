@@ -373,49 +373,8 @@ class AudioTagExtractor(RclBaseHandler):
         return False
     
 
-    def html_text(self, filename):
-        #self.em.rclog(f"processing {filename}")
-        if not self.inputmimetype:
-            raise Exception("html_text: input MIME type not set")
-        mimetype = self.inputmimetype
-
-        # We actually output text/plain
-        self.outputmimetype = 'text/plain'
-
-        mutf = None
-        strex = ""
-        try:
-            mutf = File(filename)
-        except Exception as ex:
-            strex = str(ex)
-            try:
-                # Note: this would work only in the off chance that the file format is not
-                # recognized, but the file does begin with an ID3 tag.
-                mutf = ID3(filename)
-            except Exception as ex:
-                strex += str(ex)
-        if not mutf:
-            # Note: mutagen will fail the open (and raise) for a valid
-            # file with no tags. Maybe we should just return an empty
-            # text in this case? We seem to get an empty str(ex) in
-            # this case, and a non empty one for, e.g. permission
-            # denied, but I am not sure that the emptiness will be
-            # consistent for all file types. The point of detecting
-            # this would be to avoid error messages and useless
-            # retries.
-            if not strex:
-                return b''
-            else:
-                raise Exception("Open failed: %s" % strex)
-        
-        #self._showMutaInfo(mutf)
-
-        # The field storage dictionary
-        minf = {}
-        self._extractaudioparams(filename, minf, mutf)
-        
-        ####################
-        # Metadata tags. 
+    def _processtags(self, mutf, minf):
+        # Extract and process metadata tags. 
         for tag,val in mutf.items():
             #self.em.rclog(f"TAG <{tag}> VALUE <{val}>")
             # The names vary depending on the file type. Make them consistant
@@ -434,7 +393,6 @@ class AudioTagExtractor(RclBaseHandler):
                 if not isinstance(val, (list, tuple)):
                     val = str(val)
                     val = val.split("\x00")
-
                 # Change list to string for sending up to recoll. 
                 try:
                     if isinstance(val, (list, tuple,)):
@@ -447,38 +405,77 @@ class AudioTagExtractor(RclBaseHandler):
                             continue
                 except Exception as err:
                     self.em.rclog(f"Trying list join: {err} for {filename}")
-
                 #self.em.rclog(f"VAL NOW <{val}>")
                 val =  tobytes(val)
-
                 if ntag in minf:
                     # Note that it would be nicer to use proper CSV quoting
                     minf[ntag] += b"," + val
                 else:
                     minf[ntag] = val
                 #self.em.rclog(f"Tag <{ntag}> -> <{val}>")
-
             except Exception as err:
                 self.em.rclog(f"tag: {tag} {minf[ntag]}: {err}. fn {filename}")
 
         self._fixrating(minf)
-        
-        #self.em.rclog("minf after extract %s\n" % minf)
-
-
         if 'orchestra' in minf:
             val = minf['orchestra']
             if val.startswith(b'orchestra='):
                 minf['orchestra'] = val[10:]
-                
         #self.em.rclog(f"minf after tags {minf}")
-
-        # Check for embedded image. We just set a flag.
-        embdimg = self._embeddedImageFormat(mutf)
-        if embdimg:
-            #self.em.rclog("Embedded image format: %s" % embdimg)
-            minf['embdimg'] = tobytes(embdimg)
         
+
+    def html_text(self, filename):
+        #self.em.rclog(f"processing {filename}")
+        if not self.inputmimetype:
+            raise Exception("html_text: input MIME type not set")
+        mimetype = self.inputmimetype
+        # We actually output text/plain
+        self.outputmimetype = 'text/plain'
+        # The field storage dictionary
+        minf = {}
+
+        # We open the file here in order to specify the buffering parameter. For some reason it
+        # makes a huge difference in performance (e.g. 6x) at least in some cases with an
+        # NFS-mounted volume. mutagen itself does not specify a buffering parameter (as of
+        # 1.45.1). No idea if this is a Python, or Linux kernel (or ?) issue.
+        with open(filename, "rb", buffering=4096) as fileobj:
+            strex = ""
+            try:
+                mutf = File(fileobj)
+            except Exception as ex:
+                strex = str(ex)
+                try:
+                    # Note: this would work only in the off chance that the file format is not
+                    # recognized, but the file does begin with an ID3 tag.
+                    mutf = ID3(fileobj)
+                except Exception as ex:
+                    strex += str(ex)
+            if not mutf:
+                # Note: mutagen will fail the open (and raise) for a valid
+                # file with no tags. Maybe we should just return an empty
+                # text in this case? We seem to get an empty str(ex) in
+                # this case, and a non empty one for, e.g. permission
+                # denied, but I am not sure that the emptiness will be
+                # consistent for all file types. The point of detecting
+                # this would be to avoid error messages and useless
+                # retries.
+                if not strex:
+                    return b''
+                else:
+                    raise Exception("Open failed: %s" % strex)
+            #self._showMutaInfo(mutf)
+    
+            self._extractaudioparams(filename, minf, mutf)
+    
+            self._processtags(mutf, minf)
+            
+            # Check for embedded image. We just set a flag.
+            embdimg = self._embeddedImageFormat(mutf)
+            if embdimg:
+                #self.em.rclog("Embedded image format: %s" % embdimg)
+                minf['embdimg'] = tobytes(embdimg)
+        
+
         self.em.setfield("charset", b'utf-8')
         if self.tagfix:
             self.tagfix(minf)
