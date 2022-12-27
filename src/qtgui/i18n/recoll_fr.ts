@@ -2478,6 +2478,14 @@ Merci de vérifier le fichier desktop </translation>
         <source>Snippets</source>
         <translation>Extraits</translation>
     </message>
+    <message>
+        <source>This spelling guess was added to the search:</source>
+        <translation>Approximation orthographique ajoutée à la recherche:</translation>
+    </message>
+    <message>
+        <source>These spelling guesses were added to the search:</source>
+        <translation>Approximations orthographiques ajoutées à la recherche:</translation>
+    </message>
 </context>
 <context>
     <name>ResTable</name>
@@ -4849,6 +4857,22 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Display scale (default 1.0):</source>
         <translation>Échelle d&apos;affichage (défaut 1.0):</translation>
+    </message>
+    <message>
+        <source>Enable spelling approximations for terms not found in the index.</source>
+        <translation type="obsolete">Activer l&apos;ajout automatique d&apos;approximations orthographiques aux recherches.</translation>
+    </message>
+    <message>
+        <source>Automatic spelling approximation.</source>
+        <translation>Approximation orthographique automatique.</translation>
+    </message>
+    <message>
+        <source>Max spelling distance</source>
+        <translation>Distance orthographique maximale</translation>
+    </message>
+    <message>
+        <source>Add common spelling approximations for rare terms.</source>
+        <translation>Ajouter des termes fréquents et proches orthographiquement des termes rares de la recherche.</translation>
     </message>
 </context>
 </TS>

@@ -635,7 +635,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../crontool.cpp" line="109"/>
+        <location filename="../crontool.cpp" line="112"/>
         <source>Error installing cron entry. Bad syntax in fields ?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -759,18 +759,18 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>FragButs</name>
     <message>
-        <location filename="../fragbuts.cpp" line="141"/>
+        <location filename="../fragbuts.cpp" line="147"/>
         <source>%1 not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fragbuts.cpp" line="147"/>
+        <location filename="../fragbuts.cpp" line="153"/>
         <source>%1:
  %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fragbuts.cpp" line="154"/>
+        <location filename="../fragbuts.cpp" line="160"/>
         <source>Query Fragments</source>
         <translation type="unfinished"></translation>
     </message>
@@ -831,12 +831,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="365"/>
+        <location filename="../main.cpp" line="373"/>
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="391"/>
+        <location filename="../main.cpp" line="399"/>
         <source>No db directory in configuration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1650,7 +1650,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_sidefilters.cpp" line="31"/>
+        <location filename="../rclm_sidefilters.cpp" line="42"/>
         <source>Filter directories</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1694,7 +1694,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <location filename="../rclm_view.cpp" line="348"/>
-        <location filename="../rclmain_w.cpp" line="1015"/>
+        <location filename="../rclmain_w.cpp" line="1016"/>
         <source>Cannot extract document or create temporary file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1719,12 +1719,12 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="91"/>
+        <location filename="../rclm_wins.cpp" line="89"/>
         <source>Unknown indexer state. Can&apos;t access webcache file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="96"/>
+        <location filename="../rclm_wins.cpp" line="94"/>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1941,54 +1941,54 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="821"/>
+        <location filename="../rclmain_w.cpp" line="822"/>
         <source>Query in progress.&lt;br&gt;Due to limitations of the indexing library,&lt;br&gt;cancelling will exit the program</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="853"/>
+        <location filename="../rclmain_w.cpp" line="854"/>
         <source>Result count (est.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="855"/>
+        <location filename="../rclmain_w.cpp" line="856"/>
         <source>No results found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1011"/>
+        <location filename="../rclmain_w.cpp" line="1012"/>
         <source>Save file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1035"/>
         <location filename="../rclmain_w.cpp" line="1036"/>
+        <location filename="../rclmain_w.cpp" line="1037"/>
         <source>Sub-documents and attachments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1087"/>
-        <location filename="../rclmain_w.cpp" line="1093"/>
+        <location filename="../rclmain_w.cpp" line="1088"/>
+        <location filename="../rclmain_w.cpp" line="1094"/>
         <source>History data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1092"/>
+        <location filename="../rclmain_w.cpp" line="1093"/>
         <source>Document history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1117"/>
+        <location filename="../rclmain_w.cpp" line="1119"/>
         <source>Confirm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1118"/>
+        <location filename="../rclmain_w.cpp" line="1120"/>
         <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="1144"/>
+        <location filename="../rclmain_w.cpp" line="1146"/>
         <source>Could not open/create file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2537,23 +2537,33 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="542"/>
+        <location filename="../reslist.cpp" line="373"/>
+        <source>This spelling guess was added to the search:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reslist.cpp" line="374"/>
+        <source>These spelling guesses were added to the search:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reslist.cpp" line="544"/>
         <source>Document history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="550"/>
+        <location filename="../reslist.cpp" line="552"/>
         <source>Result list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="1010"/>
+        <location filename="../reslist.cpp" line="1011"/>
         <source>Result count (est.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="1012"/>
         <location filename="../reslist.cpp" line="1013"/>
+        <location filename="../reslist.cpp" line="1014"/>
         <source>Query details</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2994,12 +3004,12 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searchclause_w.cpp" line="93"/>
+        <location filename="../searchclause_w.cpp" line="92"/>
         <source>Select the type of query that will be performed with the words</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searchclause_w.cpp" line="94"/>
+        <location filename="../searchclause_w.cpp" line="93"/>
         <source>Number of additional words that may be interspersed with the chosen ones</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3372,91 +3382,91 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="207"/>
-        <location filename="../uiprefs_w.cpp" line="216"/>
-        <location filename="../uiprefs_w.cpp" line="262"/>
-        <location filename="../uiprefs_w.cpp" line="601"/>
-        <location filename="../uiprefs_w.cpp" line="610"/>
+        <location filename="../uiprefs_w.cpp" line="211"/>
+        <location filename="../uiprefs_w.cpp" line="220"/>
+        <location filename="../uiprefs_w.cpp" line="266"/>
+        <location filename="../uiprefs_w.cpp" line="606"/>
+        <location filename="../uiprefs_w.cpp" line="615"/>
         <source>Choose</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="234"/>
+        <location filename="../uiprefs_w.cpp" line="238"/>
         <source>error retrieving stemming languages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="295"/>
+        <location filename="../uiprefs_w.cpp" line="299"/>
         <source>Context</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="296"/>
+        <location filename="../uiprefs_w.cpp" line="300"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="297"/>
+        <location filename="../uiprefs_w.cpp" line="301"/>
         <source>Shortcut</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="298"/>
+        <location filename="../uiprefs_w.cpp" line="302"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="346"/>
+        <location filename="../uiprefs_w.cpp" line="350"/>
         <source>Default QtWebkit font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="493"/>
+        <location filename="../uiprefs_w.cpp" line="498"/>
         <source>Result list paragraph format (erase all to reset to default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="504"/>
+        <location filename="../uiprefs_w.cpp" line="509"/>
         <source>Result list header (default is empty)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="563"/>
+        <location filename="../uiprefs_w.cpp" line="568"/>
         <source>Choose QSS File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="667"/>
+        <location filename="../uiprefs_w.cpp" line="672"/>
         <source>At most one index should be selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="730"/>
+        <location filename="../uiprefs_w.cpp" line="735"/>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="744"/>
+        <location filename="../uiprefs_w.cpp" line="749"/>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="754"/>
+        <location filename="../uiprefs_w.cpp" line="759"/>
         <source>The selected directory does not appear to be a Xapian index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="760"/>
+        <location filename="../uiprefs_w.cpp" line="765"/>
         <source>Cant add index with different case/diacritics stripping option</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="765"/>
+        <location filename="../uiprefs_w.cpp" line="770"/>
         <source>This is the main/local index!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs_w.cpp" line="774"/>
+        <location filename="../uiprefs_w.cpp" line="779"/>
         <source>The selected directory is already in the index list</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4007,7 +4017,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <location filename="../uiprefs.ui" line="913"/>
-        <location filename="../uiprefs.ui" line="1472"/>
+        <location filename="../uiprefs.ui" line="1516"/>
         <source>Choose</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4158,97 +4168,112 @@ May be slow for big documents.</source>
     </message>
     <message>
         <location filename="../uiprefs.ui" line="1399"/>
-        <location filename="../uiprefs.ui" line="1459"/>
+        <location filename="../uiprefs.ui" line="1503"/>
         <source>Enable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1449"/>
+        <location filename="../uiprefs.ui" line="1443"/>
+        <source>Add common spelling approximations for rare terms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../uiprefs.ui" line="1446"/>
+        <source>Automatic spelling approximation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../uiprefs.ui" line="1453"/>
+        <source>Max spelling distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../uiprefs.ui" line="1493"/>
         <source>Synonyms file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1513"/>
+        <location filename="../uiprefs.ui" line="1557"/>
         <source>External Indexes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1530"/>
+        <location filename="../uiprefs.ui" line="1574"/>
         <source>Toggle selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1537"/>
+        <location filename="../uiprefs.ui" line="1581"/>
         <source>Activate All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1544"/>
+        <location filename="../uiprefs.ui" line="1588"/>
         <source>Deactivate All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1551"/>
+        <location filename="../uiprefs.ui" line="1595"/>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1554"/>
+        <location filename="../uiprefs.ui" line="1598"/>
         <source>Paths translations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1575"/>
+        <location filename="../uiprefs.ui" line="1619"/>
         <source>Remove from list. This has no effect on the disk index.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1578"/>
+        <location filename="../uiprefs.ui" line="1622"/>
         <source>Remove selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1604"/>
+        <location filename="../uiprefs.ui" line="1648"/>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1607"/>
+        <location filename="../uiprefs.ui" line="1651"/>
         <source>Add index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1619"/>
+        <location filename="../uiprefs.ui" line="1663"/>
         <source>Misc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1625"/>
+        <location filename="../uiprefs.ui" line="1669"/>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1628"/>
+        <location filename="../uiprefs.ui" line="1672"/>
         <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1670"/>
+        <location filename="../uiprefs.ui" line="1714"/>
         <source>Apply changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1673"/>
+        <location filename="../uiprefs.ui" line="1717"/>
         <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1689"/>
+        <location filename="../uiprefs.ui" line="1733"/>
         <source>Discard changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../uiprefs.ui" line="1692"/>
+        <location filename="../uiprefs.ui" line="1736"/>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>

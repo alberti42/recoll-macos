@@ -1440,7 +1440,7 @@ May be slow for big documents.</string>
            <item>
             <widget class="QCheckBox" name="autoSpellCB">
              <property name="toolTip">
-              <string>Enable spelling approximations for terms not found in the index.</string>
+              <string>Add common spelling approximations for rare terms.</string>
              </property>
              <property name="text">
               <string>Automatic spelling approximation.</string>

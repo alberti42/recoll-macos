@@ -2477,6 +2477,14 @@ Tjek venligst desktopfilen</translation>
         <source>Snippets</source>
         <translation>Tekststumper</translation>
     </message>
+    <message>
+        <source>This spelling guess was added to the search:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These spelling guesses were added to the search:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResTable</name>
@@ -4845,6 +4853,18 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Display scale (default 1.0):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic spelling approximation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max spelling distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add common spelling approximations for rare terms.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
