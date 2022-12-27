@@ -1,10 +1,14 @@
-recoll (1.34.0pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.34.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * Index configuration parameters are not case-sensitive any more.
-  * Add option to complement queries having rare words with possible mispellings with the common
-    spellings.
-  
- -- Jean-Francois Dockes <jf@dockes.org>  Mon, 12 Dec 2022 10:22:00 +0100
+  * Add option to complement queries having rare words with more common spelling approximations.
+  * Make index configuration parameters insensitive to character case.
+  * rclaudio: improve performance with NFS-mounted volumes in some cases. Support ID3 tags in WAV
+    and AIFF files. Add dsf and dff support.
+  * Mac: fix GUI Open trying to use "xdg-open": use MacOS "open" instead .
+  * recollq: when displaying snippets for a group search, filter out non-matching snippets.
+  * TeX: make a better attempt at guessing charset.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Dec 2022 08:58:00 +0100
 
 recoll (1.33.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 

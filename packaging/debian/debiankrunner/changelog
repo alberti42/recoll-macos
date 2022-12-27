@@ -1,3 +1,9 @@
+krunner-recoll (1.34.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Follow 
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Dec 2022 08:58:00 +0100
+
 krunner-recoll (1.33.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * New package recoll krunner plugin.

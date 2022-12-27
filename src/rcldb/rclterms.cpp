@@ -347,7 +347,7 @@ void Db::spellExpand(
         auto wcf = matchResult.entries[0].wcf;
         if (wcf == 0) // ??
             wcf += 1;
-        auto rarity = totlen / wcf;
+        auto rarity = int(totlen / wcf);
         LOGDEB0("RARITY FOR " << term << " " << rarity << "\n");
         if (rarity < m_autoSpellRarityThreshold) {
             LOGDEB0("Db::spellExpand: [" << term << "] is not rare.\n");
