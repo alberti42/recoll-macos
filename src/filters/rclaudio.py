@@ -15,7 +15,7 @@ import rclconfig
 try:
     import mutagen
     from mutagen import File
-    from mutagen.id3 import ID3, ID3TimeStamp
+    from mutagen.id3 import ID3
 except:
     print("RECFILTERROR HELPERNOTFOUND python3:mutagen")
     sys.exit(1);
@@ -281,8 +281,7 @@ class AudioTagExtractor(RclBaseHandler):
 
     ###################
     # Extract audio parameters from mutagen output. Not all file types supply all or even use the
-    # same property names. Translate to consistent str keys and encoded values into our
-    # fields dict
+    # same property names. Translate to consistent str keys and encoded values into our fields dict
     def _extractaudioparams(self, filename, minf, mutf):
         for prop,dflt in [('sample_rate', 44100), ('channels', 2), ('length', 0), ('bitrate', 0)]:
             try:
@@ -440,6 +439,7 @@ class AudioTagExtractor(RclBaseHandler):
         # 1.45.1). No idea if this is a Python, or Linux kernel (or ?) issue.
         with open(filename, "rb", buffering=4096) as fileobj:
             strex = ""
+            mutf = None
             try:
                 mutf = File(fileobj)
             except Exception as ex:
@@ -447,22 +447,20 @@ class AudioTagExtractor(RclBaseHandler):
                 try:
                     # Note: this would work only in the off chance that the file format is not
                     # recognized, but the file does begin with an ID3 tag.
+                    fileobj.seek(0)
                     mutf = ID3(fileobj)
                 except Exception as ex:
-                    strex += str(ex)
-            if not mutf:
-                # Note: mutagen will fail the open (and raise) for a valid
-                # file with no tags. Maybe we should just return an empty
-                # text in this case? We seem to get an empty str(ex) in
-                # this case, and a non empty one for, e.g. permission
-                # denied, but I am not sure that the emptiness will be
-                # consistent for all file types. The point of detecting
-                # this would be to avoid error messages and useless
-                # retries.
+                    strex += "  " + str(ex)
+            if mutf is None:
+                # Note: mutagen will fail the open (and raise) for a valid file with no tags. Maybe
+                # we should just return an empty text in this case? We seem to get an empty str(ex)
+                # in this case, and a non empty one for, e.g. permission denied, but I am not sure
+                # that the emptiness will be consistent for all file types. The point of detecting
+                # this would be to avoid error messages and useless retries.
                 if not strex:
                     return b''
                 else:
-                    raise Exception("Open failed: %s" % strex)
+                    raise Exception(f"Open failed: {strex}")
             #self._showMutaInfo(mutf)
     
             self._extractaudioparams(filename, minf, mutf)
