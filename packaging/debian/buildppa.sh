@@ -14,7 +14,7 @@ PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.34.0
 GSSPVERS=1.1.1
-PPAVERS=1
+PPAVERS=2
 
 #
 #Y=/y
@@ -23,8 +23,8 @@ RCLSRC=${Y}/home/dockes/projets/fulltext/recoll/src
 GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
 RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
 
-#PPANAME=recoll15-ppa
-PPANAME=recollexp-ppa
+PPANAME=recoll15-ppa
+#PPANAME=recollexp-ppa
 #PPANAME=recoll-webengine-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
@@ -48,7 +48,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series=$SERIES
-#series=
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -84,7 +84,7 @@ done
 
 ### KIO.
 series=$SERIES
-series=
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -121,7 +121,7 @@ done
 ### 5.90 min version requested in the CMakeLists.txt. Did not try to
 ### work around.
 series="jammy kinetic"
-series=
+#series=
 
 debdir=debiankrunner
 topdir=krunner-recoll-${RCLVERS}

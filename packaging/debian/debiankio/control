@@ -12,6 +12,7 @@ Build-Depends: cdbs,
                extra-cmake-modules,
                libkf5kio-dev,
                pkg-kde-tools (>= 0.4.0), 
+               libaspell-dev,
                libxapian-dev, 
                libxslt1-dev,
                libz-dev
