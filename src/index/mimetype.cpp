@@ -74,9 +74,14 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
     if (usfc && mime.empty()) {
         // Last resort: use "file -i", or its configured replacement.
 
-        // 'file' fallback if the configured command (default:
-        // xdg-mime) is not found
-        static const vector<string> tradfilecmd = {{FILE_PROG}, {"-i"}};
+        // 'file' fallback if the configured command (default: xdg-mime) is not found
+        static const vector<string> tradfilecmd = {{FILE_PROG},
+#ifdef __APPLE__
+                                                   {"-I"}
+#else
+                                                   {"-i"}
+#endif
+        };
 
         vector<string> cmd;
         string scommand;
