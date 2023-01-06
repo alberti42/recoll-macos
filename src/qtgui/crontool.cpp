@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2020 J.F.Dockes
+/* Copyright (C) 2005-2023 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -26,6 +26,7 @@
 #include "crontool.h"
 #include "ecrontab.h"
 #include "smallut.h"
+#include "rclutil.h"
 
 static string marker;
 
@@ -82,16 +83,19 @@ void CronToolW::changeCron(bool enable)
 
     string id = idstring(theconfig->getConfDir());
     string cmd("recollindex");
-    
-#if defined(MACPORTS) || defined(HOMEBREW)
-///    // TBD: check that this this needed. The PATH is supposedly set in rclinit////////////
-    
+
+#ifdef __APPLE__
     // The MACPORTS and HOMEBREW flags are set by the resp. portfile
     // and recipee. Adjust the path for finding recollindex accordingly
 #if defined(MACPORTS)
     cmd = string("PATH=/opt/local/bin/:$PATH ") + cmd;
 #elif defined(HOMEBREW)
     cmd = string("PATH=/opt/homebrew/bin:/usr/local/bin/:$PATH ") + cmd;
+#else
+    // Built as a bundle. We add the binary location to the PATH. This is a bit ridiculous because
+    // path_pkgdatadir() actually computes the location from the recoll exe but whatever...
+    auto bindir = path_cat(path_getfather(path_pkgdatadir()), "MacOS");
+    cmd = string("PATH=") + bindir + string(":$PATH ") + cmd;
 #endif
 #endif
 
@@ -109,8 +113,7 @@ void CronToolW::changeCron(bool enable)
             accept();
         }  else {
             QMessageBox::warning(
-                0, "Recoll", tr("Error installing cron entry. "
-                                "Bad syntax in fields ?"));
+                0, "Recoll", tr("Error installing cron entry. Bad syntax in fields ?"));
         }        
     }
 }
