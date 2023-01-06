@@ -65,8 +65,8 @@ const int MB = 1024 *1024;
 
 static void meminfo(const char *msg)
 {
-    struct mallinfo minfo = mallinfo();
-    std::cerr << msg  << " : " << minfo.uordblks / MB << " MB\n";
+    std::cerr << msg  << " : ";
+    malloc_stats();
 }
 
 static inline bool testentry(const std::pair<std::string,std::string>& entry)

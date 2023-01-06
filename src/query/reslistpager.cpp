@@ -222,31 +222,13 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     bool needabstract = parFormat().find("%A") != string::npos;
     if (needabstract && m_docSource) {
         vector<string> snippets;
-        m_docSource->getAbstract(doc, snippets);
         m_hiliter->set_inputhtml(false);
-
+        m_docSource->getAbstract(doc, m_hiliter, snippets);
         for (const auto& snippet : snippets) {
             bool ret = false;
             if (!snippet.empty()) {
-                // No need to call escapeHtml(), plaintorich handles it
-                list<string> lr;
-                // There may be data like page numbers before the snippet text.  will be in
-                // brackets.
-                if (pagenumre.simpleMatch(snippet)) {
-                    string pagenum = pagenumre.getMatch(snippet, 0);
-                    if (!pagenum.empty()) {
-                        ret = m_hiliter->plaintorich(snippet.substr(pagenum.size()), lr, hdata);
-                        lr.front() = snippet.substr(0, pagenum.size()) + lr.front();
-                    } else {
-                        ret = m_hiliter->plaintorich(snippet, lr, hdata);
-                    }
-                } else {
-                    ret = m_hiliter->plaintorich(snippet, lr, hdata);
-                }
-                if (ret) {
-                    richabst += lr.front();
-                    richabst += absSep();
-                }
+                richabst += snippet;
+                richabst += absSep();
             }
         }
     }

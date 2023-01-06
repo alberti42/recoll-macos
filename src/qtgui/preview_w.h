@@ -43,7 +43,6 @@
 #include <qimage.h>
 
 #include "rcldb.h"
-#include "plaintorich.h"
 #include "rclmain_w.h"
 #include "internfile.h"
 

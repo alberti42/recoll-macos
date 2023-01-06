@@ -298,7 +298,7 @@ bool Query::getQueryTerms(vector<string>& terms)
     return true;
 }
 
-int Query::makeDocAbstract(const Doc &doc, vector<Snippet>& abstract, 
+int Query::makeDocAbstract(const Doc &doc, PlainToRich *plaintorich, vector<Snippet>& abstract, 
                            int maxoccs, int ctxwords, bool sortbypage)
 {
     LOGDEB("makeDocAbstract: maxoccs " << maxoccs << " ctxwords "  <<
@@ -308,19 +308,30 @@ int Query::makeDocAbstract(const Doc &doc, vector<Snippet>& abstract,
         return ABSRES_ERROR;
     }
     int ret = ABSRES_ERROR;
-    XAPTRY(ret = m_nq->makeAbstract(doc.xdocid, abstract, maxoccs, ctxwords, sortbypage),
+    vector<Snippet> abs1;
+    XAPTRY(ret = m_nq->makeAbstract(doc.xdocid, abs1, maxoccs, ctxwords, sortbypage),
            m_db->m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
         LOGDEB("makeDocAbstract: makeAbstract: reason: " << m_reason << "\n");
         return ABSRES_ERROR;
     }
+    HighlightData hldata;
+    auto sd = getSD();
+    sd->getTerms(hldata);
+    for (auto& snip : abs1) {
+        list<string> ls;
+        if (plaintorich->plaintorich(snip.snippet, ls, hldata)) {
+          snip.snippet = ls.front();
+          abstract.push_back(snip);
+        }
+    }
     return ret;
 }
 
-bool Query::makeDocAbstract(const Doc &doc, vector<string>& abstract)
+bool Query::makeDocAbstract(const Doc &doc, PlainToRich *plaintorich, vector<string>& abstract)
 {
     vector<Snippet> vpabs;
-    if (!makeDocAbstract(doc, vpabs))
+    if (!makeDocAbstract(doc, plaintorich, vpabs))
         return false;
     for (const auto& snippet : vpabs) {
         string chunk;
@@ -337,18 +348,6 @@ bool Query::makeDocAbstract(const Doc &doc, vector<string>& abstract)
         abstract.push_back(chunk);
     }
     return true;
-}
-
-bool Query::makeDocAbstract(const Doc &doc, string& abstract)
-{
-    vector<Snippet> vpabs;
-    if (!makeDocAbstract(doc, vpabs))
-        return false;
-    for (const auto& snippet : vpabs) {
-        abstract.append(snippet.snippet);
-        abstract.append(cstr_ellipsis);
-    }
-    return m_reason.empty() ? true : false;
 }
 
 int Query::getFirstMatchPage(const Doc &doc, string& term)

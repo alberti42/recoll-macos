@@ -23,6 +23,8 @@
 #include "searchdata.h"
 #include "rclquery.h"
 
+class PlainToRich;
+
 /** A DocSequence from a Db query */
 class DocSequenceDb : public DocSequence {
 public:
@@ -38,10 +40,10 @@ public:
 
     // Called to fill-up the snippets window. Ignoers
     // buildabstract/replaceabstract and syntabslen
-    virtual bool getAbstract(Rcl::Doc &doc, std::vector<Rcl::Snippet>&,
+    virtual bool getAbstract(Rcl::Doc &doc, PlainToRich *ptr, std::vector<Rcl::Snippet>&,
                              int maxlen, bool sortbypage) override;
 
-    virtual bool getAbstract(Rcl::Doc &doc, std::vector<std::string>&) override;
+    virtual bool getAbstract(Rcl::Doc &doc, PlainToRich *ptr, std::vector<std::string>&) override;
     virtual int getFirstMatchPage(Rcl::Doc&, std::string& term) override;
     virtual int getFirstMatchLine(const Rcl::Doc&, const std::string& term) override;
     virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)

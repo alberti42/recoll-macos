@@ -63,6 +63,8 @@ public:
     bool isNotNull() const {return crits.size() != 0;}
 };
 
+class PlainToRich;
+
 /** Interface for a list of documents coming from some source.
 
     The result list display data may come from different sources (ie:
@@ -99,11 +101,11 @@ public:
     /** Get abstract for document. This is special because it may take time.
      *  The default is to return the input doc's abstract fields, but some 
      *  sequences can compute a better value (ie: docseqdb) */
-    virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs) {
+    virtual bool getAbstract(Rcl::Doc& doc, PlainToRich *, std::vector<std::string>& abs) {
         abs.push_back(doc.meta[Rcl::Doc::keyabs]);
         return true;
     }
-    virtual bool getAbstract(Rcl::Doc& doc, std::vector<Rcl::Snippet>& abs, 
+    virtual bool getAbstract(Rcl::Doc& doc, PlainToRich *, std::vector<Rcl::Snippet>& abs, 
                              int, bool) {
         abs.push_back(Rcl::Snippet(0, doc.meta[Rcl::Doc::keyabs]));
         return true;
@@ -189,17 +191,17 @@ public:
     DocSeqModifier(const DocSeqModifier&) = delete;
     DocSeqModifier& operator=(const DocSeqModifier&) = delete;
 
-    virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs)
-        override{
+    virtual bool getAbstract(Rcl::Doc& doc, PlainToRich *ptr, std::vector<std::string>& abs)
+        override {
         if (!m_seq)
             return false;
-        return m_seq->getAbstract(doc, abs);
+        return m_seq->getAbstract(doc, ptr, abs);
     }
-    virtual bool getAbstract(Rcl::Doc& doc, std::vector<Rcl::Snippet>& abs,
+    virtual bool getAbstract(Rcl::Doc& doc, PlainToRich *ptr, std::vector<Rcl::Snippet>& abs,
                              int maxlen, bool bypage) override {
         if (!m_seq)
             return false;
-        return m_seq->getAbstract(doc, abs, maxlen, bypage);
+        return m_seq->getAbstract(doc, ptr, abs, maxlen, bypage);
     }
     /** Get duplicates. */
     virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)

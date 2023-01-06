@@ -206,10 +206,7 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
     setWindowTitle(title);
 
     vector<Rcl::Snippet> vpabs;
-    source->getAbstract(m_doc, vpabs, prefs.snipwMaxLength, m_sortingByPage);
-
-    HighlightData hdata;
-    source->getTerms(hdata);
+    source->getAbstract(m_doc, &g_hiliter, vpabs, prefs.snipwMaxLength, m_sortingByPage);
 
     std::string snipcss;
     if (!prefs.snipCssFile.isEmpty()) {
@@ -221,17 +218,11 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
     oss << prefs.htmlHeaderContents() << snipcss;
     oss << "\n</head>\n<body>\n<table class=\"snippets\">";
 
-    g_hiliter.set_inputhtml(false);
     bool nomatch = true;
 
     for (const auto& snippet : vpabs) {
         if (snippet.page == -1) {
             oss << "<tr><td colspan=\"2\">" << snippet.snippet << "</td></tr>" << "\n";
-            continue;
-        }
-        list<string> lr;
-        if (!g_hiliter.plaintorich(snippet.snippet, lr, hdata)) {
-            LOGDEB1("No match for [" << snippet.snippet << "]\n");
             continue;
         }
         nomatch = false;
@@ -243,7 +234,7 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
             oss << "<a href=\"http://h/L" << snippet.line << "T" << snippet.term << "\">" <<
                 "L.&nbsp;" << snippet.line << "</a>";
         }
-        oss << "</td><td>" << lr.front().c_str() << "</td></tr>" << "\n";
+        oss << "</td><td>" << snippet.snippet << "</td></tr>" << "\n";
     }
     oss << "</table>" << "\n";
     if (nomatch) {

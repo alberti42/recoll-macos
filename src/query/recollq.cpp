@@ -72,20 +72,15 @@ string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
     std::vector<Rcl::Snippet> snippets;
     std::ostringstream str;
     int cnt = 0;
-    if (query.makeDocAbstract(doc, snippets, 0, -1, true)) {
+    if (query.makeDocAbstract(doc, &g_hiliter, snippets, 0, -1, true)) {
         for (const auto& snippet : snippets) {
             if (++cnt > snipcount)
                 break;
-            list<string> lr;
-            // We are only using the highlighter to filter out snippets which have search terms
-            // but don't match the group search (if any).
-            if (g_hiliter.plaintorich(snippet.snippet, lr, hldata)) {
-                if (asSnippets) {
-                    str << (showlines ? snippet.line : snippet.page) << " : "
-                        << snippet.snippet << "\n";
-                } else {
-                    str << snippet.snippet << cstr_ellipsis;
-                }
+            if (asSnippets) {
+                str << (showlines ? snippet.line : snippet.page) << " : "
+                    << snippet.snippet << "\n";
+            } else {
+                str << snippet.snippet << cstr_ellipsis;
             }
         }
     }

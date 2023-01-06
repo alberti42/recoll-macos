@@ -159,8 +159,8 @@ query/dynconf.cpp \
 query/dynconf.h \
 query/filtseq.cpp \
 query/filtseq.h \
-query/plaintorich.cpp \
-query/plaintorich.h \
+common/plaintorich.cpp \
+common/plaintorich.h \
 query/qresultstore.cpp \
 query/qresultstore.h \
 query/recollq.cpp \

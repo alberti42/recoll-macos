@@ -20,7 +20,9 @@
 #include <vector>
 
 #include <memory>
+
 #include "searchdata.h"
+#include "plaintorich.h"
 
 #ifndef NO_NAMESPACES
 namespace Rcl {
@@ -48,6 +50,9 @@ public:
     int page{0};
     std::string snippet;
     int line{0};
+    // This is the "best term" in the fragment, as determined by the qualityTerms() coef. It's only
+    // used as a search term when launching an external app. We don't even try to use NEAR/PHRASE
+    // groups for this, there are many cases where this would fail.
     std::string term;
 };
 
@@ -108,14 +113,15 @@ public:
     bool getQueryTerms(std::vector<std::string>& terms);
 
     /** Build synthetic abstract for document, extracting chunks relevant for
-     * the input query. This uses index data only (no access to the file) */
-    // Abstract returned as one string
-    bool makeDocAbstract(const Doc &doc, std::string& abstract);
-    // Returned as a snippets vector
-    bool makeDocAbstract(const Doc &doc, std::vector<std::string>& abstract);
-    // Returned as a vector of pair<page,snippet> page is 0 if unknown
-    int makeDocAbstract(const Doc &doc, std::vector<Snippet>& abst, 
+     * the input query. This uses index data only (no access to the file) 
+     */
+    // Returned as a vector of Snippet objects
+    int makeDocAbstract(const Doc &doc, PlainToRich *plaintorich, std::vector<Snippet>& abstract, 
                         int maxoccs= -1, int ctxwords= -1,bool sortbypage=false);
+    // Returned as a vector of text snippets. This just calls the above with default parameters and
+    // does a bit of formatting (page/line numbers if applicable).
+    bool makeDocAbstract(const Doc &doc, PlainToRich *plaintorich,
+                         std::vector<std::string>& abstract);
 
     /** Choose most interesting term and return the page number for its first match
      *  @param term returns the chosen term 

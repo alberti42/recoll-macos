@@ -1194,17 +1194,24 @@ PyDoc_STRVAR(doc_Query_highlight,
 class PyPlainToRich: public PlainToRich {
 public:
     PyPlainToRich() {}
-    PyPlainToRich(PyObject *methods, bool eolbr = false)
+    PyPlainToRich(PyObject *methods, bool eolbr = false,
+                  // Do not use default markers if methods is nullptr
+                  bool nohl = false)
         : m_methods(methods) {
         m_eolbr = eolbr;
+        m_nohl = nohl;
     }
     virtual ~PyPlainToRich() {}
     virtual string startMatch(unsigned int idx) {
         PyObject *res =  0;
         if (m_methods)
             res = PyObject_CallMethod(m_methods, (char *)"startMatch", (char *)"(i)", idx);
-        if (res == 0)
+        if (res == 0) {
+            if (m_nohl) {
+                return "";
+            }
             return "<span class=\"rclmatch\">";
+        }
         PyObject *res1 = res;
         if (PyUnicode_Check(res))
             res1 = PyUnicode_AsUTF8String(res);
@@ -1215,8 +1222,12 @@ public:
         PyObject *res =  0;
         if (m_methods)
             res = PyObject_CallMethod(m_methods, (char *)"endMatch", 0);
-        if (res == 0)
+        if (res == 0) {
+            if (m_nohl) {
+                return "";
+            }
             return "</span>";
+        }
         PyObject *res1 = res;
         if (PyUnicode_Check(res))
             res1 = PyUnicode_AsUTF8String(res);
@@ -1224,6 +1235,7 @@ public:
     }
 
     PyObject *m_methods{nullptr};
+    bool m_nohl{false};
 };
 
 static PyObject *
@@ -1279,78 +1291,67 @@ Query_highlight(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     return unicode;
 }
 
+// Helper shared by db.makeDocAbstract() and query.makeDocAbstract()
+static std::string makedocabstract(Rcl::Query *query, const Rcl::Doc& doc, PyObject *hlmethods,
+                                   bool nohl = false)
+{
+    string abstract;
+    PyPlainToRich hler(hlmethods, false, nohl);
+    hler.set_inputhtml(0);
+    vector<string> vabs;
+    query->makeDocAbstract(doc, &hler, vabs);
+    for (unsigned int i = 0; i < vabs.size(); i++) {
+        if (vabs[i].empty())
+            continue;
+        abstract += vabs[i];
+        abstract += "...";
+    }
+    return abstract;
+}
+
 PyDoc_STRVAR(doc_Query_makedocabstract,
-             "makedocabstract(doc, methods = object))\n"
+             "makedocabstract(doc, methods = object, nohl=False))\n"
              "Will create a snippets abstract for doc by selecting text around the match\n"
              " terms\n"
              "If methods is set, will also perform highlighting. See the highlight method\n"
+             "If methods is not set and nohl is true, it will disable the default insertion of "
+             "match regions\n"
     );
 
 static PyObject *
 Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
 {
     LOGDEB0("Query_makeDocAbstract\n");
-    static const char *kwlist[] = {"doc", "methods", NULL};
+    static const char *kwlist[] = {"doc", "methods", "nohl", NULL};
     recoll_DocObject *pydoc = 0;
     PyObject *hlmethods = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|O:Query_makeDocAbstract",
-                                     (char **)kwlist,
-                                     &recoll_DocType, &pydoc,
-                                     &hlmethods)) {
+    PyObject *nohlobj = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|OO:Query_makeDocAbstract", (char **)kwlist,
+                                     &recoll_DocType, &pydoc, &hlmethods, &nohlobj)) {
         return 0;
     }
+    bool nohl{false};
+    if (nohlobj != 0 && PyObject_IsTrue(nohlobj))
+        nohl = true;
 
     if (pydoc->doc == 0) {
         LOGERR("Query_makeDocAbstract: doc not found " << pydoc->doc << "\n");
         PyErr_SetString(PyExc_AttributeError, "doc");
         return 0;
     }
-    if (self->query == 0) {
+    if (nullptr == self->query) {
         LOGERR("Query_makeDocAbstract: query not found " << self->query<< "\n");
         PyErr_SetString(PyExc_AttributeError, "query");
         return 0;
     }
-    std::shared_ptr<Rcl::SearchData> sd = self->query->getSD();
-    if (!sd) {
-        PyErr_SetString(PyExc_ValueError, "Query not initialized");
-        return 0;
-    }
-    string abstract;
-    if (hlmethods == 0) {
-        // makeDocAbstract() can fail if there are no query terms (e.g. for
-        // a query like [ext:odt]. This should not cause an exception
-        self->query->makeDocAbstract(*(pydoc->doc), abstract);
-    } else {
-        HighlightData hldata;
-        sd->getTerms(hldata);
-        PyPlainToRich hler(hlmethods);
-        hler.set_inputhtml(0);
-        vector<string> vabs;
-        self->query->makeDocAbstract(*pydoc->doc, vabs);
-        for (unsigned int i = 0; i < vabs.size(); i++) {
-            if (vabs[i].empty())
-                continue;
-            list<string> lr;
-            // There may be data like page numbers before the snippet text.
-            // will be in brackets.
-            string::size_type bckt = vabs[i].find("]");
-            if (bckt == string::npos) {
-                hler.plaintorich(vabs[i], lr, hldata);
-            } else {
-                hler.plaintorich(vabs[i].substr(bckt), lr, hldata);
-                lr.front() = vabs[i].substr(0, bckt) + lr.front();
-            }
-            abstract += lr.front();
-            abstract += "...";
-        }
-    }
-
+    std::string abstract = makedocabstract(self->query, *pydoc->doc, hlmethods, nohl);
     // Return a python unicode object
     return PyUnicode_Decode(abstract.c_str(), abstract.size(), "UTF-8", "replace");
 }
 
 PyDoc_STRVAR(doc_Query_getsnippets,
-             "getsnippets(doc, maxoccs = -1, ctxwords = -1, sortbypage=False, methods = object))\n"
+             "getsnippets(doc, maxoccs = -1, ctxwords = -1, sortbypage=False, "
+             "methods = object, nohl=False))\n"
              "Will return a list of snippets for doc by selecting text around the match terms\n"
              "If methods is set, will also perform highlighting. See the highlight method\n"
     );
@@ -1359,32 +1360,33 @@ static PyObject *
 Query_getsnippets(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Query_getSnippets\n");
-    static const char *kwlist[] = {"doc", "methods", "maxoccs", "ctxwords", "sortbypage", NULL};
+    static const char *kwlist[] =
+        {"doc", "methods", "maxoccs", "ctxwords", "sortbypage", "nohl", NULL};
     recoll_DocObject *pydoc = 0;
     PyObject *hlmethods = 0;
     int maxoccs = -1;
     int ctxwords = -1;
     PyObject *osortbp = 0;
     bool sortbypage = false;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|OiiO:Query_getSnippets",
-                                     (char **)kwlist,
-                                     &recoll_DocType, &pydoc,
-                                     &hlmethods,
-                                     &maxoccs,
-                                     &ctxwords,
-                                     &osortbp)) {
+    PyObject *nohlobj = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|OiiOO:Query_getSnippets", (char **)kwlist,
+                                     &recoll_DocType, &pydoc, &hlmethods,  &maxoccs, &ctxwords,
+                                     &osortbp, &nohlobj)) {
         return 0;
     }
     if (osortbp && PyObject_IsTrue(osortbp))
         sortbypage = true;
+    bool nohl{false};
+    if (nohlobj != 0 && PyObject_IsTrue(nohlobj))
+        nohl = true;
 
     if (pydoc->doc == 0) {
-        LOGERR("Query_makeDocAbstract: doc not found " << pydoc->doc << "\n");
+        LOGERR("Query_getsnippets: doc not found " << pydoc->doc << "\n");
         PyErr_SetString(PyExc_AttributeError, "doc");
         return 0;
     }
     if (self->query == 0) {
-        LOGERR("Query_makeDocAbstract: query not found " << self->query<< "\n");
+        LOGERR("Query_getsnippets: query not found " << self->query<< "\n");
         PyErr_SetString(PyExc_AttributeError, "query");
         return 0;
     }
@@ -1394,29 +1396,16 @@ Query_getsnippets(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
         return 0;
     }
     std::vector<Rcl::Snippet> snippets;
-    self->query->makeDocAbstract(*(pydoc->doc), snippets, maxoccs, ctxwords, sortbypage);
-    PyObject *sniplist = PyList_New(snippets.size());
-    int i = 0;
-    HighlightData hldata;
-    std::unique_ptr<PyPlainToRich> hler;
-    if (hlmethods) {
-        sd->getTerms(hldata);
-        hler = std::unique_ptr<PyPlainToRich>(new PyPlainToRich(hlmethods));
-        hler->set_inputhtml(0);
-    }
+    PyPlainToRich hler(hlmethods, false, nohl);
+    self->query->makeDocAbstract(*(pydoc->doc), &hler, snippets, maxoccs, ctxwords, sortbypage);
+    PyObject *sniplist = PyList_New(0);
     for (const auto& snip : snippets) {
         const std::string *textp = &snip.snippet;
-        list<string> lr;
-        if (hlmethods) {
-            hler->plaintorich(snip.snippet, lr, hldata);
-            textp = &lr.front();
-        }
-        PyList_SetItem(
-            sniplist, i++,
-            Py_BuildValue(
-                "(iOO)", snip.page,
-                PyUnicode_Decode(snip.term.c_str(), snip.term.size(), "UTF-8", "replace"),
-                PyUnicode_Decode(textp->c_str(), textp->size(), "UTF-8", "replace")));
+        PyList_Append(sniplist,
+                      Py_BuildValue(
+                          "(iOO)", snip.page,
+                          PyUnicode_Decode(snip.term.c_str(), snip.term.size(), "UTF-8", "replace"),
+                          PyUnicode_Decode(textp->c_str(), textp->size(), "UTF-8", "replace")));
     }
     return sniplist;
 }
@@ -1789,8 +1778,7 @@ Db_makeDocAbstract(recoll_DbObject* self, PyObject *args)
     recoll_DocObject *pydoc = 0;
     recoll_QueryObject *pyquery = 0;
     if (!PyArg_ParseTuple(args, "O!O!:Db_makeDocAbstract",
-                          &recoll_DocType, &pydoc,
-                          &recoll_QueryType, &pyquery)) {
+                          &recoll_DocType, &pydoc, &recoll_QueryType, &pyquery)) {
         return 0;
     }
     if (self->db == 0) {
@@ -1808,11 +1796,7 @@ Db_makeDocAbstract(recoll_DbObject* self, PyObject *args)
         PyErr_SetString(PyExc_AttributeError, "query");
         return 0;
     }
-    string abstract;
-    if (!pyquery->query->makeDocAbstract(*(pydoc->doc), abstract)) {
-        PyErr_SetString(PyExc_EnvironmentError, "rcl makeDocAbstract failed");
-        return 0;
-    }
+    string abstract = makedocabstract(pyquery->query, *pydoc->doc, nullptr);
     // Return a python unicode object
     return PyUnicode_Decode(abstract.c_str(), abstract.size(), "UTF-8", "replace");
 }

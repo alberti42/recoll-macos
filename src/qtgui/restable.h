@@ -29,7 +29,6 @@
 
 #include "ui_restable.h"
 #include "docseq.h"
-#include "plaintorich.h"
 
 class ResTable;
 

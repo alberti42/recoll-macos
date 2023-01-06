@@ -28,7 +28,7 @@ def msg(s):
     print(f"{s}", file=sys.stderr)
     
 def Usage():
-    msg("Usage: snippets.py [-c conf] [-i extra_index] [-w ctxwords] <recoll query>")
+    msg("Usage: snippets.py [-c conf] [-i extra_index] [-w ctxwords] [-n] <recoll query>")
     sys.exit(1);
 
 if len(sys.argv) < 2:
@@ -38,15 +38,18 @@ if len(sys.argv) < 2:
 confdir=""
 extra_dbs = []
 ctxwords = 4
+nohl=False
 # Process options: [-c confdir] [-i extra_db [-i extra_db] ...]
 try:
-    options, args = getopt(sys.argv[1:], "c:i:w:")
+    options, args = getopt(sys.argv[1:], "c:i:w:n")
 except Exception as ex:
     print(f"{ex}")
     sys.exit(1)
 for opt,val in options:
     if opt == "-c":
         confdir = val
+    elif opt == "-n":
+        nohl = True
     elif opt == "-i":
         extra_dbs.append(val)
     elif opt == "-w":
@@ -75,8 +78,8 @@ hlmeths = HL()
 
 for doc in query:
     print("DOC %s" % doc.title)
-    snippets = query.getsnippets(doc,
-                                 maxoccs=-1, ctxwords=ctxwords, methods=hlmeths, sortbypage=False)
+    snippets = query.getsnippets(doc, maxoccs=-1, ctxwords=ctxwords,
+                                 nohl=nohl, sortbypage=False)
     print("Got %d snippets" % len(snippets))
     for snip in snippets:
         print("Page %d term [%s] snippet [%s]" % (snip[0], snip[1], snip[2]))

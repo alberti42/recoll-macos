@@ -69,7 +69,7 @@ static const string cstr_mre("[...]");
 
 // This one only gets called to fill-up the snippets window
 // We ignore most abstract/snippets preferences.
-bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs,
+bool DocSequenceDb::getAbstract(Rcl::Doc &doc, PlainToRich *ptr, vector<Rcl::Snippet>& vpabs,
                                 int maxlen, bool sortbypage)
 {
     LOGDEB("DocSequenceDb::getAbstract/pair\n");
@@ -81,7 +81,7 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs,
     int ret = Rcl::ABSRES_ERROR;
     if (m_q->whatDb()) {
         ret = m_q->makeDocAbstract(
-            doc, vpabs, maxlen, m_q->whatDb()->getAbsCtxLen() + 2, sortbypage);
+            doc, ptr, vpabs, maxlen, m_q->whatDb()->getAbsCtxLen() + 2, sortbypage);
     } 
     LOGDEB("DocSequenceDb::getAbstract: got ret " << ret << " vpabs len " <<
            vpabs.size() << "\n");
@@ -94,21 +94,20 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs,
         vpabs.push_back(Rcl::Snippet(-1, cstr_mre));
     } 
     if (ret & Rcl::ABSRES_TERMMISS) {
-        vpabs.insert(vpabs.begin(), 
-                     Rcl::Snippet(-1, "(Words missing in snippets)"));
+        vpabs.insert(vpabs.begin(), Rcl::Snippet(-1, "(Words missing in snippets)"));
     }
 
     return true;
 }
 
-bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
+bool DocSequenceDb::getAbstract(Rcl::Doc &doc,  PlainToRich *ptr, vector<string>& vabs)
 {
     std::unique_lock<std::mutex> locker(o_dblock);
     if (!setQuery())
         return false;
     if (m_q->whatDb() &&
         m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
-        m_q->makeDocAbstract(doc, vabs);
+        m_q->makeDocAbstract(doc, ptr, vabs);
     }
     if (vabs.empty())
         vabs.push_back(doc.meta[Rcl::Doc::keyabs]);
