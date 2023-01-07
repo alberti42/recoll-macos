@@ -77,7 +77,9 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
         // 'file' fallback if the configured command (default: xdg-mime) is not found
         static const vector<string> tradfilecmd = {{FILE_PROG},
 #ifdef __APPLE__
-                                                   {"-I"}
+            // On the Mac, /usr/bin/file wants a -I to print the MIME type, but we may be using
+            // a MacPorts or Homebrew version, needing -i. Fortunately both accept --mime-type
+                                                   {"--mime-type"}
 #else
                                                    {"-i"}
 #endif
