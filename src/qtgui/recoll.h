@@ -49,15 +49,17 @@ extern void applyStyleSheet(const QString&);
 
 inline std::string qs2utf8s(const QString& qs)
 {
-    return std::string((const char *)qs.toUtf8());
+    auto qb = qs.toUtf8();
+    return std::string(qb.data(), qb.size());
 }
 inline std::string qs2u8s(const QString& qs)
 {
-    return std::string((const char *)qs.toUtf8());
+    auto qb = qs.toUtf8();
+    return std::string(qb.data(), qb.size());
 }
 inline QString u8s2qs(const std::string& us)
 {
-    return QString::fromUtf8(us.c_str());
+    return QString::fromUtf8(us.c_str(), us.size());
 }
 inline QString path2qs(const std::string& us)
 {
