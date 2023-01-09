@@ -5913,7 +5913,7 @@ for doc in results:
 from recoll import recoll, rclextract
 
 qdoc = query.fetchone()
-extractor = recoll.Extractor(qdoc)
+extractor = rclextract.Extractor(qdoc)
 doc = extractor.textextract(qdoc.ipath)
 # use doc.text, e.g. for previewing</programlisting>
 
@@ -5934,7 +5934,7 @@ doc = extractor.textextract(qdoc.ipath)
 from recoll import recoll, rclextract
 
 qdoc = query.fetchone()
-extractor = recoll.Extractor(qdoc)
+extractor = rclextract.Extractor(qdoc)
 filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</programlisting>
  
                   <para>In all cases the output is a copy, even if the
