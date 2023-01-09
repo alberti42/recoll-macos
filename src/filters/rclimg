@@ -40,6 +40,8 @@ $tagMap = {
 	'tag' => 'tag',
 };
 
+%options = ('CharsetIPTC' => 'UTF8');
+
 # set to non-zero if tags which map to xapian tags are to output
 # in the body as well as the header
 #
@@ -64,7 +66,7 @@ sub imgTagsToHtml {
 	print STDERR "$0: can't open file $imageFile\n";
 	return $output; # file doesn't exist or can't be read
     }
-    $info = ImageInfo(\*IMGF);
+    $info = ImageInfo(\*IMGF, \%options);
     return $output unless $info;
     close(\*IMGF);
     $fields = [];
