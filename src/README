@@ -3252,7 +3252,7 @@ Chapter 4. Programming interface
            would be as follows:
 
  qdoc = query.fetchone()
- extractor = recoll.Extractor(qdoc)
+ extractor = rclextract.Extractor(qdoc)
  doc = extractor.textextract(qdoc.ipath)
  # use doc.text, e.g. for previewing
 
@@ -3262,7 +3262,7 @@ Chapter 4. Programming interface
            the caller. Typical use:
 
  qdoc = query.fetchone()
- extractor = recoll.Extractor(qdoc)
+ extractor = rclextract.Extractor(qdoc)
  filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)
 
     4.3.2.5. Example code

@@ -7952,7 +7952,7 @@ for doc in results:
 from recoll import recoll, rclextract
 
 qdoc = query.fetchone()
-extractor = recoll.Extractor(qdoc)
+extractor = rclextract.Extractor(qdoc)
 doc = extractor.textextract(qdoc.ipath)
 # use doc.text, e.g. for previewing</pre>
                     <p>Passing <code class=
@@ -7975,7 +7975,7 @@ doc = extractor.textextract(qdoc.ipath)
 from recoll import recoll, rclextract
 
 qdoc = query.fetchone()
-extractor = recoll.Extractor(qdoc)
+extractor = rclextract.Extractor(qdoc)
 filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</pre>
                     <p>In all cases the output is a copy, even if
                     the requested document is a regular system
