@@ -299,7 +299,7 @@ void SnippetsW::slotSearchTextChanged(const QString& txt)
     QTextCursor cursor = browser->textCursor();
     cursor.setPosition(cursor.anchor(), QTextCursor::KeepAnchor);
     browser->setTextCursor(cursor);
-    browser->find(txt, 0);
+    browser->find(txt);
 #endif
 }
 

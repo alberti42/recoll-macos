@@ -1,3 +1,15 @@
+#cmake
+.idea/
+cmake-build**/
+build**/
+# by Qt Creator
+CMakeLists.txt.user
+# Vistual Studio cmake's config
+CMakeSettings.json
+# kdevelop
+.kdev4/
+*.kdev4
+#
 *.dep
 *.dep.stamp
 *.exe
