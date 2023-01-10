@@ -103,6 +103,7 @@ class PDFExtractor:
         self.em = em
         self.tesseract = None
         self.extrameta = None
+        self.re_head = None
 
         self.config = rclconfig.RclConfig()
         self.confdir = self.config.getConfDir()
@@ -124,6 +125,7 @@ class PDFExtractor:
         else:
             self.needescape = True
 
+        # pdfinfo may be used to extract XML metadata and custom PDF properties
         if not _mswindows:
             self.pdfinfo = rclexecm.which("pdfinfo")
         if not self.pdfinfo:
@@ -138,6 +140,16 @@ class PDFExtractor:
                 self._initextrameta()
         #self.em.rclog(f"PDFINFOVERSION {self.pdfinfoversion}")
 
+        # Extracting the outline / bookmarks needs still another poppler command...
+        self.dooutline = self.config.getConfParam("pdfoutline")
+        if self.dooutline:
+            if not _mswindows:
+                self.pdftohtml = rclexecm.which("pdftohtml")
+            if not self.pdftohtml:
+                self.pdftohtml = rclexecm.which("poppler/pdftohtml")
+            if not self.pdftohtml:
+                self.dooutline = False
+            
         # Pdftk is optionally used to extract attachments. This takes
         # a hit on performance even in the absence of any attachments,
         # so it can be disabled in the configuration.
@@ -192,7 +204,6 @@ class PDFExtractor:
             self.pdfinfo = None
             return
 
-        self.re_head = re.compile(br'<head>', re.IGNORECASE)
         self.re_xmlpacket = re.compile(br'<\?xpacket[ 	]+begin.*\?>' +
                                        br'(.*)' + br'<\?xpacket[ 	]+end',
                                        flags = re.DOTALL)
@@ -329,6 +340,8 @@ class PDFExtractor:
 
     # metaheaders is a list of (nm, value) pairs
     def _injectmeta(self, html, metaheaders):
+        if self.re_head is None:
+            self.re_head = re.compile(br'<head>', re.IGNORECASE)
         metatxt = b''
         for nm, val in metaheaders:
             metatxt += self._metatag(nm, val) + b'\n'
@@ -515,7 +528,39 @@ class PDFExtractor:
         if annotsfield:
             self.em.setfield("pdfannot", annotsfield)
         return html
-    
+
+
+    def _process_outline(self):
+        import xml.sax
+        data = subprocess.check_output([self.pdftohtml, "-i", "-s", "-enc", "UTF-8", "-xml",
+                                 "-stdout", self.filename])
+        class OutlineHandler(xml.sax.ContentHandler):
+            def __init__(self):
+                self.outlinelevel = 0
+                self.page = 0
+                self.alltext = ""
+                self.initem = False
+            def startElement(self, name, attrs):
+                if name == "outline":
+                    self.outlinelevel += 1
+                elif name == "item" and self.outlinelevel:
+                    self.initem = True
+                    if "page" in attrs:
+                        self.alltext += f"[P. {attrs['page']}] "
+            def endElement(self, name):
+                if name == "item" and self.outlinelevel:
+                    self.initem = False
+                    self.alltext += "\n"
+                elif name == "outline":
+                    self.outlinelevel -= 1
+            def characters(self, content):
+                if self.initem:
+                    self.alltext += content
+        handler = OutlineHandler()
+        xml.sax.parseString(data, handler)
+        return handler.alltext
+
+        
     def _selfdoc(self):
         '''Extract the text from the pdf doc (as opposed to attachment)'''
         self.em.setmimetype('text/html')
@@ -544,22 +589,29 @@ class PDFExtractor:
                     ocrproc = None
                     html = _htmlprefix + rclexecm.htmlescape(data) + _htmlsuffix
                 except Exception as e:
-                    self.em.rclog("%s failed: %s" % (cmd, e))
+                    self.em.rclog(f"{cmd} failed: {e}")
                     pass
 
         if self.extrameta:
             try:
                 html = self._setextrameta(html)
             except Exception as err:
-                self.em.rclog("Metadata extraction failed: %s %s" %
-                              (err, traceback.format_exc()))
+                self.em.rclog(f"Metadata extraction failed: {err} {traceback.format_exc()}")
+
+        if self.dooutline:
+            try:
+                outlinetext = self._process_outline()
+                html = self._injectmeta(html, [("description" , outlinetext),])
+            except Exception as err:
+                self.em.rclog(f"Outline extraction failed: {err} {traceback.format_exc()}")
 
         if havepopplerglib:
             try:
                 html = self._process_annotations(html)
             except Exception as err:
-                self.em.rclog("Annotation extraction failed: %s %s" %
-                              (err, traceback.format_exc()))
+                self.em.rclog(f"Annotation extraction failed: {err} {traceback.format_exc()}")
+
+            
         return (True, html, "", eof)
 
 
