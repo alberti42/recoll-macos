@@ -61,20 +61,22 @@ project(recoll
 
 ### Configure Options
 
-if(LINUX)
-    option(x11mon "x11mon" ON)
-else()
-    option(x11mon "x11mon" OFF)
-endif()
+if (LINUX)
+    option(enable_x11mon "x11mon" ON)
+else ()
+    option(enable_x11mon "x11mon" OFF)
+endif ()
+
+option(enable_webengine "enable webengine" ON)
 
 ### Platforms
 
-if(APPLE)
+if (APPLE)
     # assuming packages are installed via homebrew.
     # External dependencies will be copied automatically via macdeployqt
     include_directories(/usr/local/include /opt/homebrew/include)
     add_compile_definitions(RECOLL_AS_MAC_BUNDLE)
-endif()
+endif ()
 
 ## Definitions soup
 
@@ -85,30 +87,39 @@ add_compile_definitions(HAVE_DLOPEN)
 
 add_compile_definitions(RECOLL_DATADIR="${CMAKE_INSTALL_PREFIX}/share/recoll")
 
-if(NOT x11mon)
+if (NOT enable_x11mon)
     add_compile_definitions(DISABLE_X11MON)
-endif()
+endif ()
+
+if (enable_webengine)
+    add_compile_definitions(USING_WEBENGINE)
+endif ()
+
 
 ### External Libraries
 
-find_package(Qt6 REQUIRED COMPONENTS
-        Core Gui Widgets PrintSupport
-        LinguistTools # to have qt_add_translations and revelent cmake macros
-        )
+set(QtComponents Core Gui Widgets PrintSupport LinguistTools)
 set(RECOLL_QT_LIBRARIES Qt6::Core Qt6::Gui Qt6::Widgets Qt6::PrintSupport)
+
+if (enable_webengine)
+    list(APPEND QtComponents WebEngineWidgets)
+    list(APPEND RECOLL_QT_LIBRARIES Qt::WebEngineWidgets)
+endif ()
+
+find_package(Qt6 REQUIRED COMPONENTS ${QtComponents})
 
 # To know ${VARS} provided with find_package, check the urls
 
 find_package(LibXml2 REQUIRED) # https://cmake.org/cmake/help/latest/module/FindLibXml2.html
 find_package(LibXslt REQUIRED) # https://cmake.org/cmake/help/latest/module/FindLibXslt.html
 find_package(Xapian REQUIRED) # https://github.com/xapian/xapian/blob/master/xapian-core/cmake/xapian-config.cmake.in
-if (x11mon)
+if (enable_x11mon)
     find_package(X11 REQUIRED) # https://cmake.org/cmake/help/latest/module/FindX11.html
 endif ()
 if (APPLE)
     find_package(ZLIB REQUIRED) # https://cmake.org/cmake/help/latest/module/FindZLIB.html
     find_package(Iconv REQUIRED) # https://cmake.org/cmake/help/latest/module/FindIconv.html
-endif()
+endif ()
 #
 
 qt_standard_project_setup()
@@ -481,11 +492,12 @@ set(example_config_files
         )
 
 set(filter_files
+        python/recoll/recoll/rclconfig.py
+        python/recoll/recoll/conftree.py
         filters/abiword.xsl
         filters/cmdtalk.py
         filters/fb2.xsl
         filters/gnumeric.xsl
-        filters/injectcommon.sh
         filters/kosplitter.py
         filters/msodump.zip
         filters/okular-note.xsl
@@ -528,7 +540,6 @@ set(filter_files
         filters/rcllyx
         filters/rclman
         filters/rclmidi.py
-        filters/rclnull.py
         filters/rclocr.py
         filters/rclocrabbyy.py
         filters/rclocrcache.py
@@ -548,7 +559,6 @@ set(filter_files
         filters/rcltar.py
         filters/rcltex
         filters/rcltext.py
-        filters/rcltxtlines.py
         filters/rcluncomp
         filters/rcluncomp.py
         filters/rclwar.py
@@ -557,7 +567,6 @@ set(filter_files
         filters/rclxmp.py
         filters/rclxslt.py
         filters/rclzip.py
-        filters/recfiltcommon
         filters/recoll-we-move-files.py
         filters/recollepub.zip
         filters/svg.xsl
@@ -617,11 +626,11 @@ include_directories(
 
 #--- librecoll
 
-if(LINUX)
+if (LINUX)
     add_library(librecoll SHARED ${librecoll_SOURCES})
-else()
+else ()
     add_library(librecoll STATIC ${librecoll_SOURCES})
-endif()
+endif ()
 
 target_link_libraries(librecoll PRIVATE ${XAPIAN_LIBRARIES} LibXml2::LibXml2 LibXslt::LibXslt)
 set_target_properties(librecoll PROPERTIES VERSION ${PROJECT_VERSION})
@@ -638,7 +647,7 @@ target_link_libraries(recollindex PRIVATE
         ${XAPIAN_LIBRARIES}
         )
 
-if (x11mon)
+if (enable_x11mon)
     target_link_libraries(recollindex PRIVATE ${X11_LIBRARIES})
 endif ()
 
@@ -650,7 +659,7 @@ target_link_libraries(recollq PRIVATE
         ${XAPIAN_LIBRARIES}
         )
 
-if (x11mon)
+if (enable_x11mon)
     target_link_libraries(recollq PRIVATE ${X11_LIBRARIES})
 endif ()
 
@@ -742,7 +751,7 @@ endif ()
 
 # .app bundle assembling
 
-if(APPLE)
+if (APPLE)
     set(bundle_icon qtgui/images/recoll.icns)
     set(docs_files ${CMAKE_SOURCE_DIR}/doc/user/usermanual.html ${CMAKE_SOURCE_DIR}/doc/user/docbook-xsl.css)
     target_sources(recoll PRIVATE ${example_config_files} ${filter_files} ${mtpics_files} ${bundle_icon} ${docs_files})
@@ -765,4 +774,4 @@ if(APPLE)
 
     set_target_properties(recollq PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/recoll.app/Contents/MacOS/)
-endif()
+endif ()
