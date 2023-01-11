@@ -26,7 +26,6 @@
 #include <stdlib.h>
 
 #include "safeunistd.h"
-#include "dlib.h"
 #include "pathut.h"
 #include "execmd.h"
 #include "log.h"

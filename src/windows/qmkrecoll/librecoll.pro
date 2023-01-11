@@ -21,8 +21,8 @@ SOURCES += \
 ../../bincimapmime/mime-parseonlyheader.cc \
 ../../bincimapmime/mime-printbody.cc \
 ../../bincimapmime/mime.cc \
-../../common/webstore.cpp \
 ../../common/cstr.cpp \
+../../common/plaintorich.cpp \
 ../../common/rclconfig.cpp \
 ../../common/rclinit.cpp \
 ../../common/syngroups.cpp \
@@ -30,15 +30,16 @@ SOURCES += \
 ../../common/textsplitko.cpp \
 ../../common/unacpp.cpp \
 ../../common/utf8fn.cpp \
-../../index/webqueuefetcher.cpp \
-../../index/fetcher.cpp \
+../../common/webstore.cpp \
 ../../index/exefetcher.cpp \
+../../index/fetcher.cpp \
 ../../index/fsfetcher.cpp \
 ../../index/idxdiags.cpp \
 ../../index/idxstatus.cpp \
 ../../index/indexer.cpp \
 ../../index/mimetype.cpp \
 ../../index/subtreelist.cpp \
+../../index/webqueuefetcher.cpp \
 ../../internfile/extrameta.cpp \
 ../../internfile/htmlparse.cpp \
 ../../internfile/internfile.cpp \
@@ -58,7 +59,6 @@ SOURCES += \
 ../../query/docseqhist.cpp \
 ../../query/dynconf.cpp \
 ../../query/filtseq.cpp \
-../../query/plaintorich.cpp \
 ../../query/qresultstore.cpp \
 ../../query/recollq.cpp \
 ../../query/reslistpager.cpp \
@@ -67,21 +67,21 @@ SOURCES += \
 ../../query/wasaparseaux.cpp \
 ../../rcldb/daterange.cpp \
 ../../rcldb/expansiondbs.cpp \
-../../rcldb/rclabstract.cpp \
 ../../rcldb/rclabsfromtext.cpp \
+../../rcldb/rclabstract.cpp \
 ../../rcldb/rcldb.cpp \
 ../../rcldb/rcldoc.cpp \
 ../../rcldb/rcldups.cpp \
 ../../rcldb/rclquery.cpp \
 ../../rcldb/rclterms.cpp \
+../../rcldb/rclvalues.cpp \
+../../rcldb/rclvalues.h \
 ../../rcldb/searchdata.cpp \
 ../../rcldb/searchdatatox.cpp \
 ../../rcldb/searchdataxml.cpp \
 ../../rcldb/stemdb.cpp \
 ../../rcldb/stoplist.cpp \
 ../../rcldb/synfamily.cpp \
-../../rcldb/rclvalues.cpp \
-../../rcldb/rclvalues.h \
 ../../unac/unac.cpp \
 ../../utils/appformime.cpp \
 ../../utils/base64.cpp \
@@ -95,14 +95,11 @@ SOURCES += \
 ../../utils/cpuconf.cpp \
 ../../utils/dlib.cpp \
 ../../utils/ecrontab.cpp \
-../../utils/listmem.cpp \
-../../utils/utf8iter.cpp \
-../../utils/zlibut.cpp \
-../../utils/zlibut.h \
 ../../utils/fileudi.cpp \
 ../../utils/fstreewalk.cpp \
 ../../utils/hldata.cpp \
 ../../utils/idfile.cpp \
+../../utils/listmem.cpp \
 ../../utils/log.cpp \
 ../../utils/md5.cpp \
 ../../utils/md5ut.cpp \
@@ -115,6 +112,9 @@ SOURCES += \
 ../../utils/smallut.cpp \
 ../../utils/strmatcher.cpp \
 ../../utils/transcode.cpp \
+../../utils/utf8iter.cpp \
+../../utils/zlibut.cpp \
+../../utils/zlibut.h \
 ../../utils/wipedir.cpp
 
 INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
