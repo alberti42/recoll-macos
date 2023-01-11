@@ -24,8 +24,8 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 
 BUILD=MSVC
 #BUILD=MINGW
-WEB=WEBKIT
-#WEB=WEBENGINE
+#WEB=WEBKIT
+WEB=WEBENGINE
 
 if test $BUILD = MSVC ; then
     # Recoll src tree
@@ -37,9 +37,9 @@ if test $BUILD = MSVC ; then
     LIBXSLT=${RCLDEPS}/msvc/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.dll
     ZLIB=${RCLDEPS}/msvc/zlib-1.2.11
     # Qt
-    QTA=Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release
-    QTBIN=C:/Qt/5.14.2/msvc2017/bin
-    MINGWBIN=C:/Qt/Tools/mingw730_32/bin/
+    QTA=Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release
+    QTBIN=C:/Qt/5.15.2/msvc2019/bin
+    MINGWBIN=C:/Qt/5.15.2/mingw81_32/bin
 else
     # Recoll src tree
     RCL=/c/recoll/src/
