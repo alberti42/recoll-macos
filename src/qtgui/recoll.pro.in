@@ -22,7 +22,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 @QMAKE_ENABLE_WEBKIT@ greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
 @QMAKE_ENABLE_WEBENGINE@ greaterThan(QT_MAJOR_VERSION, 4): QT += webenginewidgets
 
-CONFIG  += qt warn_on thread release
+CONFIG  += qt warn_on thread release lrelease
 @QMAKE_ENABLE_GUIDEBUG@ CONFIG += force_debug_info
 
 
@@ -199,7 +199,7 @@ unix {
 
   imdata.files = @srcdir@/mtpics/*.png
   imdata.path = $$PREFIX/share/recoll/images
-  trdata.files = @srcdir@/i18n/*.qm
+  trdata.files = .qm/*.qm
   trdata.path = $$PREFIX/share/recoll/translations
   desktop.files += @srcdir@/../desktop/recoll-searchgui.desktop
   desktop.path = $$PREFIX/share/applications/
@@ -210,9 +210,4 @@ unix {
   appdata.files = @srcdir@/../desktop/recoll.appdata.xml
   appdata.path = $$PREFIX/share/metainfo/
   INSTALLS += target imdata trdata desktop icona iconb appdata
-
-  # The recollinstall script used to do the following to install zh_CN as
-  # zh. Is this still needed?
-  #${INSTALL} -m 0444 ${I18N}/recoll_zh_CN.qm \
-  #  ${datadir}/recoll/translations/recoll_zh.qm || exit 1
 }

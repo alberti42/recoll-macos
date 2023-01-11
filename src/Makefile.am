@@ -430,7 +430,7 @@ qtgui/fragbuts.cpp \
 qtgui/fragbuts.h \
 qtgui/guiutils.cpp \
 qtgui/guiutils.h \
-qtgui/i18n/*.qm qtgui/i18n/*.ts \
+qtgui/i18n/*.ts \
 qtgui/idxmodel.cpp \
 qtgui/idxmodel.h \
 qtgui/idxsched.h \

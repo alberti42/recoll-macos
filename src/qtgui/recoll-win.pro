@@ -17,7 +17,7 @@ DEFINES += USING_WEBENGINE
 
 QT += xml widgets printsupport
 
-CONFIG  += qt warn_on thread release
+CONFIG  += qt warn_on thread release lrelease
 # CONFIG += force_debug_info
 
 

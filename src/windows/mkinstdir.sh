@@ -190,7 +190,8 @@ copyrecoll()
     rm -f $FILTERS/rclimg $FILTERS/rclimg.py
     chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
     chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
-    chkcp $RCL/qtgui/i18n/*.qm $DESTDIR/Share/translations
+    chkcp $RCL/build-recoll-win-${QTA}/${qtsdir}/*.qm $DESTDIR/Share/translations
+
     chkcp $RCL/desktop/recoll.ico $DESTDIR/Share
 }
 
