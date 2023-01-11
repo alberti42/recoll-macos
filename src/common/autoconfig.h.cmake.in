@@ -1,0 +1,7 @@
+#pragma once
+
+#define PACKAGE_VERSION "@CMAKE_PROJECT_VERSION@"
+
+/* MYTH of autoheader */
+
+#define ICONV_CONST
