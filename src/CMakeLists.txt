@@ -10,8 +10,8 @@ cmake3.25+
 C++17 compiler
 
 -----------------------------------------------
-
-Usage
+    Usage
+-----------------------------------------------
 
 cd .../recoll/src
 
@@ -26,6 +26,28 @@ cmake --build build_dir --parallel 7
 
 cmake --install ./build_dir/
 
+Toggling Options
+
+cmake -Dsome_option=ON .....
+
+-----------------------------------------------
+    macOS
+-----------------------------------------------
+
+To assemble a portable .app bundle, you must use the Qt from official installer.
+The Homebrew Qt doesn't work, this is a known bug and unlikely to be fixed in short time.
+
+To specify qt path, specify `CMAKE_PREFIX_PATH` when generating the build_dir
+
+cmake -DCMAKE_PREFIX_PATH="~/Qt/6.4.2/macos" ....
+
+ ~/Qt/6.4.2/macos/bin/macdeployqt recoll.app
+
+To completely avoid codesign problems, just force one #TODO: use personal codesign
+
+codesign --force --deep -s - recoll.app
+
+
 ]]
 
 cmake_minimum_required(VERSION 3.25)
@@ -37,7 +59,24 @@ project(recoll
         VERSION 1.34.0
         LANGUAGES CXX C)
 
-### Definitions soup
+### Configure Options
+
+if(LINUX)
+    option(x11mon "x11mon" ON)
+else()
+    option(x11mon "x11mon" OFF)
+endif()
+
+### Platforms
+
+if(APPLE)
+    # assuming packages are installed via homebrew.
+    # External dependencies will be copied automatically via macdeployqt
+    include_directories(/usr/local/include /opt/homebrew/include)
+    add_compile_definitions(RECOLL_AS_MAC_BUNDLE)
+endif()
+
+## Definitions soup
 
 add_compile_definitions(BUILDING_RECOLL)
 add_compile_definitions(READFILE_ENABLE_ZLIB READFILE_ENABLE_MINIZ READFILE_ENABLE_MD5)
@@ -45,6 +84,10 @@ add_compile_definitions(READFILE_ENABLE_ZLIB READFILE_ENABLE_MINIZ READFILE_ENAB
 add_compile_definitions(HAVE_DLOPEN)
 
 add_compile_definitions(RECOLL_DATADIR="${CMAKE_INSTALL_PREFIX}/share/recoll")
+
+if(NOT x11mon)
+    add_compile_definitions(DISABLE_X11MON)
+endif()
 
 ### External Libraries
 
@@ -59,7 +102,13 @@ set(RECOLL_QT_LIBRARIES Qt6::Core Qt6::Gui Qt6::Widgets Qt6::PrintSupport)
 find_package(LibXml2 REQUIRED) # https://cmake.org/cmake/help/latest/module/FindLibXml2.html
 find_package(LibXslt REQUIRED) # https://cmake.org/cmake/help/latest/module/FindLibXslt.html
 find_package(Xapian REQUIRED) # https://github.com/xapian/xapian/blob/master/xapian-core/cmake/xapian-config.cmake.in
-find_package(X11 REQUIRED) # https://cmake.org/cmake/help/latest/module/FindX11.html
+if (x11mon)
+    find_package(X11 REQUIRED) # https://cmake.org/cmake/help/latest/module/FindX11.html
+endif ()
+if (APPLE)
+    find_package(ZLIB REQUIRED) # https://cmake.org/cmake/help/latest/module/FindZLIB.html
+    find_package(Iconv REQUIRED) # https://cmake.org/cmake/help/latest/module/FindIconv.html
+endif()
 #
 
 qt_standard_project_setup()
@@ -568,9 +617,18 @@ include_directories(
 
 #--- librecoll
 
-add_library(librecoll SHARED ${librecoll_SOURCES})
-target_link_libraries(librecoll PRIVATE LibXml2::LibXml2 LibXslt::LibXslt)
+if(LINUX)
+    add_library(librecoll SHARED ${librecoll_SOURCES})
+else()
+    add_library(librecoll STATIC ${librecoll_SOURCES})
+endif()
+
+target_link_libraries(librecoll PRIVATE ${XAPIAN_LIBRARIES} LibXml2::LibXml2 LibXslt::LibXslt)
 set_target_properties(librecoll PROPERTIES VERSION ${PROJECT_VERSION})
+
+if (APPLE)
+    target_link_libraries(librecoll PRIVATE ZLIB::ZLIB Iconv::Iconv)
+endif ()
 
 #--- recollindex ---
 
@@ -578,8 +636,11 @@ add_executable(recollindex ${recollindex_SOURCES})
 target_link_libraries(recollindex PRIVATE
         librecoll
         ${XAPIAN_LIBRARIES}
-        ${X11_LIBRARIES} # for x11mon.cpp
         )
+
+if (x11mon)
+    target_link_libraries(recollindex PRIVATE ${X11_LIBRARIES})
+endif ()
 
 #--- recollq ---
 
@@ -587,8 +648,11 @@ add_executable(recollq ${recollq_SOURCE})
 target_link_libraries(recollq PRIVATE
         librecoll
         ${XAPIAN_LIBRARIES}
-        ${X11_LIBRARIES} # for x11mon.cpp
         )
+
+if (x11mon)
+    target_link_libraries(recollq PRIVATE ${X11_LIBRARIES})
+endif ()
 
 #--- recoll ---
 
@@ -654,15 +718,12 @@ qt_add_translations(recoll TS_FILES ${TRANS_FILES}
 
 ### Install targets and other runtime files
 
-install(TARGETS librecoll LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(TARGETS recollindex RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-install(TARGETS recollq RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-install(TARGETS recoll RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
 if (LINUX)
+    install(TARGETS librecoll LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(TARGETS recollindex RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(TARGETS recollq RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(TARGETS recoll RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
     install(FILES ${CMAKE_SOURCE_DIR}/desktop/recoll-searchgui.desktop DESTINATION share/applications)
     install(FILES ${CMAKE_SOURCE_DIR}/desktop/recoll.appdata.xml DESTINATION share/metainfo)
 
@@ -679,3 +740,29 @@ if (LINUX)
     install(FILES ${QM_FILES} DESTINATION share/recoll/translations)
 endif ()
 
+# .app bundle assembling
+
+if(APPLE)
+    set(bundle_icon qtgui/images/recoll.icns)
+    set(docs_files ${CMAKE_SOURCE_DIR}/doc/user/usermanual.html ${CMAKE_SOURCE_DIR}/doc/user/docbook-xsl.css)
+    target_sources(recoll PRIVATE ${example_config_files} ${filter_files} ${mtpics_files} ${bundle_icon} ${docs_files})
+
+    set_source_files_properties(${example_config_files} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/examples)
+    set_source_files_properties(${filter_files} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/filters)
+    set_source_files_properties(${mtpics_files} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/images)
+    set_source_files_properties(${bundle_icon} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set_source_files_properties(${docs_files} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/doc)
+
+    set_target_properties(recoll PROPERTIES
+            MACOSX_BUNDLE_GUI_IDENTIFIER org.lesbonscomptes.recoll
+            MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+            MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+            MACOSX_BUNDLE_ICON_FILE recoll.icns
+            MACOSX_BUNDLE TRUE)
+
+    set_target_properties(recollindex PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/recoll.app/Contents/MacOS/)
+
+    set_target_properties(recollq PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/recoll.app/Contents/MacOS/)
+endif()
