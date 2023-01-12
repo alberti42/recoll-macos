@@ -32,12 +32,12 @@ define_macros = [
 ]
 
 library_dirs = [
-        os.path.join(top, "windows", "build-librecoll-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release"),
+        os.path.join(top, "windows", "build-librecoll-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release"),
         os.path.join(recolldeps, "libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc"),
         os.path.join(recolldeps, "libxslt/libxslt-1.1.29/win32/bin.msvc"),
-        os.path.join(top, "windows", "build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release"),
+        os.path.join(top, "windows", "build-libxapian-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release"),
         os.path.join(recolldeps, "zlib-1.2.11"),
-        os.path.join(recolldeps, "build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release")
+        os.path.join(recolldeps, "build-libiconv-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release")
         ]
 
 libraries =  ["librecoll", "libxml2_a", "libxslt_a",

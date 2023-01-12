@@ -19,7 +19,7 @@ setup (name = 'aspell-python-py3',
                              library_dirs = [
                                  os.path.join(
                                      recolldeps, "mingw",
-                                     "build-libaspell-Desktop_Qt_5_14_2_MSVC2017_32bit-Release",
+                                     "build-libaspell-Desktop_Qt_5_15_2_MSVC2019_32bit-Release",
                                      "release")],
                              )],
     description      = "Wrapper around GNU Aspell for Python 3",

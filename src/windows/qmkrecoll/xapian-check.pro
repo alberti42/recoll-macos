@@ -26,9 +26,9 @@ windows {
       ../../../../recolldeps/msvc/zlib-1.2.11/ \
       ../../../../recolldeps/msvc/wlibiconv/include
     LIBS += \
-      -L../build-libxapian-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release \
+      -L../build-libxapian-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release \
         -llibxapian \
-      -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_14_2_MSVC2017_32bit-Release/release/ \
+      -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release/ \
         -llibiconv \
       $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
       -lrpcrt4 -lws2_32 -luser32 -lshell32 \
