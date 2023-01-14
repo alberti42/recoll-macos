@@ -1364,6 +1364,12 @@ int Pidfile::read_pid()
     return pid;
 }
 
+int path_open(const std::string& path, int flags, int mode)
+{
+    SYSPATH(path, syspath);
+    return OPEN(syspath, flags, mode);
+}
+
 int Pidfile::flopen()
 {
     SYSPATH(m_path, syspath);

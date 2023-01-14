@@ -673,17 +673,15 @@ bool CirCache::create(int64_t maxsize, int flags)
     struct stat st;
     if (stat(m_dir.c_str(), &st) < 0) {
         // Directory does not exist, create it
-        if (mkdir(m_dir.c_str(), 0777) < 0) {
-            m_d->m_reason << "CirCache::create: mkdir(" << m_dir <<
-                ") failed" << " errno " << errno;
+        if (!path_makepath(m_dir, 0777)) {
+            m_d->m_reason << "CirCache::create: mkdir(" << m_dir << ") failed. errno: " << errno;
             return false;
         }
     } else {
         // If the file exists too, and truncate is not set, switch
         // to open-mode. Still may need to update header params.
-        if (access(m_d->datafn(m_dir).c_str(), 0) >= 0 &&
-            !(flags & CC_CRTRUNCATE)) {
-            if (!open(CC_OPWRITE)) {
+        if (path_exists(m_d->datafn(m_dir)) && !(flags & CC_CRTRUNCATE)) {
+            if (!this->open(CC_OPWRITE)) {
                 return false;
             }
             if (maxsize == m_d->m_maxsize &&
@@ -714,8 +712,8 @@ bool CirCache::create(int64_t maxsize, int flags)
         // Else fallthrough to create file
     }
 
-    if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(),
-                            O_CREAT | O_RDWR | O_TRUNC | O_BINARY, 0666)) < 0) {
+    if ((m_d->m_fd = path_open(m_d->datafn(m_dir),
+                               O_CREAT | O_RDWR | O_TRUNC | O_BINARY, 0666)) < 0) {
         m_d->m_reason << "CirCache::create: open/creat(" <<
             m_d->datafn(m_dir) << ") failed " << "errno " << errno;
         return false;
@@ -747,9 +745,8 @@ bool CirCache::open(OpMode mode)
         ::close(m_d->m_fd);
     }
 
-    if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(),
-                            mode == CC_OPREAD ?
-                            O_RDONLY | O_BINARY : O_RDWR | O_BINARY)) < 0) {
+    if ((m_d->m_fd = path_open(m_d->datafn(m_dir),
+                            mode == CC_OPREAD ? O_RDONLY | O_BINARY : O_RDWR | O_BINARY)) < 0) {
         m_d->m_reason << "CirCache::open: open(" << m_d->datafn(m_dir) <<
             ") failed " << "errno " << errno;
         return false;
@@ -763,21 +760,25 @@ int64_t CirCache::size()
         LOGERR("CirCache::open: null data\n");
         return -1;
     }
-    struct stat st;
+    int64_t sz = -1;
+    struct PathStat st;
     if (m_d->m_fd < 0) {
-        if (stat(m_d->datafn(m_dir).c_str(), &st) < 0) {
+        if (path_fileprops(m_d->datafn(m_dir), &st) < 0) {
             m_d->m_reason << "CirCache::size: stat(" << m_d->datafn(m_dir) <<
                 ") failed " << "errno " << errno;
             return -1;
         }
+        sz = st.pst_size;
     } else {
+        struct stat st;
         if (fstat(m_d->m_fd, &st) < 0) {
             m_d->m_reason << "CirCache::open: fstat(" << m_d->datafn(m_dir) <<
                 ") failed " << "errno " << errno;
             return -1;
         }
+        sz = st.st_size;
     }
-    return st.st_size;
+    return sz;
 }
 
 int64_t CirCache::maxsize()

@@ -1,4 +1,4 @@
-/* Copyright (C) 2004-2022 J.F.Dockes
+/* Copyright (C) 2004-2023 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
  *   the Free Software Foundation; either version 2.1 of the License, or
@@ -200,6 +200,9 @@ typedef struct path_timeval {
     long tv_usec;
 } path_timeval;
 bool path_utimes(const std::string& path, struct path_timeval times[2]);
+
+/// Open, path is utf-8 and we do the right thing on Windows.
+int path_open(const std::string& path, int flags, int mode = 0);
 
 /* Open file, trying to do the right thing with non-ASCII paths on
  * Windows, where it only works with MSVC at the moment if the path is

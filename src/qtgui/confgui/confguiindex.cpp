@@ -369,9 +369,11 @@ bool ConfIndexW::setupWebHistoryPanel(int idx)
     m_w->enableLink(bparam, cparam);
 
 
-    int64_t sz = -1;
+    int64_t sz = 0;
     auto ws = std::unique_ptr<WebStore>(new WebStore(m_rclconf));
-    sz = ws->cc()->size();
+    if (ws && ws->cc()) {
+        sz = ws->cc()->size();
+    }
     m_w->addBlurb(idx, tr("Note: old pages will be erased to make space for "
                           "new ones when the maximum size is reached. "
                           "Current size: %1").arg(u8s2qs(displayableBytes(sz))));
