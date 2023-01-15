@@ -1351,10 +1351,21 @@ string RclConfig::getCachedirPath(const char *varname, const char *dflt) const
     return path_canon(result);
 }
 
-// On Windows, try to translate a possibly non-ascii path into the
-// shortpath alias. We first create the target, as this only works if
-// it exists. Used for xapiandb and aspell as these can't handle
-// Unicode paths.
+// Windows: try to translate a possibly non-ASCII path into the shortpath alias. We first create the
+// target, as this only works if it exists.
+//
+// This is mainly useful/necessary for paths based on the configuration directory, when the user has
+// a non ASCII name, and for use with code which can't handle properly an Unicode path.
+//
+// For example, we execute an aspell command to create the spelling dictionary, and the parameter is
+// a path to a dictionary file located inside the configuration directory.
+// 
+// This code is now mostly (only?) necessary for aspell as we use a patched Xapian, modified to
+// properly handle Unicode paths, so that the shortpath getDbDir() is probably redundant.
+//
+// Note that it is not clear from the Windows doc that the shortpath call is going to work in all
+// cases (file system types etc.). It returns the original path in case it fails, so it's important
+// that the essential code (Xapian) can deal with Unicode paths.
 static string maybeshortpath(const std::string& in)
 {
 #ifdef _WIN32
