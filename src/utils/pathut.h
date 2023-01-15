@@ -17,6 +17,10 @@
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
 
+// Miscellaneous pathname-related utility functions, some actually accessing the filesystem, some
+// purely textual. Work with Posix or Windows paths. All properly handle UTF-8 encoded non-ASCII
+// paths on Windows, which is their reason for existing in many cases.
+
 #include <string>
 #include <vector>
 #include <set>
@@ -150,7 +154,6 @@ struct PathStat {
 };
 extern int path_fileprops(const std::string path, struct PathStat *stp, bool follow = true);
 
-
 /// Return separator for PATH environment variable
 extern std::string path_PATHsep();
 
@@ -216,21 +219,6 @@ int path_open(const std::string& path, int flags, int mode = 0);
  * @param mode is an std::fstream mode (ios::in etc.) */
 extern bool path_streamopen(const std::string& path, int mode, std::fstream& outstream);
 
-/// URI parser, loosely from rfc2396.txt
-class ParsedUri {
-public:
-    ParsedUri(std::string uri);
-    bool parsed{false};
-    std::string scheme;
-    std::string user;
-    std::string pass;
-    std::string host;
-    std::string port;
-    std::string path;
-    std::string query;
-    std::vector<std::pair<std::string,std::string>> parsedquery;
-    std::string fragment;
-};
 
 /// Lock/pid file class. This is quite close to the pidfile_xxx
 /// utilities in FreeBSD with a bit more encapsulation. I'd have used
