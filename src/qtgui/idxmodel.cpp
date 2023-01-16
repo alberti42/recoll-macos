@@ -38,6 +38,7 @@ public:
     WalkerCB(const std::string& topstring, IdxTreeModel *model, const QModelIndex& index)
         : m_topstring(topstring), m_model(model)
     {
+        LOGDEB1("WalkerCB: topstring [" << topstring << "]\n");
         m_indexes.push(index);
         m_rows.push(0);
     }
@@ -118,7 +119,7 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
     }
     std::vector<std::string> curpath;
     stringToTokens(top, curpath, "/");
-    LOGDEB0("treelist: " << "top " << top << " TOP depth is " << curpath.size() << "\n");
+    LOGDEB0("treelist: " << "top [" << top << "] TOP depth is " << curpath.size() << "\n");
     for (const auto& dir : lst) {
         LOGDEB1("DIR: " << dir << "\n");
         std::vector<std::string> npath;
@@ -131,7 +132,7 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
             if (npath[i] != curpath[i] && int(curpath.size()) > 0) {
                 // Differing at i, unwind old stack and break the main loop
                 for (int j = int(curpath.size()) - 1; j >= i; j--) {
-                    //std::cerr << "Exiting  " <<  toksToPath(curpath, j) << "\n";
+                    LOGDEB1("treelist: exiting  " <<  toksToPath(curpath, j) << "\n");
                     cb.processone(toksToPath(curpath, j), nullptr, FsTreeWalker::FtwDirReturn);
                 }
                 break;
@@ -139,7 +140,7 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
         }
         // Callbacks for new entries above the base.
         for (int j = i; j < int(npath.size()); j++) {
-            //std::cerr << "Entering " << toksToPath(npath, j) << "\n";
+            LOGDEB1("treelist: entering " << toksToPath(npath, j) << "\n");
             cb.processone(toksToPath(npath, j), nullptr, FsTreeWalker::FtwDirEnter);
         }
         curpath.swap(npath);
@@ -149,20 +150,20 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
 void IdxTreeModel::populate()
 {
     LOGDEB0("IdxTreeModel::populate\n");
+    std::vector<std::string> thedirs;
+    std::string prefix;
+    rcldb->dirlist(m_depth, prefix, thedirs);
+    LOGDEB1("IdxTreeModel::populate: prefix [" << prefix << "] thedirs: " <<
+            stringsToString(thedirs) << "\n");
+
     QModelIndex index = this->index(0,0);
     if (this->columnCount(index) == 0) {
         if (!this->insertColumn(0, index))
             return;
     }
-    int row = 0;
-    std::vector<std::string> thedirs;
-    std::string prefix;
-    rcldb->dirlist(m_depth, prefix, thedirs);
-    LOGDEB0("IdxTreeModel::populate: prefix [" << prefix << "] thedirs: " <<
-            stringsToString(thedirs) << "\n");
-    const QModelIndex child = this->index(row, 0, index);
-    WalkerCB cb(prefix == "/" ? std::string() : prefix, this, child);
-    if (prefix.empty())
-        prefix = "/";
-    treelist(path_getfather(prefix), thedirs, cb);
+    const QModelIndex child = this->index(0, 0, index);
+    WalkerCB cb(path_isroot(prefix) ? std::string() : prefix, this, child);
+    if (!prefix.empty())
+        prefix = path_getfather(prefix);
+    treelist(prefix, thedirs, cb);
 }
