@@ -1378,7 +1378,7 @@ static string maybeshortpath(const std::string& in)
 
 string RclConfig::getDbDir() const
 {
-    return maybeshortpath(getCachedirPath("dbdir", "xapiandb"));
+    return getCachedirPath("dbdir", "xapiandb");
 }
 string RclConfig::getWebcacheDir() const
 {
