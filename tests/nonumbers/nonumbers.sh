@@ -71,6 +71,4 @@ idxandquery $nonumbers
 # Have to delete the tempdir name from the output for comparison
 sed -i -e "s,$docdir,,g" $mystdout
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
-
 checkresult

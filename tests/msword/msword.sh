@@ -10,6 +10,4 @@ recollq -S url '"Evenements et programme 2006"'
 recollq -S url 'pcx11 manuel de programmation iamactuallyanrtf'
 )  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
-
 checkresult

@@ -14,6 +14,4 @@ initvariables $0
 xadump -d $RECOLL_TESTCACHEDIR/xapiandb -t maildir_uniquexxx -F | \
        grep FreqFor > $mystdout 2> $mystderr
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
-
 checkresult

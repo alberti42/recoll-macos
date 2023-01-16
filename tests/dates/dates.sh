@@ -19,6 +19,4 @@ recollq -S mtime date:2010-03-10/P10D datetest
 recollq date:2010-03-10/P10D datetestnotermsmatch
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
-
 checkresult

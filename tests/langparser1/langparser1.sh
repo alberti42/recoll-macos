@@ -48,6 +48,4 @@ xrun()
     done
 )  2> $mystderr | egrep -v 'results|^Query setup took' > $mystdout
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
-
 checkresult

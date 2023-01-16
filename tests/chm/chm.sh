@@ -14,6 +14,4 @@ recollq -S url '"establishment of a project cost accounting system of ledgers"'
 recollq -S url '"Cocaine-induced ACS"'
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
-
 checkresult

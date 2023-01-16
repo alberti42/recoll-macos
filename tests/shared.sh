@@ -34,6 +34,9 @@ fatal () {
 }
 
 checkresult() {
+
+  diff -u -w ${myname}.txt $mystdout > $mydiffs 2>&1
+
   if test -s "$mydiffs" ; then
     fatal '*** ' $myname FAILED
   else

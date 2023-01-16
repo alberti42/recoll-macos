@@ -5,18 +5,15 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
+(
 # These one are name/filenamefor an inline part, no result
-recollq EnerveUniqueNameTerm 2> $mystderr | 
-	egrep -v '^Recoll query: ' > $mystdout
+recollq EnerveUniqueNameTerm
 
-recollq EnerveUniqueFileNameTerm 2>> $mystderr | 
-	egrep -v '^Recoll query: ' >> $mystdout
+recollq EnerveUniqueFileNameTerm
 # This one for actual attachment
-recollq EpatantUniquenameterm      2>> $mystderr | 
-	egrep -v '^Recoll query: ' >> $mystdout
-recollq EpatantUniquefilenameterm      2>> $mystderr | 
-	egrep -v '^Recoll query: ' >> $mystdout
+recollq EpatantUniquenameterm
+recollq EpatantUniquefilenameterm
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
+) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 checkresult

@@ -57,6 +57,5 @@ recollq -s french '"Majusculesxx"C'
 
 )  2>&1 | egrep -v '^Recoll query: ' > $mystdout
 
-diff -u -w ${myname}.txt $mystdout > $mydiffs 2>&1
 checkresult
 

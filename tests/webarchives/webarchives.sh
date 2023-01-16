@@ -11,6 +11,4 @@ initvariables $0
   recollq -S url '"We borrow a lot of code from other packages"' dir:webarchives
 )  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
-
 checkresult

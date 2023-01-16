@@ -11,6 +11,4 @@ recollq -S url 'Welcome To Lyx'
 recollq -S url 'LyX jol dokumentalt'
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
-
 checkresult

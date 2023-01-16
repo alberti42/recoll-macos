@@ -5,9 +5,9 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq EQUK0401319A 2> $mystderr | 
-	egrep -v '^Recoll query: ' > $mystdout
+(
+    recollq EQUK0401319A 
 
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
+) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 checkresult
