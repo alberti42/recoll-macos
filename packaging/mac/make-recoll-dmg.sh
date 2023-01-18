@@ -15,8 +15,8 @@ top=~/Recoll
 # The possibly bogus version we have in paths (may be harcoded in the .pro)
 # qcbuildloc=Desktop_Qt_5_15_2_clang_64bit
 #deploy=~/Qt/5.15.2/clang_64bit/macdeployqt
-qcbuildloc=Qt_6_2_4_for_macOS
-deploy=~/Qt/6.2.4/macos/bin/macdeployqt
+qcbuildloc=Qt_6_4_2_for_macOS
+deploy=~/Qt/6.4.2/macos/bin/macdeployqt
 
 toprecoll=$top/recoll/src
 appdir=$toprecoll/build-recoll-win-${qcbuildloc}-Release/recoll.app
