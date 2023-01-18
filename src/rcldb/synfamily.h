@@ -52,6 +52,7 @@ public:
         : m_rdb(xdb) {
         m_prefix1 = std::string(":") + familyname;
     }
+    virtual ~XapSynFamily() = default;
     
     /** Retrieve all members of this family (e.g: french english german...) */
     virtual bool getMembers(std::vector<std::string>&);
@@ -93,7 +94,8 @@ public:
     /** Construct with Xapian db open for r/w */
     XapWritableSynFamily(Xapian::WritableDatabase db, const std::string& familyname)
         : XapSynFamily(db, familyname),  m_wdb(db) {}
-
+    virtual ~XapWritableSynFamily() = default;
+    
     /** Delete all entries for one member (e.g. french), and remove from list
      * of members */
     virtual bool deleteMember(const std::string& membername);
@@ -126,7 +128,8 @@ public:
         : m_family(xdb, familyname), m_membername(membername), 
           m_trans(trans), m_prefix(m_family.entryprefix(m_membername)) {}
 
-
+    virtual ~XapComputableSynFamMember() = default;
+    
     /** Expand a term to its list of synonyms. If filtertrans is set we 
      * keep only the results which transform to the same value as the input 
      * This is used for example for filtering the result of case+diac
@@ -155,7 +158,8 @@ public:
         std::string membername, SynTermTrans* trans)
         : m_family(xdb, familyname), m_membername(membername), 
           m_trans(trans), m_prefix(m_family.entryprefix(m_membername)) {}
-
+    virtual ~XapWritableComputableSynFamMember() = default;
+    
     virtual bool addSynonym(const std::string& term) {
         LOGDEB2("addSynonym:me " << this << " term [" << term << "] m_trans " << m_trans << "\n");
         std::string transformed = (*m_trans)(term);
