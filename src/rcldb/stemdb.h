@@ -60,6 +60,7 @@ class SynTermTransStem : public SynTermTrans {
 public:
     SynTermTransStem(const std::string& lang)
         : m_stemmer(lang), m_lang(lang) {}
+    virtual ~SynTermTransStem() = default;
 
     virtual std::string operator()(const std::string& in) {
         string out = m_stemmer(in);

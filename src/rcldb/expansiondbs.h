@@ -41,7 +41,8 @@ public:
      */
     SynTermTransUnac(UnacOp op)
         : m_op(op) {}
-
+    virtual ~SynTermTransUnac() = default;
+    
     virtual std::string name() {
         std::string nm("Unac: ");
         if (m_op & UNACOP_UNAC)

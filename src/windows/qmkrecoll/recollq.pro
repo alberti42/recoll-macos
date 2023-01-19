@@ -46,16 +46,16 @@ windows {
 }
 
 mac {
+  QCBUILDLOC=Qt_6_4_2_for_macOS
   QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
   QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
   DEFINES += RECOLL_AS_MAC_BUNDLE
   SOURCES += \
-    ../../utils/closefrom.cpp \
     ../../utils/execmd.cpp \
     ../../utils/netcon.cpp \
     ../../utils/rclionice.cpp
   LIBS += \
-     ../build-librecoll-Qt_6_2_4_for_macOS-Release/liblibrecoll.a \
-     ../build-libxapian-Qt_6_2_4_for_macOS-Release/liblibxapian.a \
+     ../build-librecoll-$$QCBUILDLOC-Release/liblibrecoll.a \
+     ../build-libxapian-$$QCBUILDLOC-Release/liblibxapian.a \
      -lxslt -lxml2 -liconv -lz
 }

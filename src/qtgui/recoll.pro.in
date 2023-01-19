@@ -178,7 +178,9 @@ windows {
   }
 }
 
-mac {
+macx: {
+  QCBUILDLOC=Qt_6_4_2_for_macOS
+
   # QT += webkit webkitwidgets
   # DEFINES += USING_WEBKIT
 
@@ -187,7 +189,6 @@ mac {
 
   QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
   QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
-  QCBUILDLOC=Qt_6_2_4_for_macOS
 
   DEFINES += RECOLL_AS_MAC_BUNDLE
   
@@ -207,6 +208,9 @@ mac {
     crontool.ui \
     rtitool.ui
 
+  INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
+              ../utils ../aspell ../rcldb ../qtgui ../xaposix \
+              confgui widgets
   LIBS += \
     ../windows/build-librecoll-$$QCBUILDLOC-Release/liblibrecoll.a \
     ../windows/build-libxapian-$$QCBUILDLOC-Release/liblibxapian.a \
@@ -369,19 +373,20 @@ mac {
   QMAKE_BUNDLE_DATA = APP_EXAMPLES APP_EXAMPLES_MAC APP_FILTERS APP_IMAGES APP_DOC
 }
 
-unix {
+unix!macx: {
 QMAKE_CXXFLAGS += -std=c++11
 
 VPATH = @srcdir@
 
-@QMAKE_ENABLE_WEBKIT@QT += webkit
+@QMAKE_ENABLE_WEBKIT@QT += webkitwidgets
 @QMAKE_ENABLE_WEBKIT@DEFINES += USING_WEBKIT
-@QMAKE_ENABLE_WEBENGINE@QT += webengine
+
 @QMAKE_ENABLE_WEBENGINE@DEFINES += USING_WEBENGINE
+@QMAKE_ENABLE_WEBENGINE@QT += webenginewidgets
+
 @QMAKE_ENABLE_ZEITGEIST@QT += dbus
 @QMAKE_ENABLE_ZEITGEIST@QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
-@QMAKE_ENABLE_WEBKIT@greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
-@QMAKE_ENABLE_WEBENGINE@greaterThan(QT_MAJOR_VERSION, 4): QT += webenginewidgets
+
 @QMAKE_ENABLE_GUIDEBUG@CONFIG += force_debug_info
 
   HEADERS += crontool.h \
