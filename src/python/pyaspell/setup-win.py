@@ -13,12 +13,12 @@ setup (name = 'aspell-python-py3',
                              [os.path.join(pytop, "aspell.c")],
                              include_dirs = [
                                  os.path.join(recolldeps,
-                                              "mingw", "aspell-0.60.7", "interfaces", "cc"), 
+                                              "msvc", "aspell-0.60.7", "interfaces", "cc"), 
                              ],
                              libraries = ["aspell"],
                              library_dirs = [
                                  os.path.join(
-                                     recolldeps, "mingw",
+                                     recolldeps, "msvc",
                                      "build-libaspell-Desktop_Qt_5_15_2_MSVC2019_32bit-Release",
                                      "release")],
                              )],
