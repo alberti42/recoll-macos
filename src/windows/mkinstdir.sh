@@ -55,8 +55,13 @@ else
     export PATH
 fi
 
-# We use the mingw-compiled aspell program in both cases, it's only executed as a command
+# We use the mingw-compiled aspell program for building the dict
 ASPELL=${RCLDEPS}/mingw/aspell-0.60.7/aspell-installed
+# We use an msvc-built aspell lib for supporting a python extension
+# used by the suggestion script The extension is built separately and
+# copied into the bundled Python installation manually. This is just
+# for the record, the variable is not used currently
+#LIBASPELL=${RCLDEPS}/msvc/aspell-0.60.7/
 
 # Where to find libgcc_s_dw2-1.dll et all for progs compiled with
 # c:/MinGW (as opposed to the mingw bundled with qt). This is the same
