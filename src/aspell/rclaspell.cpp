@@ -117,6 +117,10 @@ bool Aspell::init(string &reason)
         return false;
     }
 
+    // At the moment, no idea how to distribute the pyaspell Python extension on MacOS.
+    // So Recoll still makes suggestions (using the aspell command) when a search fails,
+    // but can't widen searches to common orthographic neighbours.
+#ifndef __APPLE__
     m_data->m_execspell = {
         "rclaspell-sugg.py", 
         string("--lang=") + m_lang,
@@ -133,6 +137,20 @@ bool Aspell::init(string &reason)
     }
     m_data->m_execspell.push_back("pipe");
     m_config->processFilterCmd(m_data->m_execspell);
+#else // __APPLE__ ->
+    m_data->m_execspell = {
+        m_data->m_execbuild,
+        string("--lang=") + m_lang,
+        "--encoding=utf-8",
+        string("--master=") + dicPath(),
+        "--sug-mode=fast",
+        "--mode=none",
+    };
+    if (!m_data->m_addCreateParam.empty()) {
+        m_data->m_execspell.push_back(m_data->m_addCreateParam);
+    }
+    m_data->m_execspell.push_back("pipe");
+#endif
     return true;
 }
 
