@@ -3,12 +3,12 @@
 
 cachedir = @RECOLL_TESTCACHEDIR@
 
-loglevel = 6
-logfilename = /tmp/logrcltst
-idxlogfilename = /tmp/idxlogrcltst
+loglevel = 3
+logfilename = @TMPDIR@/logrcltst
+idxlogfilename = @TMPDIR@/idxlogrcltst
 
-daemloglevel = 6
-daemlogfilename = /tmp/rclmontrace
+daemloglevel = 3
+daemlogfilename = @TMPDIR@/rclmontrace
 
 systemfilecommand = xdg-mime query filetype
 
@@ -18,6 +18,7 @@ detectxattronly = 1
 topdirs = @RECOLL_TESTDATA@
 
 #thrQSizes = -1 -1 -1
+idxflushmbs=200
 
 # Adding to skippedNames
 skippedNames+ = notinskippednames

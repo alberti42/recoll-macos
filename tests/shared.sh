@@ -1,10 +1,6 @@
 # @(#$Id: shared.sh,v 1.4 2009-01-06 18:47:33 dockes Exp $  (C) 2006 J.F.Dockes
 # shared code and variables for all tests
 
-# TMPDIR has to be something which belongs to the user because of pdftk
-# issues (see runtests.sh)
-export TMPDIR=$HOME/tmp
-
 # The test data location which is recorded in the test results. New tests will need to be edited
 # for comparison if the actual/current location differs.
 RECOLL_TESTDATA_BASE=/home/dockes/projets/fulltext/testrecoll
@@ -43,6 +39,12 @@ fatal () {
 
 checkresult() {
 #    set -x
+    if test -n "$WINDIR"; then
+        # because file:///c:... : one more / after //
+        ADDSLASH=/
+    else
+        ADDSLASH=""
+    fi
     tocompare=$mystdout
     temp=""
     if test "$TESTLOC_CHANGED" -ne 0; then
@@ -50,7 +52,7 @@ checkresult() {
         if test -z "$temp";then
             exit 1
         fi
-        sed -e "s!${RECOLL_TESTDATA}!${RECOLL_TESTDATA_BASE}!g" "$mystdout" > "$temp"
+        sed -e "s!${ADDSLASH}${RECOLL_TESTDATA}!${RECOLL_TESTDATA_BASE}!g" "$mystdout" > "$temp"
         tocompare=$temp
     fi
        

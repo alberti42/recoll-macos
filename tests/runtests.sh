@@ -1,7 +1,22 @@
 #!/bin/sh
 
-export TMPDIR=$HOME/tmp
+isLinux=0
+isWindows=0
+sys=`uname`
+case $sys in
+    Linux) isLinux=1;;
+    MINGW*) isWindows=1;;
+esac
 
+iswindows()
+{
+    if test $isWindows -eq 1; then
+        return 0
+    fi
+    return 1
+}
+
+       
 fatal()
 {
     echo $*;exit 1
@@ -28,18 +43,43 @@ rerootResults()
     cd $savedcd
 }
 
+testexe()
+{
+    _tx_cmd=$1
+    if test -d "$_tx_cmd"; then
+        return 1
+    fi
+    if test -x "$_tx_cmd"; then
+        iscmdresult="$_tx_cmd"
+        return 0
+    else
+        if iswindows; then
+            if test -x "$_tx_cmd".exe; then
+                iscmdresult="$_tx_cmd".exe
+                return 0
+            fi
+        fi
+    fi
+    return 1
+}
+
 iscmd()
 {
-    cmd=$1
-    case $cmd in
-    */*)
-	if test -x $cmd -a ! -d $cmd ; then return 0; else return 1; fi ;;
-    *)
-      oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
-      for d in $*;do test -x $d/$cmd -a ! -d $d/$cmd && \
-          iscmdresult=$d/$cmd && return 0;done
-      return 1 ;;
+    _ic_cmd=$1
+    case "$_ic_cmd" in
+        */*)
+	    if testexe "$_ic_cmd"; then
+                return 0
+            fi;;
+        *)
+            oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
+            for d in "$@";do
+                if testexe "$d/$_ic_cmd"; then
+                    return 0
+                fi
+            done
     esac
+    return 1
 }
 
 checkcmds()
@@ -68,22 +108,27 @@ makeindex() {
 if test ! -f shared.sh ; then
     fatal must be run in the top test directory
 fi
-checkcmds recollq recollindex pxattr xadump pdftk || exit 1
-
-iscmd pdftk
-pdftk=$iscmdresult
-tmpdir=${RECOLL_TMPDIR:-$TMPDIR}
-case "$pdftk" in
-    /snap/*)
-        if test X$tmpdir = X -o "$tmpdir" = /tmp;then
-            fatal pdftk as snap need '$TMPDIR' to belong to you
-        fi
-    ;;
-esac
-
-if test ! x$reroot = x ; then
-    rerootResults
+if iswindows; then
+    checkcmds recollq recollindex || exit 1
+else
+    checkcmds recollq recollindex pxattr xadump pdftk || exit 1
+    iscmd pdftk
+    pdftk=$iscmdresult
+    tmpdir=${RECOLL_TMPDIR:-$TMPDIR}
+    case "$pdftk" in
+        /snap/*)
+            if test X$tmpdir = X -o "$tmpdir" = /tmp;then
+                fatal pdftk as snap need '$TMPDIR' to belong to you
+            fi
+            ;;
+    esac
+    if test ! x$reroot = x ; then
+        rerootResults
+    fi
+    # Because of the snap thing
+    export TMPDIR=$HOME/tmp
 fi
+
 
 # Temp directory for test results
 # Make sure this is computed in the same way as in shared.sh
@@ -110,6 +155,7 @@ export RECOLL_TESTCACHEDIR=$toptmp
 
 sed -e "s,@RECOLL_TESTS@,$RECOLL_TESTS,g" \
     -e "s,@RECOLL_TESTDATA@,$RECOLL_TESTDATA,g" \
+    -e "s,@TMPDIR@,$TMPDIR,g" \
     -e "s,@RECOLL_TESTCACHEDIR@,$RECOLL_TESTCACHEDIR,g" \
     < $RECOLL_CONFDIR/recoll.conf.in \
     > $RECOLL_CONFDIR/recoll.conf || exit 1
