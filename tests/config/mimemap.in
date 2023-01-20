@@ -7,10 +7,10 @@
 # with the same name in the central directory. The syntax for setting
 # values is identical.
 
-[/home/dockes/projets/fulltext/testrecoll/okular-notes]
+[@RECOLL_TESTDATA@/okular-notes]
 .xml = application/x-okular-notes
 
-[/home/dockes/projets/fulltext/testrecoll/man]
+[@RECOLL_TESTDATA@/man]
 .0p = text/x-man
 .1 = text/x-man
 .1m = text/x-man
@@ -40,5 +40,5 @@
 .9 = text/x-man
 .n = text/x-man
 
-[/home/dockes/projets/fulltext/testrecoll/purple]
+[@RECOLL_TESTDATA@/purple]
 .txt = text/x-purple-log

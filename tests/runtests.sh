@@ -103,8 +103,9 @@ export LC_ALL=en_US.UTF-8
 
 RECOLL_TESTS=`pwd`
 RECOLL_TESTDATA=${RECOLL_TESTDATA:-/home/dockes/projets/fulltext/testrecoll}
+RECOLL_TESTDATA=`echo $RECOLL_TESTDATA | sed -e 's!/$!!'`
 export RECOLL_CONFDIR=$RECOLL_TESTS/config/
-# Some test need to access RECOLL_TESTCACHEDIR
+# Some tests need to access RECOLL_TESTCACHEDIR
 export RECOLL_TESTCACHEDIR=$toptmp
 
 sed -e "s,@RECOLL_TESTS@,$RECOLL_TESTS,g" \
@@ -112,6 +113,11 @@ sed -e "s,@RECOLL_TESTS@,$RECOLL_TESTS,g" \
     -e "s,@RECOLL_TESTCACHEDIR@,$RECOLL_TESTCACHEDIR,g" \
     < $RECOLL_CONFDIR/recoll.conf.in \
     > $RECOLL_CONFDIR/recoll.conf || exit 1
+sed -e "s,@RECOLL_TESTS@,$RECOLL_TESTS,g" \
+    -e "s,@RECOLL_TESTDATA@,$RECOLL_TESTDATA,g" \
+    -e "s,@RECOLL_TESTCACHEDIR@,$RECOLL_TESTCACHEDIR,g" \
+    < $RECOLL_CONFDIR/mimemap.in \
+    > $RECOLL_CONFDIR/mimemap || exit 1
 
 if test x$noindex = x ; then
   makeindex
