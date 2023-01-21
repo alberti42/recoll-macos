@@ -5,18 +5,19 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-tstfile=${tstdata}/delete/tobedeleted.txt
+# Create file to be deleted, index, query. Note: the 'delete' directory must not be empty,
+# else the dismounted media test will trigger in the second indexer and the subtree will
+# be marked existing (no purge).
+(
+    echo "DeletedFileUnique" > ${tstdata}/delete/tobedeleted.txt
+    recollindex -z
+    recollq DeletedFileUnique 
 
-# Create file to be deleted, index, query
-echo "DeletedFileUnique" > $tstfile
-recollindex >> $mystderr 2>&1 
-recollq DeletedFileUnique 2> $mystderr | 
-	egrep -v '^Recoll query: ' > $mystdout
+    # Delete file and query again
+    rm ${tstdata}/delete/tobedeleted.txt
+    recollindex
+    recollq DeletedFileUnique
 
-# Delete file and query again
-rm -f ${tstdata}/delete/tobedeleted.txt
-recollindex  >> $mystderr 2>&1 
-recollq DeletedFileUnique 2>> $mystderr | 
-	egrep -v '^Recoll query: ' >> $mystdout
+)  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 checkresult

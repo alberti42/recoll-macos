@@ -7,8 +7,7 @@ initvariables $0
 
 (
   # Only
-  recollq filename:testdirfile dir:dir/d1 OR \
-                               dir:dir/d2  -dir:d2
+  recollq filename:testdirfile dir:dir/d1 OR dir:dir/d2  -dir:d2
 
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 

@@ -19,7 +19,7 @@ iswindows()
        
 fatal()
 {
-    echo $*;exit 1
+    echo Error: $*;exit 1
 }
 
 rerootResults()
@@ -108,6 +108,10 @@ makeindex() {
 if test ! -f shared.sh ; then
     fatal must be run in the top test directory
 fi
+
+# We now want RECOLL_TESTDATA to be set always. No more relying on the default path
+test -n "$RECOLL_TESTDATA" || fatal RECOLL_TESTDATA is not set
+
 if iswindows; then
     checkcmds recollq recollindex || exit 1
 else
