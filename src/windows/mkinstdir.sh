@@ -81,7 +81,8 @@ UNRTF=${RCLDEPS}unrtf
 ANTIWORD=${RCLDEPS}antiword
 PYXSLT=${RCLDEPS}pyxslt
 PYEXIV2=${RCLDEPS}pyexiv2
-MUTAGEN=${RCLDEPS}mutagen-1.32/
+# We expect $MUTAGEN to be an unzipped .whl from pypi
+MUTAGEN=${RCLDEPS}mutagen-1.46/
 EPUB=${RCLDEPS}epub-0.5.2
 FUTURE=${RCLDEPS}python2-future
 POPPLER=${RCLDEPS}poppler-22.04.0/Library/
@@ -188,12 +189,15 @@ copyrecoll()
     chkcp $RCL/sampleconf/recoll-dark.qss $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll-dark.css $DESTDIR/Share/examples
 
+    chkcp $RCL/filters/*       $FILTERS
+    # KEEP THESE TWO *AFTER* the above
     chkcp $RCL/python/recoll/recoll/rclconfig.py $FILTERS
     chkcp $RCL/python/recoll/recoll/conftree.py $FILTERS
+
     rm -f $FILTERS/rclimg*
-    chkcp $RCL/filters/*       $FILTERS
     rm -f $FILTERS/rclimg $FILTERS/rclimg.py
     chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
+
     chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
     chkcp $RCL/build-recoll-win-${QTA}/${qtsdir}/*.qm $DESTDIR/Share/translations
 
@@ -223,9 +227,10 @@ copyunrtf()
 
 copymutagen()
 {
-    cp -rp $MUTAGEN/build/lib/mutagen $FILTERS
+    # We expect $MUTAGEN to be an unzipped .whl from pypi
+    cp -rp $MUTAGEN/mutagen $FILTERS
     # chkcp to check that mutagen is where we think it is
-    chkcp $MUTAGEN/build/lib/mutagen/mp3.py $FILTERS/mutagen
+    chkcp $MUTAGEN/mutagen/_file.py $FILTERS/mutagen
 }
 
 # Not used any more, the epub python code is bundled with recoll
