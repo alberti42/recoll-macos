@@ -25,7 +25,7 @@ fatal()
 rerootResults()
 {
     savedcd=`pwd`
-    dirs=`ls -F | grep / | grep -v CVS | grep -v non-auto | grep -v config`
+    dirs=`ls -F | grep / | grep -v non-auto | grep -v config`
     for dir in $dirs ; do
     	cd $dir
 	resfile=`basename $dir`.txt
@@ -124,12 +124,12 @@ if iswindows; then
     # pdf-annots needs the poppler glib bindings
     # pdfattach needs pdftk
     # postscript needs ghostscript
-    excluded="badsuffs badsuffs1 casediac cjk compressed info kar koi8r kword lyx djvu dvi \
-              Maildir Maildir1 man empty nonumbers notypes onlynames pdf-annots pdfattach \
-              postscript "
+    excluded="non-auto badsuffs badsuffs1 casediac cjk compressed info kar koi8r kword lyx \
+              djvu dvi Maildir Maildir1 man empty nonumbers notypes onlynames pdf-annots \
+              pdfattach postscript"
 else
     checkcmds recollq recollindex pxattr xadump pdftk || exit 1
-    excluded=""
+    excluded="non-auto"
     iscmd pdftk
     pdftk=$iscmdresult
     tmpdir=${RECOLL_TMPDIR:-$TMPDIR}
@@ -191,7 +191,7 @@ if test x$noindex = x ; then
 fi
 
 
-dirs=`ls -F | grep / | grep -v CVS | grep -v non-auto | grep -v config`
+dirs=`ls -F | grep / | grep -v config`
 
 echo
 echo "Running query tests:"

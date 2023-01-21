@@ -12,6 +12,8 @@ daemlogfilename = @TMPDIR@/rclmontrace
 
 systemfilecommand = xdg-mime query filetype
 
+noaspell = 1
+
 indexStripChars = 1
 detectxattronly = 1
 
