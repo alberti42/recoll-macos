@@ -13,13 +13,14 @@ initvariables $0
 
 RECOLL_CONFDIR=$topdir/casediac
 export RECOLL_CONFDIR
+toptmp=${TMPDIR:-/tmp}/recolltsttmp
 
 cat > $RECOLL_CONFDIR/recoll.conf <<EOF
 loglevel = 6
-logfilename = /tmp/logrcltst
+logfilename = ${toptmp}/logcasediac
 
 daemloglevel = 6
-daemlogfilename = /tmp/rclmontrace
+daemlogfilename = ${toptmp}/rclmoncasediac
 
 indexStripChars = 0
 

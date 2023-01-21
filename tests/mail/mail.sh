@@ -6,7 +6,7 @@ topdir=`dirname $0`/..
 initvariables $0
 
 (
-  recollq Outmail_uniqueTerm          
+  recollq -S dbytes -D Outmail_uniqueTerm          
   recollq '"St Pierre en Chartreuse"'
   recollq HtmlAttachment_uniqueTerm
   recollq '"Dear Corporate Administrator"'

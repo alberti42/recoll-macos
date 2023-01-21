@@ -6,7 +6,7 @@ topdir=`dirname $0`/..
 initvariables $0
 (
 recollq DirWithBlanksUnique 
-recollq DirWithBlanksUnique dir:\"$tstdata/"dir with blanks"\"
+recollq DirWithBlanksUnique dir:\"$tstdataindir/"dir with blanks"\"
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 checkresult

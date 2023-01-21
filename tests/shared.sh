@@ -1,6 +1,22 @@
 # @(#$Id: shared.sh,v 1.4 2009-01-06 18:47:33 dockes Exp $  (C) 2006 J.F.Dockes
 # shared code and variables for all tests
 
+isLinux=0
+isWindows=0
+sys=`uname`
+case $sys in
+    Linux) isLinux=1;;
+    MINGW*) isWindows=1;;
+esac
+
+iswindows()
+{
+    if test $isWindows -eq 1; then
+        return 0
+    fi
+    return 1
+}
+
 # The test data location which is recorded in the test results. New tests will need to be edited
 # for comparison if the actual/current location differs.
 RECOLL_TESTDATA_BASE=/home/dockes/projets/fulltext/testrecoll
@@ -23,6 +39,11 @@ ECHON="/bin/echo -n"
 # Call this with the script's $0 as argument
 initvariables() {
     tstdata=${RECOLL_TESTDATA}
+    tstdataindir=$tstdata
+    if iswindows; then
+        # tstdata path when used in dir clauses. Need to change c: to /c
+        tstdataindir=`echo $tstdata | sed -e 's,c:,/c,'`
+    fi
     toptmp=${TMPDIR:-/tmp}/recolltsttmp
     myname=`basename $1 .sh`
     mystderr=$toptmp/${myname}.err

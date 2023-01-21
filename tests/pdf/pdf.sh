@@ -12,6 +12,7 @@ initvariables $0
     # url is prefixed for the dc:identifier search to work
     recollq dc:identifier:10.12345/sampledoi
     recollq 'pdf:Producer:"GPL Ghostscript 9.18" metafixerunique'
+    # This is from an image pdf. Only works if OCR is set up
     recollq '"bubbleupnp server to simulate openhome"'
     
 )  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
