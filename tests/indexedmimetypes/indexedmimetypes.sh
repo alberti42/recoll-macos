@@ -14,7 +14,7 @@ cat > recoll.conf <<EOF
 topdirs = $tstdata/html $tstdata/txt
 logfilename=$logfilename
 loglevel = 6
-
+noaspell = 1
 EOF
 }
 ###########

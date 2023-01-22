@@ -14,10 +14,9 @@ initvariables $0
     recollq ShouldbeSkippedUnique
 
     # skippedNames
-    # recollrc is in the default skippedNames list, but should be the
-    # result here because 'recollrc' is in the local config
-    # skippedNames-
-    # 1 res: skipped/recollrc
+    # recoll.ini is in the default skippedNames list, but should be the
+    # result here because 'recoll.ini' is in the local config skippedNames-
+    # 1 res: skipped/recoll.ini
     recollq recollrcUnique
 
     # skippedNames

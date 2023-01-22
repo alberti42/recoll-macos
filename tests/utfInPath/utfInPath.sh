@@ -7,7 +7,6 @@ initvariables $0
 
 (
 
-recollq -S fmtime -q '"simulating shock turbulence interactions"' 
 recollq -S fmtime Utf8pathunique 
 
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout

@@ -25,7 +25,7 @@ idxflushmbs=200
 # Adding to skippedNames
 skippedNames+ = notinskippednames
 # Removing from skippedNames
-skippedNames- = recollrc
+skippedNames- = recoll.ini
 
 # Adding to noContentSuffixes
 noContentSuffixes+ = .nosuff
