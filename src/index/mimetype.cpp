@@ -33,6 +33,7 @@
 #include "smallut.h"
 #include "idfile.h"
 #include "pxattr.h"
+#include "rclutil.h"
 
 using namespace std;
 
@@ -64,9 +65,16 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
         // libmagic is not thread-safe
         auto mgtoken = magic_open(MAGIC_MIME_TYPE);
         if (mgtoken) {
-            magic_load(mgtoken, nullptr);
-            mime = magic_file(mgtoken, fn.c_str());
-            magic_close(mgtoken);
+#ifdef _WIN32
+            std::string magicfile = path_cat(path_pkgdatadir(), "magic.mgc");
+            int ret = magic_load(mgtoken, magicfile.c_str());
+#else
+            int ret = magic_load(mgtoken, nullptr);
+#endif
+            if (ret == 0) {
+                mime = magic_file(mgtoken, fn.c_str());
+                magic_close(mgtoken);
+            }
         }
     }
 #else

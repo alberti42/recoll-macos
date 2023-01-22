@@ -36,6 +36,7 @@ if test $BUILD = MSVC ; then
     LIBXML=${RCLDEPS}/msvc/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.dll
     LIBXSLT=${RCLDEPS}/msvc/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.dll
     ZLIB=${RCLDEPS}/msvc/zlib-1.2.11
+    LIBMAGIC=${RCLDEPS}/msvc/libmagic
     # Qt
     QTA=Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release
     QTBIN=C:/Qt/5.15.2/msvc2019/bin
@@ -95,6 +96,7 @@ LIBPFF=${RCLDEPS}pffinstall
 ################
 # Script:
 FILTERS=$DESTDIR/Share/filters
+SHARE=$DESTDIR/Share
 
 fatal()
 {
@@ -310,6 +312,11 @@ copypff()
     chkcp $MINGWBIN/libwinpthread-1.dll $DEST
 }
 
+copymagic()
+{
+    chkcp $LIBMAGIC/magic/magic.mgc $SHARE
+}
+
 copyaspell()
 {
     DEST=$FILTERS
@@ -381,5 +388,6 @@ copymutagen
 copywpd
 copypff
 copypython
+copymagic
 
 echo "MKINSTDIR OK"

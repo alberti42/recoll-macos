@@ -6,7 +6,7 @@ isWindows=0
 sys=`uname`
 case $sys in
     Linux) isLinux=1;;
-    MINGW*) isWindows=1;;
+    MSYS*|MINGW*) isWindows=1;;
 esac
 
 iswindows()
@@ -43,6 +43,7 @@ initvariables() {
     if iswindows; then
         # tstdata path when used in dir clauses. Need to change c: to /c
         tstdataindir=`echo $tstdata | sed -e 's,c:,/c,'`
+        export MSYS2_ARG_CONV_EXCL='*'
     fi
     toptmp=${TMPDIR:-/tmp}/recolltsttmp
     myname=`basename $1 .sh`

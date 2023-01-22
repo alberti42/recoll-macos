@@ -38,6 +38,8 @@ windows {
       $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
       -L../build-libxapian-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release -llibxapian \
       -L$$RECOLLDEPS/build-libiconv-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release/ -llibiconv \
+      $$RECOLLDEPS/libmagic/src/lib/libmagic.lib \
+      $$RECOLLDEPS/regex/libregex.lib \
       $$RECOLLDEPS/zlib-1.2.11/zdll.lib \
       -lrpcrt4 -lws2_32 -luser32 -lshell32 -lshlwapi -lpsapi -lkernel32
   }

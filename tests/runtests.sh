@@ -5,7 +5,7 @@ isWindows=0
 sys=`uname`
 case $sys in
     Linux) isLinux=1;;
-    MINGW*) isWindows=1;;
+    MINGW*|MSYS*) isWindows=1;;
 esac
 
 iswindows()
@@ -112,6 +112,7 @@ fi
 
 # We now want RECOLL_TESTDATA to be set always. No more relying on the default path
 test -n "$RECOLL_TESTDATA" || fatal RECOLL_TESTDATA is not set
+test -n "$TMPDIR" || fatal TMPDIR is not set
 
 if iswindows; then
     checkcmds recollq recollindex || exit 1
@@ -120,7 +121,7 @@ if iswindows; then
     # casediac, cjk koi8r: needs utf8 on the command line
     # compressed: weird unix stuff
     # info kar kword lyx djvu dvi Maildir Maildir1 man purple scribus:
-    #     unix command (info) or code (rclmidi) missing or filter is shell-script etc.
+    #   need unix command (info) or code (rclmidi) missing or filter is shell-script etc.
     # empty: fails because of differing dir sizes (0 vs 4096), not worth fixing
     # nonumbers: fails because of paths and testing on unix is enough
     # pdf-annots: needs the poppler glib bindings
@@ -130,9 +131,9 @@ if iswindows; then
     # pythonapi: would need a lot of porting. Design windows-specific one?
     # xattr: unix-specific
     # xml: several files are also compressed or have bad suffixes
-    excluded="non-auto badsuffs badsuffs1 casediac cjk compressed info kar koi8r kword lyx \
-              djvu dvi Maildir Maildir1 man empty nonumbers notypes onlynames pdf-annots \
-              pdf-ocr pdfattach postscript program purple pythonapi scribus xattr xml"
+    excluded="non-auto casediac cjk compressed info kar koi8r kword lyx \
+              djvu dvi Maildir Maildir1 man empty nonumbers pdf-annots \
+              pdf-ocr pdfattach postscript purple pythonapi scribus xattr xml"
 else
     checkcmds recollq recollindex pxattr xadump pdftk || exit 1
     excluded="non-auto"

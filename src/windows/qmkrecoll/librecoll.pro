@@ -159,12 +159,14 @@ windows {
     RECOLLDEPS = ../../../../recolldeps
     CONFIG += staticlib
     DEFINES += USING_STATIC_LIBICONV
+    DEFINES += ENABLE_LIBMAGIC
     INCLUDEPATH += ../../windows \
       $$RECOLLDEPS/msvc/xapian-core/include \
       $$RECOLLDEPS/msvc/zlib-1.2.11/ \
       $$RECOLLDEPS/msvc/libxslt/libxslt-1.1.29/ \
       $$RECOLLDEPS/msvc/libxml2/libxml2-2.9.4+dfsg1/include \
-      $$RECOLLDEPS/msvc/wlibiconv/include
+      $$RECOLLDEPS/msvc/wlibiconv/include \
+      $$RECOLLDEPS/msvc/libmagic/src
   }
 
 }

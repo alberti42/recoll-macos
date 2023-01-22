@@ -6,12 +6,13 @@ topdir=`dirname $0`/..
 initvariables $0
 
 (
-  recollq '"maps image file tags to xapian tags"'
-  recollq '"PMC = Performance Monitor Control MSR"'
-  recollq shellscriptUUnique
-  # Python: query.py
-  recollq Xesam QueryException
+    # Suppress the mime type because it may be application/xxx or text/xxx
+    recollq '"maps image file tags to xapian tags"' |  awk '{$1 = "";print $0}'
+    recollq '"PMC = Performance Monitor Control MSR"' | awk '{$1 = "";print $0}'
+    recollq shellscriptUUnique | awk '{$1 = "";print $0}'
+    # Python: query.py
+    recollq Xesam QueryException 
   
-) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
+) 2> $mystderr | egrep -v 'query: ' > $mystdout
 
 checkresult
