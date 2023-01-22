@@ -6,7 +6,9 @@ topdir=`dirname $0`/..
 initvariables $0
 
 # check indexing of an empty directory name
-recollq EmptyUniqueTerm 2> $mystderr | 
-	egrep -v '^Recoll query: ' > $mystdout
+(
+    recollq -S url EmptyUniqueTerm
+
+) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 checkresult

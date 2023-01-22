@@ -98,9 +98,10 @@ checkcmds()
 }
 
 makeindex() {
-  echo "Zeroing Index" 
-  rm -rf $RECOLL_CONFDIR/xapiandb $RECOLL_CONFDIR/aspdict.*.rws
-  rm -rf $RECOLL_CONFDIR/ocrcache
+    echo "Zeroing Index"
+    for dir in "$RECOLL_TESTCACHEDIR" "$RECOLL_CONFDIR";do
+        rm -rf "$dir"/xapiandb "$dir"/aspdict.*.rws "$dir"/ocrcache
+    done
   echo "Indexing" 
   recollindex -c $RECOLL_CONFDIR -z
 }
@@ -126,7 +127,7 @@ if iswindows; then
     # postscript needs ghostscript
     excluded="non-auto badsuffs badsuffs1 casediac cjk compressed info kar koi8r kword lyx \
               djvu dvi Maildir Maildir1 man empty nonumbers notypes onlynames pdf-annots \
-              pdfattach postscript"
+              pdf-ocr pdfattach postscript"
 else
     checkcmds recollq recollindex pxattr xadump pdftk || exit 1
     excluded="non-auto"
