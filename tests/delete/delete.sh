@@ -10,7 +10,7 @@ initvariables $0
 # be marked existing (no purge).
 (
     echo "DeletedFileUnique" > ${tstdata}/delete/tobedeleted.txt
-    recollindex -z
+    recollindex
     recollq DeletedFileUnique 
 
     # Delete file and query again
