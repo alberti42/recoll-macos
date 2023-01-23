@@ -1,3 +1,17 @@
+recoll (1.34.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * GUI: fix restable header click not initiating query.
+  * PDF: if pdfoutline is set, extract TOC/bookmarks/outline as supplementary
+    description.
+  * Windows: fix the initial dialog which  showed an error instead of proposing
+    to configure then index.
+  * Windows: improve the dir side filter list display.
+  * Windows: fix crash in index config dialog for non-ascii user names.
+  * MacOS: fix identification for file names without suffixes.
+  * MacOS: fix issue with crontab usage.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 23 Jan 2023 09:10:00 +0100
+
 recoll (1.34.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Add option to complement queries having rare words with more common spelling approximations.
