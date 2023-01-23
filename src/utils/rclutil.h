@@ -148,4 +148,8 @@ extern std::string langtocode(const std::string& lang);
 
 extern int u8DLDistance(const std::string& str1, const std::string str2);
 
+// Extract MIME type from a string looking like: ": text/plain; charset=us-ascii".  (the string is
+// "file -i" output after the path has been removed). Exported here so that it can be unit-tested.
+extern std::string growmimearoundslash(std::string mime);
+
 #endif /* _RCLUTIL_H_INCLUDED_ */

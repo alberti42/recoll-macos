@@ -184,6 +184,7 @@ copyrecoll()
     chkcp $RCL/sampleconf/mimeview        $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/mimemap         $DESTDIR/Share/examples
     chkcp $RCL/windows/mimeconf           $DESTDIR/Share/examples/windows
+    chkcp $RCL/windows/recoll.conf        $DESTDIR/Share/examples/windows
     chkcp $RCL/windows/mimeview           $DESTDIR/Share/examples/windows
     chkcp $RCL/sampleconf/recoll.conf     $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/recoll.qss      $DESTDIR/Share/examples

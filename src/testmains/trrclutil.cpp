@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <map>
+#include <string>
+#include <vector>
 
 #include "pathut.h"
 
@@ -13,7 +15,8 @@ using namespace std;
 static std::map<std::string, int> options {
     {"path_to_thumb", 0},
     {"url_encode", 0},
-        };
+    {"growmime", 0},
+};
 
 static const char *thisprog;
 static void Usage(void)
@@ -24,6 +27,38 @@ static void Usage(void)
     }
     fprintf(stderr, "%s: usage: %s\n%s", thisprog, thisprog, sopts.c_str());
     exit(1);
+}
+
+int growmime()
+{
+    vector<pair<string, string>> cases{
+        {"", ""},
+        {"/", "/"},
+        {"t/", "t/"},
+        {"/p", "/p"},
+        {"text/plain", "text/plain"},
+        {"text/plain ", "text/plain"},
+        {"text/plain;", "text/plain"},
+        {" text/plain;", "text/plain"},
+        {": text/plain", "text/plain"},
+        {": text/plain; charset=us-ascii", "text/plain"},
+        {"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+         "application/vnd.openxmlformats-officedocument.presentationml.presentation"},
+        {"image/svg+xml", "image/svg+xml",},
+        {"text/t140; charset=iso-8845", "text/t140"},
+        {": text/vnd.DMClientScript", "text/vnd.DMClientScript"},
+    };
+    for (const auto &c : cases) {
+        string res;
+        if ((res = growmimearoundslash(c.first)) != c.second) {
+            std::cerr << "Failed [" << c.first << "]: [" << res << "] != ["
+                      << c.second << "]\n";
+            return -1;
+        } else {
+//            std::cerr << "Ok [" << c.first << "] -> [" <<c.second << "]\n";
+        }
+    }
+    return 0;
 }
 
 void path_to_thumb(const string& _input)
@@ -86,6 +121,13 @@ int main(int argc, char **argv)
             return 1;
         }
         cout << "url_encode(" << s << ", " << offs << ") -> [" << url_encode(s, offs) << "]\n";
+    } else if (options["growmime"]) {
+        if (optind < argc) {
+            Usage();
+            return 1;
+        }
+        growmime();
+        return 0;
     } else {
         Usage();
     }

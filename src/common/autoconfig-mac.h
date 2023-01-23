@@ -160,10 +160,6 @@
 /* Use posix_spawn() */
 /* #undef USE_POSIX_SPAWN */
 
-/* Enable using the system's 'file' command to id mime if we fail internally
-   */
-#define USE_SYSTEM_FILE_COMMAND 1
-
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
 #if defined AC_APPLE_UNIVERSAL_BUILD

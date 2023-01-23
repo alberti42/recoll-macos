@@ -986,6 +986,34 @@ int u8DLDistance(const std::string& str1, const std::string str2)
     return DLDistance(istr1, istr2);
 }
 
+// Extract MIME type from a string looking like: ": text/plain; charset=us-ascii".
+string growmimearoundslash(string mime)
+{
+    string::size_type start;
+    string::size_type nd;
+    // File -i will sometimes return strange stuff (ie: "very small file")
+    if((start = nd = mime.find("/")) == string::npos) {
+        return string();
+    }
+    while (start > 0) {
+        start--;
+        if (!isalpha(mime[start])) {
+            start++;
+            break;
+        }
+    }
+    const static string allowedpunct("+-.");
+    while (nd < mime.size() - 1) {
+        nd++;
+        if (!isalnum(mime[nd]) && allowedpunct.find(mime[nd]) == string::npos) {
+            nd--;
+            break;
+        }
+    }
+    mime = mime.substr(start, nd-start+1);
+    return mime;
+}
+
 void rclutil_init_mt()
 {
     path_pkgdatadir();

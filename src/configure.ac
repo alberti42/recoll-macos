@@ -110,10 +110,6 @@ if test ! -x "$fileProg"; then
 fi
 AC_DEFINE_UNQUOTED(FILE_PROG, "$fileProg", [Path to the file program])
 
-# Can't use Solaris standard 'file' command, it doesn't support -i
-AC_DEFINE(USE_SYSTEM_FILE_COMMAND, 1,
-    [Enable using the system's 'file' command to id mime if we fail internally])
-
 # Use aspell to provide spelling expansions ?
 # The default is yes. If we do find an aspell installation, we use it. Else
 # we do compile the aspell module using an internal copy of aspell.h
