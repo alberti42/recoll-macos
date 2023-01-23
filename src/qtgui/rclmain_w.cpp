@@ -239,7 +239,7 @@ void RclMain::init()
     connect(this, SIGNAL(uiPrefsChanged()), restable, SLOT(onUiPrefsChanged()));
 
     connect(restable->getModel(), SIGNAL(sortDataChanged(DocSeqSortSpec)),
-            this, SLOT(onSortDataChanged(DocSeqSortSpec)));
+            this, SLOT(onExtSortDataChanged(DocSeqSortSpec)));
 
     connect(restable, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
             this, SLOT(startPreview(int, Rcl::Doc, int)));
@@ -901,6 +901,12 @@ void RclMain::onSortCtlChanged()
     if (m_source)
         m_source->setSortSpec(m_sortspec);
     emit sortDataChanged(m_sortspec);
+}
+
+void RclMain::onExtSortDataChanged(DocSeqSortSpec spec)
+{
+    onSortDataChanged(spec);
+    initiateQuery();
 }
 
 void RclMain::onSortDataChanged(DocSeqSortSpec spec)
