@@ -11,6 +11,9 @@ daemloglevel = 3
 daemlogfilename = @TMPDIR@/rclmontrace
 
 systemfilecommand = xdg-mime query filetype
+# This is the default on unix but not windows, and needed for windows test
+# to succeed
+usesystemfilecommand = 1
 
 noaspell = 1
 
