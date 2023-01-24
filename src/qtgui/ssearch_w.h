@@ -22,7 +22,7 @@
 
 #include <QVariant>
 #include <QWidget>
-#include <QAbstractListModel>
+#include <QAbstractTableModel>
 #include <QVariant>
 #include <QPixmap>
 
@@ -40,22 +40,22 @@ struct SSearchDef;
 class SSearch;
 class QCompleter;
 
-class RclCompleterModel : public QAbstractListModel {
+class RclCompleterModel : public QAbstractTableModel {
     Q_OBJECT
 
 public:
     RclCompleterModel(SSearch *parent = 0)
-        : QAbstractListModel((QWidget*)parent), m_parent(parent) {
+        : QAbstractTableModel((QWidget*)parent), m_parent(parent) {
         init();
     }
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex &index,
-                  int role = Qt::DisplayRole) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 public slots:
     virtual void onPartialWord(int, const QString&, const QString&);
 private:
     void init();
-    vector<QString> currentlist;
+    vector<pair<QString, int>> currentlist;
     int firstfromindex;
     QPixmap clockPixmap;
     QPixmap interroPixmap;

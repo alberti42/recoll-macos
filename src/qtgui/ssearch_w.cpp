@@ -36,6 +36,8 @@
 #include <QAbstractItemView>
 #include <QAbstractListModel>
 #include <QModelIndex>
+#include <QTableView>
+#include <QHeaderView>
 #include <QTimer>
 #include <QListView>
 #include <QShortcut>
@@ -77,26 +79,35 @@ int RclCompleterModel::rowCount(const QModelIndex &) const
     return currentlist.size();
 }
 
+int RclCompleterModel::columnCount(const QModelIndex &) const
+{
+    return 2;
+}
+
 QVariant RclCompleterModel::data(const QModelIndex &index, int role) const
 {
     LOGDEB1("RclCompleterModel::data: row: " << index.row() << " role " << role << "\n");
-    if (role != Qt::DisplayRole && role != Qt::EditRole &&
-        role != Qt::DecorationRole) {
+    if (role != Qt::DisplayRole && role != Qt::EditRole && role != Qt::DecorationRole) {
         return QVariant();
     }
     if (index.row() < 0 || index.row() >= int(currentlist.size())) {
         return QVariant();
     }
 
-    if (role == Qt::DecorationRole) {
-        LOGDEB1("RclCompleterModel::data: returning pixmap\n");
-        return index.row() < firstfromindex ? QVariant(clockPixmap) :
-            QVariant(interroPixmap);
-    } else {
-        LOGDEB1("RclCompleterModel::data: return: " <<
-                qs2u8s(currentlist[index.row()]) << endl);
-        return QVariant(currentlist[index.row()]);
+    if (index.column() == 0) {
+        if (role == Qt::DecorationRole) {
+            LOGDEB1("RclCompleterModel::data: returning pixmap\n");
+            return index.row() < firstfromindex ? QVariant(clockPixmap) : QVariant(interroPixmap);
+        } else {
+            LOGDEB1("RclCompleterModel::data: return: " << qs2u8s(currentlist[index.row()]) << "\n");
+            return QVariant(currentlist[index.row()].first);
+        }
+    } else if (index.column() == 1 && prefs.showcompleterhitcounts) {
+        if (currentlist[index.row()].second > 0) {
+            return QVariant(QString("%1").arg(currentlist[index.row()].second) + tr(" Hits"));
+        }
     }
+    return QVariant();
 }
 
 void RclCompleterModel::onPartialWord(int tp, const QString& _qtext, const QString& qpartial)
@@ -124,7 +135,7 @@ void RclCompleterModel::onPartialWord(int tp, const QString& _qtext, const QStri
         // If there is current text, only show a limited count of
         // matching entries, else show the full history.
         if (onlyspace || prefs.ssearchHistory[i].contains(qtext, Qt::CaseInsensitive)) {
-            currentlist.push_back(prefs.ssearchHistory[i]);
+            currentlist.push_back({prefs.ssearchHistory[i], -1});
             if (!onlyspace && ++histmatch >= maxhistmatch)
                 break;
         }
@@ -145,8 +156,7 @@ void RclCompleterModel::onPartialWord(int tp, const QString& _qtext, const QStri
         }
         for (const auto& entry : rclmatches.entries) {
             LOGDEB1("RclCompleterModel: match " << entry.term << endl);
-            string data = entry.term;
-            currentlist.push_back(u8s2qs(data));
+            currentlist.push_back({u8s2qs(entry.term), entry.wcf});
         }
     }
     endResetModel();
@@ -172,6 +182,12 @@ void SSearch::init()
 
     m_completermodel = new RclCompleterModel(this);
     m_completer = new QCompleter(m_completermodel, this);
+    auto popup = new QTableView();
+    popup->setShowGrid(false);
+    popup->setWordWrap(false);
+    popup->horizontalHeader()->hide();
+    popup->verticalHeader()->hide();
+    m_completer->setPopup(popup);
     m_completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
     m_completer->setFilterMode(Qt::MatchContains);
     m_completer->setCaseSensitivity(Qt::CaseInsensitive);
@@ -246,6 +262,10 @@ void SSearch::onCompleterShown()
         LOGDEB0("SSearch::onCompleterShown: no popup\n");
         return;
     }
+    auto tb = (QTableView*)popup;
+    tb->resizeColumnToContents(0);
+    tb->resizeRowsToContents();
+    
     QVariant data = popup->model()->data(popup->currentIndex());
     if (!data.isValid()) {
         LOGDEB0("SSearch::onCompleterShown: data not valid\n");

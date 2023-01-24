@@ -160,6 +160,7 @@ public:
     double wholeuiscale{1.0};
     bool autoSpell{false};
     int autoSpellMaxDist{1};
+    bool showcompleterhitcounts{false};
     /*INSERTHERE*/
 
     // See widgets/qxtconfirmationmessage.

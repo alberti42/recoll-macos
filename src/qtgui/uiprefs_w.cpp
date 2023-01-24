@@ -93,6 +93,7 @@ void UIPrefsDialog::init()
     connect(buildAbsCB, SIGNAL(toggled(bool)), replAbsCB, SLOT(setEnabled(bool)));
     connect(autoSpellCB, SIGNAL(toggled(bool)), autoSpellMaxDistSB, SLOT(setEnabled(bool)));
     connect(ssNoCompleteCB, SIGNAL(toggled(bool)), ssSearchOnCompleteCB, SLOT(setDisabled(bool)));
+    connect(ssNoCompleteCB, SIGNAL(toggled(bool)), showcompleterhitcountsCB,SLOT(setDisabled(bool)));
     connect(resetscPB, SIGNAL(clicked()), this, SLOT(resetShortcuts()));
 
     (void)new HelpClient(this);
@@ -134,6 +135,7 @@ void UIPrefsDialog::setFromPrefs()
     }
     noBeepsCB->setChecked(prefs.noBeeps);
     ssNoCompleteCB->setChecked(prefs.ssearchNoComplete);
+    showcompleterhitcountsCB->setChecked(prefs.showcompleterhitcounts);
     ssSearchOnCompleteCB->setChecked(prefs.ssearchStartOnComplete);
     ssSearchOnCompleteCB->setEnabled(!prefs.ssearchNoComplete);
 
@@ -168,6 +170,7 @@ void UIPrefsDialog::setFromPrefs()
     autoSpellCB->setChecked(prefs.autoSpell);
     autoSpellMaxDistSB->setValue(prefs.autoSpellMaxDist);
     autoSpellMaxDistSB->setEnabled(prefs.autoSpell);
+    showcompleterhitcountsCB->setChecked(prefs.showcompleterhitcounts);
     /*INSERTHERE_LOAD*/
 
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
@@ -361,6 +364,7 @@ void UIPrefsDialog::accept()
     QSettings settings;
     prefs.noBeeps = noBeepsCB->isChecked();
     prefs.ssearchNoComplete = ssNoCompleteCB->isChecked();
+    prefs.showcompleterhitcounts = showcompleterhitcountsCB->isChecked();
     prefs.ssearchStartOnComplete = ssSearchOnCompleteCB->isChecked();
 
     if (ssearchTypCMB->currentIndex() == 4) {
@@ -446,6 +450,7 @@ void UIPrefsDialog::accept()
     prefs.wholeuiscale = wholeuiscaleSB->value();
     prefs.autoSpell = autoSpellCB->isChecked();
     prefs.autoSpellMaxDist = autoSpellMaxDistSB->value();
+    prefs.showcompleterhitcounts = showcompleterhitcountsCB->isChecked();
     /*INSERTHERE_ACCEPT*/
 
     // -1 is the qxtconf... predefined value to show the dialog
