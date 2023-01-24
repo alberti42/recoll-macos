@@ -19,7 +19,8 @@ Build-Depends: bison,
                python-setuptools,
                python3-all-dev,
                python3-setuptools,
-               qtbase5-dev
+               qtbase5-dev,
+               qttools5-dev-tools
 X-Python3-Version: >= 3.4
 Vcs-Git: https://salsa.debian.org/debian/recoll.git
 Vcs-Browser: https://salsa.debian.org/debian/recoll
