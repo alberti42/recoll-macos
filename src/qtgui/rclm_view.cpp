@@ -275,21 +275,23 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
 
     // We used to try being clever here, but actually, the only case
     // where we don't need a local file copy of the document (or
-    // parent document) is the case of an HTML page with a non-file
+    // parent document) is the case of ??an HTML page?? with a non-file
     // URL (http or https). Trying to guess based on %u or %f is
-    // doomed because we pass %u to xdg-open.
+    // doomed because we pass %u to xdg-open. 2023-01: can't see why the text/html
+    // test any more. The type of URL should be enough ? Can't need a file if it's not file:// ?
+    // If this does not work, we'll need an explicit attribute in the configuration.
+    // Change needed for enabling an external indexer script, with, for example URLs like
+    // joplin://x-callback-url/openNote?id=xxx and a non HTML MIME.
     bool wantsfile = false;
     bool wantsparentfile = cmd.find("%F") != string::npos;
-    if (!wantsparentfile &&
-        (cmd.find("%f") != string::npos || urlisfileurl(doc.url) ||
-         doc.mimetype.compare("text/html"))) {
+    if (!wantsparentfile && (cmd.find("%f") != string::npos || urlisfileurl(doc.url))) {
         wantsfile = true;
     } 
 
     if (wantsparentfile && !urlisfileurl(doc.url)) {
         QMessageBox::warning(0, "Recoll", 
                              tr("Viewer command line for %1 specifies "
-                                "parent file but URL is http[s]: unsupported")
+                                "parent file but URL is not file:// : unsupported")
                              .arg(QString::fromUtf8(doc.mimetype.c_str())));
         return;
     }
@@ -309,8 +311,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
         // open the chm file, not the internal page. Note that we just
         // override the other file name in this case.
         if (!m_source || !m_source->getEnclosing(doc, pdoc)) {
-            QMessageBox::warning(0, "Recoll",
-                                 tr("Cannot find parent document"));
+            QMessageBox::warning(0, "Recoll", tr("Cannot find parent document"));
             return;
         }
         // Override fn with the parent's : 
