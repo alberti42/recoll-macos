@@ -37,6 +37,7 @@ module1 = Extension('_recoll',
                                     os.path.join(localtop, 'common'),
                                     os.path.join(top, 'common'), 
                                     os.path.join(top, 'internfile'), 
+                                    os.path.join(top, 'index'), 
                                     os.path.join(top, 'rcldb'), 
                                     os.path.join(top, 'query'), 
                                     os.path.join(top, 'unac')

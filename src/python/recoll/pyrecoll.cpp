@@ -36,6 +36,7 @@
 #include "plaintorich.h"
 #include "hldata.h"
 #include "smallut.h"
+#include "idxstatus.h"
 
 #include "pyrecoll.h"
 
@@ -1661,7 +1662,11 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_EnvironmentError, "Bad config ?");
         return -1;
     }
-
+    if (writable) {
+        // Make sure that we have an updater as there may be non-initialisation calls in other parts
+        // of the code
+        statusUpdater(self->rclconfig.get(), true);
+    }
     delete self->db;
     self->db = new Rcl::Db(self->rclconfig.get());
     if (!self->db->open(writable ? Rcl::Db::DbUpd : Rcl::Db::DbRO)) {
