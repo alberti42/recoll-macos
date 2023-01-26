@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 """This sample uses the Recoll Python API to index a directory
 containing mbox files. This is not particularly useful as Recoll
 itself can do this better (e.g. this script does not process
