@@ -5991,111 +5991,107 @@ for i in range(nres):
       <sect2 id="RCL.PROGRAM.PYTHONAPI.UPDATE">
         <title>Creating Python external indexers</title>
 
-        <para>The update API can be used to create an index from data which
-        is not accessible to the regular &RCL; indexer, or structured to
-        present difficulties to the &RCL; input handlers.</para>
+        <para>The update API can be used to create an index from data which is not accessible to the
+          regular &RCL; indexer, or structured in a way which presents difficulties to the &RCL;
+          input handlers.</para>
 
-        <para>An indexer created using this API will be have equivalent work
-        to do as the the Recoll file system indexer: look for modified
-        documents, extract their text, call the API for indexing it, take
-        care of purging the index out of data from documents which do not
-        exist in the document store any more.</para>
+        <para>An indexer created using this API will have to do equivalent work as the the Recoll
+          file system indexer: look for modified documents, extract their text, call the API for
+          indexing it, take care of purging the index of documents which do not exist any
+          more.</para>
         
-        <para>The data for such an external indexer should be stored in an
-        index separate from any used by the &RCL; internal file system
-        indexer. The reason is that the main document indexer purge pass
-        (removal of deleted documents) would also remove all the documents
-        belonging to the external indexer, as they were not seen during the
-        filesystem walk. The main indexer documents would also probably be a
-        problem for the external indexer own purge operation.</para>
+        <para>The index data from such an external indexer should be stored in an index separate
+          from any used by the &RCL; internal file system indexer. The reason is that the main
+          document indexer purge pass (removal of deleted documents) would also remove all the
+          documents belonging to the external indexer, as they were not seen during the filesystem
+          walk (and conversely, the external indexer purge pass would delete all the regular
+          document entries).</para>
 
-        <para>While there would be ways to enable multiple foreign indexers
-        to cooperate on a single index, it is just simpler to use separate
-        ones, and use the multiple index access capabilities of the query
-        interface, if needed.</para>
+        <para>While there would be ways to enable multiple foreign indexers to cooperate on a single
+        index, it is just simpler to use separate ones, and use the multiple index access
+        capabilities of the query interface, if needed.</para>
 
         <para>There are two parts in the update interface:</para>
 
         <itemizedlist>
-          <listitem><para>Methods inside the <filename>recoll</filename>
-          module allow inserting data into the index, to make it accessible by
-          the normal query interface.</para></listitem>
-          <listitem><para>An interface based on scripts execution is defined
-          to allow either the GUI or the <filename>rclextract</filename>
-          module to access original document data for previewing or
-          editing.</para></listitem>
+          <listitem><para>Methods inside the <filename>recoll</filename> module allow the foreign
+              indexer to insert data into the index, to make it accessible by the normal query
+              interface.</para></listitem>
+          <listitem><para>An interface based on scripts execution is defined to allow either the GUI
+              or the <filename>rclextract</filename> module to access original document data for
+              previewing or editing.</para></listitem>
         </itemizedlist>
 
         <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE">
           <title>Python update interface</title>
 
-          <para>The update methods are part of the
-          <filename>recoll</filename> module described above. The connect()
-          method is used with a <literal>writable=true</literal> parameter to
-          obtain a writable <literal>Db</literal> object. The following
-          <literal>Db</literal> object methods are then available.</para>
+          <para>The update methods are part of the <filename>recoll</filename> module described
+            above. The connect() method is used with a <literal>writable=true</literal> parameter to
+            obtain a writable <literal>Db</literal> object. The following <literal>Db</literal>
+            object methods are then available.</para>
 
           <variablelist>
 
             <varlistentry>
               <term>addOrUpdate(udi, doc, parent_udi=None)</term>
               <listitem><para>Add or update index data for a given document
-              The
-              <literal><link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">udi</link></literal> 
-              string must define a unique id for
-                the document. It is an opaque interface element and not
-                interpreted inside Recoll. <literal>doc</literal> is a
-                <literal><link linkend="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC">Doc</link></literal> 
-                object, created from the data to be
-                    indexed (the main text should be in
-                    <literal>doc.text</literal>). If
-                    <literal><link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">parent_udi</link></literal>
-                    is set, this is a unique identifier for the top-level
-                    container (e.g. for the filesystem indexer, this would
-                    be the one which is an actual file).</para>
+                  The
+                  <literal><link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">udi</link></literal> 
+                  string must define a unique id for
+                  the document. It is an opaque interface element and not
+                  interpreted inside Recoll. <literal>doc</literal> is a
+                  <literal><link linkend="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC">Doc</link>
+                  </literal>
+                  object, created from the data to be indexed (the main text should be in
+                  <literal>doc.text</literal>). If
+                  <literal><link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">parent_udi</link>
+                  </literal>
+                  is set, this is a unique identifier for the top-level container (e.g. for the
+                  filesystem indexer, this would be the one which is an actual
+                  file). The <literal>doc</literal> <literal>url</literal> and
+                  possibly <literal>ipath</literal> fields should also be set to allow access to the
+                  actual document after a query. Other fields should also be set to allow further
+                  access to the data, see the description further
+                  down: <literal>rclbes</literal>, <literal>sig</literal>,
+                  <literal>mimetype</literal>. Of course, any standard or custom &RCL; field can
+                  also be added.</para>
               </listitem>
             </varlistentry>
 
             <varlistentry>
               <term>delete(udi)</term>
-              <listitem><para>Purge index from all data for
-              <literal>udi</literal>, and all documents (if any) which have a
-              matrching <literal>parent_udi</literal>.  </para> </listitem>
+              <listitem><para>Purge index from all data for <literal>udi</literal>, and all
+                  documents (if any) which have a
+                  matching <literal>parent_udi</literal>.</para> </listitem> 
             </varlistentry>
 
             <varlistentry>
               <term>needUpdate(udi, sig)</term>
-              <listitem><para>Test if the index needs to be updated for the
-              document identified by <literal>udi</literal>. If this call is
-              to be used, the <literal>doc.sig</literal> field should contain
-              a signature value when calling
-              <literal>addOrUpdate()</literal>. The
-              <literal>needUpdate()</literal> call then compares its
-              parameter value with the stored <literal>sig</literal> for
-              <literal>udi</literal>. <literal>sig</literal> is an opaque
-              value, compared as a string.</para>
-              <para>The filesystem indexer uses a
-              concatenation of the decimal string values for file size and
-              update time, but a hash of the contents could also be
-              used.</para>
-              <para>As a side effect, if the return value is false (the index
-              is up to date), the call will set the existence flag for the
-              document (and any subdocument defined by its
-              <literal>parent_udi</literal>), so that a later
-              <literal>purge()</literal> call will preserve them).</para>
-              <para>The use of <literal>needUpdate()</literal> and
-              <literal>purge()</literal> is optional, and the indexer may use
-              another method for checking the need to reindex or to delete
-              stale entries.</para></listitem>
+              <listitem><para>Test if the index needs to be updated for the document identified
+                  by <literal>udi</literal>. If this call is to be used,
+                  the <literal>doc.sig</literal> field should contain a signature value when calling
+                  <literal>addOrUpdate()</literal>. The
+                  <literal>needUpdate()</literal> call then compares its
+                  parameter value with the stored <literal>sig</literal> for
+                  <literal>udi</literal>. <literal>sig</literal> is an opaque value, compared as a
+                  string.</para>
+                <para>The filesystem indexer uses a concatenation of the decimal string values for
+                  file size and update time, but a hash of the contents could also be used.</para>
+                <para>As a side effect, if the return value is false (the index is up to date), the
+                  call will set the existence flag for the document (and any subdocument defined by
+                  its <literal>parent_udi</literal>), so that a later
+                  <literal>purge()</literal> call will preserve them).</para>
+                <para>The use of <literal>needUpdate()</literal> and
+                  <literal>purge()</literal> is optional, and the indexer may use another method for
+                  checking the need to reindex or to delete stale entries.</para></listitem>
             </varlistentry>
             
             <varlistentry>
               <term>purge()</term>
-              <listitem><para>Delete all documents that were not touched
-              during the just finished indexing pass (since
-              open-for-write). These are the documents for the needUpdate()
-              call was not performed, indicating that they no longer exist in
-              the primary storage system.</para></listitem> 
+              <listitem><para>Delete all documents that were not touched during the just finished
+                  indexing pass (since open-for-write). These are the documents for the needUpdate()
+                  call was not performed, indicating that they no longer exist in the primary
+                  storage system.</para></listitem>
             </varlistentry>
 
           </variablelist>
@@ -6103,43 +6099,42 @@ for i in range(nres):
         </sect3>
 
         <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS">
-          <title>Query data access for external indexers (1.23)</title>
+          <title>Query data access for external indexers</title>
 
-          <para>&RCL; has internal methods to access document data for its
-          internal (filesystem) indexer. An external indexer needs to provide
-          data access methods if it needs integration with the GUI
-          (e.g. preview function), or support for the
-          <filename>rclextract</filename> module.</para>
+          <para>&RCL; has internal methods to access document data for its internal (filesystem)
+            indexer. An external indexer needs to provide data access methods if it needs
+            integration with the GUI (e.g. preview function), or support for the
+            <filename>rclextract</filename> module.</para>
 
           <para>The index data and the access method are linked by the
-          <literal>rclbes</literal> (recoll backend storage) 
-          <literal>Doc</literal> field. You should set this to a short string
-          value identifying your indexer (e.g. the filesystem indexer uses either
-          "FS" or an empty value, the Web history indexer uses "BGL").</para>
+            <literal>rclbes</literal> (recoll backend storage)
+            <literal>Doc</literal> field. You should set this to a short string
+            value identifying your indexer (e.g. the filesystem indexer uses either
+            "FS" or an empty value, the Web history indexer uses "BGL").</para>
 
-          <para>The link is actually performed inside a
-          <filename>backends</filename> configuration file (stored in the
-          configuration directory). This defines commands to execute to
-          access data from the specified indexer. Example, for the mbox
-          indexing sample found in the Recoll source (which sets
-          <literal>rclbes="MBOX"</literal>):</para>
+          <para>The link is actually performed inside a <filename>backends</filename> configuration
+            file (stored in the configuration directory). This defines commands to execute to access
+            data from the specified indexer. Example, for the mbox indexing sample found in the
+            Recoll source (which sets
+            <literal>rclbes="MBOX"</literal>):</para>
+
 <programlisting>[MBOX]
 fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
 makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
 </programlisting>
 
-          <para><literal>fetch</literal> and <literal>makesig</literal>
-          define two commands to execute to respectively retrieve the
-          document text and compute the document signature (the example
-          implementation uses the same script with different first parameters
-          to perform both operations).</para>
+          <para><literal>fetch</literal> and <literal>makesig</literal> define two commands to
+            execute to respectively retrieve the document text and compute the document signature
+            (the example implementation uses the same <filename>rclmbox.py</filename> script with
+            different first parameters to perform both operations, but this is in no way
+            mandatory).</para>
 
-          <para>The scripts are called with three additional arguments:
-          <literal>udi</literal>, <literal>url</literal>,
-          <literal>ipath</literal>, stored with the document when it was
-          indexed, and may use any or all to perform the requested
-          operation. The caller expects the result data on
-          <literal>stdout</literal>.</para>
+          <para>The scripts are called with three additional
+            arguments: <literal>udi</literal>, <literal>url</literal>,
+            <literal>ipath</literal>. These were set by the indexer and stored with the document by
+            the <literal>addOrUpdate()</literal> call described above. Not all arguments are needed
+            in all cases, the script will use what it needs to perform the requested operation. The
+            caller expects the result data on <literal>stdout</literal>.</para>
 
         </sect3>
 
@@ -6147,14 +6142,41 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
           <title>External indexer samples</title>
 
           <para>The Recoll source tree has two samples of external indexers
-          in the <filename>src/python/samples</filename> directory. The more
-          interesting one is <filename>rclmbox.py</filename> which indexes a
-          directory containing <literal>mbox</literal> folder files. It
-          exercises most features in the update interface, and has a data
-          access interface.</para>
-
-          <para>See the comments inside the file for more information.</para>
+            in the <filename>src/python/samples</filename> directory.</para>
+          <para>
+          <itemizedlist>
+            <listitem><filename>rclmbox.py</filename> indexes a
+              directory containing <literal>mbox</literal> folder files. Of course it is not
+              really useful because &RCL; can do this by itself, but it
+              exercises most features in the update interface, and has a data
+              access interface. Also it generates compound documents with
+              actual <literal>ipath</literal> values.</listitem>
+            <listitem><filename>rcljoplin.py</filename> indexes a <application>Joplin</application>
+              application main <literal>notes</literal> SQL table. <application>Joplin</application>
+              sets an an update date attribute for each record in the table, so each note record can
+              be processed as a standalone document (no <literal>ipath</literal> necessary). The
+              sample has full preview and open support (the latter using
+              a <application>Joplin</application> callback URL which allows displaying the result
+              note inside the native app), so it could actually be useful to perform a unified
+              search of the <application>Joplin</application> data and the regular &RCL;
+              data.</listitem>
+          </itemizedlist>
+          </para>
+          <para>See the comments inside the scripts for more information.</para>
         </sect3>
+
+
+        <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.ASEXTINDEX">
+          <title>Using an external indexer index in conjunction with a regular one</title>
+
+          <para>When adding an external indexer to a regular one for unified querying, some
+            elements of the foreign index configuration should be copied or merged into the main
+            index configuration. At the very least, the <filename>backends</filename> file needs to
+            be copied or merged, and also possibly data from the <filename>mimeconf</filename>
+            and <filename>mimeview</filename> files. See the <filename>rcljoplin.py</filename>
+            sample for an example.</para>
+        </sect3>
+        
       </sect2>
       
       <sect2 id="RCL.PROGRAM.PYTHONAPI.COMPAT">

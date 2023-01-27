@@ -8044,24 +8044,23 @@ for i in range(nres):
           </div>
           <p>The update API can be used to create an index from
           data which is not accessible to the regular <span class=
-          "application">Recoll</span> indexer, or structured to
-          present difficulties to the <span class=
+          "application">Recoll</span> indexer, or structured in a
+          way which presents difficulties to the <span class=
           "application">Recoll</span> input handlers.</p>
-          <p>An indexer created using this API will be have
-          equivalent work to do as the the Recoll file system
-          indexer: look for modified documents, extract their text,
-          call the API for indexing it, take care of purging the
-          index out of data from documents which do not exist in
-          the document store any more.</p>
-          <p>The data for such an external indexer should be stored
-          in an index separate from any used by the <span class=
-          "application">Recoll</span> internal file system indexer.
-          The reason is that the main document indexer purge pass
-          (removal of deleted documents) would also remove all the
-          documents belonging to the external indexer, as they were
-          not seen during the filesystem walk. The main indexer
-          documents would also probably be a problem for the
-          external indexer own purge operation.</p>
+          <p>An indexer created using this API will have to do
+          equivalent work as the the Recoll file system indexer:
+          look for modified documents, extract their text, call the
+          API for indexing it, take care of purging the index of
+          documents which do not exist any more.</p>
+          <p>The index data from such an external indexer should be
+          stored in an index separate from any used by the
+          <span class="application">Recoll</span> internal file
+          system indexer. The reason is that the main document
+          indexer purge pass (removal of deleted documents) would
+          also remove all the documents belonging to the external
+          indexer, as they were not seen during the filesystem walk
+          (and conversely, the external indexer purge pass would
+          delete all the regular document entries).</p>
           <p>While there would be ways to enable multiple foreign
           indexers to cooperate on a single index, it is just
           simpler to use separate ones, and use the multiple index
@@ -8073,9 +8072,9 @@ for i in range(nres):
             "list-style-type: disc;">
               <li class="listitem">
                 <p>Methods inside the <code class=
-                "filename">recoll</code> module allow inserting
-                data into the index, to make it accessible by the
-                normal query interface.</p>
+                "filename">recoll</code> module allow the foreign
+                indexer to insert data into the index, to make it
+                accessible by the normal query interface.</p>
               </li>
               <li class="listitem">
                 <p>An interface based on scripts execution is
@@ -8127,13 +8126,25 @@ for i in range(nres):
                   is set, this is a unique identifier for the
                   top-level container (e.g. for the filesystem
                   indexer, this would be the one which is an actual
-                  file).</p>
+                  file). The <code class="literal">doc</code>
+                  <code class="literal">url</code> and possibly
+                  <code class="literal">ipath</code> fields should
+                  also be set to allow access to the actual
+                  document after a query. Other fields should also
+                  be set to allow further access to the data, see
+                  the description further down: <code class=
+                  "literal">rclbes</code>, <code class=
+                  "literal">sig</code>, <code class=
+                  "literal">mimetype</code>. Of course, any
+                  standard or custom <span class=
+                  "application">Recoll</span> field can also be
+                  added.</p>
                 </dd>
                 <dt><span class="term">delete(udi)</span></dt>
                 <dd>
                   <p>Purge index from all data for <code class=
                   "literal">udi</code>, and all documents (if any)
-                  which have a matrching <code class=
+                  which have a matching <code class=
                   "literal">parent_udi</code>.</p>
                 </dd>
                 <dt><span class="term">needUpdate(udi,
@@ -8187,7 +8198,7 @@ for i in range(nres):
                   <h4 class="title"><a name=
                   "RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS" id=
                   "RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS"></a>Query
-                  data access for external indexers (1.23)</h4>
+                  data access for external indexers</h4>
                 </div>
               </div>
             </div>
@@ -8220,15 +8231,19 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
             "literal">makesig</code> define two commands to execute
             to respectively retrieve the document text and compute
             the document signature (the example implementation uses
-            the same script with different first parameters to
-            perform both operations).</p>
+            the same <code class="filename">rclmbox.py</code>
+            script with different first parameters to perform both
+            operations, but this is in no way mandatory).</p>
             <p>The scripts are called with three additional
             arguments: <code class="literal">udi</code>,
             <code class="literal">url</code>, <code class=
-            "literal">ipath</code>, stored with the document when
-            it was indexed, and may use any or all to perform the
-            requested operation. The caller expects the result data
-            on <code class="literal">stdout</code>.</p>
+            "literal">ipath</code>. These were set by the indexer
+            and stored with the document by the <code class=
+            "literal">addOrUpdate()</code> call described above.
+            Not all arguments are needed in all cases, the script
+            will use what it needs to perform the requested
+            operation. The caller expects the result data on
+            <code class="literal">stdout</code>.</p>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -8243,14 +8258,62 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
             </div>
             <p>The Recoll source tree has two samples of external
             indexers in the <code class=
-            "filename">src/python/samples</code> directory. The
-            more interesting one is <code class=
-            "filename">rclmbox.py</code> which indexes a directory
-            containing <code class="literal">mbox</code> folder
-            files. It exercises most features in the update
-            interface, and has a data access interface.</p>
-            <p>See the comments inside the file for more
+            "filename">src/python/samples</code> directory.</p>
+            <div class="itemizedlist">
+              <ul class="itemizedlist" style=
+              "list-style-type: disc;">
+                <li class="listitem"><code class=
+                "filename">rclmbox.py</code> indexes a directory
+                containing <code class="literal">mbox</code> folder
+                files. Of course it is not really useful because
+                <span class="application">Recoll</span> can do this
+                by itself, but it exercises most features in the
+                update interface, and has a data access interface.
+                Also it generates compound documents with actual
+                <code class="literal">ipath</code> values.</li>
+                <li class="listitem"><code class=
+                "filename">rcljoplin.py</code> indexes a
+                <span class="application">Joplin</span> application
+                main <code class="literal">notes</code> SQL table.
+                <span class="application">Joplin</span> sets an an
+                update date attribute for each record in the table,
+                so each note record can be processed as a
+                standalone document (no <code class=
+                "literal">ipath</code> necessary). The sample has
+                full preview and open support (the latter using a
+                <span class="application">Joplin</span> callback
+                URL which allows displaying the result note inside
+                the native app), so it could actually be useful to
+                perform a unified search of the <span class=
+                "application">Joplin</span> data and the regular
+                <span class="application">Recoll</span> data.</li>
+              </ul>
+            </div>
+            <p>See the comments inside the scripts for more
             information.</p>
+          </div>
+          <div class="sect3">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.PROGRAM.PYTHONAPI.UPDATE.ASEXTINDEX" id=
+                  "RCL.PROGRAM.PYTHONAPI.UPDATE.ASEXTINDEX"></a>Using
+                  an external indexer index in conjunction with a
+                  regular one</h4>
+                </div>
+              </div>
+            </div>
+            <p>When adding an external indexer to a regular one for
+            unified querying, some elements of the foreign index
+            configuration should be copied or merged into the main
+            index configuration. At the very least, the
+            <code class="filename">backends</code> file needs to be
+            copied or merged, and also possibly data from the
+            <code class="filename">mimeconf</code> and <code class=
+            "filename">mimeview</code> files. See the <code class=
+            "filename">rcljoplin.py</code> sample for an
+            example.</p>
           </div>
         </div>
         <div class="sect2">
