@@ -42,23 +42,26 @@
 import sys
 import os
 import sqlite3
+import subprocess
 
 from recoll import recoll
+from recoll import rclconfig
+from recoll import conftree
 
 def msg(s):
     print(f"{s}", file=sys.stderr)
     
 
 class joplin_indexer:
-    """The indexer classs. An object is created for indexing one joplin db"""
-    def __init__(self, rcldb, sqfile):
-        """Initialize for writable db recoll.Db object and joplin db connection"""
+    def __init__(self, rclconfdir, rcldb, sqfile):
+        self.confdir = rclconfdir
+        self.rclconfig = rclconfig.RclConfig(argcnf = self.confdir)
         self.rcldb = rcldb
         self.sqconn = sqlite3.connect(sqfile)
 
-    def sig(self, note):
-        """Create update verification value for note: updtime looks ok"""
-        return str(note["updtime"])
+    def _sig(self, note):
+        """Create update verification value for note: updated_time looks ok"""
+        return str(note["updated_time"])
 
     def sigfromid(self, id):
         #msg(f"sigfromid: {id}")
@@ -67,39 +70,46 @@ class joplin_indexer:
         c.execute(stmt, (id,))
         r = c.fetchone()
         if r:
-            return self.sig({"updtime":r[0]})
+            return self._sig({"updated_time":r[0]})
         return ""
         
-    def udi(self, note):
+    def _udi(self, note):
         """Create unique document identifier for message. This should
         be shorter than 150 bytes, which we optimistically don't check
         here, as we just use the note id (which we also assume to be globally unique)"""
         return note["id"]
 
-
     # Walk the table, check if index is up to date for each note, update the index if not
     def index(self):
-        names = ["id", "title", "body", "updtime", "author"]
+        cols = ["id", "title", "body", "updated_time", "author"]
         c = self.sqconn.cursor()
-        stmt = "SELECT id, title, body, updated_time, author FROM notes"
+        stmt = "SELECT " + ",".join(cols) + " FROM notes"
         c.execute(stmt)
         for r in c:
-            note = dict((nm,val) for nm, val in zip(names, r))
-            if not self.rcldb.needUpdate(self.udi(note), self.sig(note)):
+            note = dict((nm,val) for nm, val in zip(cols, r))
+            if not self.rcldb.needUpdate(self._udi(note), self._sig(note)):
                 #msg(f"Index is up to date for {note['id']}")
                 continue
             #msg(f"Indexing {str(note)[0:200]}")
-            self.index_note(note)
+            self._index_note(note)
         self.rcldb.purge()
+        langs = self.rclconfig.getConfParam("indexstemminglanguages")
+        langs = conftree.stringToStrings(langs)
+        self.rcldb.createStemDbs(langs)
+        self.rcldb.close()
+        # The recoll extension has no support for accessing the aspell speller at the moment.
+        # However, we can run recollindex which will do the job for us.
+        args=["recollindex", "-c", self.confdir, "-S"]
+        #msg(f"running {args}")
+        subprocess.run(args)
         
-
-    # Index a specific note
-    def index_note(self, note):
+    # Index one note record
+    def _index_note(self, note):
         doc = recoll.Doc()
 
         # Misc standard recoll fields
-        # it appears that the joplin updtime is in mS, we want secs
-        doc.mtime = str(note["updtime"])[0:-3]
+        # it appears that the joplin updated_time is in mS, we want secs
+        doc.mtime = str(note["updated_time"])[0:-3]
         doc.title = note["title"]
         doc.author = note["author"]
 
@@ -109,7 +119,7 @@ class joplin_indexer:
         doc.mimetype = "application/x-joplin-note"
         
         # Store data for later "up to date" checks
-        doc.sig = self.sig(note)
+        doc.sig = self._sig(note)
         
         # The rclbes field is the link between the index data and this
         # script when used at query time
@@ -121,7 +131,7 @@ class joplin_indexer:
 
         # The udi is the unique document identifier, later used if we
         # want to e.g. delete the document index data (and other ops).
-        udi = self.udi(note)
+        udi = self._udi(note)
 
         self.rcldb.addOrUpdate(udi, doc)
 
@@ -137,13 +147,6 @@ class joplin_indexer:
             return r[0]
         return ""
 
-
-# Routine for indexing a Joplin notes table. Open the recoll index, call the actual
-# indexer.
-def index_joplin():
-    rcldb = recoll.connect(confdir=rclconfdir, writable=1)
-    indexer = joplin_indexer(rcldb, joplindb)
-    indexer.index()
 
 ########
 # Main program. This is called from cron or the command line for indexing, or called from the recoll
@@ -177,7 +180,10 @@ def usage():
     sys.exit(1)
 
 if len(sys.argv) == 1:
-    index_joplin()
+    rcldb = recoll.connect(confdir=rclconfdir, writable=1)
+    indexer = joplin_indexer(rclconfdir, rcldb, joplindb)
+    indexer.index()
+
 else:
     # cmd [fetch|makesig] udi url ipath
     if len(sys.argv) != 5:
@@ -187,7 +193,7 @@ else:
     url = sys.argv[3]
     
     # no need for an rcldb for getdata or makesig.
-    fetcher = joplin_indexer(None, joplindb)
+    fetcher = joplin_indexer(rclconfdir, None, joplindb)
 
     if cmd == 'fetch':
         print(f"{fetcher.getdata(joplindb, udi)}", end="")
