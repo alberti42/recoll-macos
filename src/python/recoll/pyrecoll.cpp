@@ -1953,6 +1953,56 @@ Db_purge(recoll_DbObject* self)
     return Py_BuildValue("i", result);
 }
 
+#if PY_MAJOR_VERSION >=3
+static PyObject*
+Db_createStemDbs(recoll_DbObject* self, PyObject* args) {
+    PyObject* pylangs;
+    std::vector<std::string> langs;
+    bool opret;
+    if (self->db == 0) {
+        LOGERR("Db_createStemDbs: db not found " << self->db << "\n");
+        PyErr_SetString(PyExc_AttributeError, "db");
+        return 0;
+    }
+    if (!PyArg_ParseTuple(args, "O", &pylangs)) {
+        return NULL;
+    }
+    if (PyUnicode_Check(pylangs)) {
+        Py_ssize_t sz;
+        const char *bytes = PyUnicode_AsUTF8AndSize(pylangs, &sz);
+        langs.push_back(std::string(bytes, sz));
+    } else {
+        if (!PySequence_Check(pylangs)) {
+            PyErr_SetString(PyExc_TypeError, "Input must be a list or tuple.");
+            return NULL;
+        }
+        PyObject  *seq = PySequence_Fast(pylangs, "createStemDbs: input must be str or sequence");
+        if (NULL == seq) {
+            return NULL;
+        }
+        Py_ssize_t lsz = PySequence_Fast_GET_SIZE(seq);
+        for (int i = 0; i < lsz; i++) {
+            Py_ssize_t sz;
+            const char *bytes;
+            PyObject *pylang = PySequence_Fast_GET_ITEM(seq, i);
+            if (!PyUnicode_Check(pylang)) {
+              PyErr_SetString(PyExc_TypeError, "Input must be a list or tuple of str.");
+              return NULL;
+            }
+            bytes = PyUnicode_AsUTF8AndSize(pylang, &sz);
+            langs.push_back(std::string(bytes, sz));
+        }
+    }
+    opret = self->db->createStemDbs(langs);
+    if (opret) {
+        Py_RETURN_NONE;
+    } else {
+        PyErr_SetString(PyExc_SystemError, "Db update failed");
+        return NULL;
+    }
+}
+#endif /* Python3 */
+
 static PyObject *
 Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
 {
@@ -2041,6 +2091,12 @@ static PyMethodDef Db_methods[] = {
      "if parent_udi is set, this is a unique identifier for the\n"
      "top-level container (ie mbox file)"
     },
+#if PY_MAJOR_VERSION >=3
+    {"createStemDbs", (PyCFunction)Db_createStemDbs, METH_VARARGS,
+     "createStemDbs(lang|lang sequence) -> None\n"
+     "Create stemming dictionaries for the specified languages\n"
+    },
+#endif
     {NULL}  /* Sentinel */
 };
 PyDoc_STRVAR(doc_DbObject,
