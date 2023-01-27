@@ -93,7 +93,10 @@ void UIPrefsDialog::init()
     connect(buildAbsCB, SIGNAL(toggled(bool)), replAbsCB, SLOT(setEnabled(bool)));
     connect(autoSpellCB, SIGNAL(toggled(bool)), autoSpellMaxDistSB, SLOT(setEnabled(bool)));
     connect(ssNoCompleteCB, SIGNAL(toggled(bool)), ssSearchOnCompleteCB, SLOT(setDisabled(bool)));
-    connect(ssNoCompleteCB, SIGNAL(toggled(bool)), showcompleterhitcountsCB,SLOT(setDisabled(bool)));
+    connect(ssNoCompleteCB, SIGNAL(toggled(bool)),
+            showcompleterhitcountsCB, SLOT(setDisabled(bool)));
+    connect(ssNoCompleteCB, SIGNAL(toggled(bool)),
+            ssearchCompleterHistCntSB, SLOT(setDisabled(bool)));
     connect(resetscPB, SIGNAL(clicked()), this, SLOT(resetShortcuts()));
 
     (void)new HelpClient(this);
@@ -171,6 +174,7 @@ void UIPrefsDialog::setFromPrefs()
     autoSpellMaxDistSB->setValue(prefs.autoSpellMaxDist);
     autoSpellMaxDistSB->setEnabled(prefs.autoSpell);
     showcompleterhitcountsCB->setChecked(prefs.showcompleterhitcounts);
+    ssearchCompleterHistCntSB->setValue(prefs.ssearchCompleterHistCnt);
     /*INSERTHERE_LOAD*/
 
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
@@ -451,6 +455,7 @@ void UIPrefsDialog::accept()
     prefs.autoSpell = autoSpellCB->isChecked();
     prefs.autoSpellMaxDist = autoSpellMaxDistSB->value();
     prefs.showcompleterhitcounts = showcompleterhitcountsCB->isChecked();
+    prefs.ssearchCompleterHistCnt = ssearchCompleterHistCntSB->value();
     /*INSERTHERE_ACCEPT*/
 
     // -1 is the qxtconf... predefined value to show the dialog

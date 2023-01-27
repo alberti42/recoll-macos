@@ -161,6 +161,7 @@ public:
     bool autoSpell{false};
     int autoSpellMaxDist{1};
     bool showcompleterhitcounts{false};
+    int ssearchCompleterHistCnt{0};
     /*INSERTHERE*/
 
     // See widgets/qxtconfirmationmessage.

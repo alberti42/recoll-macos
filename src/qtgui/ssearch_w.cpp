@@ -58,8 +58,6 @@
 
 using namespace std;
 
-// Max search history matches displayed in completer
-static const int maxhistmatch = 10;
 // Max db term matches fetched from the index
 static const int maxdbtermmatch = 20;
 // Visible rows for the completer listview
@@ -127,6 +125,7 @@ void RclCompleterModel::onPartialWord(int tp, const QString& _qtext, const QStri
         return;
     }
 
+    int maxhistmatch = prefs.ssearchCompleterHistCnt;
     int histmatch = 0;
     // Look for matches between the full entry and the search history
     // (anywhere in the string)
@@ -135,9 +134,9 @@ void RclCompleterModel::onPartialWord(int tp, const QString& _qtext, const QStri
         // If there is current text, only show a limited count of
         // matching entries, else show the full history.
         if (onlyspace || prefs.ssearchHistory[i].contains(qtext, Qt::CaseInsensitive)) {
-            currentlist.push_back({prefs.ssearchHistory[i], -1});
-            if (!onlyspace && ++histmatch >= maxhistmatch)
+            if (!onlyspace && histmatch++ >= maxhistmatch)
                 break;
+            currentlist.push_back({prefs.ssearchHistory[i], -1});
         }
     }
     firstfromindex = currentlist.size();
