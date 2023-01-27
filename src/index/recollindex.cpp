@@ -567,7 +567,7 @@ int main(int argc, char *argv[])
     
     std::string burstdir;
     std::string diagsfile;
-    while ((ret = getopt_long(argc, (char *const*)&args[0], "c:CDdEefhikKlmnPp:rR:sS:w:xZz",
+    while ((ret = getopt_long(argc, (char *const*)&args[0], "c:CDdEefhikKlmnPp:rR:sSw:xZz",
                               long_options, NULL)) != -1) {
         switch (ret) {
         case 'c':  op_flags |= OPT_c; a_config = optarg; break;
