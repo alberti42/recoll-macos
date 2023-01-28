@@ -43,6 +43,7 @@ import sys
 import os
 import sqlite3
 import subprocess
+from getopt import getopt
 
 from recoll import recoll
 from recoll import rclconfig
@@ -148,6 +149,62 @@ class joplin_indexer:
         return ""
 
 
+# Installation procedure: create the recoll-joplin configuration directory and the appropriate
+# config files, update the main recoll one with the necessary bits for using the joplin one as an
+# external index
+def init_config(confdir):
+    # Maybe create recoll-joplin recoll config/index directory + empty directory for topdirs
+    emptydir = os.path.join(confdir, "empty")
+    if not os.path.isdir(confdir):
+        os.makedirs(os.path.join(confdir, "empty"))
+    # Create/update recoll.conf
+    conf = conftree.ConfSimple(os.path.join(confdir, "recoll.conf"), readonly=False)
+    conf.set("topdirs", emptydir)
+    conf.set("loglevel", "3")
+    # Create/update mimeconf
+    conf = conftree.ConfSimple(os.path.join(confdir, "mimeconf"), readonly=False)
+    conf.set("application/x-joplin-note", "internal text/plain", "index")
+    # Create/update mimeview
+    conf = conftree.ConfSimple(os.path.join(confdir, "mimeview"), readonly=False)
+    conf.set("xallexcepts+", "application/x-joplin-note")
+    conf.set("application/x-joplin-note", "xdg-open %u", "view")
+    # Create/update backends
+    conf = conftree.ConfSimple(os.path.join(confdir, "backends"), readonly=False)
+    scriptpath = os.path.realpath(__file__)
+    conf.set("fetch", scriptpath + " fetch", "JOPLIN")
+    conf.set("makesig", scriptpath + " makesig", "JOPLIN")
+
+    # Now for the base dir: edit the existing files
+    recollconf = rclconfig.RclConfig()
+    baseconfdir = recollconf.getConfDir()
+    # mimeconf
+    conf = conftree.ConfSimple(os.path.join(baseconfdir, "mimeconf"), readonly=False)
+    conf.set("application/x-joplin-note", "internal text/plain", "index")
+    # mimeview
+    conf = conftree.ConfSimple(os.path.join(baseconfdir, "mimeview"), readonly=False)
+    xalle = conf.get("xallexcepts+")
+    if not xalle:
+        xalle = "application/x-joplin-note"
+    else:
+        xalle += " application/x-joplin-note"
+    conf.set("xallexcepts+", xalle)
+    conf.set("application/x-joplin-note", "xdg-open %u", "view")
+    # backends
+    conf = conftree.ConfSimple(os.path.join(baseconfdir, "backends"), readonly=False)
+    conf.set("fetch", scriptpath + " fetch", "JOPLIN")
+    conf.set("makesig", scriptpath + " makesig", "JOPLIN")
+    # Check external indexes. Can't edit directly because no such function in rclconfig.py
+    edbs = rclconfig.RclExtraDbs(recollconf)
+    dbs = edbs.getActDbs()
+    rdbs = []
+    for db in dbs:
+        rdbs.append(os.path.dirname(os.path.realpath(db.decode('UTF-8'))))
+    if os.path.realpath(confdir) not in rdbs:
+        print(f"You will need to add and/or activate {confdir} as an external index to " 
+              f"{baseconfdir} for joint querying")
+
+
+
 ########
 # Main program. This is called from cron or the command line for indexing, or called from the recoll
 # main code with a specific command line for retrieving data or checking up-to-date-ness (for
@@ -169,37 +226,51 @@ rclconfdir = os.path.expanduser("~/.recoll-joplin")
 joplindb = os.path.expanduser("~/.config/joplin-desktop/database.sqlite")
     
 usage_string="""Usage:
-rcljoplin.py
+rcljoplin.py --config Create rcljoplin index configuration and update the base recoll one.
+rcljoplin.py --index
     Index the joplin notes table (the path to the sqlite db is hard-coded inside the script)
 rcljoplin.py [fetch|makesig] <udi> <url> <ipath>
     fetch subdoc data or make signature (query time). ipath must be set but is ignored
 """
 
-def usage():
-    msg(f"{usage_string}")
+def usage(f=sys.stderr):
+    print(f"{usage_string}", file=f)
     sys.exit(1)
 
-if len(sys.argv) == 1:
-    rcldb = recoll.connect(confdir=rclconfdir, writable=1)
-    indexer = joplin_indexer(rclconfdir, rcldb, joplindb)
-    indexer.index()
-
-else:
-    # cmd [fetch|makesig] udi url ipath
-    if len(sys.argv) != 5:
-        usage()
-    cmd = sys.argv[1]
-    udi = sys.argv[2]
-    url = sys.argv[3]
+try:
+    options, args = getopt(sys.argv[1:], "chi", ["config", "help", "index"])
+except Exception as err:
+    print(err, file=sys.stderr)
+    usage()
+for o,a in options:
+    if o in ("-h", "--help"):
+        usage(sys.stdout)
+    elif o in ("-i", "--index"):
+        rcldb = recoll.connect(confdir=rclconfdir, writable=1)
+        indexer = joplin_indexer(rclconfdir, rcldb, joplindb)
+        indexer.index()
+        sys.exit(0)
+    elif o in ("-c", "--config"):
+        init_config(rclconfdir)
+        sys.exit(0)
+        
+# cmd [fetch|makesig] udi url ipath
+if len(args) != 5:
+    usage()
+cmd = sys.argv[1]
+udi = sys.argv[2]
+url = sys.argv[3]
     
-    # no need for an rcldb for getdata or makesig.
-    fetcher = joplin_indexer(rclconfdir, None, joplindb)
+# no need for an rcldb for getdata or makesig.
+fetcher = joplin_indexer(rclconfdir, None, joplindb)
 
-    if cmd == 'fetch':
-        print(f"{fetcher.getdata(joplindb, udi)}", end="")
-    elif cmd == 'makesig':
-        print(f"{fetcher.sigfromid(udi)}", end="")
-    else:
-        usage()
+if cmd == 'fetch':
+    print(f"{fetcher.getdata(joplindb, udi)}", end="")
+elif cmd == 'makesig':
+    print(f"{fetcher.sigfromid(udi)}", end="")
+else:
+    usage()
 
 sys.exit(0)
+
+
