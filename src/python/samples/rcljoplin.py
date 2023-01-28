@@ -8,8 +8,11 @@
 # Configuration: we need a separate recoll configuration and index (else all the main data will be
 # purged after indexing the Joplin db...)
 #
-# Configuration files. Note that the mimeconf and mimeview additions, and the backends file need to
+# Configuration files: Note that the mimeconf and mimeview additions, and the backends file need to
 # exist for any index which would add the Joplin one as an external index.
+#
+# rcljoplin.py -c will take care to create the configuration for you (and update the main one). See
+# the init_config() routine. Here follows a description anyway:
 #
 # recoll.conf: just set it to index an empty directory
 #
