@@ -120,16 +120,16 @@ inode/directory|parentopen = dolphin --select %(childurl) %f
 application/x-gnuinfo = xterm -e "info -f %f"
 application/x-gnumeric = gnumeric %f
 
-application/x-flac = rhythmbox %f
-audio/flac = rhythmbox %f
-audio/mpeg = rhythmbox %f
-audio/aac = rhythmbox %f
-audio/ape = rhythmbox %f
-audio/mp4 = rhythmbox %f
-audio/ogg = rhythmbox %f
-audio/x-musepack = rhythmbox %f
-audio/x-wavpack = rhythmbox %f
-application/ogg = rhythmbox %f
+application/x-flac = vlc --start-time %p %f
+audio/flac = vlc --start-time %p %f
+audio/mpeg = vlc --start-time %p %f
+audio/aac = vlc --start-time %p %f
+audio/ape = vlc --start-time %p %f
+audio/mp4 = vlc --start-time %p %f
+audio/ogg = vlc --start-time %p %f
+audio/x-musepack = vlc --start-time %p %f
+audio/x-wavpack = vlc --start-time %p %f
+application/ogg = vlc --start-time %p %f
 
 audio/x-karaoke = kmid %f
 
@@ -236,13 +236,13 @@ text/x-purple-log = emacsclient --no-wait  %f
 
 # The video types will usually be handled by the desktop default, but they
 # need entries here to get an "Open" link
-video/3gpp = vlc %f
-video/mp2p = vlc %f
-video/mp2t = vlc %f
-video/mp4 = vlc %f
-video/mpeg = vlc %f
-video/quicktime = vlc %f
-video/x-matroska = vlc %f
-video/x-ms-asf = vlc %f
-video/x-msvideo = vlc %f
+video/3gpp = vlc --start-time %p %f
+video/mp2p = vlc --start-time %p %f
+video/mp2t = vlc --start-time %p %f
+video/mp4 = vlc --start-time %p %f
+video/mpeg = vlc --start-time %p %f
+video/quicktime = vlc --start-time %p %f
+video/x-matroska = vlc --start-time %p %f
+video/x-ms-asf = vlc --start-time %p %f
+video/x-msvideo = vlc --start-time %p %f
 
