@@ -211,7 +211,7 @@ class AudioTagExtractor(RclBaseHandler):
         self.recoll_confdir = self.config.confdir
         self.process_stt = False
         self.preview_mode = os.environ.get("RECOLL_FILTER_FORPREVIEW", "no")
-        if self.preview_mode != "yes" and self.config.getConfParam("speechtotext") == "whisper":
+        if self.config.getConfParam("speechtotext") == "whisper":
             self.process_stt = True
 
         tagfixerfn = self.config.getConfParam("audiotagfixerscript")
@@ -229,8 +229,7 @@ class AudioTagExtractor(RclBaseHandler):
     def _showMutaInfo(self, mutf):
         self.em.rclog("%s" % mutf.info.pprint())
         for prop in dir(mutf.info):
-            self.em.rclog("mutinfo: %s -> %s" %
-                          (prop, getattr( mutf.info, prop)))
+            self.em.rclog(f"mutinfo: {prop} -> {getattr( mutf.info, prop)}")
 
 
     def _fixrating(self, minf):
@@ -292,7 +291,8 @@ class AudioTagExtractor(RclBaseHandler):
             if len(dt) > 10:
                 dt = dt[0:10]
             date_parts = dt.split('-')
-            if len(date_parts) > 3 or len(date_parts) == 2 or len(date_parts[0]) != 4 or date_parts[0] == '0000':
+            if len(date_parts) > 3 or len(date_parts) == 2 or len(date_parts[0]) != 4 or \
+               date_parts[0] == '0000':
                 return ''
             if len(date_parts) == 1:
                 pdt = datetime.datetime.strptime(dt, "%Y")
@@ -474,7 +474,8 @@ class AudioTagExtractor(RclBaseHandler):
                     sys.exit(1)
 
                 if sttdataset not in whisper.available_models():
-                    self.em.rclog(f"Invalid stt model specified, skipping speech transcription for {filename}.")
+                    self.em.rclog(f"Invalid stt model specified, skipping speech transcription "
+                                  "for {filename}.")
                 else:
                     if device_name:
                         stt_model = whisper.load_model(name=sttdataset, device=device_name)
@@ -485,53 +486,80 @@ class AudioTagExtractor(RclBaseHandler):
                         raw_result = stt_model.transcribe(filename)
                         del stt_model
                     except Exception as ex:
-                        self.em.rclog(f"Whisper speech to text transcription error: {ex}, skipping transcription of {filename}.")
+                        self.em.rclog(f"Whisper speech to text transcription error: {ex}, "
+                                      "skipping transcription of {filename}.")
                     finally:
                         torch.cuda.empty_cache()
                         gc.collect()
                         # self.em.rclog(torch.cuda.memory_summary())
             # self.em.rclog(f"Released stt file lock for: {filename}.")
         except Exception as ex:
-            self.em.rclog(f"Whisper speech to text lock error: {ex}, skipping transcription of {filename}.")
+            self.em.rclog(f"Whisper speech to text lock error: {ex}, skipping transcription "
+                          "of {filename}.")
         return raw_result
 
     def speech_to_text(self, filename: str):
         """Output html content containing the speech to text content found in the audio track.
 
-        This reuses recolls page numbering mechanism, wherein a slash f designates a new page, i.e. a form feed.
-        In the case of an audio track, we are using a page to represent a second in time.
+        This reuses recolls page numbering mechanism, wherein a slash f designates a new page,
+        i.e. a form feed.  In the case of an audio track, we are using a page to represent a second
+        in time.
 
-        We fill the output with empty page form feeds unless we have text
-        that starts during that second/page, then we output the content and append the form feed to it.
+        We fill the output with empty page form feeds unless we have text that starts during that
+        second/page, then we output the content and append the form feed to it.
 
-        When the audio/video player is called from opened from recoll using a snippet of indexed speech to text,
-        it should open to the correct second where the snippet was played. Not all audio players and formats do this accurately.
+        When the audio/video player is called from opened from recoll using a snippet of indexed
+        speech to text, it should open to the correct second where the snippet was played. Not all
+        audio players and formats do this accurately.
+
         """
         output_array = []
         result_dict = {}
-        if os.path.exists(filename):
+
+        import rclocrcache
+        import json
+        # The cache can find data either based on file metadata, or, in case, e.g. the file has been
+        # renamed, based on a data hash. We limit the hash size to 3mb (which will be taken as 3 1mb
+        # slices at the beginning, middle and end of the file
+        cache = rclocrcache.OCRCache(self.config, hashmb=3)
+        incache, json_result = cache.get(filename)
+        if incache:
+            raw_result = json.loads(json_result.decode("UTF-8"))
+        else:
             raw_result = self.transcribe_via_whisper(filename)
-            for segment in raw_result["segments"]:
-                if "start" in segment:
-                    segment_start = int(segment["start"])
-                    if segment_start in result_dict:
-                        result_dict[segment_start] += " " + segment["text"]
-                    else:
-                        result_dict[segment_start] = segment["text"]
-            max_seconds = 0
-            if result_dict:
-                max_seconds = max(result_dict.keys()) + 1
-            for i in range(max_seconds):
-                if i in result_dict:
-                    output_array.append(result_dict.get(i))
+            cache.store(filename, json.dumps(raw_result).encode("UTF-8"))
+        
+        for segment in raw_result["segments"]:
+            if "start" in segment:
+                segment_start = int(segment["start"])
+                if segment_start in result_dict:
+                    result_dict[segment_start] += " " + segment["text"]
                 else:
-                    output_array.append("")
-        return '\f\n'.join(output_array)
+                    result_dict[segment_start] = segment["text"]
+        max_seconds = 0
+        if result_dict:
+            max_seconds = max(result_dict.keys()) + 1
+        for i in range(max_seconds):
+            if i in result_dict:
+                output_array.append(result_dict.get(i))
+            else:
+                output_array.append("")
+        if self.preview_mode == "yes":
+            return '\n'.join([e for e in output_array if e])
+        else:
+            return '\f\n'.join(output_array)
+
 
     def html_text(self, filename):
         # self.em.rclog(f"processing {filename}")
         if not self.inputmimetype:
             raise Exception("html_text: input MIME type not set")
+        self.config.setKeyDir(os.path.dirname(filename))
+        if self.config.getConfParam("speechtotext") == "whisper":
+            self.process_stt = True
+        else:
+            self.process_stt = False
+        
         # The field storage dictionary
         minf = {}
 
@@ -598,7 +626,7 @@ class AudioTagExtractor(RclBaseHandler):
             docdata = tobytes(mutf.pprint())
         except Exception as err:
             docdata = ""
-            self.em.rclog("Doc pprint error: %s" % err)
+            self.em.rclog(f"Doc pprint error: {err}")
 
         stt_results = b""
         if self.process_stt and "LYRICS" not in mutf:
@@ -608,14 +636,6 @@ class AudioTagExtractor(RclBaseHandler):
         html_output += _htmlsuffix
         # self.em.rclog(f"Results: {html_output}")
         return html_output
-
-
-def makeObject():
-    print("makeObject")
-    proto = rclexecm.RclExecM()
-    print("makeObject: rclexecm ok")
-    extract = AudioTagExtractor(proto)
-    return 17
 
 
 if __name__ == '__main__':
