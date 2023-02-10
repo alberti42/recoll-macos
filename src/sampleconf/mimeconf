@@ -221,6 +221,8 @@ text/x-c = internal
 text/x-c+ = internal
 text/x-c++ = internal
 text/x-chm-html = internal text/html
+# Stupid xdg-mime type for COPYING files
+text/x-copying = internal text/plain
 text/x-csharp = internal text/plain
 text/x-csv = internal text/plain
 text/x-fictionbook = internal xsltproc fb2.xsl
