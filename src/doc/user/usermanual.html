@@ -11,7 +11,7 @@
   <meta name="generator" content=
   "DocBook XSL Stylesheets Vsnapshot">
   <meta name="description" content=
-  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.33.">
+  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.34.">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084"
 alink="#0000FF">
@@ -36,7 +36,7 @@ alink="#0000FF">
           </div>
         </div>
         <div>
-          <p class="copyright">Copyright © 2005-2020 Jean-Francois
+          <p class="copyright">Copyright © 2005-2023 Jean-Francois
           Dockes</p>
         </div>
         <div>
@@ -54,7 +54,7 @@ alink="#0000FF">
             and describes the installation and use of the
             <span class="application">Recoll</span> application.
             This version describes <span class=
-            "application">Recoll</span> 1.33.</p>
+            "application">Recoll</span> 1.34.</p>
           </div>
         </div>
       </div>
@@ -95,9 +95,9 @@ alink="#0000FF">
                 <dt><span class="sect2">2.1.3. <a href=
                 "#idm232">Document types</a></span></dt>
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idm281">Indexing failures</a></span></dt>
+                "#idm283">Indexing failures</a></span></dt>
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idm291">Recovery</a></span></dt>
+                "#idm293">Recovery</a></span></dt>
               </dl>
             </dd>
             <dt><span class="sect1">2.2. <a href=
@@ -122,14 +122,14 @@ alink="#0000FF">
             <dd>
               <dl>
                 <dt><span class="sect2">2.3.1. <a href=
-                "#RCL.INDEXING.CONFIG.MULTIPLE">Multiple
-                indexes</a></span></dt>
-                <dt><span class="sect2">2.3.2. <a href=
-                "#RCL.INDEXING.CONFIG.SENS">Index case and
-                diacritics sensitivity</a></span></dt>
-                <dt><span class="sect2">2.3.3. <a href=
                 "#RCL.INDEXING.CONFIG.GUI">The index configuration
                 GUI</a></span></dt>
+                <dt><span class="sect2">2.3.2. <a href=
+                "#RCL.INDEXING.CONFIG.MULTIPLE">Multiple
+                indexes</a></span></dt>
+                <dt><span class="sect2">2.3.3. <a href=
+                "#RCL.INDEXING.CONFIG.SENS">Index case and
+                diacritics sensitivity</a></span></dt>
                 <dt><span class="sect2">2.3.4. <a href=
                 "#RCL.INDEXING.CONFIG.THREADS">Indexing threads
                 configuration (<span class=
@@ -138,41 +138,46 @@ alink="#0000FF">
               </dl>
             </dd>
             <dt><span class="sect1">2.4. <a href=
-            "#RCL.INDEXING.REMOVABLE">Removable
-            volumes</a></span></dt>
-            <dt><span class="sect1">2.5. <a href=
-            "#RCL.INDEXING.WebQUEUE"><span class=
-            "application">Unix</span>-like systems: indexing
-            visited Web pages</a></span></dt>
-            <dt><span class="sect1">2.6. <a href=
-            "#RCL.INDEXING.EXTATTR"><span class=
-            "application">Unix</span>-like systems: using extended
-            attributes</a></span></dt>
-            <dt><span class="sect1">2.7. <a href=
-            "#RCL.INDEXING.EXTTAGS"><span class=
-            "application">Unix</span>-like systems: importing
-            external tags</a></span></dt>
-            <dt><span class="sect1">2.8. <a href=
-            "#RCL.INDEXING.PDF">The PDF input
-            handler</a></span></dt>
+            "#RCL.INDEXING.OPERATION">Index update
+            scheduling</a></span></dt>
             <dd>
               <dl>
-                <dt><span class="sect2">2.8.1. <a href=
-                "#RCL.INDEXING.PDF.XMP">XMP fields
-                extraction</a></span></dt>
-                <dt><span class="sect2">2.8.2. <a href=
-                "#RCL.INDEXING.PDF.ATTACH">PDF attachment
+                <dt><span class="sect2">2.4.1. <a href=
+                "#RCL.INDEXING.PERIODIC">Periodic
+                indexing</a></span></dt>
+                <dt><span class="sect2">2.4.2. <a href=
+                "#RCL.INDEXING.MONITOR">Real time
                 indexing</a></span></dt>
               </dl>
             </dd>
-            <dt><span class="sect1">2.9. <a href=
-            "#RCL.INDEXING.OCR">Recoll and OCR</a></span></dt>
-            <dt><span class="sect1">2.10. <a href=
-            "#RCL.INDEXING.PERIODIC">Periodic
-            indexing</a></span></dt>
-            <dt><span class="sect1">2.11. <a href=
-            "#RCL.INDEXING.MONITOR">Real time
-            indexing</a></span></dt>
+            <dt><span class="sect1">2.5. <a href=
+            "#RCL.INDEXING.NOTES">Miscellaneous indexing
+            notes</a></span></dt>
+            <dd>
+              <dl>
+                <dt><span class="sect2">2.5.1. <a href=
+                "#RCL.INDEXING.PDF">The PDF input
+                handler</a></span></dt>
+                <dt><span class="sect2">2.5.2. <a href=
+                "#RCL.INDEXING.OCR">Running OCR on image
+                documents</a></span></dt>
+                <dt><span class="sect2">2.5.3. <a href=
+                "#RCL.INDEXING.REMOVABLE">Removable
+                volumes</a></span></dt>
+                <dt><span class="sect2">2.5.4. <a href=
+                "#RCL.INDEXING.WEBQUEUE"><span class=
+                "application">Unix</span>-like systems: indexing
+                visited Web pages</a></span></dt>
+                <dt><span class="sect2">2.5.5. <a href=
+                "#RCL.INDEXING.EXTATTR"><span class=
+                "application">Unix</span>-like systems: using
+                extended attributes</a></span></dt>
+                <dt><span class="sect2">2.5.6. <a href=
+                "#RCL.INDEXING.EXTTAGS"><span class=
+                "application">Unix</span>-like systems: importing
+                external tags</a></span></dt>
+              </dl>
+            </dd>
           </dl>
         </dd>
         <dt><span class="chapter">3. <a href=
@@ -346,10 +351,6 @@ alink="#0000FF">
                 <dt><span class="sect2">4.3.5. <a href=
                 "#RCL.PROGRAM.PYTHONAPI.UPDATE">Creating Python
                 external indexers</a></span></dt>
-                <dt><span class="sect2">4.3.6. <a href=
-                "#RCL.PROGRAM.PYTHONAPI.COMPAT">Package
-                compatibility with the previous
-                version</a></span></dt>
               </dl>
             </dd>
           </dl>
@@ -419,7 +420,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1581">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1594">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -434,23 +435,22 @@ alink="#0000FF">
       <p>This document introduces full text search notions and
       describes the installation and use of the <span class=
       "application">Recoll</span> application. It is updated for
-      <span class="application">Recoll</span> 1.33.</p>
+      <span class="application">Recoll</span> 1.34.</p>
       <p><span class="application">Recoll</span> was for a long
       time dedicated to Unix-like systems. It was only lately
       (2015) ported to <span class="application">MS-Windows</span>.
       Many references in this manual, especially file locations,
-      are specific to Unix, and not valid on <span class=
-      "application">Windows</span>, where some described features
-      are also not available. The manual will be progressively
-      updated. Until this happens, on <span class=
-      "application">Windows</span>, most references to shared files
-      can be translated by looking under the Recoll installation
-      directory (Typically <code class="filename">C:/Program Files
-      (x86)/Recoll</code>). Especially, anything referenced inside
-      <code class="filename">/usr/share</code> in this document
-      will be found in the <code class="filename">Share</code>
-      subdirectory of the installation). The user configuration is
-      stored by default under <code class=
+      are specific to Unix, and not valid on Windows, where some
+      described features are also not available. The manual will be
+      progressively updated. Until this happens, on Windows, most
+      references to shared files can be translated by looking under
+      the Recoll installation directory (Typically <code class=
+      "filename">C:/Program Files (x86)/Recoll</code>). Especially,
+      anything referenced inside <code class=
+      "filename">/usr/share</code> in this document will be found
+      in the <code class="filename">Share</code> subdirectory of
+      the installation). The user configuration is stored by
+      default under <code class=
       "filename">AppData/Local/Recoll</code> inside the user
       directory, along with the index itself.</p>
       <div class="sect1">
@@ -478,12 +478,13 @@ alink="#0000FF">
         short on disk space. In this case, you may first want to
         customize the <a class="link" href="#RCL.INDEXING.CONFIG"
         title="2.3.&nbsp;Index configuration">configuration</a> to
-        restrict the indexed area (shortcut: from the <span class=
+        restrict the indexed area. From the <span class=
         "command"><strong>recoll</strong></span> GUI go to:
         <span class="guimenu">Preferences</span> → <span class=
         "guimenuitem">Indexing configuration</span>, then adjust
-        the <span class="guilabel">Top directories</span>
-        section).</p>
+        the <span class="guilabel">Top directories</span> section,
+        which defines the directories from which the filesystem
+        exploration starts.</p>
         <p>On <span class="application">Unix</span>-like systems,
         you may need to install the appropriate <a class="link"
         href="#RCL.INSTALL.EXTERNAL" title=
@@ -647,7 +648,7 @@ alink="#0000FF">
         sensitive to case and diacritics. This is described in more
         detail in the section about <a class="link" href=
         "#RCL.INDEXING.CONFIG.SENS" title=
-        "2.3.2.&nbsp;Index case and diacritics sensitivity">index
+        "2.3.3.&nbsp;Index case and diacritics sensitivity">index
         case and diacritics sensitivity</a>.</p>
         <p><span class="application">Recoll</span> uses many
         parameters to define exactly what to index, and how to
@@ -788,7 +789,7 @@ alink="#0000FF">
             "list-style-type: disc;">
               <li class="listitem">
                 <p><b><a class="link" href="#RCL.INDEXING.PERIODIC"
-                title="2.10.&nbsp;Periodic indexing">Periodic (or
+                title="2.4.1.&nbsp;Periodic indexing">Periodic (or
                 batch) indexing</a> .&nbsp;</b><span class=
                 "command"><strong>recollindex</strong></span> is
                 executed at discrete times. On <span class=
@@ -798,15 +799,16 @@ alink="#0000FF">
                 "Linux: using cron to automate indexing">programmed</a>
                 into your <span class=
                 "command"><strong>cron</strong></span> file. On
-                <span class="application">Windows</span>, this is
-                the only mode available, and the Windows Task
-                Scheduler can be used to run indexing. In both
-                cases, the GUI includes an easy interface to the
-                system batch scheduler.</p>
+                <span class="application">Windows</span>, the
+                <span class="application">Task Scheduler</span> can
+                be used to run indexing. In both cases, the
+                <span class="application">Recoll</span> GUI
+                includes a simplified interface to configure the
+                system scheduler.</p>
               </li>
               <li class="listitem">
                 <p><b><a class="link" href="#RCL.INDEXING.MONITOR"
-                title="2.11.&nbsp;Real time indexing">Real time
+                title="2.4.2.&nbsp;Real time indexing">Real time
                 indexing</a> .&nbsp;</b><span class=
                 "command"><strong>recollindex</strong></span> runs
                 permanently as a daemon and uses a file system
@@ -834,7 +836,7 @@ alink="#0000FF">
             indexing on a big documentation directory, and real
             time indexing on a small home directory), or by
             <a class="link" href="#RCL.INDEXING.MONITOR" title=
-            "2.11.&nbsp;Real time indexing">configuring the index
+            "2.4.2.&nbsp;Real time indexing">configuring the index
             so that only a subset of the tree will be
             monitored.</a></p>
             <p>The choice of method and the parameters used can be
@@ -912,8 +914,7 @@ alink="#0000FF">
           own, by using the <span class="guimenuitem">External
           index</span> function in the <span class=
           "command"><strong>recoll</strong></span> GUI, or some
-          other functions in the command line and programming
-          tools.</p>
+          equivalent in the command line and programming tools.</p>
           <p>A plausible usage scenario for the multiple index
           feature would be for a system administrator to set up a
           central index for shared data, that you choose to search
@@ -932,7 +933,7 @@ alink="#0000FF">
           them, or querying them in parallel.</p>
           <p>See the section about <a class="link" href=
           "#RCL.INDEXING.CONFIG.MULTIPLE" title=
-          "2.3.1.&nbsp;Multiple indexes">configuring multiple
+          "2.3.2.&nbsp;Multiple indexes">configuring multiple
           indexes</a> for more detail</p>
         </div>
         <div class="sect2">
@@ -1013,15 +1014,12 @@ alink="#0000FF">
           <a class="link" href=
           "#RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES">indexedmimetypes</a>
           configuration variable. Example:</p>
-          <pre class="programlisting">
-        indexedmimetypes = text/html application/pdf
-      </pre>
+          <pre class=
+          "programlisting">indexedmimetypes = text/html application/pdf</pre>
           <p>It is possible to redefine this parameter for
           subdirectories. Example:</p>
-          <pre class="programlisting">
-      [/path/to/my/dir]
-      indexedmimetypes = application/pdf
-    </pre>
+          <pre class="programlisting">[/path/to/my/dir]
+indexedmimetypes = application/pdf</pre>
           <p>(When using sections like this, don't forget that they
           remain in effect until the end of the file or another
           section indicator).</p>
@@ -1053,8 +1051,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm281" id=
-                "idm281"></a>2.1.4.&nbsp;Indexing failures</h3>
+                <h3 class="title"><a name="idm283" id=
+                "idm283"></a>2.1.4.&nbsp;Indexing failures</h3>
               </div>
             </div>
           </div>
@@ -1084,8 +1082,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm291" id=
-                "idm291"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idm293" id=
+                "idm293"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -1322,7 +1320,7 @@ alink="#0000FF">
         files. Most of the more commonly used ones can also be
         adjusted by using the <a class="link" href=
         "#RCL.INDEXING.CONFIG.GUI" title=
-        "2.3.3.&nbsp;The index configuration GUI">dialogs in the
+        "2.3.1.&nbsp;The index configuration GUI">dialogs in the
         <span class="command"><strong>recoll</strong></span>
         GUI</a>.</p>
         <p>The first time you start <span class=
@@ -1358,16 +1356,69 @@ alink="#0000FF">
         depending on the treatment of character case and
         diacritics. A <a class="link" href=
         "#RCL.INDEXING.CONFIG.SENS" title=
-        "2.3.2.&nbsp;Index case and diacritics sensitivity">further
+        "2.3.3.&nbsp;Index case and diacritics sensitivity">further
         section</a> describes the two types in more detail. The
         default type is appropriate in most cases.</p>
         <div class="sect2">
           <div class="titlepage">
             <div>
               <div>
+                <h3 class="title"><a name="RCL.INDEXING.CONFIG.GUI"
+                id="RCL.INDEXING.CONFIG.GUI"></a>2.3.1.&nbsp;The
+                index configuration GUI</h3>
+              </div>
+            </div>
+          </div>
+          <p>Most index configuration parameters can be set from
+          the <span class="command"><strong>recoll</strong></span>
+          GUI (set <code class="envar">RECOLL_CONFDIR</code> or use
+          the <code class="option">-c</code> option to affect a
+          non-default index.)</p>
+          <p>The interface is started from the <span class=
+          "guimenu">Preferences</span> → <span class=
+          "guimenuitem">Index Configuration</span> menu entry. It
+          is divided in four tabs, <span class="guilabel">Global
+          parameters</span>, <span class="guilabel">Local
+          parameters</span>, <span class="guilabel">Web
+          history</span> (<a class="link" href=
+          "#RCL.INDEXING.WEBQUEUE" title=
+          "2.5.4.&nbsp;Unix-like systems: indexing visited Web pages">details</a>)
+          and <span class="guilabel">Search parameters</span>.</p>
+          <p>The <span class="guilabel">Global parameters</span>
+          tab allows setting global variables, like the lists of
+          top/start directories, skipped paths, or stemming
+          languages.</p>
+          <p>The <span class="guilabel">Local parameters</span> tab
+          allows setting variables that can be redefined for
+          subdirectories. This second tab has an initially empty
+          list of customisation directories, to which you can add.
+          The variables are then set for the currently selected
+          directory (or at the top level if the empty line is
+          selected).</p>
+          <p>The <span class="guilabel">Search parameters</span>
+          section defines parameters which are used at query time,
+          but are global to an index and affect all search tools,
+          not only the GUI.</p>
+          <p>The meaning for most entries in the interface is
+          self-evident and documented by a <code class=
+          "literal">ToolTip</code> popup on the text label. For
+          more detail, you may need to refer to the <a class="link"
+          href="#RCL.INSTALL.CONFIG" title=
+          "5.4.&nbsp;Configuration overview">configuration
+          section</a> of this guide.</p>
+          <p>The configuration tool normally respects the comments
+          and most of the formatting inside the configuration file,
+          so that it is quite possible to use it on hand-edited
+          files, which you might nevertheless want to backup
+          first...</p>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
                 <h3 class="title"><a name=
                 "RCL.INDEXING.CONFIG.MULTIPLE" id=
-                "RCL.INDEXING.CONFIG.MULTIPLE"></a>2.3.1.&nbsp;Multiple
+                "RCL.INDEXING.CONFIG.MULTIPLE"></a>2.3.2.&nbsp;Multiple
                 indexes</h3>
               </div>
             </div>
@@ -1407,7 +1458,7 @@ alink="#0000FF">
           using a text editor on the files, or, for most
           parameters, by using the <a class="link" href=
           "#RCL.INDEXING.CONFIG.GUI" title=
-          "2.3.3.&nbsp;The index configuration GUI"><span class=
+          "2.3.1.&nbsp;The index configuration GUI"><span class=
           "command"><strong>recoll</strong></span> index
           configuration GUI</a>. In the latter case, the
           configuration directory for which parameters are modified
@@ -1437,19 +1488,21 @@ alink="#0000FF">
           mistyped. Also, the GUI or the indexer must be launched
           with a specific option or environment to work on the
           right configuration.</p>
-          <div class="simplesect">
+          <div class="sect3">
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm415" id=
-                  "idm415"></a>In practise: creating and using an
-                  additional index</h4>
+                  <h4 class="title"><a name="idm442" id=
+                  "idm442"></a>Creating and using an additional
+                  index: example</h4>
                 </div>
               </div>
             </div>
+            <p>The following applies to <span class=
+            "application">Unix</span>-like systems</p>
             <p>Initially creating the configuration and index:</p>
             <pre class="programlisting">
-mkdir <em class=
+              mkdir <em class=
 "replaceable"><code>/path/to/my/new/config</code></em></pre>
             <p>Configuring the new index can be done from the
             <span class="command"><strong>recoll</strong></span>
@@ -1457,24 +1510,25 @@ mkdir <em class=
             <code class="literal">-c</code> option (you could
             create a desktop file to do it for you), and then using
             the <a class="link" href="#RCL.INDEXING.CONFIG.GUI"
-            title="2.3.3.&nbsp;The index configuration GUI">GUI
+            title="2.3.1.&nbsp;The index configuration GUI">GUI
             index configuration tool</a> to set up the index.</p>
             <pre class="programlisting">
-recoll -c <em class=
+              recoll -c <em class=
 "replaceable"><code>/path/to/my/new/config</code></em></pre>
             <p>Alternatively, you can just start a text editor on
             the main configuration file:</p>
             <pre class="programlisting">
-<em class="replaceable"><code>someEditor</code></em> <em class=
+              <em class=
+"replaceable"><code>someEditor</code></em> <em class=
 "replaceable"><code>/path/to/my/new/config</code></em>/<a class=
 "link" href="#RCL.INSTALL.CONFIG.RECOLLCONF" title=
 "5.4.2.&nbsp;Recoll main configuration file, recoll.conf"><code class="filename">recoll.conf</code></a>
-</pre>
+            </pre>
             <p>Creating and updating the index can be done from the
             command line:</p>
             <pre class="programlisting">recollindex -c <em class=
             "replaceable"><code>/path/to/my/new/config</code></em>
-</pre>
+            </pre>
             <p>or from the File menu of a GUI launched with the
             same option (<span class=
             "command"><strong>recoll</strong></span>, see
@@ -1487,7 +1541,7 @@ recoll -c <em class=
             option).</p>
             <p>The new index can be queried alone with:</p>
             <pre class="programlisting">
-recoll -c <em class=
+              recoll -c <em class=
 "replaceable"><code>/path/to/my/new/config</code></em></pre>
             <p>Or, in parallel with the default index, by starting
             <span class="command"><strong>recoll</strong></span>
@@ -1511,7 +1565,7 @@ recoll -c <em class=
               <div>
                 <h3 class="title"><a name=
                 "RCL.INDEXING.CONFIG.SENS" id=
-                "RCL.INDEXING.CONFIG.SENS"></a>2.3.2.&nbsp;Index
+                "RCL.INDEXING.CONFIG.SENS"></a>2.3.3.&nbsp;Index
                 case and diacritics sensitivity</h3>
               </div>
             </div>
@@ -1566,58 +1620,6 @@ recoll -c <em class=
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="RCL.INDEXING.CONFIG.GUI"
-                id="RCL.INDEXING.CONFIG.GUI"></a>2.3.3.&nbsp;The
-                index configuration GUI</h3>
-              </div>
-            </div>
-          </div>
-          <p>Most parameters for a given index configuration can be
-          set from a <span class=
-          "command"><strong>recoll</strong></span> GUI running on
-          this configuration (either as default, or by setting
-          <code class="envar">RECOLL_CONFDIR</code> or the
-          <code class="option">-c</code> option.)</p>
-          <p>The interface is started from the <span class=
-          "guimenu">Preferences</span> → <span class=
-          "guimenuitem">Index Configuration</span> menu entry. It
-          is divided in four tabs, <span class="guilabel">Global
-          parameters</span>, <span class="guilabel">Local
-          parameters</span>, <span class="guilabel">Web
-          history</span> (which is explained in the next section)
-          and <span class="guilabel">Search parameters</span>.</p>
-          <p>The <span class="guilabel">Global parameters</span>
-          tab allows setting global variables, like the lists of
-          top directories, skipped paths, or stemming
-          languages.</p>
-          <p>The <span class="guilabel">Local parameters</span> tab
-          allows setting variables that can be redefined for
-          subdirectories. This second tab has an initially empty
-          list of customisation directories, to which you can add.
-          The variables are then set for the currently selected
-          directory (or at the top level if the empty line is
-          selected).</p>
-          <p>The <span class="guilabel">Search parameters</span>
-          section defines parameters which are used at query time,
-          but are global to an index and affect all search tools,
-          not only the GUI.</p>
-          <p>The meaning for most entries in the interface is
-          self-evident and documented by a <code class=
-          "literal">ToolTip</code> popup on the text label. For
-          more detail, you will need to refer to the <a class=
-          "link" href="#RCL.INSTALL.CONFIG" title=
-          "5.4.&nbsp;Configuration overview">configuration
-          section</a> of this guide.</p>
-          <p>The configuration tool normally respects the comments
-          and most of the formatting inside the configuration file,
-          so that it is quite possible to use it on hand-edited
-          files, which you might nevertheless want to backup
-          first...</p>
-        </div>
-        <div class="sect2">
-          <div class="titlepage">
-            <div>
-              <div>
                 <h3 class="title"><a name=
                 "RCL.INDEXING.CONFIG.THREADS" id=
                 "RCL.INDEXING.CONFIG.THREADS"></a>2.3.4.&nbsp;Indexing
@@ -1632,8 +1634,8 @@ recoll -c <em class=
           commonly useful, so I'll prepend it here. In <code class=
           "filename">recoll.conf</code>:</p>
           <pre class="programlisting">
-          thrQSizes = -1 -1 -1
-        </pre>
+            thrQSizes = -1 -1 -1
+          </pre>
           <p>The <span class="application">Recoll</span> indexing
           process <span class=
           "command"><strong>recollindex</strong></span> can use
@@ -1712,9 +1714,9 @@ recoll -c <em class=
           was tested to be the best configuration on the test
           system (quadri-processor with multiple disks).</p>
           <pre class="programlisting">
-          thrQSizes = 2 2 2
-          thrTCounts =  4 2 1
-        </pre>
+            thrQSizes = 2 2 2
+            thrTCounts =  4 2 1
+          </pre>
           <p>The following example would use a single queue, and
           the complete processing for each document would be
           performed by a single thread (several documents will
@@ -1726,14 +1728,12 @@ recoll -c <em class=
           sequentially), so the previous approach is preferred.
           YMMV... The 2 last values for thrTCounts are ignored.</p>
           <pre class="programlisting">
-          thrQSizes = 2 -1 -1
-          thrTCounts =  6 1 1
-        </pre>
+            thrQSizes = 2 -1 -1
+            thrTCounts =  6 1 1
+          </pre>
           <p>The following example would disable multithreading.
           Indexing will be performed by a single thread.</p>
-          <pre class="programlisting">
-          thrQSizes = -1 -1 -1
-        </pre>
+          <pre class="programlisting">thrQSizes = -1 -1 -1</pre>
         </div>
       </div>
       <div class="sect1">
@@ -1741,115 +1741,764 @@ recoll -c <em class=
           <div>
             <div>
               <h2 class="title" style="clear: both"><a name=
-              "RCL.INDEXING.REMOVABLE" id=
-              "RCL.INDEXING.REMOVABLE"></a>2.4.&nbsp;Removable
-              volumes</h2>
+              "RCL.INDEXING.OPERATION" id=
+              "RCL.INDEXING.OPERATION"></a>2.4.&nbsp;Index update
+              scheduling</h2>
             </div>
           </div>
         </div>
-        <p><span class="application">Recoll</span> used to have no
-        support for indexing removable volumes (portable disks, USB
-        keys, etc.). Recent versions have improved the situation
-        and support indexing removable volumes in two different
-        ways:</p>
-        <div class="itemizedlist">
-          <ul class="itemizedlist" style="list-style-type: disc;">
-            <li class="listitem">
-              <p>By indexing the volume in the main, fixed, index,
-              and ensuring that the volume data is not purged if
-              the indexing runs while the volume is mounted. (since
-              <span class="application">Recoll</span> 1.25.2).</p>
-            </li>
-            <li class="listitem">
-              <p>By storing a volume index on the volume itself
-              (since <span class="application">Recoll</span>
-              1.24).</p>
-            </li>
-          </ul>
-        </div>
-        <div class="simplesect">
+        <div class="sect2">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name=
-                "RCL.INDEXING.REMOVABLE.MAIN" id=
-                "RCL.INDEXING.REMOVABLE.MAIN"></a>Indexing
-                removable volumes in the main index</h3>
+                <h3 class="title"><a name="RCL.INDEXING.PERIODIC"
+                id="RCL.INDEXING.PERIODIC"></a>2.4.1.&nbsp;Periodic
+                indexing</h3>
               </div>
             </div>
           </div>
-          <p>As of version 1.25.2, <span class=
-          "application">Recoll</span> provides a simple way to
-          ensure that the index data for an absent volume will not
-          be purged. Two conditions must be met:</p>
+          <div class="simplesect">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.PERIODIC.EXEC" id=
+                  "RCL.INDEXING.PERIODIC.EXEC"></a>Running the
+                  indexer</h4>
+                </div>
+              </div>
+            </div>
+            <p>The <span class=
+            "command"><strong>recollindex</strong></span> program
+            performs index updates. You can start it either from
+            the command line or from the <span class=
+            "guimenu">File</span> menu in the <span class=
+            "command"><strong>recoll</strong></span> GUI program.
+            When started from the GUI, the indexing will run on the
+            same configuration <span class=
+            "command"><strong>recoll</strong></span> was started
+            on. When started from the command line, <span class=
+            "command"><strong>recollindex</strong></span> will use
+            the <code class="envar">RECOLL_CONFDIR</code> variable
+            or accept a <code class="option">-c</code> <em class=
+            "replaceable"><code>confdir</code></em> option to
+            specify a non-default configuration directory.</p>
+            <p>If the <span class=
+            "command"><strong>recoll</strong></span> program finds
+            no index when it starts, it will automatically start
+            indexing (except if canceled).</p>
+            <p>The GUI <span class="guimenu">File</span> menu has
+            entries to start or stop the current indexing
+            operation. When indexing is not currently running, you
+            have a choice between <span class="guimenuitem">Update
+            Index</span> or <span class="guimenuitem">Rebuild
+            Index</span>. The first choice only processes changed
+            files, the second one erases the index before starting
+            so that all files are processed.</p>
+            <p>On Linux and Windows, the GUI can be used to manage
+            the indexing operation. Stopping the indexer can be
+            done from the <span class=
+            "command"><strong>recoll</strong></span> GUI
+            <span class="guimenu">File</span> → <span class=
+            "guimenuitem">Stop Indexing</span> menu entry.</p>
+            <p>On Linux, the <span class=
+            "command"><strong>recollindex</strong></span> indexing
+            process can be interrupted by sending an interrupt
+            (<span class="keysym">Ctrl-C</span>, SIGINT) or
+            terminate (SIGTERM) signal.</p>
+            <p>When stopped, some time may elapse before
+            <span class=
+            "command"><strong>recollindex</strong></span> exits,
+            because it needs to properly flush and close the
+            index.</p>
+            <p>After an interruption, the index will be somewhat
+            inconsistent because some operations which are normally
+            performed at the end of the indexing pass will have
+            been skipped (for example, the stemming and spelling
+            databases will be inexistent or out of date). You just
+            need to restart indexing at a later time to restore
+            consistency. The indexing will restart at the
+            interruption point (the full file tree will be
+            traversed, but files that were indexed up to the
+            interruption and for which the index is still up to
+            date will not need to be reindexed).</p>
+          </div>
+          <div class="simplesect">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.PERIODIC.CMDLINE" id=
+                  "RCL.INDEXING.PERIODIC.CMDLINE"></a>recollindex
+                  command line</h4>
+                </div>
+              </div>
+            </div>
+            <p><span class=
+            "command"><strong>recollindex</strong></span> has many
+            options which are listed in its <a class="ulink" href=
+            "https://www.lesbonscomptes.com/recoll/manpages/recollindex.1.html"
+            target="_top">manual page</a>. Only a few will be
+            described here.</p>
+            <p>Option <code class="option">-z</code> will reset the
+            index when starting. This is almost the same as
+            destroying the index files (the nuance is that the
+            <span class="application">Xapian</span> format version
+            will not be changed).</p>
+            <p>Option <code class="option">-Z</code> will force the
+            update of all documents without resetting the index
+            first. This will not have the "clean start" aspect of
+            <code class="option">-z</code>, but the advantage is
+            that the index will remain available for querying while
+            it is rebuilt, which can be a significant advantage if
+            it is very big (some installations need days for a full
+            index rebuild).</p>
+            <p>Option <code class="option">-k</code> will force
+            retrying files which previously failed to be indexed,
+            for example because of a missing helper program.</p>
+            <p>Of special interest also, maybe, are the
+            <code class="option">-i</code> and <code class=
+            "option">-f</code> options. <code class=
+            "option">-i</code> allows indexing an explicit list of
+            files (given as command line parameters or read on
+            <code class="literal">stdin</code>). <code class=
+            "option">-f</code> tells <span class=
+            "command"><strong>recollindex</strong></span> to ignore
+            file selection parameters from the configuration.
+            Together, these options allow building a custom file
+            selection process for some area of the file system, by
+            adding the top directory to the <code class=
+            "varname">skippedPaths</code> list and using an
+            appropriate file selection method to build the file
+            list to be fed to <span class=
+            "command"><strong>recollindex</strong></span>
+            <code class="option">-if</code>. Trivial example:</p>
+            <pre class=
+            "programlisting">    find . -name indexable.txt -print | recollindex -if</pre>
+            <p><span class=
+            "command"><strong>recollindex</strong></span>
+            <code class="option">-i</code> will not descend into
+            subdirectories specified as parameters, but just add
+            them as index entries. It is up to the external file
+            selection method to build the complete file list.</p>
+          </div>
+          <div class="simplesect">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.PERIODIC.AUTOMAT" id=
+                  "RCL.INDEXING.PERIODIC.AUTOMAT"></a>Linux: using
+                  <span class=
+                  "command"><strong>cron</strong></span> to
+                  automate indexing</h4>
+                </div>
+              </div>
+            </div>
+            <p>The most common way to set up indexing is to have a
+            cron task execute it every night. For example the
+            following <code class="filename">crontab</code> entry
+            would do it every day at 3:30AM (supposing <span class=
+            "command"><strong>recollindex</strong></span> is in
+            your PATH):</p>
+            <pre class=
+            "screen">30 3 * * * recollindex &gt; /some/tmp/dir/recolltrace 2&gt;&amp;1</pre>
+            <p>Or, using <span class=
+            "command"><strong>anacron</strong></span>:</p>
+            <pre class=
+            "screen">1  15  su mylogin -c "recollindex recollindex &gt; /tmp/rcltraceme 2&gt;&amp;1"</pre>
+            <p>The <span class="application">Recoll</span> GUI has
+            dialogs to manage <code class="filename">crontab</code>
+            entries for <span class=
+            "command"><strong>recollindex</strong></span>. You can
+            reach them from the <span class=
+            "guimenu">Preferences</span> → <span class=
+            "guimenuitem">Indexing Schedule</span> menu. They only
+            work with the good old <span class=
+            "command"><strong>cron</strong></span>, and do not give
+            access to all features of <span class=
+            "command"><strong>cron</strong></span> scheduling.
+            Entries created via the tool are marked with a
+            <code class="literal">RCLCRON_RCLINDEX=</code> marker
+            so that the tool knows which entries belong to it. As a
+            side effect, this sets an environment variable for the
+            process, but it's not actually used, this is just a
+            marker.</p>
+            <p>The usual command to edit your <code class=
+            "filename">crontab</code> is <span class=
+            "command"><strong>crontab</strong></span> <code class=
+            "option">-e</code> (which will usually start the
+            <span class="command"><strong>vi</strong></span> editor
+            to edit the file). You may have more sophisticated
+            tools available on your system.</p>
+            <p>Please be aware that there may be differences
+            between your usual interactive command line environment
+            and the one seen by crontab commands. Especially the
+            PATH variable may be of concern. Please check the
+            crontab manual pages about possible issues.</p>
+          </div>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.INDEXING.MONITOR"
+                id="RCL.INDEXING.MONITOR"></a>2.4.2.&nbsp;Real time
+                indexing</h3>
+              </div>
+            </div>
+          </div>
+          <p>Real time monitoring/indexing is performed by starting
+          the <span class=
+          "command"><strong>recollindex</strong></span>
+          <code class="option">-m</code> command. With this option,
+          <span class="command"><strong>recollindex</strong></span>
+          will permanently monitor file changes and update the
+          index.</p>
+          <p>On <span class="application">Windows</span> systems,
+          the monitoring process is started from the <span class=
+          "command"><strong>recoll</strong></span> GUI <span class=
+          "guilabel">File</span> menu. On <span class=
+          "application">Unix</span>-like systems, there are other
+          possibilities, see the following sections.</p>
+          <p>When this is in use, the <span class=
+          "command"><strong>recoll</strong></span> GUI <span class=
+          "guimenu">File</span> menu makes two operations
+          available: <span class="guimenuitem">Stop</span> and
+          <span class="guimenuitem">Trigger incremental
+          pass</span>.</p>
+          <p><span class="guimenuitem">Trigger incremental
+          pass</span> has the same effect as restarting the
+          indexer, and will cause a complete walk of the indexed
+          area, processing the changed files, then switch to
+          monitoring. This is only marginally useful, maybe in
+          cases where the indexer is configured to delay updates,
+          or to force an immediate rebuild of the stemming and
+          phonetic data, which are only processed at intervals by
+          the real time indexer.</p>
+          <p>While it is convenient that data is indexed in real
+          time, repeated indexing can generate a significant load
+          on the system when files such as email folders change.
+          Also, monitoring large file trees by itself significantly
+          taxes system resources. You probably do not want to
+          enable it if your system is short on resources. Periodic
+          indexing is adequate in most cases.</p>
+          <p>As of <span class="application">Recoll</span> 1.24,
+          you can set the <a class="link" href=
+          "#RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">monitordirs</a>
+          configuration variable to specify that only a subset of
+          your indexed files will be monitored for instant
+          indexing. In this situation, an incremental pass on the
+          full tree can be triggered by either restarting the
+          indexer, or just running <span class=
+          "command"><strong>recollindex</strong></span>, which will
+          notify the running process. The <span class=
+          "command"><strong>recoll</strong></span> GUI also has a
+          menu entry for this.</p>
+          <div class="simplesect">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.MONITOR.START.SYSTEMD" id=
+                  "RCL.INDEXING.MONITOR.START.SYSTEMD"></a><span class="application">Unix</span>-like
+                  systems: automatic daemon start with systemd</h4>
+                </div>
+              </div>
+            </div>
+            <p>The installation contains two example files (in
+            <code class="filename">share/recoll/examples</code>)
+            for starting the indexing daemon with <span class=
+            "application">systemd</span>.</p>
+            <p><code class="filename">recollindex.service</code>
+            would be used for starting <span class=
+            "command"><strong>recollindex</strong></span> as a user
+            service. The indexer will start when the user logs in
+            and run while there is a session open for them.</p>
+            <p><code class="filename">recollindex@.service</code>
+            is a template service which would be used for starting
+            the indexer at boot time, running as a specific user.
+            It can be useful when running the text search as a
+            shared service (e.g. when users access it through the
+            WEB UI).</p>
+            <p>If configured to do so, the unit files should have
+            been installed in your system's default systemd paths
+            (usually <code class=
+            "filename">/usr/lib/systemd/system/</code> and
+            <code class="filename">/usr/lib/systemd/user/</code>).
+            If not, you may need to copy the files there before
+            starting the service.</p>
+            <p>With the unit files installed in the proper
+            location, the user unit can be started with the
+            following commands:</p>
+            <pre class=
+            "programlisting">systemctl --user daemon-reload
+systemctl --user enable --now recollindex.service</pre>
+            <p>The system unit file can be enabled for a particular
+            user by running, as root:</p>
+            <pre class="programlisting">systemctl daemon-reload
+systemctl enable --now recollindex@<code class=
+"varname">username</code>.service</pre>
+            <p>(A valid user name should be substituted for
+            <code class="varname">username</code>, of course.)</p>
+          </div>
+          <div class="simplesect">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.MONITOR.START" id=
+                  "RCL.INDEXING.MONITOR.START"></a><span class=
+                  "application">Unix</span>-like systems: automatic
+                  daemon start from the desktop session</h4>
+                </div>
+              </div>
+            </div>
+            <p>Under <span class="application">KDE</span>,
+            <span class="application">Gnome</span> and some other
+            desktop environments, the daemon can automatically
+            started when you log in, by creating a desktop file
+            inside the <code class=
+            "filename">~/.config/autostart</code> directory. This
+            can be done for you by the <span class=
+            "application">Recoll</span> GUI. Use the <span class=
+            "guimenu">Preferences-&gt;Indexing Schedule</span>
+            menu.</p>
+            <p>With older <span class="application">X11</span>
+            setups, starting the daemon is normally performed as
+            part of the user session script.</p>
+            <p>The <code class="filename">rclmon.sh</code> script
+            can be used to easily start and stop the daemon. It can
+            be found in the <code class="filename">examples</code>
+            directory (typically <code class=
+            "filename">/usr/local/[share/]recoll/examples</code>).</p>
+            <p>For example, a good old <span class=
+            "application">xdm</span>-based session could have a
+            <code class="filename">.xsession</code> script with the
+            following lines at the end:</p>
+            <pre class=
+            "programlisting">recollconf=$HOME/.recoll-home
+recolldata=/usr/local/share/recoll
+RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
+
+fvwm</pre>
+            <p>The indexing daemon gets started, then the window
+            manager, for which the session waits.</p>
+            <p>By default the indexing daemon will monitor the
+            state of the X11 session, and exit when it finishes, it
+            is not necessary to kill it explicitly. (The
+            <span class="application">X11</span> server monitoring
+            can be disabled with option <code class=
+            "option">-x</code> to <span class=
+            "command"><strong>recollindex</strong></span>).</p>
+            <p>If you use the daemon completely out of an
+            <span class="application">X11</span> session, you need
+            to add option <code class="option">-x</code> to disable
+            <span class="application">X11</span> session monitoring
+            (else the daemon will not start).</p>
+          </div>
+          <div class="simplesect">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.MONITOR.DETAILS" id=
+                  "RCL.INDEXING.MONITOR.DETAILS"></a>Miscellaneous
+                  details</h4>
+                </div>
+              </div>
+            </div>
+            <p><b>Logging.&nbsp;</b>By default, the messages from
+            the indexing daemon will be sent to the same file as
+            those from the interactive commands (<code class=
+            "literal">logfilename</code>). You may want to change
+            this by setting the <code class=
+            "varname">daemlogfilename</code> and <code class=
+            "varname">daemloglevel</code> configuration parameters.
+            Also the log file will only be truncated when the
+            daemon starts. If the daemon runs permanently, the log
+            file may grow quite big, depending on the log
+            level.</p>
+            <p><b><span class="application">Unix</span>-like
+            systems: increasing resources for inotify.&nbsp;</b>On
+            Linux systems, monitoring a big tree may need
+            increasing the resources available to inotify, which
+            are normally defined in <code class=
+            "filename">/etc/sysctl.conf</code>.</p>
+            <pre class="programlisting">### inotify
+#
+# cat  /proc/sys/fs/inotify/max_queued_events   - 16384
+# cat  /proc/sys/fs/inotify/max_user_instances  - 128
+# cat  /proc/sys/fs/inotify/max_user_watches    - 16384
+#
+# -- Change to:
+#
+fs.inotify.max_queued_events=32768
+fs.inotify.max_user_instances=256
+fs.inotify.max_user_watches=32768</pre>
+            <p>Especially, you will need to trim your tree or
+            adjust the <code class=
+            "literal">max_user_watches</code> value if indexing
+            exits with a message about errno <code class=
+            "literal">ENOSPC</code> (28) from <code class=
+            "function">inotify_add_watch</code>.</p>
+            <p><b>Slowing down the reindexing rate for fast
+            changing files.&nbsp;</b>When using the real time
+            monitor, it may happen that some files need to be
+            indexed, but change so often that they impose an
+            excessive load for the system.<span class=
+            "application">Recoll</span> provides a configuration
+            option to specify the minimum time before which a file,
+            specified by a wildcard pattern, cannot be reindexed.
+            See the <code class="varname">mondelaypatterns</code>
+            parameter in the <a class="link" href=
+            "#RCL.INSTALL.CONFIG.RECOLLCONF.MISC" title=
+            "Miscellaneous parameters">configuration
+            section</a>.</p>
+          </div>
+        </div>
+      </div>
+      <div class="sect1">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a name=
+              "RCL.INDEXING.NOTES" id=
+              "RCL.INDEXING.NOTES"></a>2.5.&nbsp;Miscellaneous
+              indexing notes</h2>
+            </div>
+          </div>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.INDEXING.PDF" id=
+                "RCL.INDEXING.PDF"></a>2.5.1.&nbsp;The PDF input
+                handler</h3>
+              </div>
+            </div>
+          </div>
+          <p>The PDF format is very important for scientific and
+          technical documentation, and document archival. It has
+          extensive facilities for storing metadata along with the
+          document, and these facilities are actually used in the
+          real world.</p>
+          <p>In consequence, the <span class=
+          "command"><strong>rclpdf.py</strong></span> PDF input
+          handler has more complex capabilities than most others,
+          and it is also more configurable. Specifically,
+          <span class="command"><strong>rclpdf.py</strong></span>
+          has the following features:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
             "list-style-type: disc;">
               <li class="listitem">
-                <p>The volume mount point must be a member of the
-                <code class="literal">topdirs</code> list.</p>
+                <p>It can be configured to extract specific
+                metadata tags from an XMP packet.</p>
               </li>
               <li class="listitem">
-                <p>The mount directory must be empty (when the
-                volume is not mounted).</p>
+                <p>It can extract PDF attachments.</p>
+              </li>
+              <li class="listitem">
+                <p>It can automatically perform OCR if the document
+                text is empty. This is done by executing an
+                external program and is now described in a
+                <a class="link" href="#RCL.INDEXING.OCR" title=
+                "2.5.2.&nbsp;Running OCR on image documents">separate
+                section</a>, because the OCR framework can also be
+                used with non-PDF image files.</p>
               </li>
             </ul>
           </div>
-          <p>If <span class=
-          "command"><strong>recollindex</strong></span> finds that
-          one of the <code class="literal">topdirs</code> is empty
-          when starting up, any existing data for the tree will be
-          preserved by the indexing pass (no purge for this
-          area).</p>
+          <div class="sect3">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name="RCL.INDEXING.PDF.XMP"
+                  id="RCL.INDEXING.PDF.XMP"></a>XMP fields
+                  extraction</h4>
+                </div>
+              </div>
+            </div>
+            <p>The <code class="filename">rclpdf.py</code> script
+            in <span class="application">Recoll</span> version
+            1.23.2 and later can extract XMP metadata fields by
+            executing the <span class=
+            "command"><strong>pdfinfo</strong></span> command
+            (usually found with <span class=
+            "application">poppler-utils</span>). This is controlled
+            by the <a class="link" href=
+            "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA">pdfextrameta</a>
+            configuration variable, which specifies which tags to
+            extract and, possibly, how to rename them.</p>
+            <p>The <a class="link" href=
+            "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">pdfextrametafix</a>
+            variable can be used to designate a file with Python
+            code to edit the metadata fields (available for
+            <span class="application">Recoll</span> 1.23.3 and
+            later. 1.23.2 has equivalent code inside the handler
+            script). Example:</p>
+            <pre class="programlisting">import sys
+import re
+
+class MetaFixer(object):
+def __init__(self):
+pass
+
+def metafix(self, nm, txt):
+if nm == 'bibtex:pages':
+txt = re.sub(r'--', '-', txt)
+elif nm == 'someothername':
+# do something else
+pass
+elif nm == 'stillanother':
+# etc.
+pass
+
+return txt
+def wrapup(self, metaheaders):
+pass</pre>
+            <p>If the 'metafix()' method is defined, it is called
+            for each metadata field. A new MetaFixer object is
+            created for each PDF document (so the object can keep
+            state for, for example, eliminating duplicate values).
+            If the 'wrapup()' method is defined, it is called at
+            the end of XMP fields processing with the whole
+            metadata as parameter, as an array of '(nm, val)'
+            pairs, allowing an alternate approach for editing or
+            adding/deleting fields.</p>
+            <p>See <a class="ulink" href=
+            "https://www.lesbonscomptes.com/recoll/pages/recoll_XMP/index.html"
+            target="_top">this page</a> for a more detailed
+            discussion about indexing PDF XMP properties.</p>
+          </div>
+          <div class="sect3">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.PDF.ATTACH" id=
+                  "RCL.INDEXING.PDF.ATTACH"></a>PDF attachment
+                  indexing</h4>
+                </div>
+              </div>
+            </div>
+            <p>If <span class="application">pdftk</span> is
+            installed, and if the the <a class="link" href=
+            "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</a>
+            configuration variable is set, the PDF input handler
+            will try to extract PDF attachments for indexing as
+            sub-documents of the PDF file. This is disabled by
+            default, because it slows down PDF indexing a bit even
+            if not one attachment is ever found (PDF attachments
+            are uncommon in my experience).</p>
+          </div>
         </div>
-        <div class="simplesect">
+        <div class="sect2">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name=
-                "RCL.INDEXING.REMOVABLE.SELF" id=
-                "RCL.INDEXING.REMOVABLE.SELF"></a>Self contained
+                <h3 class="title"><a name="RCL.INDEXING.OCR" id=
+                "RCL.INDEXING.OCR"></a>2.5.2.&nbsp;Running OCR on
+                image documents</h3>
+              </div>
+            </div>
+          </div>
+          <p>The <span class="application">Recoll</span> PDF
+          handler has the ability to call an external OCR program
+          if the processed file has no text content. The OCR data
+          is stored in a cache of separate files, avoiding any
+          modification of the originals.</p>
+          <p>It must be noted that, if modifying the files (or a
+          copy) is acceptable, then running something like
+          <a class="ulink" href=
+          "https://ocrmypdf.readthedocs.io/en/latest/index.html"
+          target="_top">OCRmyPDF</a> to add a text layer to the PDF
+          itself is a better solution (e.g. allowing <span class=
+          "application">Recoll</span> to position the PDF viewer on
+          the search target when opening the document, and
+          permitting secondary search in the native tool).</p>
+          <p>To enable the <span class="application">Recoll</span>
+          OCR feature, you need to install one of the supported OCR
+          applications (<span class="application">tesseract</span>
+          or <span class="application">ABBYY</span>), enable OCR in
+          the PDF handler (by setting <code class=
+          "literal">pdfocr</code> to <code class="literal">1</code>
+          in the index configuration file), and tell <span class=
+          "application">Recoll</span> how to run the OCR by setting
+          <a class="link" href="#RCL.INSTALL.CONFIG.RECOLLCONF.OCR"
+          title="Parameters for OCR processing">configuration
+          variables</a>. All parameters can be localized in
+          subdirectories through the usual main configuration
+          mechanism (path sections).</p>
+          <p>Example configuration fragment in <code class=
+          "filename">recoll.conf</code>:</p>
+          <pre class="programlisting">pdfocr = 1
+ocrprogs = tesseract
+pdfocrlang = eng</pre>
+          <p>This facility got a major update in <span class=
+          "application">Recoll</span> 1.26.5. Older versions had a
+          more limited, non-caching capability to execute an
+          external OCR program in the PDF handler. The new function
+          has the following features:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist" style=
+            "list-style-type: disc;">
+              <li class="listitem">
+                <p>The OCR output is cached, stored as separate
+                files. The caching is ultimately based on a hash
+                value of the original file contents, so that it is
+                immune to file renames. A first path-based layer
+                ensures fast operation for unchanged (unmoved
+                files), and the data hash (which is still orders of
+                magnitude faster than OCR) is only re-computed if
+                the file has moved. OCR is only performed if the
+                file was not previously processed or if it
+                changed.</p>
+              </li>
+              <li class="listitem">
+                <p>The support for a specific program is
+                implemented in a simple Python module. It should be
+                straightforward to add support for any OCR engine
+                with a capability to run from the command line.</p>
+              </li>
+              <li class="listitem">
+                <p>Modules initially exist for <span class=
+                "application">tesseract</span> (Linux and Windows),
+                and <span class="application">ABBYY
+                FineReader</span> (Linux, tested with version 11).
+                ABBYY FineReader is a commercial closed source
+                program, but it sometimes perform better than
+                tesseract.</p>
+              </li>
+              <li class="listitem">
+                <p>The OCR is currently only called from the PDF
+                handler, but there should be no problem using it
+                for other image types.</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.INDEXING.REMOVABLE"
+                id=
+                "RCL.INDEXING.REMOVABLE"></a>2.5.3.&nbsp;Removable
                 volumes</h3>
               </div>
             </div>
           </div>
-          <p>As of <span class="application">Recoll</span> 1.24, it
-          has become possible to build self-contained datasets
-          including a <span class="application">Recoll</span>
-          configuration directory and index together with the
-          indexed documents, and to move such a dataset around (for
-          example copying it to an USB drive), without having to
-          adjust the configuration for querying the index.</p>
-          <div class="note" style=
-          "margin-left: 0.5in; margin-right: 0.5in;">
-            <h3 class="title">Note</h3>
-            <p>This is a query-time feature only. The index must
-            only be updated in its original location. If an update
-            is necessary in a different location, the index must be
-            reset.</p>
+          <p><span class="application">Recoll</span> used to have
+          no support for indexing removable volumes (portable
+          disks, USB keys, etc.). Recent versions have improved the
+          situation and support indexing removable volumes in two
+          different ways:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist" style=
+            "list-style-type: disc;">
+              <li class="listitem">
+                <p>By indexing the volume in the main, fixed,
+                index, and ensuring that the volume data is not
+                purged if the indexing runs while the volume is
+                mounted. (since <span class=
+                "application">Recoll</span> 1.25.2).</p>
+              </li>
+              <li class="listitem">
+                <p>By storing a volume index on the volume itself
+                (since <span class="application">Recoll</span>
+                1.24).</p>
+              </li>
+            </ul>
           </div>
-          <p>The principle of operation is that the configuration
-          stores the location of the original configuration
-          directory, which must reside on the movable volume. If
-          the volume is later mounted elsewhere, <span class=
-          "application">Recoll</span> adjusts the paths stored
-          inside the index by the difference between the original
-          and current locations of the configuration directory.</p>
-          <p>To make a long story short, here follows a script to
-          create a <span class="application">Recoll</span>
-          configuration and index under a given directory (given as
-          single parameter). The resulting data set (files + recoll
-          directory) can later to be moved to a CDROM or thumb
-          drive. Longer explanations come after the script.</p>
-          <pre class="programlisting">#!/bin/sh
+          <div class="simplesect">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.REMOVABLE.MAIN" id=
+                  "RCL.INDEXING.REMOVABLE.MAIN"></a>Indexing
+                  removable volumes in the main index</h4>
+                </div>
+              </div>
+            </div>
+            <p>As of version 1.25.2, <span class=
+            "application">Recoll</span> provides a simple way to
+            ensure that the index data for an absent volume will
+            not be purged. Two conditions must be met:</p>
+            <div class="itemizedlist">
+              <ul class="itemizedlist" style=
+              "list-style-type: disc;">
+                <li class="listitem">
+                  <p>The volume mount point must be a member of the
+                  <code class="literal">topdirs</code> list.</p>
+                </li>
+                <li class="listitem">
+                  <p>The mount directory must be empty (when the
+                  volume is not mounted).</p>
+                </li>
+              </ul>
+            </div>
+            <p>If <span class=
+            "command"><strong>recollindex</strong></span> finds
+            that one of the <code class="literal">topdirs</code> is
+            empty when starting up, any existing data for the tree
+            will be preserved by the indexing pass (no purge for
+            this area).</p>
+          </div>
+          <div class="simplesect">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.REMOVABLE.SELF" id=
+                  "RCL.INDEXING.REMOVABLE.SELF"></a>Self contained
+                  volumes</h4>
+                </div>
+              </div>
+            </div>
+            <p>As of <span class="application">Recoll</span> 1.24,
+            it has become possible to build self-contained datasets
+            including a <span class="application">Recoll</span>
+            configuration directory and index together with the
+            indexed documents, and to move such a dataset around
+            (for example copying it to an USB drive), without
+            having to adjust the configuration for querying the
+            index.</p>
+            <div class="note" style=
+            "margin-left: 0.5in; margin-right: 0.5in;">
+              <h3 class="title">Note</h3>
+              <p>This is a query-time feature only. The index must
+              only be updated in its original location. If an
+              update is necessary in a different location, the
+              index must be reset.</p>
+            </div>
+            <p>The principle of operation is that the configuration
+            stores the location of the original configuration
+            directory, which must reside on the movable volume. If
+            the volume is later mounted elsewhere, <span class=
+            "application">Recoll</span> adjusts the paths stored
+            inside the index by the difference between the original
+            and current locations of the configuration
+            directory.</p>
+            <p>To make a long story short, here follows a script to
+            create a <span class="application">Recoll</span>
+            configuration and index under a given directory (given
+            as single parameter). The resulting data set (files +
+            recoll directory) can later to be moved to a CDROM or
+            thumb drive. Longer explanations come after the
+            script.</p>
+            <pre class="programlisting">#!/bin/sh
 
 fatal()
 {
-    echo $*;exit 1
+echo $*;exit 1
 }
 usage()
 {
-    fatal "Usage: init-recoll-volume.sh &lt;top-directory&gt;"
+fatal "Usage: init-recoll-volume.sh &lt;top-directory&gt;"
 }
 
 test $# = 1 || usage
@@ -1866,936 +2515,329 @@ cd "$confdir"
 confdir=`pwd`
 
 (echo topdirs = '"'$topdir'"'; \
- echo orgidxconfdir = $topdir/recoll-config) &gt; "$confdir/recoll.conf"
+echo orgidxconfdir = $topdir/recoll-config) &gt; "$confdir/recoll.conf"
 
-recollindex -c "$confdir"
-</pre>
-          <p>The examples below will assume that you have a dataset
-          under <code class="filename">/home/me/mydata/</code>,
-          with the index configuration and data stored inside
-          <code class=
-          "filename">/home/me/mydata/recoll-confdir</code>.</p>
-          <p>In order to be able to run queries after the dataset
-          has been moved, you must ensure the following:</p>
+recollindex -c "$confdir"</pre>
+            <p>The examples below will assume that you have a
+            dataset under <code class=
+            "filename">/home/me/mydata/</code>, with the index
+            configuration and data stored inside <code class=
+            "filename">/home/me/mydata/recoll-confdir</code>.</p>
+            <p>In order to be able to run queries after the dataset
+            has been moved, you must ensure the following:</p>
+            <div class="itemizedlist">
+              <ul class="itemizedlist" style=
+              "list-style-type: disc;">
+                <li class="listitem">
+                  <p>The main configuration file must define the
+                  <a class="link" href=
+                  "#RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</a>
+                  variable to be the original location of the
+                  configuration directory (<code class=
+                  "filename">orgidxconfdir=/home/me/mydata/recoll-confdir</code>
+                  must be set inside <code class=
+                  "filename">/home/me/mydata/recoll-confdir/recoll.conf</code>
+                  in the example above).</p>
+                </li>
+                <li class="listitem">
+                  <p>The configuration directory must exist with
+                  the documents, somewhere under the directory
+                  which will be moved. E.g. if you are moving
+                  <code class="filename">/home/me/mydata</code>
+                  around, the configuration directory must exist
+                  somewhere below this point, for example
+                  <code class=
+                  "filename">/home/me/mydata/recoll-confdir</code>,
+                  or <code class=
+                  "filename">/home/me/mydata/sub/recoll-confdir</code>.</p>
+                </li>
+                <li class="listitem">
+                  <p>You should keep the default locations for the
+                  index elements which are relative to the
+                  configuration directory by default (principally
+                  <code class="literal">dbdir</code>). Only the
+                  paths referring to the documents themselves (e.g.
+                  <code class="literal">topdirs</code> values)
+                  should be absolute (in general, they are only
+                  used when indexing anyway).</p>
+                </li>
+              </ul>
+            </div>
+            <p>Only the first point needs an explicit user action,
+            the <span class="application">Recoll</span> defaults
+            are compatible with the third one, and the second is
+            natural.</p>
+            <p>If, after the move, the configuration directory
+            needs to be copied out of the dataset (for example
+            because the thumb drive is too slow), you can set the
+            <a class="link" href=
+            "#RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">curidxconfdir</a>,
+            variable inside the copied configuration to define the
+            location of the moved one. For example if <code class=
+            "filename">/home/me/mydata</code> is now mounted onto
+            <code class="filename">/media/me/somelabel</code>, but
+            the configuration directory and index has been copied
+            to <code class="filename">/tmp/tempconfig</code>, you
+            would set <code class="literal">curidxconfdir</code> to
+            <code class=
+            "filename">/media/me/somelabel/recoll-confdir</code>
+            inside <code class=
+            "filename">/tmp/tempconfig/recoll.conf</code>.
+            <code class="literal">orgidxconfdir</code> would still
+            be <code class=
+            "filename">/home/me/mydata/recoll-confdir</code> in the
+            original and the copy.</p>
+            <p>If you are regularly copying the configuration out
+            of the dataset, it will be useful to write a script to
+            automate the procedure. This can't really be done
+            inside <span class="application">Recoll</span> because
+            there are probably many possible variants. One example
+            would be to copy the configuration to make it writable,
+            but keep the index data on the medium because it is too
+            big - in this case, the script would also need to set
+            <code class="literal">dbdir</code> in the copied
+            configuration.</p>
+            <p>The same set of modifications (<span class=
+            "application">Recoll</span> 1.24) has also made it
+            possible to run queries from a readonly configuration
+            directory (with slightly reduced function of course,
+            such as not recording the query history).</p>
+          </div>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.INDEXING.WEBQUEUE"
+                id=
+                "RCL.INDEXING.WEBQUEUE"></a>2.5.4.&nbsp;<span class="application">Unix</span>-like
+                systems: indexing visited Web pages</h3>
+              </div>
+            </div>
+          </div>
+          <p>With the help of a <span class=
+          "application">Firefox</span> extension, <span class=
+          "application">Recoll</span> can index the Internet pages
+          that you visit. The extension has a long history: it was
+          initially designed for the <span class=
+          "application">Beagle</span> indexer, then adapted to
+          <span class="application">Recoll</span> and the
+          <span class="application">Firefox</span> <span class=
+          "application">XUL</span> API. The current version of the
+          extension is located in the <a class="ulink" href=
+          "https://addons.mozilla.org/en-US/firefox/addon/recoll-we/"
+          target="_top">Mozilla add-ons repository</a> uses the
+          <span class="application">WebExtensions</span> API, and
+          works with current <span class=
+          "application">Firefox</span> versions.</p>
+          <p>The extension works by copying visited Web pages to an
+          indexing queue directory, which <span class=
+          "application">Recoll</span> then processes, storing the
+          data into a local cache, then indexing it, then removing
+          the file from the queue.</p>
+          <div class="note" style=
+          "margin-left: 0.5in; margin-right: 0.5in;">
+            <h3 class="title">The local cache is not an
+            archive</h3>
+            <p>As mentioned above, a copy of the indexed Web pages
+            is retained by Recoll in a local cache (from which data
+            is fetched for previews, or when resetting the index).
+            The cache is not changed by an index reset, just read
+            for indexing. The cache has a maximum size, which can
+            be adjusted from the <span class="guilabel">Index
+            configuration</span> / <span class="guilabel">Web
+            history</span> panel (<code class=
+            "literal">webcachemaxmbs</code> parameter in
+            <code class="filename">recoll.conf</code>). Once the
+            maximum size is reached, old pages are erased to make
+            room for new ones. The pages which you want to keep
+            indefinitely need to be explicitly archived elsewhere.
+            Using a very high value for the cache size can avoid
+            data erasure, but see the above 'Howto' page for more
+            details and gotchas.</p>
+          </div>
+          <p>The visited Web pages indexing feature can be enabled
+          on the <span class="application">Recoll</span> side from
+          the GUI <span class="guilabel">Index configuration</span>
+          panel, or by editing the configuration file (set
+          <code class="varname">processwebqueue</code> to 1).</p>
+          <p>The <span class="application">Recoll</span> GUI has a
+          tool to list and edit the contents of the Web cache.
+          (<span class="guimenu">Tools</span> → <span class=
+          "guimenuitem">Webcache editor</span>)</p>
+          <p>The <span class=
+          "command"><strong>recollindex</strong></span> command has
+          two options to help manage the Web cache:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
             "list-style-type: disc;">
-              <li class="listitem">
-                <p>The main configuration file must define the
-                <a class="link" href=
-                "#RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</a>
-                variable to be the original location of the
-                configuration directory (<code class=
-                "filename">orgidxconfdir=/home/me/mydata/recoll-confdir</code>
-                must be set inside <code class=
-                "filename">/home/me/mydata/recoll-confdir/recoll.conf</code>
-                in the example above).</p>
-              </li>
-              <li class="listitem">
-                <p>The configuration directory must exist with the
-                documents, somewhere under the directory which will
-                be moved. E.g. if you are moving <code class=
-                "filename">/home/me/mydata</code> around, the
-                configuration directory must exist somewhere below
-                this point, for example <code class=
-                "filename">/home/me/mydata/recoll-confdir</code>,
-                or <code class=
-                "filename">/home/me/mydata/sub/recoll-confdir</code>.</p>
-              </li>
-              <li class="listitem">
-                <p>You should keep the default locations for the
-                index elements which are relative to the
-                configuration directory by default (principally
-                <code class="literal">dbdir</code>). Only the paths
-                referring to the documents themselves (e.g.
-                <code class="literal">topdirs</code> values) should
-                be absolute (in general, they are only used when
-                indexing anyway).</p>
-              </li>
+              <li class="listitem"><code class=
+              "option">--webcache-compact</code> will recover the
+              space from erased entries. It may need to use twice
+              the disk space currently needed for the Web
+              cache.</li>
+              <li class="listitem"><code class=
+              "option">--webcache-burst <em class=
+              "replaceable"><code>destdir</code></em></code> will
+              extract all current entries into pairs of metadata
+              and data files created inside <em class=
+              "replaceable"><code>destdir</code></em></li>
             </ul>
           </div>
-          <p>Only the first point needs an explicit user action,
-          the <span class="application">Recoll</span> defaults are
-          compatible with the third one, and the second is
-          natural.</p>
-          <p>If, after the move, the configuration directory needs
-          to be copied out of the dataset (for example because the
-          thumb drive is too slow), you can set the <a class="link"
-          href=
-          "#RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">curidxconfdir</a>,
-          variable inside the copied configuration to define the
-          location of the moved one. For example if <code class=
-          "filename">/home/me/mydata</code> is now mounted onto
-          <code class="filename">/media/me/somelabel</code>, but
-          the configuration directory and index has been copied to
-          <code class="filename">/tmp/tempconfig</code>, you would
-          set <code class="literal">curidxconfdir</code> to
-          <code class=
-          "filename">/media/me/somelabel/recoll-confdir</code>
-          inside <code class=
-          "filename">/tmp/tempconfig/recoll.conf</code>.
-          <code class="literal">orgidxconfdir</code> would still be
-          <code class=
-          "filename">/home/me/mydata/recoll-confdir</code> in the
-          original and the copy.</p>
-          <p>If you are regularly copying the configuration out of
-          the dataset, it will be useful to write a script to
-          automate the procedure. This can't really be done inside
-          <span class="application">Recoll</span> because there are
-          probably many possible variants. One example would be to
-          copy the configuration to make it writable, but keep the
-          index data on the medium because it is too big - in this
-          case, the script would also need to set <code class=
-          "literal">dbdir</code> in the copied configuration.</p>
-          <p>The same set of modifications (<span class=
-          "application">Recoll</span> 1.24) has also made it
-          possible to run queries from a readonly configuration
-          directory (with slightly reduced function of course, such
-          as not recording the query history).</p>
+          <p>You can find more details on Web indexing, its usage
+          and configuration in a <a class="ulink" href=
+          "https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexWebHistory"
+          target="_top">Recoll 'Howto' entry</a>.</p>
         </div>
-      </div>
-      <div class="sect1">
-        <div class="titlepage">
-          <div>
+        <div class="sect2">
+          <div class="titlepage">
             <div>
-              <h2 class="title" style="clear: both"><a name=
-              "RCL.INDEXING.WebQUEUE" id=
-              "RCL.INDEXING.WebQUEUE"></a>2.5.&nbsp;<span class=
-              "application">Unix</span>-like systems: indexing
-              visited Web pages</h2>
+              <div>
+                <h3 class="title"><a name="RCL.INDEXING.EXTATTR"
+                id="RCL.INDEXING.EXTATTR"></a>2.5.5.&nbsp;<span class="application">Unix</span>-like
+                systems: using extended attributes</h3>
+              </div>
             </div>
           </div>
-        </div>
-        <p>With the help of a <span class=
-        "application">Firefox</span> extension, <span class=
-        "application">Recoll</span> can index the Internet pages
-        that you visit. The extension has a long history: it was
-        initially designed for the <span class=
-        "application">Beagle</span> indexer, then adapted to
-        <span class="application">Recoll</span> and the
-        <span class="application">Firefox</span> <span class=
-        "application">XUL</span> API. The current version of the
-        extension is located in the <a class="ulink" href=
-        "https://addons.mozilla.org/en-US/firefox/addon/recoll-we/"
-        target="_top">Mozilla add-ons repository</a> uses the
-        <span class="application">WebExtensions</span> API, and
-        works with current <span class="application">Firefox</span>
-        versions.</p>
-        <p>The extension works by copying visited Web pages to an
-        indexing queue directory, which <span class=
-        "application">Recoll</span> then processes, storing the
-        data into a local cache, then indexing it, then removing
-        the file from the queue.</p>
-        <div class="note" style=
-        "margin-left: 0.5in; margin-right: 0.5in;">
-          <h3 class="title">The local cache is not an archive</h3>
-          <p>As mentioned above, a copy of the indexed Web pages is
-          retained by Recoll in a local cache (from which data is
-          fetched for previews, or when resetting the index). The
-          cache is not changed by an index reset, just read for
-          indexing. The cache has a maximum size, which can be
-          adjusted from the <span class="guilabel">Index
-          configuration</span> / <span class="guilabel">Web
-          history</span> panel (<code class=
-          "literal">webcachemaxmbs</code> parameter in <code class=
-          "filename">recoll.conf</code>). Once the maximum size is
-          reached, old pages are erased to make room for new ones.
-          The pages which you want to keep indefinitely need to be
-          explicitly archived elsewhere. Using a very high value
-          for the cache size can avoid data erasure, but see the
-          above 'Howto' page for more details and gotchas.</p>
-        </div>
-        <p>The visited Web pages indexing feature can be enabled on
-        the <span class="application">Recoll</span> side from the
-        GUI <span class="guilabel">Index configuration</span>
-        panel, or by editing the configuration file (set
-        <code class="varname">processwebqueue</code> to 1).</p>
-        <p>The <span class="application">Recoll</span> GUI has a
-        tool to list and edit the contents of the Web cache.
-        (<span class="guimenu">Tools</span> → <span class=
-        "guimenuitem">Webcache editor</span>)</p>
-        <p>The <span class=
-        "command"><strong>recollindex</strong></span> command has
-        two options to help manage the Web cache:</p>
-        <div class="itemizedlist">
-          <ul class="itemizedlist" style="list-style-type: disc;">
-            <li class="listitem"><code class=
-            "option">--webcache-compact</code> will recover the
-            space from erased entries. It may need to use twice the
-            disk space currently needed for the Web cache.</li>
-            <li class="listitem"><code class=
-            "option">--webcache-burst <em class=
-            "replaceable"><code>destdir</code></em></code> will
-            extract all current entries into pairs of metadata and
-            data files created inside <em class=
-            "replaceable"><code>destdir</code></em></li>
-          </ul>
-        </div>
-        <p>You can find more details on Web indexing, its usage and
-        configuration in a <a class="ulink" href=
-        "https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexWebHistory"
-        target="_top">Recoll 'Howto' entry</a>.</p>
-      </div>
-      <div class="sect1">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both"><a name=
-              "RCL.INDEXING.EXTATTR" id=
-              "RCL.INDEXING.EXTATTR"></a>2.6.&nbsp;<span class=
-              "application">Unix</span>-like systems: using
-              extended attributes</h2>
-            </div>
+          <p>User extended attributes are named pieces of
+          information that most modern file systems can attach to
+          any file.</p>
+          <p><span class="application">Recoll</span> processes all
+          extended attributes as document fields. Note that most
+          fields are not indexed by default, you need to activate
+          them by defining a prefix in the <a class="link" href=
+          "#RCL.INSTALL.CONFIG.FIELDS" title=
+          "5.4.3.&nbsp;The fields file"><code class=
+          "filename">fields</code> configuration file</a>.</p>
+          <p>A <a class="ulink" href=
+          "http://www.freedesktop.org/wiki/CommonExtendedAttributes"
+          target="_top">freedesktop standard</a> defines a few
+          special attributes, which are handled as such by
+          <span class="application">Recoll</span>:</p>
+          <div class="variablelist">
+            <dl class="variablelist">
+              <dt><span class="term">mime_type</span></dt>
+              <dd>
+                <p>If set, this overrides any other determination
+                of the file MIME type.</p>
+              </dd>
+              <dt><span class="term">charset</span></dt>
+              <dd>
+                <p>If set, this defines the file character set
+                (mostly useful for plain text files).</p>
+              </dd>
+            </dl>
           </div>
-        </div>
-        <p>User extended attributes are named pieces of information
-        that most modern file systems can attach to any file.</p>
-        <p><span class="application">Recoll</span> processes all
-        extended attributes as document fields. Note that most
-        fields are not indexed by default, you need to activate
-        them by defining a prefix in the <a class="link" href=
-        "#RCL.INSTALL.CONFIG.FIELDS" title=
-        "5.4.3.&nbsp;The fields file"><code class=
-        "filename">fields</code> configuration file</a>.</p>
-        <p>A <a class="ulink" href=
-        "http://www.freedesktop.org/wiki/CommonExtendedAttributes"
-        target="_top">freedesktop standard</a> defines a few
-        special attributes, which are handled as such by
-        <span class="application">Recoll</span>:</p>
-        <div class="variablelist">
-          <dl class="variablelist">
-            <dt><span class="term">mime_type</span></dt>
-            <dd>
-              <p>If set, this overrides any other determination of
-              the file MIME type.</p>
-            </dd>
-            <dt><span class="term">charset</span></dt>
-            <dd>
-              <p>If set, this defines the file character set
-              (mostly useful for plain text files).</p>
-            </dd>
-          </dl>
-        </div>
-        <p>By default, other attributes are handled as <span class=
-        "application">Recoll</span> fields of the same name.</p>
-        <p>On Linux, the <code class="literal">user</code> prefix
-        is removed from the name.</p>
-        <p>The name translation can be configured more precisely,
-        also inside the <a class="link" href=
-        "#RCL.INSTALL.CONFIG.FIELDS.XATTR" title=
-        "Extended attributes in the fields file"><code class=
-        "filename">fields</code> configuration file</a>.</p>
-        <div class="note" style=
-        "margin-left: 0.5in; margin-right: 0.5in;">
-          <h3 class="title">Setting the document
-          modification/creation date</h3>
-          <p>Date fields are processed specially by <span class=
-          "application">Recoll</span>. For obscure and
-          uninteresting reasons, you should use <code class=
-          "literal">modificationdate</code> as extended attribute
-          name for setting this value. Also, the date string should
-          be an ASCII integer representing the Unix time (seconds
-          since the epoch). An example Linux command line for
-          setting this particular field follow. The substituted
-          <span class="command"><strong>date</strong></span> prints
-          the example date parameter in Unix time format (seconds
-          since the epoch).</p>
-          <pre class="programlisting">
-            setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/file
-          </pre>The date substitution will then be automatic, you
+          <p>By default, other attributes are handled as
+          <span class="application">Recoll</span> fields of the
+          same name.</p>
+          <p>On Linux, the <code class="literal">user</code> prefix
+          is removed from the name.</p>
+          <p>The name translation can be configured more precisely,
+          also inside the <a class="link" href=
+          "#RCL.INSTALL.CONFIG.FIELDS.XATTR" title=
+          "Extended attributes in the fields file"><code class=
+          "filename">fields</code> configuration file</a>.</p>
+          <div class="note" style=
+          "margin-left: 0.5in; margin-right: 0.5in;">
+            <h3 class="title">Setting the document
+            modification/creation date</h3>
+            <p>Date fields are processed specially by <span class=
+            "application">Recoll</span>. For obscure and
+            uninteresting reasons, you should use <code class=
+            "literal">modificationdate</code> as extended attribute
+            name for setting this value. Also, the date string
+            should be an ASCII integer representing the Unix time
+            (seconds since the epoch). An example Linux command
+            line for setting this particular field follow. The
+            substituted <span class=
+            "command"><strong>date</strong></span> prints the
+            example date parameter in Unix time format (seconds
+            since the epoch).</p>
+            <pre class="programlisting">
+              setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/file
+            </pre>The date substitution will then be automatic, you
 do not need to customize the <code class="filename">fields</code>
 file.
-        </div>
-      </div>
-      <div class="sect1">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both"><a name=
-              "RCL.INDEXING.EXTTAGS" id=
-              "RCL.INDEXING.EXTTAGS"></a>2.7.&nbsp;<span class=
-              "application">Unix</span>-like systems: importing
-              external tags</h2>
-            </div>
           </div>
         </div>
-        <p>During indexing, it is possible to import metadata for
-        each file by executing commands. This allows, for example,
-        extracting tag data from an external application and
-        storing it in a field for indexing.</p>
-        <p>See the <a class="link" href=
-        "#RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS">section about
-        the <code class="literal">metadatacmds</code> field</a> in
-        the main configuration chapter for a description of the
-        configuration syntax.</p>
-        <p>For example, if you would want <span class=
-        "application">Recoll</span> to use tags managed by
-        <span class="application">tmsu</span> in a field named
-        <em class="replaceable"><code>tags</code></em>, you would
-        add the following to the configuration file:</p>
-        <pre class="programlisting">[/some/area/of/the/fs]
-metadatacmds = ; <em class=
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.INDEXING.EXTTAGS"
+                id="RCL.INDEXING.EXTTAGS"></a>2.5.6.&nbsp;<span class="application">Unix</span>-like
+                systems: importing external tags</h3>
+              </div>
+            </div>
+          </div>
+          <p>During indexing, it is possible to import metadata for
+          each file by executing commands. This allows, for
+          example, extracting tag data from an external application
+          and storing it in a field for indexing.</p>
+          <p>See the <a class="link" href=
+          "#RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS">section
+          about the <code class="literal">metadatacmds</code>
+          field</a> in the main configuration chapter for a
+          description of the configuration syntax.</p>
+          <p>For example, if you would want <span class=
+          "application">Recoll</span> to use tags managed by
+          <span class="application">tmsu</span> in a field named
+          <em class="replaceable"><code>tags</code></em>, you would
+          add the following to the configuration file:</p>
+          <pre class="programlisting">[/some/area/of/the/fs]
+          metadatacmds = ; <em class=
 "replaceable"><code>tags</code></em> = tmsu tags %f
-      </pre>
-        <div class="note" style=
-        "margin-left: 0.5in; margin-right: 0.5in;">
-          <h3 class="title">Note</h3>
-          <p>Depending on the <span class="application">tmsu</span>
-          version, you may need/want to add options like
-          <code class="literal">--database=/some/db</code>.</p>
-        </div>
-        <p>You may want to restrict this processing to a subset of
-        the directory tree, because it may slow down indexing a bit
-        (<code class="literal">[some/area/of/the/fs]</code>).</p>
-        <p>Note the initial semi-colon after the equal sign.</p>
-        <p>In the example above, the output of <span class=
-        "command"><strong>tmsu</strong></span> is used to set a
-        field named <em class="replaceable"><code>tags</code></em>.
-        The field name is arbitrary and could be <em class=
-        "replaceable"><code>tmsu</code></em> or <em class=
-        "replaceable"><code>myfield</code></em> just the same, but
-        <em class="replaceable"><code>tags</code></em> is an alias
-        for the standard <span class="application">Recoll</span>
-        <code class="literal">keywords</code> field, and the
-        <span class="command"><strong>tmsu</strong></span> output
-        will just augment its contents. This will avoid the need to
-        extend the <a class="link" href="#RCL.PROGRAM.FIELDS"
-        title="4.2.&nbsp;Field data processing">field
-        configuration</a>.</p>
-        <p>Once re-indexing is performed (you will need to force
-        the file reindexing, <span class=
-        "application">Recoll</span> will not detect the need by
-        itself), you will be able to search from the query
-        language, through any of its aliases: <em class=
-        "replaceable"><code>tags:some/alternate/values</code></em>
-        or <em class=
-        "replaceable"><code>tags:all,these,values</code></em>. The
-        compact comma- or slash-based field search syntax is
-        supported for recoll 1.20 and later. For older versions,
-        you would need to repeat the <em class=
-        "replaceable"><code>tags:</code></em> specifier for each
-        term, e.g. <em class=
-        "replaceable"><code>tags:some</code></em> <code class=
-        "literal">OR</code> <em class=
-        "replaceable"><code>tags:alternate</code></em>.</p>
-        <p>Tags changes will not be detected by the indexer if the
-        file itself did not change. One possible workaround would
-        be to update the file <code class="literal">ctime</code>
-        when you modify the tags, which would be consistent with
-        how extended attributes function. A pair of <span class=
-        "command"><strong>chmod</strong></span> commands could
-        accomplish this, or a <code class="literal">touch
-        -a</code>. Alternatively, just couple the tag update with a
-        <code class="literal">recollindex -e -i</code> <em class=
-        "replaceable"><code>/path/to/the/file</code></em>.</p>
-      </div>
-      <div class="sect1">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both"><a name=
-              "RCL.INDEXING.PDF" id=
-              "RCL.INDEXING.PDF"></a>2.8.&nbsp;The PDF input
-              handler</h2>
-            </div>
-          </div>
-        </div>
-        <p>The PDF format is very important for scientific and
-        technical documentation, and document archival. It has
-        extensive facilities for storing metadata along with the
-        document, and these facilities are actually used in the
-        real world.</p>
-        <p>In consequence, the <span class=
-        "command"><strong>rclpdf.py</strong></span> PDF input
-        handler has more complex capabilities than most others, and
-        it is also more configurable. Specifically, <span class=
-        "command"><strong>rclpdf.py</strong></span> has the
-        following features:</p>
-        <div class="itemizedlist">
-          <ul class="itemizedlist" style="list-style-type: disc;">
-            <li class="listitem">
-              <p>It can be configured to extract specific metadata
-              tags from an XMP packet.</p>
-            </li>
-            <li class="listitem">
-              <p>It can extract PDF attachments.</p>
-            </li>
-            <li class="listitem">
-              <p>It can automatically perform OCR if the document
-              text is empty. This is done by executing an external
-              program and is now described in a <a class="link"
-              href="#RCL.INDEXING.OCR" title=
-              "2.9.&nbsp;Recoll and OCR">separate section</a>,
-              because the OCR framework can also be used with
-              non-PDF image files.</p>
-            </li>
-          </ul>
-        </div>
-        <div class="sect2">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name="RCL.INDEXING.PDF.XMP"
-                id="RCL.INDEXING.PDF.XMP"></a>2.8.1.&nbsp;XMP
-                fields extraction</h3>
-              </div>
-            </div>
-          </div>
-          <p>The <code class="filename">rclpdf.py</code> script in
-          <span class="application">Recoll</span> version 1.23.2
-          and later can extract XMP metadata fields by executing
-          the <span class="command"><strong>pdfinfo</strong></span>
-          command (usually found with <span class=
-          "application">poppler-utils</span>). This is controlled
-          by the <a class="link" href=
-          "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA">pdfextrameta</a>
-          configuration variable, which specifies which tags to
-          extract and, possibly, how to rename them.</p>
-          <p>The <a class="link" href=
-          "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">pdfextrametafix</a>
-          variable can be used to designate a file with Python code
-          to edit the metadata fields (available for <span class=
-          "application">Recoll</span> 1.23.3 and later. 1.23.2 has
-          equivalent code inside the handler script). Example:</p>
-          <pre class="programlisting">import sys
-        import re
-
-        class MetaFixer(object):
-            def __init__(self):
-                pass
-
-            def metafix(self, nm, txt):
-                if nm == 'bibtex:pages':
-                    txt = re.sub(r'--', '-', txt)
-                elif nm == 'someothername':
-                    # do something else
-                    pass
-                elif nm == 'stillanother':
-                    # etc.
-                    pass
-        
-                return txt
-            def wrapup(self, metaheaders):
-                pass
         </pre>
-          <p>If the 'metafix()' method is defined, it is called for
-          each metadata field. A new MetaFixer object is created
-          for each PDF document (so the object can keep state for,
-          for example, eliminating duplicate values). If the
-          'wrapup()' method is defined, it is called at the end of
-          XMP fields processing with the whole metadata as
-          parameter, as an array of '(nm, val)' pairs, allowing an
-          alternate approach for editing or adding/deleting
-          fields.</p>
-          <p>See <a class="ulink" href=
-          "https://www.lesbonscomptes.com/recoll/pages/recoll_XMP/index.html"
-          target="_top">this page</a> for a more detailed
-          discussion about indexing PDF XMP properties.</p>
-        </div>
-        <div class="sect2">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name="RCL.INDEXING.PDF.ATTACH"
-                id="RCL.INDEXING.PDF.ATTACH"></a>2.8.2.&nbsp;PDF
-                attachment indexing</h3>
-              </div>
-            </div>
+          <div class="note" style=
+          "margin-left: 0.5in; margin-right: 0.5in;">
+            <h3 class="title">Note</h3>
+            <p>Depending on the <span class=
+            "application">tmsu</span> version, you may need/want to
+            add options like <code class=
+            "literal">--database=/some/db</code>.</p>
           </div>
-          <p>If <span class="application">pdftk</span> is
-          installed, and if the the <a class="link" href=
-          "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</a>
-          configuration variable is set, the PDF input handler will
-          try to extract PDF attachments for indexing as
-          sub-documents of the PDF file. This is disabled by
-          default, because it slows down PDF indexing a bit even if
-          not one attachment is ever found (PDF attachments are
-          uncommon in my experience).</p>
-        </div>
-      </div>
-      <div class="sect1">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both"><a name=
-              "RCL.INDEXING.OCR" id=
-              "RCL.INDEXING.OCR"></a>2.9.&nbsp;Recoll and OCR</h2>
-            </div>
-          </div>
-        </div>
-        <p>The <span class="application">Recoll</span> PDF handler
-        has the ability to call an external OCR program if the
-        processed file has no text content. The OCR data is stored
-        in a cache of separate files, avoiding any modification of
-        the originals.</p>
-        <p>It must be noted that, if modifying the files (or a
-        copy) is acceptable, then running something like <a class=
-        "ulink" href=
-        "https://ocrmypdf.readthedocs.io/en/latest/index.html"
-        target="_top">OCRmyPDF</a> to add a text layer to the PDF
-        itself is a better solution (e.g. allowing <span class=
-        "application">Recoll</span> to position the PDF viewer on
-        the search target when opening the document, and permitting
-        secondary search in the native tool).</p>
-        <p>To enable the <span class="application">Recoll</span>
-        OCR feature, you need to install one of the supported OCR
-        applications (<span class="application">tesseract</span> or
-        <span class="application">ABBYY</span>), enable OCR in the
-        PDF handler (by setting <code class="literal">pdfocr</code>
-        to <code class="literal">1</code> in the index
-        configuration file), and tell <span class=
-        "application">Recoll</span> how to run the OCR by setting
-        <a class="link" href="#RCL.INSTALL.CONFIG.RECOLLCONF.OCR"
-        title="Parameters for OCR processing">configuration
-        variables</a>. All parameters can be localized in
-        subdirectories through the usual main configuration
-        mechanism (path sections).</p>
-        <p>This facility got a major update in <span class=
-        "application">Recoll</span> 1.26.5. Older versions had a
-        more limited, non-caching capability to execute an external
-        OCR program in the PDF handler. The new function has the
-        following features:</p>
-        <div class="itemizedlist">
-          <ul class="itemizedlist" style="list-style-type: disc;">
-            <li class="listitem">
-              <p>The OCR output is cached, stored as separate
-              files. The caching is ultimately based on a hash
-              value of the original file contents, so that it is
-              immune to file renames. A first path-based layer
-              ensures fast operation for unchanged (unmoved files),
-              and the data hash (which is still orders of magnitude
-              faster than OCR) is only re-computed if the file has
-              moved. OCR is only performed if the file was not
-              previously processed or if it changed.</p>
-            </li>
-            <li class="listitem">
-              <p>The support for a specific program is implemented
-              in a simple Python module. It should be
-              straightforward to add support for any OCR engine
-              with a capability to run from the command line.</p>
-            </li>
-            <li class="listitem">
-              <p>Modules initially exist for <span class=
-              "application">tesseract</span> (Linux and Windows),
-              and <span class="application">ABBYY FineReader</span>
-              (Linux, tested with version 11). ABBYY FineReader is
-              a commercial closed source program, but it sometimes
-              perform better than tesseract.</p>
-            </li>
-            <li class="listitem">
-              <p>The OCR is currently only called from the PDF
-              handler, but there should be no problem using it for
-              other image types.</p>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="sect1">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both"><a name=
-              "RCL.INDEXING.PERIODIC" id=
-              "RCL.INDEXING.PERIODIC"></a>2.10.&nbsp;Periodic
-              indexing</h2>
-            </div>
-          </div>
-        </div>
-        <div class="simplesect">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name=
-                "RCL.INDEXING.PERIODIC.EXEC" id=
-                "RCL.INDEXING.PERIODIC.EXEC"></a>Running the
-                indexer</h3>
-              </div>
-            </div>
-          </div>
-          <p>The <span class=
-          "command"><strong>recollindex</strong></span> program
-          performs index updates. You can start it either from the
-          command line or from the <span class=
-          "guimenu">File</span> menu in the <span class=
-          "command"><strong>recoll</strong></span> GUI program.
-          When started from the GUI, the indexing will run on the
-          same configuration <span class=
-          "command"><strong>recoll</strong></span> was started on.
-          When started from the command line, <span class=
-          "command"><strong>recollindex</strong></span> will use
-          the <code class="envar">RECOLL_CONFDIR</code> variable or
-          accept a <code class="option">-c</code> <em class=
-          "replaceable"><code>confdir</code></em> option to specify
-          a non-default configuration directory.</p>
-          <p>If the <span class=
-          "command"><strong>recoll</strong></span> program finds no
-          index when it starts, it will automatically start
-          indexing (except if canceled).</p>
-          <p>The GUI <span class="guimenu">File</span> menu has
-          entries to start or stop the current indexing operation.
-          When indexing is not currently running, you have a choice
-          between <span class="guimenuitem">Update Index</span> or
-          <span class="guimenuitem">Rebuild Index</span>. The first
-          choice only processes changed files, the second one
-          erases the index before starting so that all files are
-          processed.</p>
-          <p>On Linux and Windows, the GUI can be used to manage
-          the indexing operation. Stopping the indexer can be done
-          from the <span class=
-          "command"><strong>recoll</strong></span> GUI <span class=
-          "guimenu">File</span> → <span class="guimenuitem">Stop
-          Indexing</span> menu entry.</p>
-          <p>On Linux, the <span class=
-          "command"><strong>recollindex</strong></span> indexing
-          process can be interrupted by sending an interrupt
-          (<span class="keysym">Ctrl-C</span>, SIGINT) or terminate
-          (SIGTERM) signal.</p>
-          <p>When stopped, some time may elapse before <span class=
-          "command"><strong>recollindex</strong></span> exits,
-          because it needs to properly flush and close the
-          index.</p>
-          <p>After an interruption, the index will be somewhat
-          inconsistent because some operations which are normally
-          performed at the end of the indexing pass will have been
-          skipped (for example, the stemming and spelling databases
-          will be inexistent or out of date). You just need to
-          restart indexing at a later time to restore consistency.
-          The indexing will restart at the interruption point (the
-          full file tree will be traversed, but files that were
-          indexed up to the interruption and for which the index is
-          still up to date will not need to be reindexed).</p>
-        </div>
-        <div class="simplesect">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name=
-                "RCL.INDEXING.PERIODIC.CMDLINE" id=
-                "RCL.INDEXING.PERIODIC.CMDLINE"></a>recollindex
-                command line</h3>
-              </div>
-            </div>
-          </div>
-          <p><span class=
-          "command"><strong>recollindex</strong></span> has many
-          options which are listed in its <a class="ulink" href=
-          "https://www.lesbonscomptes.com/recoll/manpages/recollindex.1.html"
-          target="_top">manual page</a>. Only a few will be
-          described here.</p>
-          <p>Option <code class="option">-z</code> will reset the
-          index when starting. This is almost the same as
-          destroying the index files (the nuance is that the
-          <span class="application">Xapian</span> format version
-          will not be changed).</p>
-          <p>Option <code class="option">-Z</code> will force the
-          update of all documents without resetting the index
-          first. This will not have the "clean start" aspect of
-          <code class="option">-z</code>, but the advantage is that
-          the index will remain available for querying while it is
-          rebuilt, which can be a significant advantage if it is
-          very big (some installations need days for a full index
-          rebuild).</p>
-          <p>Option <code class="option">-k</code> will force
-          retrying files which previously failed to be indexed, for
-          example because of a missing helper program.</p>
-          <p>Of special interest also, maybe, are the <code class=
-          "option">-i</code> and <code class="option">-f</code>
-          options. <code class="option">-i</code> allows indexing
-          an explicit list of files (given as command line
-          parameters or read on <code class=
-          "literal">stdin</code>). <code class="option">-f</code>
-          tells <span class=
-          "command"><strong>recollindex</strong></span> to ignore
-          file selection parameters from the configuration.
-          Together, these options allow building a custom file
-          selection process for some area of the file system, by
-          adding the top directory to the <code class=
-          "varname">skippedPaths</code> list and using an
-          appropriate file selection method to build the file list
-          to be fed to <span class=
-          "command"><strong>recollindex</strong></span>
-          <code class="option">-if</code>. Trivial example:</p>
-          <pre class="programlisting">
-          find . -name indexable.txt -print | recollindex -if
-        </pre>
-          <p><span class=
-          "command"><strong>recollindex</strong></span>
-          <code class="option">-i</code> will not descend into
-          subdirectories specified as parameters, but just add them
-          as index entries. It is up to the external file selection
-          method to build the complete file list.</p>
-        </div>
-        <div class="simplesect">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name=
-                "RCL.INDEXING.PERIODIC.AUTOMAT" id=
-                "RCL.INDEXING.PERIODIC.AUTOMAT"></a>Linux: using
-                <span class="command"><strong>cron</strong></span>
-                to automate indexing</h3>
-              </div>
-            </div>
-          </div>
-          <p>The most common way to set up indexing is to have a
-          cron task execute it every night. For example the
-          following <code class="filename">crontab</code> entry
-          would do it every day at 3:30AM (supposing <span class=
-          "command"><strong>recollindex</strong></span> is in your
-          PATH):</p>
-          <pre class="screen">
-        30 3 * * * recollindex &gt; /some/tmp/dir/recolltrace 2&gt;&amp;1
-        </pre>
-          <p>Or, using <span class=
-          "command"><strong>anacron</strong></span>:</p>
-          <pre class="screen">
-        1  15  su mylogin -c "recollindex recollindex &gt; /tmp/rcltraceme 2&gt;&amp;1"
-        </pre>
-          <p>The <span class="application">Recoll</span> GUI has
-          dialogs to manage <code class="filename">crontab</code>
-          entries for <span class=
-          "command"><strong>recollindex</strong></span>. You can
-          reach them from the <span class=
-          "guimenu">Preferences</span> → <span class=
-          "guimenuitem">Indexing Schedule</span> menu. They only
-          work with the good old <span class=
-          "command"><strong>cron</strong></span>, and do not give
-          access to all features of <span class=
-          "command"><strong>cron</strong></span> scheduling.
-          Entries created via the tool are marked with a
-          <code class="literal">RCLCRON_RCLINDEX=</code> marker so
-          that the tool knows which entries belong to it. As a side
-          effect, this sets an environment variable for the
-          process, but it's not actually used, this is just a
-          marker.</p>
-          <p>The usual command to edit your <code class=
-          "filename">crontab</code> is <span class=
-          "command"><strong>crontab</strong></span> <code class=
-          "option">-e</code> (which will usually start the
-          <span class="command"><strong>vi</strong></span> editor
-          to edit the file). You may have more sophisticated tools
-          available on your system.</p>
-          <p>Please be aware that there may be differences between
-          your usual interactive command line environment and the
-          one seen by crontab commands. Especially the PATH
-          variable may be of concern. Please check the crontab
-          manual pages about possible issues.</p>
-        </div>
-      </div>
-      <div class="sect1">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both"><a name=
-              "RCL.INDEXING.MONITOR" id=
-              "RCL.INDEXING.MONITOR"></a>2.11.&nbsp;Real time
-              indexing</h2>
-            </div>
-          </div>
-        </div>
-        <p>Real time monitoring/indexing is performed by starting
-        the <span class=
-        "command"><strong>recollindex</strong></span> <code class=
-        "option">-m</code> command. With this option, <span class=
-        "command"><strong>recollindex</strong></span> will
-        permanently monitor file changes and update the index.</p>
-        <p>On <span class="application">Windows</span> systems, the
-        monitoring process is started from the <span class=
-        "command"><strong>recoll</strong></span> GUI <span class=
-        "guilabel">File</span> menu. On <span class=
-        "application">Unix</span>-like systems, there are other
-        possibilities, see the following sections.</p>
-        <p>When this is in use, the <span class=
-        "command"><strong>recoll</strong></span> GUI <span class=
-        "guimenu">File</span> menu makes two operations available:
-        <span class="guimenuitem">Stop</span> and <span class=
-        "guimenuitem">Trigger incremental pass</span>.</p>
-        <p><span class="guimenuitem">Trigger incremental
-        pass</span> has the same effect as restarting the indexer,
-        and will cause a complete walk of the indexed area,
-        processing the changed files, then switch to monitoring.
-        This is only marginally useful, maybe in cases where the
-        indexer is configured to delay updates, or to force an
-        immediate rebuild of the stemming and phonetic data, which
-        are only processed at intervals by the real time
-        indexer.</p>
-        <p>While it is convenient that data is indexed in real
-        time, repeated indexing can generate a significant load on
-        the system when files such as email folders change. Also,
-        monitoring large file trees by itself significantly taxes
-        system resources. You probably do not want to enable it if
-        your system is short on resources. Periodic indexing is
-        adequate in most cases.</p>
-        <p>As of <span class="application">Recoll</span> 1.24, you
-        can set the <a class="link" href=
-        "#RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">monitordirs</a>
-        configuration variable to specify that only a subset of
-        your indexed files will be monitored for instant indexing.
-        In this situation, an incremental pass on the full tree can
-        be triggered by either restarting the indexer, or just
-        running <span class=
-        "command"><strong>recollindex</strong></span>, which will
-        notify the running process. The <span class=
-        "command"><strong>recoll</strong></span> GUI also has a
-        menu entry for this.</p>
-        <div class="simplesect">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name=
-                "RCL.INDEXING.MONITOR.START.SYSTEMD" id=
-                "RCL.INDEXING.MONITOR.START.SYSTEMD"></a><span class="application">Unix</span>-like
-                systems: automatic daemon start with systemd</h3>
-              </div>
-            </div>
-          </div>
-          <p>The installation contains two example files (in
-          <code class="filename">share/recoll/examples</code>) for
-          starting the indexing daemon with <span class=
-          "application">systemd</span>.</p>
-          <p><code class="filename">recollindex.service</code>
-          would be used for starting <span class=
-          "command"><strong>recollindex</strong></span> as a user
-          service. The indexer will start when the user logs in and
-          run while there is a session open for them.</p>
-          <p><code class="filename">recollindex@.service</code> is
-          a template service which would be used for starting the
-          indexer at boot time, running as a specific user. It can
-          be useful when running the text search as a shared
-          service (e.g. when users access it through the WEB
-          UI).</p>
-          <p>If configured to do so, the unit files should have
-          been installed in your system's default systemd paths
-          (usually <code class=
-          "filename">/usr/lib/systemd/system/</code> and
-          <code class="filename">/usr/lib/systemd/user/</code>). If
-          not, you may need to copy the files there before starting
-          the service.</p>
-          <p>With the unit files installed in the proper location,
-          the user unit can be started with the following
-          commands:</p>
-          <pre class=
-          "programlisting">systemctl --user daemon-reload
-systemctl --user enable --now recollindex.service</pre>
-          <p>The system unit file can be enabled for a particular
-          user by running, as root:</p>
-          <pre class="programlisting">systemctl daemon-reload
-systemctl enable --now recollindex@<code class=
-"varname">username</code>.service</pre>
-          <p>(A valid user name should be substituted for
-          <code class="varname">username</code>, of course.)</p>
-        </div>
-        <div class="simplesect">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name=
-                "RCL.INDEXING.MONITOR.START" id=
-                "RCL.INDEXING.MONITOR.START"></a><span class=
-                "application">Unix</span>-like systems: automatic
-                daemon start from the desktop session</h3>
-              </div>
-            </div>
-          </div>
-          <p>Under <span class="application">KDE</span>,
-          <span class="application">Gnome</span> and some other
-          desktop environments, the daemon can automatically
-          started when you log in, by creating a desktop file
-          inside the <code class=
-          "filename">~/.config/autostart</code> directory. This can
-          be done for you by the <span class=
-          "application">Recoll</span> GUI. Use the <span class=
-          "guimenu">Preferences-&gt;Indexing Schedule</span>
-          menu.</p>
-          <p>With older <span class="application">X11</span>
-          setups, starting the daemon is normally performed as part
-          of the user session script.</p>
-          <p>The <code class="filename">rclmon.sh</code> script can
-          be used to easily start and stop the daemon. It can be
-          found in the <code class="filename">examples</code>
-          directory (typically <code class=
-          "filename">/usr/local/[share/]recoll/examples</code>).</p>
-          <p>For example, a good old <span class=
-          "application">xdm</span>-based session could have a
-          <code class="filename">.xsession</code> script with the
-          following lines at the end:</p>
-          <pre class="programlisting">recollconf=$HOME/.recoll-home
-recolldata=/usr/local/share/recoll
-RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
-
-fvwm 
-</pre>
-          <p>The indexing daemon gets started, then the window
-          manager, for which the session waits.</p>
-          <p>By default the indexing daemon will monitor the state
-          of the X11 session, and exit when it finishes, it is not
-          necessary to kill it explicitly. (The <span class=
-          "application">X11</span> server monitoring can be
-          disabled with option <code class="option">-x</code> to
-          <span class=
-          "command"><strong>recollindex</strong></span>).</p>
-          <p>If you use the daemon completely out of an
-          <span class="application">X11</span> session, you need to
-          add option <code class="option">-x</code> to disable
-          <span class="application">X11</span> session monitoring
-          (else the daemon will not start).</p>
-        </div>
-        <div class="simplesect">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name=
-                "RCL.INDEXING.MONITOR.DETAILS" id=
-                "RCL.INDEXING.MONITOR.DETAILS"></a>Miscellaneous
-                details</h3>
-              </div>
-            </div>
-          </div>
-          <p>By default, the messages from the indexing daemon will
-          be sent to the same file as those from the interactive
-          commands (<code class="literal">logfilename</code>). You
-          may want to change this by setting the <code class=
-          "varname">daemlogfilename</code> and <code class=
-          "varname">daemloglevel</code> configuration parameters.
-          Also the log file will only be truncated when the daemon
-          starts. If the daemon runs permanently, the log file may
-          grow quite big, depending on the log level.</p>
-          <p><b><span class="application">Unix</span>-like systems:
-          increasing resources for inotify.&nbsp;</b>On Linux
-          systems, monitoring a big tree may need increasing the
-          resources available to inotify, which are normally
-          defined in <code class=
-          "filename">/etc/sysctl.conf</code>.</p>
-          <pre class="programlisting">
-### inotify
-#
-# cat  /proc/sys/fs/inotify/max_queued_events   - 16384
-# cat  /proc/sys/fs/inotify/max_user_instances  - 128
-# cat  /proc/sys/fs/inotify/max_user_watches    - 16384
-#
-# -- Change to:
-#
-fs.inotify.max_queued_events=32768
-fs.inotify.max_user_instances=256
-fs.inotify.max_user_watches=32768
-        </pre>
-          <p>Especially, you will need to trim your tree or adjust
-          the <code class="literal">max_user_watches</code> value
-          if indexing exits with a message about errno <code class=
-          "literal">ENOSPC</code> (28) from <code class=
-          "function">inotify_add_watch</code>.</p>
-          <p><b>Slowing down the reindexing rate for fast changing
-          files.&nbsp;</b>When using the real time monitor, it may
-          happen that some files need to be indexed, but change so
-          often that they impose an excessive load for the
-          system.<span class="application">Recoll</span> provides a
-          configuration option to specify the minimum time before
-          which a file, specified by a wildcard pattern, cannot be
-          reindexed. See the <code class=
-          "varname">mondelaypatterns</code> parameter in the
-          <a class="link" href=
-          "#RCL.INSTALL.CONFIG.RECOLLCONF.MISC" title=
-          "Miscellaneous parameters">configuration section</a>.</p>
+          <p>You may want to restrict this processing to a subset
+          of the directory tree, because it may slow down indexing
+          a bit (<code class=
+          "literal">[some/area/of/the/fs]</code>).</p>
+          <p>Note the initial semi-colon after the equal sign.</p>
+          <p>In the example above, the output of <span class=
+          "command"><strong>tmsu</strong></span> is used to set a
+          field named <em class=
+          "replaceable"><code>tags</code></em>. The field name is
+          arbitrary and could be <em class=
+          "replaceable"><code>tmsu</code></em> or <em class=
+          "replaceable"><code>myfield</code></em> just the same,
+          but <em class="replaceable"><code>tags</code></em> is an
+          alias for the standard <span class=
+          "application">Recoll</span> <code class=
+          "literal">keywords</code> field, and the <span class=
+          "command"><strong>tmsu</strong></span> output will just
+          augment its contents. This will avoid the need to extend
+          the <a class="link" href="#RCL.PROGRAM.FIELDS" title=
+          "4.2.&nbsp;Field data processing">field
+          configuration</a>.</p>
+          <p>Once re-indexing is performed (you will need to force
+          the file reindexing, <span class=
+          "application">Recoll</span> will not detect the need by
+          itself), you will be able to search from the query
+          language, through any of its aliases: <em class=
+          "replaceable"><code>tags:some/alternate/values</code></em>
+          or <em class=
+          "replaceable"><code>tags:all,these,values</code></em>.</p>
+          <p>Tags changes will not be detected by the indexer if
+          the file itself did not change. One possible workaround
+          would be to update the file <code class=
+          "literal">ctime</code> when you modify the tags, which
+          would be consistent with how extended attributes
+          function. A pair of <span class=
+          "command"><strong>chmod</strong></span> commands could
+          accomplish this, or a <code class="literal">touch
+          -a</code>. Alternatively, just couple the tag update with
+          a <code class="literal">recollindex -e -i</code>
+          <em class=
+          "replaceable"><code>/path/to/the/file</code></em>.</p>
         </div>
       </div>
     </div>
@@ -4136,7 +4178,7 @@ fs.inotify.max_user_watches=32768
           </div>
           <p>See the section describing <a class="link" href=
           "#RCL.INDEXING.CONFIG.MULTIPLE" title=
-          "2.3.1.&nbsp;Multiple indexes">the use of multiple
+          "2.3.2.&nbsp;Multiple indexes">the use of multiple
           indexes</a> for generalities. Only the aspects concerning
           the <span class="command"><strong>recoll</strong></span>
           GUI are described here.</p>
@@ -4296,7 +4338,7 @@ fs.inotify.max_user_watches=32768
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1581" id="idm1581"></a>
+            <a name="idm1594" id="idm1594"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -5062,9 +5104,8 @@ fs.inotify.max_user_watches=32768
                   <p>The paragraph format</p>
                 </li>
                 <li class="listitem">
-                  <p>HTML code inside the header section. For
-                  versions 1.21 and later, this is also used for
-                  the <a class="link" href=
+                  <p>HTML code inside the header section. This is
+                  also used for the <a class="link" href=
                   "#RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">snippets
                   window</a>.</p>
                 </li>
@@ -5084,7 +5125,7 @@ fs.inotify.max_user_watches=32768
             <p>There are a few examples on the <a class="ulink"
             href="http://www.recoll.org/pages/custom.html" target=
             "_top">page about customising the result list</a> on
-            the <span class="application">Recoll</span> web
+            the <span class="application">Recoll</span> Web
             site.</p>
             <div class="sect4">
               <div class="titlepage">
@@ -5387,10 +5428,10 @@ Common options:
 recollq 'ilur -nautique mime:text/html'
 Recoll query: ((((ilur:(wqf=11) OR ilurs) AND_NOT (nautique:(wqf=11) OR nautiques OR nautiqu OR nautiquement)) FILTER Ttext/html))
 4 results
-text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/comptes.html]      [comptes.html]  18593   bytes   
-text/html       [file:///Users/uncrypted-dockes/projets/nautique/webnautique/articles/ilur1/index.html] [Constructio...
-text/html       [file:///Users/uncrypted-dockes/projets/pagepers/index.html]    [psxtcl/writemime/recoll]...
-text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
+text/html       [file:///Users/dockes/projets/bateaux/ilur/comptes.html]      [comptes.html]  18593   bytes   
+text/html       [file:///Users/dockes/projets/nautique/webnautique/articles/ilur1/index.html] [Constructio...
+text/html       [file:///Users/dockes/projets/pagepers/index.html]    [psxtcl/writemime/recoll]...
+text/html       [file:///Users/dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
       </pre>
       </div>
       <div class="sect1">
@@ -7906,12 +7947,12 @@ for doc in results:
             retrieved when running a query (see <code class=
             "literal">query.execute()</code> above - the result is
             always plain text).</p>
-            <p>The <code class="literal">rclextract</code> module
-            can give access to the original document and to the
-            document text content (if not stored by the index, or
-            to access an HTML version of the text). Accessing the
-            original document is particularly useful if it is
-            embedded (e.g. an email attachment).</p>
+            <p>Independantly, the <code class=
+            "literal">rclextract</code> module can give access to
+            the original document and to the document text content,
+            possibly as an HTML version. Accessing the original
+            document is particularly useful if it is embedded (e.g.
+            an email attachment).</p>
             <p>You need to import the <code class=
             "literal">recoll</code> module before the <code class=
             "literal">rclextract</code> module.</p>
@@ -8332,39 +8373,6 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
             "filename">rcljoplin.py</code> sample for an
             example.</p>
           </div>
-        </div>
-        <div class="sect2">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name=
-                "RCL.PROGRAM.PYTHONAPI.COMPAT" id=
-                "RCL.PROGRAM.PYTHONAPI.COMPAT"></a>4.3.6.&nbsp;Package
-                compatibility with the previous version</h3>
-              </div>
-            </div>
-          </div>
-          <p>The following code fragments can be used to ensure
-          that code can run with both the old and the new API (as
-          long as it does not use the new abilities of the new API
-          of course).</p>
-          <p>Adapting to the new package structure:</p>
-          <pre class="programlisting">
-try:
-from recoll import recoll
-from recoll import rclextract
-hasextract = True
-except:
-import recoll
-hasextract = False
-</pre>
-          <p>Adapting to the change of nature of the <code class=
-          "literal">next</code> <code class="literal">Query</code>
-          member. The same test can be used to choose to use the
-          <code class="literal">scroll()</code> method (new) or set
-          the <code class="literal">next</code> value (old).</p>
-          <pre class=
-          "programlisting">rownum = query.next if type(query.next) == int else query.rownumber</pre>
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='https://www.lesbonscomptes.com/recoll/pages/features.html#doctypes'>http://www.recoll.org/pages/features.html</ulink>">
-<!ENTITY RCLVERSION "1.33">
+<!ENTITY RCLVERSION "1.34">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
@@ -14,10 +14,7 @@
 ]>
 
 <book lang="en">
-
-
   <!-- A nice overview of docbook elements:
-
        https://tdg.docbook.org/tdg/4.5/ch02.html#ch02-logdiv -->
   
   <bookinfo>
@@ -32,7 +29,7 @@
     </author>
 
     <copyright>
-      <year>2005-2020</year>
+      <year>2005-2023</year>
       <holder role="mailto:jfd@recoll.org">Jean-Francois Dockes</holder>
     </copyright>
 
@@ -61,14 +58,13 @@
     and describes the installation and use of the &RCL;
     application. It is updated for &RCL; &RCLVERSION;.</para>
 
-    <para>&RCL; was for a long time dedicated to Unix-like systems. It
-      was only lately (2015) ported to <application>MS-Windows</application>. Many references in
-      this manual, especially file locations, are specific to Unix, and not valid on &WIN;, where
-      some described features are also not available.  The manual will be progressively
-      updated. Until this happens, on &WIN;, most references to shared files can be translated by
-      looking under the Recoll installation directory (Typically <filename>C:/Program
-        Files (x86)/Recoll</filename>). Especially, anything referenced
-      inside <filename>/usr/share</filename> in this document will be found in
+    <para>&RCL; was for a long time dedicated to Unix-like systems. It was only lately (2015) ported
+      to <application>MS-Windows</application>. Many references in this manual, especially file
+      locations, are specific to Unix, and not valid on Windows, where some described features are
+      also not available. The manual will be progressively updated. Until this happens, on Windows,
+      most references to shared files can be translated by looking under the Recoll installation
+      directory (Typically <filename>C:/Program Files (x86)/Recoll</filename>). Especially, anything
+      referenced inside <filename>/usr/share</filename> in this document will be found in
       the <filename>Share</filename> subdirectory of the installation). The user configuration is
       stored by default under <filename>AppData/Local/Recoll</filename> inside the user directory,
       along with the index itself.</para>
@@ -76,22 +72,19 @@
     <sect1 id="RCL.INTRODUCTION.TRYIT">
       <title>Giving it a try</title>
       
-      <para>If you do not like reading manuals (who does?) but 
-      wish to give &RCL; a try, just
-      <link linkend="RCL.INSTALL.BINARY">install</link> the application
-      and start the <command>recoll</command> graphical user
-      interface (GUI), which will ask permission to index your home
-      directory, allowing you to search immediately after
-      indexing completes.</para>
+      <para>If you do not like reading manuals (who does?) but wish to give &RCL; a try, just
+      <link linkend="RCL.INSTALL.BINARY">install</link> the application and start
+      the <command>recoll</command> graphical user interface (GUI), which will ask permission to
+      index your home directory, allowing you to search immediately after indexing completes.</para>
 
       <para>Do not do this if your home directory contains a huge number of documents and you do not
-      want to wait or are very short on disk space. In this case, you may first want to customize
-      the <link linkend="RCL.INDEXING.CONFIG">configuration</link> to restrict the indexed area
-      (shortcut: from the <command>recoll</command> GUI go to: <menuchoice>
+        want to wait or are very short on disk space. In this case, you may first want to customize
+        the <link linkend="RCL.INDEXING.CONFIG">configuration</link> to restrict the indexed area.
+        From the <command>recoll</command> GUI go to: <menuchoice>
         <guimenu>Preferences</guimenu>
         <guimenuitem>Indexing configuration</guimenuitem>
-        </menuchoice>, then adjust the <guilabel>Top
-      directories</guilabel> section).</para>
+        </menuchoice>, then adjust the <guilabel>Top directories</guilabel> section, which defines
+        the directories from which the filesystem exploration starts.</para>
 
       <para>On &LIN;, you may need to install the
       appropriate <link linkend="RCL.INSTALL.EXTERNAL">supporting applications</link> for document
@@ -284,31 +277,27 @@
     <sect1 id="RCL.INDEXING.INTRODUCTION">
       <title>Introduction</title>
 
-      <para>Indexing is the process by which the set of documents is
-      analyzed and the data entered into the database. &RCL;
-      indexing is normally incremental: documents will only be
-      processed if they have been modified since the last run. On
-      the first execution, all documents will need processing. A
-      full index build can be forced later by specifying an option
-      to the indexing command (<command>recollindex</command>
-      <option>-z</option> or <option>-Z</option>).</para>
+      <para>Indexing is the process by which the set of documents is analyzed and the data entered
+        into the database. &RCL; indexing is normally incremental: documents will only be processed
+        if they have been modified since the last run. On the first execution, all documents will
+        need processing. A full index build can be forced later by specifying an option to the
+        indexing command (<command>recollindex</command>
+        <option>-z</option> or <option>-Z</option>).</para>
 
-      <para><command>recollindex</command> skips files which caused an
-      error during a previous pass. This is a performance optimization, and
-      the command line option <option>-k</option> can be set to retry
-      failed files, for example after updating an input handler.</para>
+      <para><command>recollindex</command> skips files which caused an error during a previous
+        pass. This is a performance optimization, and the command line option <option>-k</option>
+        can be set to retry failed files, for example after updating an input handler.</para>
 
-      <para>The following sections give an overview of different
-      aspects of the indexing processes and configuration, with links
-      to detailed sections.</para>
+      <para>The following sections give an overview of different aspects of the indexing processes
+        and configuration, with links to detailed sections.</para>
 
-      <para>Depending on your data, temporary files may be needed during
-      indexing, some of them possibly quite big. You can use the
-      <envar>RECOLL_TMPDIR</envar> or <envar>TMPDIR</envar> environment
-      variables to determine where they are created (the default is to
-      use <filename>/tmp</filename>). Using <envar>TMPDIR</envar> has
-      the nice property that it may also be taken into account by 
-      auxiliary commands executed by <command>recollindex</command>.</para>
+      <para>Depending on your data, temporary files may be needed during indexing, some of them
+        possibly quite big. You can use the
+        <envar>RECOLL_TMPDIR</envar> or <envar>TMPDIR</envar> environment
+        variables to determine where they are created (the default is to
+        use <filename>/tmp</filename>). Using <envar>TMPDIR</envar> has
+        the nice property that it may also be taken into account by 
+        auxiliary commands executed by <command>recollindex</command>.</para>
 
       <sect2 id="RCL.INDEXING.INTRODUCTION.MODES">
         <title>Indexing modes</title> 
@@ -317,46 +306,43 @@
         <itemizedlist>
           <listitem>
             <formalpara><title>
-              <link linkend="RCL.INDEXING.PERIODIC">Periodic (or batch) indexing</link>
-            </title> <para><command>recollindex</command> is executed at
+                <link linkend="RCL.INDEXING.PERIODIC">Periodic (or batch) indexing</link>
+              </title> <para><command>recollindex</command> is executed at
                 discrete times. On &LIN;, the typical usage is to have a
                 nightly run
                 <link linkend="RCL.INDEXING.PERIODIC.AUTOMAT">
-                  programmed</link>
-                into your <command>cron</command> file. On &WIN;, this is
-                the only mode available, and the Windows Task Scheduler can
-                be used to run indexing. In both cases, the GUI includes an
-                easy interface to the system batch scheduler.</para>
+                  programmed</link> into your <command>cron</command> file. On &WIN;,
+                the <application>Task Scheduler</application> can be used to run indexing. In both
+                cases, the &RCL; GUI includes a simplified interface to configure the system
+                scheduler.</para>
             </formalpara>
           </listitem>
           <listitem>
             <formalpara><title>
-              <link linkend="RCL.INDEXING.MONITOR">Real time indexing</link>
-            </title>
-            <para><command>recollindex</command> runs permanently as a daemon and uses a file system
-              alteration monitor (e.g. <application>inotify</application> on &LIN;) to detect file
-              changes. New or updated files are indexed at once. Monitoring a big file system tree
-              can consume significant system resources.</para>
+                <link linkend="RCL.INDEXING.MONITOR">Real time indexing</link>
+              </title>
+              <para><command>recollindex</command> runs permanently as a daemon and uses a file system
+                alteration monitor (e.g. <application>inotify</application> on &LIN;) to detect file
+                changes. New or updated files are indexed at once. Monitoring a big file system tree
+                can consume significant system resources.</para>
             </formalpara>
           </listitem>
         </itemizedlist>
 
         <simplesect><title>Choosing an indexing mode</title>
-        <para>The choice between the two methods is mostly a matter of
-          preference, and they can be combined by setting up multiple
-          indexes (e.g.: use periodic indexing on a big documentation
-          directory, and real time indexing on a small home
-          directory), or by
-          <link linkend="RCL.INDEXING.MONITOR">configuring the index so that only a subset of the
-            tree will be monitored.</link> 
-        </para>
-        <para>The choice of method and the parameters used can be
-          configured from the <command>recoll</command> GUI:
-        <menuchoice>
-          <guimenu>Preferences</guimenu>
-          <guimenuitem>Indexing schedule</guimenuitem>
-        </menuchoice> dialog.
-        </para>
+          <para>The choice between the two methods is mostly a matter of preference, and they can be
+            combined by setting up multiple indexes (e.g.: use periodic indexing on a big
+            documentation directory, and real time indexing on a small home directory), or by
+            <link linkend="RCL.INDEXING.MONITOR">configuring the index so that only a subset of the
+              tree will be monitored.</link> 
+          </para>
+          <para>The choice of method and the parameters used can be
+            configured from the <command>recoll</command> GUI:
+            <menuchoice>
+              <guimenu>Preferences</guimenu>
+              <guimenuitem>Indexing schedule</guimenuitem>
+            </menuchoice> dialog.
+          </para>
         </simplesect>
 
       </sect2>
@@ -376,12 +362,10 @@
           and <filename>%LOCALAPPDATA%/Recoll</filename> on &WIN;
           (typically <filename>C:/Users/[me]/Appdata/Local/Recoll</filename>).</para>
 
-        <para>All configuration parameters have defaults, defined in
-        system-wide files. Without further customisation, the default
-        configuration will process your complete home directory, with a
-        reasonable set of defaults. It can be adjusted to process a
-        different area of the file system, select files in different ways,
-        and many other things.</para>
+        <para>All configuration parameters have defaults, defined in system-wide files. Without
+          further customisation, the default configuration will process your complete home
+          directory, with a reasonable set of defaults. It can be adjusted to process a different
+          area of the file system, select files in different ways, and many other things.</para>
 
         <para>In some cases, it may be useful to create additional configuration directories, for
           example, to separate personal and shared indexes, or to take advantage of the organization
@@ -402,11 +386,10 @@
           <envar>RECOLL_CONFDIR</envar> environment variable when starting a
           command, to select the desired index.</para>
 
-        <para>It is also possible to instruct one configuration to
-          query one or several other indexes in addition to its own, by using
-          the <guimenuitem>External index</guimenuitem> function in the
-          <command>recoll</command> GUI, or some other functions in the
-          command line and programming tools.</para>
+        <para>It is also possible to instruct one configuration to query one or several other
+          indexes in addition to its own, by using the <guimenuitem>External index</guimenuitem>
+          function in the <command>recoll</command> GUI, or some equivalent in the command line and
+          programming tools.</para>
         
         <para>A plausible usage scenario for the multiple index feature would be for a system
           administrator to set up a central index for shared data, that you choose to search or not
@@ -421,9 +404,8 @@
           or possibly several machines), and then merging them, or querying them in parallel.</para>
 
         <para>See the section about
-        <link linkend="RCL.INDEXING.CONFIG.MULTIPLE">configuring multiple indexes</link>
-        for more detail</para>
-
+          <link linkend="RCL.INDEXING.CONFIG.MULTIPLE">configuring multiple indexes</link>
+          for more detail</para>
       </sect2>
 
       <sect2>
@@ -435,137 +417,119 @@
             configuration files</link>.
         </para>
 
-        <para>Most file types, like HTML or word processing files, only hold
-        one document. Some file types, like email folders or zip
-        archives, can hold many individually indexed documents, which may
-        themselves be compound ones. Such hierarchies can go quite
-        deep, and &RCL; can process, for example, a
-        <application>LibreOffice</application> 
-        document stored as an attachment to an email message inside an
-        email folder archived in a zip file...</para>
+        <para>Most file types, like HTML or word processing files, only hold one document. Some file
+          types, like email folders or zip archives, can hold many individually indexed documents,
+          which may themselves be compound ones. Such hierarchies can go quite deep, and &RCL; can
+          process, for example, a
+          <application>LibreOffice</application> 
+          document stored as an attachment to an email message inside an
+          email folder archived in a zip file...</para>
 
         <para><command>recollindex</command> processes plain text, HTML,
-        OpenDocument (Open/LibreOffice), email formats, and a few others
-        internally.</para>
+          OpenDocument (Open/LibreOffice), email formats, and a few others
+          internally.</para>
 
         <para>Other file types (e.g.: postscript, pdf, ms-word, rtf ...) 
-        need external applications for preprocessing. The list is in the
-        <link linkend="RCL.INSTALL.EXTERNAL">installation</link>
-        section. After every indexing operation, &RCL; updates a list of
-        commands that would be needed for indexing existing files
-        types. This list can be displayed by selecting the menu option
-        <menuchoice>
-          <guimenu>File</guimenu>
-          <guimenuitem>Show Missing Helpers</guimenuitem>
-        </menuchoice>
-        in the <command>recoll</command> GUI. It is stored in the
-        <filename>missing</filename> text file inside the configuration
-        directory.</para>
+          need external applications for preprocessing. The list is in the
+          <link linkend="RCL.INSTALL.EXTERNAL">installation</link>
+          section. After every indexing operation, &RCL; updates a list of
+          commands that would be needed for indexing existing files
+          types. This list can be displayed by selecting the menu option
+          <menuchoice>
+            <guimenu>File</guimenu>
+            <guimenuitem>Show Missing Helpers</guimenuitem>
+          </menuchoice>
+          in the <command>recoll</command> GUI. It is stored in the
+          <filename>missing</filename> text file inside the configuration
+          directory.</para>
 
         <para>After installing a missing handler, you may need to
           tell <command>recollindex</command> 
           to retry the failed files, by adding option <literal>-k</literal>
           to the command line, or by using the GUI
-        <menuchoice>
-          <guimenu>File</guimenu>
-          <guimenuitem>Special indexing</guimenuitem> 
-        </menuchoice> menu. This is because <command>recollindex</command>,
-        in its default operation mode, will not retry files which caused an
-        error during an earlier pass. In special cases, it may be useful to
-        reset the data for a category of files before indexing. See
-        the <command>recollindex</command> manual page. If your index is
-        not too big, it may be simpler to just reset it.</para>
-          
-        <para>By default, &RCL; will try to index any file type that
-        it has a way to read. This is sometimes not desirable, and
-        there are ways to either exclude some types, or on the
-        contrary define a positive list of types to be
-        indexed. In the latter case, any type not in the list will
-        be ignored.</para>
+          <menuchoice>
+            <guimenu>File</guimenu>
+            <guimenuitem>Special indexing</guimenuitem> 
+          </menuchoice> menu. This is because <command>recollindex</command>, in its default
+          operation mode, will not retry files which caused an error during an earlier pass. In
+          special cases, it may be useful to reset the data for a category of files before
+          indexing. See the <command>recollindex</command> manual page. If your index is not too
+          big, it may be simpler to just reset it.</para>
+        
+        <para>By default, &RCL; will try to index any file type that it has a way to read. This is
+          sometimes not desirable, and there are ways to either exclude some types, or on the
+          contrary define a positive list of types to be indexed. In the latter case, any type not
+          in the list will be ignored.</para>
 
         <para>Excluding files by name can be done by adding wildcard name
-        patterns to the
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">
-          skippedNames</link> 
-        list, which can be done from the GUI Index configuration
-        menu. Excluding by type can be done by setting the 
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
-          excludedmimetypes</link> 
-        list in the configuration file. This can be redefined for subdirectories.</para>
+          patterns to the
+          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">
+            skippedNames</link> 
+          list, which can be done from the GUI Index configuration
+          menu. Excluding by type can be done by setting the 
+          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
+            excludedmimetypes</link> 
+          list in the configuration file. This can be redefined for subdirectories.</para>
 
         <para>You can also define an exclusive list of MIME types to be
-        indexed (no others will be indexed), by setting 
-        the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES">
+          indexed (no others will be indexed), by setting 
+          the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES">
             indexedmimetypes</link>
-        configuration variable. Example:<programlisting>
-        indexedmimetypes = text/html application/pdf
-      </programlisting>
-      It is possible to redefine this parameter for
-      subdirectories. Example:<programlisting>
-      [/path/to/my/dir]
-      indexedmimetypes = application/pdf
-    </programlisting>
-    (When using sections like this, don't forget that they remain
-    in effect until the end of the file or another section
-    indicator).
+          configuration variable. Example:</para>
+        <programlisting>indexedmimetypes = text/html application/pdf</programlisting>
+        <para>It is possible to redefine this parameter for subdirectories. Example:</para>
+        <programlisting>[/path/to/my/dir]
+indexedmimetypes = application/pdf</programlisting>
+        <para>(When using sections like this, don't forget that they remain
+          in effect until the end of the file or another section
+          indicator).
         </para>
 
         <para><literal>excludedmimetypes</literal> or
-        <literal>indexedmimetypes</literal>, can be set either by editing
-        the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration file (<filename>recoll.conf</filename>)</link>
-        for the index, or by using the GUI index configuration tool.</para>
+          <literal>indexedmimetypes</literal>, can be set either by editing
+          the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration file (<filename>recoll.conf</filename>)</link>
+          for the index, or by using the GUI index configuration tool.</para>
 
         <note><title>Note about MIME types</title>
-        <para>When editing the <literal>indexedmimetypes</literal>
-        or <literal>excludedmimetypes</literal> lists, you should use the
-        MIME values listed in the <filename>mimemap</filename> file
-        or in Recoll result lists in preference to <literal>file -i</literal>
-        output: there are a number of differences. The
-        <literal>file -i</literal> output should only be used for files
-        without extensions, or for which the extension is not listed in
-        <filename>mimemap</filename></para></note> 
+          <para>When editing the <literal>indexedmimetypes</literal>
+            or <literal>excludedmimetypes</literal> lists, you should use the MIME values listed in
+            the <filename>mimemap</filename> file or in Recoll result lists in preference
+            to <literal>file -i</literal> output: there are a number of differences. The
+            <literal>file -i</literal> output should only be used for files
+            without extensions, or for which the extension is not listed in
+            <filename>mimemap</filename></para></note> 
 
       </sect2>
-
 
       <sect2>
         <title>Indexing failures</title>
 
-        <para>Indexing may fail for some documents, for a number of
-        reasons: a helper program may be missing, the document may be
-        corrupt, we may fail to uncompress a file because no file
-        system space is available, etc.</para>
+        <para>Indexing may fail for some documents, for a number of reasons: a helper program may be
+          missing, the document may be corrupt, we may fail to uncompress a file because no file
+          system space is available, etc.</para>
         
-        <para>The &RCL; indexer in versions 1.21 and later does not
-          retry failed files by default, because some indexing failures
-          can be quite costly (for example failing to uncompress a big
-          file because of insufficient disk space).
-          Retrying will only occur if an explicit option
-          (<option>-k</option>) is set on
-          the <command>recollindex</command> command line, or if a script
-          executed when <command>recollindex</command> starts up says
-          so. The script is defined by a configuration variable
-          (<literal>checkneedretryindexscript</literal>), and makes a
-          rather lame attempt at deciding if a helper command may have been
-          installed, by checking if any of the
-          common <filename>bin</filename> directories have changed.</para>
+        <para>The &RCL; indexer in versions 1.21 and later does not retry failed files by default,
+          because some indexing failures can be quite costly (for example failing to uncompress a
+          big file because of insufficient disk space).  Retrying will only occur if an explicit
+          option (<option>-k</option>) is set on the <command>recollindex</command> command line, or
+          if a script executed when <command>recollindex</command> starts up says so. The script is
+          defined by a configuration variable (<literal>checkneedretryindexscript</literal>), and
+          makes a rather lame attempt at deciding if a helper command may have been installed, by
+          checking if any of the common <filename>bin</filename> directories have changed.</para>
 
       </sect2>
 
       <sect2>
         <title>Recovery</title>
 
-        <para>In the rare case where the index becomes corrupted (which can
-        signal itself by weird search results or crashes), the index files
-        need to be erased before restarting a clean indexing pass. Just delete
-        the <filename>xapiandb</filename> directory (see 
-        <link linkend="RCL.INDEXING.STORAGE">next section</link>), or, 
-        alternatively, start the next <command>recollindex</command> with the 
-        <option>-z</option> option, which will reset the database before
-        indexing. The difference between the two methods is that the
-        second will not change the current index format, which may be
-        undesirable if a newer format is supported by the &XAP;
-        version.</para>
+        <para>In the rare case where the index becomes corrupted (which can signal itself by weird
+          search results or crashes), the index files need to be erased before restarting a clean
+          indexing pass. Just delete the <filename>xapiandb</filename> directory (see
+          <link linkend="RCL.INDEXING.STORAGE">next section</link>), or, alternatively, start the
+          next <command>recollindex</command> with the
+          <option>-z</option> option, which will reset the database before indexing. The difference
+          between the two methods is that the second will not change the current index format, which
+          may be undesirable if a newer format is supported by the &XAP; version.</para>
 
       </sect2>
 
@@ -575,84 +539,79 @@
       <title>Index storage</title>
 
       <para>The default location for the index data is the <filename>xapiandb</filename>
-      subdirectory of the &RCL; configuration directory,
-      typically <filename>$HOME/.recoll/xapiandb/</filename> on &LIN;
-      or <filename>C:/Users/[me]/Appdata/Local/Recoll/xapiandb</filename> on &WIN;. This can be
-      changed via two different methods (with different purposes):
-      <orderedlist>
+        subdirectory of the &RCL; configuration directory,
+        typically <filename>$HOME/.recoll/xapiandb/</filename> on &LIN;
+        or <filename>C:/Users/[me]/Appdata/Local/Recoll/xapiandb</filename> on &WIN;. This can be
+        changed via two different methods (with different purposes):
+        <orderedlist>
 
-        <listitem><para>For a given configuration directory, you can
-        specify a non-default storage location for the index by setting
-        the <varname>dbdir</varname> parameter in the configuration file
-        (see the
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration section</link>).
-        This method would mainly be of use if you wanted
-        to keep the configuration directory in its default location, but
-        desired another location for the index, typically out of disk
-        occupation or performance concerns.</para>
-        </listitem>
+          <listitem><para>For a given configuration directory, you can
+              specify a non-default storage location for the index by setting
+              the <varname>dbdir</varname> parameter in the configuration file
+              (see the
+              <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration section</link>).
+              This method would mainly be of use if you wanted
+              to keep the configuration directory in its default location, but
+              desired another location for the index, typically out of disk
+              occupation or performance concerns.</para>
+          </listitem>
 
-        <listitem><para>You can specify a different configuration
-        directory by setting the <envar>RECOLL_CONFDIR</envar>
-        environment variable, or using the <option>-c</option>
-        option to the &RCL; commands. This method would typically be
-        used to index different areas of the file system to
-        different indexes. For example, if you were to issue the
-        following command: 
-        <programlisting>recoll -c ~/.indexes-email</programlisting> Then
-        &RCL; would use configuration files 
-        stored in <filename>~/.indexes-email/</filename> and,
-        (unless specified otherwise in
-        <filename>recoll.conf</filename>) would look for 
-        the index in
-        <filename>~/.indexes-email/xapiandb/</filename>.</para>
+          <listitem><para>You can specify a different configuration directory by setting
+              the <envar>RECOLL_CONFDIR</envar> environment variable, or using
+              the <option>-c</option> option to the &RCL; commands. This method would typically be
+              used to index different areas of the file system to different indexes. For example, if
+              you were to issue the following command:
+              <programlisting>recoll -c ~/.indexes-email</programlisting> Then
+              &RCL; would use configuration files 
+              stored in <filename>~/.indexes-email/</filename> and,
+              (unless specified otherwise in
+              <filename>recoll.conf</filename>) would look for 
+              the index in
+              <filename>~/.indexes-email/xapiandb/</filename>.</para>
 
-        <para>Using multiple configuration directories and
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration options</link>
-        allows you to tailor multiple configurations and
-        indexes to handle whatever subset of the available data you wish
-        to make searchable.</para>
-        </listitem>
+            <para>Using multiple configuration directories and
+              <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration options</link>
+              allows you to tailor multiple configurations and
+              indexes to handle whatever subset of the available data you wish
+              to make searchable.</para>
+          </listitem>
 
-      </orderedlist>
+        </orderedlist>
       </para>
 
-      <para>The size of the index is determined by the size of the set
-      of documents, but the ratio can vary a lot. For a typical
-      mixed set of documents, the index size will often be close to
-      the data set size. In specific cases (a set of compressed mbox
-      files for example), the index can become much bigger than the
-      documents. It may also be much smaller if the documents
-      contain a lot of images or other non-indexed data (an extreme
-      example being a set of mp3 files where only the tags would be
-      indexed).</para>
+      <para>The size of the index is determined by the size of the set of documents, but the ratio
+        can vary a lot. For a typical mixed set of documents, the index size will often be close to
+        the data set size. In specific cases (a set of compressed mbox files for example), the index
+        can become much bigger than the documents. It may also be much smaller if the documents
+        contain a lot of images or other non-indexed data (an extreme example being a set of mp3
+        files where only the tags would be indexed).</para>
 
       <para>Of course, images, sound and video do not increase the index
-      size, which means that in most cases, the space used by the index
-      will be negligible compared to the total amount of data on the
-      computer.</para>
+        size, which means that in most cases, the space used by the index
+        will be negligible compared to the total amount of data on the
+        computer.</para>
       
       <para>The index data directory (<filename>xapiandb</filename>)
-      only contains data that can be completely rebuilt by an index run
-      (as long as the original documents exist), and it can always be
-      destroyed safely.</para>
+        only contains data that can be completely rebuilt by an index run
+        (as long as the original documents exist), and it can always be
+        destroyed safely.</para>
       
       <sect2 id="RCL.INDEXING.STORAGE.FORMAT">
         <title>&XAP; index formats</title>
 
         <para>&XAP; versions usually support several formats for index
-        storage. A given major &XAP; version will have a current format,
-        used to create new indexes, and will also support the format from
-        the previous major version.</para>
+          storage. A given major &XAP; version will have a current format,
+          used to create new indexes, and will also support the format from
+          the previous major version.</para>
 
         <para>&XAP; will not convert automatically an existing index from
-        the older format to the newer one. If you want to upgrade to the
-        new format, or if a very old index needs to be converted because
-        its format is not supported any more, you will have to explicitly
-        delete the old index (typically
-        <filename>~/.recoll/xapiandb</filename>), then run a normal
-        indexing command. Using <command>recollindex</command> option
-        <option>-z</option> would not work in this situation.</para>
+          the older format to the newer one. If you want to upgrade to the
+          new format, or if a very old index needs to be converted because
+          its format is not supported any more, you will have to explicitly
+          delete the old index (typically
+          <filename>~/.recoll/xapiandb</filename>), then run a normal
+          indexing command. Using <command>recollindex</command> option
+          <option>-z</option> would not work in this situation.</para>
 
 
       </sect2>
@@ -661,20 +620,20 @@
         <title>Security aspects</title>
 
         <para>The &RCL; index does not hold complete copies of the indexed
-        documents (it almost does after version 1.24). But it does
-        hold enough data to allow for an almost complete reconstruction. If
-        confidential data is indexed, access to the database directory
-        should be restricted. </para>
+          documents (it almost does after version 1.24). But it does
+          hold enough data to allow for an almost complete reconstruction. If
+          confidential data is indexed, access to the database directory
+          should be restricted. </para>
 
         <para>&RCL; will create the configuration directory with a mode of
-        0700 (access by owner only). As the index data directory is by
-        default a sub-directory of the configuration directory, this should
-        result in appropriate protection.</para>
+          0700 (access by owner only). As the index data directory is by
+          default a sub-directory of the configuration directory, this should
+          result in appropriate protection.</para>
 
         <para>If you use another setup, you should think of the kind
-        of protection you need for your index, set the directory
-        and files access modes appropriately, and also maybe adjust
-        the <literal>umask</literal> used during index updates.</para>
+          of protection you need for your index, set the directory
+          and files access modes appropriately, and also maybe adjust
+          the <literal>umask</literal> used during index updates.</para>
 
       </sect2>
 
@@ -682,32 +641,32 @@
         <title>Special considerations for big indexes</title>
 
         <para>This only needs concern you if your index is going to be
-        bigger than around 5 GBytes. Beyond 10 GBytes, it becomes a serious
-        issue. Most people have much smaller indexes. For reference, 5
-        GBytes would be around 2000 bibles, a lot of text.  If you have a
-        huge text dataset (remember: images don't count, the text content
-        of PDFs is typically less than 5% of the file size), read on.</para>
+          bigger than around 5 GBytes. Beyond 10 GBytes, it becomes a serious
+          issue. Most people have much smaller indexes. For reference, 5
+          GBytes would be around 2000 bibles, a lot of text.  If you have a
+          huge text dataset (remember: images don't count, the text content
+          of PDFs is typically less than 5% of the file size), read on.</para>
 
         <para>The amount of writing performed by Xapian during index
-        creation is not linear with the index size (it is somewhere between
-        linear and quadratic). For big indexes this becomes a performance
-        issue, and may even be an SSD disk wear issue.</para>
+          creation is not linear with the index size (it is somewhere between
+          linear and quadratic). For big indexes this becomes a performance
+          issue, and may even be an SSD disk wear issue.</para>
 
         <para>The problem can be mitigated by observing the following
-        rules:</para>
+          rules:</para>
         <itemizedlist>
           <listitem><para>Partition the data set and create several indexes
-          of reasonable size rather than a huge one. These indexes can then
-          be queried in parallel (using the &RCL; external indexes
-          facility), or merged using
-          <command>xapian-compact</command>.</para></listitem> 
+              of reasonable size rather than a huge one. These indexes can then
+              be queried in parallel (using the &RCL; external indexes
+              facility), or merged using
+              <command>xapian-compact</command>.</para></listitem> 
           <listitem><para>Have a lot of RAM available and set the
-          <literal>idxflushmb</literal> &RCL; configuration parameter as
-          high as you can without swapping (experimentation will be
-          needed). 200 would be a minimum in this
-          context.</para></listitem>
+              <literal>idxflushmb</literal> &RCL; configuration parameter as
+              high as you can without swapping (experimentation will be
+              needed). 200 would be a minimum in this
+              context.</para></listitem>
           <listitem><para>Use Xapian 1.4.10 or newer, as this version
-          brought a significant improvement in the amount of writes.</para>
+              brought a significant improvement in the amount of writes.</para>
           </listitem>
         </itemizedlist>
 
@@ -727,36 +686,82 @@
           dialogs in the <command>recoll</command> GUI</link>.</para>
 
       <para>The first time you start <command>recoll</command>, you will be
-      asked whether or not you would like it to build the index. If you
-      want to adjust the configuration before indexing, just click
-      <guilabel>Cancel</guilabel> at this point, which will get you into
-      the configuration interface. If you exit at this point,
-      <filename>recoll</filename> will have created a default configuration
-      directory with empty configuration files, which you can then
-      edit.</para>
+        asked whether or not you would like it to build the index. If you
+        want to adjust the configuration before indexing, just click
+        <guilabel>Cancel</guilabel> at this point, which will get you into
+        the configuration interface. If you exit at this point,
+        <filename>recoll</filename> will have created a default configuration
+        directory with empty configuration files, which you can then
+        edit.</para>
 
       <para>The configuration is documented inside the 
-      <link linkend="RCL.INSTALL.CONFIG">installation chapter</link> 
-      of this document, or in the
-      <ulink url="https://www.lesbonscomptes.com/recoll/manpages/recoll.conf.5.html"><citerefentry><refentrytitle>recoll.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></ulink>
-      manual page. Both documents are automatically generated from
-      the comments inside the configuration file.</para>
+        <link linkend="RCL.INSTALL.CONFIG">installation chapter</link> 
+        of this document, or in the
+        <ulink url="https://www.lesbonscomptes.com/recoll/manpages/recoll.conf.5.html"><citerefentry><refentrytitle>recoll.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></ulink>
+        manual page. Both documents are automatically generated from
+        the comments inside the configuration file.</para>
 
       <para>The most immediately useful variable
-      is probably
-      <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS"><varname>topdirs</varname></link>, 
-      which lists the subtrees and files to be indexed.</para>
+        is probably
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS"><varname>topdirs</varname></link>, 
+        which lists the subtrees and files to be indexed.</para>
 
       <para>The applications needed to index file types other than
-      text, HTML or email (e.g.: pdf, postscript, ms-word...) are
-      described in the <link linkend="RCL.INSTALL.EXTERNAL">external packages section</link>.
+        text, HTML or email (e.g.: pdf, postscript, ms-word...) are
+        described in the <link linkend="RCL.INSTALL.EXTERNAL">external packages section</link>.
       </para>
 
       <para>There are two incompatible types of Recoll
         indexes, depending on the treatment of character case and
         diacritics. A <link linkend="RCL.INDEXING.CONFIG.SENS">further
-        section</link> describes the two types in more detail. The default
+          section</link> describes the two types in more detail. The default
         type is appropriate in most cases.</para>
+
+      <sect2 id="RCL.INDEXING.CONFIG.GUI">
+        <title>The index configuration GUI</title>
+
+        <para>Most index configuration parameters can be set from
+          the <command>recoll</command> GUI (set <envar>RECOLL_CONFDIR</envar> or use
+          the <option>-c</option> option to affect a non-default index.)</para>
+
+        <para>The interface is started from the
+          <menuchoice>
+            <guimenu>Preferences</guimenu>
+            <guimenuitem>Index Configuration</guimenuitem> 
+          </menuchoice>
+          menu entry. It is divided in four tabs,
+          <guilabel>Global parameters</guilabel>, <guilabel>Local
+            parameters</guilabel>, <guilabel>Web history</guilabel>
+            (<link linkend="RCL.INDEXING.WEBQUEUE">details</link>) and <guilabel>Search
+            parameters</guilabel>.</para>
+
+        <para>The <guilabel>Global parameters</guilabel> tab allows setting global variables, like
+          the lists of top/start directories, skipped paths, or stemming languages.</para>
+
+        <para>The <guilabel>Local parameters</guilabel> tab allows setting
+          variables that can be redefined for subdirectories. This second tab
+          has an initially empty list of customisation directories, to which
+          you can add. The variables are then set for the currently selected
+          directory (or at the top level if the empty line is
+          selected).</para>
+
+        <para>The <guilabel>Search parameters</guilabel> section defines
+          parameters which are used at query time, but are global to an
+          index and affect all search tools, not only the GUI.</para>
+
+        <para>The meaning for most entries in the interface is 
+          self-evident and documented by a <literal>ToolTip</literal>
+          popup on the text label. For more detail, you may need to
+          refer to the
+          <link linkend="RCL.INSTALL.CONFIG">configuration section</link>
+          of this guide.</para>
+
+        <para>The configuration tool normally respects the comments
+          and most of the formatting inside the configuration file, so
+          that it is quite possible to use it on hand-edited files,
+          which you might nevertheless want to backup first...</para>
+
+      </sect2>
 
       <sect2 id="RCL.INDEXING.CONFIG.MULTIPLE">
         <title>Multiple indexes</title>
@@ -787,7 +792,7 @@
         <para>Index configuration parameters can be set either by using a
           text editor on the files, or, for most parameters, by using the
           <link linkend="RCL.INDEXING.CONFIG.GUI"><command>recoll</command> index configuration
-          GUI</link>. In the latter case, the configuration directory for which parameters are
+            GUI</link>. In the latter case, the configuration directory for which parameters are
           modified is the one which was selected by
           <envar>RECOLL_CONFDIR</envar> or the <option>-c</option> parameter, and there is no way to
           switch configurations within the GUI.</para>
@@ -808,38 +813,37 @@
           mistyped. Also, the GUI or the indexer must be launched with a specific option or
           environment to work on the right configuration.</para>
 
-        <simplesect>
-          <title>In practise: creating and using an additional index</title>
+        <sect3>
+          <title>Creating and using an additional index: example</title>
+
+          <para>The following applies to &LIN;</para>
+          <para>Initially creating the configuration and index:<programlisting>
+              mkdir <replaceable>/path/to/my/new/config</replaceable></programlisting></para>
+          
+          <para>Configuring the new index can be done from the
+            <command>recoll</command> GUI, launched from the
+            command line to pass the <literal>-c</literal> option
+            (you could create a desktop file to do it for you), and then using the
+            <link linkend="RCL.INDEXING.CONFIG.GUI">GUI index configuration tool</link>
+            to set up the index.
+            <programlisting>
+              recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
+          </para>
+
+          <para>Alternatively, you can just start a text editor on the main
+            configuration file:
+            <programlisting>
+              <replaceable>someEditor</replaceable> <replaceable>/path/to/my/new/config</replaceable>/<link linkend="RCL.INSTALL.CONFIG.RECOLLCONF"><filename>recoll.conf</filename></link>
+            </programlisting>
+          </para>
 
 
-        <para>Initially creating the configuration and index:<programlisting>
-mkdir <replaceable>/path/to/my/new/config</replaceable></programlisting></para>
-        
-        <para>Configuring the new index can be done from the
-        <command>recoll</command> GUI, launched from the
-        command line to pass the <literal>-c</literal> option
-        (you could create a desktop file to do it for you), and then using the
-        <link linkend="RCL.INDEXING.CONFIG.GUI">GUI index configuration tool</link>
-        to set up the index.
-        <programlisting>
-recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
-</para>
-    
+          <para>Creating and updating the index can be done from the command line:
 
-         <para>Alternatively, you can just start a text editor on the main
-         configuration file:
-         <programlisting>
-<replaceable>someEditor</replaceable> <replaceable>/path/to/my/new/config</replaceable>/<link linkend="RCL.INSTALL.CONFIG.RECOLLCONF"><filename>recoll.conf</filename></link>
-</programlisting>
-         </para>
-
-
-<para>Creating and updating the index can be done from the command line:
-
-<programlisting>recollindex -c <replaceable>/path/to/my/new/config</replaceable>
-</programlisting>
-or from the File menu of a GUI launched with the same option
-(<command>recoll</command>, see above).</para>
+            <programlisting>recollindex -c <replaceable>/path/to/my/new/config</replaceable>
+            </programlisting>
+            or from the File menu of a GUI launched with the same option
+            (<command>recoll</command>, see above).</para>
 
           <para>The same GUI would also let you set up batch indexing for
             the new index. Real time indexing can only be set up from the GUI
@@ -847,7 +851,7 @@ or from the File menu of a GUI launched with the same option
             was started with a non-default <literal>-c</literal> option).</para>
 
           <para>The new index can be queried alone with: <programlisting>
-recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
+              recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
             Or, in parallel with the default index, by starting
             <command>recoll</command> without a <literal>-c</literal> option, and using
             the <guilabel>External Indexes</guilabel> tab in the preferences dialog, which can be
@@ -861,9 +865,8 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
               <guimenu>Query</guimenu>
               <guimenuitem>External index dialog</guimenuitem>
             </menuchoice>.  See the <link linkend="RCL.SEARCH.GUI.MULTIDB">GUI external indexes
-            section</link> for more details.</para>
-        </simplesect>
-
+              section</link> for more details.</para>
+        </sect3>
       </sect2>
 
 
@@ -871,283 +874,696 @@ recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
         <title>Index case and diacritics sensitivity</title>
 
         <para>As of &RCL; version 1.18 you have a choice of building an
-        index with terms stripped of character case and diacritics, or
-        one with raw terms. For a source term of
-        <literal>Résumé</literal>, the former will store
-        <literal>resume</literal>, the latter
-        <literal>Résumé</literal>.</para>
+          index with terms stripped of character case and diacritics, or
+          one with raw terms. For a source term of
+          <literal>Résumé</literal>, the former will store
+          <literal>resume</literal>, the latter
+          <literal>Résumé</literal>.</para>
         
         <para>Each type of index allows performing searches insensitive to
-        case and diacritics: with a raw index, the user entry will be
-        expanded to match all case and diacritics variations present in
-        the index. With a stripped index, the search term will be stripped
-        before searching.</para>
+          case and diacritics: with a raw index, the user entry will be
+          expanded to match all case and diacritics variations present in
+          the index. With a stripped index, the search term will be stripped
+          before searching.</para>
         
         <para>A raw index allows using case and diacritics to discriminate
-        between terms, e.g., returning different results when searching for
-        <literal>US</literal> and <literal>us</literal> or
-        <literal>resume</literal> and <literal>résumé</literal>.
-        Read the
-        <link linkend="RCL.SEARCH.CASEDIAC">section about search case and diacritics sensitivity</link> 
-        for more details.</para>
+          between terms, e.g., returning different results when searching for
+          <literal>US</literal> and <literal>us</literal> or
+          <literal>resume</literal> and <literal>résumé</literal>.
+          Read the
+          <link linkend="RCL.SEARCH.CASEDIAC">section about search case and diacritics sensitivity</link> 
+          for more details.</para>
 
         <para>The type of index to be created is controlled by the
-        <literal>indexStripChars</literal> configuration
-        variable which can only be changed by editing the
-        configuration file. Any change implies an index reset (not
-        automated by &RCL;), and all indexes in a search must be set
-        in the same way (again, not checked by &RCL;). </para>
+          <literal>indexStripChars</literal> configuration
+          variable which can only be changed by editing the
+          configuration file. Any change implies an index reset (not
+          automated by &RCL;), and all indexes in a search must be set
+          in the same way (again, not checked by &RCL;). </para>
 
         <para>&RCL; creates a stripped index by default if
-        <literal>indexStripChars</literal> is not set.</para>
+          <literal>indexStripChars</literal> is not set.</para>
 
         <para>As a cost for added capability, a raw index will be slightly
-        bigger than a stripped one (around 10%). Also, searches will be
-        more complex, so probably slightly slower, and the feature is
-        relatively little used, so that a certain amount of weirdness
-        cannot be excluded.</para>
+          bigger than a stripped one (around 10%). Also, searches will be
+          more complex, so probably slightly slower, and the feature is
+          relatively little used, so that a certain amount of weirdness
+          cannot be excluded.</para>
 
         <para>One of the most adverse consequence of using a raw index
-        is that some phrase and proximity searches may become
-        impossible: because each term needs to be expanded, and all
-        combinations searched for, the multiplicative expansion may
-        become unmanageable.</para>
+          is that some phrase and proximity searches may become
+          impossible: because each term needs to be expanded, and all
+          combinations searched for, the multiplicative expansion may
+          become unmanageable.</para>
 
       </sect2>
-
-
-
-
-      <sect2 id="RCL.INDEXING.CONFIG.GUI">
-        <title>The index configuration GUI</title>
-
-        <para>Most parameters for a given index configuration can
-        be set from a <command>recoll</command> GUI running on this
-        configuration (either as default, or by setting
-        <envar>RECOLL_CONFDIR</envar> or the <option>-c</option>
-        option.)</para> 
-
-        <para>The interface is started from the
-        <menuchoice>
-          <guimenu>Preferences</guimenu>
-          <guimenuitem>Index Configuration</guimenuitem> 
-        </menuchoice>
-        menu entry. It is divided in four tabs,
-        <guilabel>Global parameters</guilabel>, <guilabel>Local
-        parameters</guilabel>, <guilabel>Web history</guilabel>
-        (which is explained in the next section) and <guilabel>Search
-        parameters</guilabel>.</para>
-
-        <para>The <guilabel>Global parameters</guilabel> tab allows setting
-        global variables, like the lists of top directories, skipped paths,
-        or stemming languages.</para> 
-
-        <para>The <guilabel>Local parameters</guilabel> tab allows setting
-        variables that can be redefined for subdirectories. This second tab
-        has an initially empty list of customisation directories, to which
-        you can add. The variables are then set for the currently selected
-        directory (or at the top level if the empty line is
-        selected).</para>
-
-        <para>The <guilabel>Search parameters</guilabel> section defines
-        parameters which are used at query time, but are global to an
-        index and affect all search tools, not only the GUI.</para>
-
-        <para>The meaning for most entries in the interface is 
-        self-evident and documented by a <literal>ToolTip</literal>
-        popup on the text label. For more detail, you will need to
-        refer to the
-        <link linkend="RCL.INSTALL.CONFIG">configuration section</link>
-        of this guide.</para>
-
-        <para>The configuration tool normally respects the comments
-        and most of the formatting inside the configuration file, so
-        that it is quite possible to use it on hand-edited files,
-        which you might nevertheless want to backup first...</para>
-
-      </sect2>
-
 
       <sect2 id="RCL.INDEXING.CONFIG.THREADS">
         <title>Indexing threads configuration (&LIN;)</title>
 
         <para>Note: you don't probably don't need to read this. The default automatic configuration
-        is fine is most cases. Only the part about disabling multithreading may be more commonly
+          is fine is most cases. Only the part about disabling multithreading may be more commonly
           useful, so I'll prepend it here. In <filename>recoll.conf</filename>:
-        <programlisting>
-          thrQSizes = -1 -1 -1
-        </programlisting>
+          <programlisting>
+            thrQSizes = -1 -1 -1
+          </programlisting>
         </para>
 
         <para>The &RCL; indexing process 
-        <command>recollindex</command> can use multiple threads to
-        speed up indexing on multiprocessor systems. The work done
-        to index files is divided in several stages and some of the
-        stages can be executed by multiple threads. The stages are:
-        <orderedlist>
-          <listitem><para>File system walking: this is always performed by
-          the main thread.</para></listitem>
-          <listitem><para>File conversion and data
-          extraction.</para></listitem>
-          <listitem><para>Text processing (splitting, stemming,
-          etc.).</para></listitem>
-          <listitem><para>&XAP; index update.</para></listitem>
-        </orderedlist>
+          <command>recollindex</command> can use multiple threads to
+          speed up indexing on multiprocessor systems. The work done
+          to index files is divided in several stages and some of the
+          stages can be executed by multiple threads. The stages are:
+          <orderedlist>
+            <listitem><para>File system walking: this is always performed by
+                the main thread.</para></listitem>
+            <listitem><para>File conversion and data
+                extraction.</para></listitem>
+            <listitem><para>Text processing (splitting, stemming,
+                etc.).</para></listitem>
+            <listitem><para>&XAP; index update.</para></listitem>
+          </orderedlist>
         </para>
         <para>You can also read a 
-        <ulink url="http://www.recoll.org/pages/idxthreads/threadingRecoll.html">
-          longer document</ulink> about the transformation of
-        &RCL; indexing to multithreading.</para>
+          <ulink url="http://www.recoll.org/pages/idxthreads/threadingRecoll.html">
+            longer document</ulink> about the transformation of
+          &RCL; indexing to multithreading.</para>
 
         <para>The threads configuration is controlled by two
-        configuration file parameters.</para>
+          configuration file parameters.</para>
 
         <variablelist>
 
           <varlistentry><term><varname>thrQSizes</varname></term>
-          <listitem><para>This variable defines the job input queues
-          configuration. There are three possible queues for stages
-          2, 3 and 4, and this parameter should give the queue depth
-          for each stage (three integer values). If a value of -1 is
-          used for a given stage, no queue is used, and the thread
-          will go on performing the next stage. In practise, deep
-          queues have not been shown to increase performance. A value
-          of 0 for the first queue tells &RCL; to perform
-          autoconfiguration (no need for anything else in this case,
-          thrTCounts is not used) - this is the default
-          configuration.</para>
-          </listitem>
+            <listitem><para>This variable defines the job input queues
+                configuration. There are three possible queues for stages
+                2, 3 and 4, and this parameter should give the queue depth
+                for each stage (three integer values). If a value of -1 is
+                used for a given stage, no queue is used, and the thread
+                will go on performing the next stage. In practise, deep
+                queues have not been shown to increase performance. A value
+                of 0 for the first queue tells &RCL; to perform
+                autoconfiguration (no need for anything else in this case,
+                thrTCounts is not used) - this is the default
+                configuration.</para>
+            </listitem>
           </varlistentry>
 
           <varlistentry><term><varname>thrTCounts</varname></term>
-          <listitem><para>This defines the number of threads used
-          for each stage. If a value of -1 is used for one of
-          the queue depths, the corresponding thread count is
-          ignored. It makes no sense to use a value other than 1
-          for the last stage because updating the &XAP; index is
-          necessarily single-threaded (and protected by a
-          mutex).</para>
-          </listitem>
+            <listitem><para>This defines the number of threads used
+                for each stage. If a value of -1 is used for one of
+                the queue depths, the corresponding thread count is
+                ignored. It makes no sense to use a value other than 1
+                for the last stage because updating the &XAP; index is
+                necessarily single-threaded (and protected by a
+                mutex).</para>
+            </listitem>
           </varlistentry>
 
         </variablelist>
 
         <note><para>If the first value in <varname>thrQSizes</varname> is
-        0, <varname>thrTCounts</varname> is ignored.</para></note>
+            0, <varname>thrTCounts</varname> is ignored.</para></note>
         
         <para>The following example would use three queues (of depth 2),
-        and 4 threads for converting source documents, 2 for
-        processing their text, and one to update the index. This was
-        tested to be the best configuration on the test system
-        (quadri-processor with multiple disks).
-        <programlisting>
-          thrQSizes = 2 2 2
-          thrTCounts =  4 2 1
-        </programlisting>
+          and 4 threads for converting source documents, 2 for
+          processing their text, and one to update the index. This was
+          tested to be the best configuration on the test system
+          (quadri-processor with multiple disks).
+          <programlisting>
+            thrQSizes = 2 2 2
+            thrTCounts =  4 2 1
+          </programlisting>
         </para>
 
         <para>The following example would use a single queue, and the
-        complete processing for each document would be performed by
-        a single thread (several documents will still be processed
-        in parallel in most cases). The threads will use mutual
-        exclusion when entering the index update stage. In practise
-        the performance would be close to the precedent case in
-        general, but worse in certain cases (e.g. a Zip archive
-        would be performed purely sequentially), so the previous
-        approach is preferred. YMMV...  The 2 last values for
-        thrTCounts are ignored.
-        <programlisting>
-          thrQSizes = 2 -1 -1
-          thrTCounts =  6 1 1
-        </programlisting>
+          complete processing for each document would be performed by
+          a single thread (several documents will still be processed
+          in parallel in most cases). The threads will use mutual
+          exclusion when entering the index update stage. In practise
+          the performance would be close to the precedent case in
+          general, but worse in certain cases (e.g. a Zip archive
+          would be performed purely sequentially), so the previous
+          approach is preferred. YMMV...  The 2 last values for
+          thrTCounts are ignored.
+          <programlisting>
+            thrQSizes = 2 -1 -1
+            thrTCounts =  6 1 1
+          </programlisting>
         </para>
 
         <para>The following example would disable
-        multithreading. Indexing will be performed by a single
-        thread.
-        <programlisting>
-          thrQSizes = -1 -1 -1
-        </programlisting>
+          multithreading. Indexing will be performed by a single
+          thread.</para>
+        <programlisting>thrQSizes = -1 -1 -1</programlisting>
+      </sect2>
+    </sect1>
+
+    <sect1 id="RCL.INDEXING.OPERATION">
+      <title>Index update scheduling</title>
+
+      <sect2 id="RCL.INDEXING.PERIODIC">
+        <title>Periodic indexing</title>
+
+        <simplesect id="RCL.INDEXING.PERIODIC.EXEC">
+          <title>Running the indexer</title>
+
+          <para>The <command>recollindex</command> program performs index updates. You can start it
+            either from the command line or from the
+            <guimenu>File</guimenu> menu in the <command>recoll</command> GUI program. When started
+            from the GUI, the indexing will run on the same configuration <command>recoll</command>
+            was started on. When started from the command line, <command>recollindex</command> will
+            use the <envar>RECOLL_CONFDIR</envar> variable or accept a
+            <option>-c</option> <replaceable>confdir</replaceable> option to specify a non-default
+            configuration directory.</para>
+
+          <para>If the <command>recoll</command> program finds no index
+            when it starts, it will automatically start indexing (except
+            if canceled).</para>
+
+          <para>The GUI <menuchoice><guimenu>File</guimenu> </menuchoice>
+            menu has entries to start or stop the current indexing
+            operation. When indexing is not currently running, you have a
+            choice between <guimenuitem>Update
+              Index</guimenuitem> or <guimenuitem>Rebuild Index</guimenuitem>.
+            The first choice only processes changed files, the second one
+            erases the index before starting so that all files are
+            processed.</para>
+
+          <para>On Linux and Windows, the GUI can be used to manage the indexing
+            operation. Stopping the indexer can be done
+            from the <command>recoll</command> GUI
+            <menuchoice>
+              <guimenu>File</guimenu>
+              <guimenuitem>Stop Indexing</guimenuitem>
+            </menuchoice>
+            menu entry.
+          </para>
+
+          <para>On Linux, the <command>recollindex</command> indexing process
+            can be interrupted by sending an interrupt
+            (<keysym>Ctrl-C</keysym>, SIGINT) or terminate (SIGTERM)
+            signal. 
+          </para>
+
+          <para>When stopped, some time may elapse before
+            <command>recollindex</command> exits, because it needs to properly
+            flush and close the index.</para>
+          
+          <para>After an interruption, the index will be somewhat
+            inconsistent because some operations which are normally
+            performed at the end of the indexing pass will have been
+            skipped (for example, the stemming and spelling databases
+            will be inexistent or out of date). You just need to restart
+            indexing at a later time to restore consistency. The
+            indexing will restart at the interruption point (the full
+            file tree will be traversed, but files that were indexed up
+            to the interruption and for which the index is still up to
+            date will not need to be reindexed).</para>
+        </simplesect>
+
+        <simplesect id="RCL.INDEXING.PERIODIC.CMDLINE">
+          <title>recollindex command line</title>
+
+          <para><command>recollindex</command> has many options
+            which are listed in its
+            <ulink url="https://www.lesbonscomptes.com/recoll/manpages/recollindex.1.html">manual page</ulink>.
+            Only a few will be described here.</para>
+          
+          <para>Option <option>-z</option> will reset the index when
+            starting. This is almost the same as destroying the index
+            files (the nuance is that the &XAP; format version will not
+            be changed).</para>
+          <para>Option <option>-Z</option> will force the update of all
+            documents without resetting the index first. This will not
+            have the "clean start" aspect of <option>-z</option>, but
+            the advantage is that the index will remain available for
+            querying while it is rebuilt, which can be a significant
+            advantage if it is very big (some installations need days
+            for a full index rebuild).</para>
+
+          <para>Option <option>-k</option> will force retrying files
+            which previously failed to be indexed, for example because
+            of a missing helper program.</para>
+
+          <para>Of special interest also, maybe, are
+            the <option>-i</option> and <option>-f</option>
+            options. <option>-i</option> allows indexing an explicit
+            list of files (given as command line parameters or read on
+            <literal>stdin</literal>).  <option>-f</option> tells
+            <command>recollindex</command> to ignore file selection parameters from the
+            configuration. Together, these options allow building a custom file selection process
+            for some area of the file system, by adding the top directory to the
+            <varname>skippedPaths</varname> list and using an
+            appropriate file selection method to build the file list to
+            be fed to <command>recollindex</command>
+            <option>-if</option>.  Trivial example:</para>
+
+          <programlisting>    find . -name indexable.txt -print | recollindex -if</programlisting>
+
+          <para><command>recollindex</command> <option>-i</option> will 
+            not descend into subdirectories specified as parameters, 
+            but just add them as index entries. It is
+            up to the external file selection method to build the complete
+            file list.</para>
+        </simplesect>
+
+        <simplesect id="RCL.INDEXING.PERIODIC.AUTOMAT">
+          <title>Linux: using <command>cron</command> to automate indexing</title>
+
+          <para>The most common way to set up indexing is to have a cron
+            task execute it every night. For example the following
+            <filename>crontab</filename> entry would do it every day at 3:30AM
+            (supposing <command>recollindex</command> is in your PATH):
+
+            <screen>30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&amp;1</screen>
+
+            Or, using <command>anacron</command>:
+            <screen>1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&amp;1"</screen>
+          </para>
+
+          <para>The &RCL; GUI has dialogs to manage
+            <filename>crontab</filename> entries for
+            <command>recollindex</command>. You can reach them from the
+            <menuchoice>
+              <guimenu>Preferences</guimenu>
+              <guimenuitem>Indexing Schedule</guimenuitem> 
+            </menuchoice> 
+            menu. They only 
+            work with the good old <command>cron</command>, and do not give
+            access to all features of <command>cron</command>
+            scheduling. Entries created via the tool are marked with
+            a <literal>RCLCRON_RCLINDEX=</literal> marker so that the tool
+            knows which entries belong to it. As a side effect, this sets an
+            environment variable for the process, but it's not actually used,
+            this is just a marker.</para> 
+
+          <para>The usual command to edit your
+            <filename>crontab</filename> is <command>crontab</command>
+            <option>-e</option> (which will usually start the
+            <command>vi</command> editor to edit the file). You may have
+            more sophisticated tools available on your system.</para>
+
+          <para>Please be aware that there may be differences between your
+            usual interactive command line environment and the one seen by
+            crontab commands. Especially the PATH variable may be of
+            concern. Please check the crontab manual pages about possible
+            issues.</para>
+        </simplesect>
+      </sect2>
+
+      <sect2 id="RCL.INDEXING.MONITOR">
+        <title>Real time indexing</title>
+
+        <para>Real time monitoring/indexing is performed by starting
+          the <command>recollindex</command> <option>-m</option> command. With this
+          option, <command>recollindex</command> will permanently monitor file changes and update the
+          index.</para>
+
+        <para>On &WIN; systems, the monitoring process is started from the <command>recoll</command>
+          GUI <guilabel>File</guilabel> menu. On &LIN;, there are other possibilities, see
+          the following sections.</para> 
+
+        <para>When this is in use, the <command>recoll</command>
+          GUI <menuchoice><guimenu>File</guimenu></menuchoice> menu makes two operations
+          available: <guimenuitem>Stop</guimenuitem> and <guimenuitem>Trigger incremental
+            pass</guimenuitem>.</para>
+
+        <para><guimenuitem>Trigger incremental pass</guimenuitem> has the
+          same effect as restarting the indexer, and will cause a complete walk of the indexed area,
+          processing the changed files, then switch to monitoring. This is only marginally useful,
+          maybe in cases where the indexer is configured to delay updates, or to force an immediate
+          rebuild of the stemming and phonetic data, which are only processed at intervals by the real
+          time indexer.</para>
+
+        <para>While it is convenient that data is indexed in real time,
+          repeated indexing can generate a significant load on the system when files such as email
+          folders change. Also, monitoring large file trees by itself significantly taxes system
+          resources. You probably do not want to enable it if your system is short on
+          resources. Periodic indexing is adequate in most cases.</para>
+
+        <para>As of &RCL; 1.24, you can set the
+          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">monitordirs</link>
+          configuration variable to specify that only a subset of your indexed
+          files will be monitored for instant indexing.  In this situation, an
+          incremental pass on the full tree can be triggered by either
+          restarting the indexer, or just running 
+          <command>recollindex</command>, which will notify the running
+          process. The <command>recoll</command> GUI also has a menu entry for
+          this.</para>
+
+
+        <simplesect id="RCL.INDEXING.MONITOR.START.SYSTEMD">
+          <title>&LIN;: automatic daemon start with systemd</title>
+
+          <para>The installation contains two example files
+            (in <filename>share/recoll/examples</filename>) for starting the indexing daemon with
+            <application>systemd</application>.</para>
+          <para><filename>recollindex.service</filename> would be used for
+            starting <command>recollindex</command> as a user service. 
+            The indexer will start when the user logs in and run while there is a session open for
+            them.</para>
+
+          <para><filename>recollindex@.service</filename> is a template service which would be used
+            for starting the indexer at boot time, running as a specific user. It can be useful when
+            running the text search as a shared service (e.g. when users access it through the WEB
+            UI).</para>
+
+          <para>If configured to do so, the unit files should have been installed in your system's
+            default systemd paths (usually <filename>/usr/lib/systemd/system/</filename> and
+            <filename>/usr/lib/systemd/user/</filename>). If not, you may need to copy the files
+	    there before starting the service.</para>
+
+          <para>With the unit files installed in the proper location, the user unit can be
+	    started with the following commands:</para>
+            <programlisting>systemctl --user daemon-reload
+systemctl --user enable --now recollindex.service</programlisting>
+
+            <para>The system unit file can be enabled for a particular user by running, as
+            root:</para>
+          <programlisting>systemctl daemon-reload
+systemctl enable --now recollindex@<varname>username</varname>.service</programlisting>
+          <para>(A valid user name should be substituted for <varname>username</varname>, of
+          course.)</para> 
+        </simplesect>
+
+        <simplesect id="RCL.INDEXING.MONITOR.START">
+          <title>&LIN;: automatic daemon start from the desktop session</title>
+
+          <para>Under <application>KDE</application>,
+            <application>Gnome</application> and some other desktop
+            environments, the daemon can automatically started when you log
+            in, by creating a desktop file inside the
+            <filename>~/.config/autostart</filename> directory.  This can be
+            done for you by the &RCL; GUI. Use the
+            <guimenu>Preferences->Indexing Schedule</guimenu> menu.</para>
+          
+          <para>With older <application>X11</application> setups, starting
+            the daemon is normally performed as part of the user session
+            script.</para>
+
+          <para>The <filename>rclmon.sh</filename> script can be used to
+            easily start and stop the daemon. It can be found in the
+            <filename>examples</filename> directory (typically
+            <filename>/usr/local/[share/]recoll/examples</filename>).</para>
+
+          <para>For example, a good old <application>xdm</application>-based
+            session could have a <filename>.xsession</filename> script with the
+            following lines  at the end:</para>
+
+          <programlisting>recollconf=$HOME/.recoll-home
+recolldata=/usr/local/share/recoll
+RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
+
+fvwm</programlisting>
+
+          <para>The indexing daemon gets started, then the window manager, for which the session
+            waits.</para> <para>By default the indexing daemon will monitor the state of the X11
+            session, and exit when it finishes, it is not necessary to kill it
+            explicitly. (The <application>X11</application> server monitoring can be disabled with
+            option <option>-x</option> to
+            <command>recollindex</command>).</para>
+
+          <para>If you use the daemon completely out of an
+            <application>X11</application> session, you need to add option
+            <option>-x</option> to disable <application>X11</application>
+            session monitoring (else the daemon will not start).</para>
+        </simplesect>
+        
+        <simplesect id="RCL.INDEXING.MONITOR.DETAILS">
+          <title>Miscellaneous details</title>
+
+          <formalpara><title>Logging</title>
+            <para>By default, the messages from the indexing daemon will be
+              sent to the same file as those from the interactive commands
+              (<literal>logfilename</literal>).  You may want to change this
+              by setting the <varname>daemlogfilename</varname> and
+              <varname>daemloglevel</varname> configuration parameters. Also
+              the log file will only be truncated when the daemon starts. If
+              the daemon runs permanently, the log file may grow quite big,
+              depending on the log level.</para>
+          </formalpara>
+          
+          <formalpara>
+            <title>&LIN;: increasing resources for inotify</title>
+            <para>On Linux systems, monitoring a big tree may need
+              increasing the resources available to inotify, which are
+              normally defined in <filename>/etc/sysctl.conf</filename>.</para>
+            <programlisting>### inotify
+#
+# cat  /proc/sys/fs/inotify/max_queued_events   - 16384
+# cat  /proc/sys/fs/inotify/max_user_instances  - 128
+# cat  /proc/sys/fs/inotify/max_user_watches    - 16384
+#
+# -- Change to:
+#
+fs.inotify.max_queued_events=32768
+fs.inotify.max_user_instances=256
+fs.inotify.max_user_watches=32768</programlisting>
+          
+            <para>Especially, you will need to trim your tree or adjust
+              the <literal>max_user_watches</literal> value if indexing exits with
+              a message about errno <literal>ENOSPC</literal> (28) from
+              <function>inotify_add_watch</function>.</para>
+          </formalpara>
+          
+          <formalpara>
+            <title>Slowing down the reindexing rate for fast changing files</title>
+            <para>When using the real time monitor, it may happen that some
+              files need to be indexed, but change so often that they impose an
+              excessive load for the system.</para>
+
+            <para>&RCL; provides a configuration option to specify the minimum
+              time before which a file, specified by a wildcard pattern, cannot be reindexed. See
+              the <varname>mondelaypatterns</varname> parameter in the
+              <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">configuration section</link>.</para>
+          </formalpara>
+          
+        </simplesect>
+      </sect2>
+    </sect1>
+
+
+    <sect1 id="RCL.INDEXING.NOTES">
+      <title>Miscellaneous indexing notes</title>
+
+      <sect2 id="RCL.INDEXING.PDF">
+        <title>The PDF input handler</title>
+
+        <para>The PDF format is very important for scientific and technical
+          documentation, and document archival. It has extensive
+          facilities for storing metadata along with the document, and these
+          facilities are actually used in the real world.</para>
+
+        <para>In consequence, the <command>rclpdf.py</command> PDF input
+          handler has more complex capabilities than most others, and it is
+          also more configurable. Specifically, <command>rclpdf.py</command>
+          has the following features:
+          <itemizedlist>
+            <listitem><para>It can be configured to extract
+                specific metadata tags from an XMP packet.</para></listitem>
+            <listitem><para>It can extract PDF
+                attachments.</para></listitem>
+            <listitem><para>It can automatically perform
+                OCR if the document text is empty. This is done by 
+                executing an external program and is now described in a 
+                <link linkend="RCL.INDEXING.OCR">separate
+                  section</link>, because the OCR framework can also be used
+                with non-PDF image files.</para></listitem>
+          </itemizedlist>
+        </para>
+        
+        <sect3 id="RCL.INDEXING.PDF.XMP">
+          <title>XMP fields extraction</title>
+
+          <para>The <filename>rclpdf.py</filename> script in &RCL; version
+            1.23.2 and later can extract XMP metadata fields by executing the
+            <command>pdfinfo</command> command (usually found with
+            <application>poppler-utils</application>). This is controlled by
+            the
+            <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA">pdfextrameta</link>
+            configuration variable, which specifies which tags to extract and,
+            possibly, how to rename them.</para>
+
+          <para>The
+            <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">pdfextrametafix</link>
+            variable can be used to designate a file with Python code to edit
+            the metadata fields (available for &RCL; 1.23.3 and later. 1.23.2
+            has equivalent code inside the handler script). Example:</para>
+
+          <programlisting>import sys
+import re
+
+class MetaFixer(object):
+def __init__(self):
+pass
+
+def metafix(self, nm, txt):
+if nm == 'bibtex:pages':
+txt = re.sub(r'--', '-', txt)
+elif nm == 'someothername':
+# do something else
+pass
+elif nm == 'stillanother':
+# etc.
+pass
+
+return txt
+def wrapup(self, metaheaders):
+pass</programlisting>
+
+          <para>If the 'metafix()' method is defined, it is called for each
+            metadata field. A new MetaFixer object is created for each PDF
+            document (so the object can keep state for, for example,
+            eliminating duplicate values). If the 'wrapup()' method is defined, it
+            is called at the end of XMP fields processing with the whole
+            metadata as parameter, as an array of '(nm, val)' pairs, allowing
+            an alternate approach for editing or adding/deleting fields.</para>
+          
+          <para>See 
+            <ulink url="https://www.lesbonscomptes.com/recoll/pages/recoll_XMP/index.html">this
+              page</ulink> for a more detailed discussion about indexing PDF XMP properties.</para>
+        </sect3>
+
+        <sect3 id="RCL.INDEXING.PDF.ATTACH">
+          <title>PDF attachment indexing</title>
+
+          <para>If <application>pdftk</application> is installed, and if the
+            the
+            <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</link>
+            configuration variable is set, the PDF input handler will try to
+            extract PDF attachments for indexing as sub-documents of the PDF
+            file. This is disabled by default, because it slows down PDF
+            indexing a bit even if not one attachment is ever found (PDF
+            attachments are uncommon in my experience).</para>
+        </sect3>
+      </sect2>
+
+      <sect2 id="RCL.INDEXING.OCR">
+        <title>Running OCR on image documents</title>
+
+        <para>The &RCL; PDF handler has the ability to call an external OCR program if the processed
+          file has no text content. The OCR data is stored in a cache of separate files, avoiding
+          any modification of the originals.</para>
+
+        <para>It must be noted that, if modifying the files (or a copy) is acceptable, then running
+          something like
+          <ulink url="https://ocrmypdf.readthedocs.io/en/latest/index.html">OCRmyPDF</ulink> to add
+          a text layer to the PDF itself is a better solution (e.g. allowing &RCL; to position the
+          PDF viewer on the search target when opening the document, and permitting secondary search
+          in the native tool).</para>
+
+        <para>To enable the &RCL; OCR feature, you need to install one of the supported OCR
+          applications (<application>tesseract</application> or <application>ABBYY</application>),
+          enable OCR in the PDF handler (by setting <literal>pdfocr</literal>
+          to <literal>1</literal> in the index configuration file), and tell &RCL; how to run the
+          OCR by setting <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.OCR">configuration
+          variables</link>. All parameters can be localized in subdirectories through the usual main
+          configuration mechanism (path sections).</para>
+
+        <para>Example configuration fragment in <filename>recoll.conf</filename>:</para>
+        <programlisting>pdfocr = 1
+ocrprogs = tesseract
+pdfocrlang = eng</programlisting>
+    
+        <para>This facility got a major update in &RCL; 1.26.5. Older versions had a more limited,
+          non-caching capability to execute an external OCR program in the PDF handler. The new
+          function has the following features:
+
+          <itemizedlist>
+            <listitem><para>The OCR output is cached, stored as separate files. The caching is
+                ultimately based on a hash value of the original file contents, so that it is immune
+                to file renames. A first path-based layer ensures fast operation for unchanged
+                (unmoved files), and the data hash (which is still orders of magnitude faster than
+                OCR) is only re-computed if the file has moved. OCR is only performed if the file
+                was not previously processed or if it changed.</para></listitem>
+            <listitem><para>The support for a specific program is implemented in a simple Python
+                module. It should be straightforward to add support for any OCR engine with a
+                capability to run from the command line.</para></listitem>
+            <listitem><para>Modules initially exist for
+                <application>tesseract</application> (Linux and Windows), and
+                <application>ABBYY FineReader</application> (Linux, tested with version 11). ABBYY
+                FineReader is a commercial closed source program, but it sometimes perform better
+                than tesseract.</para></listitem>
+            <listitem><para>The OCR is currently only called from the PDF handler, but there should
+                be no problem using it for other image types.</para></listitem>
+          </itemizedlist>
         </para>
 
       </sect2>
 
+      <sect2 id="RCL.INDEXING.REMOVABLE">
+        <title>Removable volumes</title>
 
-    </sect1>
+        <para>&RCL; used to have no support for indexing removable volumes (portable disks, USB
+          keys, etc.). Recent versions have improved the situation and support indexing removable
+          volumes in two different ways:</para>
 
-    <sect1 id="RCL.INDEXING.REMOVABLE">
-      <title>Removable volumes</title>
+        <itemizedlist>
+          <listitem><para>By indexing the volume in the main, fixed, index, and
+              ensuring that the volume data is not purged if the indexing runs
+              while the volume is mounted. (since &RCL; 1.25.2).</para></listitem>
+          <listitem><para>By storing a volume index on the volume
+              itself (since &RCL; 1.24).</para></listitem>
+        </itemizedlist>
 
-      <para>&RCL; used to have no support for indexing removable volumes
-      (portable disks, USB keys, etc.). Recent versions have improved the
-      situation and support indexing removable volumes in two different
-      ways:</para>
+        <simplesect id="RCL.INDEXING.REMOVABLE.MAIN">
+          <title>Indexing removable volumes in the main index</title>
 
-    <itemizedlist>
-      <listitem><para>By indexing the volume in the main, fixed, index, and
-      ensuring that the volume data is not purged if the indexing runs
-      while the volume is mounted. (since &RCL; 1.25.2).</para></listitem>
-      <listitem><para>By storing a volume index on the volume
-      itself (since &RCL; 1.24).</para></listitem>
-    </itemizedlist>
+          <para>As of version 1.25.2, &RCL; provides a simple way to ensure
+            that the index data for an absent volume will not be purged. Two
+            conditions must be met:
+            <itemizedlist>
+              <listitem><para>The volume mount 
+                  point must be a member of the <literal>topdirs</literal>
+                  list.</para></listitem> 
+              <listitem><para>The mount directory must be empty (when the volume
+                  is not mounted).</para></listitem>
+            </itemizedlist>
+          </para>
 
-    <simplesect id="RCL.INDEXING.REMOVABLE.MAIN">
-      <title>Indexing removable volumes in the main index</title>
+          <para>If <command>recollindex</command> finds that one of the
+            <literal>topdirs</literal> is empty when starting up, any existing
+            data for the tree will be preserved by the indexing
+            pass (no purge for this area).</para> 
 
-      <para>As of version 1.25.2, &RCL; provides a simple way to ensure
-      that the index data for an absent volume will not be purged. Two
-      conditions must be met:
-      <itemizedlist>
-        <listitem><para>The volume mount 
-        point must be a member of the <literal>topdirs</literal>
-        list.</para></listitem> 
-        <listitem><para>The mount directory must be empty (when the volume
-        is not mounted).</para></listitem>
-      </itemizedlist>
-      </para>
-
-      <para>If <command>recollindex</command> finds that one of the
-      <literal>topdirs</literal> is empty when starting up, any existing
-      data for the tree will be preserved by the indexing
-      pass (no purge for this area).</para> 
-
-    </simplesect>
-    
-    <simplesect id="RCL.INDEXING.REMOVABLE.SELF">
-      <title>Self contained volumes</title>
+        </simplesect>
       
-      <para>As of &RCL; 1.24, it has become possible to build
-      self-contained datasets including a &RCL; configuration directory and
-      index together with the indexed documents, and to move such a dataset
-      around (for example copying it to an USB drive), without having to
-      adjust the configuration for querying the index.</para>
+        <simplesect id="RCL.INDEXING.REMOVABLE.SELF">
+          <title>Self contained volumes</title>
+          
+          <para>As of &RCL; 1.24, it has become possible to build
+            self-contained datasets including a &RCL; configuration directory and
+            index together with the indexed documents, and to move such a dataset
+            around (for example copying it to an USB drive), without having to
+            adjust the configuration for querying the index.</para>
 
-      <note><para>This is a query-time feature only. The index must only be
-      updated in its original location. If an update is necessary in a
-      different location, the index must be reset.</para></note>
+          <note><para>This is a query-time feature only. The index must only be
+              updated in its original location. If an update is necessary in a
+              different location, the index must be reset.</para></note>
 
-      <para>The principle of operation is that the configuration stores the
-      location of the original configuration directory, which must reside
-      on the movable volume. If the volume is later mounted elsewhere,
-      &RCL; adjusts the paths stored inside the index by the difference
-      between the original and current locations of the configuration
-      directory.</para>
-      
-      <para>To make a long story short, here follows a script to create a
-      &RCL; configuration and index under a given directory (given as single
-      parameter). The resulting data set (files + recoll directory) can later
-      to be moved to a CDROM or thumb drive. Longer explanations come after
-      the script.</para>
-      
-    <programlisting>#!/bin/sh
+          <para>The principle of operation is that the configuration stores the
+            location of the original configuration directory, which must reside
+            on the movable volume. If the volume is later mounted elsewhere,
+            &RCL; adjusts the paths stored inside the index by the difference
+            between the original and current locations of the configuration
+            directory.</para>
+          
+          <para>To make a long story short, here follows a script to create a
+            &RCL; configuration and index under a given directory (given as single
+            parameter). The resulting data set (files + recoll directory) can later
+            to be moved to a CDROM or thumb drive. Longer explanations come after
+            the script.</para>
+        
+          <programlisting>#!/bin/sh
 
 fatal()
 {
-    echo $*;exit 1
+echo $*;exit 1
 }
 usage()
 {
-    fatal "Usage: init-recoll-volume.sh &lt;top-directory>"
+fatal "Usage: init-recoll-volume.sh &lt;top-directory>"
 }
 
 test $# = 1 || usage
@@ -1164,737 +1580,247 @@ cd "$confdir"
 confdir=`pwd`
 
 (echo topdirs = '"'$topdir'"'; \
- echo orgidxconfdir = $topdir/recoll-config) > "$confdir/recoll.conf"
+echo orgidxconfdir = $topdir/recoll-config) > "$confdir/recoll.conf"
 
-recollindex -c "$confdir"
-</programlisting>
-    
-    <para>The examples below will assume that you have a dataset under
-    <filename>/home/me/mydata/</filename>, with the index configuration and
-    data stored inside
-    <filename>/home/me/mydata/recoll-confdir</filename>.</para> 
-    
-    <para>In order to be able to run queries after the dataset has been
-    moved, you must ensure the following:
-    <itemizedlist>
-      <listitem><para>The main configuration file must define the
-      <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</link>
-      variable to be the original location of the configuration directory
-      (<filename>orgidxconfdir=/home/me/mydata/recoll-confdir</filename>
-      must be set inside
-      <filename>/home/me/mydata/recoll-confdir/recoll.conf</filename> in
-      the example above).</para></listitem>
+recollindex -c "$confdir"</programlisting>
 
-      <listitem><para>The configuration directory must exist with the
-      documents, somewhere under the directory which will be
-      moved. E.g. if you are moving <filename>/home/me/mydata</filename>
-      around, the configuration directory must exist somewhere below this
-      point, for example
-      <filename>/home/me/mydata/recoll-confdir</filename>, or
-      <filename>/home/me/mydata/sub/recoll-confdir</filename>.</para></listitem>
+          <para>The examples below will assume that you have a dataset under
+            <filename>/home/me/mydata/</filename>, with the index configuration and
+            data stored inside
+            <filename>/home/me/mydata/recoll-confdir</filename>.</para> 
 
-      <listitem><para>You should keep the default locations for the index
-      elements which are relative to the configuration directory by
-      default (principally <literal>dbdir</literal>). Only the paths
-      referring to the documents themselves
-      (e.g. <literal>topdirs</literal> values) should be absolute (in
-      general, they are only used when indexing anyway).</para></listitem>
-      
-    </itemizedlist>
-    </para>
+          <para>In order to be able to run queries after the dataset has been
+            moved, you must ensure the following:
+            <itemizedlist>
+              <listitem><para>The main configuration file must define the
+                  <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">orgidxconfdir</link>
+                  variable to be the original location of the configuration directory
+                  (<filename>orgidxconfdir=/home/me/mydata/recoll-confdir</filename>
+                  must be set inside
+                  <filename>/home/me/mydata/recoll-confdir/recoll.conf</filename> in
+                  the example above).</para></listitem>
 
-    <para>Only the first point needs an explicit user action, the &RCL;
-    defaults are compatible with the third one, and the second is
-    natural.</para>
-    
-    <para>If, after the move, the configuration directory needs to be
-    copied out of the dataset (for example because the thumb drive is too
-    slow), you can set the
-    <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">curidxconfdir</link>,
-    variable inside the copied configuration to
-    define the location of the moved one. For example if
-    <filename>/home/me/mydata</filename> is now mounted onto
-    <filename>/media/me/somelabel</filename>, but the configuration
-    directory and index has been copied to
-    <filename>/tmp/tempconfig</filename>, you would set
-    <literal>curidxconfdir</literal> to
-    <filename>/media/me/somelabel/recoll-confdir</filename> inside
-    <filename>/tmp/tempconfig/recoll.conf</filename>.
-    <literal>orgidxconfdir</literal> would still be
-    <filename>/home/me/mydata/recoll-confdir</filename> in the original and
-    the copy.</para>
+              <listitem><para>The configuration directory must exist with the
+                  documents, somewhere under the directory which will be
+                  moved. E.g. if you are moving <filename>/home/me/mydata</filename>
+                  around, the configuration directory must exist somewhere below this
+                  point, for example
+                  <filename>/home/me/mydata/recoll-confdir</filename>, or
+                  <filename>/home/me/mydata/sub/recoll-confdir</filename>.</para></listitem>
 
-    <para>If you are regularly copying the configuration out of the
-    dataset, it will be useful to write a script to automate the
-    procedure. This can't really be done inside &RCL; because there are
-    probably many possible variants. One example would be to copy the
-    configuration to make it writable, but keep the index data on the
-    medium because it is too big - in this case, the script would also need
-    to set <literal>dbdir</literal> in the copied configuration.</para>
-    
-    <para>The same set of modifications (&RCL; 1.24) has also made it
-    possible to run queries from a readonly configuration directory (with
-    slightly reduced function of course, such as not recording the query
-    history).</para>
-  </simplesect>
-  </sect1>
+              <listitem><para>You should keep the default locations for the index
+                  elements which are relative to the configuration directory by
+                  default (principally <literal>dbdir</literal>). Only the paths
+                  referring to the documents themselves
+                  (e.g. <literal>topdirs</literal> values) should be absolute (in
+                  general, they are only used when indexing anyway).</para></listitem>
+              
+            </itemizedlist>
+          </para>
 
-    <sect1 id="RCL.INDEXING.WebQUEUE">
-      <title>&LIN;: indexing visited Web pages</title>
+          <para>Only the first point needs an explicit user action, the &RCL;
+            defaults are compatible with the third one, and the second is
+            natural.</para>
 
-      <para>With the help of a <application>Firefox</application>
-        extension, &RCL; can index the Internet pages that you visit. The
-        extension has a long history: it was initially designed for
-        the <application>Beagle</application> indexer, then adapted to
-        &RCL; and
-        the <application>Firefox</application> <application>XUL</application>
-        API. The current version of the extension is located in
-        the <ulink url="https://addons.mozilla.org/en-US/firefox/addon/recoll-we/">Mozilla
-        add-ons repository</ulink> uses
-        the <application>WebExtensions</application> API, and works with
-        current <application>Firefox</application> versions.</para>
+          <para>If, after the move, the configuration directory needs to be
+            copied out of the dataset (for example because the thumb drive is too
+            slow), you can set the
+            <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">curidxconfdir</link>,
+            variable inside the copied configuration to
+            define the location of the moved one. For example if
+            <filename>/home/me/mydata</filename> is now mounted onto
+            <filename>/media/me/somelabel</filename>, but the configuration
+            directory and index has been copied to
+            <filename>/tmp/tempconfig</filename>, you would set
+            <literal>curidxconfdir</literal> to
+            <filename>/media/me/somelabel/recoll-confdir</filename> inside
+            <filename>/tmp/tempconfig/recoll.conf</filename>.
+            <literal>orgidxconfdir</literal> would still be
+            <filename>/home/me/mydata/recoll-confdir</filename> in the original and
+            the copy.</para>
 
-      <para>The extension works by copying visited Web pages to an indexing
-        queue directory, which &RCL; then processes, storing the data into a
-        local cache, then indexing it, then removing the file from the
-        queue.</para>
-      
-      <note><title>The local cache is not an archive</title><para>As
-          mentioned above, a copy of the indexed Web pages is retained by
-          Recoll in a local cache (from which data is fetched for previews,
-          or when resetting the index). The cache is not changed by an
-          index reset, just read for indexing. The cache has a maximum
-          size, which can be adjusted from the <guilabel>Index
-          configuration</guilabel> / <guilabel>Web history</guilabel> panel
-          (<literal>webcachemaxmbs</literal> parameter
-          in <filename>recoll.conf</filename>). Once the maximum size is
-          reached, old pages are erased to make room for new ones.  The
-          pages which you want to keep indefinitely need to be explicitly
-          archived elsewhere. Using a very high value for the cache size
-          can avoid data erasure, but see the above 'Howto' page for more
-          details and gotchas.</para></note>
+          <para>If you are regularly copying the configuration out of the
+            dataset, it will be useful to write a script to automate the
+            procedure. This can't really be done inside &RCL; because there are
+            probably many possible variants. One example would be to copy the
+            configuration to make it writable, but keep the index data on the
+            medium because it is too big - in this case, the script would also need
+            to set <literal>dbdir</literal> in the copied configuration.</para>
 
-      <para>The visited Web pages indexing feature can be enabled on the
-        &RCL; side from the GUI <guilabel>Index configuration</guilabel>
-        panel, or by editing the configuration file (set
-        <varname>processwebqueue</varname> to 1).</para>
+          <para>The same set of modifications (&RCL; 1.24) has also made it
+            possible to run queries from a readonly configuration directory (with
+            slightly reduced function of course, such as not recording the query
+            history).</para>
+        </simplesect>
+      </sect2>
 
-      <para>The &RCL; GUI has a tool to list and edit the contents of the
-        Web cache. (<menuchoice><guimenu>Tools</guimenu><guimenuitem>Webcache
-        editor</guimenuitem></menuchoice>)</para>
-      <para>The <command>recollindex</command> command has two options to
-        help manage the Web cache:</para>
-      <itemizedlist>
-        <listitem><option>--webcache-compact</option> will recover
+      <sect2 id="RCL.INDEXING.WEBQUEUE">
+        <title>&LIN;: indexing visited Web pages</title>
+
+        <para>With the help of a <application>Firefox</application>
+          extension, &RCL; can index the Internet pages that you visit. The
+          extension has a long history: it was initially designed for
+          the <application>Beagle</application> indexer, then adapted to
+          &RCL; and
+          the <application>Firefox</application> <application>XUL</application>
+          API. The current version of the extension is located in
+          the <ulink url="https://addons.mozilla.org/en-US/firefox/addon/recoll-we/">Mozilla
+            add-ons repository</ulink> uses
+          the <application>WebExtensions</application> API, and works with
+          current <application>Firefox</application> versions.</para>
+
+        <para>The extension works by copying visited Web pages to an indexing
+          queue directory, which &RCL; then processes, storing the data into a
+          local cache, then indexing it, then removing the file from the
+          queue.</para>
+        
+        <note><title>The local cache is not an archive</title><para>As
+            mentioned above, a copy of the indexed Web pages is retained by
+            Recoll in a local cache (from which data is fetched for previews,
+            or when resetting the index). The cache is not changed by an
+            index reset, just read for indexing. The cache has a maximum
+            size, which can be adjusted from the <guilabel>Index
+              configuration</guilabel> / <guilabel>Web history</guilabel> panel
+            (<literal>webcachemaxmbs</literal> parameter
+            in <filename>recoll.conf</filename>). Once the maximum size is
+            reached, old pages are erased to make room for new ones.  The
+            pages which you want to keep indefinitely need to be explicitly
+            archived elsewhere. Using a very high value for the cache size
+            can avoid data erasure, but see the above 'Howto' page for more
+            details and gotchas.</para></note>
+
+        <para>The visited Web pages indexing feature can be enabled on the
+          &RCL; side from the GUI <guilabel>Index configuration</guilabel>
+          panel, or by editing the configuration file (set
+          <varname>processwebqueue</varname> to 1).</para>
+
+        <para>The &RCL; GUI has a tool to list and edit the contents of the
+          Web cache. (<menuchoice><guimenu>Tools</guimenu><guimenuitem>Webcache
+              editor</guimenuitem></menuchoice>)</para>
+        <para>The <command>recollindex</command> command has two options to
+          help manage the Web cache:</para>
+        <itemizedlist>
+          <listitem><option>--webcache-compact</option> will recover
             the space from erased entries. It may need to use twice the disk space
             currently needed for the Web cache.</listitem>
-        <listitem><option>--webcache-burst <replaceable>destdir</replaceable></option>
+          <listitem><option>--webcache-burst <replaceable>destdir</replaceable></option>
             will extract all current entries into pairs of metadata and data
             files created
             inside <replaceable>destdir</replaceable></listitem>
-      </itemizedlist>
-
-      <para>You can find more details on Web indexing, its usage and configuration
-        in a <ulink url="&FAQS;IndexWebHistory">Recoll 'Howto'
-        entry</ulink>.</para> 
-
-
-    </sect1>
-
-    <sect1 id="RCL.INDEXING.EXTATTR">
-      <title>&LIN;: using extended attributes</title>
-
-      <para>User extended attributes are named pieces of information that most modern file systems
-        can attach to any file.</para>
-
-      <para>&RCL; processes all extended attributes as document fields. Note that most
-        fields are not indexed by default, you need to activate them by defining a prefix in
-        the <link linkend="RCL.INSTALL.CONFIG.FIELDS"><filename>fields</filename>
-        configuration file</link>.</para> 
-
-      <para>A <ulink url="http://www.freedesktop.org/wiki/CommonExtendedAttributes">
-        freedesktop standard</ulink> defines a few special attributes, which are handled as such by
-        &RCL;: 
-
-        <variablelist>
-          <varlistentry>
-            <term>mime_type</term>
-            <listitem><para>If set, this overrides any other
-            determination of the file MIME type.</para></listitem>
-          </varlistentry>
-          <varlistentry>
-            <term>charset</term>
-            <listitem><para>If set, this defines the file character set
-            (mostly useful for plain text files).</para></listitem>
-          </varlistentry>
-        </variablelist>
-      </para>
-
-      <para>By default, other attributes are handled as &RCL; fields of the same name.</para>
-
-      <para>On Linux, the <literal>user</literal> prefix is removed from the name.</para>
-
-      <para>The name translation can be configured more precisely, also inside the
-        <link linkend="RCL.INSTALL.CONFIG.FIELDS.XATTR"><filename>fields</filename> configuration
-          file</link>.</para>
-
-      <note><title>Setting the document modification/creation date</title>
-        <para>Date fields are processed specially by &RCL;. For obscure and uninteresting reasons,
-          you should use <literal>modificationdate</literal> as extended attribute name for setting
-          this value. Also, the date string should be an ASCII integer representing the Unix time
-          (seconds since the epoch). An example Linux command line for setting this particular field
-          follow. The substituted <command>date</command> prints the example date parameter in Unix
-          time format (seconds since the epoch).
-          <programlisting>
-            setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/file
-          </programlisting>
-        </para>
-        The date substitution will then be automatic, you do not need to customize
-        the <filename>fields</filename> file.
-      </note>
-
-    </sect1>
-
-    <sect1 id="RCL.INDEXING.EXTTAGS">
-      <title>&LIN;: importing external tags</title>
-
-      <para>During indexing, it is possible to import metadata for each file by executing
-      commands. This allows, for example, extracting tag data from an external application and
-      storing it in a field for indexing.</para>
-
-      <para>See the 
-      <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS">section about the <literal>metadatacmds</literal> field</link> 
-      in the main configuration chapter for a description of the
-      configuration syntax.</para>
-
-      <para>For example, if you would want &RCL; to use tags managed by
-      <application>tmsu</application> in a field named
-      <replaceable>tags</replaceable>, you would add the following to the
-      configuration file:</para>
-
-      <programlisting>[/some/area/of/the/fs]
-metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
-      </programlisting>
-
-      <note><para>Depending on the <application>tmsu</application> version,
-      you may need/want to add options like
-      <literal>--database=/some/db</literal>.</para></note>
-      
-      <para>You may want to restrict this processing to a subset of
-      the directory tree, because it may slow down indexing a bit
-      (<literal>[some/area/of/the/fs]</literal>).</para>
-      <para>Note the initial semi-colon after the equal sign.</para>
-
-      <para>In the example above, the output of <command>tmsu</command> is
-      used to set a field named <replaceable>tags</replaceable>. The field
-      name is arbitrary and could be <replaceable>tmsu</replaceable> or
-      <replaceable>myfield</replaceable> just the same, but
-      <replaceable>tags</replaceable> is an alias for the standard &RCL;
-      <literal>keywords</literal> field, and the <command>tmsu</command>
-      output will just augment its contents. This will avoid the need to
-      extend the <link linkend="RCL.PROGRAM.FIELDS">field
-      configuration</link>.</para>
-
-      <para>Once re-indexing is performed (you will need to force the file reindexing, &RCL; will
-        not detect the need by itself), you will be able to search from the query language, through
-        any of its aliases: <replaceable>tags:some/alternate/values</replaceable>
-        or <replaceable>tags:all,these,values</replaceable>. The compact comma- or slash-based field
-        search syntax is supported for recoll 1.20 and later. For older versions, you would need to
-        repeat the <replaceable>tags:</replaceable> specifier for each term,
-        e.g. <replaceable>tags:some</replaceable> <literal>OR</literal> 
-        <replaceable>tags:alternate</replaceable>.</para>
-
-      <para>Tags changes will not be detected by the indexer if the file itself did not change. One
-        possible workaround would be to update the file <literal>ctime</literal> when you modify the
-        tags, which would be consistent with how extended attributes function. A pair
-        of <command>chmod</command> commands could accomplish this, or a 
-        <literal>touch -a</literal>.
-        Alternatively, just couple the tag update with a 
-        <literal>recollindex -e -i</literal> <replaceable>/path/to/the/file</replaceable>.</para>
-
-    </sect1>
-
-
-    <sect1 id="RCL.INDEXING.PDF">
-      <title>The PDF input handler</title>
-
-      <para>The PDF format is very important for scientific and technical
-        documentation, and document archival. It has extensive
-        facilities for storing metadata along with the document, and these
-        facilities are actually used in the real world.</para>
-
-      <para>In consequence, the <command>rclpdf.py</command> PDF input
-        handler has more complex capabilities than most others, and it is
-        also more configurable. Specifically, <command>rclpdf.py</command>
-        has the following features:
-        <itemizedlist>
-          <listitem><para>It can be configured to extract
-              specific metadata tags from an XMP packet.</para></listitem>
-          <listitem><para>It can extract PDF
-              attachments.</para></listitem>
-          <listitem><para>It can automatically perform
-              OCR if the document text is empty. This is done by 
-              executing an external program and is now described in a 
-              <link linkend="RCL.INDEXING.OCR">separate
-                section</link>, because the OCR framework can also be used
-                with non-PDF image files.</para></listitem>
         </itemizedlist>
-      </para>
-      
-      <sect2 id="RCL.INDEXING.PDF.XMP">
-        <title>XMP fields extraction</title>
 
-        <para>The <filename>rclpdf.py</filename> script in &RCL; version
-        1.23.2 and later can extract XMP metadata fields by executing the
-        <command>pdfinfo</command> command (usually found with
-        <application>poppler-utils</application>). This is controlled by
-        the
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA">pdfextrameta</link>
-        configuration variable, which specifies which tags to extract and,
-        possibly, how to rename them.</para>
-
-        <para>The
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">pdfextrametafix</link>
-        variable can be used to designate a file with Python code to edit
-        the metadata fields (available for &RCL; 1.23.3 and later. 1.23.2
-        has equivalent code inside the handler script). Example:</para>
-
-        <programlisting>import sys
-        import re
-
-        class MetaFixer(object):
-            def __init__(self):
-                pass
-
-            def metafix(self, nm, txt):
-                if nm == 'bibtex:pages':
-                    txt = re.sub(r'--', '-', txt)
-                elif nm == 'someothername':
-                    # do something else
-                    pass
-                elif nm == 'stillanother':
-                    # etc.
-                    pass
-        
-                return txt
-            def wrapup(self, metaheaders):
-                pass
-        </programlisting>
-
-        <para>If the 'metafix()' method is defined, it is called for each
-        metadata field. A new MetaFixer object is created for each PDF
-        document (so the object can keep state for, for example,
-        eliminating duplicate values). If the 'wrapup()' method is defined, it
-        is called at the end of XMP fields processing with the whole
-        metadata as parameter, as an array of '(nm, val)' pairs, allowing
-        an alternate approach for editing or adding/deleting fields.</para>
-        
-        <para>See 
-          <ulink url="https://www.lesbonscomptes.com/recoll/pages/recoll_XMP/index.html">this
-            page</ulink> for a more detailed discussion about indexing PDF XMP properties.</para>
-        
+        <para>You can find more details on Web indexing, its usage and configuration
+          in a <ulink url="&FAQS;IndexWebHistory">Recoll 'Howto'
+            entry</ulink>.</para> 
 
       </sect2>
 
-      <sect2 id="RCL.INDEXING.PDF.ATTACH">
-        <title>PDF attachment indexing</title>
+      <sect2 id="RCL.INDEXING.EXTATTR">
+        <title>&LIN;: using extended attributes</title>
 
-        <para>If <application>pdftk</application> is installed, and if the
-          the
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</link>
-        configuration variable is set, the PDF input handler will try to
-        extract PDF attachments for indexing as sub-documents of the PDF
-        file. This is disabled by default, because it slows down PDF
-        indexing a bit even if not one attachment is ever found (PDF
-        attachments are uncommon in my experience).</para>
+        <para>User extended attributes are named pieces of information that most modern file systems
+          can attach to any file.</para>
 
-      </sect2>
-      
-    </sect1>
+        <para>&RCL; processes all extended attributes as document fields. Note that most
+          fields are not indexed by default, you need to activate them by defining a prefix in
+          the <link linkend="RCL.INSTALL.CONFIG.FIELDS"><filename>fields</filename>
+            configuration file</link>.</para> 
 
-
-    <sect1 id="RCL.INDEXING.OCR">
-      <title>Recoll and OCR</title>
-
-      <para>The &RCL; PDF handler has the ability to call an external OCR program if the processed
-        file has no text content. The OCR data is stored in a cache of separate files, avoiding any
-        modification of the originals.</para>
-      <para>It must be noted that, if modifying the files (or a copy) is acceptable, then running
-        something like
-        <ulink url="https://ocrmypdf.readthedocs.io/en/latest/index.html">OCRmyPDF</ulink> to add a
-        text layer to the PDF itself is a better solution (e.g. allowing &RCL; to position the PDF
-        viewer on the search target when opening the document, and permitting secondary search in
-        the native tool).
-       </para>
-
-      <para>To enable the &RCL; OCR feature, you need to install one of the supported OCR
-        applications (<application>tesseract</application> or <application>ABBYY</application>),
-        enable OCR in the PDF handler (by setting <literal>pdfocr</literal> to <literal>1</literal>
-        in the index configuration file), and tell &RCL; how to run the OCR by
-        setting <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.OCR">configuration
-        variables</link>. All parameters can be localized in subdirectories through the usual main
-        configuration mechanism (path sections).</para>
-
-      <para>This facility got a major update in &RCL; 1.26.5. Older versions had a more limited,
-        non-caching capability to execute an external OCR program in the PDF handler. The new
-        function has the following features:
-
-        <itemizedlist>
-          <listitem><para>The OCR output is cached, stored as separate files. The caching is
-              ultimately based on a hash value of the original file contents, so that it is immune
-              to file renames. A first path-based layer ensures fast operation for unchanged
-              (unmoved files), and the data hash (which is still orders of magnitude faster than
-              OCR) is only re-computed if the file has moved. OCR is only performed if the file was
-              not previously processed or if it changed.</para></listitem>
-          <listitem><para>The support for a specific program is implemented in a simple Python
-              module. It should be straightforward to add support for any OCR engine with a
-              capability to run from the command line.</para></listitem>
-          <listitem><para>Modules initially exist for
-              <application>tesseract</application> (Linux and Windows), and
-              <application>ABBYY FineReader</application> (Linux, tested with
-              version 11). ABBYY FineReader is a commercial closed source
-              program, but it sometimes perform better than
-              tesseract.</para></listitem>
-          <listitem><para>The OCR is currently only called from the PDF handler, but there should be
-              no problem using it for other image types.</para></listitem>
-        </itemizedlist>
-    </para>
-
-
-    </sect1>
-
-
-    <sect1 id="RCL.INDEXING.PERIODIC">
-      <title>Periodic indexing</title>
-
-      <simplesect id="RCL.INDEXING.PERIODIC.EXEC">
-        <title>Running the indexer</title>
-
-        <para>The <command>recollindex</command> program performs index
-        updates. You can start it either from the command line or from the
-        <guimenu>File</guimenu> menu in the <command>recoll</command> GUI
-        program. When started from the GUI, the indexing will run on the
-        same configuration <command>recoll</command> was started on. When
-        started from the command line, <command>recollindex</command> will
-        use the <envar>RECOLL_CONFDIR</envar> variable or accept a
-        <option>-c</option> <replaceable>confdir</replaceable> option to
-        specify a non-default configuration directory.</para>
-
-        <para>If the <command>recoll</command> program finds no index
-        when it starts, it will automatically start indexing (except
-        if canceled).</para>
-
-        <para>The GUI <menuchoice><guimenu>File</guimenu> </menuchoice>
-        menu has entries to start or stop the current indexing
-        operation. When indexing is not currently running, you have a
-        choice between <guimenuitem>Update
-            Index</guimenuitem> or <guimenuitem>Rebuild Index</guimenuitem>.
-          The first choice only processes changed files, the second one
-          erases the index before starting so that all files are
-          processed.</para>
-
-        <para>On Linux and Windows, the GUI can be used to manage the indexing
-        operation. Stopping the indexer can be done
-        from the <command>recoll</command> GUI
-        <menuchoice>
-          <guimenu>File</guimenu>
-          <guimenuitem>Stop Indexing</guimenuitem>
-        </menuchoice>
-        menu entry.
+        <para>A <ulink url="http://www.freedesktop.org/wiki/CommonExtendedAttributes"> freedesktop
+            standard</ulink> defines a few special attributes, which are handled as such by &RCL;:
+          <variablelist>
+            <varlistentry>
+              <term>mime_type</term>
+              <listitem><para>If set, this overrides any other
+                  determination of the file MIME type.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>charset</term>
+              <listitem><para>If set, this defines the file character set
+                  (mostly useful for plain text files).</para></listitem>
+            </varlistentry>
+          </variablelist>
         </para>
 
-        <para>On Linux, the <command>recollindex</command> indexing process
-        can be interrupted by sending an interrupt
-        (<keysym>Ctrl-C</keysym>, SIGINT) or terminate (SIGTERM)
-        signal. 
-        </para>
+        <para>By default, other attributes are handled as &RCL; fields of the same name.</para>
 
-        <para>When stopped, some time may elapse before
-        <command>recollindex</command> exits, because it needs to properly
-        flush and close the index.</para>
-        
-        <para>After an interruption, the index will be somewhat
-        inconsistent because some operations which are normally
-        performed at the end of the indexing pass will have been
-        skipped (for example, the stemming and spelling databases
-        will be inexistent or out of date). You just need to restart
-        indexing at a later time to restore consistency. The
-        indexing will restart at the interruption point (the full
-        file tree will be traversed, but files that were indexed up
-        to the interruption and for which the index is still up to
-        date will not need to be reindexed).</para>
-      </simplesect>
+        <para>On Linux, the <literal>user</literal> prefix is removed from the name.</para>
 
-      <simplesect id="RCL.INDEXING.PERIODIC.CMDLINE">
-          <title>recollindex command line</title>
+        <para>The name translation can be configured more precisely, also inside the
+          <link linkend="RCL.INSTALL.CONFIG.FIELDS.XATTR"><filename>fields</filename> configuration
+            file</link>.</para>
 
-        <para><command>recollindex</command> has many options
-        which are listed in its
-        <ulink url="https://www.lesbonscomptes.com/recoll/manpages/recollindex.1.html">manual page</ulink>.
-        Only a few will be described here.</para>
-        
-        <para>Option <option>-z</option> will reset the index when
-        starting. This is almost the same as destroying the index
-        files (the nuance is that the &XAP; format version will not
-        be changed).</para>
-        <para>Option <option>-Z</option> will force the update of all
-        documents without resetting the index first. This will not
-        have the "clean start" aspect of <option>-z</option>, but
-        the advantage is that the index will remain available for
-        querying while it is rebuilt, which can be a significant
-        advantage if it is very big (some installations need days
-        for a full index rebuild).</para>
-
-        <para>Option <option>-k</option> will force retrying files
-        which previously failed to be indexed, for example because
-        of a missing helper program.</para>
-
-        <para>Of special interest also, maybe, are
-        the <option>-i</option> and <option>-f</option>
-        options. <option>-i</option> allows indexing an explicit
-        list of files (given as command line parameters or read on
-        <literal>stdin</literal>).  <option>-f</option> tells
-        <command>recollindex</command> to ignore file selection
-        parameters from the configuration. Together, these options
-        allow building a custom file selection process for some area
-        of the file system, by adding the top directory to the
-        <varname>skippedPaths</varname> list and using an
-        appropriate file selection method to build the file list to
-        be fed to <command>recollindex</command>
-        <option>-if</option>.  Trivial example:</para>
-
-        <programlisting>
-          find . -name indexable.txt -print | recollindex -if
-        </programlisting>
-
-        <para><command>recollindex</command> <option>-i</option> will 
-        not descend into subdirectories specified as parameters, 
-        but just add them as index entries. It is
-        up to the external file selection method to build the complete
-        file list.</para>
-      </simplesect>
-
-      <simplesect id="RCL.INDEXING.PERIODIC.AUTOMAT">
-        <title>Linux: using <command>cron</command> to automate indexing</title>
-
-        <para>The most common way to set up indexing is to have a cron
-        task execute it every night. For example the following
-        <filename>crontab</filename> entry would do it every day at
-        3:30AM (supposing <command>recollindex</command> is in your
-        PATH):
-
-        <screen><![CDATA[
-        30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&1
-        ]]></screen>
-
-        Or, using <command>anacron</command>:
-        <screen><![CDATA[
-        1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&1"
-        ]]></screen>
-        </para>
-
-        <para>The &RCL; GUI has dialogs to manage
-        <filename>crontab</filename> entries for
-        <command>recollindex</command>. You can reach them from the
-        <menuchoice>
-          <guimenu>Preferences</guimenu>
-          <guimenuitem>Indexing Schedule</guimenuitem> 
-        </menuchoice> 
-        menu. They only 
-        work with the good old <command>cron</command>, and do not give
-        access to all features of <command>cron</command>
-        scheduling. Entries created via the tool are marked with
-        a <literal>RCLCRON_RCLINDEX=</literal> marker so that the tool
-        knows which entries belong to it. As a side effect, this sets an
-        environment variable for the process, but it's not actually used,
-        this is just a marker.</para> 
-
-        <para>The usual command to edit your
-        <filename>crontab</filename> is <command>crontab</command>
-        <option>-e</option> (which will usually start the
-        <command>vi</command> editor to edit the file). You may have
-        more sophisticated tools available on your system.</para>
-
-        <para>Please be aware that there may be differences between your
-        usual interactive command line environment and the one seen by
-        crontab commands. Especially the PATH variable may be of
-        concern. Please check the crontab manual pages about possible
-        issues.</para>
-
-
-      </simplesect>
-    </sect1>
-
-    <sect1 id="RCL.INDEXING.MONITOR">
-      <title>Real time indexing</title>
-
-      <para>Real time monitoring/indexing is performed by starting
-        the <command>recollindex</command> <option>-m</option> command. With this
-        option, <command>recollindex</command> will permanently monitor file changes and update the
-        index.</para>
-
-      <para>On &WIN; systems, the monitoring process is started from the <command>recoll</command>
-        GUI <guilabel>File</guilabel> menu. On &LIN;, there are other possibilities, see
-        the following sections.</para> 
-
-      <para>When this is in use, the <command>recoll</command>
-        GUI <menuchoice><guimenu>File</guimenu></menuchoice> menu makes two operations
-        available: <guimenuitem>Stop</guimenuitem> and <guimenuitem>Trigger incremental
-        pass</guimenuitem>.</para>
-
-      <para><guimenuitem>Trigger incremental pass</guimenuitem> has the
-        same effect as restarting the indexer, and will cause a complete walk of the indexed area,
-        processing the changed files, then switch to monitoring. This is only marginally useful,
-        maybe in cases where the indexer is configured to delay updates, or to force an immediate
-        rebuild of the stemming and phonetic data, which are only processed at intervals by the real
-        time indexer.</para>
-
-      <para>While it is convenient that data is indexed in real time,
-        repeated indexing can generate a significant load on the system when files such as email
-        folders change. Also, monitoring large file trees by itself significantly taxes system
-        resources. You probably do not want to enable it if your system is short on
-        resources. Periodic indexing is adequate in most cases.</para>
-
-      <para>As of &RCL; 1.24, you can set the
-      <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">monitordirs</link>
-      configuration variable to specify that only a subset of your indexed
-      files will be monitored for instant indexing.  In this situation, an
-      incremental pass on the full tree can be triggered by either
-      restarting the indexer, or just running 
-      <command>recollindex</command>, which will notify the running
-      process. The <command>recoll</command> GUI also has a menu entry for
-      this.</para>
-
-
-      <simplesect id="RCL.INDEXING.MONITOR.START.SYSTEMD">
-        <title>&LIN;: automatic daemon start with systemd</title>
-
-        <para>The installation contains two example files
-          (in <filename>share/recoll/examples</filename>) for starting the indexing daemon with
-          <application>systemd</application>.</para>
-        <para><filename>recollindex.service</filename> would be used for
-        starting <command>recollindex</command> as a user service. 
-        The indexer will start when the user logs in and run while there is a session open for
-        them.</para>
-
-<para><filename>recollindex@.service</filename> is a template service which would be used
-        for starting the indexer at boot time, running as a specific user. It can be useful when
-running the text search as a shared service (e.g. when users access it through the WEB UI).</para>
-
-	<para>If configured to do so, the unit files should have been installed in your system's
-        default systemd paths (usually <filename>/usr/lib/systemd/system/</filename> and
-        <filename>/usr/lib/systemd/user/</filename>). If not, you may need to copy the files there
-	before starting the service.</para>
-
-	<para>With the unit files installed in the proper location, the user unit can be
-	started with the following commands:
-<programlisting>systemctl --user daemon-reload
-systemctl --user enable --now recollindex.service</programlisting>
-        The system unit file can be enabled for a particular user by running, as root:
-<programlisting>systemctl daemon-reload
-systemctl enable --now recollindex@<varname>username</varname>.service</programlisting>
-	(A valid user name should be substituted for <varname>username</varname>, of course.)</para>
-      </simplesect>
-
-      <simplesect id="RCL.INDEXING.MONITOR.START">
-        <title>&LIN;: automatic daemon start from the desktop session</title>
-
-        <para>Under <application>KDE</application>,
-        <application>Gnome</application> and some other desktop
-        environments, the daemon can automatically started when you log
-        in, by creating a desktop file inside the
-        <filename>~/.config/autostart</filename> directory.  This can be
-        done for you by the &RCL; GUI. Use the
-        <guimenu>Preferences->Indexing Schedule</guimenu> menu.</para>
-        
-        <para>With older <application>X11</application> setups, starting
-        the daemon is normally performed as part of the user session
-        script.</para>
-
-        <para>The <filename>rclmon.sh</filename> script can be used to
-        easily start and stop the daemon. It can be found in the
-        <filename>examples</filename> directory (typically
-        <filename>/usr/local/[share/]recoll/examples</filename>).</para>
-
-        <para>For example, a good old <application>xdm</application>-based
-        session could have a <filename>.xsession</filename> script with the
-        following lines  at the end:</para>
-
-        <programlisting>recollconf=$HOME/.recoll-home
-recolldata=/usr/local/share/recoll
-RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
-
-fvwm 
-</programlisting>
-
-        <para>The indexing daemon gets started, then the window manager,
-        for which the session waits.</para> <para>By default the
-        indexing daemon will monitor the state of the X11 session, and
-        exit when it finishes, it is not necessary to kill it
-        explicitly. (The <application>X11</application> server
-        monitoring can be disabled with option <option>-x</option> to
-        <command>recollindex</command>).</para>
-
-        <para>If you use the daemon completely out of an
-        <application>X11</application> session, you need to add option
-        <option>-x</option> to disable <application>X11</application>
-        session monitoring (else the daemon will not start).</para>
-      </simplesect>
-      
-      <simplesect id="RCL.INDEXING.MONITOR.DETAILS">
-        <title>Miscellaneous details</title>
-
-        <para>By default, the messages from the indexing daemon will be
-        sent to the same file as those from the interactive commands
-        (<literal>logfilename</literal>).  You may want to change this
-        by setting the <varname>daemlogfilename</varname> and
-        <varname>daemloglevel</varname> configuration parameters. Also
-        the log file will only be truncated when the daemon starts. If
-        the daemon runs permanently, the log file may grow quite big,
-        depending on the log level.</para>
-
-        <formalpara>
-          <title>&LIN;: increasing resources for inotify</title>
-          <para>On Linux systems, monitoring a big tree may need
-            increasing the resources available to inotify, which are
-            normally defined in <filename>/etc/sysctl.conf</filename>.
+        <note><title>Setting the document modification/creation date</title>
+          <para>Date fields are processed specially by &RCL;. For obscure and uninteresting reasons,
+            you should use <literal>modificationdate</literal> as extended attribute name for
+            setting this value. Also, the date string should be an ASCII integer representing the
+            Unix time (seconds since the epoch). An example Linux command line for setting this
+            particular field follow. The substituted <command>date</command> prints the example date
+            parameter in Unix time format (seconds since the epoch).
             <programlisting>
-### inotify
-#
-# cat  /proc/sys/fs/inotify/max_queued_events   - 16384
-# cat  /proc/sys/fs/inotify/max_user_instances  - 128
-# cat  /proc/sys/fs/inotify/max_user_watches    - 16384
-#
-# -- Change to:
-#
-fs.inotify.max_queued_events=32768
-fs.inotify.max_user_instances=256
-fs.inotify.max_user_watches=32768
+              setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/file
+            </programlisting>
+          </para>
+          The date substitution will then be automatic, you do not need to customize
+          the <filename>fields</filename> file.
+        </note>
+
+      </sect2>
+
+      <sect2 id="RCL.INDEXING.EXTTAGS">
+        <title>&LIN;: importing external tags</title>
+
+        <para>During indexing, it is possible to import metadata for each file by executing
+          commands. This allows, for example, extracting tag data from an external application and
+          storing it in a field for indexing.</para>
+
+        <para>See the 
+          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS">section about
+          the <literal>metadatacmds</literal> field</link> in the main configuration chapter for a
+          description of the configuration syntax.</para>
+
+        <para>For example, if you would want &RCL; to use tags managed by
+          <application>tmsu</application> in a field named
+          <replaceable>tags</replaceable>, you would add the following to the
+          configuration file:</para>
+
+        <programlisting>[/some/area/of/the/fs]
+          metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
         </programlisting>
-        
-            Especially, you will need to trim your tree or adjust
-            the <literal>max_user_watches</literal> value if indexing exits with
-            a message about errno <literal>ENOSPC</literal> (28) from
-            <function>inotify_add_watch</function>.</para>
-        </formalpara>
 
+        <note><para>Depending on the <application>tmsu</application> version,
+            you may need/want to add options like
+            <literal>--database=/some/db</literal>.</para></note>
         
-        <formalpara>
-          <title>Slowing down the reindexing rate for fast changing files</title>
-          <para>When using the real time monitor, it may happen that some
-            files need to be indexed, but change so often that they impose an
-            excessive load for the system.</para>
+        <para>You may want to restrict this processing to a subset of
+          the directory tree, because it may slow down indexing a bit
+          (<literal>[some/area/of/the/fs]</literal>).</para>
+        <para>Note the initial semi-colon after the equal sign.</para>
 
-          <para>&RCL; provides a configuration option to specify the minimum
-            time before which a file, specified by a wildcard pattern, cannot be reindexed. See
-            the <varname>mondelaypatterns</varname> parameter in the
-            <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">configuration section</link>.</para>
-        </formalpara>
-      
-      </simplesect>
-      
+        <para>In the example above, the output of <command>tmsu</command> is
+          used to set a field named <replaceable>tags</replaceable>. The field
+          name is arbitrary and could be <replaceable>tmsu</replaceable> or
+          <replaceable>myfield</replaceable> just the same, but
+          <replaceable>tags</replaceable> is an alias for the standard &RCL;
+          <literal>keywords</literal> field, and the <command>tmsu</command>
+          output will just augment its contents. This will avoid the need to
+          extend the <link linkend="RCL.PROGRAM.FIELDS">field
+            configuration</link>.</para>
+
+        <para>Once re-indexing is performed (you will need to force the file reindexing, &RCL; will
+          not detect the need by itself), you will be able to search from the query language,
+          through any of its aliases: <replaceable>tags:some/alternate/values</replaceable>
+          or <replaceable>tags:all,these,values</replaceable>.</para>
+
+        <para>Tags changes will not be detected by the indexer if the file itself did not
+          change. One possible workaround would be to update the file <literal>ctime</literal> when
+          you modify the tags, which would be consistent with how extended attributes function. A
+          pair of <command>chmod</command> commands could accomplish this, or a
+          <literal>touch -a</literal>.  Alternatively, just couple the tag update with a
+          <literal>recollindex -e -i</literal> <replaceable>/path/to/the/file</replaceable>.</para>
+
+      </sect2>
     </sect1>
-
   </chapter>
 
 
@@ -3695,31 +3621,24 @@ fs.inotify.max_user_watches=32768
             what data each result will contain, and how it will be
             displayed.</para>
 
-          <para>The result list presentation can be customized
-            by adjusting two elements:
+          <para>The result list presentation can be customized by adjusting two elements:
+            <itemizedlist>
+              <listitem><para>The paragraph format</para></listitem>
+              <listitem><para>HTML code inside the header section. This is also used for the
+                  <link linkend="RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">snippets window</link>.
+              </para></listitem>
+            </itemizedlist>
+            The paragraph format and the header fragment can be edited from the <guilabel>Result
+            list</guilabel> tab of the <guilabel>GUI configuration</guilabel>.</para>
 
-          <itemizedlist>
-            <listitem><para>The paragraph format</para></listitem>
-            <listitem><para>HTML code inside the header section. For
-            versions 1.21 and later, this is also used for the
-            <link linkend="RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">snippets window</link>.
-            </para></listitem>
-          </itemizedlist>
-          The paragraph format and the header fragment can be edited
-          from the <guilabel>Result list</guilabel> tab of the
-          <guilabel>GUI configuration</guilabel>.
-          </para>
-
-          <para>The header fragment is used both for the result list and
-          the snippets window. The snippets list is a table and has a
-          <literal>snippets</literal> class attribute. Each paragraph in
-          the result list is a table, with class
-          <literal>respar</literal>, but this can be changed by editing
-          the paragraph format.</para>
+          <para>The header fragment is used both for the result list and the snippets window. The
+            snippets list is a table and has a <literal>snippets</literal> class attribute. Each
+            paragraph in the result list is a table, with class <literal>respar</literal>, but this
+            can be changed by editing the paragraph format.</para>
 
           <para>There are a few examples on the 
-          <ulink url="http://www.recoll.org/pages/custom.html">page about 
-          customising the result list</ulink> on the &RCL; web site.</para>
+            <ulink url="http://www.recoll.org/pages/custom.html">page about 
+              customising the result list</ulink> on the &RCL; Web site.</para>
 
           <sect4 id="RCL.SEARCH.GUI.CUSTOM.RESLIST.PARA">
             <title>The paragraph format</title>
@@ -3953,10 +3872,10 @@ Common options:
 recollq 'ilur -nautique mime:text/html'
 Recoll query: ((((ilur:(wqf=11) OR ilurs) AND_NOT (nautique:(wqf=11) OR nautiques OR nautiqu OR nautiquement)) FILTER Ttext/html))
 4 results
-text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/comptes.html]      [comptes.html]  18593   bytes   
-text/html       [file:///Users/uncrypted-dockes/projets/nautique/webnautique/articles/ilur1/index.html] [Constructio...
-text/html       [file:///Users/uncrypted-dockes/projets/pagepers/index.html]    [psxtcl/writemime/recoll]...
-text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
+text/html       [file:///Users/dockes/projets/bateaux/ilur/comptes.html]      [comptes.html]  18593   bytes   
+text/html       [file:///Users/dockes/projets/nautique/webnautique/articles/ilur1/index.html] [Constructio...
+text/html       [file:///Users/dockes/projets/pagepers/index.html]    [psxtcl/writemime/recoll]...
+text/html       [file:///Users/dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
       </programlisting>
     </sect1>
 
@@ -5873,21 +5792,18 @@ for doc in results:
         <sect3 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT">
           <title>The rclextract module</title>
 
-          
-          <para>Prior to &RCL; 1.25, index queries could not provide document
-          content because it was never stored. &RCL; 1.25 and later usually
-          store the document text, which can be optionally retrieved when
-          running a query (see <literal>query.execute()</literal>
-          above - the result is always plain text).</para>
+          <para>Prior to &RCL; 1.25, index queries could not provide document content because it was
+            never stored. &RCL; 1.25 and later usually store the document text, which can be
+            optionally retrieved when running a query (see <literal>query.execute()</literal> above
+            - the result is always plain text).</para>
 
-          <para>The <literal>rclextract</literal> module can give access to
-          the original document and to the document text content (if not
-          stored by the index, or to access an HTML version of the text).
-          Accessing the original document is particularly useful if it is
-          embedded (e.g. an email attachment).</para>
+          <para>Independantly, the <literal>rclextract</literal> module can give access to the
+            original document and to the document text content, possibly as an HTML version.
+            Accessing the original document is particularly useful if it is embedded (e.g. an email
+            attachment).</para>
 
           <para>You need to import the <literal>recoll</literal> module
-          before the <literal>rclextract</literal> module.</para>
+            before the <literal>rclextract</literal> module.</para>
           
           <simplesect id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR">
             <title>The Extractor class</title>
@@ -6187,39 +6103,7 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
             and <filename>mimeview</filename> files. See the <filename>rcljoplin.py</filename>
             sample for an example.</para>
         </sect3>
-        
       </sect2>
-      
-      <sect2 id="RCL.PROGRAM.PYTHONAPI.COMPAT">
-        <title>Package compatibility with the previous version</title>
-        
-        <para>The following code fragments can be used to ensure that
-        code can run with both the old and the new API (as long as it
-        does not use the new abilities of the new API of
-        course).</para>
-
-        <para>Adapting to the new package structure:</para>
-<programlisting><![CDATA[
-try:
-from recoll import recoll
-from recoll import rclextract
-hasextract = True
-except:
-import recoll
-hasextract = False
-]]></programlisting>
-
-        <para>Adapting to the change of nature of
-        the <literal>next</literal> <literal>Query</literal>
-        member. The same test can be used to choose to use
-        the <literal>scroll()</literal> method (new) or set
-        the <literal>next</literal> value (old).</para>
-
-        <programlisting><![CDATA[rownum = query.next if type(query.next) == int else query.rownumber]]></programlisting>
-
-      </sect2> <!-- compat with previous version -->
-
-      
     </sect1>
   </chapter>
 
