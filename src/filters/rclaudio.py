@@ -20,12 +20,6 @@ except ImportError:
     print("RECFILTERROR HELPERNOTFOUND python3:mutagen")
     sys.exit(1)
 
-try:
-    from filelock import FileLock
-except ImportError:
-    print("RECFILTERROR HELPERNOTFOUND python3:filelock")
-    sys.exit(1)
-
 re_pairnum = re.compile('''[([]*([0-9]+),\s*([0-9]+)''')
 
 _htmlprefix = b'''<html><head>
@@ -516,6 +510,11 @@ class AudioTagExtractor(RclBaseHandler):
         output_array = []
         result_dict = {}
 
+        try:
+            from filelock import FileLock
+        except ImportError:
+            print("RECFILTERROR HELPERNOTFOUND python3:filelock")
+        sys.exit(1)
         import rclocrcache
         import json
         # The cache can find data either based on file metadata, or, in case, e.g. the file has been
