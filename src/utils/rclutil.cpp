@@ -342,47 +342,6 @@ string url_encode(const string& url, string::size_type offs)
     return out;
 }
 
-static inline int h2d(int c) {
-    if ('0' <= c && c <= '9')
-        return c - '0';
-    else if ('A' <= c && c <= 'F')
-        return 10 + c - 'A';
-    else if ('a' <= c && c <= 'f')
-        return 10 + c - 'a';
-    else 
-        return -1;
-}
-
-string url_decode(const string &in)
-{
-    if (in.size() <= 2)
-        return in;
-    string out;
-    out.reserve(in.size());
-    const char *cp = in.c_str();
-    string::size_type i = 0;
-    for (; i < in.size() - 2; i++) {
-        if (cp[i] == '%') {
-            int d1 = h2d(cp[i+1]);
-            int d2 = h2d(cp[i+2]);
-            if (d1 != -1 && d2 != -1) {
-                out += (d1 << 4) + d2;
-            } else {
-                out += '%';
-                out += cp[i+1];
-                out += cp[i+2];
-            }
-            i += 2;
-        } else {
-            out += cp[i];
-        }
-    }
-    while (i < in.size()) {
-        out += cp[i++];
-    }
-    return out;
-}
-
 string url_gpath(const string& url)
 {
     // Remove the access schema part (or whatever it's called)
