@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Audio extractor for Recoll, using mutagen for metadata and optionally using whisper for speech to text."""
+"""Audio extractor for Recoll, using mutagen for metadata and optionally using whisper
+for speech to text."""
 
 import sys
 import os
 import gc
-import rclexecm
-from rclbasehandler import RclBaseHandler
 import time
 import datetime
 import re
 
+import rclexecm
+from rclbasehandler import RclBaseHandler
 import rclconfig
 
 try:
@@ -20,7 +21,7 @@ except ImportError:
     print("RECFILTERROR HELPERNOTFOUND python3:mutagen")
     sys.exit(1)
 
-re_pairnum = re.compile('''[([]*([0-9]+),\s*([0-9]+)''')
+re_pairnum = re.compile(r"[([]*([0-9]+),\s*([0-9]+)")
 
 _htmlprefix = b'''<html><head>
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
@@ -229,12 +230,12 @@ class AudioTagExtractor(RclBaseHandler):
     def _fixrating(self, minf):
         if 'RATING1' in minf:
             if not 'RATING' in minf:
-               val = int(minf['RATING1']) // 51 + 1
-               if val > 5:
-                   val = 5
-               if val < 1:
-                   val = 1
-               minf['RATING'] = str(val)
+                val = int(minf['RATING1']) // 51 + 1
+                if val > 5:
+                    val = 5
+                if val < 1:
+                    val = 1
+                minf['RATING'] = str(val)
             del minf['RATING1']
 
 
@@ -527,7 +528,7 @@ class AudioTagExtractor(RclBaseHandler):
         else:
             raw_result = self.transcribe_via_whisper(filename)
             cache.store(filename, json.dumps(raw_result).encode("UTF-8"))
-        
+
         for segment in raw_result["segments"]:
             if "start" in segment:
                 segment_start = int(segment["start"])
@@ -558,7 +559,7 @@ class AudioTagExtractor(RclBaseHandler):
             self.process_stt = True
         else:
             self.process_stt = False
-        
+
         # The field storage dictionary
         minf = {}
 
