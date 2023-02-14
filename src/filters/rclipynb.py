@@ -15,8 +15,10 @@
 # Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Recoll handler for iPython / Jupyter notebook files.
+""" Recoll handler for iPython / Jupyter notebook files."""
 
+# Rem 02-2023. This is not used and I'm not sure why it exists. We use jupyter nbconvert directly
+# set in mimeconf instead. Kept around just in case.
 import os
 import sys
 import json

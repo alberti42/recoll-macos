@@ -153,7 +153,7 @@ application/vnd.sun.xml.writer.template = \
 #application/x-tar = execm rcltar.py
 
 application/epub+zip = execm rclepub.py
-application/x-ipynb+json = exec jupyter nbconvert --to script --stdout ; mimetype = text/plain
+application/x-ipynb+json = exec jupyter nbconvert --to html --stdout ; mimetype = text/html
 application/javascript = internal text/plain
 application/ogg = execm rclaudio.py
 application/pdf = execm rclpdf.py
