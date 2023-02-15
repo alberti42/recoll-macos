@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from setuptools import setup, Extension
 
 # For shadow builds: references to the source tree

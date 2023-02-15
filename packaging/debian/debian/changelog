@@ -1,3 +1,10 @@
+recoll (1.34.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Install the needed pyaspell python extension, renamed as recollaspell to avoid
+    conflicts
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 15 Feb 2023 11:00:00 +0100
+
 recoll (1.34.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * GUI: fix restable header click not initiating query.

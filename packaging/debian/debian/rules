@@ -53,10 +53,6 @@ override_dh_auto_install:
 					--prefix=/usr \
 	                                --root=$(CURDIR)/debian/tmp/ ) ; \
 	done
-	(cd python/pyaspell; python2 ./setup.py install \
-	                                   --install-layout=deb \
-					   --prefix=/usr \
-	                                   --root=$(CURDIR)/debian/tmp/ )
 	set -e && for i in $(build3vers); do \
 	(cd python/pyaspell; python$$i ./setup.py install \
 	                                --install-layout=deb \

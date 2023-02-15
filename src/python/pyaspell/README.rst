@@ -2,7 +2,7 @@
               aspell-python - Python bindings for GNU aspell
 ========================================================================
 
-This version of aspell-python has been trimmed and adapted for use with Recoll
+This version of aspell-python has been trimmed, and renamed for use with Recoll.
 
 .. image:: https://travis-ci.org/WojciechMula/aspell-python.svg?branch=master
     :target: https://travis-ci.org/WojciechMula/aspell-python
