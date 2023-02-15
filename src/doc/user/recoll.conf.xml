@@ -911,10 +911,23 @@ through the contents of a file in
 the currently processed directory. See the rclocrabbyy.py
 script. Typical values: English, French... See the ABBYY documentation.
 </para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ABBYYCMD">
-<term><varname>abbyycmd</varname></term>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ABBYYOCRCMD">
+<term><varname>abbyyocrcmd</varname></term>
 <listitem><para>Path for the abbyy command The ABBY directory is usually not in the path, so you should set this.
 </para></listitem></varlistentry>
+</variablelist></sect3>
+<sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.SPEECHTOTEXTPARAMS">
+<title>Parameters for running speech to text conversion </title><variablelist>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SPEECHTOTEXT">
+<term><varname>speechtotext</varname></term>
+<listitem><para>Activate speech to text conversion The only posssible value at the moment is "whisper" for using the OpenAI whisper program
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.STTMODEL">
+<term><varname>sttmodel</varname></term>
+<listitem><para>Name of the whisper model </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.STTDEVICE">
+<term><varname>sttdevice</varname></term>
+<listitem><para>Name of the device to be used by for whisper </para></listitem></varlistentry>
 </variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.MISCHANDLERPARAMS">
 <title>Parameters for specific handlers </title><variablelist>
