@@ -820,7 +820,7 @@ static PyModuleDef aspellmodule = {
 };
 
 PyMODINIT_FUNC
-PyInit_aspell(void) {
+PyInit_recollaspell(void) {
 	PyObject *module;
 
 	module = PyModule_Create(&aspellmodule);

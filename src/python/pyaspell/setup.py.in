@@ -5,9 +5,9 @@ import os
 top = os.path.join('@srcdir@', '..', '..')
 pytop = '@srcdir@'
 
-setup (name = 'aspell-python-py3',
+setup (name = 'recoll-aspell-python-py3',
     version = '1.15',
-    ext_modules = [Extension('aspell',
+    ext_modules = [Extension('recollaspell',
                              [os.path.join(pytop, "aspell.c")],
                              libraries = ["aspell"],
                              )],

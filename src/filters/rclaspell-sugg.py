@@ -1,7 +1,16 @@
 #!/usr/bin/python3
-import aspell
 import sys
 import getopt
+
+try:
+    from aspell import Speller
+except:
+    try:
+        from recollaspell import Speller
+    except:
+        print("RECFILTERROR HELPERNOTFOUND aspell/recollaspell")
+        sys.exit(1);
+
 
 def deb(s):
     print(s, file=sys.stderr)
@@ -42,7 +51,7 @@ if len(args) != 1 or args[0] != "pipe":
 #[("lang","en"), ("encoding","utf-8"), ("master","/home/dockes/.recoll-prod/aspdict.en.rws"),
 # ("sug-mode", "fast")]
 
-speller = aspell.Speller(*options)
+speller = Speller(*options)
 
 print("@(#) International Ispell Version 3.1.20 (but really rclaspell-sugg 0.60.8)")
 sys.stdout.flush()
