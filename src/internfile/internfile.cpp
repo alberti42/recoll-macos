@@ -542,8 +542,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
                 // returning text/plain content, so that there is no
                 // ipath-less filter at the top
                 lltodecstr(doc.text.length(), doc.fbytes);
-                LOGDEB("FileInterner::dijontorcl: fbytes->" << doc.fbytes <<
-                       endl);
+                LOGDEB("FileInterner::dijontorcl: fbytes->" << doc.fbytes << "\n");
             }
         } else if (ent.first == cstr_dj_keymd) {
             doc.dmtime = ent.second;
@@ -710,6 +709,14 @@ int FileInterner::addHandler()
     LOGDEB("FileInterner::addHandler: back()  is " << mimetype <<
            " target [" << m_targetMType << "]\n");
 
+    // A handler may send a path pointing to the content in a file instead of returning the data
+    bool isdatapath{false};
+    {std::string sdp;
+        if (getKeyValue(docdata, cstr_dj_content_is_datapath, sdp)) {
+            isdatapath = stringToBool(sdp);
+        }
+    }
+
     // If we find a document of the target type (text/plain in
     // general), we're done decoding. If we hit text/plain, we're done
     // in any case
@@ -754,28 +761,31 @@ int FileInterner::addHandler()
     string ns;
     const string *txt = &ns;
     {
-        map<string,string>::const_iterator it;
-        it = docdata.find(cstr_dj_keycontent);
+        auto it = docdata.find(cstr_dj_keycontent);
         if (it != docdata.end())
             txt = &it->second;
     }
     bool setres = false;
     newflt->set_docsize(txt->length());
-    if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
+    if (!isdatapath && newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
         setres = newflt->set_document_string(mimetype, *txt);
-    } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
-        setres = newflt->set_document_data(mimetype,txt->c_str(),txt->length());
+    } else if (!isdatapath && newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
+        setres = newflt->set_document_data(mimetype,txt->c_str(), txt->length());
     } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
-        TempFile temp = dataToTempFile(*txt, mimetype);
-        if (temp.ok() && 
-            (setres = newflt->set_document_file(mimetype, temp.filename()))) {
-            m_tmpflgs[m_handlers.size()] = true;
-            m_tempfiles.push_back(temp);
-            // Hack here, but really helps perfs: if we happen to
-            // create a temp file for, ie, an image attachment, keep
-            // it around for preview to use it through get_imgtmp()
-            if (!mimetype.compare(0, 6, "image/")) {
-                m_imgtmp = m_tempfiles.back();
+        if (isdatapath && !txt->empty()) {
+            setres = newflt->set_document_file(mimetype, *txt);
+        } else {
+            TempFile temp = dataToTempFile(*txt, mimetype);
+            if (temp.ok() && 
+                (setres = newflt->set_document_file(mimetype, temp.filename()))) {
+                m_tmpflgs[m_handlers.size()] = true;
+                m_tempfiles.push_back(temp);
+                // Hack here, but really helps perfs: if we happen to
+                // create a temp file for, ie, an image attachment, keep
+                // it around for preview to use it through get_imgtmp()
+                if (!mimetype.compare(0, 6, "image/")) {
+                    m_imgtmp = m_tempfiles.back();
+                }
             }
         }
     }

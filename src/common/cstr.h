@@ -64,6 +64,10 @@ DEF_CSTR(regSpecStChars, "(.[{");
 
 // Values used as keys inside Dijon::Filter::metaData[].
 
+// Protocol-specific flag indicating that the "content" field is not the text but a file path
+// pointing to the actual content.
+DEF_CSTR(dj_content_is_datapath, "rclisdatapath");
+
 // The document data.
 DEF_CSTR(dj_keycontent, "content");
 
