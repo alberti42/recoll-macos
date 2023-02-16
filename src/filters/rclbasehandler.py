@@ -25,10 +25,12 @@ import rclexecm
 class RclBaseHandler(object):
     '''Base Object for simple extractors.
 
-    This implements the boilerplate code for simple extractors for
-    file types with a single document. The derived class would
-    typically need only to implement the html_text method to return
-    the document text in HTML format'''
+    This implements the boilerplate code for simple extractors for file types with a single
+    document. The derived class would typically need only to implement the html_text method to
+    return the document text in HTML format by default, but any output MIME value is also possible
+    by setting self.outputmimetype (do *not* call self.em.setmimetype(), the value would be
+    clobbered.
+    '''
     
     def __init__(self, em):
         self.em = em
