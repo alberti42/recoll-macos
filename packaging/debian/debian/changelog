@@ -1,7 +1,23 @@
 recoll (1.34.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * Install the needed pyaspell python extension, renamed as recollaspell to avoid
-    conflicts
+  * Fix jupyter notebook indexing: only the code was extracted.
+  * Add config line for text/x-rpm-spec and text/x-copying: COPYING and .spec
+    files were not indexed.
+  * Packaging: install the needed pyaspell python extension, renamed as
+    recollaspell to avoid conflicts. pyaspell is not commonly packaged so we
+    can't have a depend. Actually makes it possible to use the automatic
+    spelling expansion capability in the packaged version. It is not enabled by
+    default, do it from the GUI search preferences.
+  * rclaudio: add capability to run OpenAI whisper speech-to-text and index the
+    result, which is also cached the same way as  OCR data (immune to index
+    resets and file moves). This is off by default and activated by setting
+    parameters in recoll.conf, see the manual and
+    https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexAudioWhisper.html
+  * Add a sample Python external indexer for indexing the Joplin notes
+    database. See src/python/samples/rcljoplin.py, which has comments for
+    configuration and setup at the top.
+  * GUI: add option to show hit counts in completer popup.
+  * Fix possible crash in the recoll Python extension in update mode.
   
  -- Jean-Francois Dockes <jf@dockes.org>  Wed, 15 Feb 2023 11:00:00 +0100
 

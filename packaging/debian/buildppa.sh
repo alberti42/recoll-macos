@@ -13,7 +13,7 @@ SERIES="bionic focal jammy kinetic"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.34.2
+RCLVERS=1.34.3
 GSSPVERS=1.1.1
 PPAVERS=1
 
@@ -122,7 +122,7 @@ done
 ### 5.90 min version requested in the CMakeLists.txt. Did not try to
 ### work around.
 series="jammy kinetic"
-#series=
+series=
 
 debdir=debiankrunner
 topdir=krunner-recoll-${RCLVERS}
