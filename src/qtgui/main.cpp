@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2022 J.F.Dockes
+/* Copyright (C) 2005-2023 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -197,7 +197,8 @@ static int    op_flags;
 #define OPT_q 0x80      
 #define OPT_t 0x100      
 #define OPT_v 0x200     
-#define OPT_w 0x400
+#define OPT_W 0x400
+#define OPT_w 0x800
 
 static const char usage [] =
     "\n"
@@ -219,6 +220,7 @@ static const char usage [] =
     "       be last on the command line if this is used.\n"
     "       Use -t -h to see the additional non-gui options\n"
     "  -w : open minimized\n"
+    "  -W : do not open at all, only system tray icon (needs system tray!)\n"
     "recoll -v : print version\n"
     "recoll <url>\n"
     "   This is used to open a recoll url (including an ipath), and called\n"
@@ -305,6 +307,7 @@ int main(int argc, char **argv)
             case 'v': op_flags |= OPT_v;
                 fprintf(stdout, "%s\n", Rcl::version_string().c_str());
                 return 0;
+            case 'W': op_flags |= OPT_W; break;
             case 'w': op_flags |= OPT_w; break;
             default: Usage();
             }
@@ -355,7 +358,7 @@ int main(int argc, char **argv)
 #else
                   QLibraryInfo::location
 #endif
-                      (QLibraryInfo::TranslationsPath));
+                  (QLibraryInfo::TranslationsPath));
     app.installTranslator(&qt_trans);
 
     // Translations for Recoll
@@ -369,10 +372,8 @@ int main(int argc, char **argv)
     string historyfile = path_cat(theconfig->getConfDir(), "history");
     g_dynconf = new RclDynConf(historyfile);
     if (!g_dynconf || !g_dynconf->ok()) {
-        QString msg = app.translate
-            ("Main",
-             "\"history\" file is damaged, please check "
-             "or remove it: ") + path2qs(historyfile);
+        QString msg = app.translate("Main", "\"history\" file is damaged, please check "
+                                    "or remove it: ") + path2qs(historyfile);
         QMessageBox::critical(0, "Recoll",  msg);
         exit(1);
     }
@@ -395,8 +396,7 @@ int main(int argc, char **argv)
     string dbdir = theconfig->getDbDir();
     if (dbdir.empty()) {
         QMessageBox::critical(
-            0, "Recoll",
-            app.translate("Main", "No db directory in configuration"));
+            0, "Recoll", app.translate("Main", "No db directory in configuration"));
         exit(1);
     }
 
@@ -404,6 +404,14 @@ int main(int argc, char **argv)
 
     if (op_flags & OPT_w) {
         mainWindow->showMinimized();
+    } else if (op_flags & OPT_W) {
+        // Don't show anything except the systray icon
+        if (!prefs.showTrayIcon) {
+            QMessageBox::critical(
+                0, "Recoll", app.translate(
+                    "Main", "Needs \"Show system tray icon\" to be set in preferences!\n"));
+            mainWindow->show();
+        }
     } else {
         switch (prefs.showmode) {
         case PrefsPack::SHOW_NORMAL: mainWindow->show(); break;
@@ -427,10 +435,9 @@ int main(int argc, char **argv)
             stype = SSearch::SST_LANG;
         }
         mainWindow->sSearch->searchTypCMB->setCurrentIndex(int(stype));
-        mainWindow->
-            sSearch->setSearchString(QString::fromLocal8Bit(question.c_str()));
+        mainWindow->sSearch->setSearchString(QString::fromLocal8Bit(question.c_str()));
     } else if (!urltoview.empty()) {
-        LOGDEB("MAIN: got urltoview ["  << (urltoview) << "]\n" );
+        LOGDEB("MAIN: got urltoview [" << urltoview << "]\n");
         mainWindow->setUrlToView(QString::fromLocal8Bit(urltoview.c_str()));
     }
     return app.exec();
@@ -460,8 +467,7 @@ QString myGetFileName(bool isdir, MyGFNParams &parms)
         first = false;
         // See https://doc.qt.io/qt-5/qfiledialog.html#setDirectoryUrl
         // about the clsid magic (this one points to the desktop).
-        dialog.setDirectoryUrl(
-            QUrl("clsid:B4BFCC3A-DB2C-424C-B029-7FE99A87C641"));
+        dialog.setDirectoryUrl(QUrl("clsid:B4BFCC3A-DB2C-424C-B029-7FE99A87C641"));
     }
 #endif
     if (!parms.dirlocation.isEmpty()) {
