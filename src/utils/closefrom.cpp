@@ -72,20 +72,20 @@
  */
 #include "closefrom.h"
 
-#include <stdio.h>
 #include "safeunistd.h"
 #include <fcntl.h>
-#include <string.h>
+
 #ifndef _WIN32
 #include <sys/param.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #endif
 
-
-/* #define DEBUG_CLOSEFROM */
+// #define DEBUG_CLOSEFROM
 #ifdef DEBUG_CLOSEFROM
-#define DPRINT(X) fprintf X
+#include <iostream>
+#include <stdio.h>
+#define DPRINT(X) X
 #else
 #define DPRINT(X)
 #endif
@@ -97,12 +97,11 @@
 
 /* closefrom() exists on Solaris, netbsd and openbsd, but someone will
  * have to provide me the appropriate macro to test */
-#if ((defined(__FreeBSD__) && __FreeBSD_version >= 702104)) ||  \
-    defined(__DragonFly__)
+#if ((defined(__FreeBSD__) && __FreeBSD_version >= 702104)) ||  defined(__DragonFly__)
 /* Use closefrom() system call */
 int libclf_closefrom(int fd0)
 {
-    DPRINT((stderr, "libclf_closefrom: using closefrom(2)\n"));
+    DPRINT((std::cerr <<  "libclf_closefrom: using closefrom(2)\n"));
     closefrom(fd0);
     return 0;
 }
@@ -114,9 +113,8 @@ int libclf_closefrom(int fd0)
 
 int libclf_closefrom(int fd0)
 {
-    DPRINT((stderr, "libclf_closefrom: using fcntl(F_CLOSEM)\n"));
-    // We need a valid descriptor for this to work. Try to dup stdin, else
-    // go wild
+    DPRINT((std::cerr << "libclf_closefrom: using fcntl(F_CLOSEM)\n"));
+    // We need a valid descriptor for this to work. Try to dup stdin, else go wild
     if (fcntl(0, F_GETFL) != -1) {
         if (fd0 != 0)
             dup2(0, fd0);
@@ -147,7 +145,7 @@ int libclf_closefrom(int fd0)
     DIR *dirp;
     struct dirent *ent;
 
-    DPRINT((stderr, "libclf_closefrom: using /proc\n"));
+    DPRINT((std::cerr << "libclf_closefrom: using /proc\n"));
     dirp = opendir("/proc/self/fd");
     if (dirp == 0)
         return -1;
@@ -172,13 +170,11 @@ int libclf_closefrom(int fd0)
 
 /* System has no native support for this functionality.
  *
- * Close all descriptors up to compiled/configured maximum.
- * The caller will usually have an idea of a reasonable maximum, else
- * we retrieve a value from the system.
+ * Close all descriptors up to compiled/configured maximum.  The caller will usually have an idea of
+ * a reasonable maximum, else we retrieve a value from the system.
  *
- * Note that there is actually no real guarantee that no open
- * descriptor higher than the reported limit can exist, as noted by
- * the Solaris man page for closefrom()
+ * Note that there is actually no real guarantee that no open descriptor higher than the reported
+ * limit can exist, as noted by the Solaris man page for closefrom()
  */
 
 static int closefrom_maxfd = -1;
@@ -196,6 +192,7 @@ void libclf_setmaxfd(int max)
 
 int libclf_closefrom(int fd0)
 {
+    DPRINT((std::cerr << "libclf_closefrom: no system support, winging it...\n"));
     int i, maxfd = closefrom_maxfd;
 
     if (maxfd < 0) {
@@ -204,8 +201,6 @@ int libclf_closefrom(int fd0)
     if (maxfd < 0)
         maxfd = OPEN_MAX;
 
-    DPRINT((stderr, "libclf_closefrom: using loop to %d\n", maxfd));
-
     for (i = fd0; i < maxfd; i++) {
         (void)close(i);
     }
@@ -213,12 +208,15 @@ int libclf_closefrom(int fd0)
 }
 #endif
 
-// Note that this will not work if the limit was lowered after a
-// higher fd was opened. But we don't call setrlimit() inside recoll
-// code, so we should be ok. It seems that sysconf(_SC_OPEN_MAX)
-// usually reports the soft limit, so it's redundant, but it could be
-// useful in case getrlimit() is not implemented (unlikely as they're
-// both POSIX.1-2001?
+// Note that this will not work if the limit was lowered after a higher fd was opened. But we don't
+// call setrlimit(nofile) inside recoll code, so we should be ok. It seems that
+// sysconf(_SC_OPEN_MAX) usually reports the soft limit, so it's redundant, but it could be useful
+// in case getrlimit() is not implemented (unlikely as they're both POSIX.1-2001?)
+//
+// On some systems / environments, getrlimit() returns an unworkably high value. For example on an
+// Arch Linux Docker environment, we get 1E9, which results in a seemingly looping process. Have to
+// put a limit somewhere, so it's 8192... You can still use libclf_setmaxfd() before the first
+// closefrom call to use a higher value.
 int libclf_maxfd(int)
 {
 #ifdef _WIN32
@@ -227,7 +225,10 @@ int libclf_maxfd(int)
 #else
     struct rlimit lim;
     getrlimit(RLIMIT_NOFILE, &lim);
-    return int(lim.rlim_cur);
+    auto max = lim.rlim_cur;
+    DPRINT((std::cerr << "Libclf_maxfd: got " << max << "\n"));
+    if (max > 8192)
+        max = 8192;
+    return int(max);
 #endif
 }
-
