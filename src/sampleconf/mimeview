@@ -158,6 +158,11 @@ image/svg+xml = inkview %f
 #  - "kmail --view %u" works
 #  - claws-mail: in POP3 mode, works using a small intermediary shell-script. See page linked above
 message/rfc822 = thunderbird-open-message.sh %f
+# Evolution: this needs the following in $RECOLL_CONFDIR/fields:
+#   [stored]
+#   msgid=
+#   [mail]
+#   Message-Id = msgid
 #message/rfc822 = evolution mid:%(msgid)
 
 text/x-mail = thunderbird -file %f
