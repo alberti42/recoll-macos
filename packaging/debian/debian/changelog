@@ -1,3 +1,9 @@
+recoll (1.34.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * recollq: repair -A option, broken from 1.34.0
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 25 Feb 2023 09:28:00 +0100
+
 recoll (1.34.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * GUI: add -W command line flag to start with a system tray icon only (no window open).
