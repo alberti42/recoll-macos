@@ -74,15 +74,17 @@ string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
     int cnt = 0;
     if (query.makeDocAbstract(doc, &g_hiliter, snippets, 0, -1, true)) {
         for (const auto& snippet : snippets) {
-            if (++cnt > snipcount)
+            if (snipcount > 0 && ++cnt > snipcount)
                 break;
             if (asSnippets) {
-                str << (showlines ? snippet.line : snippet.page) << " : "
-                    << snippet.snippet << "\n";
+                str << (showlines ? snippet.line : snippet.page) << " : " << snippet.snippet << "\n";
             } else {
                 str << snippet.snippet << cstr_ellipsis;
             }
         }
+    }
+    if (!asSnippets) {
+        str << "\n";
     }
     return str.str();
 }
@@ -122,49 +124,49 @@ void output_fields(vector<string> fields, Rcl::Doc& doc,
 
 static char *thisprog;
 static char usage [] =
-" -P: Show the date span for all the documents present in the index.\n"
-" [-o|-a|-f] [-q] <query string>\n"
-" Runs a recoll query and displays result lines. \n"
-"  Default: will interpret the argument(s) as a xesam query string.\n"
-"  Query elements: \n"
-"   * Implicit AND, exclusion, field spec:  t1 -t2 title:t3\n"
-"   * OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)\n"
-"   * Phrase: \"t1 t2\" (needs additional quoting on cmd line)\n"
-" -o Emulate the GUI simple search in ANY TERM mode.\n"
-" -a Emulate the GUI simple search in ALL TERMS mode.\n"
-" -f Emulate the GUI simple search in filename mode.\n"
-" -q is just ignored (compatibility with the recoll GUI command line).\n"
-"Common options:\n"
-" -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR.\n"
-" -C : collapse duplicates\n"            
-" -d also dump file contents.\n"
-" -n [first-]<cnt> define the result slice. The default value for [first]\n"
-"    is 0. Without the option, the default max count is 2000.\n"
-"    Use n=0 for no limit.\n"
-" -b : basic. Just output urls, no mime types or titles.\n"
-" -Q : no result lines, just the processed query and result count.\n"
-" -m : dump the whole document meta[] array for each result.\n"
-" -A : output the document abstracts.\n"
-"    -p <cnt> : show <cnt> snippets, with page numbers instead of the concatenated abstract.\n"
-"    -g <cnt> : show <cnt> snippets, with line numbers instead of the concatenated abstract.\n"
-" -S fld : sort by field <fld>.\n"
-"   -D : sort descending.\n"
-" -s stemlang : set stemming language to use (must exist in index...).\n"
-"    Use -s \"\" to turn off stem expansion.\n"
-" -T <synonyms file>: use the parameter (Thesaurus) for word expansion.\n"
-" -i <dbdir> : additional index, several can be given.\n"
-" -e use url encoding (%xx) for urls.\n"
-" -E use exact result count instead of lower bound estimate.\n"
-" -F <field name list> : output exactly these fields for each result.\n"
-"    The field values are encoded in base64, output in one line and \n"
-"    separated by one space character. This is the recommended format \n"
-"    for use by other programs. Use a normal query with option -m to \n"
-"    see the field names. Use -F '' to output all fields, but you probably\n"
-"    also want option -N in this case.\n"
-"   -N : with -F, print the (plain text) field names before the field values.\n"
-" --extract_to <filepath> : extract the first result to filepath, which must not exist.\n"
-"      Use a -n option with an offset to select the appropriate result.\n"
-;
+    " -P: Show the date span for all the documents present in the index.\n"
+    " [-o|-a|-f] [-q] <query string>\n"
+    " Runs a recoll query and displays result lines. \n"
+    "  Default: will interpret the argument(s) as a xesam query string.\n"
+    "  Query elements: \n"
+    "   * Implicit AND, exclusion, field spec:  t1 -t2 title:t3\n"
+    "   * OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)\n"
+    "   * Phrase: \"t1 t2\" (needs additional quoting on cmd line)\n"
+    " -o Emulate the GUI simple search in ANY TERM mode.\n"
+    " -a Emulate the GUI simple search in ALL TERMS mode.\n"
+    " -f Emulate the GUI simple search in filename mode.\n"
+    " -q is just ignored (compatibility with the recoll GUI command line).\n"
+    "Common options:\n"
+    " -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR.\n"
+    " -C : collapse duplicates\n"            
+    " -d also dump file contents.\n"
+    " -n [first-]<cnt> define the result slice. The default value for [first]\n"
+    "    is 0. Without the option, the default max count is 2000.\n"
+    "    Use n=0 for no limit.\n"
+    " -b : basic. Just output urls, no mime types or titles.\n"
+    " -Q : no result lines, just the processed query and result count.\n"
+    " -m : dump the whole document meta[] array for each result.\n"
+    " -A : output the document abstracts.\n"
+    "    -p <cnt> : show <cnt> snippets, with page numbers instead of the concatenated abstract.\n"
+    "    -g <cnt> : show <cnt> snippets, with line numbers instead of the concatenated abstract.\n"
+    " -S fld : sort by field <fld>.\n"
+    "   -D : sort descending.\n"
+    " -s stemlang : set stemming language to use (must exist in index...).\n"
+    "    Use -s \"\" to turn off stem expansion.\n"
+    " -T <synonyms file>: use the parameter (Thesaurus) for word expansion.\n"
+    " -i <dbdir> : additional index, several can be given.\n"
+    " -e use url encoding (%xx) for urls.\n"
+    " -E use exact result count instead of lower bound estimate.\n"
+    " -F <field name list> : output exactly these fields for each result.\n"
+    "    The field values are encoded in base64, output in one line and \n"
+    "    separated by one space character. This is the recommended format \n"
+    "    for use by other programs. Use a normal query with option -m to \n"
+    "    see the field names. Use -F '' to output all fields, but you probably\n"
+    "    also want option -N in this case.\n"
+    "   -N : with -F, print the (plain text) field names before the field values.\n"
+    " --extract_to <filepath> : extract the first result to filepath, which must not exist.\n"
+    "      Use a -n option with an offset to select the appropriate result.\n"
+    ;
 
 static void Usage(std::ostream &os = std::cerr)
 {
@@ -470,7 +472,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 
             char cpc[20];
             sprintf(cpc, "%d", doc.pc);
-            cout 
+            cout
                 << doc.mimetype << "\t"
                 << "[" << doc.url << "]" << "\t" 
                 << "[" << titleorfn << "]" << "\t"
@@ -487,9 +489,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
                 string abstract = make_abstract(doc, query, asSnippets, snipcnt, showlines, hldata);
                 string marker = asSnippets ? "SNIPPETS" : "ABSTRACT";
                 if (!abstract.empty()) {
-                    cout << marker << "\n";
-                    cout << abstract;
-                    cout << string("/") + marker << "\n";
+                    cout << marker << "\n" << abstract << "/" << marker << "\n";
                 }
             }
         }
