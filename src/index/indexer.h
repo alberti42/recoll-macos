@@ -61,6 +61,9 @@ public:
                  IxFDoPurge = 16,
                  // Evict each indexed file from the page cache.
                  IxFCleanCache = 32,
+                 // In place reset: pretend all documents need updating: allows updating all while
+                 // keeping a usable index.
+                 IxFInPlaceReset = 64,
     };
 
     /** Run indexers */
@@ -90,8 +93,6 @@ public:
     /** Purge a list of files. */
     bool purgeFiles(std::list<std::string> &files, int f = IxFNone);
 
-    /** Set in place reset mode */
-    void setInPlaceReset() {m_db.setInPlaceReset();}
 private:
     RclConfig *m_config;
     Rcl::Db    m_db;

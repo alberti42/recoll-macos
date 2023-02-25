@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes 
+/* Copyright (C) 2004-2023 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -155,15 +155,13 @@ static void sigcleanup(int sig)
     }
 }
 
-static void makeIndexerOrExit(RclConfig *config, bool inPlaceReset)
+static void makeIndexerOrExit(RclConfig *config)
 {
     if (!confindexer) {
         confindexer = new ConfIndexer(config);
-        if (inPlaceReset)
-            confindexer->setInPlaceReset();
     }
     if (!confindexer) {
-        cerr << "Cannot create indexer" << endl;
+        std::cerr << "Cannot create indexer" << "\n";
         exit(1);
     }
 }
@@ -271,7 +269,7 @@ bool indexfiles(RclConfig *config, list<string> &filenames)
 {
     if (filenames.empty())
         return true;
-    makeIndexerOrExit(config, (op_flags & OPT_Z) != 0);
+    makeIndexerOrExit(config);
     // The default is to retry failed files
     int indexerFlags = ConfIndexer::IxFNone; 
     if (op_flags & OPT_K) 
@@ -281,6 +279,9 @@ bool indexfiles(RclConfig *config, list<string> &filenames)
     if (op_flags & OPT_P) {
         indexerFlags |= ConfIndexer::IxFDoPurge;
     }
+    if (op_flags & OPT_Z) {
+        indexerFlags |= ConfIndexer::IxFInPlaceReset;
+    }
     return confindexer->indexFiles(filenames, indexerFlags);
 }
 
@@ -289,14 +290,14 @@ bool purgefiles(RclConfig *config, list<string> &filenames)
 {
     if (filenames.empty())
         return true;
-    makeIndexerOrExit(config, (op_flags & OPT_Z) != 0);
+    makeIndexerOrExit(config);
     return confindexer->purgeFiles(filenames, ConfIndexer::IxFNone);
 }
 
 // Create stemming and spelling databases
 bool createAuxDbs(RclConfig *config)
 {
-    makeIndexerOrExit(config, false);
+    makeIndexerOrExit(config);
 
     if (!confindexer->createStemmingDatabases())
         return false;
@@ -310,7 +311,7 @@ bool createAuxDbs(RclConfig *config)
 // Create additional stem database 
 static bool createstemdb(RclConfig *config, const string &lang)
 {
-    makeIndexerOrExit(config, false);
+    makeIndexerOrExit(config);
     return confindexer->createStemDb(lang);
 }
 
@@ -618,8 +619,7 @@ int main(int argc, char *argv[])
 
 #ifndef RCL_MONITOR
     if (op_flags & (OPT_m | OPT_w|OPT_x)) {
-        std::cerr << "-m not available: real-time monitoring was not "
-            "configured in this build\n";
+        std::cerr << "-m not available: real-time monitoring was not configured in this build\n";
         exit(1);
     }
 #endif
@@ -634,14 +634,14 @@ int main(int argc, char *argv[])
 
     string reason;
     int flags = RCLINIT_IDX;
-    if ((op_flags & OPT_m) && !(op_flags&OPT_D)) {
+    if ((op_flags & OPT_m) && !(op_flags & OPT_D)) {
         flags |= RCLINIT_DAEMON;
     }
     config = recollinit(flags, cleanup, sigcleanup, reason, &a_config);
     if (nullptr == config || !config->ok()) {
         addIdxReason("init", reason);
         flushIdxReasons();
-        std::cerr << "Configuration problem: " << reason << endl;
+        std::cerr << "Configuration problem: " << reason << "\n";
         exit(1);
     }
 
@@ -682,10 +682,9 @@ int main(int argc, char *argv[])
     }
 
     if (nonexist.size()) {
-        ostream& out = (op_flags & OPT_E) ? cout : cerr;
+        ostream& out = (op_flags & OPT_E) ? std::cout : std::cerr;
         if (!(op_flags & OPT_E)) {
-            cerr << "Warning: invalid paths in topdirs, skippedPaths or "
-                "daemSkippedPaths:\n";
+            std::cerr << "Warning: invalid paths in topdirs, skippedPaths or daemSkippedPaths:\n";
         }
         for (const auto& entry : nonexist) {
             out << entry << endl;
@@ -700,7 +699,7 @@ int main(int argc, char *argv[])
             Usage();
         vector<string> stemmers = ConfIndexer::getStemmerNames();
         for (const auto& stemmer : stemmers) {
-            cout << stemmer << endl;
+            std::cout << stemmer << "\n";
         }
         exit(0);
     }
@@ -712,7 +711,7 @@ int main(int argc, char *argv[])
         if (!rundir.compare("tmp")) {
             rundir = tmplocation();
         }
-        LOGINFO("recollindex: changing current directory to [" <<rundir<<"]\n");
+        LOGINFO("recollindex: changing current directory to [" << rundir <<"]\n");
         if (!path_chdir(rundir)) {
             LOGSYSERR("main", "chdir", rundir);
         }
@@ -725,7 +724,6 @@ int main(int argc, char *argv[])
         }
     }
     bool rezero((op_flags & OPT_z) != 0);
-    bool inPlaceReset((op_flags & OPT_Z) != 0);
 
     // The default is not to retry previously failed files by default.
     // If -k is set, we do.
@@ -748,6 +746,9 @@ int main(int argc, char *argv[])
         LOGDEB("recollindex: files in error will not be retried\n");
     } else {
         LOGDEB("recollindex: files in error will be retried\n");
+    }
+    if (op_flags & OPT_Z) {
+        indexerFlags |= ConfIndexer::IxFInPlaceReset;
     }
 
 #if defined(HAVE_POSIX_FADVISE)
@@ -828,7 +829,7 @@ int main(int argc, char *argv[])
 
 #ifdef RCL_USE_ASPELL
     } else if (op_flags & OPT_S) {
-        makeIndexerOrExit(config, false);
+        makeIndexerOrExit(config);
         exit(!confindexer->createAspellDict());
 #endif // ASPELL
 
@@ -870,7 +871,7 @@ int main(int argc, char *argv[])
         }
 
         if (!(op_flags & OPT_n)) {
-            makeIndexerOrExit(config, inPlaceReset);
+            makeIndexerOrExit(config);
             LOGDEB("Recollindex: initial indexing pass before monitoring\n");
             if (!confindexer->index(rezero, ConfIndexer::IxTAll, indexerFlags)
                 || stopindexing) {
@@ -910,7 +911,7 @@ int main(int argc, char *argv[])
 
     }
 
-    makeIndexerOrExit(config, inPlaceReset);
+    makeIndexerOrExit(config);
     bool status = confindexer->index(rezero, ConfIndexer::IxTAll, indexerFlags);
     // Record success of indexing pass with failed files retries.
     if (status && !(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {

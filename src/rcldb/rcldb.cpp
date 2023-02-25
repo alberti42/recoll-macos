@@ -868,7 +868,6 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
 
 /* Rcl::Db methods ///////////////////////////////// */
 
-bool Db::o_inPlaceReset;
 bool Db::o_nospell_chars[256];
 
 Db::Db(const RclConfig *cfp)
@@ -929,6 +928,7 @@ bool Db::open(OpenMode mode, OpenError *error)
     LOGDEB("Db::open: m_isopen " << m_ndb->m_isopen << " m_iswritable " <<
            m_ndb->m_iswritable << " mode " << mode << "\n");
 
+    m_inPlaceReset = false;
     if (m_ndb->m_isopen) {
         // We used to return an error here but I see no reason to
         if (!close())
@@ -2088,8 +2088,7 @@ void Db::i_setExistingFlags(const string& udi, unsigned int docid)
 }
 
 // Test if doc given by udi has changed since last indexed (test sigs)
-bool Db::needUpdate(const string &udi, const string& sig, 
-                    unsigned int *docidp, string *osigp)
+bool Db::needUpdate(const string &udi, const string& sig, unsigned int *docidp, string *osigp)
 {
     if (nullptr == m_ndb)
         return false;
@@ -2100,10 +2099,10 @@ bool Db::needUpdate(const string &udi, const string& sig,
         *docidp = 0;
 
     // If we are doing an in place or full reset, no need to test.
-    if (o_inPlaceReset || m_mode == DbTrunc) {
+    if (m_inPlaceReset || m_mode == DbTrunc) {
         // For in place reset, pretend the doc existed, to enable
         // subdoc purge. The value is only used as a boolean in this case.
-        if (docidp && o_inPlaceReset) {
+        if (docidp && m_inPlaceReset) {
             *docidp = -1;
         }
         return true;

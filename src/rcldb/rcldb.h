@@ -317,7 +317,7 @@ public:
 
     /** Indicate if we are doing a systematic reindex. This complements
         needUpdate() return */
-    bool inFullReset() {return o_inPlaceReset || m_mode == DbTrunc;}
+    bool inFullReset() {return m_inPlaceReset || m_mode == DbTrunc;}
 
     /** Add or update document identified by unique identifier.
      * @param config Config object to use. Can be the same as the member config
@@ -543,12 +543,11 @@ public:
     const RclConfig *getConf() {return m_config;}
 
     /** 
-        Activate the "in place reset" mode where all documents are
-        considered as needing update. This is a global/per-process
-        option, and can't be reset. It should be set at the start of
-        the indexing pass. 2012-10: no idea why this is done this way...
-    */
-    static void setInPlaceReset() {o_inPlaceReset = true;}
+     * Activate the "in place reset" mode where all documents are
+     * considered as needing update. It should be set at the start of
+     * the indexing pass. 
+     */
+    void setInPlaceReset() {m_inPlaceReset = true;}
 
     /** Flush interval get/set. This is used by the first indexing
         pass to override the config value and flush more rapidly
@@ -642,7 +641,7 @@ private:
     // This implements an alternative to just erasing the index before 
     // beginning, with the advantage that, for small index formats updates, 
     // between releases the index remains available while being recreated.
-    static bool o_inPlaceReset;
+    bool m_inPlaceReset{false};
     static bool o_nospell_chars[256];
     /******* End logical constnesss */
 

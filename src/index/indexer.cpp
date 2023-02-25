@@ -148,6 +148,9 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         addIdxReason("indexer", m_db.getReason());
         return false;
     }
+    if (flags & IxFInPlaceReset) {
+        m_db.setInPlaceReset();
+    }
     std::string logloc;
     if (Logger::getTheLog()->logisstderr()) {
         logloc = "program error output.";
@@ -225,7 +228,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     return ret;
 }
 
-bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
+bool ConfIndexer::indexFiles(list<string>& ifiles, int flags)
 {
     list<string> myfiles;
     string origcwd = m_config->getOrigCwd();
@@ -239,17 +242,20 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
                m_config->getDbDir() << "\n");
         return false;
     }
+    if (flags & IxFInPlaceReset) {
+        m_db.setInPlaceReset();
+    }
     m_config->setKeyDir(cstr_null);
     bool ret = false;
     if (!m_fsindexer)
         m_fsindexer = new FsIndexer(m_config, &m_db);
     if (m_fsindexer)
-        ret = m_fsindexer->indexFiles(myfiles, flag);
+        ret = m_fsindexer->indexFiles(myfiles, flags);
     LOGDEB2("ConfIndexer::indexFiles: fsindexer returned " << ret << ", " <<
             myfiles.size() << " files remainining\n");
 #ifndef DISABLE_WEB_INDEXER
 
-    if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
+    if (m_doweb && !myfiles.empty() && !(flags & IxFNoWeb)) {
         if (!m_webindexer)
             m_webindexer = new WebQueueIndexer(m_config, &m_db);
         if (m_webindexer) {
@@ -259,7 +265,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
         }
     }
 #endif
-    if (flag & IxFDoPurge) {
+    if (flags & IxFDoPurge) {
         m_db.purge();
     }
     // The close would be done in our destructor, but we want status here
@@ -275,18 +281,18 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
 
 // Update index for specific documents. The docs come from an index
 // query, so the udi, backend etc. fields are filled.
-bool ConfIndexer::updateDocs(vector<Rcl::Doc> &docs, IxFlag flag)
+bool ConfIndexer::updateDocs(vector<Rcl::Doc> &docs, IxFlag flags)
 {
     vector<string> paths;
     docsToPaths(docs, paths);
     list<string> files(paths.begin(), paths.end());
     if (!files.empty()) {
-        return indexFiles(files, flag);
+        return indexFiles(files, flags);
     }
     return true;
 }
 
-bool ConfIndexer::purgeFiles(list<string> &files, int flag)
+bool ConfIndexer::purgeFiles(list<string> &files, int flags)
 {
     list<string> myfiles;
     string origcwd = m_config->getOrigCwd();
@@ -296,8 +302,7 @@ bool ConfIndexer::purgeFiles(list<string> &files, int flag)
     myfiles.sort();
 
     if (!m_db.open(Rcl::Db::DbUpd)) {
-        LOGERR("ConfIndexer: purgeFiles error opening database " <<
-               m_config->getDbDir() << "\n");
+        LOGERR("ConfIndexer: purgeFiles error opening database " << m_config->getDbDir() << "\n");
         return false;
     }
     bool ret = false;
@@ -308,7 +313,7 @@ bool ConfIndexer::purgeFiles(list<string> &files, int flag)
         ret = m_fsindexer->purgeFiles(myfiles);
 
 #ifndef DISABLE_WEB_INDEXER
-    if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
+    if (m_doweb && !myfiles.empty() && !(flags & IxFNoWeb)) {
         if (!m_webindexer)
             m_webindexer = new WebQueueIndexer(m_config, &m_db);
         if (m_webindexer) {
