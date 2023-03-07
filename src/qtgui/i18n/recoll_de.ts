@@ -4642,7 +4642,7 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Close to tray instead of exiting.</source>
-        <translation>Schieße es in den Benachrichtigungsbereich, anstatt es zu verlassen.</translation>
+        <translation>Schließe es in den Benachrichtigungsbereich, anstatt es zu verlassen.</translation>
     </message>
     <message>
         <source>Start with simple search mode</source>
