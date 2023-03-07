@@ -155,7 +155,7 @@ windows {
     
   contains(QMAKE_CC, gcc){
     # MingW
-    QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+    QMAKE_CXXFLAGS += -Wno-unused-parameter
     LIBS += \
     C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
   }
@@ -190,7 +190,7 @@ macx: {
   DEFINES += USING_WEBENGINE
 
   QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
-  QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
+  QMAKE_CXXFLAGS += -pthread -Wno-unused-parameter
 
   DEFINES += RECOLL_AS_MAC_BUNDLE
   
@@ -376,7 +376,6 @@ macx: {
 }
 
 unix:!macx {
-QMAKE_CXXFLAGS += -std=c++11
 
 VPATH = @srcdir@
 
