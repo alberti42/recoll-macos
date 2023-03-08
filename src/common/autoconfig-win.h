@@ -1,9 +1,6 @@
 /* Manually edited version of autoconfig.h for windows. Many things are
    overriden in the c++ code by ifdefs _WIN32 anyway  */
 
-/* Define if building universal (internal helper macro) */
-/* #undef AC_APPLE_UNIVERSAL_BUILD */
-
 /* Aspell program parameter to findFilter(). */
 #define ASPELL_PROG "aspell-installed/mingw32/bin/aspell"
 
@@ -152,18 +149,6 @@
 
 /* Use posix_spawn() */
 /* #undef USE_POSIX_SPAWN */
-
-/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
-   significant byte first (like Motorola and SPARC, unlike Intel). */
-#if defined AC_APPLE_UNIVERSAL_BUILD
-# if defined __BIG_ENDIAN__
-#  define WORDS_BIGENDIAN 1
-# endif
-#else
-# ifndef WORDS_BIGENDIAN
-/* #  undef WORDS_BIGENDIAN */
-# endif
-#endif
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */

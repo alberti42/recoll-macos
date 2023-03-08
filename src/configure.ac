@@ -43,13 +43,19 @@ esac
 AC_PROG_YACC
 
 LT_INIT
-AC_C_BIGENDIAN
 
 AC_SYS_LARGEFILE
 
 # OpenBSD needs sys/param.h for mount.h to compile
 AC_CHECK_HEADERS([sys/param.h, spawn.h])
+AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h malloc.h malloc/malloc.h], [], [],
+[#ifdef HAVE_SYS_PARAM_H
+# include <sys/param.h>
+#endif
+])
 
+AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf malloc_trim posix_fadvise])
+AC_CHECK_FUNCS(mkdtemp)
 
 if test "x$ac_cv_func_posix_spawn" = xyes; then :
    AC_ARG_ENABLE(posix_spawn,
@@ -60,15 +66,6 @@ if test X$posixSpawnEnabled = Xyes ; then
   AC_DEFINE(USE_POSIX_SPAWN, 1, [Use posix_spawn()])
 fi
 
-AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h malloc.h malloc/malloc.h], [], [],
-[#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-])
-
-AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf malloc_trim posix_fadvise])
-
-AC_CHECK_FUNCS(mkdtemp)
 AC_CHECK_LIB([pthread], [pthread_create], [], [])
 AC_SEARCH_LIBS([dlopen], [dl], [], [])
 if test X$ac_cv_search_function != Xno ; then
@@ -91,7 +88,6 @@ AC_LANG_POP([C++])
 
 
 PKG_CHECK_MODULES([XSLT], [libxslt], [], AC_MSG_ERROR([libxslt]))
-
 
 # Use specific 'file' command ? (Useful on solaris to specify
 # /usr/local/bin/file instead of the system's which doesn't understand '-i'
@@ -299,42 +295,22 @@ AM_CONDITIONAL(MAKEUSERDOC, [test X$enableUserdoc = Xyes])
 
 
 #### QT
-# The way qt and its tools (qmake especially) are installed is very
-# different between systems (and maybe qt versions)
-#
-# In general we need QTDIR to be set, because it is used inside the
-# qmake-generated makefiles. But there are exceptions: ie on debian3.1 (at
-# least on the sourceforge compile farm), QTDIR is not needed because qmake
-# generates hard paths (and is installed in /usr/bin). We don't want to
-# force the user to set QTDIR if it is not needed.
-#
-# The logic is then to first look for qmake, possibly using QTDIR if it is
-# set.
-# 
-# If QTDIR is not set, we then generate a bogus qt project and check if
-# QTDIR is needed in the Makefile, in which case we complain.
-#
-# QMAKESPEC: on most Linux system, there is a 'default' link inside the
-# mkspecs directory, so that QMAKESPEC is not needed.
-# If QMAKESPEC is not set and needed, the qmake test at the previous test
-# will have failed, and we tell the user to check his environment.
-#
+
 AC_ARG_ENABLE(qtgui, 
     AS_HELP_STRING([--disable-qtgui],[Disable the QT-based graphical user interface.]),
         enableQT=$enableval, enableQT="yes")
 AM_CONDITIONAL(MAKEQT, [test X$enableQT = Xyes])
 
 AC_ARG_ENABLE(recollq, 
-    AS_HELP_STRING([--enable-recollq],[Enable building the recollq command line query tool (recoll -t without
-   need for Qt). This is done by default if --disable-qtgui is set but this
-   option enables forcing it.]),
+    AS_HELP_STRING([--enable-recollq],[Enable building the recollq command line query tool (recoll
+ -t without need for Qt). This is done by default if --disable-qtgui is set but this
+ option enables forcing it.]),
         enableRECOLLQ=$enableval, enableRECOLLQ="no")
 if test X"$enableRECOLLQ" != X ; then
     AM_CONDITIONAL(MAKECMDLINE, [test X$enableRECOLLQ = Xyes])
 else
     AM_CONDITIONAL(MAKECMDLINE, [test X$enableQT = Xno])
 fi
-
 
 if test X$enableQT = Xyes ; then
 
