@@ -459,6 +459,11 @@ class AudioTagExtractor(RclBaseHandler):
         # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:1024"
         # os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
         try:
+            from filelock import FileLock
+        except ImportError:
+            print("RECFILTERROR HELPERNOTFOUND python3:filelock")
+            sys.exit(1)
+        try:
             with FileLock(lock_file_name):
                 # self.em.rclog(f"Acquired stt file lock: {lock_file_name} to process {filename}.")
                 try:
@@ -511,11 +516,6 @@ class AudioTagExtractor(RclBaseHandler):
         output_array = []
         result_dict = {}
 
-        try:
-            from filelock import FileLock
-        except ImportError:
-            print("RECFILTERROR HELPERNOTFOUND python3:filelock")
-        sys.exit(1)
         import rclocrcache
         import json
         # The cache can find data either based on file metadata, or, in case, e.g. the file has been
