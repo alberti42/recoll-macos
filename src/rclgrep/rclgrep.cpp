@@ -308,7 +308,7 @@ public:
     WalkerCB(const vector<string>& selpats, RclConfig *config)
         : m_pats(selpats), m_config(config) {}
     virtual FsTreeWalker::Status processone(
-        const string& fn, const struct PathStat *, FsTreeWalker::CbFlag flg) {
+        const string& fn, FsTreeWalker::CbFlag flg, const struct PathStat&) override {
         if (flg == FsTreeWalker::FtwRegular) {
             if (m_pats.empty()) {
                 processpath(m_config, fn);

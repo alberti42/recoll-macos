@@ -244,7 +244,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)
     // will process files and recursively descend into subdirs in
     // physical order of the current directory.
     if ((data->options & FtwTravMask) == FtwTravNatural) {
-        return iwalk(top, &st, cb);
+        return iwalk(top, st, cb);
     }
 
     // Breadth first of filesThenDirs semi-depth first order
@@ -300,8 +300,8 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)
                 return errno == ENOENT ? FtwOk : FtwError;
             }
             if (!(data->options & FtwOnlySkipped)) {
-                if ((status = cb.processone(nfather, &st, FtwDirReturn)) & 
-                    (FtwStop|FtwError)) {
+                status = cb.processone(nfather, FtwDirReturn, st);
+                if (status & (FtwStop|FtwError)) {
                     return status;
                 }
             }
@@ -313,9 +313,10 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)
         }
         // iwalk will not recurse in this case, just process file entries
         // and append subdir entries to the queue.
-        status = iwalk(dir, &st, cb);
-        if (status != FtwOk)
+        status = iwalk(dir, st, cb);
+        if (status != FtwOk) {
             return status;
+        }
     }
     return FtwOk;
 }
@@ -323,24 +324,23 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)
 // Note that the 'norecurse' flag is handled as part of the directory read. 
 // This means that we always go into the top 'walk()' parameter if it is a 
 // directory, even if norecurse is set. Bug or Feature ?
-FsTreeWalker::Status FsTreeWalker::iwalk(const string &top, 
-                                         struct PathStat *stp,
-                                         FsTreeWalkerCB& cb)
+FsTreeWalker::Status FsTreeWalker::iwalk(
+    const string &top, const struct PathStat& stp, FsTreeWalkerCB& cb)
 {
     Status status = FtwOk;
     bool nullpush = false;
 
     // Tell user to process the top entry itself
-    if (stp->pst_type == PathStat::PST_DIR) {
+    if (stp.pst_type == PathStat::PST_DIR) {
         if (!(data->options & FtwOnlySkipped)) {
-            if ((status = cb.processone(top, stp, FtwDirEnter)) & 
-                (FtwStop|FtwError)) {
+            status = cb.processone(top, FtwDirEnter,  stp);
+            if (status &  (FtwStop|FtwError)) {
                 return status;
             }
         }
-    } else if (stp->pst_type == PathStat::PST_REGULAR) {
+    } else if (stp.pst_type == PathStat::PST_REGULAR) {
         if (!(data->options & FtwOnlySkipped)) {
-            return cb.processone(top, stp, FtwRegular);
+            return cb.processone(top, FtwRegular, stp);
         } else {
             return status;
         }
@@ -364,7 +364,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     // For now, we'll ignore the "other kind of cycle" part and only monitor
     // this is FtwFollow is set
     if (data->options & FtwFollow) {
-        DirId dirid(stp->pst_dev, stp->pst_ino);
+        DirId dirid(stp.pst_dev, stp.pst_ino);
         if (data->donedirs.find(dirid) != data->donedirs.end()) {
             LOGINFO("Not processing [" << top <<
                     "] (already seen as other path)\n");
@@ -412,7 +412,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
         // Skipped file names match ?
         if (!data->skippedNames.empty()) {
             if (inSkippedNames(dname)) {
-                cb.processone(path_cat(top, dname), nullptr, FtwSkipped);
+                cb.processone(path_cat(top, dname), FtwSkipped);
                 continue;
             }
         }
@@ -427,7 +427,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
             // this was broken by 1.13.00 and the systematic use of 
             // FNM_LEADING_DIR
             if (inSkippedPaths(fn, false)) {
-                cb.processone(fn, nullptr, FtwSkipped);
+                cb.processone(fn, FtwSkipped);
                 continue;
             }
         }
@@ -453,21 +453,21 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
             }
             if (data->options & FtwNoRecurse) {
                 if (!(data->options & FtwOnlySkipped)) {
-                    status = cb.processone(fn, &st, FtwDirEnter);
+                    status = cb.processone(fn, FtwDirEnter, st);
                 } else {
                     status = FtwOk;
                 }
             } else {
                 if (data->options & FtwTravNatural) {
-                    status = iwalk(fn, &st, cb);
+                    status = iwalk(fn, st, cb);
                 } else {
                     // If first subdir, push marker to separate
                     // from entries for other dir. This is to help
                     // with generating DirReturn callbacks
                     if (!nullpush) {
-                        if (!data->dirs.empty() && 
-                            !data->dirs.back().empty())
+                        if (!data->dirs.empty() && !data->dirs.back().empty()) {
                             data->dirs.push_back(cstr_null);
+                        }
                         nullpush = true;
                     }
                     data->dirs.push_back(fn);
@@ -479,9 +479,10 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
                 goto out;
             if (!(data->options & FtwNoRecurse)) 
                 if (!(data->options & FtwOnlySkipped)) {
-                    if ((status = cb.processone(top, &st, FtwDirReturn)) 
-                        & (FtwStop|FtwError))
+                    status = cb.processone(top, FtwDirReturn, st);
+                    if (status & (FtwStop|FtwError)) {
                         goto out;
+                    }
                 }
         } else if (st.pst_type == PathStat::PST_REGULAR ||
                    st.pst_type == PathStat::PST_SYMLINK) {
@@ -491,8 +492,8 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
                     continue;
             }
             if (!(data->options & FtwOnlySkipped)) {
-                if ((status = cb.processone(fn, &st, FtwRegular)) & 
-                    (FtwStop|FtwError)) {
+                status = cb.processone(fn, FtwRegular, st);
+                if (status & (FtwStop|FtwError)) {
                     goto out;
                 }
             }
@@ -521,15 +522,14 @@ int64_t fsTreeBytes(const string& topdir)
 {
     class bytesCB : public FsTreeWalkerCB {
     public:
-        FsTreeWalker::Status processone(const string &, 
-                                        const struct PathStat *st,
-                                        FsTreeWalker::CbFlag flg) {
+        FsTreeWalker::Status processone(
+            const string &, FsTreeWalker::CbFlag flg, const struct PathStat& st) override {
             if (flg == FsTreeWalker::FtwDirEnter ||
                 flg == FsTreeWalker::FtwRegular) {
 #ifdef _WIN32
-                totalbytes += st->pst_size;
+                totalbytes += st.pst_size;
 #else
-                totalbytes += st->pst_blocks * 512;
+                totalbytes += st.pst_blocks * 512;
 #endif
             }
             return FsTreeWalker::FtwOk;

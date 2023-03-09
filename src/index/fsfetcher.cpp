@@ -58,10 +58,10 @@ bool FSDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
     return true;
 }
 
-void fsmakesig(const struct PathStat *stp, string& out)
+void fsmakesig(const struct PathStat& stp, string& out)
 {
-    out = lltodecstr(stp->pst_size) + 
-        lltodecstr(o_uptodate_test_use_mtime ? stp->pst_mtime : stp->pst_ctime);
+    out = lltodecstr(stp.pst_size) + 
+        lltodecstr(o_uptodate_test_use_mtime ? stp.pst_mtime : stp.pst_ctime);
 }
 
 bool FSDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
@@ -70,7 +70,7 @@ bool FSDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
     struct PathStat st;
     if (urltopath(cnf, idoc, fn, st) != DocFetcher::FetchOk)
         return false;
-    fsmakesig(&st, sig);
+    fsmakesig(st, sig);
     return true;
 }
 

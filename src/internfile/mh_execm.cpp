@@ -306,7 +306,7 @@ bool MimeHandlerExecMultiple::next_document()
         m_metaData[cstr_dj_keyipath] = ipath;
         if (mtype.empty()) {
             LOGDEB0("MHExecMultiple: no mime type from filter, using ipath for a guess\n");
-            mtype = mimetype(ipath, 0, m_config, false);
+            mtype = mimetype(ipath, m_config, false);
             if (mtype.empty()) {
                 // mimetype() won't call idFile when there is no file. Do it
                 mtype = idFileMem(m_metaData[cstr_dj_keycontent]);

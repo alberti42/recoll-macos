@@ -116,7 +116,7 @@ bool FileInterner::ipathContains(const string& parent, const string& child)
 // Empty handler on return says that we're in error, this will be
 // processed by the first call to internfile().
 // Split into "constructor calls init()" to allow use from other constructor
-FileInterner::FileInterner(const string &fn, const struct PathStat *stp,
+FileInterner::FileInterner(const string &fn, const struct PathStat& stp,
                            RclConfig *cnf, int flags, const string *imime)
 {
     LOGDEB0("FileInterner::FileInterner(fn=" << fn << ")\n");
@@ -136,7 +136,7 @@ FileInterner::FileInterner(const string &fn, const struct PathStat *stp,
 // used to not be the case, and was changed because this was the
 // simplest way to solve the retry issues (simpler than changing the
 // caller in e.g. fsindexer).
-void FileInterner::init(const string &f, const struct PathStat *stp,
+void FileInterner::init(const string &f, const struct PathStat& stp,
                         RclConfig *cnf, int flags, const string *imime)
 {
     if (f.empty()) {
@@ -175,7 +175,7 @@ void FileInterner::init(const string &f, const struct PathStat *stp,
                m_forPreview << "\n");
 
         // Run mime type identification in any case (see comment above).
-        l_mime = mimetype(m_fn, stp, m_cfg, usfci);
+        l_mime = mimetype(m_fn, m_cfg, usfci, stp);
 
         // If identification fails, try to use the input parameter. This
         // is then normally not a compressed type (it's the mime type from
@@ -184,7 +184,7 @@ void FileInterner::init(const string &f, const struct PathStat *stp,
             l_mime = *imime;
     }
 
-    int64_t docsize = stp->pst_size;
+    int64_t docsize = stp.pst_size;
 
     if (!l_mime.empty()) {
         // Has mime: check for a compressed file. If so, create a
@@ -195,7 +195,8 @@ void FileInterner::init(const string &f, const struct PathStat *stp,
             // Check for compressed size limit
             int maxkbs = -1;
             if (!m_cfg->getConfParam("compressedfilemaxkbs", &maxkbs) ||
-                maxkbs < 0 || !stp || int(stp->pst_size / 1024) < maxkbs) {
+                maxkbs < 0 || stp.pst_type == PathStat::PST_INVALID ||
+                int(stp.pst_size / 1024) < maxkbs) {
                 if (!m_uncomp->uncompressfile(m_fn, ucmd, m_tfile)) {
                     m_ok = true;
                     return;
@@ -212,12 +213,11 @@ void FileInterner::init(const string &f, const struct PathStat *stp,
                 } else {
                     docsize = ucstat.pst_size;
                 }
-                l_mime = mimetype(m_fn, &ucstat, m_cfg, usfci);
+                l_mime = mimetype(m_fn, m_cfg, usfci, ucstat);
                 if (l_mime.empty() && imime)
                     l_mime = *imime;
             } else {
-                LOGINFO("FileInterner:: " << m_fn << " over size limit " <<
-                        maxkbs << " kbs\n");
+                LOGINFO("FileInterner:: " << m_fn << " over size limit " << maxkbs << " kbs\n");
             }
         }
     }
@@ -339,7 +339,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
     }
     switch (rawdoc.kind) {
     case DocFetcher::RawDoc::RDK_FILENAME:
-        init(rawdoc.data, &rawdoc.st, cnf, flags, &idoc.mimetype);
+        init(rawdoc.data, rawdoc.st, cnf, flags, &idoc.mimetype);
         break;
     case DocFetcher::RawDoc::RDK_DATA:
         init(rawdoc.data, cnf, flags, idoc.mimetype);
@@ -1115,7 +1115,7 @@ bool FileInterner::isCompressed(const string& fn, RclConfig *cnf)
         LOGERR("FileInterner::isCompressed: can't stat [" << fn << "]\n");
         return false;
     }
-    string l_mime = mimetype(fn, &st, cnf, true);
+    string l_mime = mimetype(fn, cnf, true, st);
     if (l_mime.empty()) {
         LOGERR("FileInterner::isUncompressed: can't get mime for [" << fn <<
                "]\n");
@@ -1139,7 +1139,7 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
         LOGERR("FileInterner::maybeUncompressToTemp: can't stat [" <<fn<<"]\n");
         return false;
     }
-    string l_mime = mimetype(fn, &st, cnf, true);
+    string l_mime = mimetype(fn, cnf, true, st);
     if (l_mime.empty()) {
         LOGERR("FileInterner::maybeUncompress.: can't id. mime for [" <<
                fn << "]\n");

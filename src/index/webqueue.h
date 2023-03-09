@@ -50,7 +50,7 @@ public:
 
     /** Called when we fstreewalk the queue dir */
     FsTreeWalker::Status 
-    processone(const std::string &, const struct PathStat *, FsTreeWalker::CbFlag);
+    processone(const std::string &, FsTreeWalker::CbFlag, const struct PathStat&) override;
 
     /** Index a list of files. No db cleaning or stemdb updating. 
      *  Used by the real time monitor */

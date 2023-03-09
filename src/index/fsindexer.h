@@ -66,15 +66,14 @@ public:
     bool index(int flags);
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(std::list<std::string> &files, 
-                    int f = ConfIndexer::IxFNone);
+    bool indexFiles(std::list<std::string> &files, int f = ConfIndexer::IxFNone);
 
     /** Purge a list of files. */
     bool purgeFiles(std::list<std::string> &files);
 
     /**  Tree walker callback method */
     FsTreeWalker::Status 
-    processone(const string &fn, const struct PathStat *, FsTreeWalker::CbFlag);
+    processone(const string &fn, FsTreeWalker::CbFlag, const struct PathStat& st) override;
 
 private:
 
@@ -156,8 +155,7 @@ private:
     string getDbDir() {return m_config->getDbDir();}
     FsTreeWalker::Status 
     processonefile(RclConfig *config, const string &fn, 
-                   const struct PathStat *,
-                   const map<string,string>& localfields);
+                   const struct PathStat &, const map<string,string>& localfields);
     void shutdownQueues(bool);
 };
 

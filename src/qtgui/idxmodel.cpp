@@ -36,14 +36,13 @@
 class WalkerCB : public FsTreeWalkerCB {
 public:
     WalkerCB(const std::string& topstring, IdxTreeModel *model, const QModelIndex& index)
-        : m_topstring(topstring), m_model(model)
-    {
+        : m_topstring(topstring), m_model(model) {
         LOGDEB1("WalkerCB: topstring [" << topstring << "]\n");
         m_indexes.push(index);
         m_rows.push(0);
     }
-    virtual FsTreeWalker::Status processone(
-        const std::string& path, const struct PathStat *, FsTreeWalker::CbFlag flg) override;
+    virtual FsTreeWalker::Status processone(const std::string& path, FsTreeWalker::CbFlag flg,
+                                            const struct PathStat& = PathStat()) override;
 
     std::string m_topstring;
     IdxTreeModel *m_model;
@@ -52,7 +51,7 @@ public:
 };
 
 FsTreeWalker::Status WalkerCB::processone(
-    const std::string& path, const struct PathStat *, FsTreeWalker::CbFlag flg)
+    const std::string& path, FsTreeWalker::CbFlag flg, const struct PathStat&)
 {
     if (flg == FsTreeWalker::FtwDirReturn) {
         m_indexes.pop();
@@ -133,7 +132,7 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
                 // Differing at i, unwind old stack and break the main loop
                 for (int j = int(curpath.size()) - 1; j >= i; j--) {
                     LOGDEB1("treelist: exiting  " <<  toksToPath(curpath, j) << "\n");
-                    cb.processone(toksToPath(curpath, j), nullptr, FsTreeWalker::FtwDirReturn);
+                    cb.processone(toksToPath(curpath, j), FsTreeWalker::FtwDirReturn);
                 }
                 break;
             }
@@ -141,7 +140,7 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
         // Callbacks for new entries above the base.
         for (int j = i; j < int(npath.size()); j++) {
             LOGDEB1("treelist: entering " << toksToPath(npath, j) << "\n");
-            cb.processone(toksToPath(npath, j), nullptr, FsTreeWalker::FtwDirEnter);
+            cb.processone(toksToPath(npath, j), FsTreeWalker::FtwDirEnter);
         }
         curpath.swap(npath);
     }

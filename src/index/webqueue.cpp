@@ -354,7 +354,7 @@ bool WebQueueIndexer::indexFiles(list<string>& files)
             it++; continue;
         }
 
-        processone(*it, &st, FsTreeWalker::FtwRegular);
+        processone(*it, FsTreeWalker::FtwRegular, st);
         it = files.erase(it);
     }
     m_nocacheindex = true;
@@ -391,7 +391,7 @@ static std::string yearyear()
 
 FsTreeWalker::Status 
 WebQueueIndexer::processone(
-    const string &path, const struct PathStat *stp, FsTreeWalker::CbFlag flg)
+    const string &path, FsTreeWalker::CbFlag flg, const struct PathStat& stp)
 {
     if (!m_db) //??
         return FsTreeWalker::FtwError;
@@ -432,14 +432,14 @@ WebQueueIndexer::processone(
     make_udi(udipath, cstr_null, udi);
 
     LOGDEB("WebQueueIndexer::processone: udi [" << udi << "]\n");
-    ascdate = lltodecstr(stp->pst_mtime);
+    ascdate = lltodecstr(stp.pst_mtime);
 
     if (!stringlowercmp("bookmark", dotdoc.meta[Rcl::Doc::keybght])) {
         // For bookmarks, we just index the doc that was built from the metadata.
         if (dotdoc.fmtime.empty())
             dotdoc.fmtime = ascdate;
 
-        dotdoc.pcbytes = lltodecstr(stp->pst_size);
+        dotdoc.pcbytes = lltodecstr(stp.pst_size);
 
         // Document signature for up to date checks: none. 
         dotdoc.sig.clear();
@@ -476,7 +476,7 @@ WebQueueIndexer::processone(
             doc.fmtime = ascdate;
         dotdoc.fmtime = doc.fmtime;
 
-        dotdoc.pcbytes = doc.pcbytes = lltodecstr(stp->pst_size);
+        dotdoc.pcbytes = doc.pcbytes = lltodecstr(stp.pst_size);
         // Document signature for up to date checks: none. 
         doc.sig.clear();
         doc.url = dotdoc.url;

@@ -37,6 +37,6 @@ public:
     FSDocFetcher& operator=(const FSDocFetcher&) = delete;
 };
 
-extern void fsmakesig(const struct PathStat *stp, std::string& out);
+extern void fsmakesig(const struct PathStat& stp, std::string& out);
 
 #endif /* _FSFETCHER_H_INCLUDED_ */

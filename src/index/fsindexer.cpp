@@ -74,9 +74,9 @@ extern void *FsIndexerDbUpdWorker(void*);
 class InternfileTask {
 public:
     // Take some care to avoid sharing string data (if string impl is cow)
-    InternfileTask(const std::string &f, const struct PathStat *i_stp,
+    InternfileTask(const std::string &f, const struct PathStat& i_stp,
                    map<string,string> lfields)
-        : fn(f.begin(), f.end()), statbuf(*i_stp)
+        : fn(f.begin(), f.end()), statbuf(i_stp)
         {
             map_ss_cp_noshr(lfields, &localfields);
         }
@@ -412,7 +412,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
                 continue;
             }
         }
-        if (processone(*it, &stb, FsTreeWalker::FtwRegular) != FsTreeWalker::FtwOk) {
+        if (processone(*it, FsTreeWalker::FtwRegular, stb) != FsTreeWalker::FtwOk) {
             LOGERR("FsIndexer::indexFiles: processone failed\n");
             goto out;
         }
@@ -553,7 +553,7 @@ void *FsIndexerInternfileWorker(void * fsp)
         }
         LOGDEB0("FsIndexerInternfileWorker: task fn " << tsk->fn << "\n");
         if (fip->processonefile(
-                &myconf, tsk->fn, &tsk->statbuf, tsk->localfields) != FsTreeWalker::FtwOk) {
+                &myconf, tsk->fn, tsk->statbuf, tsk->localfields) != FsTreeWalker::FtwOk) {
             LOGERR("FsIndexerInternfileWorker: processone failed\n");
             tqp->workerExit();
             return (void*)0;
@@ -576,7 +576,7 @@ void *FsIndexerInternfileWorker(void * fsp)
 /// the actual indexing work. The Rcl::Doc created by internfile()
 /// mostly contains pretty raw utf8 data.
 FsTreeWalker::Status FsIndexer::processone(
-    const std::string &fn, const struct PathStat *stp, FsTreeWalker::CbFlag flg)
+    const std::string &fn, FsTreeWalker::CbFlag flg, const struct PathStat& stp)
 {
     if (!statusUpdater()->update(DbIxStatus::DBIXS_FILES, fn)) {
         return FsTreeWalker::FtwStop;
@@ -633,7 +633,7 @@ bool FsIndexer::launchAddOrUpdate(const string& udi, const string& parent_udi,
 }
 
 FsTreeWalker::Status FsIndexer::processonefile(
-    RclConfig *config, const std::string &fn, const struct PathStat *stp,
+    RclConfig *config, const std::string &fn, const struct PathStat& stp,
     const map<string, string>& localfields)
 {
     ////////////////////
@@ -671,7 +671,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
     // miss the data update. We would have to store both the mtime and
     // the ctime to avoid this
     bool xattronly = m_detectxattronly && !m_db->inFullReset() && 
-        existingDoc && needupdate && (stp->pst_mtime < stp->pst_ctime);
+        existingDoc && needupdate && (stp.pst_mtime < stp.pst_ctime);
 
     LOGDEB("processone: needupdate " << needupdate << " noretry " <<
            m_noretryfailed << " existing " << existingDoc << " oldsig [" <<
@@ -700,7 +700,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
         return FsTreeWalker::FtwOk;
     }
 
-    LOGDEB0("processone: processing: [" << displayableBytes(stp->pst_size) << "] " << fn << "\n");
+    LOGDEB0("processone: processing: [" << displayableBytes(stp.pst_size) << "] " << fn << "\n");
 
     // Note that we used to do the full path here, but I ended up
     // believing that it made more sense to use only the file name
@@ -712,7 +712,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
 
     Rcl::Doc doc;
     char ascdate[30];
-    sprintf(ascdate, "%ld", long(stp->pst_mtime));
+    sprintf(ascdate, "%ld", long(stp.pst_mtime));
 
     bool hadNullIpath = false;
     string mimetype;
@@ -781,7 +781,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
             // Set container file name for all docs, top or subdoc
             doc.meta[Rcl::Doc::keyctfn] = utf8fn;
 
-            doc.pcbytes = lltodecstr(stp->pst_size);
+            doc.pcbytes = lltodecstr(stp.pst_size);
             // Document signature for up to date checks. All subdocs inherit the
             // file's.
             doc.sig = sig;
@@ -877,7 +877,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
             fileDoc.url = path_pathtofileurl(fn);
             if (m_havelocalfields) 
                 setlocalfields(localfields, fileDoc);
-            fileDoc.pcbytes = lltodecstr(stp->pst_size);
+            fileDoc.pcbytes = lltodecstr(stp.pst_size);
         }
 
         fileDoc.sig = sig;

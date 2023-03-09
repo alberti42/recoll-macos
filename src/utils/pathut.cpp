@@ -1071,11 +1071,12 @@ int path_fileprops(const std::string path, struct PathStat *stp, bool follow)
     if (nullptr == stp) {
         return -1;
     }
-    memset(stp, 0, sizeof(struct PathStat));
+    *stp = PathStat{PathStat::PST_INVALID,0,0,0,0,0,0,0,0};
     struct STATBUF mst;
     SYSPATH(path, syspath);
     int ret = follow ? STAT(syspath, &mst) : LSTAT(syspath, &mst);
     if (ret != 0) {
+        stp->pst_type = PathStat::PST_INVALID;
         return ret;
     }
     stp->pst_size = mst.st_size;

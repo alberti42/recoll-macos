@@ -216,7 +216,7 @@ public:
     MakeListWalkerCB(list<string>& files, const vector<string>& selpats)
         : m_files(files), m_pats(selpats) {}
     virtual FsTreeWalker::Status processone(
-        const string& fn, const struct PathStat *, FsTreeWalker::CbFlag flg) {
+        const string& fn, FsTreeWalker::CbFlag flg, const struct PathStat&) override {
         if (flg== FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwRegular){
             if (m_pats.empty()) {
                 m_files.push_back(fn);

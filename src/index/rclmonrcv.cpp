@@ -101,7 +101,7 @@ public:
     virtual ~WalkCB() {}
 
     virtual FsTreeWalker::Status processone(
-        const string &fn, const struct PathStat *st, FsTreeWalker::CbFlag flg) {
+        const string &fn, FsTreeWalker::CbFlag flg, const struct PathStat&) override {
         MONDEB("walkerCB: processone " << fn <<  " m_mon " << m_mon <<
                " m_mon->ok " << (m_mon ? m_mon->ok() : false) << "\n");
 

@@ -126,8 +126,7 @@ public:
     bool inOnlyNames(const std::string& name);
 
 private:
-    Status iwalk(const std::string &dir, struct PathStat *stp,
-                 FsTreeWalkerCB& cb);
+    Status iwalk(const std::string &dir, const struct PathStat& stp, FsTreeWalkerCB& cb);
     class Internal; 
     Internal *data;
 };
@@ -141,7 +140,7 @@ public:
     
     // Only st_mtime, st_ctime, st_size, st_mode (filetype bits: dir/reg/lnk),
     virtual FsTreeWalker::Status 
-    processone(const std::string&, const struct PathStat *, FsTreeWalker::CbFlag) = 0;
+    processone(const std::string&, FsTreeWalker::CbFlag, const struct PathStat& = PathStat()) = 0;
 };
 
 // Utility function. Somewhat like du.

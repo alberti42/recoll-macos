@@ -161,18 +161,18 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 
 // Guess mime type, first from suffix, then from file data. We also have a list of suffixes that we
 // don't touch at all.
-string mimetype(const string &fn, const struct PathStat *stp, RclConfig *cfg, bool usfc)
+string mimetype(const string &fn, RclConfig *cfg, bool usfc, const struct PathStat& stp)
 {
     // Use stat data if available to check for non regular files
-    if (stp) {
-        if (stp->pst_type == PathStat::PST_DIR)
+    if (stp.pst_type != PathStat::PST_INVALID) {
+        if (stp.pst_type == PathStat::PST_DIR)
             return "inode/directory";
-        if (stp->pst_type == PathStat::PST_SYMLINK)
+        if (stp.pst_type == PathStat::PST_SYMLINK)
             return "inode/symlink";
-        if (stp->pst_type != PathStat::PST_REGULAR)
+        if (stp.pst_type != PathStat::PST_REGULAR)
             return "inode/x-fsspecial";
         // Empty files are just this: avoid further errors with actual filters.
-        if (stp->pst_size == 0) 
+        if (stp.pst_size == 0) 
             return "inode/x-empty";
     }
 
@@ -210,7 +210,7 @@ string mimetype(const string &fn, const struct PathStat *stp, RclConfig *cfg, bo
 
     // If the type was not determined from the suffix, examine file data. Can only do this if we
     // have an actual file (as opposed to a pure name).
-    if (mtype.empty() && stp)
+    if (mtype.empty() && stp.pst_type != PathStat::PST_INVALID)
         mtype = mimetypefromdata(cfg, fn, usfc);
 
     return mtype;

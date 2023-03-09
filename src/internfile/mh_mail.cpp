@@ -277,8 +277,7 @@ bool MimeHandlerMail::processAttach()
     // identify content, using file name if set
     if (m_metaData[cstr_dj_keymt] == "application/octet-stream" &&
         !m_metaData[cstr_dj_keyfn].empty()) {
-        string mt = mimetype(m_metaData[cstr_dj_keyfn], 0,      
-                             m_config, false);
+        string mt = mimetype(m_metaData[cstr_dj_keyfn], m_config, false);
         if (!mt.empty()) 
             m_metaData[cstr_dj_keymt] = mt;
     }

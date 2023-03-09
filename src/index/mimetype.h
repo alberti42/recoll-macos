@@ -26,15 +26,15 @@ class RclConfig;
 /**
  * Try to determine a mime type for file. 
  *
- * If stp is not null, this may imply more than matching the suffix,
+ * If stp is valid, this may imply more than matching the suffix,
  * the name must be usable to actually access file data.
  * @param filename file/path name to use
  * @param stp if not null use st_mode bits for directories etc.
  * @param cfg recoll config
  * @param usfc Use system's 'file' command as last resort (or not)
  */
-std::string mimetype(const std::string &filename, const struct PathStat *stp,
-                     RclConfig *cfg, bool usfc);
+std::string mimetype(const std::string &filename, RclConfig *cfg, bool usfc,
+                     const struct PathStat& stp = PathStat());
 
 
 #endif /* _MIMETYPE_H_INCLUDED_ */

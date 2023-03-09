@@ -114,7 +114,7 @@ public:
      * @param mtype mime type if known. For a compressed file this is the 
      *   mime type for the uncompressed version.
      */
-    FileInterner(const string &fn, const struct PathStat *stp, 
+    FileInterner(const string &fn, const struct PathStat& stp, 
                  RclConfig *cnf, int flags, const string *mtype = nullptr);
     
     /** 
@@ -288,7 +288,7 @@ private:
     bool                   m_direct; // External app did the extraction
     
     // Pseudo-constructors
-    void init(const string &fn, const struct PathStat *stp, 
+    void init(const string &fn, const struct PathStat& stp, 
               RclConfig *cnf, int flags, const string *mtype = nullptr);
     void init(const string &data, RclConfig *cnf, int flags, 
               const string& mtype);

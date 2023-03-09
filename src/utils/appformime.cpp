@@ -35,12 +35,12 @@ public:
     FstCb(DesktopDb::AppMap *appdefs)
         : m_appdefs(appdefs) {}
     virtual FsTreeWalker::Status 
-    processone(const string &, const struct PathStat *, FsTreeWalker::CbFlag);
+    processone(const string &, FsTreeWalker::CbFlag, const struct PathStat&) override;
     DesktopDb::AppMap *m_appdefs;
 };
 
 FsTreeWalker::Status FstCb::processone(
-    const string& fn, const struct PathStat*, FsTreeWalker::CbFlag flg) 
+    const string& fn, FsTreeWalker::CbFlag flg, const struct PathStat&)
 {
     if (flg != FsTreeWalker::FtwRegular)
         return FsTreeWalker::FtwOk;

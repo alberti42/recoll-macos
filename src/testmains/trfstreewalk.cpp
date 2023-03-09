@@ -48,9 +48,8 @@ static int     op_flags;
 
 class myCB : public FsTreeWalkerCB {
 public:
-    FsTreeWalker::Status processone(const string &path, 
-                                    const struct PathStat *st,
-                                    FsTreeWalker::CbFlag flg) {
+    FsTreeWalker::Status processone(
+        const string &path, FsTreeWalker::CbFlag flg, const struct PathStat&) override {
         if (flg == FsTreeWalker::FtwDirEnter) {
             if (op_flags & OPT_r) {
                 cout << path << endl;
