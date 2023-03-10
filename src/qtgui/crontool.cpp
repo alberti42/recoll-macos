@@ -28,6 +28,11 @@
 #include "smallut.h"
 #include "rclutil.h"
 
+using std::string;
+using std::vector;
+using std::map;
+using std::list;
+
 static string marker;
 
 static string idstring(const string& confdir)

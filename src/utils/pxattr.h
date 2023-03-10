@@ -27,8 +27,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 #include <string>
 #include <vector>
-using std::string;
-using std::vector;
 
 /**
  * Provide a uniform C++ API for extended file attributes on Linux/FreeBSD 
@@ -82,54 +80,54 @@ namespace pxattr {
     /**
      * Retrieve the named attribute from path. 
      */
-    bool get(const string& path, const string& name, string* value, 
+    bool get(const std::string& path, const std::string& name, std::string* value, 
          flags flags = PXATTR_NONE, nspace dom = PXATTR_USER);
     /**
      * Retrieve the named attribute from open file. 
      */
-    bool get(int fd, const string& name, string* value, 
+    bool get(int fd, const std::string& name, std::string* value, 
          flags flags = PXATTR_NONE, nspace dom = PXATTR_USER);
     /**
      * Set the named attribute on path. 
      */
-    bool set(const string& path, const string& name, const string& value, 
+    bool set(const std::string& path, const std::string& name, const std::string& value, 
          flags flags = PXATTR_NONE, nspace dom = PXATTR_USER);
     /**
      * Set the named attribute on open file. 
      */
-    bool set(int fd, const string& name, const string& value, 
+    bool set(int fd, const std::string& name, const std::string& value, 
          flags flags = PXATTR_NONE, nspace dom = PXATTR_USER);
     /**
      * Delete the named attribute from path.
      */
-    bool del(const string& path, const string& name, 
+    bool del(const std::string& path, const std::string& name, 
          flags flags = PXATTR_NONE, nspace dom = PXATTR_USER);
     /**
      * Delete the named attribute from open file.
      */
-    bool del(int fd, const string& name, 
+    bool del(int fd, const std::string& name, 
          flags flags = PXATTR_NONE, nspace dom = PXATTR_USER);
     /**
      * List attribute names from path.
      */
-    bool list(const string& path, vector<string>* names, 
+    bool list(const std::string& path, std::vector<std::string>* names, 
           flags flags = PXATTR_NONE, nspace dom = PXATTR_USER);
     /**
      * List attribute names from open file.
      */
-    bool list(int fd, vector<string>* names, 
+    bool list(int fd, std::vector<std::string>* names, 
           flags flags = PXATTR_NONE, nspace dom = PXATTR_USER);
 
     /**
      * Compute actual/system attribute name from external name 
      * (ie: myattr->user.myattr)
      */
-    bool sysname(nspace dom, const string& pname, string* sname);
+    bool sysname(nspace dom, const std::string& pname, std::string* sname);
     /**
      * Compute external name from actual/system name 
      * (ie: user.myattr->myattr)
      */
-    bool pxname(nspace dom, const string& sname, string* pname);
+    bool pxname(nspace dom, const std::string& sname, std::string* pname);
 }
 
 

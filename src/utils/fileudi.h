@@ -16,8 +16,8 @@
  */
 #ifndef _FILEUDI_H_INCLUDED_
 #define _FILEUDI_H_INCLUDED_
+
 #include <string>
-using std::string;
 
 // Unique Document Ids for the file-based indexer (main Recoll
 // indexer).  Document Ids are built from a concatenation of the file
@@ -26,6 +26,6 @@ using std::string;
 // limited, the Id path is truncated to a maximum length, and completed
 // by a hash of the remainder (including the ipath)
 
-extern void make_udi(const string& fn, const string& ipath, string &udi);
+extern void make_udi(const std::string& fn, const std::string& ipath, std::string &udi);
 
 #endif /* _FILEUDI_H_INCLUDED_ */

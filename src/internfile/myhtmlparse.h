@@ -22,8 +22,9 @@
  * USA
  * -----END-LICENCE-----
  */
+
 #include <map>
-using std::map;
+#include <string>
 
 #include "htmlparse.h"
 
@@ -39,33 +40,33 @@ public:
     bool in_pre_tag;
     bool in_title_tag;
     bool pending_space;
-    map<string,string> meta;
-    string dump, dmtime, titledump;
+    std::map<std::string, std::string> meta;
+    std::string dump, dmtime, titledump;
     // This is the charset our caller thinks the doc used (initially
     // comes from the environment/configuration, used as source for
     // conversion to utf-8)
-    string fromcharset; 
+    std::string fromcharset; 
     // This is the charset it was supposedly converted to (always
     // utf-8 in fact, except if conversion utterly failed)
-    string tocharset; 
+    std::string tocharset; 
     // charset is declared by HtmlParser. It is the charset from the
     // document: default, then from html or xml header.
     // string charset; 
 
     bool indexing_allowed;
 
-    void process_text(const string &text);
-    bool opening_tag(const string &tag);
-    bool closing_tag(const string &tag);
+    void process_text(const std::string &text);
+    bool opening_tag(const std::string &tag);
+    bool closing_tag(const std::string &tag);
     void do_eof();
-    void decode_entities(string &s);
+    void decode_entities(std::string &s);
     void reset_charsets() {fromcharset = tocharset = "";}
-    void set_charsets(const string& f, const string& t) {
+    void set_charsets(const std::string& f, const std::string& t) {
         fromcharset = f;
         tocharset = t;
     }
     // Return charset as determined from html
-    const string& get_charset() {return charset;}
+    const std::string& get_charset() {return charset;}
 
     MyHtmlParser();
 };

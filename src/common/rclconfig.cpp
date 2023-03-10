@@ -26,8 +26,6 @@
 #include "wincodepages.h"
 #endif
 #include <limits.h>
-#include "safesysstat.h"
-#include "safeunistd.h"
 #ifdef __FreeBSD__
 #include <osreldate.h>
 #endif
@@ -1813,8 +1811,7 @@ static const char swedish_ex[] = "unac_except_trans = \303\244\303\244 \303\204\
 static const char german_ex[] = "unac_except_trans = \303\244\303\244 \303\204\303\244 \303\266\303\266 \303\226\303\266 \303\274\303\274 \303\234\303\274 \303\237ss \305\223oe \305\222oe \303\246ae \303\206ae \357\254\201fi \357\254\202fl";
 
 // Create initial user config by creating commented empty files
-static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf", 
-                                    "mimeview", "fields"};
+static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf", "mimeview", "fields"};
 static int ncffiles = sizeof(configfiles) / sizeof(char *);
 bool RclConfig::initUserConfig()
 {

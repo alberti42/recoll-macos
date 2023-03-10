@@ -22,6 +22,9 @@
 #include "log.h"
 #include "internfile.h"
 
+using std::string;
+using std::vector;
+
 std::mutex DocSequence::o_dblock;
 string DocSequence::o_sort_trans;
 string DocSequence::o_filt_trans;

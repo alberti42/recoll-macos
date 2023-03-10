@@ -30,14 +30,14 @@ namespace Rcl {
 class DocSequenceDocs : public DocSequence {
  public:
     DocSequenceDocs(std::shared_ptr<Rcl::Db> d,
-                    const std::vector<Rcl::Doc> docs, const string &t) 
+                    const std::vector<Rcl::Doc> docs, const std::string &t) 
     : DocSequence(t), m_db(d), m_docs(docs) {}
     virtual ~DocSequenceDocs() {}
     DocSequenceDocs(const DocSequenceDocs&) = delete;
     DocSequenceDocs& operator=(const DocSequenceDocs&) = delete;
-    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0) {
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) {
     if (sh)
-        *sh = string();
+        *sh = std::string();
     if (num < 0 || num >= int(m_docs.size()))
         return false;
     doc = m_docs[num];
@@ -46,10 +46,10 @@ class DocSequenceDocs : public DocSequence {
     virtual int getResCnt() {
     return m_docs.size();
     }
-    virtual string getDescription() {
+    virtual std::string getDescription() {
     return m_description;
     }
-    void setDescription(const string& desc) {
+    void setDescription(const std::string& desc) {
     m_description = desc;
     }
 protected:
@@ -58,7 +58,7 @@ protected:
     }
  private:
     std::shared_ptr<Rcl::Db> m_db;
-    string      m_description;
+    std::string      m_description;
     std::vector<Rcl::Doc> m_docs;
 };
 

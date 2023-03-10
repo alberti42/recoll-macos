@@ -20,6 +20,7 @@
 #include <time.h>
 
 #include <list>
+#include <string>
 
 #include "docseqdb.h"
 #include "rcldb.h"
@@ -27,6 +28,8 @@
 #include "wasatorcl.h"
 
 using std::list;
+using std::string;
+using std::vector;
 
 DocSequenceDb::DocSequenceDb(std::shared_ptr<Rcl::Db> db,
                              std::shared_ptr<Rcl::Query> q, const string &t, 

@@ -48,6 +48,10 @@
 
 #include "recollq.h"
 
+using std::string;
+using std::list;
+using std::vector;
+
 extern RclConfig *theconfig;
 
 std::mutex thetempfileslock;

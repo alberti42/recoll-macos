@@ -27,7 +27,7 @@ class RclConfig;
 // retrieve all the entries below the specified path. This is used by
 // the real time indexer to purge entries when a top directory is
 // renamed. This is really convoluted, I'd like a better way.
-extern bool subtreelist(RclConfig *config, const string& top, 
-                        std::vector<std::string>& paths); 
+extern bool subtreelist(
+    RclConfig *config, const std::string& top, std::vector<std::string>& paths); 
 
 #endif /* _SUBTREELIST_H_INCLUDED_ */

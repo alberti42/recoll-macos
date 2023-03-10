@@ -87,8 +87,8 @@ private:
     std::shared_ptr<PlainToRichQtPreview> m_plaintorich;
     
     bool   m_dspflds;
-    string m_url; // filename for this tab
-    string m_ipath; // Internal doc path inside file
+    std::string m_url; // filename for this tab
+    std::string m_ipath; // Internal doc path inside file
     int    m_docnum;  // Index of doc in db search results.
 
     // doc out of internfile (previous fields come from the index) with
@@ -108,7 +108,7 @@ private:
     // TempFile itself is kept inside main.cpp (because that's where
     // signal cleanup happens), but we use its name to ask for release
     // when the tab is closed.
-    string m_tmpfilename;
+    std::string m_tmpfilename;
     QImage m_image;
     DspType m_curdsp;
 };

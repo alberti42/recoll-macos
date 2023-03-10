@@ -110,7 +110,7 @@ signals:
     void showSnippets(Rcl::Doc);
     void showSubDocs(Rcl::Doc);
     void editRequested(Rcl::Doc);
-    void openWithRequested(Rcl::Doc, string cmd);
+    void openWithRequested(Rcl::Doc, std::string cmd);
     void docExpand(Rcl::Doc);
     void wordSelect(QString);
     void wordReplace(const QString&, const QString&);
@@ -203,8 +203,8 @@ private:
 
 class PlainToRichQtReslist : public PlainToRich {
 public:
-    virtual string startMatch(unsigned int idx);
-    virtual string endMatch();
+    virtual std::string startMatch(unsigned int idx);
+    virtual std::string endMatch();
 };
 
 #endif /* _RESLIST_H_INCLUDED_ */

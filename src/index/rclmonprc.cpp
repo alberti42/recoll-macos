@@ -38,9 +38,6 @@
 #include <condition_variable>
 #include <chrono>
 
-using std::list;
-using std::vector;
-
 #include "log.h"
 #include "rclmon.h"
 #include "log.h"
@@ -53,6 +50,11 @@ using std::vector;
 #endif
 #include "subtreelist.h"
 #include "idxstatus.h"
+
+using std::list;
+using std::vector;
+using std::map;
+using std::string;
 
 typedef unsigned long mttcast;
 

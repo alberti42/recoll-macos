@@ -20,7 +20,6 @@
 #include "filtseq.h"
 #include "rclconfig.h"
 
-using std::string;
 
 static bool filter(const DocSeqFiltSpec& fs, const Rcl::Doc *x)
 {
@@ -63,10 +62,10 @@ bool DocSeqFiltered::setFiltSpec(const DocSeqFiltSpec &filtspec)
         case DocSeqFiltSpec::DSFS_QLANG: {
             // There are very few lang constructs that we can interpret. The
             // default config uses rclcat:value only. That will be all for now...
-            string val = filtspec.values[i];
+            std::string val = filtspec.values[i];
             if (val.find("rclcat:") == 0) {
-                string catg = val.substr(7);
-                vector<string> tps;
+                std::string catg = val.substr(7);
+                std::vector<std::string> tps;
                 m_config->getMimeCatTypes(catg, tps);
                 for (const auto& mime : tps) {
                     LOGDEB2("Adding mime: [" << mime << "]\n");
@@ -87,7 +86,7 @@ bool DocSeqFiltered::setFiltSpec(const DocSeqFiltSpec &filtspec)
     return true;
 }
 
-bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, string *)
+bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, std::string *)
 {
     LOGDEB2("DocSeqFiltered::getDoc() fetching " << idx << "\n");
 

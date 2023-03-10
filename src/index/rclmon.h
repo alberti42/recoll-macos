@@ -31,15 +31,9 @@
  */
 #include <time.h>
 #include <string>
-#include <map>
 #include <mutex>
 
 #include "rclconfig.h"
-
-#ifndef NO_NAMESPACES
-using std::string;
-using std::multimap;
-#endif
 
 /**
  * Monitoring event: something changed in the filesystem
@@ -48,7 +42,7 @@ class RclMonEvent {
 public: 
     enum EvType {RCLEVT_NONE= 0, RCLEVT_MODIFY=1, RCLEVT_DELETE=2, 
                  RCLEVT_DIRCREATE=3, RCLEVT_ISDIR=0x10};
-    string m_path;
+    std::string m_path;
     // Type and flags
     int  m_etyp;
 

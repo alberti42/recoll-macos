@@ -20,21 +20,18 @@
 
 #include <string>
 #include <map>
-using std::map;
-using std::string;
 
-class HelpClient : public QObject
-{
+class HelpClient : public QObject {
     Q_OBJECT
 public:
     HelpClient(QObject *parent, const char *name = 0);
 
     // Install mapping from widget name to manual section
-    static void installMap(string wname, string section);
+    static void installMap(std::string wname, std::string section);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
-    static map<string, string> helpmap;
+    static std::map<std::string, std::string> helpmap;
 };
 
 #endif // RCLHELP_H

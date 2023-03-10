@@ -120,7 +120,7 @@ public slots:
     virtual void showMissingHelpers();
     virtual void showActiveTypes();
     virtual void startManual();
-    virtual void startManual(const string&);
+    virtual void startManual(const std::string&);
     virtual void showDocHistory();
     virtual void showExtIdxDialog();
     virtual void setSynEnabled(bool);
@@ -144,7 +144,7 @@ public slots:
     virtual void startPreview(Rcl::Doc);
     virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, QString term = QString(),
                                    int line = -1);
-    virtual void openWith(Rcl::Doc, string);
+    virtual void openWith(Rcl::Doc, std::string);
     virtual void saveDocToFile(Rcl::Doc);
     virtual void populateSideFilters(SideFilterUpdateReason);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
@@ -240,12 +240,12 @@ private:
     QShortcut      *m_actionssearchsc{0};
     QShortcut      *m_cleardirfiltersc{0};
     QFileSystemWatcher m_watcher;
-    vector<ExecCmd*>  m_viewers;
+    std::vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc{0}; // Indexing process
     bool             m_idxkilled{false}; // Killed my process
     TempFile        *m_idxreasontmp{nullptr};
-    map<QString, QAction*> m_stemLangToId;
-    vector<string>    m_catgbutvec;
+    std::map<QString, QAction*> m_stemLangToId;
+    std::vector<std::string>    m_catgbutvec;
     int               m_catgbutvecidx{0};
     DocSeqFiltSpec    m_filtspec;
     bool              m_sortspecnochange{false};
@@ -286,16 +286,16 @@ private:
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum,
                                         bool next);
     // flags may contain ExecCmd::EXF_xx values
-    virtual void execViewer(const map<string, string>& subs, bool enterHistory,
-                            const string& execpath, const vector<string>& lcmd,
-                            const string& cmd, Rcl::Doc doc, int flags=0);
+    virtual void execViewer(const std::map<std::string, std::string>& subs, bool enterHistory,
+                            const std::string& execpath, const std::vector<std::string>& lcmd,
+                            const std::string& cmd, Rcl::Doc doc, int flags=0);
     virtual void setStemLang(const QString& lang);
     virtual void onSortCtlChanged();
     virtual void showIndexConfig(bool modal);
     virtual void showIndexSched(bool modal);
     virtual void showCronTool(bool modal);
     virtual void showRTITool(bool modal);
-    virtual void updateIdxForDocs(vector<Rcl::Doc>&);
+    virtual void updateIdxForDocs(std::vector<Rcl::Doc>&);
     virtual void initiateQuery();
     virtual bool containerUpToDate(Rcl::Doc& doc);
     virtual bool checkIdxPaths();

@@ -22,10 +22,6 @@
 #include <vector>
 #include <map>
 #include <set>
-using std::string;
-using std::vector;
-using std::map;
-using std::set;
 
 #include "mimehandler.h"
 #include "pathut.h"
@@ -47,20 +43,20 @@ class Uncomp;
 class FIMissingStore {
 public:
     FIMissingStore() {}
-    FIMissingStore(const string& in);
+    FIMissingStore(const std::string& in);
     virtual ~FIMissingStore() {}
     FIMissingStore(const FIMissingStore&) = delete;
     FIMissingStore& operator=(const FIMissingStore&) = delete;
-    virtual void addMissing(const string& prog, const string& mt) {
+    virtual void addMissing(const std::string& prog, const std::string& mt) {
         m_typesForMissing[prog].insert(mt);
     }
     // Get simple progs list string
-    virtual void getMissingExternal(string& out);
+    virtual void getMissingExternal(std::string& out);
     // Get progs + assoc mtypes description string
-    virtual void getMissingDescription(string& out);
+    virtual void getMissingDescription(std::string& out);
 
     // Missing external programs
-    map<string, set<string> > m_typesForMissing;
+    std::map<std::string, std::set<std::string> > m_typesForMissing;
 };
 
 /** 
@@ -114,16 +110,16 @@ public:
      * @param mtype mime type if known. For a compressed file this is the 
      *   mime type for the uncompressed version.
      */
-    FileInterner(const string &fn, const struct PathStat& stp, 
-                 RclConfig *cnf, int flags, const string *mtype = nullptr);
+    FileInterner(const std::string &fn, const struct PathStat& stp, 
+                 RclConfig *cnf, int flags, const std::string *mtype = nullptr);
     
     /** 
      * Alternate constructor for the case where the data is in memory.
      * This is mainly for data extracted from the web cache. 
      * The MIME type must be set, and the data must be uncompressed.
      */
-    FileInterner(const string &data, RclConfig *cnf, 
-                 int flags, const string& mtype);
+    FileInterner(const std::string &data, RclConfig *cnf, 
+                 int flags, const std::string& mtype);
 
     /**
      * Alternate constructor used at query time. We don't know where
@@ -158,34 +154,34 @@ public:
      *  this is a multi-document file, with more subdocs, and internfile() 
      *  should be called again to get the following one(s).
      */
-    Status internfile(Rcl::Doc& doc, const string &ipath = "");
+    Status internfile(Rcl::Doc& doc, const std::string &ipath = "");
 
     /** Extract subdoc defined by ipath in idoc to file. See params for
         idocToFile() */
-    bool interntofile(TempFile& otemp, const string& tofile,
-                      const string& ipath, const string& mimetype);
+    bool interntofile(TempFile& otemp, const std::string& tofile,
+                      const std::string& ipath, const std::string& mimetype);
 
     /** Return the file's (top level object) mimetype (useful for 
      *  creating the pseudo-doc for container files) 
      */ 
-    const string&  getMimetype() {return m_mimetype;}
+    const std::string&  getMimetype() {return m_mimetype;}
 
     /** We normally always return text/plain data. A caller can request
      *  that we stop conversion at the native document type (ie: extracting
      *  an email attachment in its native form for an external viewer)
      */
-    void setTargetMType(const string& tp) {m_targetMType = tp;}
+    void setTargetMType(const std::string& tp) {m_targetMType = tp;}
 
     /** In case we see an html version while converting, it is set aside 
      *  and can be recovered 
      */
-    const string& get_html() {return m_html;}
+    const std::string& get_html() {return m_html;}
 
     /** If we happen to be processing an image file and need a temp file,
         we keep it around to save work for our caller, which can get it here */
     TempFile get_imgtmp() {return m_imgtmp;}
 
-    const string& getReason() const {
+    const std::string& getReason() const {
         return m_reason;
     }
     bool ok() const {
@@ -200,7 +196,7 @@ public:
      * this would be for exemple the email containing the attachment.
      * This is in internfile because of the ipath computation.
      */
-    static bool getEnclosingUDI(const Rcl::Doc &doc, string& udi);
+    static bool getEnclosingUDI(const Rcl::Doc &doc, std::string& udi);
 
     /** Return last element in ipath, like basename */
     static std::string getLastIpathElt(const std::string& ipath);
@@ -210,7 +206,7 @@ public:
     /** 
      * Build sig for doc coming from rcldb. This is here because we know how
      * to query the right backend. Used to check up-to-dateness at query time */
-    static bool makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig);
+    static bool makesig(RclConfig *cnf, const Rcl::Doc& idoc, std::string& sig);
 
     /** Extract internal document into temporary file, without converting the 
      * data.
@@ -231,19 +227,19 @@ public:
      * @param uncompress if true, uncompress compressed original doc. Only does
      *      anything for a top level document.
      */
-    static bool idocToFile(TempFile& temp, const string& tofile, 
+    static bool idocToFile(TempFile& temp, const std::string& tofile, 
                            RclConfig *cnf, const Rcl::Doc& doc,
                            bool uncompress = true);
 
     /** Does file appear to be the compressed version of a document? */
-    static bool isCompressed(const string& fn, RclConfig *cnf);
+    static bool isCompressed(const std::string& fn, RclConfig *cnf);
 
     /** 
      * Check input compressed, allocate temp file and uncompress if it is.  
      * @return true if ok, false for error. Actual decompression is indicated
      *  by the TempFile status (!isNull())
      */
-    static bool maybeUncompressToTemp(TempFile& temp, const string& fn, 
+    static bool maybeUncompressToTemp(TempFile& temp, const std::string& fn, 
                                       RclConfig *cnf, const Rcl::Doc& doc);
 
     /** Try to get a top level reason after an operation failed. This
@@ -255,31 +251,31 @@ public:
 private:
     static const unsigned int MAXHANDLERS = 20;
     RclConfig             *m_cfg;
-    string                 m_fn;
-    string                 m_mimetype; // Mime type for [uncompressed] file
+    std::string                 m_fn;
+    std::string                 m_mimetype; // Mime type for [uncompressed] file
     bool                   m_forPreview;
-    string                 m_html; // Possibly set-aside html text for preview
+    std::string                 m_html; // Possibly set-aside html text for preview
     TempFile               m_imgtmp; // Possible reference to an image temp file
-    string                 m_targetMType;
-    string                 m_reachedMType; // target or text/plain
-    string                 m_tfile;
+    std::string                 m_targetMType;
+    std::string                 m_reachedMType; // target or text/plain
+    std::string                 m_tfile;
     bool                   m_ok{false}; // Set after construction if ok
     // Fields found in file extended attributes. This is kept here,
     // not in the file-level handler because we are only interested in
     // the top-level file, not any temp file necessitated by
     // processing the internal doc hierarchy.
-    map<string, string> m_XAttrsFields;
+    std::map<std::string, std::string> m_XAttrsFields;
     // Fields gathered by executing configured external commands
-    map<string, string> m_cmdFields;
+    std::map<std::string, std::string> m_cmdFields;
 
     // Filter stack, path to the current document from which we're
     // fetching subdocs
-    vector<RecollFilter*> m_handlers;
+    std::vector<RecollFilter*> m_handlers;
     // Temporary files used for decoding the current stack
     bool                   m_tmpflgs[MAXHANDLERS];
-    vector<TempFile>       m_tempfiles;
+    std::vector<TempFile>       m_tempfiles;
     // Error data if any
-    string                 m_reason;
+    std::string                 m_reason;
     FIMissingStore        *m_missingdatap{nullptr};
 
     Uncomp                 *m_uncomp{nullptr};
@@ -288,21 +284,19 @@ private:
     bool                   m_direct; // External app did the extraction
     
     // Pseudo-constructors
-    void init(const string &fn, const struct PathStat& stp, 
-              RclConfig *cnf, int flags, const string *mtype = nullptr);
-    void init(const string &data, RclConfig *cnf, int flags, 
-              const string& mtype);
+    void init(const std::string &fn, const struct PathStat& stp, 
+              RclConfig *cnf, int flags, const std::string *mtype = nullptr);
+    void init(const std::string &data, RclConfig *cnf, int flags, const std::string& mtype);
     void initcommon(RclConfig *cnf, int flags);
 
     bool dijontorcl(Rcl::Doc&);
     void collectIpathAndMT(Rcl::Doc&) const;
-    TempFile dataToTempFile(const string& data, const string& mt);
+    TempFile dataToTempFile(const std::string& data, const std::string& mt);
     void popHandler();
     int addHandler();
-    void checkExternalMissing(const string& msg, const string& mt);
+    void checkExternalMissing(const std::string& msg, const std::string& mt);
     void processNextDocError(Rcl::Doc &doc);
-    static bool tempFileForMT(TempFile& otemp, RclConfig *cnf, 
-                              const std::string& mimetype);
+    static bool tempFileForMT(TempFile& otemp, RclConfig *cnf, const std::string& mimetype);
     static bool topdocToFile(TempFile& otemp, const std::string& tofile,
                              RclConfig *cnf, const Rcl::Doc& idoc,
                              bool uncompress);

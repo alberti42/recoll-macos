@@ -46,6 +46,10 @@
 
 #include "autoconfig.h"
 
+#include <string>
+#include <vector>
+#include <map>
+
 #include <errno.h>
 #include <cstdio>
 #include <cstring>
@@ -56,6 +60,10 @@
 #include "rclinit.h"
 #include "fstreewalk.h"
 #include "pathut.h"
+
+using std::string;
+using std::vector;
+using std::map;
 
 /**
  * Recoll real time monitor event receiver. This file has code to interface 

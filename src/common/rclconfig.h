@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2023 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -25,12 +25,6 @@
 #include <map>
 #include <unordered_set>
 
-using std::string;
-using std::vector;
-using std::pair;
-using std::set;
-using std::map;
-
 #include "conftree.h"
 #include "smallut.h"
 
@@ -46,15 +40,15 @@ class RclConfig;
 class ParamStale {
 public:
     ParamStale() {}
-    ParamStale(RclConfig *rconf, const string& nm)
-        : parent(rconf), paramnames(vector<string>(1, nm)), savedvalues(1) {
+    ParamStale(RclConfig *rconf, const std::string& nm)
+        : parent(rconf), paramnames(std::vector<std::string>(1, nm)), savedvalues(1) {
     }
-    ParamStale(RclConfig *rconf, const vector<string>& nms)
+    ParamStale(RclConfig *rconf, const std::vector<std::string>& nms)
         : parent(rconf), paramnames(nms), savedvalues(nms.size()) {
     }
     void init(ConfNull *cnf);
     bool needrecompute();
-    const string& getvalue(unsigned int i = 0) const;
+    const std::string& getvalue(unsigned int i = 0) const;
 
 private:
     // The config we belong to. 
@@ -62,8 +56,8 @@ private:
     // The configuration file we search for values. This is a borrowed
     // pointer belonging to the parent, we do not manage it.
     ConfNull  *conffile{0};
-    vector<string>    paramnames;
-    vector<string>    savedvalues;
+    std::vector<std::string>    paramnames;
+    std::vector<std::string>    savedvalues;
     // Check at init if the configuration defines our vars at all. No
     // further processing is needed if it does not.
     bool      active{false}; 
@@ -72,13 +66,13 @@ private:
 
 // Hold the description for an external metadata-gathering command
 struct MDReaper {
-    string fieldname;
-    vector<string> cmdv;
+    std::string fieldname;
+    std::vector<std::string> cmdv;
 };
 
 // Data associated to a indexed field name: 
 struct FieldTraits {
-    string pfx; // indexing prefix,
+    std::string pfx; // indexing prefix,
     uint32_t valueslot{0};
     enum ValueType {STR, INT};
     ValueType valuetype{STR};
@@ -95,7 +89,7 @@ public:
     // Constructor: we normally look for a configuration file, except
     // if this was specified on the command line and passed through
     // argcnf
-    RclConfig(const string *argcnf = nullptr);
+    RclConfig(const std::string *argcnf = nullptr);
 
     RclConfig(const RclConfig &r);
 
@@ -119,14 +113,14 @@ public:
     bool updateMainConfig();
 
     bool ok() const {return m_ok;}
-    const string &getReason() const {return m_reason;}
+    const std::string &getReason() const {return m_reason;}
 
     /** Return the directory where this configuration is stored. 
      *  This was possibly silently created by the rclconfig
      *  constructor it it is the default one (~/.recoll) and it did 
      *  not exist yet. */
-    string getConfDir() const {return m_confdir;}
-    string getCacheDir() const;
+    std::string getConfDir() const {return m_confdir;}
+    std::string getCacheDir() const;
 
     /** Check if the config files were modified since we read them */
     bool sourceChanged() const;
@@ -134,51 +128,51 @@ public:
     /** Returns true if this is ~/.recoll */
     bool isDefaultConfig() const;
     /** Get the local value for /usr/local/share/recoll/ */
-    const string& getDatadir() const {return m_datadir;}
+    const std::string& getDatadir() const {return m_datadir;}
 
     /** Set current directory reference, and fetch automatic parameters. */
-    void setKeyDir(const string &dir);
-    string getKeyDir() const {return m_keydir;}
+    void setKeyDir(const std::string &dir);
+    std::string getKeyDir() const {return m_keydir;}
 
     /** Get generic configuration parameter according to current keydir */
-    bool getConfParam(const string& name, string& value, bool shallow=false) const {
+    bool getConfParam(const std::string& name, std::string& value, bool shallow=false) const {
             if (nullptr == m_conf)
                 return false;
             return m_conf->get(name, value, m_keydir, shallow);
     }
     /** Variant with autoconversion to int */
-    bool getConfParam(const string &name, int *value, bool shallow=false) const;
+    bool getConfParam(const std::string &name, int *value, bool shallow=false) const;
     /** Variant with autoconversion to bool */
-    bool getConfParam(const string &name, bool *value, bool shallow=false) const;
+    bool getConfParam(const std::string &name, bool *value, bool shallow=false) const;
     /** Variant with conversion to vector<string>
      *  (stringToStrings). Can fail if the string is malformed. */
-    bool getConfParam(const string &name, vector<string> *value, bool shallow=false) const;
+    bool getConfParam(const std::string& name, std::vector<std::string> *value, bool shallow=false)const;
     /** Variant with conversion to unordered_set<string>
      *  (stringToStrings). Can fail if the string is malformed. */
-    bool getConfParam(const string &name, std::unordered_set<std::string> *v, 
+    bool getConfParam(const std::string &name, std::unordered_set<std::string> *v, 
                       bool shallow=false) const;
     /** Variant with conversion to vector<int> */
-    bool getConfParam(const string &name, vector<int> *value, bool shallow=false) const;
+    bool getConfParam(const std::string &name, std::vector<int> *value, bool shallow=false) const;
 
     enum ThrStage {ThrIntern=0, ThrSplit=1, ThrDbWrite=2};
-    pair<int, int> getThrConf(ThrStage who) const;
+    std::pair<int, int> getThrConf(ThrStage who) const;
 
     /** 
      * Get list of config names under current sk, with possible 
      * wildcard filtering 
      */
-    vector<string> getConfNames(const char *pattern = nullptr) const {
+    std::vector<std::string> getConfNames(const char *pattern = nullptr) const {
         return m_conf->getNames(m_keydir, pattern);
     }
 
     /** Check if name exists anywhere in config */
-    bool hasNameAnywhere(const string& nm) const {
+    bool hasNameAnywhere(const std::string& nm) const {
         return m_conf? m_conf->hasNameAnywhere(nm) : false;
     }
 
     /** Get default charset for current keydir (was set during setKeydir) 
      * filenames are handled differently */
-    const string &getDefCharset(bool filename = false) const;
+    const std::string &getDefCharset(bool filename = false) const;
 
     /** Get list of top directories. This is needed from a number of places
      * and needs some cleaning-up code. An empty list is always an error, no
@@ -186,43 +180,43 @@ public:
      * @param formonitor if set retrieve the list for real time monitoring 
      *         (if the monitor list does not exist we return the normal one).
      */
-    vector<string> getTopdirs(bool formonitor = false) const;
+    std::vector<std::string> getTopdirs(bool formonitor = false) const;
 
-    string getConfdirPath(const char *varname, const char *dflt) const;
-    string getCachedirPath(const char *varname, const char *dflt) const;
+    std::string getConfdirPath(const char *varname, const char *dflt) const;
+    std::string getCachedirPath(const char *varname, const char *dflt) const;
     /** Get database and other directories */
-    string getDbDir() const;
-    string getWebcacheDir() const;
-    string getMboxcacheDir() const;
-    string getAspellcacheDir() const;
+    std::string getDbDir() const;
+    std::string getWebcacheDir() const;
+    std::string getMboxcacheDir() const;
+    std::string getAspellcacheDir() const;
     /** Get stoplist file name */
-    string getStopfile() const;
+    std::string getStopfile() const;
     /** Get synonym groups file name */
-    string getIdxSynGroupsFile() const;
+    std::string getIdxSynGroupsFile() const;
     /** Get indexing pid file name */
-    string getPidfile() const;
+    std::string getPidfile() const;
     /** Get indexing status file name */
-    string getIdxStatusFile() const;
-    string getIdxStopFile() const;
+    std::string getIdxStatusFile() const;
+    std::string getIdxStopFile() const;
     /** Do path translation according to the ptrans table */
-    void urlrewrite(const string& dbdir, string& url) const;
+    void urlrewrite(const std::string& dbdir, std::string& url) const;
     ConfSimple *getPTrans() {
         return m_ptrans;
     }
     /** Get Web Queue directory name */
-    string getWebQueueDir() const;
+    std::string getWebQueueDir() const;
 
     /** Get list of skipped file names for current keydir */
-    vector<string>& getSkippedNames();
+    std::vector<std::string>& getSkippedNames();
     /** Get list of file name filters for current keydir (only those
         names indexed) */
-    vector<string>& getOnlyNames();
+    std::vector<std::string>& getOnlyNames();
 
     /** Get list of skipped paths patterns. Doesn't depend on the keydir */
-    vector<string> getSkippedPaths() const;
+    std::vector<std::string> getSkippedPaths() const;
     /** Get list of skipped paths patterns, daemon version (may add some)
         Doesn't depend on the keydir */
-    vector<string> getDaemSkippedPaths() const;
+    std::vector<std::string> getDaemSkippedPaths() const;
 
     /** Return list of no content suffixes. Used by confgui, indexing uses
         inStopSuffixes() for testing suffixes */
@@ -234,7 +228,7 @@ public:
      * The list of ignored suffixes is initialized on first call, and
      * not changed for subsequent setKeydirs.
      */
-    bool inStopSuffixes(const string& fn);
+    bool inStopSuffixes(const std::string& fn);
 
     /** 
      * Check in mimeconf if input mime type is a compressed one, and
@@ -243,17 +237,17 @@ public:
      * The returned command has substitutable places for input file name 
      * and temp dir name, and will return output name
      */
-    bool getUncompressor(const string &mtpe, vector<string>& cmd) const;
+    bool getUncompressor(const std::string &mtpe, std::vector<std::string>& cmd) const;
 
     /** mimemap: compute mimetype */
-    string getMimeTypeFromSuffix(const string &suffix) const;
+    std::string getMimeTypeFromSuffix(const std::string &suffix) const;
     /** mimemap: get a list of all indexable mime types defined */
-    vector<string> getAllMimeTypes() const;
+    std::vector<std::string> getAllMimeTypes() const;
     /** mimemap: Get appropriate suffix for mime type. This is inefficient */
-    string getSuffixFromMimeType(const string &mt) const;
+    std::string getSuffixFromMimeType(const std::string &mt) const;
 
     /** mimeconf: get input filter for mimetype */
-    string getMimeHandlerDef(const string &mimetype, bool filtertypes=false,
+    std::string getMimeHandlerDef(const std::string &mimetype, bool filtertypes=false,
                              const std::string& fn = std::string());
 
     /** For lines like: [name = some value; attr1 = value1; attr2 = val2]
@@ -267,7 +261,7 @@ public:
      *
      * @param whole the raw value.
      */
-    static bool valueSplitAttributes(const string& whole, string& value, ConfSimple& attrs) ;
+    static bool valueSplitAttributes(const std::string& whole, std::string& value, ConfSimple& attrs) ;
 
     /** Compute difference between 'base' and 'changed', as elements to be
      * added and substracted from base. Input and output strings are in
@@ -280,64 +274,64 @@ public:
     static const std::string& getLocaleCharset();
     
     /** Return icon path for mime type and tag */
-    string getMimeIconPath(const string &mt, const string& apptag) const;
+    std::string getMimeIconPath(const std::string &mt, const std::string& apptag) const;
 
     /** mimeconf: get list of file categories */
-    bool getMimeCategories(vector<string>&) const;
+    bool getMimeCategories(std::vector<std::string>&) const;
     /** mimeconf: is parameter one of the categories ? */
-    bool isMimeCategory(const string&) const;
+    bool isMimeCategory(const std::string&) const;
     /** mimeconf: get list of mime types for category */
-    bool getMimeCatTypes(const string& cat, vector<string>&) const;
+    bool getMimeCatTypes(const std::string& cat, std::vector<std::string>&) const;
 
     /** mimeconf: get list of gui filters (doc cats by default */
-    bool getGuiFilterNames(vector<string>&) const;
+    bool getGuiFilterNames(std::vector<std::string>&) const;
     /** mimeconf: get query lang frag for named filter */
-    bool getGuiFilter(const string& filtername, string& frag) const;
+    bool getGuiFilter(const std::string& filtername, std::string& frag) const;
 
     /** fields: get field prefix from field name. Use additional query
         aliases if isquery is set */
-    bool getFieldTraits(const string& fldname, const FieldTraits **,
+    bool getFieldTraits(const std::string& fldname, const FieldTraits **,
                         bool isquery = false) const;
 
-    const set<string>& getStoredFields() const {return m_storedFields;}
+    const std::set<std::string>& getStoredFields() const {return m_storedFields;}
 
-    set<string> getIndexedFields() const;
+    std::set<std::string> getIndexedFields() const;
 
     /** Get canonic name for possible alias */
-    string fieldCanon(const string& fld) const;
+    std::string fieldCanon(const std::string& fld) const;
 
     /** Get canonic name for possible alias, including query-only aliases */
-    string fieldQCanon(const string& fld) const;
+    std::string fieldQCanon(const std::string& fld) const;
 
     /** Get xattr name to field names translations */
-    const map<string, string>& getXattrToField() const {return m_xattrtofld;}
+    const std::map<std::string, std::string>& getXattrToField() const {return m_xattrtofld;}
 
     /** Get value of a parameter inside the "fields" file. Only some filters 
      * use this (ie: mh_mail). The information specific to a given filter
      * is typically stored in a separate section(ie: [mail]) 
      */
-    vector<string> getFieldSectNames(const string &sk, const char* = nullptr) const;
-    bool getFieldConfParam(const string &name, const string &sk, string &value)
+    std::vector<std::string> getFieldSectNames(const std::string &sk, const char* = nullptr) const;
+    bool getFieldConfParam(const std::string &name, const std::string &sk, std::string &value)
         const;
 
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
-    string getMimeViewerDef(const string &mimetype, const string& apptag, 
+    std::string getMimeViewerDef(const std::string &mimetype, const std::string& apptag, 
                             bool useall) const;
-    set<string> getMimeViewerAllEx() const;
-    bool setMimeViewerAllEx(const set<string>& allex);
-    bool getMimeViewerDefs(vector<pair<string, string> >&) const;
-    bool setMimeViewerDef(const string& mimetype, const string& cmd);
+    std::set<std::string> getMimeViewerAllEx() const;
+    bool setMimeViewerAllEx(const std::set<std::string>& allex);
+    bool getMimeViewerDefs(std::vector<std::pair<std::string, std::string> >&) const;
+    bool setMimeViewerDef(const std::string& mimetype, const std::string& cmd);
     /** Check if mime type is designated as needing no uncompress before view
      * (if a file of this type is found compressed). Default is true,
      *  exceptions are found in the nouncompforviewmts mimeview list */
-    bool mimeViewerNeedsUncomp(const string &mimetype) const;
+    bool mimeViewerNeedsUncomp(const std::string &mimetype) const;
 
     /** Retrieve extra metadata-gathering commands */
-    const vector<MDReaper>& getMDReapers();
+    const std::vector<MDReaper>& getMDReapers();
 
     /** Store/retrieve missing helpers description string */
-    bool getMissingHelperDesc(string&) const;
-    void storeMissingHelperDesc(const string &s);
+    bool getMissingHelperDesc(std::string&) const;
+    void storeMissingHelperDesc(const std::string &s);
 
     /** Replace simple command name(s) inside vector with full
      * paths. May have to replace two if the first entry is an
@@ -362,14 +356,14 @@ public:
      *    command. If cmd begins with a /, we return cmd without
      *    further processing.
      */
-    string findFilter(const string& cmd) const;
+    std::string findFilter(const std::string& cmd) const;
 
     /** Thread config init is not done automatically because not all
         programs need it and it uses the debug log so that it's better to
         call it after primary init */
     void initThrConf();
 
-    const string& getOrigCwd() {
+    const std::string& getOrigCwd() {
         return o_origcwd;
     }
 
@@ -377,58 +371,58 @@ public:
 
 private:
     int m_ok;
-    string m_reason;    // Explanation for bad state
-    string m_confdir;   // User directory where the customized files are stored
+    std::string m_reason;    // Explanation for bad state
+    std::string m_confdir;   // User directory where the customized files are stored
     // Normally same as confdir. Set to store all bulk data elsewhere.
     // Provides defaults top location for dbdir, webcachedir,
     // mboxcachedir, aspellDictDir, which can still be used to
     // override.
-    string m_cachedir;  
-    string m_datadir;   // Example: /usr/local/share/recoll
-    string m_keydir;    // Current directory used for parameter fetches.
+    std::string m_cachedir;  
+    std::string m_datadir;   // Example: /usr/local/share/recoll
+    std::string m_keydir;    // Current directory used for parameter fetches.
     int    m_keydirgen; // To help with knowing when to update computed data.
 
-    vector<string> m_cdirs; // directory stack for the confstacks
+    std::vector<std::string> m_cdirs; // directory stack for the confstacks
 
-    map<string, FieldTraits>  m_fldtotraits; // Field to field params
-    map<string, string>  m_aliastocanon;
-    map<string, string>  m_aliastoqcanon;
-    set<string>          m_storedFields;
-    map<string, string>  m_xattrtofld;
+    std::map<std::string, FieldTraits>  m_fldtotraits; // Field to field params
+    std::map<std::string, std::string>  m_aliastocanon;
+    std::map<std::string, std::string>  m_aliastoqcanon;
+    std::set<std::string>          m_storedFields;
+    std::map<std::string, std::string>  m_xattrtofld;
 
     unsigned int m_maxsufflen;
     ParamStale   m_oldstpsuffstate; // Values from user mimemap, now obsolete
     ParamStale   m_stpsuffstate;
-    vector<string> m_stopsuffvec;
+    std::vector<std::string> m_stopsuffvec;
 
     // skippedNames state 
     ParamStale   m_skpnstate;
-    vector<string> m_skpnlist;
+    std::vector<std::string> m_skpnlist;
 
     // onlyNames state 
     ParamStale   m_onlnstate;
-    vector<string> m_onlnlist;
+    std::vector<std::string> m_onlnlist;
 
     // Original current working directory. Set once at init before we do any
     // chdir'ing and used for converting user args to absolute paths.
-    static string o_origcwd;
+    static std::string o_origcwd;
 
     // Parameters auto-fetched on setkeydir
-    string m_defcharset;
-    static string o_localecharset;
+    std::string m_defcharset;
+    static std::string o_localecharset;
     // Limiting set of mime types to be processed. Normally empty.
     ParamStale    m_rmtstate;
-    std::unordered_set<string>   m_restrictMTypes; 
+    std::unordered_set<std::string>   m_restrictMTypes; 
     // Exclusion set of mime types. Normally empty
     ParamStale    m_xmtstate;
-    std::unordered_set<string>   m_excludeMTypes; 
+    std::unordered_set<std::string>   m_excludeMTypes; 
 
-    vector<pair<int, int> > m_thrConf;
+    std::vector<std::pair<int, int> > m_thrConf;
 
     // Same idea with the metadata-gathering external commands,
     // (e.g. used to reap tagging info: "tmsu tags %f")
     ParamStale    m_mdrstate;
-    vector<MDReaper> m_mdreapers;
+    std::vector<MDReaper> m_mdreapers;
 
     //////////////////
     // Members needing explicit processing when copying 
@@ -451,7 +445,7 @@ private:
     void zeroMe();
     /** Free data then zero pointers */
     void freeAll();
-    bool readFieldsConfig(const string& errloc);
+    bool readFieldsConfig(const std::string& errloc);
 };
 
 // This global variable defines if we are running with an index

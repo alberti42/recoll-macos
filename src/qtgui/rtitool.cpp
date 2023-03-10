@@ -35,6 +35,9 @@
 #include "execmd.h"
 
 using std::string;
+using std::vector;
+using std::map;
+using std::list;
 
 static const char *rautostartfile = ".config/autostart/recollindex.desktop";
 

@@ -200,7 +200,7 @@ signals:
     void docSaveToFileClicked(Rcl::Doc);
     void previewRequested(Rcl::Doc);
     void editRequested(Rcl::Doc);
-    void openWithRequested(Rcl::Doc, string cmd);
+    void openWithRequested(Rcl::Doc, std::string cmd);
     void headerClicked();
     void docExpand(Rcl::Doc);
     void showSubDocs(Rcl::Doc);

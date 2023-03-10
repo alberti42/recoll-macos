@@ -41,6 +41,9 @@
 #include "transcode.h"
 #include "rclutil.h"
 
+using std::string;
+using std::map;
+
 static const string cstr_html_charset("charset");
 static const string cstr_html_content("content");
 

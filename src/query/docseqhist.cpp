@@ -23,13 +23,15 @@
 #include <time.h>
 
 #include <cmath>
-using std::vector;
 
 #include "rcldb.h"
 #include "fileudi.h"
 #include "base64.h"
 #include "log.h"
 #include "smallut.h"
+
+using std::vector;
+using std::string;
 
 // Encode document history entry: 
 // U + Unix time + base64 of udi

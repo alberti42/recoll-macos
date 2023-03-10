@@ -59,6 +59,11 @@
 #include "scbase.h"
 #include "rclhelp.h"
 
+using std::string;
+using std::vector;
+using std::map;
+using std::list;
+
 void UIPrefsDialog::init()
 {
     // See enum above and keep in order !

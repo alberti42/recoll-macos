@@ -28,6 +28,8 @@
 #include "pathut.h"
 #include "rcldoc.h"
 
+using std::string;
+
 const string cstr_bgc_mimetype("mimetype");
 
 WebStore::WebStore(RclConfig *cnf) 
@@ -81,10 +83,9 @@ bool WebStore::getFromCache(const string& udi, Rcl::Doc &dotdoc,
     cf.get(cstr_fmtime, dotdoc.fmtime, cstr_null);
     cf.get(cstr_fbytes, dotdoc.pcbytes, cstr_null);
     dotdoc.sig.clear();
-    vector<string> names = cf.getNames(cstr_null);
-    for (vector<string>::const_iterator it = names.begin();
-         it != names.end(); it++) {
-        cf.get(*it, dotdoc.meta[*it], cstr_null);
+    auto names = cf.getNames(cstr_null);
+    for (const auto& nm : names) {
+        cf.get(nm, dotdoc.meta[nm], cstr_null);
     }
     dotdoc.meta[Rcl::Doc::keyudi] = udi;
     return true;

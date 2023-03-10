@@ -16,6 +16,8 @@
  */
 #include "autoconfig.h"
 
+#include <string>
+
 #include <stdio.h>
 #ifdef _WIN32
 #include "safewindows.h"
@@ -39,6 +41,8 @@
 #include "execmd.h"
 #include "textsplit.h"
 #include "rcldb.h"
+
+using std::string;
 
 std::thread::id mainthread_id;
 

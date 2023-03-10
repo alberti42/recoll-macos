@@ -23,6 +23,9 @@
 #include "smallut.h"
 #include "log.h"
 
+using std::string;
+using std::vector;
+
 // Read crontab file and split it into lines.
 static bool eCrontabGetLines(vector<string>& lines)
 {

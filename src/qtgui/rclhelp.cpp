@@ -25,6 +25,9 @@
 #include "rclhelp.h"
 #include "log.h"
 
+using std::string;
+using std::map;
+
 map<string, string> HelpClient::helpmap;
 
 void HelpClient::installMap(string wname, string section)

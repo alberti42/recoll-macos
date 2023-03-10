@@ -81,6 +81,9 @@
 #define PRETEND_USE(var) ((void)var)
 #endif
 
+using std::string;
+using std::vector;
+
 namespace pxattr {
 
 class AutoBuf {

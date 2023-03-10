@@ -49,7 +49,7 @@
 #include "hldata.h"
 
 static PlainToRich g_hiliter;
-static const string cstr_ellipsis("...");
+static const std::string cstr_ellipsis("...");
 
 using namespace std;
 
@@ -57,7 +57,7 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
 {
     FileInterner interner(idoc, rclconfig, FileInterner::FIF_forPreview);
     Rcl::Doc fdoc;
-    string ipath = idoc.ipath;
+    std::string ipath = idoc.ipath;
     if (interner.internfile(fdoc, ipath)) {
         cout << fdoc.text << "\n";
     } else {
@@ -66,7 +66,7 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
     return true;
 }
 
-string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
+std::string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
                      int snipcount, bool showlines, HighlightData& hldata)
 {
     std::vector<Rcl::Snippet> snippets;
@@ -89,7 +89,7 @@ string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
     return str.str();
 }
 
-void output_fields(vector<string> fields, Rcl::Doc& doc,
+void output_fields(std::vector<std::string> fields, Rcl::Doc& doc,
                    Rcl::Query& query, Rcl::Db&, bool printnames,
                    bool asSnippets, int snipcnt, bool showlines, HighlightData& hldata)
 {
@@ -99,7 +99,7 @@ void output_fields(vector<string> fields, Rcl::Doc& doc,
         }
     }
     for (const auto& fld : fields) {
-        string out;
+        std::string out;
         if (fld == "abstract") {
             base64_encode(make_abstract(doc, query, asSnippets, snipcnt, showlines, hldata), out);
         } else if (fld == "xdocid") {
@@ -212,12 +212,12 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 {
     thisprog = argv[0];
 
-    string a_config;
-    string sortfield;
-    string stemlang("english");
-    list<string> extra_dbs;
-    string sf;
-    string syngroupsfn;
+    std::string a_config;
+    std::string sortfield;
+    std::string stemlang("english");
+    list<std::string> extra_dbs;
+    std::string sf;
+    std::string syngroupsfn;
     int firstres = 0;
     int maxcount = 2000;
     int snipcnt = -1;
@@ -253,9 +253,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         case 'N': op_flags |= OPT_N; break;
         case 'n':   
         {
-            string rescnt = optarg;
-            string::size_type dash = rescnt.find("-");
-            if (dash != string::npos) {
+            std::string rescnt = optarg;
+            std::string::size_type dash = rescnt.find("-");
+            if (dash != std::string::npos) {
                 firstres = atoi(rescnt.substr(0, dash).c_str());
                 if (dash < rescnt.size()-1) {
                     maxcount = atoi(rescnt.substr(dash+1).c_str());
@@ -300,7 +300,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         }
     }
 
-    string reason;
+    std::string reason;
     *cfp = recollinit(0, nullptr, nullptr, reason, &a_config);
     RclConfig *rclconfig = *cfp;
     if (!rclconfig || !rclconfig->ok()) {
@@ -311,7 +311,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     if (argc < 1 && !(op_flags & OPT_P)) {
         Usage();
     }
-    vector<string> fields;
+    std::vector<std::string> fields;
     if (op_flags & OPT_F) {
         if (op_flags & (OPT_b|OPT_d|OPT_b|OPT_Q|OPT_m|OPT_A))
             Usage();
@@ -355,14 +355,14 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     if (optind >= argc) {
         Usage();
     }
-    string qs;
+    std::string qs;
     while (optind < argc) {
         qs += std::string(argv[optind++]) + " ";
     }
 
     {
-        string uq;
-        string charset = rclconfig->getDefCharset(true);
+        std::string uq;
+        std::string charset = rclconfig->getDefCharset(true);
         int ercnt;
         if (!transcode(qs, uq, charset, "UTF-8", &ercnt)) {
             std::cerr << "Can't convert command line args to utf-8\n";
@@ -461,11 +461,11 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         if (op_flags & OPT_b) {
             cout << doc.url << "\n";
         } else {
-            string titleorfn = doc.meta[Rcl::Doc::keytt];
+            std::string titleorfn = doc.meta[Rcl::Doc::keytt];
             if (titleorfn.empty())
                 titleorfn = doc.meta[Rcl::Doc::keyfn];
             if (titleorfn.empty()) {
-                string url;
+                std::string url;
                 printableUrl(rclconfig->getDefCharset(), doc.url, url);
                 titleorfn = path_getsimple(url);
             }
@@ -486,8 +486,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             if (op_flags & OPT_A) {
                 bool asSnippets = (op_flags & (OPT_p|OPT_g)) != 0;
                 bool showlines = (op_flags & OPT_g) != 0;
-                string abstract = make_abstract(doc, query, asSnippets, snipcnt, showlines, hldata);
-                string marker = asSnippets ? "SNIPPETS" : "ABSTRACT";
+                std::string abstract =
+                    make_abstract(doc, query, asSnippets, snipcnt, showlines, hldata);
+                std::string marker = asSnippets ? "SNIPPETS" : "ABSTRACT";
                 if (!abstract.empty()) {
                     cout << marker << "\n" << abstract << "/" << marker << "\n";
                 }

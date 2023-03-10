@@ -21,6 +21,9 @@
 #include "smallut.h"
 #include "stoplist.h"
 
+using std::string;
+using std::set;
+
 namespace Rcl 
 {
 

@@ -25,8 +25,9 @@
 #include "webqueuefetcher.h"
 #include "exefetcher.h"
 
-std::unique_ptr<DocFetcher> docFetcherMake(RclConfig *config,
-                                           const Rcl::Doc& idoc)
+using std::string;
+
+std::unique_ptr<DocFetcher> docFetcherMake(RclConfig *config, const Rcl::Doc& idoc)
 {
     if (idoc.url.empty()) {
         LOGERR("docFetcherMakeg:: no url in doc!\n" );

@@ -28,6 +28,12 @@
 #include <qtooltip.h>
 #include <qwhatsthis.h>
 
+using std::string;
+using std::vector;
+using std::map;
+using std::list;
+using std::set;
+
 using namespace Rcl;
 
 /*

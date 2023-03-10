@@ -43,6 +43,9 @@
 #include <QFont>
 #endif
 
+using std::vector;
+using std::string;
+
 RclDynConf *g_dynconf;
 AdvSearchHist *g_advshistory;
 RclConfig *theconfig;
@@ -52,6 +55,7 @@ static const std::string dirlistsep{";"};
 #else
 static const std::string dirlistsep{":"};
 #endif
+
 
 // The table should not be necessary, but I found no css way to get
 // qt 4.6 qtextedit to clear the margins after the float img without 

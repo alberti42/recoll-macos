@@ -20,12 +20,8 @@
 #include <set>
 #include <string>
 
-#ifndef NO_NAMESPACES
-using std::set;
-using std::string;
 namespace Rcl 
 {
-#endif
 
 /**
  * A StopList is just a bunch of strings read from a file. 
@@ -37,18 +33,16 @@ namespace Rcl
 class StopList {
 public:
     StopList() {}
-    StopList(const string &filename) {setFile(filename);}
+    StopList(const std::string &filename) {setFile(filename);}
 
-    bool setFile(const string &filename);
-    bool isStop(const string &term) const;
+    bool setFile(const std::string &filename);
+    bool isStop(const std::string &term) const;
     bool hasStops() const {return !m_stops.empty();}
 
 private:
-    set<string> m_stops;
+    std::set<std::string> m_stops;
 };
 
-#ifndef NO_NAMESPACES
 }
-#endif
 
 #endif /* _STOPLIST_H_INCLUDED_ */

@@ -19,6 +19,8 @@
 #include "autoconfig.h"
 
 #include <string>
+#include <vector>
+#include <memory>
 
 #include <QVariant>
 #include <QWidget>
@@ -26,19 +28,17 @@
 #include <QVariant>
 #include <QPixmap>
 
-class QTimer;
-class QShortcut;
-
 #include "recoll.h"
 #include "searchdata.h"
-#include <memory>
 
 #include "ui_ssearchb.h"
 
 struct SSearchDef;
-
 class SSearch;
 class QCompleter;
+class QTimer;
+class QShortcut;
+
 
 class RclCompleterModel : public QAbstractTableModel {
     Q_OBJECT
@@ -55,7 +55,7 @@ public slots:
     virtual void onPartialWord(int, const QString&, const QString&);
 private:
     void init();
-    vector<pair<QString, int>> currentlist;
+    std::vector<std::pair<QString, int>> currentlist;
     int firstfromindex;
     QPixmap clockPixmap;
     QPixmap interroPixmap;
@@ -116,7 +116,7 @@ signals:
     
 private:
     int getPartialWord(QString& word);
-    bool startSimpleSearch(const string& q, int maxexp = -1);
+    bool startSimpleSearch(const std::string& q, int maxexp = -1);
     bool checkExtIndexes(const std::vector<std::string>& dbs);
 
     RclCompleterModel *m_completermodel{nullptr};

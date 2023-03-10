@@ -25,9 +25,6 @@
 #include <sstream>
 #include <iostream>
 #include <list>
-using std::ostringstream;
-using std::endl;
-using std::list;
 
 #include "cstr.h"
 #include "reslistpager.h"
@@ -38,6 +35,12 @@ using std::list;
 #include "plaintorich.h"
 #include "mimehandler.h"
 #include "transcode.h"
+
+using std::ostringstream;
+using std::list;
+using std::map;
+using std::string;
+using std::vector;
 
 // Default highlighter. No need for locking, this is query-only.
 static const string cstr_hlfontcolor("<span style='color: blue;'>");

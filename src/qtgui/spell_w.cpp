@@ -51,6 +51,8 @@
 using std::list;
 using std::multimap;
 using std::string;
+using std::vector;
+using std::pair;
 
 inline bool wordlessMode(SpellW::comboboxchoice v)
 {

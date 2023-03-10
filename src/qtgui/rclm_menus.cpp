@@ -25,6 +25,10 @@
 #include <QMessageBox>
 #include <QActionGroup>
 
+using std::string;
+using std::vector;
+using std::map;
+
 void RclMain::buildMenus()
 {
     fileMenu = new QMenu();

@@ -24,6 +24,10 @@
 #include "rclzg.h"
 #include "rclmain_w.h"
 
+using std::string;
+using std::vector;
+using std::map;
+
 static const QKeySequence quitKeySeq("Ctrl+q");
 
 // If a preview (toplevel) window gets closed by the user, we need to

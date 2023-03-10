@@ -69,7 +69,7 @@ public:
     void abstractPopulateQTerm(
         Xapian::Database& xrdb,
         Xapian::docid docid,
-        const string& qterm,
+        const std::string& qterm,
         int qtrmwrdcnt,
         int ctxwords,
         unsigned int maxgrpoccs,
@@ -113,7 +113,7 @@ public:
         double totalweight,
         int ctxwords,
         unsigned int maxtotaloccs,
-        vector<Snippet>& vabs,
+        std::vector<Snippet>& vabs,
         Chrono& chron,
         bool sortbypage
         );

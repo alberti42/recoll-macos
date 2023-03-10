@@ -33,17 +33,17 @@ extern bool maybeOpenDb(std::string &reason, bool force, bool *maindberror = 0);
 extern const std::vector<std::string> *getCurrentExtraDbs();
 
 /** Retrieve configured stemming languages */
-bool getStemLangs(vector<string>& langs);
+bool getStemLangs(std::vector<std::string>& langs);
 
 extern RclConfig *theconfig;
 
 extern TempFile *rememberTempFile(TempFile);
-extern void forgetTempFile(string &fn);
+extern void forgetTempFile(std::string &fn);
 extern void deleteAllTempFiles();
 
 extern std::shared_ptr<Rcl::Db> rcldb;
 extern int recollNeedsExit;
-extern void startManual(const string& helpindex);
+extern void startManual(const std::string& helpindex);
 
 extern void applyStyleSheet(const QString&);
 

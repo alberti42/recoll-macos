@@ -63,7 +63,7 @@ public:
     virtual ~SynTermTransStem() = default;
 
     virtual std::string operator()(const std::string& in) {
-        string out = m_stemmer(in);
+        std::string out = m_stemmer(in);
         LOGDEB2("SynTermTransStem(" << m_lang << "): in [" << in << "] out [" << out << "]\n");
         return out;
     }

@@ -17,6 +17,8 @@
 
 #include "autoconfig.h"
 
+#include <string>
+
 #include <errno.h>
 
 #include "rclconfig.h"
@@ -28,9 +30,9 @@
 
 using std::string;
 using std::map;
+using std::vector;
 
-static void docfieldfrommeta(RclConfig* cfg, const string& name, 
-                             const string &value, Rcl::Doc& doc)
+static void docfieldfrommeta(RclConfig* cfg, const string& name, const string &value, Rcl::Doc& doc)
 {
     string fieldname = cfg->fieldCanon(name);
     LOGDEB0("Internfile:: setting [" << fieldname << "] from cmd/xattr value [" << value << "]\n");

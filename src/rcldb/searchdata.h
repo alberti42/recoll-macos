@@ -77,7 +77,7 @@ class SearchDataClauseDist;
 */
 class SearchData {
 public:
-    SearchData(SClType tp, const string& stemlang) 
+    SearchData(SClType tp, const std::string& stemlang) 
         : m_tp(tp), m_stemlang(stemlang) {
         if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
             m_tp = SCLT_OR;
@@ -151,7 +151,7 @@ public:
 
     /** Return an XML version of the contents, for storage in search history
         by the GUI */
-    string asXML();
+    std::string asXML();
 
     void setTp(SClType tp) {
         m_tp = tp;
@@ -226,7 +226,7 @@ private:
     bool expandFileTypes(Rcl::Db &db, std::vector<std::string>& exptps);
     bool clausesToQuery(Rcl::Db &db, SClType tp,     
                         std::vector<SearchDataClause*>& query,
-                        string& reason, void *d);
+                        std::string& reason, void *d);
 };
 
 class SearchDataClause {
@@ -267,7 +267,7 @@ public:
     void setParent(SearchData *p) {
         m_parentSearch = p;
     }
-    string getStemLang() {
+    std::string getStemLang() {
         return (m_modifiers & SDCM_NOSTEMMING) || nullptr == m_parentSearch ? 
             cstr_null : m_parentSearch->getStemLang();
     }
@@ -356,7 +356,7 @@ public:
     virtual const std::string& getfield() const {
         return m_field;
     }
-    virtual void setfield(const string& field) {
+    virtual void setfield(const std::string& field) {
         m_field = field;
     }
     virtual void dump(std::ostream& o) const override;
@@ -368,7 +368,7 @@ protected:
     // Current count of Xapian clauses, to check against expansion limit
     size_t  m_curcl;
 
-    bool processUserString(Rcl::Db &db, const string &iq,
+    bool processUserString(Rcl::Db &db, const std::string &iq,
                            std::string &ermsg,
                            void* pq, int slack = 0, bool useNear = false);
     bool expandTerm(Rcl::Db &db, std::string& ermsg, int mods, 
@@ -377,10 +377,10 @@ protected:
                     std::string& sterm, const std::string& prefix,
                     std::vector<std::string>* multiwords = nullptr);
     // After splitting entry on whitespace: process non-phrase element
-    void processSimpleSpan(Rcl::Db &db, string& ermsg, const string& span, 
+    void processSimpleSpan(Rcl::Db &db, std::string& ermsg, const std::string& span, 
                            int mods, void *pq);
     // Process phrase/near element
-    void processPhraseOrNear(Rcl::Db &db, string& ermsg, TermProcQ *splitData, 
+    void processPhraseOrNear(Rcl::Db &db, std::string& ermsg, TermProcQ *splitData, 
                              int mods, void *pq, bool useNear, int slack);
 };
 

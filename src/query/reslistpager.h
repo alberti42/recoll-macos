@@ -89,19 +89,19 @@ public:
                           Rcl::Doc& doc, const HighlightData& hdata);
     /* Generate HTML for single document inside page */
     void displayDoc(RclConfig *, int idx, Rcl::Doc& doc, 
-                    const HighlightData& hdata, const string& sh = "");
+                    const HighlightData& hdata, const std::string& sh = "");
 
     bool pageEmpty() {return m_respage.size() == 0;}
 
-    string queryDescription() {
+    std::string queryDescription() {
         return m_docSource ? m_docSource->getDescription() : "";
     }
 
     bool getDoc(int num, Rcl::Doc &doc);
 
     // Things that need to be reimplemented in the subclass:
-    virtual bool append(const string& data);
-    virtual bool append(const string& data, int, const Rcl::Doc&) {
+    virtual bool append(const std::string& data);
+    virtual bool append(const std::string& data, int, const Rcl::Doc&) {
             return append(data);
     }
     /* Implementing this allows accumulating the text and setting the HTML 
@@ -113,22 +113,22 @@ public:
     // To repeat: any change to a string used with trans() inside
     // reslistpager.cpp must be reflected in the string table inside
     // reslist.cpp for translation to work.
-    virtual string trans(const string& in);
-    virtual string detailsLink();
-    virtual const string &parFormat();
-    virtual const string &dateFormat();
-    virtual string nextUrl();
-    virtual string prevUrl();
-    virtual string pageTop() {return string();}
-    virtual string headerContent() {return string();}
-    virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
+    virtual std::string trans(const std::string& in);
+    virtual std::string detailsLink();
+    virtual const std::string &parFormat();
+    virtual const std::string &dateFormat();
+    virtual std::string nextUrl();
+    virtual std::string prevUrl();
+    virtual std::string pageTop() {return std::string();}
+    virtual std::string headerContent() {return std::string();}
+    virtual std::string iconUrl(RclConfig *, Rcl::Doc& doc);
     virtual void suggest(const std::vector<std::string>, 
                          std::map<std::string, std::vector<std::string> >& sugg){
             sugg.clear();
     }
-    virtual string absSep() {return "&hellip;";}
-    virtual string linkPrefix() {return "";}
-    virtual string bodyAttrs() {return string();}
+    virtual std::string absSep() {return "&hellip;";}
+    virtual std::string linkPrefix() {return "";}
+    virtual std::string bodyAttrs() {return std::string();}
 private:
     int                  m_pagesize;
     bool                 m_alwaysSnippets;

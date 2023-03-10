@@ -63,6 +63,8 @@
 #include "scbase.h"
 #include "appformime.h"
 
+using std::string;
+
 // Make an attempt at trimming wildcard exprs at both ends of string
 static void trimwildcards(string& elt)
 {

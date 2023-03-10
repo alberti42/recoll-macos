@@ -26,12 +26,6 @@
 #include <algorithm>
 #include <regex>
 
-using std::vector;
-using std::list;
-using std::pair;
-using std::set;
-using std::unordered_map;
-
 // #define LOGGER_LOCAL_LOGINC 3
 
 #include "rcldb.h"
@@ -44,6 +38,14 @@ using std::unordered_map;
 #include "plaintorich.h"
 #include "cancelcheck.h"
 #include "unacpp.h"
+
+using std::vector;
+using std::list;
+using std::pair;
+using std::set;
+using std::unordered_map;
+using std::map;
+using std::string;
 
 // Text splitter used to take note of the position of query terms
 // inside the result text. This is then used to insert highlight tags.

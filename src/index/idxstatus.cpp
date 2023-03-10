@@ -25,6 +25,8 @@
 #include "rclconfig.h"
 #include "x11mon.h"
 
+using std::string;
+
 // Global stop request flag. This is checked in a number of place in the
 // indexing routines.
 int stopindexing;

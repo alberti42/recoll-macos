@@ -59,6 +59,11 @@
 #include "respopup.h"
 #include "reslistpager.h"
 
+using std::string;
+using std::vector;
+using std::map;
+using std::list;
+
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
 

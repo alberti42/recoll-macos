@@ -24,6 +24,8 @@
 #include "cancelcheck.h"
 #include "rclconfig.h"
 
+using std::string;
+
 LoadThread::LoadThread(RclConfig *config, const Rcl::Doc& idc,
                        bool pvhtm, QObject *parent)
     : QThread(parent), status(1), m_idoc(idc), m_previewHtml(pvhtm),

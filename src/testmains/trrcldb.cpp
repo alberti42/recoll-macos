@@ -33,6 +33,10 @@
 #include "rclutil.h"
 #include "log.h"
 
+using std::string;
+using std::vector;
+using std::map;
+
 static std::map<std::string, int> options {
     {"dirlist", 0},
 };

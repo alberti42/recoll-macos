@@ -58,7 +58,7 @@ public:
     /* Copyconst and assignment forbidden */
     TermProc(const TermProc &) = delete;
     TermProc& operator=(const TermProc &) = delete;
-    virtual bool takeword(const string &term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string &term, int pos, int bs, int be) {
         if (m_next)
             return m_next->takeword(term, pos, bs, be);
         return true;
@@ -89,14 +89,14 @@ public:
     TextSplitP(TermProc *prc, Flags flags = Flags(TXTS_NONE))
         : TextSplit(flags), m_prc(prc)  {}
 
-    virtual bool text_to_words(const string &in) {
+    virtual bool text_to_words(const std::string &in) {
         bool ret = TextSplit::text_to_words(in);
         if (m_prc && !m_prc->flush())
             return false;
         return ret;
     }
 
-    virtual bool takeword(const string& term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& term, int pos, int bs, int be) {
         if (m_prc)
             return m_prc->takeword(term, pos, bs, be);
         return true;
@@ -119,9 +119,9 @@ public:
     TermProcPrep(TermProc *nxt)
         : TermProc(nxt) {}
 
-    virtual bool takeword(const string& itrm, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& itrm, int pos, int bs, int be) {
         m_totalterms++;
-        string otrm;
+        std::string otrm;
 
         if (!unacmaybefold(itrm, otrm, "UTF-8", UNACOP_UNACFOLD)) {
             LOGDEB("splitter::takeword: unac [" << itrm << "] failed\n");
@@ -204,7 +204,7 @@ public:
     TermProcStop(TermProc *nxt, const Rcl::StopList& stops)
         : TermProc(nxt), m_stops(stops) {}
 
-    virtual bool takeword(const string& term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& term, int pos, int bs, int be) {
         if (m_stops.isStop(term)) {
             return true;
         }
@@ -223,7 +223,7 @@ public:
         : TermProc(nxt), m_groups(sg.getmultiwords()), 
           m_maxl(sg.getmultiwordsmaxlength()) {}
     
-    virtual bool takeword(const string& term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& term, int pos, int bs, int be) {
         LOGDEB1("TermProcMulti::takeword[" << term << "] at pos " << pos <<"\n");
         if (m_maxl < 2) {
             // Should not have been pushed??
@@ -233,7 +233,7 @@ public:
         if (m_terms.size() > m_maxl) {
             m_terms.pop_front();
         }
-        string comp;
+        std::string comp;
         int gsz{1};
         for (const auto& gterm : m_terms) {
             if (comp.empty()) {
@@ -275,7 +275,7 @@ public:
     TermProcCommongrams(TermProc *nxt, const Rcl::StopList& stops)
         : TermProc(nxt), m_stops(stops), m_onlygrams(false) {}
 
-    virtual bool takeword(const string& term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& term, int pos, int bs, int be) {
         LOGDEB1("TermProcCom::takeword: pos " << pos << " " << bs << " " <<
                 be << " [" << term << "]\n");
         bool isstop = m_stops.isStop(term);
@@ -284,7 +284,7 @@ public:
         if (!m_prevterm.empty() && (m_prevstop || isstop)) {
             // create 2-gram. space unnecessary but improves
             // the readability of queries
-            string twogram;
+            std::string twogram;
             twogram.swap(m_prevterm);
             twogram.append(1, ' ');
             twogram += term;
@@ -333,7 +333,7 @@ private:
     // The stoplist we're using
     const Rcl::StopList& m_stops;
     // Remembered data for the last processed term
-    string m_prevterm;
+    std::string m_prevterm;
     bool   m_prevstop;
     int    m_prevpos;
     int    m_prevbs;

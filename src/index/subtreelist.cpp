@@ -18,6 +18,8 @@
 #include "autoconfig.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "cstr.h"
 #include "rcldb.h"
@@ -26,7 +28,7 @@
 #include "subtreelist.h"
 #include "log.h"
 
-bool subtreelist(RclConfig *config, const string& _top, vector<string>& paths)
+bool subtreelist(RclConfig *config, const std::string& _top, std::vector<std::string>& paths)
 {
     std::string top(_top);
 #ifdef _WIN32
@@ -55,7 +57,7 @@ bool subtreelist(RclConfig *config, const string& _top, vector<string>& paths)
         Rcl::Doc doc;
         if (!query.getDoc(i, doc))
             break;
-        string path = fileurltolocalpath(doc.url);
+        std::string path = fileurltolocalpath(doc.url);
         if (!path.empty())
             paths.push_back(path);
     }

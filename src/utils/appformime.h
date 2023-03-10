@@ -45,10 +45,10 @@ public:
     static DesktopDb* getDb();
 
     /** Constructor for a db based on a non-standard location */
-    DesktopDb(const string& dir);
+    DesktopDb(const std::string& dir);
 
     /** In case of error: what happened ? */
-    const string& getReason();
+    const std::string& getReason();
 
     /**
      * Get a list of applications able to process a given MIME type.
@@ -58,7 +58,7 @@ public:
      * @return true for no error (apps may still be empty). false if a serious
      *   problem was detected.
      */
-    bool appForMime(const std::string& mime, vector<AppDef> *apps, 
+    bool appForMime(const std::string& mime, std::vector<AppDef> *apps, 
                     std::string *reason = nullptr);
 
     /**
@@ -66,12 +66,12 @@ public:
      * @param[output] apps applications 
      * @return true 
      */
-    bool allApps(vector<AppDef> *apps);
+    bool allApps(std::vector<AppDef> *apps);
 
     /** 
      * Get app with given name 
      */
-    bool appByName(const string& nm, AppDef& app);
+    bool appByName(const std::string& nm, AppDef& app);
 
     typedef std::map<std::string, std::vector<DesktopDb::AppDef> > AppMap;
 

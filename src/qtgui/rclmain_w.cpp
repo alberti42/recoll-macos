@@ -76,6 +76,11 @@
 #include "scbase.h"
 #include "idxmodel.h"
 
+using std::string;
+using std::vector;
+using std::map;
+using std::list;
+
 QString g_stringAllStem, g_stringNoStem;
 static const char *settingskey_toolarea="/Recoll/geometry/toolArea";
 static const char *settingskey_resarea="/Recoll/geometry/resArea";
@@ -245,8 +250,8 @@ void RclMain::init()
             this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(restable, SIGNAL(docExpand(Rcl::Doc)), this, SLOT(docExpand(Rcl::Doc)));
     connect(restable, SIGNAL(showSubDocs(Rcl::Doc)), this, SLOT(showSubDocs(Rcl::Doc)));
-    connect(restable, SIGNAL(openWithRequested(Rcl::Doc, string)), 
-            this, SLOT(openWith(Rcl::Doc, string)));
+    connect(restable, SIGNAL(openWithRequested(Rcl::Doc, std::string)), 
+            this, SLOT(openWith(Rcl::Doc, std::string)));
 
     reslist->setRclMain(this, true);
     connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
@@ -270,8 +275,8 @@ void RclMain::init()
     connect(reslist, SIGNAL(showSubDocs(Rcl::Doc)), this, SLOT(showSubDocs(Rcl::Doc)));
     connect(reslist, SIGNAL(docSaveToFileClicked(Rcl::Doc)), this, SLOT(saveDocToFile(Rcl::Doc)));
     connect(reslist, SIGNAL(editRequested(Rcl::Doc)), this, SLOT(startNativeViewer(Rcl::Doc)));
-    connect(reslist, SIGNAL(openWithRequested(Rcl::Doc, string)),
-            this, SLOT(openWith(Rcl::Doc, string)));
+    connect(reslist, SIGNAL(openWithRequested(Rcl::Doc, std::string)),
+            this, SLOT(openWith(Rcl::Doc, std::string)));
     connect(reslist, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
             this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(reslist, SIGNAL(previewRequested(Rcl::Doc)), this, SLOT(startPreview(Rcl::Doc)));

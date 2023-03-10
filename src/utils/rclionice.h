@@ -18,8 +18,7 @@
 #define _RCLIONICE_H_INCLUDED_
 
 #include <string>
-using std::string;
 
-extern bool rclionice(const string& clss, const string& classdata);
+extern bool rclionice(const std::string& clss, const std::string& classdata);
 
 #endif /* _RCLIONICE_H_INCLUDED_ */

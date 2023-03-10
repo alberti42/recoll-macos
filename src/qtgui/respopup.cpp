@@ -33,6 +33,11 @@
 #include "utf8iter.h"
 #include "rclutil.h"
 
+using std::string;
+using std::vector;
+using std::map;
+using std::list;
+
 namespace ResultPopup {
 
 QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source, Rcl::Doc& doc)

@@ -233,7 +233,7 @@ public:
     }
     virtual std::string getReason() override {
         if (!m_seq)
-            return string();
+            return std::string();
         return m_seq->getReason();
     }
     virtual std::string title() override {

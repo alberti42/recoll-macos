@@ -27,23 +27,21 @@
 #include <string>
 #include <map>
 
-using std::string;
-using std::map;
 
 class HtmlParser {
-    map<string, string> parameters;
+    std::map<std::string, std::string> parameters;
 protected:
-    virtual void decode_entities(string &s);
+    virtual void decode_entities(std::string &s);
     bool in_script;
-    string charset;
-    static map<string, unsigned int> named_ents;
+    std::string charset;
+    static std::map<std::string, unsigned int> named_ents;
 
-    bool get_parameter(const string & param, string & value) const;
+    bool get_parameter(const std::string & param, std::string & value) const;
 public:
-    virtual void process_text(const string &/*text*/) { }
-    virtual bool opening_tag(const string &/*tag*/) { return true; }
-    virtual bool closing_tag(const string &/*tag*/) { return true; }
-    virtual void parse_html(const string &text);
+    virtual void process_text(const std::string &/*text*/) { }
+    virtual bool opening_tag(const std::string &/*tag*/) { return true; }
+    virtual bool closing_tag(const std::string &/*tag*/) { return true; }
+    virtual void parse_html(const std::string &text);
     virtual void do_eof() {}
     HtmlParser();
 };

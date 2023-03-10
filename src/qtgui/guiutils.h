@@ -31,9 +31,6 @@ extern RclDynConf *g_dynconf;
 #include "advshist.h"
 extern AdvSearchHist *g_advshistory;
 
-using std::string;
-using std::list;
-using std::vector;
 
 /** Holder for preferences (gets saved to user Qt prefs) */
 class PrefsPack {
@@ -54,7 +51,7 @@ public:
     QString qtermstyle; // CSS style for query terms in reslist and other places
     // Result list format string
     QString reslistformat;
-    string  creslistformat;
+    std::string  creslistformat;
     QString reslistheadertext;
     // This is either empty or the contents of the recoll-dark.css
     // file if we are in dark mode. It is set in the header before the
@@ -62,7 +59,7 @@ public:
     // is controled by darkMode
     QString darkreslistheadertext;
     // Date strftime format
-    string reslistdateformat;
+    std::string reslistdateformat;
 
     //  General Qt style sheet.
     QString qssFile;
@@ -111,11 +108,11 @@ public:
     bool showResultsAsTable;
 
     // Extra query indexes. This are stored in the history file, not qt prefs
-    vector<string> allExtraDbs;
-    vector<string> activeExtraDbs;
+    std::vector<std::string> allExtraDbs;
+    std::vector<std::string> activeExtraDbs;
     // Temporary value while we run a saved query. Erased right after use.
     bool useTmpActiveExtraDbs{false};
-    vector<string> tmpActiveExtraDbs;
+    std::vector<std::string> tmpActiveExtraDbs;
     // Advanced search subdir restriction: we don't activate the last value
     // but just remember previously entered values
     QStringList asearchSubdirHist;
@@ -169,7 +166,7 @@ public:
     int showTempFileWarning{-1};
     
     // Advanced search window clause list state
-    vector<int> advSearchClauses;
+    std::vector<int> advSearchClauses;
 
     // Default paragraph format for result list
     static const char *dfltResListFormat;

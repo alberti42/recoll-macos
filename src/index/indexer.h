@@ -19,9 +19,7 @@
 
 #include <string>
 #include <list>
-#include <map>
 #include <vector>
-#include <mutex>
 
 #include "rclconfig.h"
 #include "rcldb.h"
@@ -69,26 +67,26 @@ public:
     /** Run indexers */
     bool index(bool resetbefore, ixType typestorun, int f = IxFNone);
 
-    const string &getReason() {return m_reason;}
+    const std::string &getReason() {return m_reason;}
 
     /** Stemming reset to config: create needed, delete unconfigured */
     bool createStemmingDatabases();
 
     /** Create stem database for given language */
-    bool createStemDb(const string &lang);
+    bool createStemDb(const std::string &lang);
 
     /** Create misspelling expansion dictionary if aspell i/f is available */
     bool createAspellDict();
 
     /** List possible stemmer names */
-    static vector<string> getStemmerNames();
+    static std::vector<std::string> getStemmerNames();
 
     /** Index a list of files. No db cleaning or stemdb updating */
     bool indexFiles(std::list<std::string> &files, int f = IxFNone);
 
     /** Update index for list of documents given as list of docs (out of query)
      */
-    bool updateDocs(vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
+    bool updateDocs(std::vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
 
     /** Purge a list of files. */
     bool purgeFiles(std::list<std::string> &files, int f = IxFNone);
@@ -99,7 +97,7 @@ private:
     FsIndexer *m_fsindexer{nullptr}; 
     bool       m_doweb{false};
     WebQueueIndexer *m_webindexer{nullptr}; 
-    string     m_reason;
+    std::string     m_reason;
 
     // The first time we index, we do things a bit differently to
     // avoid user frustration (make at least some results available

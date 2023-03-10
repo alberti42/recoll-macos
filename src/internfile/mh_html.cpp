@@ -16,6 +16,8 @@
  */
 #include "autoconfig.h"
 
+#include <iostream>
+
 #include "cstr.h"
 #include "mimehandler.h"
 #include "log.h"
@@ -31,7 +33,6 @@
 #include "pathut.h"
 #include "rclconfig.h"
 
-#include <iostream>
 
 using namespace std;
 

@@ -23,12 +23,15 @@
  */
 
 #include <algorithm>
-using std::find;
-using std::find_if;
 #include "htmlparse.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <cstring>
+
+using std::find;
+using std::find_if;
+using std::string;
+using std::map;
 
 inline void
 lowercase_string(string &str)

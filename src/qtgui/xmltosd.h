@@ -65,7 +65,7 @@
 
 // Parsing XML from advanced search history or saved advanced search into
 // a SearchData structure:
-std::shared_ptr<Rcl::SearchData> xmlToSearchData(const string& xml,
+std::shared_ptr<Rcl::SearchData> xmlToSearchData(const std::string& xml,
                                                  bool complain = true);
 
 // Parsing XML from saved simple search to ssearch parameters
@@ -78,5 +78,5 @@ struct SSearchDef {
     bool autophrase;
     int mode;
 };
-bool xmlToSSearch(const string& xml, SSearchDef&);
+bool xmlToSSearch(const std::string& xml, SSearchDef&);
 #endif /* XMLTOSD_H_INCLUDED */

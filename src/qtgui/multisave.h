@@ -17,8 +17,10 @@
 #ifndef _MULTISAVE_W_H_INCLUDED_
 #define _MULTISAVE_W_H_INCLUDED_
 
+#include <vector>
+
 #include <QWidget>
 
-extern void multiSave(QWidget *parent, vector<Rcl::Doc>& docs);
+extern void multiSave(QWidget *parent, std::vector<Rcl::Doc>& docs);
 
 #endif /* _MULTISAVE_W_H_INCLUDED_ */

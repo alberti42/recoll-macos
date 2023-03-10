@@ -22,6 +22,8 @@
 
 #include <mutex>
 #include <functional>
+#include <string>
+#include <vector>
 
 #include <xapian.h>
 
@@ -51,22 +53,22 @@ public:
     // passed both just to avoid recomputing uniterm which is
     // available on the caller site.
     // Take some care to avoid sharing string data (if string impl is cow)
-    DbUpdTask(Op _op, const string& ud, const string& un, 
-          Xapian::Document *d, size_t tl, string& rztxt)
+    DbUpdTask(Op _op, const std::string& ud, const std::string& un, 
+          Xapian::Document *d, size_t tl, std::string& rztxt)
         : op(_op), udi(ud.begin(), ud.end()), uniterm(un.begin(), un.end()), 
           doc(d), txtlen(tl) {
         rawztext.swap(rztxt);
     }
     // Udi and uniterm equivalently designate the doc
     Op op;
-    string udi;
-    string uniterm;
+    std::string udi;
+    std::string uniterm;
     Xapian::Document *doc;
     // txtlen is used to update the flush interval. It's -1 for a
     // purge because we actually don't know it, and the code fakes a
     // text length based on the term count.
     size_t txtlen;
-    string rawztext; // Compressed doc text
+    std::string rawztext; // Compressed doc text
 };
 #endif // IDX_THREADS
 
@@ -106,16 +108,16 @@ class Db::Native {
 #endif // IDX_THREADS
 
     void openWrite(const std::string& dir, Db::OpenMode mode);
-    void openRead(const string& dir);
+    void openRead(const std::string& dir);
 
     // Determine if an existing index is of the full-text-storing kind
     // by looking at the index metadata. Stores the result in m_storetext
     void storesDocText(Xapian::Database&);
     
     // Final steps of doc update, part which need to be single-threaded
-    bool addOrUpdateWrite(const string& udi, const string& uniterm, 
+    bool addOrUpdateWrite(const std::string& udi, const std::string& uniterm, 
               Xapian::Document *doc, size_t txtlen
-                          , const string& rawztext);
+                          , const std::string& rawztext);
 
     /** Delete all documents which are contained in the input document, 
      * which must be a file-level one.
@@ -128,11 +130,11 @@ class Db::Native {
      * @param udi the parent document identifier.
      * @param uniterm equivalent to udi, passed just to avoid recomputing.
      */
-    bool purgeFileWrite(bool onlyOrphans, const string& udi, 
-            const string& uniterm);
+    bool purgeFileWrite(bool onlyOrphans, const std::string& udi, 
+            const std::string& uniterm);
 
-    bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
-    int getPageNumberForPosition(const vector<int>& pbreaks, int pos);
+    bool getPagePositions(Xapian::docid docid, std::vector<int>& vpos);
+    int getPageNumberForPosition(const std::vector<int>& pbreaks, int pos);
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc,
                         bool fetchtext = false);
@@ -149,25 +151,25 @@ class Db::Native {
      * @param[out] xdoc the xapian document.
      * @return 0 if not found
      */
-    Xapian::docid getDoc(const string& udi, int idxi, Xapian::Document& xdoc);
+    Xapian::docid getDoc(const std::string& udi, int idxi, Xapian::Document& xdoc);
 
     /** Retrieve unique document identifier for given Xapian document, 
      * using the document termlist 
      */
-    bool xdocToUdi(Xapian::Document& xdoc, string &udi);
+    bool xdocToUdi(Xapian::Document& xdoc, std::string &udi);
 
     /** Check if doc is indexed by term */
-    bool hasTerm(const string& udi, int idxi, const string& term);
+    bool hasTerm(const std::string& udi, int idxi, const std::string& term);
 
     /** Update existing Xapian document for pure extended attrs change */
-    bool docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
+    bool docToXdocXattrOnly(TextSplitDb *splitter, const std::string &udi, 
                 Doc &doc, Xapian::Document& xdoc);
     /** Remove all terms currently indexed for field defined by idx prefix */
-    bool clearField(Xapian::Document& xdoc, const string& pfx, 
+    bool clearField(Xapian::Document& xdoc, const std::string& pfx, 
             Xapian::termcount wdfdec);
 
     /** Check if term wdf is 0 and remove term if so */
-    bool clearDocTermIfWdf0(Xapian::Document& xdoc, const string& term);
+    bool clearDocTermIfWdf0(Xapian::Document& xdoc, const std::string& term);
 
     /** Compute list of subdocuments for a given udi. We look for documents 
      * indexed by a parent term matching the udi, the posting list for the 
@@ -183,7 +185,7 @@ class Db::Native {
      * indexer (rcldb user), using the ipath.
      * 
      */
-    bool subDocs(const string &udi, int idxi, vector<Xapian::docid>& docids);
+    bool subDocs(const std::string &udi, int idxi, std::vector<Xapian::docid>& docids);
 
     /** Final matcher. All term transformations are done, we are just matching the input
      * expression against index stored terms. 
@@ -212,11 +214,11 @@ class Db::Native {
         return buf;
     }
 
-    bool getRawText(Xapian::docid docid, string& rawtext);
+    bool getRawText(Xapian::docid docid, std::string& rawtext);
 
     void deleteDocument(Xapian::docid docid) {
-        string metareason;
-        XAPTRY(xwdb.set_metadata(rawtextMetaKey(docid), string()),
+        std::string metareason;
+        XAPTRY(xwdb.set_metadata(rawtextMetaKey(docid), std::string()),
                xwdb, metareason);
         if (!metareason.empty()) {
             LOGERR("deleteDocument: set_metadata error: " <<
