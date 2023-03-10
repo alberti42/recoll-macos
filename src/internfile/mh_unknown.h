@@ -28,7 +28,7 @@
  */
 class MimeHandlerUnknown : public RecollFilter {
 public:
-    MimeHandlerUnknown(RclConfig *cnf, const string& id) 
+    MimeHandlerUnknown(RclConfig *cnf, const std::string& id) 
         : RecollFilter(cnf, id) {
     }
     virtual ~MimeHandlerUnknown() {}

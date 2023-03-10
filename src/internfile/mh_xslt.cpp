@@ -35,6 +35,7 @@
 #include "md5ut.h"
 #include "rclconfig.h"
 #include "readfile.h"
+#include "pathut.h"
 
 using namespace std;
 

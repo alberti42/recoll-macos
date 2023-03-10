@@ -47,6 +47,7 @@
 #include "base64.h"
 #include "daterange.h"
 #include "rclvalues.h"
+#include "pathut.h"
 
 using namespace std;
 

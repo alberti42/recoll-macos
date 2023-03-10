@@ -27,12 +27,14 @@
 #include <stdio.h>
 
 #include <vector>
-using namespace std;
 
 #include <xapian.h>
 
 #include "log.h"
 #include "rclconfig.h"
+#include "smallut.h"
+
+using namespace std;
 
 namespace Rcl {
 

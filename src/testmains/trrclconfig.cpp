@@ -31,6 +31,7 @@ using namespace std;
 #include "rclinit.h"
 #include "rclconfig.h"
 #include "cstr.h"
+#include "conftree.h"
 
 void showFields(RclConfig *config)
 {

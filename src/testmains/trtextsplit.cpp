@@ -38,6 +38,7 @@
 #include "termproc.h"
 #include "rclutil.h"
 #include "rclconfig.h"
+#include "pathut.h"
 
 using namespace std;
 

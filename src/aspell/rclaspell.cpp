@@ -23,6 +23,7 @@
 #include <mutex>
 #include <vector>
 #include <string>
+#include <algorithm>
 #include <stdlib.h>
 
 #include "safeunistd.h"

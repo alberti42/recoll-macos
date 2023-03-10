@@ -21,6 +21,7 @@
 #include "autoconfig.h"
 
 #include <string>
+#include <algorithm>
 
 #include "log.h"
 #include "rcldb.h"
@@ -28,6 +29,7 @@
 #include "stemdb.h"
 #include "expansiondbs.h"
 #include "strmatcher.h"
+#include "pathut.h"
 
 using namespace std;
 

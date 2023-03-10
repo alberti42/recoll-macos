@@ -17,6 +17,7 @@
 #include "autoconfig.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include "wasatorcl.h"
 #include "wasaparserdriver.h"

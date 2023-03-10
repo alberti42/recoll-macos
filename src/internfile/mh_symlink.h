@@ -49,7 +49,7 @@ public:
         char lc[1024];
         ssize_t bytes = readlink(m_fn.c_str(), lc, 1024);
         if (bytes != (ssize_t)-1) {
-            string slc(lc, bytes);
+            std::string slc(lc, bytes);
             transcode(path_getsimple(slc), m_metaData[cstr_dj_keycontent], 
                       m_config->getDefCharset(true), "UTF-8");
         } else {
@@ -60,7 +60,7 @@ public:
         return true;
     }
 protected:
-    virtual bool set_document_file_impl(const string&, const string& fn) {
+    virtual bool set_document_file_impl(const std::string&, const std::string& fn) {
         m_fn = fn;
         return m_havedoc = true;
     }

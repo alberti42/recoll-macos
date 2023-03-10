@@ -31,6 +31,7 @@ using namespace std;
 #include "rclinit.h"
 #include "cstr.h"
 #include "mh_mbox.h"
+#include "pathut.h"
 
 static char *thisprog;
 

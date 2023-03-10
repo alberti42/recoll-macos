@@ -33,6 +33,7 @@
 #include "pathut.h"
 #include "idxstatus.h"
 #include "execmd.h"
+#include "conftree.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"

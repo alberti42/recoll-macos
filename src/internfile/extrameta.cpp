@@ -27,6 +27,7 @@
 #include "cstr.h"
 #include "rcldoc.h"
 #include "execmd.h"
+#include "conftree.h"
 
 using std::string;
 using std::map;

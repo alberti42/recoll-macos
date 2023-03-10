@@ -62,6 +62,7 @@ using namespace std;
 #include "checkretryfailed.h"
 #include "circache.h"
 #include "idxdiags.h"
+#include "conftree.h"
 
 // Command line options
 static int     op_flags;

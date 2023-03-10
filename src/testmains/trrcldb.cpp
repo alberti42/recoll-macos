@@ -21,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <set>
+#include <algorithm>
 #include <getopt.h>
 #include <malloc.h>
 #include <unistd.h>

@@ -27,6 +27,7 @@
 #include "rclconfig.h"
 #include "execmd.h"
 #include "rcldoc.h"
+#include "conftree.h"
 
 using namespace std;
 

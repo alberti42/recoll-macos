@@ -30,6 +30,7 @@
 #include "md5ut.h"
 #include "rclconfig.h"
 #include "idxdiags.h"
+#include "pathut.h"
 
 using namespace std;
 

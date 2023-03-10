@@ -27,6 +27,7 @@
 #include "rclconfig.h"
 #include "pathut.h"
 #include "rcldoc.h"
+#include "conftree.h"
 
 using std::string;
 

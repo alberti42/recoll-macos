@@ -29,6 +29,7 @@
 #include <cstring>
 #include <unordered_set>
 #include <mutex>
+#include <algorithm>
 
 #include "textsplit.h"
 #include "log.h"

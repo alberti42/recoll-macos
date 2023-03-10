@@ -35,6 +35,7 @@
 #include "plaintorich.h"
 #include "mimehandler.h"
 #include "transcode.h"
+#include "pathut.h"
 
 using std::ostringstream;
 using std::list;

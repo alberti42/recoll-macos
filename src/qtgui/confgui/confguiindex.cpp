@@ -46,6 +46,7 @@ using std::string;
 #include "rclconfig.h"
 #include "webstore.h"
 #include "circache.h"
+#include "conftree.h"
 
 static const int spacing = 3;
 static const int margin = 3;

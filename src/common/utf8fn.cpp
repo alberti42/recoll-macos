@@ -17,10 +17,13 @@
 
 #include "autoconfig.h"
 
+#include <algorithm>
+
 #include "utf8fn.h"
 #include "rclconfig.h"
 #include "transcode.h"
 #include "log.h"
+#include "pathut.h"
 
 using namespace std;
 

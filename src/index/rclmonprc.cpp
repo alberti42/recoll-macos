@@ -41,7 +41,7 @@
 #include "log.h"
 #include "rclmon.h"
 #include "log.h"
-
+#include "smallut.h"
 #include "execmd.h"
 #include "recollindex.h"
 #include "pathut.h"

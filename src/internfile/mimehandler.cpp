@@ -24,7 +24,7 @@
 #include <vector>
 #include <list>
 #include <mutex>
-using namespace std;
+#include <algorithm>
 
 #include "cstr.h"
 #include "mimehandler.h"
@@ -44,6 +44,9 @@ using namespace std;
 #include "mh_xslt.h"
 #include "rcldoc.h"
 #include "rclutil.h"
+#include "conftree.h"
+
+using namespace std;
 
 // Performance help: we use a pool of already known and created
 // handlers. There can be several instances for a given mime type
