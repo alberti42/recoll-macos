@@ -24,45 +24,11 @@
 #include <utility>
 #include <map>
 #include <unordered_set>
+#include <memory>
 
-#include "conftree.h"
-#include "smallut.h"
-
-class RclConfig;
-
-// Cache parameter string values for params which need computation and
-// which can change with the keydir. Minimize work by using the
-// keydirgen and a saved string to avoid unneeded recomputations:
-// keydirgen is incremented in RclConfig with each setKeyDir(). We
-// compare our saved value with the current one. If it did not change
-// no get() is needed. If it did change, but the resulting param get()
-// string value is identical, no recomputation is needed.
-class ParamStale {
-public:
-    ParamStale() {}
-    ParamStale(RclConfig *rconf, const std::string& nm)
-        : parent(rconf), paramnames(std::vector<std::string>(1, nm)), savedvalues(1) {
-    }
-    ParamStale(RclConfig *rconf, const std::vector<std::string>& nms)
-        : parent(rconf), paramnames(nms), savedvalues(nms.size()) {
-    }
-    void init(ConfNull *cnf);
-    bool needrecompute();
-    const std::string& getvalue(unsigned int i = 0) const;
-
-private:
-    // The config we belong to. 
-    RclConfig *parent{0};
-    // The configuration file we search for values. This is a borrowed
-    // pointer belonging to the parent, we do not manage it.
-    ConfNull  *conffile{0};
-    std::vector<std::string>    paramnames;
-    std::vector<std::string>    savedvalues;
-    // Check at init if the configuration defines our vars at all. No
-    // further processing is needed if it does not.
-    bool      active{false}; 
-    int       savedkeydirgen{-1};
-};
+class ParamStale;
+class ConfSimple;
+class ConfNull;
 
 // Hold the description for an external metadata-gathering command
 struct MDReaper {
@@ -86,40 +52,29 @@ struct FieldTraits {
 class RclConfig {
 public:
 
-    // Constructor: we normally look for a configuration file, except
-    // if this was specified on the command line and passed through
-    // argcnf
+    // Constructor: we normally look for a configuration file, except if this was specified on the
+    // command line and passed through argcnf
     RclConfig(const std::string *argcnf = nullptr);
-
     RclConfig(const RclConfig &r);
 
-    ~RclConfig() {
-        freeAll();
-    }
+    ~RclConfig();
 
-    RclConfig& operator=(const RclConfig &r) {
-        if (this != &r) {
-            freeAll();
-            initFrom(r);
-        }
-        return *this;
-    }
+    RclConfig& operator=(const RclConfig &r);
 
-    // Return a writable clone of the main config. This belongs to the
-    // caller (must delete it when done)
+    // Return a writable clone of the main config. This belongs to the caller (must delete it when
+    // done)
     ConfNull *cloneMainConfig();
 
     /** (re)Read recoll.conf */
     bool updateMainConfig();
 
-    bool ok() const {return m_ok;}
-    const std::string &getReason() const {return m_reason;}
+    bool ok() const;
+    const std::string &getReason() const;
 
-    /** Return the directory where this configuration is stored. 
-     *  This was possibly silently created by the rclconfig
-     *  constructor it it is the default one (~/.recoll) and it did 
-     *  not exist yet. */
-    std::string getConfDir() const {return m_confdir;}
+    /** Return the directory where this configuration is stored. This was possibly silently created
+     *  by the rclconfig constructor it it is the default one (~/.recoll) and it did not exist
+     *  yet. */
+    std::string getConfDir() const;
     std::string getCacheDir() const;
 
     /** Check if the config files were modified since we read them */
@@ -128,25 +83,22 @@ public:
     /** Returns true if this is ~/.recoll */
     bool isDefaultConfig() const;
     /** Get the local value for /usr/local/share/recoll/ */
-    const std::string& getDatadir() const {return m_datadir;}
+    const std::string& getDatadir() const;
 
     /** Set current directory reference, and fetch automatic parameters. */
     void setKeyDir(const std::string &dir);
-    std::string getKeyDir() const {return m_keydir;}
+    std::string getKeyDir() const;
 
     /** Get generic configuration parameter according to current keydir */
-    bool getConfParam(const std::string& name, std::string& value, bool shallow=false) const {
-            if (nullptr == m_conf)
-                return false;
-            return m_conf->get(name, value, m_keydir, shallow);
-    }
+    bool getConfParam(const std::string& name, std::string& value, bool shallow=false) const;
     /** Variant with autoconversion to int */
     bool getConfParam(const std::string &name, int *value, bool shallow=false) const;
     /** Variant with autoconversion to bool */
     bool getConfParam(const std::string &name, bool *value, bool shallow=false) const;
     /** Variant with conversion to vector<string>
      *  (stringToStrings). Can fail if the string is malformed. */
-    bool getConfParam(const std::string& name, std::vector<std::string> *value, bool shallow=false)const;
+    bool getConfParam(const std::string& name, std::vector<std::string> *value,
+                      bool shallow=false) const;
     /** Variant with conversion to unordered_set<string>
      *  (stringToStrings). Can fail if the string is malformed. */
     bool getConfParam(const std::string &name, std::unordered_set<std::string> *v, 
@@ -158,17 +110,12 @@ public:
     std::pair<int, int> getThrConf(ThrStage who) const;
 
     /** 
-     * Get list of config names under current sk, with possible 
-     * wildcard filtering 
+     * Get list of config names under current sk, with possible wildcard filtering 
      */
-    std::vector<std::string> getConfNames(const char *pattern = nullptr) const {
-        return m_conf->getNames(m_keydir, pattern);
-    }
+    std::vector<std::string> getConfNames(const char *pattern = nullptr) const;
 
     /** Check if name exists anywhere in config */
-    bool hasNameAnywhere(const std::string& nm) const {
-        return m_conf? m_conf->hasNameAnywhere(nm) : false;
-    }
+    bool hasNameAnywhere(const std::string& nm) const;
 
     /** Get default charset for current keydir (was set during setKeydir) 
      * filenames are handled differently */
@@ -200,16 +147,13 @@ public:
     std::string getIdxStopFile() const;
     /** Do path translation according to the ptrans table */
     void urlrewrite(const std::string& dbdir, std::string& url) const;
-    ConfSimple *getPTrans() {
-        return m_ptrans;
-    }
+    ConfSimple *getPTrans();
     /** Get Web Queue directory name */
     std::string getWebQueueDir() const;
 
     /** Get list of skipped file names for current keydir */
     std::vector<std::string>& getSkippedNames();
-    /** Get list of file name filters for current keydir (only those
-        names indexed) */
+    /** Get list of file name filters for current keydir (only those names indexed) */
     std::vector<std::string>& getOnlyNames();
 
     /** Get list of skipped paths patterns. Doesn't depend on the keydir */
@@ -261,14 +205,14 @@ public:
      *
      * @param whole the raw value.
      */
-    static bool valueSplitAttributes(const std::string& whole, std::string& value, ConfSimple& attrs) ;
+    static bool valueSplitAttributes(const std::string& whole, std::string& value,
+                                     ConfSimple& attrs) ;
 
     /** Compute difference between 'base' and 'changed', as elements to be
      * added and substracted from base. Input and output strings are in
      * stringToStrings() format. */
-    static void setPlusMinus(
-        const std::string& base, const std::set<std::string>& changed,
-        std::string& plus, std::string& minus);
+    static void setPlusMinus(const std::string& base, const std::set<std::string>& changed,
+                             std::string& plus, std::string& minus);
 
     /** Return the locale's character set */
     static const std::string& getLocaleCharset();
@@ -293,7 +237,7 @@ public:
     bool getFieldTraits(const std::string& fldname, const FieldTraits **,
                         bool isquery = false) const;
 
-    const std::set<std::string>& getStoredFields() const {return m_storedFields;}
+    const std::set<std::string>& getStoredFields() const;
 
     std::set<std::string> getIndexedFields() const;
 
@@ -304,7 +248,7 @@ public:
     std::string fieldQCanon(const std::string& fld) const;
 
     /** Get xattr name to field names translations */
-    const std::map<std::string, std::string>& getXattrToField() const {return m_xattrtofld;}
+    const std::map<std::string, std::string>& getXattrToField() const;
 
     /** Get value of a parameter inside the "fields" file. Only some filters 
      * use this (ie: mh_mail). The information specific to a given filter
@@ -363,89 +307,12 @@ public:
         call it after primary init */
     void initThrConf();
 
-    const std::string& getOrigCwd() {
-        return o_origcwd;
-    }
+    const std::string& getOrigCwd() const;
 
+    class Internal;
     friend class ParamStale;
-
 private:
-    int m_ok;
-    std::string m_reason;    // Explanation for bad state
-    std::string m_confdir;   // User directory where the customized files are stored
-    // Normally same as confdir. Set to store all bulk data elsewhere.
-    // Provides defaults top location for dbdir, webcachedir,
-    // mboxcachedir, aspellDictDir, which can still be used to
-    // override.
-    std::string m_cachedir;  
-    std::string m_datadir;   // Example: /usr/local/share/recoll
-    std::string m_keydir;    // Current directory used for parameter fetches.
-    int    m_keydirgen; // To help with knowing when to update computed data.
-
-    std::vector<std::string> m_cdirs; // directory stack for the confstacks
-
-    std::map<std::string, FieldTraits>  m_fldtotraits; // Field to field params
-    std::map<std::string, std::string>  m_aliastocanon;
-    std::map<std::string, std::string>  m_aliastoqcanon;
-    std::set<std::string>          m_storedFields;
-    std::map<std::string, std::string>  m_xattrtofld;
-
-    unsigned int m_maxsufflen;
-    ParamStale   m_oldstpsuffstate; // Values from user mimemap, now obsolete
-    ParamStale   m_stpsuffstate;
-    std::vector<std::string> m_stopsuffvec;
-
-    // skippedNames state 
-    ParamStale   m_skpnstate;
-    std::vector<std::string> m_skpnlist;
-
-    // onlyNames state 
-    ParamStale   m_onlnstate;
-    std::vector<std::string> m_onlnlist;
-
-    // Original current working directory. Set once at init before we do any
-    // chdir'ing and used for converting user args to absolute paths.
-    static std::string o_origcwd;
-
-    // Parameters auto-fetched on setkeydir
-    std::string m_defcharset;
-    static std::string o_localecharset;
-    // Limiting set of mime types to be processed. Normally empty.
-    ParamStale    m_rmtstate;
-    std::unordered_set<std::string>   m_restrictMTypes; 
-    // Exclusion set of mime types. Normally empty
-    ParamStale    m_xmtstate;
-    std::unordered_set<std::string>   m_excludeMTypes; 
-
-    std::vector<std::pair<int, int> > m_thrConf;
-
-    // Same idea with the metadata-gathering external commands,
-    // (e.g. used to reap tagging info: "tmsu tags %f")
-    ParamStale    m_mdrstate;
-    std::vector<MDReaper> m_mdreapers;
-
-    //////////////////
-    // Members needing explicit processing when copying 
-    void        *m_stopsuffixes;
-    ConfStack<ConfTree> *m_conf;   // Parsed configuration files
-    ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, 
-    ConfStack<ConfSimple> *mimeconf; // but their content may depend on it.
-    ConfStack<ConfSimple> *mimeview; // 
-    ConfStack<ConfSimple> *m_fields;
-    ConfSimple            *m_ptrans; // Paths translations
-    ///////////////////
-
-/** Create initial user configuration */
-    bool initUserConfig();
-    /** Init all ParamStale members */
-    void initParamStale(ConfNull *cnf, ConfNull *mimemap);
-    /** Copy from other */
-    void initFrom(const RclConfig& r);
-    /** Init pointers to 0 */
-    void zeroMe();
-    /** Free data then zero pointers */
-    void freeAll();
-    bool readFieldsConfig(const std::string& errloc);
+    std::unique_ptr<Internal> m;
 };
 
 // This global variable defines if we are running with an index
