@@ -42,6 +42,8 @@ struct FieldTraits {
     uint32_t valueslot{0};
     enum ValueType {STR, INT};
     ValueType valuetype{STR};
+    // INT type fields are stored as Xapian values, and padded so that they can be compared as
+    // strings. valuelen is the padding width.
     int    valuelen{0};
     int    wdfinc{1}; // Index time term frequency increment (default 1)
     double boost{1.0}; // Query time boost (default 1.0)
@@ -52,8 +54,8 @@ struct FieldTraits {
 class RclConfig {
 public:
 
-    // Constructor: we normally look for a configuration file, except if this was specified on the
-    // command line and passed through argcnf
+    /** Constructor: we will look for the configuration location, except if this was specified on the
+     * command line and passed through argcnf */
     RclConfig(const std::string *argcnf = nullptr);
     RclConfig(const RclConfig &r);
 
@@ -61,8 +63,8 @@ public:
 
     RclConfig& operator=(const RclConfig &r);
 
-    // Return a writable clone of the main config. This belongs to the caller (must delete it when
-    // done)
+    /** Return a writable clone of the main config. This belongs to the caller (must delete it when
+     * done) */
     ConfNull *cloneMainConfig();
 
     /** (re)Read recoll.conf */

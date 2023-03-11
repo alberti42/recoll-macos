@@ -37,6 +37,7 @@
 #include <cstring>
 #include <unordered_map>
 #include <iterator>
+#include <array>
 
 #include "cstr.h"
 #include "pathut.h"
@@ -64,9 +65,63 @@ static const string confsysdir{"macos"};
 static const string confsysdir;
 #endif
 
-typedef multiset<SfString, SuffCmp> SuffixStore;
-#define STOPSUFFIXES ((SuffixStore *)m->m_stopsuffixes)
+// Things for suffix comparison. We define a string class and string 
+// comparison with suffix-only sensitivity
+class SfString {
+public:
+    SfString(const string& s) : m_str(s) {}
+    bool operator==(const SfString& s2) const {
+        string::const_reverse_iterator r1 = m_str.rbegin(), re1 = m_str.rend(),
+            r2 = s2.m_str.rbegin(), re2 = s2.m_str.rend();
+        while (r1 != re1 && r2 != re2) {
+            if (*r1 != *r2) {
+                return 0;
+            }
+            ++r1; ++r2;
+        }
+        return 1;
+    }
+    string m_str;
+};
 
+class SuffCmp {
+public:
+    int operator()(const SfString& s1, const SfString& s2) const {
+        //cout << "Comparing " << s1.m_str << " and " << s2.m_str << "\n";
+        string::const_reverse_iterator 
+            r1 = s1.m_str.rbegin(), re1 = s1.m_str.rend(),
+            r2 = s2.m_str.rbegin(), re2 = s2.m_str.rend();
+        while (r1 != re1 && r2 != re2) {
+            if (*r1 != *r2) {
+                return *r1 < *r2 ? 1 : 0;
+            }
+            ++r1; ++r2;
+        }
+        return 0;
+    }
+};
+
+typedef multiset<SfString, SuffCmp> SuffixStore;
+
+// Static, logically const, RclConfig members or module static
+// variables are initialized once from the first object build during
+// process initialization.
+
+// We default to a case- and diacritics-less index for now
+bool o_index_stripchars = true;
+// Default to storing the text contents for generating snippets. This
+// is only an approximate 10% bigger index and produces nicer
+// snippets.
+bool o_index_storedoctext = true;
+
+bool o_uptodate_test_use_mtime = false;
+
+bool o_expand_phrases = false;
+// We build this once. Used to ensure that the suffix used for a temp
+// file of a given MIME type is the FIRST one from the mimemap config
+// file. Previously it was the first in alphabetic (map) order, with
+// sometimes strange results.
+static unordered_map<string, string> mime_suffixes;
 
 // Cache parameter string values for params which need computation and which can change with the
 // keydir. Minimize work by using the keydirgen and a saved string to avoid unneeded recomputations:
@@ -97,39 +152,16 @@ public:
         savedkeydirgen = -1;
     }
 
-    bool needrecompute() {
-        LOGDEB1("ParamStale:: needrecompute. parent gen " << parent->m->m_keydirgen <<
-                " mine " << savedkeydirgen << "\n");
-
-        if (!conffile) {
-            LOGDEB("ParamStale::needrecompute: conffile not set\n");
-            return false;
-        }
-
-        bool needrecomp = false;
-        if (active && parent->m->m_keydirgen != savedkeydirgen) {
-            savedkeydirgen = parent->m->m_keydirgen;
-            for (unsigned int i = 0; i < paramnames.size(); i++) {
-                string newvalue;
-                conffile->get(paramnames[i], newvalue, parent->m->m_keydir);
-                LOGDEB1("ParamStale::needrecompute: " << paramnames[i] << " -> " <<
-                        newvalue << " keydir " << parent->m->m_keydir << "\n");
-                if (newvalue.compare(savedvalues[i])) {
-                    savedvalues[i] = newvalue;
-                    needrecomp = true;
-                }
-            }
-        }
-        return needrecomp;
-    }
-
-    const string& getvalue(unsigned int i) const {
+    const string& getvalue(unsigned int i = 0) const {
         if (i < savedvalues.size()) {
             return savedvalues[i];
         } else {
-            return std::string();
+            static std::string nll;
+            return nll;
         }
     }
+    // definition needs Internal class: later
+    bool needrecompute();
 
 private:
     // The config we belong to. 
@@ -159,6 +191,9 @@ public:
 
     RclConfig *m_parent;
     int m_ok;
+    // Original current working directory. Set once at init before we do any
+    // chdir'ing and used for converting user args to absolute paths.
+    static std::string o_origcwd;
     std::string m_reason;    // Explanation for bad state
     std::string m_confdir;   // User directory where the customized files are stored
     // Normally same as confdir. Set to store all bulk data elsewhere.
@@ -179,21 +214,16 @@ public:
     std::map<std::string, std::string>  m_xattrtofld;
 
     unsigned int m_maxsufflen;
+
     ParamStale   m_oldstpsuffstate; // Values from user mimemap, now obsolete
     ParamStale   m_stpsuffstate;
     std::vector<std::string> m_stopsuffvec;
-
     // skippedNames state 
     ParamStale   m_skpnstate;
     std::vector<std::string> m_skpnlist;
-
     // onlyNames state 
     ParamStale   m_onlnstate;
     std::vector<std::string> m_onlnlist;
-
-    // Original current working directory. Set once at init before we do any
-    // chdir'ing and used for converting user args to absolute paths.
-    static std::string o_origcwd;
 
     // Parameters auto-fetched on setkeydir
     std::string m_defcharset;
@@ -204,26 +234,24 @@ public:
     // Exclusion set of mime types. Normally empty
     ParamStale    m_xmtstate;
     std::unordered_set<std::string>   m_excludeMTypes; 
-
-    std::vector<std::pair<int, int> > m_thrConf;
-
-    // Same idea with the metadata-gathering external commands,
-    // (e.g. used to reap tagging info: "tmsu tags %f")
+    // Metadata-gathering external commands (e.g. used to reap tagging info: "tmsu tags %f")
     ParamStale    m_mdrstate;
     std::vector<MDReaper> m_mdreapers;
 
+    std::vector<std::pair<int, int> > m_thrConf;
+
     //////////////////
     // Members needing explicit processing when copying 
-    void        *m_stopsuffixes;
-    ConfStack<ConfTree> *m_conf;   // Parsed configuration files
-    ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, 
-    ConfStack<ConfSimple> *mimeconf; // but their content may depend on it.
-    ConfStack<ConfSimple> *mimeview; // 
-    ConfStack<ConfSimple> *m_fields;
-    ConfSimple            *m_ptrans; // Paths translations
+    std::unique_ptr<ConfStack<ConfTree>> m_conf;   // Parsed configuration files
+    std::unique_ptr<ConfStack<ConfTree>> mimemap;  // The files don't change with keydir, 
+    std::unique_ptr<ConfStack<ConfSimple>> mimeconf; // but their content may depend on it.
+    std::unique_ptr<ConfStack<ConfSimple>> mimeview; // 
+    std::unique_ptr<ConfStack<ConfSimple>> m_fields;
+    std::unique_ptr<ConfSimple>            m_ptrans; // Paths translations
+    std::unique_ptr<SuffixStore> m_stopsuffixes;
     ///////////////////
 
-/** Create initial user configuration */
+    /** Create initial user configuration */
     bool initUserConfig();
     /** Init all ParamStale members */
     void initParamStale(ConfNull *cnf, ConfNull *mimemap);
@@ -231,91 +259,164 @@ public:
     void initFrom(const RclConfig& r);
     /** Init pointers to 0 */
     void zeroMe();
-    /** Free data then zero pointers */
-    void freeAll();
     bool readFieldsConfig(const std::string& errloc);
 };
-
-// Static, logically const, RclConfig members or module static
-// variables are initialized once from the first object build during
-// process initialization.
-
-// We default to a case- and diacritics-less index for now
-bool o_index_stripchars = true;
-// Default to storing the text contents for generating snippets. This
-// is only an approximate 10% bigger index and produces nicer
-// snippets.
-bool o_index_storedoctext = true;
-
-bool o_uptodate_test_use_mtime = false;
-
-bool o_expand_phrases = false;
 
 string RclConfig::Internal::o_localecharset; 
 string RclConfig::Internal::o_origcwd; 
 
-// We build this once. Used to ensure that the suffix used for a temp
-// file of a given MIME type is the FIRST one from the mimemap config
-// file. Previously it was the first in alphabetic (map) order, with
-// sometimes strange results.
-static unordered_map<string, string> mime_suffixes;
-
-// Compute the difference of 1st to 2nd sets and return as plus/minus
-// sets. Some args are std::set and some others stringToString()
-// strings for convenience
-void RclConfig::setPlusMinus(const string& sbase, const set<string>& upd,
-                             string& splus, string& sminus)
+bool ParamStale::needrecompute()
 {
-    set<string> base;
-    stringToStrings(sbase, base);
+    LOGDEB1("ParamStale:: needrecompute. parent gen " << parent->m->m_keydirgen <<
+            " mine " << savedkeydirgen << "\n");
 
-    vector<string> diff;
-    auto it = set_difference(base.begin(), base.end(), upd.begin(), upd.end(),
-                             std::inserter(diff, diff.begin()));
-    sminus = stringsToString(diff);
+    if (!conffile) {
+        LOGDEB("ParamStale::needrecompute: conffile not set\n");
+        return false;
+    }
 
-    diff.clear();
-    it = set_difference(upd.begin(), upd.end(), base.begin(), base.end(),
-                        std::inserter(diff, diff.begin()));
-    splus = stringsToString(diff);
-}
-
-/* Compute result of substracting strminus and adding strplus to base string.
-   All string represent sets of values to be computed with stringToStrings() */
-static void computeBasePlusMinus(set<string>& res, const string& strbase,
-                                 const string& strplus, const string& strminus)
-{
-    set<string> plus, minus;
-    res.clear();
-    stringToStrings(strbase, res);
-    stringToStrings(strplus, plus);
-    stringToStrings(strminus, minus);
-    for (auto& it : minus) {
-        auto it1 = res.find(it);
-        if (it1 != res.end()) {
-            res.erase(it1);
+    bool needrecomp = false;
+    if (active && parent->m->m_keydirgen != savedkeydirgen) {
+        savedkeydirgen = parent->m->m_keydirgen;
+        for (unsigned int i = 0; i < paramnames.size(); i++) {
+            string newvalue;
+            conffile->get(paramnames[i], newvalue, parent->m->m_keydir);
+            LOGDEB1("ParamStale::needrecompute: " << paramnames[i] << " -> " <<
+                    newvalue << " keydir " << parent->m->m_keydir << "\n");
+            if (newvalue.compare(savedvalues[i])) {
+                savedvalues[i] = newvalue;
+                needrecomp = true;
+            }
         }
     }
-    for (auto& it : plus) {
-        res.insert(it);
+    return needrecomp;
+}
+
+
+static const char blurb0[] = 
+    "# The system-wide configuration files for recoll are located in:\n"
+    "#   ";
+static const char blurb1[] = 
+    "\n"
+    "# The default configuration files are commented, you should take a look\n"
+    "# at them for an explanation of what can be set (you could also take a look\n"
+    "# at the manual instead).\n"
+    "# Values set in this file will override the system-wide values for the file\n"
+    "# with the same name in the central directory. The syntax for setting\n"
+    "# values is identical.\n"
+    ;
+
+// Use uni2ascii -a K to generate these from the utf-8 strings
+// Swedish and Danish. 
+static const char swedish_ex[] = "unac_except_trans = \303\244\303\244 \303\204\303\244 \303\266\303\266 \303\226\303\266 \303\274\303\274 \303\234\303\274 \303\237ss \305\223oe \305\222oe \303\246ae \303\206ae \357\254\201fi \357\254\202fl \303\245\303\245 \303\205\303\245";
+// German:
+static const char german_ex[] = "unac_except_trans = \303\244\303\244 \303\204\303\244 \303\266\303\266 \303\226\303\266 \303\274\303\274 \303\234\303\274 \303\237ss \305\223oe \305\222oe \303\246ae \303\206ae \357\254\201fi \357\254\202fl";
+
+static std::array<const char *, 5> configfiles{
+    "recoll.conf", "mimemap", "mimeconf", "mimeview", "fields"};
+
+// Create initial user config by creating commented empty files
+bool RclConfig::Internal::initUserConfig()
+{
+    // Explanatory text
+    std::string blurb = blurb0 + path_cat(m_datadir, "examples") + blurb1;
+
+    // Use protective 700 mode to create the top configuration
+    // directory: documents can be reconstructed from index data.
+    if (!path_exists(m_confdir) && !path_makepath(m_confdir, 0700)) {
+        m_reason += string("mkdir(") + m_confdir + ") failed: "+ strerror(errno);
+        return false;
     }
+    string lang = localelang();
+    for (const auto& cnff : configfiles) {
+        string dst = path_cat(m_confdir, string(cnff));
+        if (!path_exists(dst)) {
+            fstream output;
+            if (path_streamopen(dst, ios::out, output)) {
+                output << blurb << "\n";
+                if (!strcmp(cnff, "recoll.conf")) {
+                    // Add improved unac_except_trans for some languages
+                    if (lang == "se" || lang == "dk" || lang == "no" || lang == "fi") {
+                        output << swedish_ex << "\n";
+                    } else if (lang == "de") {
+                        output << german_ex << "\n";
+                    }
+                }
+            } else {
+                m_reason += string("open ") + dst + ": " + strerror(errno);
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
-bool RclConfig::isDefaultConfig() const
+void RclConfig::Internal::zeroMe() {
+    m_ok = false; 
+    m_keydirgen = 0;
+    m_maxsufflen = 0;
+    initParamStale(0, 0);
+}
+
+void RclConfig::Internal::initFrom(const RclConfig& r)
 {
-    string defaultconf = path_cat(path_homedata(), path_defaultrecollconfsubdir());
-    path_catslash(defaultconf);
-    string specifiedconf = path_canon(m->m_confdir);
-    path_catslash(specifiedconf);
-    return !defaultconf.compare(specifiedconf);
+    zeroMe();
+
+    // Copyable fields
+    m_ok = r.m->m_ok;
+    if (!m_ok)
+        return;
+    m_reason = r.m->m_reason;
+    m_confdir = r.m->m_confdir;
+    m_cachedir = r.m->m_cachedir;
+    m_datadir = r.m->m_datadir;
+    m_keydir = r.m->m_keydir;
+    m_keydirgen = r.m->m_keydirgen;
+    m_cdirs = r.m->m_cdirs;
+    m_fldtotraits = r.m->m_fldtotraits;
+    m_aliastocanon = r.m->m_aliastocanon;
+    m_aliastoqcanon = r.m->m_aliastoqcanon;
+    m_storedFields = r.m->m_storedFields;
+    m_xattrtofld = r.m->m_xattrtofld;
+    m_maxsufflen = r.m->m_maxsufflen;
+    m_stopsuffvec = r.m->m_stopsuffvec;
+    m_skpnlist = r.m->m_skpnlist;
+    m_onlnlist = r.m->m_onlnlist;
+    m_defcharset = r.m->m_defcharset;
+    m_restrictMTypes  = r.m->m_restrictMTypes;
+    m_excludeMTypes = r.m->m_excludeMTypes;
+    m_mdreapers = r.m->m_mdreapers;
+    m_thrConf = r.m->m_thrConf;
+
+    // Special treatment
+    if (r.m->m_conf)
+        m_conf = std::make_unique<ConfStack<ConfTree>>(*(r.m->m_conf));
+    if (r.m->mimemap)
+        mimemap = std::make_unique<ConfStack<ConfTree>>(*(r.m->mimemap));
+    if (r.m->mimeconf)
+        mimeconf = std::make_unique<ConfStack<ConfSimple>>(*(r.m->mimeconf));
+    if (r.m->mimeview)
+        mimeview = std::make_unique<ConfStack<ConfSimple>>(*(r.m->mimeview));
+    if (r.m->m_fields)
+        m_fields = std::make_unique<ConfStack<ConfSimple>>(*(r.m->m_fields));
+    if (r.m->m_ptrans)
+        m_ptrans = std::make_unique<ConfSimple>(*(r.m->m_ptrans));
+    if (r.m->m_stopsuffixes)
+        m_stopsuffixes = std::make_unique<SuffixStore>(*(r.m->m_stopsuffixes));
+    initParamStale(m_conf.get(), mimemap.get());
 }
 
-
-RclConfig::RclConfig(const RclConfig &r) 
+void RclConfig::Internal::initParamStale(ConfNull *cnf, ConfNull *mimemap)
 {
-    m = std::make_unique<Internal>(this);
-    m->initFrom(r);
+    m_oldstpsuffstate.init(mimemap);
+    m_stpsuffstate.init(cnf);
+    m_skpnstate.init(cnf);
+    m_onlnstate.init(cnf);
+    m_rmtstate.init(cnf);
+    m_xmtstate.init(cnf);
+    m_mdrstate.init(cnf);
 }
+
 
 RclConfig::RclConfig(const string *argcnf)
 {
@@ -327,8 +428,8 @@ RclConfig::RclConfig(const string *argcnf)
         if (getcwd(buf, MAXPATHLEN)) {
             m->o_origcwd = string(buf);
         } else {
-            fprintf(stderr, "recollxx: can't retrieve current working "
-                    "directory: relative path translations will fail\n");
+            std::cerr << "recollxx: can't retrieve current working "
+                "directory: relative path translations will fail\n";
         }
     }
 
@@ -444,8 +545,8 @@ RclConfig::RclConfig(const string *argcnf)
     }
 
     // Other files
-    m->mimemap = new ConfStack<ConfTree>("mimemap", m->m_cdirs, true);
-    if (m->mimemap == 0 || !m->mimemap->ok()) {
+    m->mimemap = std::make_unique<ConfStack<ConfTree>>("mimemap", m->m_cdirs, true);
+    if (!m->mimemap->ok()) {
         m->m_reason = string("No or bad mimemap file in: ") + cnferrloc;
         return;
     }
@@ -467,15 +568,15 @@ RclConfig::RclConfig(const string *argcnf)
         }
     }
 
-    m->mimeconf = new ConfStack<ConfSimple>("mimeconf", m->m_cdirs, true);
-    if (m->mimeconf == 0 || !m->mimeconf->ok()) {
+    m->mimeconf = std::make_unique<ConfStack<ConfSimple>>("mimeconf", m->m_cdirs, true);
+    if (!m->mimeconf->ok()) {
         m->m_reason = string("No/bad mimeconf in: ") + cnferrloc;
         return;
     }
-    m->mimeview = new ConfStack<ConfSimple>("mimeview", m->m_cdirs, false);
-    if (m->mimeview == 0)
-        m->mimeview = new ConfStack<ConfSimple>("mimeview", m->m_cdirs, true);
-    if (m->mimeview == 0 || !m->mimeview->ok()) {
+    m->mimeview = std::make_unique<ConfStack<ConfSimple>>("mimeview", m->m_cdirs, false);
+    if (!m->mimeview->ok())
+        m->mimeview = std::make_unique<ConfStack<ConfSimple>>("mimeview", m->m_cdirs, true);
+    if (!m->mimeview->ok()) {
         m->m_reason = string("No/bad mimeview in: ") + cnferrloc;
         return;
     }
@@ -485,47 +586,62 @@ RclConfig::RclConfig(const string *argcnf)
     // Default is no threading
     m->m_thrConf = {{-1, 0}, {-1, 0}, {-1, 0}};
 
-    m->m_ptrans = new ConfSimple(path_cat(m->m_confdir, "ptrans").c_str());
+    m->m_ptrans = std::make_unique<ConfSimple>(
+        ConfSimple::CFSF_NONE, path_cat(m->m_confdir, "ptrans"));
 
     m->m_ok = true;
     setKeyDir(cstr_null);
 
-    m->initParamStale(m->m_conf, m->mimemap);
+    m->initParamStale(m->m_conf.get(), m->mimemap.get());
 
     return;
 }
 
+RclConfig::RclConfig(const RclConfig &r) 
+{
+    m = std::make_unique<Internal>(this);
+    m->initFrom(r);
+}
+
 RclConfig::~RclConfig()
 {
-    m->freeAll();
 }
 
 RclConfig& RclConfig::operator=(const RclConfig &r)
 {
     if (this != &r) {
-        m->freeAll();
+        m->zeroMe();
         m->initFrom(r);
     }
     return *this;
 }
 
+
+bool RclConfig::isDefaultConfig() const
+{
+    string defaultconf = path_cat(path_homedata(), path_defaultrecollconfsubdir());
+    path_catslash(defaultconf);
+    string specifiedconf = path_canon(m->m_confdir);
+    path_catslash(specifiedconf);
+    return !defaultconf.compare(specifiedconf);
+}
+
 bool RclConfig::updateMainConfig()
 {
-    ConfStack<ConfTree> *newconf = new ConfStack<ConfTree>("recoll.conf", m->m_cdirs, true);
-    if (newconf == 0 || !newconf->ok()) {
-        std::cerr << "updateMainConfig: new Confstack not ok\n";
-        if (m->m_conf)
+    auto newconf = std::make_unique<ConfStack<ConfTree>>("recoll.conf", m->m_cdirs, true);
+
+    if (!newconf->ok()) {
+        std::cerr << "updateMainConfig: NEW CONFIGURATION READ FAILED\n";
+        if (m->m_conf->ok())
             return false;
         m->m_ok = false;
         m->initParamStale(0, 0);
         return false;
     }
 
-    delete m->m_conf;
-    m->m_conf = newconf;
-
-    m->initParamStale(m->m_conf, m->mimemap);
-
+    m->m_conf.swap(newconf);
+    m->initParamStale(m->m_conf.get(), m->mimemap.get());
+    
     setKeyDir(cstr_null);
 
     bool bvalue = true;
@@ -550,6 +666,7 @@ bool RclConfig::updateMainConfig()
     if (getConfParam("cachedir", m->m_cachedir)) {
         m->m_cachedir = path_canon(path_tildexpand(m->m_cachedir));
     }
+
     return true;
 }
 
@@ -580,8 +697,9 @@ std::string RclConfig::getKeyDir() const
 
 bool RclConfig::getConfParam(const std::string& name, std::string& value, bool shallow) const
 {
-    if (nullptr == m->m_conf)
+    if (!m->m_conf->ok()) {
         return false;
+    }
     return m->m_conf->get(name, value, m->m_keydir, shallow);
 }
 
@@ -592,7 +710,7 @@ std::vector<std::string> RclConfig::getConfNames(const char *pattern) const
 
 ConfSimple *RclConfig::getPTrans()
 {
-    return m->m_ptrans;
+    return m->m_ptrans.get();
 }
 
 const std::set<std::string>& RclConfig::getStoredFields() const
@@ -613,15 +731,14 @@ bool RclConfig::hasNameAnywhere(const std::string& nm) const
 ConfNull *RclConfig::cloneMainConfig()
 {
     ConfNull *conf = new ConfStack<ConfTree>("recoll.conf", m->m_cdirs, false);
-    if (conf == 0 || !conf->ok()) {
+    if (!conf->ok()) {
         m->m_reason = string("Can't read config");
         return 0;
     }
     return conf;
 }
 
-// Remember what directory we're under (for further conf->get()s), and 
-// prefetch a few common values.
+// Remember what directory we're under and prefetch a few common values.
 void RclConfig::setKeyDir(const string &dir) 
 {
     if (!dir.compare(m->m_keydir))
@@ -629,7 +746,7 @@ void RclConfig::setKeyDir(const string &dir)
 
     m->m_keydirgen++;
     m->m_keydir = dir;
-    if (m->m_conf == 0)
+    if (!m->m_conf->ok())
         return;
 
     if (!m->m_conf->get("defaultcharset", m->m_defcharset, m->m_keydir))
@@ -834,47 +951,52 @@ vector<string> RclConfig::getAllMimeTypes() const
     return m->mimeconf ? m->mimeconf->getNames("index") : vector<string>();
 }
 
-// Things for suffix comparison. We define a string class and string 
-// comparison with suffix-only sensitivity
-class SfString {
-public:
-    SfString(const string& s) : m_str(s) {}
-    bool operator==(const SfString& s2) const {
-        string::const_reverse_iterator r1 = m_str.rbegin(), re1 = m_str.rend(),
-            r2 = s2.m_str.rbegin(), re2 = s2.m_str.rend();
-        while (r1 != re1 && r2 != re2) {
-            if (*r1 != *r2) {
-                return 0;
-            }
-            ++r1; ++r2;
-        }
-        return 1;
-    }
-    string m_str;
-};
+// Compute the difference of 1st to 2nd sets and return as plus/minus
+// sets. Some args are std::set and some others stringToString()
+// strings for convenience
+void RclConfig::setPlusMinus(const string& sbase, const set<string>& upd,
+                             string& splus, string& sminus)
+{
+    set<string> base;
+    stringToStrings(sbase, base);
 
-class SuffCmp {
-public:
-    int operator()(const SfString& s1, const SfString& s2) const {
-        //cout << "Comparing " << s1.m_str << " and " << s2.m_str << "\n";
-        string::const_reverse_iterator 
-            r1 = s1.m_str.rbegin(), re1 = s1.m_str.rend(),
-            r2 = s2.m_str.rbegin(), re2 = s2.m_str.rend();
-        while (r1 != re1 && r2 != re2) {
-            if (*r1 != *r2) {
-                return *r1 < *r2 ? 1 : 0;
-            }
-            ++r1; ++r2;
+    vector<string> diff;
+    auto it = set_difference(base.begin(), base.end(), upd.begin(), upd.end(),
+                             std::inserter(diff, diff.begin()));
+    sminus = stringsToString(diff);
+
+    diff.clear();
+    it = set_difference(upd.begin(), upd.end(), base.begin(), base.end(),
+                        std::inserter(diff, diff.begin()));
+    splus = stringsToString(diff);
+}
+
+/* Compute result of substracting strminus and adding strplus to base string.
+   All string represent sets of values to be computed with stringToStrings() */
+static void computeBasePlusMinus(set<string>& res, const string& strbase,
+                                 const string& strplus, const string& strminus)
+{
+    set<string> plus, minus;
+    res.clear();
+    stringToStrings(strbase, res);
+    stringToStrings(strplus, plus);
+    stringToStrings(strminus, minus);
+    for (auto& it : minus) {
+        auto it1 = res.find(it);
+        if (it1 != res.end()) {
+            res.erase(it1);
         }
-        return 0;
     }
-};
+    for (auto& it : plus) {
+        res.insert(it);
+    }
+}
 
 vector<string>& RclConfig::getStopSuffixes()
 {
     bool needrecompute = m->m_stpsuffstate.needrecompute();
     needrecompute = m->m_oldstpsuffstate.needrecompute() || needrecompute;
-    if (needrecompute || m->m_stopsuffixes == 0) {
+    if (needrecompute || !m->m_stopsuffixes) {
         // Need to initialize the suffixes
 
         // Let the old customisation have priority: if recoll_noindex from
@@ -891,14 +1013,10 @@ vector<string>& RclConfig::getStopSuffixes()
         }
 
         // Compute the special suffixes store
-        delete STOPSUFFIXES;
-        if ((m->m_stopsuffixes = new SuffixStore) == 0) {
-            LOGERR("RclConfig::inStopSuffixes: out of memory\n");
-            return m->m_stopsuffvec;
-        }
+        m->m_stopsuffixes = std::make_unique<SuffixStore>();
         m->m_maxsufflen = 0;
         for (const auto& entry : m->m_stopsuffvec) {
-            STOPSUFFIXES->insert(SfString(stringtolower(entry)));
+            m->m_stopsuffixes->insert(SfString(stringtolower(entry)));
             if (m->m_maxsufflen < entry.length())
                 m->m_maxsufflen = int(entry.length());
         }
@@ -919,8 +1037,8 @@ bool RclConfig::inStopSuffixes(const string& fni)
     string fn(fni, pos);
 
     stringtolower(fn);
-    SuffixStore::const_iterator it = STOPSUFFIXES->find(fn);
-    if (it != STOPSUFFIXES->end()) {
+    SuffixStore::const_iterator it = m->m_stopsuffixes->find(fn);
+    if (it != m->m_stopsuffixes->end()) {
         LOGDEB2("RclConfig::inStopSuffixes: Found (" << fni << ") ["  <<
                 ((*it).m->m_str) << "]\n");
         IdxDiags::theDiags().record(IdxDiags::NoContentSuffix, fni);
@@ -1133,8 +1251,8 @@ void RclConfig::storeMissingHelperDesc(const string &s)
 bool RclConfig::Internal::readFieldsConfig(const string& cnferrloc)
 {
     LOGDEB2("RclConfig::readFieldsConfig\n");
-    m_fields = new ConfStack<ConfSimple>("fields", m_cdirs, true);
-    if (m_fields == 0 || !m_fields->ok()) {
+    m_fields = std::make_unique<ConfStack<ConfSimple>>("fields", m_cdirs, true);
+    if (!m_fields->ok()) {
         m_reason = string("No/bad fields file in: ") + cnferrloc;
         return false;
     }
@@ -1288,7 +1406,7 @@ bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp,
 set<string> RclConfig::getIndexedFields() const
 {
     set<string> flds;
-    if (m->m_fields == 0)
+    if (!m->m_fields->ok())
         return flds;
 
     vector<string> sl = m->m_fields->getNames("prefixes");
@@ -1318,10 +1436,9 @@ string RclConfig::fieldQCanon(const string& f) const
     return fieldCanon(f);
 }
 
-vector<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn)
-    const
+vector<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn) const
 {
-    if (m->m_fields == 0)
+    if (!m->m_fields->ok())
         return vector<string>();
     return m->m_fields->getNames(sk, patrn);
 }
@@ -1329,7 +1446,7 @@ vector<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn)
 bool RclConfig::getFieldConfParam(const string &name, const string &sk, 
                                   string &value) const
 {
-    if (m->m_fields == 0)
+    if (!m->m_fields->ok())
         return false;
     return m->m_fields->get(name, value, sk);
 }
@@ -1337,7 +1454,7 @@ bool RclConfig::getFieldConfParam(const string &name, const string &sk,
 set<string> RclConfig::getMimeViewerAllEx() const
 {
     set<string> res;
-    if (m->mimeview == 0)
+    if (!m->mimeview->ok())
         return res;
 
     string base, plus, minus;
@@ -1355,7 +1472,7 @@ set<string> RclConfig::getMimeViewerAllEx() const
 
 bool RclConfig::setMimeViewerAllEx(const set<string>& allex)
 {
-    if (m->mimeview == 0)
+    if (!m->mimeview->ok())
         return false;
 
     string sbase;
@@ -1380,7 +1497,7 @@ string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag, bo
 {
     LOGDEB2("RclConfig::getMimeViewerDef: mtype [" << mtype << "] apptag [" << apptag << "]\n");
     string hs;
-    if (m->mimeview == 0)
+    if (!m->mimeview->ok())
         return hs;
 
     if (useall) {
@@ -1422,7 +1539,7 @@ string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag, bo
 
 bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs) const
 {
-    if (m->mimeview == 0)
+    if (!m->mimeview->ok())
         return false;
     vector<string>tps = m->mimeview->getNames("view");
     for (const auto& tp : tps) {
@@ -1433,7 +1550,7 @@ bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs) const
 
 bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
 {
-    if (m->mimeview == 0)
+    if (!m->mimeview->ok())
         return false;
     bool status;
     if (!def.empty()) 
@@ -1473,7 +1590,8 @@ string RclConfig::getMimeIconPath(const string &mtype, const string &apptag)
     string iconpath;
 #if defined (__FreeBSD__) && __FreeBSD_version < 500000
     // gcc 2.95 dies if we call getConfParam here ??
-    if (m->m_conf) m->m_conf->get(string("iconsdir"), iconpath, m->m_keydir);
+    if (m->m_conf->ok())
+        m->m_conf->get(string("iconsdir"), iconpath, m->m_keydir);
 #else
     getConfParam("iconsdir", iconpath);
 #endif
@@ -1706,7 +1824,7 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
     
     // Do path translations exist for this index ?
     bool needptrans = true;
-    if (m->m_ptrans == 0 || !m->m_ptrans->hasSubKey(dbdir)) {
+    if (!m->m_ptrans->ok() || !m->m_ptrans->hasSubKey(dbdir)) {
         LOGDEB2("RclConfig::urlrewrite: no paths translations (m->m_ptrans " << m->m_ptrans << ")\n");
         needptrans = false;
     }
@@ -1753,17 +1871,17 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
 
 bool RclConfig::sourceChanged() const
 {
-    if (m->m_conf && m->m_conf->sourceChanged())
+    if (m->m_conf->ok() && m->m_conf->sourceChanged())
         return true;
-    if (m->mimemap && m->mimemap->sourceChanged())
+    if (m->mimemap->ok() && m->mimemap->sourceChanged())
         return true;
-    if (m->mimeconf && m->mimeconf->sourceChanged())
+    if (m->mimeconf->ok() && m->mimeconf->sourceChanged())
         return true;
-    if (m->mimeview && m->mimeview->sourceChanged())
+    if (m->mimeview->ok() && m->mimeview->sourceChanged())
         return true;
-    if (m->m_fields && m->m_fields->sourceChanged())
+    if (m->m_fields->ok() && m->m_fields->sourceChanged())
         return true;
-    if (m->m_ptrans && m->m_ptrans->sourceChanged())
+    if (m->m_ptrans->ok() && m->m_ptrans->sourceChanged())
         return true;
     return false;
 }
@@ -1965,157 +2083,4 @@ bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd) const
     cmd.clear();
     cmd.insert(cmd.end(), it, tokens.end());
     return processFilterCmd(cmd);
-}
-
-static const char blurb0[] = 
-    "# The system-wide configuration files for recoll are located in:\n"
-    "#   %s\n"
-    "# The default configuration files are commented, you should take a look\n"
-    "# at them for an explanation of what can be set (you could also take a look\n"
-    "# at the manual instead).\n"
-    "# Values set in this file will override the system-wide values for the file\n"
-    "# with the same name in the central directory. The syntax for setting\n"
-    "# values is identical.\n"
-    ;
-// We just use path_max to print the path to /usr/share/recoll/examples 
-// inside the config file. At worse, the text is truncated (using
-// snprintf). But 4096 should be enough :)
-#ifndef PATH_MAX
-#define MYPATHALLOC 4096
-#else
-#define MYPATHALLOC PATH_MAX
-#endif
-
-// Use uni2ascii -a K to generate these from the utf-8 strings
-// Swedish and Danish. 
-static const char swedish_ex[] = "unac_except_trans = \303\244\303\244 \303\204\303\244 \303\266\303\266 \303\226\303\266 \303\274\303\274 \303\234\303\274 \303\237ss \305\223oe \305\222oe \303\246ae \303\206ae \357\254\201fi \357\254\202fl \303\245\303\245 \303\205\303\245";
-// German:
-static const char german_ex[] = "unac_except_trans = \303\244\303\244 \303\204\303\244 \303\266\303\266 \303\226\303\266 \303\274\303\274 \303\234\303\274 \303\237ss \305\223oe \305\222oe \303\246ae \303\206ae \357\254\201fi \357\254\202fl";
-
-// Create initial user config by creating commented empty files
-static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf", "mimeview", "fields"};
-static int ncffiles = sizeof(configfiles) / sizeof(char *);
-bool RclConfig::Internal::initUserConfig()
-{
-    // Explanatory text
-    const int bs = sizeof(blurb0)+MYPATHALLOC+1;
-    char blurb[bs];
-    string exdir = path_cat(m_datadir, "examples");
-    snprintf(blurb, bs, blurb0, exdir.c_str());
-
-    // Use protective 700 mode to create the top configuration
-    // directory: documents can be reconstructed from index data.
-    if (!path_exists(m_confdir) && !path_makepath(m_confdir, 0700)) {
-        m_reason += string("mkdir(") + m_confdir + ") failed: "+strerror(errno);
-        return false;
-    }
-    string lang = localelang();
-    for (int i = 0; i < ncffiles; i++) {
-        string dst = path_cat(m_confdir, string(configfiles[i])); 
-        if (!path_exists(dst)) {
-            fstream output;
-            if (path_streamopen(dst, ios::out, output)) {
-                output << blurb << "\n";
-                if (!strcmp(configfiles[i], "recoll.conf")) {
-                    // Add improved unac_except_trans for some languages
-                    if (lang == "se" || lang == "dk" || lang == "no" || 
-                        lang == "fi") {
-                        output << swedish_ex << "\n";
-                    } else if (lang == "de") {
-                        output << german_ex << "\n";
-                    }
-                }
-            } else {
-                m_reason += string("open ") + dst + ": " + strerror(errno);
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-void RclConfig::Internal::zeroMe() {
-    m_ok = false; 
-    m_keydirgen = 0;
-    m_conf = 0; 
-    mimemap = 0; 
-    mimeconf = 0; 
-    mimeview = 0; 
-    m_fields = 0;
-    m_ptrans = 0;
-    m_stopsuffixes = 0;
-    m_maxsufflen = 0;
-    initParamStale(0, 0);
-}
-
-void RclConfig::Internal::freeAll() 
-{
-    delete m_conf;
-    delete mimemap;
-    delete mimeconf; 
-    delete mimeview; 
-    delete m_fields;
-    delete m_ptrans;
-    delete ((SuffixStore *)m_stopsuffixes);
-    // just in case
-    zeroMe();
-}
-
-void RclConfig::Internal::initFrom(const RclConfig& r)
-{
-    zeroMe();
-    if (!(m_ok = r.m->m_ok))
-        return;
-
-    // Copyable fields
-    m_ok = r.m->m_ok;
-    m_reason = r.m->m_reason;
-    m_confdir = r.m->m_confdir;
-    m_cachedir = r.m->m_cachedir;
-    m_datadir = r.m->m_datadir;
-    m_keydir = r.m->m_keydir;
-    m_keydirgen = r.m->m_keydirgen;
-    m_cdirs = r.m->m_cdirs;
-    m_fldtotraits = r.m->m_fldtotraits;
-    m_aliastocanon = r.m->m_aliastocanon;
-    m_aliastoqcanon = r.m->m_aliastoqcanon;
-    m_storedFields = r.m->m_storedFields;
-    m_xattrtofld = r.m->m_xattrtofld;
-    m_maxsufflen = r.m->m_maxsufflen;
-    m_skpnlist = r.m->m_skpnlist;
-    m_onlnlist = r.m->m_onlnlist;
-    m_stopsuffixes = r.m->m_stopsuffixes;
-    m_defcharset = r.m->m_defcharset;
-    m_restrictMTypes  = r.m->m_restrictMTypes;
-    m_excludeMTypes = r.m->m_excludeMTypes;
-    m_thrConf = r.m->m_thrConf;
-    m_mdreapers = r.m->m_mdreapers;
-
-    // Special treatment
-    if (r.m->m_conf)
-        m_conf = new ConfStack<ConfTree>(*(r.m->m_conf));
-    if (r.m->mimemap)
-        mimemap = new ConfStack<ConfTree>(*(r.m->mimemap));
-    if (r.m->mimeconf)
-        mimeconf = new ConfStack<ConfSimple>(*(r.m->mimeconf));
-    if (r.m->mimeview)
-        mimeview = new ConfStack<ConfSimple>(*(r.m->mimeview));
-    if (r.m->m_fields)
-        m_fields = new ConfStack<ConfSimple>(*(r.m->m_fields));
-    if (r.m->m_ptrans)
-        m_ptrans = new ConfSimple(*(r.m->m_ptrans));
-    if (r.m->m_stopsuffixes)
-        m_stopsuffixes = new SuffixStore(*((SuffixStore*)r.m->m_stopsuffixes));
-    initParamStale(m_conf, mimemap);
-}
-
-void RclConfig::Internal::initParamStale(ConfNull *cnf, ConfNull *mimemap)
-{
-    m_oldstpsuffstate.init(mimemap);
-    m_stpsuffstate.init(cnf);
-    m_skpnstate.init(cnf);
-    m_onlnstate.init(cnf);
-    m_rmtstate.init(cnf);
-    m_xmtstate.init(cnf);
-    m_mdrstate.init(cnf);
 }
