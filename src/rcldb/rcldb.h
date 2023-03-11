@@ -95,12 +95,13 @@ public:
 /** Term match result list header: statistics and global info */
 class TermMatchResult {
 public:
-    TermMatchResult() {
+    TermMatchResult(bool strip_prefixes = false) : m_prefix_stripped(strip_prefixes) {
         clear();
     }
     void clear() {
         entries.clear(); 
     }
+    bool m_prefix_stripped;
     // Term expansion
     std::vector<TermMatchEntry> entries;
     // If a field was specified, this is the corresponding index prefix

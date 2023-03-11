@@ -36,6 +36,7 @@
 #include "hldata.h"
 #include "smallut.h"
 #include "idxstatus.h"
+#include "rcldoc.h"
 
 #include "pyrecoll.h"
 
@@ -1831,7 +1832,7 @@ Db_termMatch(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
     char *lang = 0; // needs freeing
     PyObject *ret = 0;
     int typ_sens = 0;
-    Rcl::TermMatchResult result;
+    Rcl::TermMatchResult result(true); /* strip prefixes in results */
     bool showfreqs = false;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|esiOOOes", 
@@ -1877,7 +1878,7 @@ Db_termMatch(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
 
     ret = PyList_New(result.entries.size());
     for (unsigned int i = 0; i < result.entries.size(); i++) {
-        PyObject *term = PyUnicode_FromString(Rcl::strip_prefix(result.entries[i].term).c_str());
+        PyObject *term = PyUnicode_FromString(result.entries[i].term.c_str());
         if (showfreqs) {
             PyObject *totcnt = PyLong_FromLong(result.entries[i].wcf);
             PyObject *doccnt = PyLong_FromLong(result.entries[i].docs);

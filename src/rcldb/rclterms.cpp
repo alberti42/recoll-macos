@@ -510,10 +510,11 @@ bool Db::idxTermMatch(int typ_sens, const string &expr,
     res.prefix = prefix;
 
     int rcnt = 0;
+    bool dostrip = res.m_prefix_stripped;
     bool ret = m_ndb->idxTermMatch_p(
         typ, expr, prefix,
-        [&res, &rcnt, max](const string& term, Xapian::termcount cf, Xapian::doccount tf) {
-            res.entries.push_back(TermMatchEntry(term, cf, tf));
+        [&res, &rcnt, max, dostrip](const string& term, Xapian::termcount cf, Xapian::doccount tf) {
+            res.entries.push_back(TermMatchEntry((dostrip?strip_prefix(term):term), cf, tf));
             // The problem with truncating here is that this is done alphabetically and we may not
             // keep the most frequent terms. OTOH, not doing it may stall the program if we are
             // walking the whole term list. We compromise by cutting at 2*max
