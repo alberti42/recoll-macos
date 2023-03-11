@@ -30,6 +30,7 @@
 #include "textsplit.h"
 #include "xmacros.h"
 #include "rcldb.h"
+#include "rcldb_p.h"
 #include "stemdb.h"
 
 using namespace std;

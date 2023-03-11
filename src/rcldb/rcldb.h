@@ -123,75 +123,6 @@ public:
     std::vector<std::string> failedurls; /* Only set if requested */
 };
 
-inline bool has_prefix(const std::string& trm)
-{
-    if (o_index_stripchars) {
-        return !trm.empty() && 'A' <= trm[0] && trm[0] <= 'Z';
-    } else {
-        return !trm.empty() && trm[0] == ':';
-    }
-}
-
-inline std::string strip_prefix(const std::string& trm)
-{
-    if (!has_prefix(trm))
-        return trm;
-    std::string::size_type st = 0;
-    if (o_index_stripchars) {
-        st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
-#ifdef _WIN32
-        // We have a problem there because we forgot to lowercase the drive
-        // name. So if the found character is a colon consider the drive name as
-        // the first non capital even if it is uppercase
-        if (st != std::string::npos && st >= 2 && trm[st] == ':') {
-            st -= 1;
-        }
-#endif
-    } else {
-        st = trm.find_first_of(":", 1) + 1;
-    }
-    if (st == std::string::npos) {
-        return std::string(); // ??
-    }
-    return trm.substr(st);
-}
-
-inline std::string get_prefix(const std::string& trm)
-{
-    if (!has_prefix(trm))
-        return std::string();
-    std::string::size_type st = 0;
-    if (o_index_stripchars) {
-        st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
-        if (st == std::string::npos) {
-            return std::string(); // ??
-        }
-#ifdef _WIN32
-        // We have a problem there because we forgot to lowercase the drive
-        // name. So if the found character is a colon consider the drive name as
-        // the first non capital even if it is uppercase
-        if (st >= 2 && trm[st] == ':') {
-            st -= 1;
-        }
-#endif
-        return trm.substr(0, st);
-    } else {
-        st = trm.find_first_of(":", 1) + 1;
-        if (st == std::string::npos) {
-            return std::string(); // ??
-        }
-        return trm.substr(1, st-2);
-    }
-}
-
-inline std::string wrap_prefix(const std::string& pfx) 
-{
-    if (o_index_stripchars) {
-        return pfx;
-    } else {
-        return cstr_colon + pfx + cstr_colon;
-    }
-}
 
 /**
  * Wrapper class for the native database.
@@ -229,47 +160,9 @@ public:
     /** Check if index stores the documents' texts. Only valid after open */
     bool storesDocText();
     
-    /** Test word for spelling correction candidate: not too long, no 
-     * special chars... 
-     * @param with_aspell test for use with aspell, else for xapian speller
-     */
-    static bool isSpellingCandidate(const std::string& term, bool with_aspell=true) {
-        if (term.empty() || term.length() > 50 || has_prefix(term))
-            return false;
-
-        Utf8Iter u8i(term);
-        if (with_aspell) {
-            // If spelling with aspell, CJK scripts are not candidates
-            if (TextSplit::isCJK(*u8i))
-                return false;
-        } else {
-#ifdef TESTING_XAPIAN_SPELL
-            // The Xapian speller (purely proximity-based) can be used
-            // for Katakana (when split as words which is not always
-            // completely feasible because of separator-less
-            // compounds). Currently we don't try to use the Xapian
-            // speller with other scripts with which it would be usable
-            // in the absence of aspell (it would indeed be better
-            // than nothing with e.g. european languages). This would
-            // require a few more config variables, maybe one day.
-            if (!TextSplit::isKATAKANA(*u8i)) {
-                return false;
-            }
-#else
-            return false;
-#endif
-        }
-
-        // Most punctuation chars inhibate stemming. We accept one dash. See o_nospell_chars init in
-        // the rcldb constructor.
-        int ccnt = 0;
-        for (unsigned char c : term) {
-            if (o_nospell_chars[(unsigned int)c] && (c != '-' || ++ccnt > 1))
-                return false;
-        }
-
-        return true;
-    }
+    /** Test word for spelling correction candidate: not too long, no special chars... 
+     * @param with_aspell test for use with aspell, else for xapian speller */
+    static bool isSpellingCandidate(const std::string& term, bool with_aspell=true);
 
     /** Return spelling suggestion */
     bool getSpellingSuggestions(const std::string& word, std::vector<std::string>& suggs);
@@ -426,8 +319,9 @@ public:
     int matchTypeTp(int tp) {
         return tp & 7;
     }
-    bool termMatch(int typ_sens, const std::string &lang, const std::string &term, TermMatchResult& result,
-                   int max = -1, const std::string& field = "", std::vector<std::string> *multiwords = nullptr);
+    bool termMatch(int typ_sens, const std::string &lang, const std::string &term,
+                   TermMatchResult& result, int max = -1, const std::string& field = "",
+                   std::vector<std::string> *multiwords = nullptr);
     bool dbStats(DbStats& stats, bool listFailed);
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);
@@ -562,8 +456,8 @@ public:
     bool setSynGroupsFile(const std::string& fn);
     const SynGroups& getSynGroups() {return m_syngroups;}
     
-    // Mark all documents with an UDI having input as prefix as
-    // existing.  Only works if the UDIs for the store are
+    // Mark all documents with an UDI having @param udi as prefix as
+    // existing. Only works if the UDIs for the store are
     // hierarchical of course.  Used by FsIndexer to avoid purging
     // files for a topdir which is on a removable file system and
     // currently unmounted (topdir does not exist or is empty.
@@ -649,8 +543,6 @@ private:
 
     // Internal form of setExistingFlags: no locking
     void i_setExistingFlags(const std::string& udi, unsigned int docid);
-    // Internal form of close, can be called during destruction
-    bool i_close(bool final);
     // Reinitialize when adding/removing additional dbs
     bool adjustdbs();
     // Match the input term (which must be in index form, diacase stripped as needed) and actual

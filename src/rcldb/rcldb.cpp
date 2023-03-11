@@ -149,12 +149,9 @@ static inline string make_parentterm(const string& udi)
 }
 
 Db::Native::Native(Db *db) 
-    : m_rcldb(db), m_isopen(false), m_iswritable(false),
-      m_noversionwrite(false)
+    : m_rcldb(db)
 #ifdef IDX_THREADS
-    , m_wqueue("DbUpd", 
-               m_rcldb->m_config->getThrConf(RclConfig::ThrDbWrite).first),
-      m_totalworkns(0LL), m_havewriteq(false)
+    , m_wqueue("DbUpd", m_rcldb->m_config->getThrConf(RclConfig::ThrDbWrite).first)
 #endif // IDX_THREADS
 { 
     LOGDEB1("Native::Native: me " << this << "\n");
@@ -900,9 +897,9 @@ Db::~Db()
     LOGDEB2("Db::~Db\n");
     if (nullptr == m_ndb)
         return;
-    LOGDEB("Db::~Db: isopen " << m_ndb->m_isopen << " m_iswritable " <<
-           m_ndb->m_iswritable << "\n");
-    i_close(true);
+    LOGDEB("Db::~Db: isopen " << m_ndb->m_isopen << " m_iswritable " << m_ndb->m_iswritable << "\n");
+    this->close();
+    delete m_ndb;
 #ifdef RCL_USE_ASPELL
     delete m_aspell;
 #endif
@@ -1021,17 +1018,12 @@ bool Db::getDocRawText(Doc& doc)
 // Note: xapian has no close call, we delete and recreate the db
 bool Db::close()
 {
-    LOGDEB1("Db::close()\n");
-    return i_close(false);
-}
-bool Db::i_close(bool final)
-{
     if (nullptr == m_ndb)
         return false;
-    LOGDEB("Db::i_close(" << final << "): m_isopen " << m_ndb->m_isopen <<
-           " m_iswritable " << m_ndb->m_iswritable << "\n");
-    if (m_ndb->m_isopen == false && !final) 
+    LOGDEB("Db::close: isopen " << m_ndb->m_isopen << " iswritable " << m_ndb->m_iswritable << "\n");
+    if (m_ndb->m_isopen == false) {
         return true;
+    }
 
     string ermsg;
     try {
@@ -1048,17 +1040,10 @@ bool Db::i_close(bool final)
         deleteZ(m_ndb);
         if (w)
             LOGDEB("Rcl::Db:close() xapian close done.\n");
-        if (final) {
-            return true;
-        }
         m_ndb = new Native(this);
-        if (m_ndb) {
-            return true;
-        }
-        LOGERR("Rcl::Db::close(): cant recreate db object\n");
-        return false;
+        return true;
     } XCATCHERROR(ermsg);
-    LOGERR("Db:close: exception while deleting db: " << ermsg << "\n");
+    LOGERR("Db:close: exception while deleting/recreating db object: " << ermsg << "\n");
     return false;
 }
 
@@ -1424,6 +1409,44 @@ public:
     vector <pair<int, int> > m_pageincrvec;
 };
 
+bool Db::isSpellingCandidate(const std::string& term, bool with_aspell)
+{
+    if (term.empty() || term.length() > 50 || has_prefix(term))
+        return false;
+
+    Utf8Iter u8i(term);
+    if (with_aspell) {
+        // If spelling with aspell, CJK scripts are not candidates
+        if (TextSplit::isCJK(*u8i))
+            return false;
+    } else {
+#ifdef TESTING_XAPIAN_SPELL
+        // The Xapian speller (purely proximity-based) can be used
+        // for Katakana (when split as words which is not always
+        // completely feasible because of separator-less
+        // compounds). Currently we don't try to use the Xapian
+        // speller with other scripts with which it would be usable
+        // in the absence of aspell (it would indeed be better
+        // than nothing with e.g. european languages). This would
+        // require a few more config variables, maybe one day.
+        if (!TextSplit::isKATAKANA(*u8i)) {
+            return false;
+        }
+#else
+        return false;
+#endif
+    }
+
+    // Most punctuation chars inhibate stemming. We accept one dash. See o_nospell_chars init in
+    // the rcldb constructor.
+    int ccnt = 0;
+    for (unsigned char c : term) {
+        if (o_nospell_chars[(unsigned int)c] && (c != '-' || ++ccnt > 1))
+            return false;
+    }
+
+    return true;
+}
 
 // At the moment, we only use aspell. The xapian speller code part is only for testing and normally
 // not compiled in.

@@ -37,6 +37,76 @@ namespace Rcl {
 
 class Query;
 
+inline bool has_prefix(const std::string& trm)
+{
+    if (o_index_stripchars) {
+        return !trm.empty() && 'A' <= trm[0] && trm[0] <= 'Z';
+    } else {
+        return !trm.empty() && trm[0] == ':';
+    }
+}
+
+inline std::string strip_prefix(const std::string& trm)
+{
+    if (!has_prefix(trm))
+        return trm;
+    std::string::size_type st = 0;
+    if (o_index_stripchars) {
+        st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
+#ifdef _WIN32
+        // We have a problem there because we forgot to lowercase the drive
+        // name. So if the found character is a colon consider the drive name as
+        // the first non capital even if it is uppercase
+        if (st != std::string::npos && st >= 2 && trm[st] == ':') {
+            st -= 1;
+        }
+#endif
+    } else {
+        st = trm.find_first_of(":", 1) + 1;
+    }
+    if (st == std::string::npos) {
+        return std::string(); // ??
+    }
+    return trm.substr(st);
+}
+
+inline std::string get_prefix(const std::string& trm)
+{
+    if (!has_prefix(trm))
+        return std::string();
+    std::string::size_type st = 0;
+    if (o_index_stripchars) {
+        st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
+        if (st == std::string::npos) {
+            return std::string(); // ??
+        }
+#ifdef _WIN32
+        // We have a problem there because we forgot to lowercase the drive
+        // name. So if the found character is a colon consider the drive name as
+        // the first non capital even if it is uppercase
+        if (st >= 2 && trm[st] == ':') {
+            st -= 1;
+        }
+#endif
+        return trm.substr(0, st);
+    } else {
+        st = trm.find_first_of(":", 1) + 1;
+        if (st == std::string::npos) {
+            return std::string(); // ??
+        }
+        return trm.substr(1, st-2);
+    }
+}
+
+inline std::string wrap_prefix(const std::string& pfx) 
+{
+    if (o_index_stripchars) {
+        return pfx;
+    } else {
+        return cstr_colon + pfx + cstr_colon;
+    }
+}
+
 #ifdef IDX_THREADS
 // Task for the index update thread. This can be 
 //  - add/update for a new / update document
@@ -81,15 +151,15 @@ class TextSplitDb;
 class Db::Native {
  public:
     Db  *m_rcldb; // Parent
-    bool m_isopen;
-    bool m_iswritable;
-    bool m_noversionwrite; //Set if open failed because of version mismatch!
+    bool m_isopen{false};
+    bool m_iswritable{false};
+    bool m_noversionwrite{false}; //Set if open failed because of version mismatch!
     bool m_storetext{false};
 #ifdef IDX_THREADS
     WorkQueue<DbUpdTask*> m_wqueue;
     std::mutex m_mutex;
-    long long  m_totalworkns;
-    bool m_havewriteq;
+    long long  m_totalworkns{0};
+    bool m_havewriteq{false};
     void maybeStartThreads();
 #endif // IDX_THREADS
 
