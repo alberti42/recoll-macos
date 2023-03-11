@@ -32,6 +32,8 @@
 
 #include <sys/stat.h>
 
+#include <vector>
+
 #include <QDebug>
 #include <QUrl>
 #include <QStandardPaths>
@@ -336,7 +338,7 @@ void RecollProtocol::listDir(const QUrl& url)
     static const int pagesize = 200;
     int pagebase = 0;
     while (pagebase < maxentries) {
-        vector<ResListEntry> page;
+        std::vector<ResListEntry> page;
         int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
         UDSEntry entry;
         if (pagelen < 0) {

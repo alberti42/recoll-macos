@@ -31,6 +31,7 @@
 #include "readfile.h"
 #include "snippets_w.h"
 #include "idxstatus.h"
+#include "conftree.h"
 
 using namespace std;
 

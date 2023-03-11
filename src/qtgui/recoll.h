@@ -37,6 +37,12 @@ bool getStemLangs(std::vector<std::string>& langs);
 
 extern RclConfig *theconfig;
 
+class RclDynConf;
+extern RclDynConf *g_dynconf;
+class AdvSearchHist;
+extern AdvSearchHist *g_advshistory;
+
+
 extern TempFile *rememberTempFile(TempFile);
 extern void forgetTempFile(std::string &fn);
 extern void deleteAllTempFiles();

@@ -17,16 +17,10 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
 
-#include "autoconfig.h"
-
 #include <stdint.h>
 #include <string>
 #include <vector>
 #include <memory>
-
-#include "stoplist.h"
-#include "syngroups.h"
-
 
 // rcldb defines an interface for a 'real' text database. The current 
 // implementation uses xapian only, and xapian-related code is in rcldb.cpp
@@ -49,10 +43,12 @@
 class RclConfig;
 class Aspell;
 class FieldTraits;
+class SynGroups;
 
 namespace Rcl {
 
 class Doc;
+class StopList;
 
 // Omega compatible values. We leave a hole for future omega values. Not sure 
 // it makes any sense to keep any level of omega compat given that the index
@@ -168,7 +164,7 @@ public:
 
     /* The next two, only for searchdata, should be somehow hidden */
     /* Return configured stop words */
-    const StopList& getStopList() const {return m_stops;}
+    const StopList& getStopList() const {return *m_stops;}
     /* Field name to prefix translation (ie: author -> 'A') */
     bool fieldToTraits(const std::string& fldname, const FieldTraits **ftpp, bool isquery = false);
 
@@ -453,7 +449,7 @@ public:
 
     // Use empty fn for no synonyms
     bool setSynGroupsFile(const std::string& fn);
-    const SynGroups& getSynGroups() {return m_syngroups;}
+    const SynGroups& getSynGroups() {return *m_syngroups;}
     
     // Mark all documents with an UDI having @param udi as prefix as
     // existing. Only works if the UDIs for the store are
@@ -491,7 +487,7 @@ private:
     // a file may be expensive and it's unlikely to change with every
     // query, so it makes sense to cache it, and Rcl::Db is not a bad
     // place for this.
-    SynGroups m_syngroups;
+    std::unique_ptr<SynGroups> m_syngroups;
 
     // Aspell object if needed
     Aspell *m_aspell{nullptr};
@@ -500,7 +496,7 @@ private:
      * Parameters cached out of the configuration files. Logically const 
      * after init */
     // Stop terms: those don't get indexed.
-    StopList m_stops;
+    std::unique_ptr<StopList> m_stops;
     // Truncation length for stored meta fields
     int         m_idxMetaStoredLen{150};
     // This is how long an abstract we keep or build from beginning of

@@ -16,7 +16,6 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-#include "autoconfig.h"
 
 #include <string>
 #include <vector>

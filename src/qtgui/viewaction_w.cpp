@@ -27,6 +27,7 @@
 #include "recoll.h"
 #include "log.h"
 #include "guiutils.h"
+#include "smallut.h"
 
 using namespace std;
 

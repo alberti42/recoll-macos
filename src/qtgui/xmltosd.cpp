@@ -27,6 +27,7 @@
 #include "smallut.h"
 #include "recoll.h"
 #include "picoxml.h"
+#include "base64.h"
 
 using namespace std;
 using namespace Rcl;

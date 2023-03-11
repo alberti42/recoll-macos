@@ -45,7 +45,8 @@
 #include "smallut.h"
 #include "readfile.h"
 #include "uncomp.h"
-
+#include "cstr.h"
+#include "dynconf.h"
 #include "recollq.h"
 
 using std::string;
@@ -53,6 +54,7 @@ using std::list;
 using std::vector;
 
 extern RclConfig *theconfig;
+AdvSearchHist *g_advshistory;
 
 std::mutex thetempfileslock;
 // Use a list not a vector so that contained objects have stable

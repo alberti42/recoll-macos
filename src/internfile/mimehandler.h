@@ -16,14 +16,12 @@
  */
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-#include "autoconfig.h"
 
 #include <stdio.h>
 #include <stdint.h>
 #include <string>
 
 #include "Filter.h"
-#include "cstr.h"
 #include "smallut.h"
 
 class RclConfig;

@@ -38,6 +38,7 @@
 #include "plaintorich.h"
 #include "cancelcheck.h"
 #include "unacpp.h"
+#include "hldata.h"
 
 using std::vector;
 using std::list;

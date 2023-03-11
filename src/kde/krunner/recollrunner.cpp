@@ -33,6 +33,8 @@
 #include "rclquery.h"
 #include "wasatorcl.h"
 #include "log.h"
+#include "rcldoc.h"
+#include "searchdata.h"
 
 QMimeDatabase mimeDb;
 

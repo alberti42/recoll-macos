@@ -17,7 +17,6 @@
 
 #ifndef _reslistpager_h_included_
 #define _reslistpager_h_included_
-#include "autoconfig.h"
 
 #include <vector>
 #include <memory>

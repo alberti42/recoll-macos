@@ -24,10 +24,10 @@
 #include <set>
 
 #include "qresultstore.h"
-
-#include "pyrecoll.h"
 #include "log.h"
 #include "rclutil.h"
+
+#include "pyrecoll.h"
 
 using namespace std;
 

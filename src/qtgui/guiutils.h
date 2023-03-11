@@ -25,13 +25,6 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
-#include "dynconf.h"
-extern RclDynConf *g_dynconf;
-
-#include "advshist.h"
-extern AdvSearchHist *g_advshistory;
-
-
 /** Holder for preferences (gets saved to user Qt prefs) */
 class PrefsPack {
 public:

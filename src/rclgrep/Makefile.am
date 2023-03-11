@@ -17,7 +17,7 @@ COMMONCPPFLAGS = -I. \
     -I$(top_srcdir)/xaposix \
     -DBUILDING_RECOLL
 
-AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
+AM_CPPFLAGS = -Wall -Wno-unused -std=c++17 \
     $(COMMONCPPFLAGS) \
     $(INCICONV) \
     $(XSLT_CFLAGS) \
@@ -89,6 +89,7 @@ rclgrep_SOURCES = \
     ../utils/readfile.cpp \
     ../utils/smallut.cpp  \
     ../utils/transcode.cpp \
+    ../utils/utf8iter.cpp \
     ../utils/wipedir.cpp \
     ../utils/zlibut.cpp
     

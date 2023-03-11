@@ -26,10 +26,13 @@
 
 #include "preview_plaintorich.h"
 
+#include "recoll.h"
 #include "plaintorich.h"
 #include "log.h"
 #include "guiutils.h"
 #include "cancelcheck.h"
+#include "cstr.h"
+#include "hldata.h"
 
 using namespace std;
 

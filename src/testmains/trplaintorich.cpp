@@ -38,6 +38,7 @@
 #include "readfile.h"
 #include "smallut.h"
 #include "log.h"
+#include "hldata.h"
 
 using namespace std;
 

@@ -43,6 +43,7 @@
 #include "guiutils.h"
 #include "rclhelp.h"
 #include "scbase.h"
+#include "advshist.h"
 
 using namespace std;
 

@@ -65,6 +65,7 @@ using namespace std;
 #include "zlibut.h"
 #include "idxstatus.h"
 #include "rcldoc.h"
+#include "stoplist.h"
 
 #ifndef XAPIAN_AT_LEAST
 // Added in Xapian 1.4.2. Define it here for older versions
@@ -891,6 +892,8 @@ Db::Db(const RclConfig *cfp)
         }
     }
     m_ndb = new Native(this);
+    m_syngroups = std::make_unique<SynGroups>();
+    m_stops = std::make_unique<StopList>();
 }
 
 Db::~Db()
@@ -933,7 +936,7 @@ bool Db::open(OpenMode mode, OpenError *error)
             return false;
     }
     if (!m_config->getStopfile().empty())
-        m_stops.setFile(m_config->getStopfile());
+        m_stops->setFile(m_config->getStopfile());
 
     if (isWriteMode(mode)) {
         // Check for an index-time synonyms file. We use this to
@@ -1076,7 +1079,7 @@ int Db::termDocCnt(const string& _term)
             return 0;
         }
 
-    if (m_stops.isStop(term)) {
+    if (m_stops->isStop(term)) {
         LOGDEB1("Db::termDocCnt [" << term << "] in stop list\n");
         return 0;
     }
@@ -1528,7 +1531,7 @@ void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 
 bool Db::setSynGroupsFile(const string& fn)
 {
-    return m_syngroups.setfile(fn);
+    return m_syngroups->setfile(fn);
 }
     
 static const string cstr_nc("\n\r\x0c\\");
@@ -1554,11 +1557,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     // The term processing pipeline:
     TermProcIdx tpidx;
     TermProc *nxt = &tpidx;
-    TermProcStop tpstop(nxt, m_stops);nxt = &tpstop;
+    TermProcStop tpstop(nxt, *m_stops);nxt = &tpstop;
     //TermProcCommongrams tpcommon(nxt, m_stops); nxt = &tpcommon;
 
-    TermProcMulti tpmulti(nxt, m_syngroups);
-    if (m_syngroups.getmultiwordsmaxlength() > 1) {
+    TermProcMulti tpmulti(nxt, *m_syngroups);
+    if (m_syngroups->getmultiwordsmaxlength() > 1) {
         nxt = &tpmulti;
     }
 

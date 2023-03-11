@@ -210,7 +210,7 @@ public:
 
     virtual string header() override {
         if (m_inputhtml) {
-            return cstr_null;
+            return std::string();
         } else {
             return string("<html><head>"
                           "<META http-equiv=\"Content-Type\""

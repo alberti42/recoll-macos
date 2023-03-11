@@ -55,6 +55,7 @@
 #include "rcldb.h"
 #include "recoll.h"
 #include "scbase.h"
+#include "base64.h"
 
 using namespace std;
 

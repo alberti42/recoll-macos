@@ -34,9 +34,8 @@
 #include "smallut.h"
 #include "guiutils.h"
 #include "pathut.h"
-#include "base64.h"
-#include "advshist.h"
 #include "readfile.h"
+#include "dynconf.h"
 
 #include <QSettings>
 #include <QStringList>
@@ -49,7 +48,6 @@ using std::vector;
 using std::string;
 
 RclDynConf *g_dynconf;
-AdvSearchHist *g_advshistory;
 RclConfig *theconfig;
 
 #ifdef _WIN32
@@ -465,7 +463,7 @@ std::string PrefsPack::scaleFonts(const std::string& style, float multiplier)
             //std::cerr << "New line: [" << lines[ln] << "]\n";
         }
     }
-#endif    
+#endif // USE_REGEX
     string nstyle = string();
     for (auto& ln : lines) {
         nstyle += ln + "\n";

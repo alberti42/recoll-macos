@@ -17,7 +17,6 @@
 
 #ifndef _RCLUTIL_H_INCLUDED_
 #define _RCLUTIL_H_INCLUDED_
-#include "autoconfig.h"
 
 // Misc stuff not generic enough to get into smallut or pathut
 
@@ -127,16 +126,14 @@ private:
 // Freedesktop thumbnail standard path routine
 // On return, path will have the appropriate value in all cases,
 // returns true if the file already exists
-extern bool thumbPathForUrl(const std::string& url, int size,
-                            std::string& path);
+extern bool thumbPathForUrl(const std::string& url, int size, std::string& path);
 
 // Duplicate (unordered)map<string,string> while ensuring no shared
 // string data (to pass to other thread):
 template <class T> void map_ss_cp_noshr(T s, T *d);
 
 // Set or extend metadata field. We store the data as CSV
-template <class T> void addmeta(T& store, const std::string& nm,
-                                const std::string& value);
+template <class T> void addmeta(T& store, const std::string& nm, const std::string& value);
 
 // Compare charset names, removing the more common spelling variations
 extern bool samecharset(const std::string& cs1, const std::string& cs2);

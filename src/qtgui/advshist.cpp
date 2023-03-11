@@ -21,6 +21,7 @@
 #include "guiutils.h"
 #include "log.h"
 #include "xmltosd.h"
+#include "dynconf.h"
 
 using namespace std;
 using namespace Rcl;

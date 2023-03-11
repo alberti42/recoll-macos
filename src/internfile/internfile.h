@@ -16,7 +16,6 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-#include "autoconfig.h"
 
 #include <string>
 #include <vector>
@@ -118,8 +117,7 @@ public:
      * This is mainly for data extracted from the web cache. 
      * The MIME type must be set, and the data must be uncompressed.
      */
-    FileInterner(const std::string &data, RclConfig *cnf, 
-                 int flags, const std::string& mtype);
+    FileInterner(const std::string &data, RclConfig *cnf, int flags, const std::string& mtype);
 
     /**
      * Alternate constructor used at query time. We don't know where

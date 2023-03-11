@@ -31,6 +31,7 @@
 #include "strmatcher.h"
 #include "pathut.h"
 #include "rcldoc.h"
+#include "syngroups.h"
 
 using namespace std;
 
@@ -283,11 +284,11 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
                 LOGDEB("Db::TermMatch: stemexp: " << stringsToString(lexp) << "\n");
             }
 
-            if (m_syngroups.ok() && (typ_sens & ET_SYNEXP)) {
+            if (m_syngroups->ok() && (typ_sens & ET_SYNEXP)) {
                 LOGDEB("Db::TermMatch: got syngroups\n");
                 vector<string> exp1(lexp);
                 for (const auto& term : lexp) {
-                    vector<string> sg = m_syngroups.getgroup(term);
+                    vector<string> sg = m_syngroups->getgroup(term);
                     if (!sg.empty()) {
                         LOGDEB("Db::TermMatch: syngroups out: " <<
                                term << " -> " << stringsToString(sg) << "\n");

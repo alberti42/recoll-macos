@@ -20,8 +20,7 @@
 #include <string>
 #include <list>
 
-#include "hldata.h"
-#include "cstr.h"
+class HighlightData;
 
 /** 
  * A class for highlighting search results. Overridable methods allow
@@ -71,22 +70,22 @@ public:
     /* Overridable output methods for headers, highlighting and marking tags */
 
     virtual std::string header() {
-        return cstr_null;
+        return std::string();
     }
 
     /** Return match prefix (e.g.: <div class="match">). 
         @param groupidx the index into hdata.groups */
     virtual std::string startMatch(unsigned int) {
-        return cstr_null;
+        return std::string();
     }
 
     /** Return data for end of match area (e.g.: </div>). */
     virtual std::string endMatch() {
-        return cstr_null;
+        return std::string();
     }
 
     virtual std::string startChunk() {
-        return cstr_null;
+        return std::string();
     }
 
 protected:

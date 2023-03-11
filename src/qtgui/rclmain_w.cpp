@@ -75,6 +75,7 @@
 #include "moc_rclmain_w.cpp"
 #include "scbase.h"
 #include "idxmodel.h"
+#include "cstr.h"
 
 using std::string;
 using std::vector;

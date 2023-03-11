@@ -36,7 +36,8 @@
 #include <string>
 #include <cstdlib>
 #include <deque>
-
+#include <memory>
+#include <algorithm>
 
 #include "log.h"
 #include "rclinit.h"
@@ -123,7 +124,7 @@ namespace Rcl {
 // This is needed to satisfy a reference from one of the recoll files.
 std::string version_string()
 {
-    return string("rclgrep ") + string(PACKAGE_VERSION);
+    return std::string("rclgrep ") + std::string(PACKAGE_VERSION);
 }
 }
 // Working directory before we change: it's simpler to change early
@@ -269,9 +270,9 @@ bool processpath(RclConfig *config, const std::string& path)
     
         config->setKeyDir(path_getfather(path));
     
-        string mimetype;
+        std::string mimetype;
 
-        FileInterner interner(path, &st, config, FileInterner::FIF_none);
+        FileInterner interner(path, st, config, FileInterner::FIF_none);
         if (!interner.ok()) {
             return false;
         }
@@ -305,10 +306,10 @@ bool processpath(RclConfig *config, const std::string& path)
 
 class WalkerCB : public FsTreeWalkerCB {
 public:
-    WalkerCB(const vector<string>& selpats, RclConfig *config)
+    WalkerCB(const std::vector<std::string>& selpats, RclConfig *config)
         : m_pats(selpats), m_config(config) {}
     virtual FsTreeWalker::Status processone(
-        const string& fn, FsTreeWalker::CbFlag flg, const struct PathStat&) override {
+        const std::string& fn, FsTreeWalker::CbFlag flg, const struct PathStat&) override {
         if (flg == FsTreeWalker::FtwRegular) {
             if (m_pats.empty()) {
                 processpath(m_config, fn);
@@ -323,12 +324,12 @@ public:
         }
         return FsTreeWalker::FtwOk;
     }
-    const vector<string>& m_pats;
+    const std::vector<std::string>& m_pats;
     RclConfig *m_config{nullptr};
 };
 
-bool recursive_grep(RclConfig *config, const string& top, const vector<string>& selpats,
-                    const vector<string>& exclpats)
+bool recursive_grep(RclConfig *config, const std::string& top,
+                    const std::vector<std::string>& selpats,const std::vector<std::string>& exclpats)
 {
 //    std::cerr << "recursive_grep: top : [" << top << "]\n";
     WalkerCB cb(selpats, config);
@@ -493,7 +494,7 @@ int main(int argc, char *argv[])
 {
     int ret;
     std::string a_config;
-    vector<string> selpatterns;
+    std::vector<std::string> selpatterns;
     
     while ((ret = getopt_long(argc, argv, "A:B:C:HLRVce:f:hilnp:qrsvwx",
                               long_options, NULL)) != -1) {
@@ -547,7 +548,7 @@ int main(int argc, char *argv[])
     if (a_config.empty()) {
         a_config = make_config();
     }
-    string reason;
+    std::string reason;
     int flags = 0;
     config = recollinit(flags, nullptr, nullptr, reason, &a_config);
     if (config == 0 || !config->ok()) {
@@ -559,7 +560,7 @@ int main(int argc, char *argv[])
     Logger::getTheLog()->setLogLevel(Logger::LLFAT);
 
     orig_cwd = path_cwd();
-    string rundir;
+    std::string rundir;
     config->getConfParam("idxrundir", rundir);
     if (!rundir.empty()) {
         if (!rundir.compare("tmp")) {
