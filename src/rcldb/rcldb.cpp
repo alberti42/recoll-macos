@@ -64,6 +64,7 @@ using namespace std;
 #endif
 #include "zlibut.h"
 #include "idxstatus.h"
+#include "rcldoc.h"
 
 #ifndef XAPIAN_AT_LEAST
 // Added in Xapian 1.4.2. Define it here for older versions

@@ -33,6 +33,7 @@ using namespace std;
 #include "log.h"
 #include "pathut.h"
 #include "internfile.h"
+#include "rcldoc.h"
 
 const unsigned int maxlen = 200;
 

@@ -32,7 +32,6 @@
 #include "rclutil.h"
 #include "wasatorcl.h"
 #include "log.h"
-#include "pathut.h"
 #include "plaintorich.h"
 #include "hldata.h"
 #include "smallut.h"

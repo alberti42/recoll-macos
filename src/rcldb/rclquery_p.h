@@ -24,6 +24,7 @@
 
 #include <xapian.h>
 #include "rclquery.h"
+#include "smallut.h"
 
 class Chrono;
 

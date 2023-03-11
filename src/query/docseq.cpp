@@ -21,6 +21,7 @@
 #include "sortseq.h"
 #include "log.h"
 #include "internfile.h"
+#include "rcldb.h"
 
 using std::string;
 using std::vector;

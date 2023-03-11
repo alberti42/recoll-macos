@@ -16,6 +16,8 @@
  */
 #include "autoconfig.h"
 
+#include <math.h>
+
 #include <algorithm>
 #include <cstdio>
 #include <sstream>

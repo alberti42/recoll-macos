@@ -16,6 +16,8 @@
  */
 #include "autoconfig.h"
 
+#include <math.h>
+
 #include "recoll.h"
 #include "log.h"
 #include "searchclause_w.h"

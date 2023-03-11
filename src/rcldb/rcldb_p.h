@@ -32,6 +32,8 @@
 #endif // IDX_THREADS
 #include "xmacros.h"
 #include "log.h"
+#include "rclconfig.h"
+#include "cstr.h"
 
 namespace Rcl {
 

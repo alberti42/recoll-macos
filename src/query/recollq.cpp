@@ -47,6 +47,8 @@
 #include "internfile.h"
 #include "plaintorich.h"
 #include "hldata.h"
+#include "rcldoc.h"
+#include "searchdata.h"
 
 static PlainToRich g_hiliter;
 static const std::string cstr_ellipsis("...");

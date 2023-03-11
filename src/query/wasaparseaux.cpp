@@ -23,6 +23,7 @@
 #include "wasaparserdriver.h"
 #include "searchdata.h"
 #include "log.h"
+#include "rclconfig.h"
 
 #define YYDEBUG 1
 

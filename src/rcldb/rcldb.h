@@ -24,12 +24,7 @@
 #include <vector>
 #include <memory>
 
-#include "cstr.h"
-#include "rcldoc.h"
 #include "stoplist.h"
-#include "rclconfig.h"
-#include "utf8iter.h"
-#include "textsplit.h"
 #include "syngroups.h"
 
 
@@ -53,8 +48,11 @@
 
 class RclConfig;
 class Aspell;
+class FieldTraits;
 
 namespace Rcl {
+
+class Doc;
 
 // Omega compatible values. We leave a hole for future omega values. Not sure 
 // it makes any sense to keep any level of omega compat given that the index
@@ -549,7 +547,7 @@ private:
     // index contents, possibly using wildcard or regexp matching. If typ_sens is ET_NONE, this is
     // just an index lookup. Accumulate the results in the TermMatchResult mutable input.
     bool idxTermMatch(int typ_sens, const std::string &term, TermMatchResult& result,
-                      int max = -1, const std::string& field = cstr_null);
+                      int max = -1, const std::string& field = std::string());
 
     // Flush when idxflushmb is reached
     bool maybeflush(int64_t moretext);

@@ -21,15 +21,13 @@
 
 #include <memory>
 
-#include "searchdata.h"
-#include "plaintorich.h"
+class PlainToRich;
 
-#ifndef NO_NAMESPACES
 namespace Rcl {
-#endif
 
 class Db;
 class Doc;
+class SearchData;
 
 enum abstract_result {
     ABSRES_ERROR = 0,
@@ -163,9 +161,6 @@ private:
     int    m_snipMaxPosWalk{1000000};
 };
 
-#ifndef NO_NAMESPACES
 }
-#endif // NO_NAMESPACES
-
 
 #endif /* _rclquery_h_included_ */

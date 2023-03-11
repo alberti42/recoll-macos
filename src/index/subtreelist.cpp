@@ -17,6 +17,8 @@
 
 #include "autoconfig.h"
 
+#include "subtreelist.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -25,8 +27,9 @@
 #include "rcldb.h"
 #include "searchdata.h"
 #include "rclquery.h"
-#include "subtreelist.h"
 #include "log.h"
+#include "rcldoc.h"
+#include "rclconfig.h"
 
 bool subtreelist(RclConfig *config, const std::string& _top, std::vector<std::string>& paths)
 {

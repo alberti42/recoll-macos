@@ -36,6 +36,8 @@
 #include "chrono.h"
 #include "searchdata.h"
 #include "unacpp.h"
+#include "rcldoc.h"
+#include "plaintorich.h"
 
 using namespace std;
 

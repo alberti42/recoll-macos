@@ -31,6 +31,7 @@ using namespace std;
 #include "md5ut.h"
 #include "searchdata.h"
 #include "rclquery.h"
+#include "rcldoc.h"
 
 namespace Rcl {
 

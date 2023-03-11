@@ -32,6 +32,7 @@
 #include "log.h"
 #include "unacpp.h"
 #include "rclutil.h"
+#include "smallut.h"
 
 using namespace std;
 

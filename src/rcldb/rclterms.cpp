@@ -30,6 +30,7 @@
 #include "expansiondbs.h"
 #include "strmatcher.h"
 #include "pathut.h"
+#include "rcldoc.h"
 
 using namespace std;
 

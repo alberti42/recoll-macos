@@ -31,11 +31,11 @@
 
 #include "rcldb.h"
 #include "smallut.h"
-#include "cstr.h"
 #include "hldata.h"
 
 class RclConfig;
 class AdvSearch;
+extern const std::string cstr_minwilds;
 
 namespace Rcl {
 
@@ -269,7 +269,7 @@ public:
     }
     std::string getStemLang() {
         return (m_modifiers & SDCM_NOSTEMMING) || nullptr == m_parentSearch ? 
-            cstr_null : m_parentSearch->getStemLang();
+            std::string() : m_parentSearch->getStemLang();
     }
     bool getAutoDiac() {
         return m_parentSearch ? m_parentSearch->getAutoDiac() : false;
@@ -331,13 +331,11 @@ public:
     SearchDataClauseSimple(SClType tp, const std::string& txt, 
                            const std::string& fld = std::string())
         : SearchDataClause(tp), m_text(txt), m_field(fld), m_curcl(0) {
-        m_haveWildCards = 
-            (txt.find_first_of(cstr_minwilds) != std::string::npos);
+        m_haveWildCards = (txt.find_first_of(cstr_minwilds) != std::string::npos);
     }
     SearchDataClauseSimple(const std::string& txt, SClType tp)
         : SearchDataClause(tp), m_text(txt), m_curcl(0) {
-        m_haveWildCards = 
-            (txt.find_first_of(cstr_minwilds) != std::string::npos);
+        m_haveWildCards = (txt.find_first_of(cstr_minwilds) != std::string::npos);
     }
     virtual ~SearchDataClauseSimple() = default;
     virtual SearchDataClauseSimple *clone() override{
