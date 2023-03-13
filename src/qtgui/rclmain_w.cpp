@@ -501,9 +501,9 @@ void RclMain::setupCategoryFiltering()
         m_filtMN->addAction(act);
         act->setCheckable(true);
         act->setData((int)(m_catgbutvec.size()-1));
-        m_filtMN->connect(m_filtMN, SIGNAL(triggered(QAction *)), this, 
-                          SLOT(catgFilter(QAction *)));
     }
+    m_filtMN->connect(m_filtMN, SIGNAL(triggered(QAction *)), this,
+                      SLOT(catgFilter(QAction *)));
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     connect(m_filtBGRP, SIGNAL(idClicked(int)), this, SLOT(catgFilter(int)));
