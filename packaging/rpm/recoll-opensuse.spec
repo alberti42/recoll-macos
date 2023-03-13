@@ -3,19 +3,19 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.33.3
+Version:        1.35.0
 Release:        2%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
 URL:            http://www.lesbonscomptes.com/recoll/
 Source0:        http://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
-Source10:       qmake-qt5.sh
+Source10:       qmake-qt6.sh
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
 
-BuildRequires:  libQt5Gui-devel
-BuildRequires:  libqt5-qtwebengine-devel
+BuildRequires:  qt6-gui-devel
+BuildRequires:  qt6-webenginewidgets-devel
 BuildRequires:  python310-devel
 BuildRequires:  libxapian-devel
 
@@ -42,8 +42,8 @@ CXXFLAGS="%{optflags}"; export CXXFLAGS
 LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 
 # force use of custom/local qmake, to inject proper build flags (above)
-install -m755 -D %{SOURCE10} qmake-qt5.sh
-export QMAKE=qmake-qt5
+install -m755 -D %{SOURCE10} qmake-qt6.sh
+export QMAKE=qmake6
 
 %configure --enable-webengine
 make %{?_smp_mflags}
@@ -61,10 +61,7 @@ rm -f %{buildroot}/usr/lib/systemd/system/recollindex@.service
 rm -f %{buildroot}/usr/lib/systemd/user/recollindex.service
 rm -f %{buildroot}/usr/share/man/man1/rclgrep.1
 rm -f %{buildroot}/usr/share/man/man1/rclgrep.1.gz
-
-
-mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
-echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
+rm -f %{buildroot}/usr/*/librecoll.la
 
 # Mix of Python 2 and 3, needs special care
 
@@ -110,7 +107,6 @@ exit 0
 %files
 %license COPYING
 %doc ChangeLog README
-%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 %{_bindir}/%{name}
 %{_bindir}/%{name}index
 %{_datadir}/%{name}
@@ -118,17 +114,19 @@ exit 0
 %{_datadir}/applications/%{name}-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png
-%{_libdir}/recoll
+%{_includedir}/recoll
+%{_libdir}/librecoll*.so
 %{python2_sitearch}/recoll
 %{python2_sitearch}/Recoll*.egg-info
 %{python3_sitearch}/recoll
 %{python3_sitearch}/Recoll*.egg-info
+%{python3_sitearch}/recollaspell.*
+%{python3_sitearch}/recoll_aspell*.egg-info
 %{python3_sitearch}/recollchm
 %{python3_sitearch}/recollchm*.egg-info
 %{_mandir}/man1/%{name}.1*
 %{_mandir}/man1/%{name}q.1*
 %{_mandir}/man1/%{name}index.1*
-%{_mandir}/man1/xadump.1*
 %{_mandir}/man5/%{name}.conf.5*
 
 

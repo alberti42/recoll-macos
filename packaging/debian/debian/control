@@ -21,7 +21,7 @@ Build-Depends: bison,
                python3-setuptools,
                qtbase5-dev,
                qttools5-dev-tools
-X-Python3-Version: >= 3.4
+X-Python3-Version: >= 3.7
 Vcs-Git: https://salsa.debian.org/debian/recoll.git
 Vcs-Browser: https://salsa.debian.org/debian/recoll
 Homepage: https://www.lesbonscomptes.com/recoll
@@ -54,9 +54,7 @@ Description: Personal full text search package
 
 Package: recollcmd
 Architecture: any
-Breaks: recoll (<< 1.23.7-2)
-Replaces: recoll (<< 1.23.7-2)
-Depends: python3, ${misc:Depends}, ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, librecoll (= ${binary:Version}), python3
 Recommends: antiword,
             aspell,
             groff,
@@ -79,8 +77,6 @@ Description: Command line programs for recoll
  
 Package: recollgui
 Architecture: any
-Breaks: recoll (<< 1.23.7-2)
-Replaces: recoll (<< 1.23.7-2)
 Depends: recollcmd (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
 Description: GUI program and elements for recoll
  Main recoll GUI for configuring, controlling and querying recoll indexes.
@@ -89,7 +85,7 @@ Package: python-recoll
 Architecture: any
 Section: python
 Depends: python2,
-         recollcmd (= ${binary:Version}),
+         librecoll (= ${binary:Version}), 
          ${misc:Depends},
          ${python:Depends},
          ${shlibs:Depends}
@@ -104,7 +100,7 @@ Package: python3-recoll
 Architecture: any
 Section: python
 Depends: python3,
-         recollcmd (= ${binary:Version}),
+         librecoll (= ${binary:Version}), 
          ${misc:Depends},
          ${python3:Depends},
          ${shlibs:Depends}
@@ -114,3 +110,21 @@ Description: Python extension for recoll (Python3)
  .
  This package provides Python3 extension module for recoll which can be use to
  extend recoll such as an Ubuntu Unity Lens.
+
+Package: librecoll
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Base library for recoll and related extensions
+ librecoll contains the base code interfacing with Xapian and is used by the
+ recoll commands, the Python extensions, the KDE plugins...
+
+Package: librecoll-dev
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends}, librecoll (= ${binary:Version})
+Multi-Arch: same
+Description: development files for librecoll
+ librecoll contains the base code interfacing with Xapian and is used by the
+ recoll commands, the Python extensions, the KDE plugins...

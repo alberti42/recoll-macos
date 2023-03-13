@@ -2,7 +2,7 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.34.5
+Version:        1.35.0
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.lesbonscomptes.com/recoll/
@@ -19,18 +19,19 @@ BuildRequires:  gcc-c++
 # kio
 BuildRequires:  kdelibs4-devel
 BuildRequires:  kf5-kio-devel
-
+# krunner
 BuildRequires:  kf5-ki18n-devel
 BuildRequires:  kf5-krunner-devel
 BuildRequires:  kf5-knotifications-devel
 BuildRequires:  kf5-kpackage-devel
+
 BuildRequires:  libxslt-devel
 BuildRequires:  make
 BuildRequires:  python-rpm-macros
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  qt5-qtbase-devel
-BuildRequires:  qt5-qtwebengine-devel
+BuildRequires:  qt5-qtwebkit-devel
 BuildRequires:  xapian-core-devel
 BuildRequires:  zlib-devel
 Requires:       xdg-utils
@@ -51,12 +52,11 @@ appropriate URL in a KDE open dialog, or with an HTML-based interface
 displayed in Konqueror.
 
 %package       krunner
-Summary:       Krunner support for recoll
+Summary:       KRunner support for recoll
 Requires:      %{name} = %{version}-%{release}
 
 %description   krunner
-The recoll krunner plugin adds Recoll search results to krunner output.
-
+The recoll KRunner plugin adds Recoll search results to KRunner output.
 
 %package       gssp
 Summary:       Recoll GNOME Shell search provider
@@ -70,7 +70,7 @@ This package contains the Recoll GNOME Shell search provider
 %setup -q -D -a 1
 %autopatch -p1
 sed -i -e '1{\,^#!/usr/bin/env,d}' python/recoll/recoll/rclconfig.py
-ln -s gssp-recoll-%{gsspver} gssp
+if test ! -e gssp ;then ln -s gssp-recoll-%{gsspver} gssp;fi
 
 %build
 CFLAGS="%{optflags}"; export CFLAGS
@@ -81,12 +81,12 @@ LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 install -m755 -D %{SOURCE10} qmake-qt5.sh
 export QMAKE=qmake-qt5
 
-%configure --enable-recollq --enable-webengine
+%configure --enable-recollq --enable-publiclib
 make %{?_smp_mflags}
 
 # gssp
 pushd gssp
-%configure 
+%configure
 popd
 
 %install
@@ -105,21 +105,21 @@ rm %{buildroot}%{_datadir}/recoll/filters/hotrecoll.py
 
 # kio_recoll -kde5
 pushd kde/kioslave/kio_recoll
-%cmake
+%cmake -DRECOLL_PUBLIC_LIB=1
 %cmake_build
 %cmake_install
 popd
 
 # kio_recoll -kde4
 pushd kde/kioslave/kio_recoll-kde4
-%cmake
+%cmake -DRECOLL_PUBLIC_LIB=1
 %cmake_build
 %cmake_install
 popd
 
 # krunner_recoll
 pushd kde/krunner
-%cmake
+%cmake -DRECOLL_PUBLIC_LIB=1
 %cmake_build
 %cmake_install
 popd
@@ -129,9 +129,6 @@ pushd gssp
 make install DESTDIR=%{buildroot}
 popd
 
-mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
-echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/recoll-%{_arch}.conf
-
 %py_byte_compile %{__python3} %{buildroot}%{_datadir}/%{name}/filters/
 
 %post -p /sbin/ldconfig
@@ -140,7 +137,6 @@ echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/recoll-%{_arc
 %files
 %license COPYING
 %doc ChangeLog README
-%{_sysconfdir}/ld.so.conf.d/recoll-%{_arch}.conf
 %{_bindir}/recoll
 %{_bindir}/recollindex
 %{_bindir}/recollq
@@ -148,17 +144,23 @@ echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/recoll-%{_arc
 %{_datadir}/metainfo/recoll.appdata.xml
 %{_datadir}/applications/recoll-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/recoll.png
+%{_includedir}/
+%{_libdir}/librecoll*.so
 %{_datadir}/pixmaps/recoll.png
-%{_libdir}/recoll
+%{_includedir}/
+%{_libdir}/librecoll*.so
+%{_datadir}/pixmaps/recoll.png
 %{python3_sitearch}/recoll
 %{python3_sitearch}/recollchm
 %{python3_sitearch}/Recoll-*.egg-info
 %{python3_sitearch}/recollchm-*.egg-info
-%{python3_sitearch}/recollaspell*.so
-%{python3_sitearch}/recoll_aspell*.egg-info
+%{python3_sitearch}/recollaspell.cpython-*-linux-gnu*.so
+%{python3_sitearch}/recoll_aspell_python_py3-*.egg-info
 %{_mandir}/man1/recoll.1*
 %{_mandir}/man1/recollq.1*
 %{_mandir}/man1/recollindex.1*
+#{_mandir}/man1/rclgrep.1*
+#{_mandir}/man1/xadump.1*
 %{_mandir}/man5/recoll.conf.5*
 %{_unitdir}/recollindex@.service
 %{_userunitdir}/recollindex.service
@@ -184,6 +186,33 @@ echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/recoll-%{_arc
 %{_datadir}/applications/org.recoll.Recoll.SearchProvider.desktop
 
 %changelog
+* Tue Apr 11 2023 Jean-Francois Dockes <jfd@recoll.org> - 1.35.0-1
+- 1.35.0 with option for installing librecoll in the system directory.
+
+* Sun Mar 26 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.34.6-1
+- 1.34.6
+
+* Sun Mar 05 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.34.5-1
+- 1.34.5
+
+* Sun Feb 19 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.34.3-1
+- 1.34.3
+
+* Sun Feb 19 2023 bzs <me@bzs.rocks> - 1.34.2-3
+- Add krunner (rhbz#2170512)
+
+* Sun Jan 29 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.34.2-2
+- Fix file pattern to cover arm32 platform
+
+* Thu Jan 26 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.34.2-1
+- 1.34.2
+
+* Wed Jan 18 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.34.0-1
+- 1.34.0
+
+* Mon Nov 28 2022 Terje Rosten <terje.rosten@ntnu.no> - 1.33.3-1
+- 1.33.3
+
 * Sat Nov 12 2022 Terje Rosten <terje.rosten@ntnu.no> - 1.33.2-1
 - 1.33.2
 
