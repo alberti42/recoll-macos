@@ -24,7 +24,7 @@ endif
 	dh $@ --with python2 --with python3
 
 override_dh_auto_configure:
-	dh_auto_configure -- --enable-recollq --enable-xadump --enable-webkit
+	dh_auto_configure -- --enable-recollq --enable-xadump --enable-webkit --enable-publiclib
 	(cd qtgui;lrelease recoll.pro;mkdir .qm;mv i18n/*.qm .qm)
 #	dh_auto_configure -- --enable-recollq --enable-xadump --enable-webengine
 

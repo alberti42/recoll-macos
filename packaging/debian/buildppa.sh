@@ -13,9 +13,9 @@ SERIES="focal jammy kinetic lunar"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.34.6
+RCLVERS=1.35.0
 GSSPVERS=1.1.1
-PPAVERS=2
+PPAVERS=1
 
 #
 #Y=/y
@@ -49,7 +49,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series=$SERIES
-series=lunar
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -126,7 +126,7 @@ done
 ### Krunner plugin. Does not build on focal and bionic because of the
 ### 5.90 min version requested in the CMakeLists.txt. Did not try to
 ### work around.
-series="jammy kinetic"
+series="jammy kinetic lunar"
 series=
 
 debdir=debiankrunner

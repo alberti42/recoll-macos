@@ -62,10 +62,7 @@ rm -f %{buildroot}/usr/lib/systemd/system/recollindex@.service
 rm -f %{buildroot}/usr/lib/systemd/user/recollindex.service
 rm -f %{buildroot}/usr/share/man/man1/rclgrep.1
 rm -f %{buildroot}/usr/share/man/man1/rclgrep.1.gz
-
-
-mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
-echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
+rm -f %{buildroot}/usr/*/librecoll.la
 
 py3_byte_compile () {
     bytecode_compilation_path="$1"
@@ -101,7 +98,6 @@ exit 0
 %files
 %license COPYING
 %doc ChangeLog README
-%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 %{_bindir}/%{name}
 %{_bindir}/%{name}index
 %{_datadir}/%{name}
@@ -109,9 +105,14 @@ exit 0
 %{_datadir}/applications/%{name}-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png
-%{_libdir}/recoll
+%{_includedir}/recoll
+%{_libdir}/librecoll*.so
+%{python2_sitearch}/recoll
+%{python2_sitearch}/Recoll*.egg-info
 %{python3_sitearch}/recoll
 %{python3_sitearch}/Recoll*.egg-info
+%{python3_sitearch}/recollaspell.*
+%{python3_sitearch}/recoll_aspell*.egg-info
 %{python3_sitearch}/recollchm
 %{python3_sitearch}/recollchm*.egg-info
 %{_mandir}/man1/%{name}.1*

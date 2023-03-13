@@ -11,11 +11,11 @@ Files: bincimapmime/*
 Copyright: 2002-2005, Andreas Aardal Hanssen <andreas-binc@bincimap.org>
 License: GPL-2+
 
-Files: filters/rcl* internfile/htmlparse.cpp
+Files: filters/rcl*
 Copyright: 2000-2004, Mikio Hirabayashi
 License: GPL-2+
 
-Files: filters/rclpython
+Files: filters/rclpython.py
 Copyright: J\xfcrgen Hermann, Mike Brown, Christopher Arndt
  <http://chrisarndt.de/en/software/python/colorize.html>
 License: GPL-2+

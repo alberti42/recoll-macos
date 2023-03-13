@@ -41,6 +41,7 @@ if (RECOLL_PUBLIC_LIB)
     ${CMAKE_INSTALL_PREFIX}/include/recoll
   )
   # Check if running inside a build tree, then use the not yet installed lib
+  # Check if running inside a build tree, then use the not yet installed lib
   if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../.libs)
   elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)

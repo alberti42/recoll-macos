@@ -1,4 +1,10 @@
-kio-recoll (1.34.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+krunner-recoll (1.35.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * New library installation location.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 14 Mar 2023 09:28:00 +0100
+
+krunner-recoll (1.34.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Follow
   
