@@ -31,6 +31,7 @@
 #include "rclutil.h"
 #include "log.h"
 #include "execmd.h"
+#include "pathut.h"
 
 using namespace std;
 

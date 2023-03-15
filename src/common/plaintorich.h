@@ -20,7 +20,7 @@
 #include <string>
 #include <list>
 
-class HighlightData;
+struct HighlightData;
 
 /** 
  * A class for highlighting search results. Overridable methods allow

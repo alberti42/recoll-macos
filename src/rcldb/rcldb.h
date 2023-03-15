@@ -42,7 +42,7 @@
 
 class RclConfig;
 class Aspell;
-class FieldTraits;
+struct FieldTraits;
 class SynGroups;
 
 namespace Rcl {

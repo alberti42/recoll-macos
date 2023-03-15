@@ -42,6 +42,10 @@
 
 using namespace std;
 
+#ifdef _WIN32
+#define strcasecmp _stricmp
+#endif /* _WIN32 */
+
 #if PY_MAJOR_VERSION >=3
 #  define Py_TPFLAGS_HAVE_ITER 0
 #else

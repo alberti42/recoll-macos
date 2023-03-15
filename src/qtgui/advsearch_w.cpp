@@ -44,6 +44,7 @@
 #include "rclhelp.h"
 #include "scbase.h"
 #include "advshist.h"
+#include "pathut.h"
 
 using namespace std;
 

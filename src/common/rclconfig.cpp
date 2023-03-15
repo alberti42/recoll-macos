@@ -23,7 +23,9 @@
 #include <langinfo.h>
 #include <sys/param.h>
 #else
+#include <direct.h>
 #include "wincodepages.h"
+#include "safeunistd.h"
 #endif
 #include <limits.h>
 #ifdef __FreeBSD__

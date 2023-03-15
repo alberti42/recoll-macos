@@ -28,6 +28,7 @@
 #include "log.h"
 #include "guiutils.h"
 #include "smallut.h"
+#include "pathut.h"
 
 using namespace std;
 
