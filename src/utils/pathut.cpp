@@ -218,14 +218,14 @@ bool wchartoutf8(const wchar_t *in, std::string& out, size_t wlen)
         fwprintf(stderr, L"wchartoutf8: conversion error1 for [%s]\n", in);
         return false;
     }
-    DirstySmartBuf buffer(bytes+1);
+    DirtySmartBuf buffer(bytes+1);
     bytes = ::WideCharToMultiByte(CP_UTF8, flags, in, wlen, buffer.buf(), bytes, nullptr, nullptr);
     if (bytes <= 0) {
         LOGERR("wchartoutf8: CONVERSION ERROR2\n");
         return false;
     }
     buffer.buf()[bytes] = 0;
-    out = cp;
+    out = buffer.buf();
     //fwprintf(stderr, L"wchartoutf8: in: [%s]\n", in);
     //fprintf(stderr, "wchartoutf8: out:  [%s]\n", out.c_str());
     return true;
@@ -617,11 +617,15 @@ string path_getsimple(const string& s)
     return simple;
 }
 
+// Unlike path_getsimple(), we ignore right-side '/' chars, like the basename command does.
+#ifdef _WIN32
+string path_basename(const string& _s, const string& suff)
+{
+    std::string s{_s};
+    path_slashize(s);
+#else
 string path_basename(const string& s, const string& suff)
 {
-    // Unlike path_getsimple(), we ignore right-side '/' chars, like the basename command does.
-#ifdef _WIN32
-    path_slashize(s);
 #endif
     if (path_isroot(s))
         return s;
