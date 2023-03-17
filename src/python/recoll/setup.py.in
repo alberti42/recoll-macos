@@ -31,16 +31,14 @@ module1 = Extension('_recoll',
                     define_macros = [
                                      ('RECOLL_DATADIR', '"@RECOLL_DATADIR@"')
                                      ],
-                    include_dirs = ['/usr/local/include',
-                                    os.path.join(top, 'utils'), 
-                                    os.path.join(top, 'common'),
+                    include_dirs = [
                                     os.path.join(localtop, 'common'),
                                     os.path.join(top, 'common'), 
-                                    os.path.join(top, 'internfile'), 
                                     os.path.join(top, 'index'), 
-                                    os.path.join(top, 'rcldb'), 
+                                    os.path.join(top, 'internfile'), 
                                     os.path.join(top, 'query'), 
-                                    os.path.join(top, 'unac')
+                                    os.path.join(top, 'rcldb'), 
+                                    os.path.join(top, 'utils'), 
                                     ],
                     extra_compile_args = extra_compile_args,
                     libraries = libraries,
