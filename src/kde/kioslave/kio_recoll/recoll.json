@@ -19,6 +19,20 @@
             "reading": true,
             "source": false,
             "writing": false
+        },
+        "hrecoll": {
+            "Class": ":local", 
+            "Icon": "recoll",
+            "defaultMimetype": "text/html", 
+            "deleting": true, 
+            "determineMimetypeFromExtension": false, 
+            "input": "none", 
+            "maxInstances": 20, 
+            "maxInstancesPerHost": 5, 
+            "output": "filesystem", 
+            "protocol": "hrecoll",
+            "reading": true, 
+            "writing": false
         }
     }
 }

@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 
 #include <string>
+
 #include <QStandardPaths>
 
 #include "rclconfig.h"
@@ -55,7 +56,7 @@ bool RecollKioPager::append(const string& data)
 string RecollProtocol::makeQueryUrl(int page, bool isdet)
 {
     ostringstream str;
-    str << "recoll://search/query?q=" <<
+    str << "hrecoll://search/query?q=" <<
         url_encode((const char*)m_query.query.toUtf8()) <<
         "&qtp=" << (const char*)m_query.opt.toUtf8();
     if (page >= 0) {
@@ -104,14 +105,14 @@ const string& RecollKioPager::parFormat()
 
 string RecollKioPager::pageTop()
 {
-    string pt = "<p align=\"center\"> <a href=\"recoll:///search.html?q=";
+    string pt = "<p align=\"center\"> <a href=\"hrecoll:///search.html?q=";
     pt += url_encode(string(m_parent->m_query.query.toUtf8()));
     pt += "\">New Search</a>";
     return pt;
 // Would be nice to have but doesnt work because the query may be executed
 // by another kio instance which has no idea of the current page o
 #if 0
-    " &nbsp;&nbsp;&nbsp;<a href=\"recoll:///" +
+    " &nbsp;&nbsp;&nbsp;<a href=\"hrecoll:///" +
     url_encode(string(m_parent->m_query.query.toUtf8())) +
     "/\">Directory view</a> (you may need to reload the page)"
 #endif
@@ -257,15 +258,13 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
         m_source->getTerms(hdata);
     }
     ptr.plaintorich(fdoc.text, otextlist, hdata);
-
-    QByteArray array;
-    QTextStream os(&array, QIODevice::WriteOnly);
-    for (list<string>::iterator it = otextlist.begin();
-            it != otextlist.end(); it++) {
-        os << (*it).c_str();
+    //qDebug() << "PREVIEW: got: " << QString::fromUtf8(fdoc.text.c_str());
+    QByteArray out;
+    for (const auto& chunk : otextlist) {
+        out.append(chunk.c_str(), chunk.size());
     }
-    os << "</body></html>" << "\n";
-    data(array);
+    out.append("</pre></body></html>");
+    data(out);
 }
 
 void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
