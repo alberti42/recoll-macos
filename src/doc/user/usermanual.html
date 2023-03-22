@@ -10581,6 +10581,20 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                   big documents, the consequence would be snippets
                   with possibly meaning-altering missing words.</p>
                 </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.THUMBNAILERCMD" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.THUMBNAILERCMD"></a><span class="term"><code class="varname">thumbnailercmd</code></span></dt>
+                <dd>
+                  <p>Command to use for generating thumbnails. If
+                  set, this should be a path to a command or script
+                  followed by its constant arguments. Four
+                  arguments will be appended before execution: the
+                  document URL, MIME type, target icon SIZE (e.g.
+                  128), and output file PATH. The command should
+                  generate a thumbnail from these values. E.g. if
+                  the MIME is video, a script could use:
+                  ffmpegthumbnailer -iURL -oPATH -sSIZE.</p>
+                </dd>
               </dl>
             </div>
           </div>
