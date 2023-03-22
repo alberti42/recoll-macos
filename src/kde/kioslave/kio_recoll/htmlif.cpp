@@ -71,7 +71,7 @@ string RecollProtocol::makeQueryUrl(int page, bool isdet)
 string RecollKioPager::detailsLink()
 {
     string chunk = string("<a href=\"") +
-                   m_parent->makeQueryUrl(m_parent->m_pager.pageNumber(), true) + "\">"
+                   m_parent->makeQueryUrl(m_parent->m_pager->pageNumber(), true) + "\">"
                    + "(show query)" + "</a>";
     return chunk;
 }
@@ -196,8 +196,8 @@ void RecollProtocol::queryDetails()
     os << "<title>" << "Recoll query details" << "</title>\n" << "\n";
     os << "</head>" << "\n";
     os << "<body><h3>Query details:</h3>" << "\n";
-    os << "<p>" << m_pager.queryDescription().c_str() << "</p>" << "\n";
-    os << "<p><a href=\"" << makeQueryUrl(m_pager.pageNumber()).c_str() <<
+    os << "<p>" << m_pager->queryDescription().c_str() << "</p>" << "\n";
+    os << "<p><a href=\"" << makeQueryUrl(m_pager->pageNumber()).c_str() <<
        "\">Return to results</a>" << "\n";
     os << "</body></html>" << "\n";
     data(array);
@@ -278,8 +278,8 @@ void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
         return;
     }
     // syncSearch/doSearch do the setDocSource when needed
-    if (m_pager.pageNumber() < 0) {
-        m_pager.resultPageNext();
+    if (m_pager->pageNumber() < 0) {
+        m_pager->resultPageNext();
     }
     if (qd.isDetReq) {
         queryDetails();
@@ -287,17 +287,17 @@ void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
     }
 
     // Check / adjust page number
-    if (qd.page > m_pager.pageNumber()) {
-        int npages = qd.page - m_pager.pageNumber();
+    if (qd.page > m_pager->pageNumber()) {
+        int npages = qd.page - m_pager->pageNumber();
         for (int i = 0; i < npages; i++) {
-            m_pager.resultPageNext();
+            m_pager->resultPageNext();
         }
-    } else if (qd.page < m_pager.pageNumber()) {
-        int npages = m_pager.pageNumber() - qd.page;
+    } else if (qd.page < m_pager->pageNumber()) {
+        int npages = m_pager->pageNumber() - qd.page;
         for (int i = 0; i < npages; i++) {
-            m_pager.resultPageBack();
+            m_pager->resultPageBack();
         }
     }
     // Display
-    m_pager.displayPage(o_rclconfig);
+    m_pager->displayPage(o_rclconfig);
 }

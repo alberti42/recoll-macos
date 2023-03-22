@@ -99,7 +99,7 @@ void Doc::copyto(Doc *d) const
 }
 
 static const string cstr_fileu("file://");
-bool docsToPaths(vector<Rcl::Doc> &docs, vector<string> &paths)
+bool docsToPaths(const vector<Rcl::Doc> &docs, vector<string> &paths)
 {
     for (const auto& idoc : docs) {
         string backend;

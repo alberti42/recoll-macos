@@ -32,7 +32,7 @@ class PlainToRich;
  */
 class ResListPager {
 public:
-    ResListPager(int pagesize=10, bool alwaysSnippets = false);
+    ResListPager(RclConfig *cnf, int pagesize=10, bool alwaysSnippets = false);
     virtual ~ResListPager() {}
     ResListPager(const ResListPager&) = delete;
     ResListPager& operator=(const ResListPager&) = delete;
@@ -84,10 +84,9 @@ public:
     /* Display page of results */
     void displayPage(RclConfig *);
     /* Display page with single document */
-    void displaySingleDoc(RclConfig *config, int idx,
-                          Rcl::Doc& doc, const HighlightData& hdata);
+    void displaySingleDoc(RclConfig *config, int idx, Rcl::Doc& doc, const HighlightData& hdata);
     /* Generate HTML for single document inside page */
-    void displayDoc(RclConfig *, int idx, Rcl::Doc& doc, 
+    void displayDoc(RclConfig *, int idx, Rcl::Doc& doc,
                     const HighlightData& hdata, const std::string& sh = "");
 
     bool pageEmpty() {return m_respage.size() == 0;}
@@ -139,6 +138,7 @@ private:
     PlainToRich         *m_hiliter;
     std::shared_ptr<DocSequence> m_docSource;
     std::vector<ResListEntry> m_respage;
+    std::vector<std::string> m_thumbnailercmd;
 };
 
 #endif /* _reslistpager_h_included_ */

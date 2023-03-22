@@ -18,6 +18,7 @@
  */
 
 #include <string>
+#include <memory>
 
 #include <QString>
 #include <QUrl>
@@ -35,7 +36,8 @@ class RecollProtocol;
 /** Specialize the recoll html pager for the kind of links we use etc. */
 class RecollKioPager : public ResListPager {
 public:
-    RecollKioPager() : m_parent(0) {}
+    RecollKioPager(RclConfig *cnf)
+        : ResListPager(cnf), m_parent(0) {}
     void setParent(RecollProtocol *proto) {
         m_parent = proto;
     }
@@ -190,7 +192,7 @@ private:
     // much in actual use. One possible workaround for some scenarios
     // (one slave several konqueror windows) would be to have a small
     // cache of recent searches kept open.
-    RecollKioPager m_pager;
+    std::unique_ptr<RecollKioPager> m_pager;
     std::shared_ptr<DocSequence> m_source;
     // Note: page here is not used, current page always comes from m_pager.
     QueryDesc      m_query;

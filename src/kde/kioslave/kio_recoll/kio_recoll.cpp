@@ -45,6 +45,11 @@
 using namespace KIO;
 using namespace std;
 
+static inline QString u8s2qs(const std::string& us)
+{
+    return QString::fromUtf8(us.c_str(), us.size());
+}
+
 class KIOPluginForMetaData : public QObject
 {
     Q_OBJECT
@@ -79,6 +84,8 @@ RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
         m_reason = "Could not build database object. (out of memory ?)";
         return;
     }
+    m_pager = std::unique_ptr<RecollKioPager>(new RecollKioPager(o_rclconfig));
+    m_pager->setParent(this);
 
     // Decide if we allow switching between html and file manager
     // presentation by using an end slash or not. Can also be done dynamically
@@ -98,7 +105,6 @@ RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
     } else {
         m_stemlang = "english";
     }
-    m_pager.setParent(this);
     m_initok = true;
     return;
 }
@@ -345,7 +351,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     m_source = std::shared_ptr<DocSequence>(src);
     // Reset pager in all cases. Costs nothing, stays at page -1 initially
     // htmldosearch will fetch the first page if needed.
-    m_pager.setDocSource(m_source);
+    m_pager->setDocSource(m_source);
     return true;
 }
 

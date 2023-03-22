@@ -36,6 +36,7 @@
 #include "mimehandler.h"
 #include "transcode.h"
 #include "pathut.h"
+#include "execmd.h"
 
 using std::ostringstream;
 using std::list;
@@ -57,7 +58,7 @@ public:
 };
 static PlainToRichHtReslist g_hiliter;
 
-ResListPager::ResListPager(int pagesize, bool alwaysSnippets) 
+ResListPager::ResListPager(RclConfig *cnf, int pagesize, bool alwaysSnippets) 
     : m_pagesize(pagesize),
       m_alwaysSnippets(alwaysSnippets),
       m_newpagesize(pagesize),
@@ -66,6 +67,7 @@ ResListPager::ResListPager(int pagesize, bool alwaysSnippets)
       m_hasNext(true),
       m_hiliter(&g_hiliter)
 {
+    cnf->getConfParam("thumbnailercmd", &m_thumbnailercmd);
 }
 
 void ResListPager::resultPageNext()
@@ -503,18 +505,33 @@ string ResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 {
     // If this is a top level doc, check for a thumbnail image
     if (doc.ipath.empty()) {
-        vector<Rcl::Doc> docs;
-        docs.push_back(doc);
         vector<string> paths;
-        Rcl::docsToPaths(docs, paths);
+        Rcl::docsToPaths({doc}, paths);
         if (!paths.empty()) {
             string path;
+            string url = cstr_fileu + paths[0];
             LOGDEB2("ResList::iconUrl: source path [" << paths[0] << "]\n");
-            if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
+            if (thumbPathForUrl(url, 128, path)) {
                 LOGDEB2("ResList::iconUrl: icon path [" << path << "]\n");
                 return cstr_fileu + path;
             } else {
                 LOGDEB2("ResList::iconUrl: no icon: path [" << path << "]\n");
+                if (!m_thumbnailercmd.empty()) {
+                    std::string thumbpath;
+                    thumbPathForUrl(url, 128, thumbpath);
+                    ExecCmd cmd;
+                    std::vector<std::string> cmdvec{m_thumbnailercmd};
+                    cmdvec.push_back(url);
+                    cmdvec.push_back(doc.mimetype);
+                    cmdvec.push_back("128");
+                    cmdvec.push_back(thumbpath);
+                    if (cmd.doexec(cmdvec) == 0) {
+                        if (thumbPathForUrl(url, 128, path)) {
+                            LOGDEB2("ResList::iconUrl: icon path [" << path << "]\n");
+                            return cstr_fileu + path;
+                        }
+                    }
+                }
             }
         } else {
             LOGDEB("ResList::iconUrl: docsToPaths failed\n");

@@ -259,7 +259,7 @@ public:
     static const std::string keybght;  // beagle hit type ("beagleHitType")
 };
 
-extern bool docsToPaths(std::vector<Doc> &docs,std::vector<std::string> &paths);
+extern bool docsToPaths(const std::vector<Doc> &docs, std::vector<std::string> &paths);
 
 }
 

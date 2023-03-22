@@ -87,9 +87,8 @@ static const char *settingskey_splittersizes="resTableSplitterSizes";
 ///
 class ResTablePager : public ResListPager {
 public:
-    ResTablePager(ResTable *p)
-        : ResListPager(1, prefs.alwaysSnippets), m_parent(p)
-        {}
+    ResTablePager(RclConfig *cnf, ResTable *p)
+        : ResListPager(cnf, 1, prefs.alwaysSnippets), m_parent(p) {}
     virtual bool append(const string& data) override;
     virtual bool flush() override;
     virtual string trans(const string& in) override;
@@ -673,7 +672,7 @@ void ResTable::init(QStringList _ifields)
     connect(tableView, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(onClicked(const QModelIndex&)));
 
-    m_pager = new ResTablePager(this);
+    m_pager = new ResTablePager(theconfig, this);
     m_pager->setHighLighter(&g_hiliter);
 
     deleteZ(textBrowser);
