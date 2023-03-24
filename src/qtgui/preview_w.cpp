@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2019 J.F.Dockes
+/* Copyright (C) 2005-2023 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -47,15 +47,15 @@
 #include <QShortcut>
 #include <QTimer>
 
+#include "preview_w.h"
+
 #include "log.h"
 #include "pathut.h"
 #include "internfile.h"
 #include "recoll.h"
 #include "smallut.h"
 #include "chrono.h"
-#include "wipedir.h"
 #include "cancelcheck.h"
-#include "preview_w.h"
 #include "guiutils.h"
 #include "docseqhist.h"
 #include "rclhelp.h"
@@ -98,7 +98,6 @@ static void trimwildcards(string& elt)
 
 void Preview::init()
 {
-    LOGDEB("Preview::init\n");
     setAttribute(Qt::WA_DeleteOnClose);
     
     // Create the first tab (the tab widget is created with one
@@ -139,8 +138,7 @@ void Preview::init()
     }
 
     (void)new HelpClient(this);
-    HelpClient::installMap((const char *)objectName().toUtf8(), 
-                           "RCL.SEARCH.GUI.PREVIEW");
+    HelpClient::installMap((const char *)objectName().toUtf8(), "RCL.SEARCH.GUI.PREVIEW");
 
     // signals and slots connections
     connect(new QShortcut(QKeySequence::ZoomIn,this), SIGNAL (activated()), this, SLOT (zoomIn()));
@@ -155,8 +153,7 @@ void Preview::init()
     connect(pvTab, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
     onNewShortcuts();
-    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
-            this, SLOT(onNewShortcuts()));
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()), this, SLOT(onNewShortcuts()));
 
     connect(nextInTabPB, SIGNAL (clicked()), this, SLOT (emitShowNext()));
     connect(prevInTabPB, SIGNAL (clicked()), this, SLOT (emitShowPrev()));
@@ -166,22 +163,18 @@ void Preview::init()
 void Preview::onNewShortcuts()
 {
     SETSHORTCUT(this, "preview:151", tr("Preview Window"),
-                tr("Close preview window"),
-                "Esc",  m_closewinsc, close);
+                tr("Close preview window"), "Esc",  m_closewinsc, close);
     SETSHORTCUT(this, "preview:153",tr("Preview Window"), tr("Show next result"),
                 "Shift+Down", m_nextdocsc, emitShowNext);
     SETSHORTCUT(this, "preview:155", tr("Preview Window"),
-                tr("Show previous result"),
-                "Shift+Up", m_prevdocsc, emitShowPrev);
+                tr("Show previous result"), "Shift+Up", m_prevdocsc, emitShowPrev);
     SETSHORTCUT(this, "preview:159", tr("Preview Window"), tr("Close tab"),
                 "Ctrl+W", m_closetabsc, closeCurrentTab);
-    QKeySequence ks =
-        SCBase::scBase().get("preview:162", tr("Preview Window"),
-                             tr("Print"), "Ctrl+P");
+    QKeySequence ks =  SCBase::scBase().get("preview:162", tr("Preview Window"),
+                                            tr("Print"), "Ctrl+P");
     if (!ks.isEmpty()) {
         delete m_printtabsc;
-        m_printtabsc = new QShortcut(
-            ks, this, SIGNAL(printCurrentPreviewRequest()));
+        m_printtabsc = new QShortcut(ks, this, SIGNAL(printCurrentPreviewRequest()));
     }
 }
 
@@ -206,17 +199,13 @@ void Preview::zoomOut()
 void Preview::listShortcuts()
 {
     LISTSHORTCUT(null, "preview:151", tr("Preview Window"),
-                 tr("Close preview window"),
-                 "Esc",  m_closewinsc, close);
+                 tr("Close preview window"), "Esc",  m_closewinsc, close);
     LISTSHORTCUT(null, "preview:153", tr("Preview Window"),
-                 tr("Show next result"),
-                 "Shift+Down", m_nextdocsc, emitShowNext);
+                 tr("Show next result"), "Shift+Down", m_nextdocsc, emitShowNext);
     LISTSHORTCUT(null, "preview:155", tr("Preview Window"),
-                 tr("Show previous result"),
-                 "Shift+Up",m_prevdocsc, emitShowPrev);
-    LISTSHORTCUT(null, "preview:159",
-                 tr("Preview Window"), tr("Close tab"),
-                 "Ctrl+W", m_closetabsc, closeCurrentTab);
+                 tr("Show previous result"), "Shift+Up",m_prevdocsc, emitShowPrev);
+    LISTSHORTCUT(null, "preview:159", tr("Preview Window"),
+                 tr("Close tab"), "Ctrl+W", m_closetabsc, closeCurrentTab);
     LISTSHORTCUT(null, "preview:162", tr("Preview Window"),
                  tr("Print"), "Ctrl+P", m_printtabsc, print);
 }
@@ -297,8 +286,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
         if (edit && 
             (target == edit || target == edit->viewport())) {
             if (keyEvent->key() == Qt::Key_Slash ||
-                (keyEvent->key() == Qt::Key_F &&
-                 (keyEvent->modifiers() & Qt::ControlModifier))) {
+                (keyEvent->key() == Qt::Key_F && (keyEvent->modifiers() & Qt::ControlModifier))) {
                 LOGDEB2("Preview::eventFilter: got / or C-F\n");
                 searchTextCMB->setFocus();
                 m_dynSearchActive = true;
@@ -325,8 +313,8 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 void Preview::searchTextChanged(const QString & text)
 {
     LOGDEB("Preview::searchTextChanged:(" << qs2utf8s(text) << ") current: ("<<
-            qs2utf8s(searchTextCMB->currentText()) << ") currentindex " <<
-            searchTextCMB->currentIndex() << "\n");
+           qs2utf8s(searchTextCMB->currentText()) << ") currentindex " <<
+           searchTextCMB->currentIndex() << "\n");
     if (!searchTextCMB->itemText(searchTextCMB->currentIndex()).compare(text)) {
         // Then we assume that the text was set by selecting in the
         // combobox There does not seem to be another way to
@@ -371,9 +359,8 @@ void Preview::emitEditRequested()
 void Preview::doSearch(const QString &_text, bool next, bool reverse, 
                        bool wordOnly)
 {
-    LOGDEB("Preview::doSearch: text [" << qs2utf8s(_text) << "] idx " <<
-           m_searchTextFromIndex << " next " << next << " rev " << reverse <<
-           " word " << wordOnly << "\n");
+    LOGDEB("Preview::doSearch: text [" << qs2utf8s(_text) << "] idx " << m_searchTextFromIndex <<
+           " next " << next << " rev " << reverse << " word " << wordOnly << "\n");
     QString text = _text;
 
     bool matchCase = casematchCB->isChecked();
@@ -593,8 +580,7 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
     /* Check if we already have this page */
     for (int i = 0; i < pvTab->count(); i++) {
         PreviewTextEdit *edit =  editor(i);
-        if (edit && !edit->m_url.compare(doc.url) && 
-            !edit->m_ipath.compare(doc.ipath)) {
+        if (edit && !edit->m_url.compare(doc.url) &&  !edit->m_ipath.compare(doc.ipath)) {
             pvTab->setCurrentIndex(i);
             return true;
         }
@@ -660,8 +646,7 @@ void Preview::displayLoadError(
         break;
     case FileInterner::InternfileOther:
 #ifdef _WIN32
-        msg = tr("Error loading the document: "
-                 "other handler error<br>"
+        msg = tr("Error loading the document: other handler error<br>"
                  "Maybe the application is locking the file ?");
 #else
         msg = tr("Error loading the document: other handler error.");
@@ -703,12 +688,8 @@ bool Preview::runLoadThread(LoadThread& lthr, QTimer& tT, QEventLoop& loop,
 
     QString explain;
     if (!lthr.missing.empty()) {
-        explain = QString::fromUtf8("<br>") +
-            tr("Missing helper program: ") +
-            path2qs(lthr.missing);
-        QMessageBox::warning(0, "Recoll",
-                             tr("Can't turn doc into internal "
-                                "representation for ") +
+        explain = QString::fromUtf8("<br>") + tr("Missing helper program: ") + path2qs(lthr.missing);
+        QMessageBox::warning(0, "Recoll", tr("Can't turn doc into internal representation for ") +
                              lthr.fdoc.mimetype.c_str() + explain);
     } else {
         if (progress.wasCanceled()) {
@@ -820,8 +801,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // We don't do the highlighting for very big texts: too long. We
     // should at least do special char escaping, in case a '&' or '<'
     // somehow slipped through previous processing.
-    bool highlightTerms = int(lthr.fdoc.text.length()) < 
-        prefs.maxhltextkbs * 1024;
+    bool highlightTerms = int(lthr.fdoc.text.length()) < prefs.maxhltextkbs * 1024;
 
     // Final text is produced in chunks so that we can display the top
     // while still inserting at bottom
@@ -856,15 +836,14 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         qApp->processEvents();
 
         if (inputishtml) {
-            LOGDEB1("Preview: got html " << lthr.fdoc.text << "\n");
+            LOGDEB1("Preview: got text/html " << lthr.fdoc.text.substr(0,100) << "\n");
             editor->m_plaintorich->set_inputhtml(true);
         } else {
-            LOGDEB1("Preview: got plain " << lthr.fdoc.text << "\n");
+            LOGDEB1("Preview: got text/plain " << lthr.fdoc.text.substr(0,100) << "\n");
             editor->m_plaintorich->set_inputhtml(false);
         }
 
-        ToRichThread rthr(lthr.fdoc.text, m_hData, editor->m_plaintorich,
-                          qrichlst, this);
+        ToRichThread rthr(lthr.fdoc.text, m_hData, editor->m_plaintorich, qrichlst, this);
         connect(&rthr, SIGNAL(finished()), &loop, SLOT(quit()));
         rthr.start();
 
@@ -890,8 +869,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             }
         }
     } else {
-        LOGDEB("Preview: no highlighting, loading " << lthr.fdoc.text.size() <<
-               " bytes\n");
+        LOGDEB("Preview: no highlighting, loading " << lthr.fdoc.text.size() << " bytes\n");
         // No plaintorich() call.  In this case, either the text is
         // html and the html quoting is hopefully correct, or it's
         // plain-text and there is no need to escape special
@@ -919,8 +897,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // Load text into editor window.
     progress.setLabelText(tr("Loading preview text into editor"));
     qApp->processEvents();
-    for (QStringList::iterator it = qrichlst.begin();
-         it != qrichlst.end(); it++) {
+    editor->m_richtxt.clear();
+    for (QStringList::iterator it = qrichlst.begin(); it != qrichlst.end(); it++) {
         qApp->processEvents();
 
         editor->append(*it);
@@ -1022,8 +1000,7 @@ PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv)
     setObjectName(nm);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
-    connect(this, SIGNAL(anchorClicked(const QUrl &)),
-            this, SLOT(onAnchorClicked(const QUrl&)));
+    connect(this, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(onAnchorClicked(const QUrl&)));
     setOpenExternalLinks(false);
     setOpenLinks(false);
 }
@@ -1061,30 +1038,46 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
         popup->addAction(tr("Show main text"), this, SLOT(displayText()));
         break;
     }
+    popup->addAction(tr("Reload as Plain Text"), this, SLOT(reloadAsPlainText()));
+    popup->addAction(tr("Reload as HTML"), this, SLOT(reloadAsHTML()));
     popup->addAction(tr("Select All"), this, SLOT(selectAll()));
     popup->addAction(tr("Copy"), this, SLOT(copy()));
     popup->addAction(tr("Print"), this, SLOT(print()));
     if (prefs.previewPlainPre) {
         popup->addAction(tr("Fold lines"), m_preview, SLOT(togglePlainPre()));
     } else {
-        popup->addAction(tr("Preserve indentation"), 
-                         m_preview, SLOT(togglePlainPre()));
+        popup->addAction(tr("Preserve indentation"), m_preview, SLOT(togglePlainPre()));
     }
     if (!m_dbdoc.url.empty()) {
-        popup->addAction(tr("Save document to file"), 
-                         m_preview, SLOT(emitSaveDocToFile()));
+        popup->addAction(tr("Save document to file"), m_preview, SLOT(emitSaveDocToFile()));
         if (canOpen(&m_dbdoc, theconfig)) {
-            popup->addAction(tr("Open document"), 
-                             m_preview, SLOT(emitEditRequested()));
+            popup->addAction(tr("Open document"), m_preview, SLOT(emitEditRequested()));
         }
     }
     popup->popup(mapToGlobal(pos));
+}
+
+void PreviewTextEdit::reloadAsPlainText()
+{
+    auto saved = prefs.previewHtml;
+    prefs.previewHtml = false;
+    m_preview->loadDocInCurrentTab(m_dbdoc, m_docnum);
+    prefs.previewHtml = saved;
+}
+
+void PreviewTextEdit::reloadAsHTML()
+{
+    auto saved = prefs.previewHtml;
+    prefs.previewHtml = true;
+    m_preview->loadDocInCurrentTab(m_dbdoc, m_docnum);
+    prefs.previewHtml = saved;
 }
 
 // Display main text
 void PreviewTextEdit::displayText()
 {
     LOGDEB1("PreviewTextEdit::displayText()\n");
+
     // Ensuring that the view does not move when changing the font
     // size and redisplaying the text: can't find a good way to do
     // it. The only imperfect way I found was to get the position for
@@ -1092,14 +1085,12 @@ void PreviewTextEdit::displayText()
     // after the change.
     auto c = cursorForPosition(QPoint(0,height()-20));
     int pos = c.position();
-    // static int lastpos;
-    // std::cerr << "POSITION: " << pos << " DELTA " << pos -lastpos << "\n";
-    // lastpos = pos;
     setFont(m_preview->m_font);
-    if (m_format == Qt::PlainText)
+    if (m_format == Qt::PlainText) {
         setPlainText(m_richtxt);
-    else
+    } else {
         setHtml(m_richtxt);
+    }
     if (m_curdsp == PTE_DSPTXT) {
         auto cursor = textCursor();
         cursor.setPosition(pos);

@@ -76,9 +76,10 @@ public slots:
     virtual void print();
     virtual void createPopupMenu(const QPoint& pos);
     void onAnchorClicked(const QUrl& url);
+    void reloadAsPlainText();
+    void reloadAsHTML();
 
     friend class Preview;
-
 protected:
     void mouseDoubleClickEvent(QMouseEvent *);
 
