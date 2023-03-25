@@ -1206,15 +1206,19 @@ public:
         m_eolbr = eolbr;
         m_nohl = nohl;
     }
-    virtual ~PyPlainToRich() {}
+    virtual ~PyPlainToRich() = default;
     virtual string startMatch(unsigned int idx) {
+        // if nohl is set or methods was explicitely set to None, do nothing.
+        if (m_nohl || m_methods == Py_None) {
+            return "";
+        }
+
+        // Use either user-defined methods or our default
         PyObject *res =  0;
-        if (m_methods)
+        if (m_methods && PyObject_HasAttrString(m_methods, (char *)"startMatch")) {
             res = PyObject_CallMethod(m_methods, (char *)"startMatch", (char *)"(i)", idx);
+        }
         if (res == 0) {
-            if (m_nohl) {
-                return "";
-            }
             return "<span class=\"rclmatch\">";
         }
         PyObject *res1 = res;
@@ -1224,13 +1228,13 @@ public:
     } 
 
     virtual string endMatch() {
+        if (m_nohl || m_methods == Py_None) {
+            return "";
+        }
         PyObject *res =  0;
-        if (m_methods)
+        if (m_methods && PyObject_HasAttrString(m_methods, (char *)"endMatch"))
             res = PyObject_CallMethod(m_methods, (char *)"endMatch", 0);
         if (res == 0) {
-            if (m_nohl) {
-                return "";
-            }
             return "</span>";
         }
         PyObject *res1 = res;
@@ -1323,8 +1327,7 @@ PyDoc_STRVAR(doc_Query_makedocabstract,
              "match regions\n"
     );
 
-static PyObject *
-Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
+static PyObject *Query_makedocabstract(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Query_makeDocAbstract\n");
     static const char *kwlist[] = {"doc", "methods", "nohl", NULL};
