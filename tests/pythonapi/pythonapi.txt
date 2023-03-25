@@ -51,6 +51,14 @@ User query [title:"été à noël"]
 Xapian query: [Query(10 * (Sete PHRASE 3 Sa PHRASE 3 Snoel))]
 nres 1
 doc.title: [HTML fields test file: été à noël]
+HIGHLIGHT DEFAULT===============
+ [L. 1] <span class="rclmatch">onlynametestkeyword</span>...
+HIGHLIGHT METHODS SET TO NONE ===============
+ [L. 1] onlynametestkeyword...
+HIGHLIGHT NOHL TRUE ===============
+ [L. 1] onlynametestkeyword...
+HIGHLIGHT CUSTOM METHODS===============
+ [L. 1] <span class="CUSTOM search-result-highlight">onlynametestkeyword</span> CUSTOM...
 python3 extract.py
 Result count: 1 1
 Text length: 3457

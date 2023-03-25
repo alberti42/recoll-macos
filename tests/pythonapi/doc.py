@@ -55,3 +55,29 @@ print(utf8string(qs))
 print("nres %d" %(nres,))
 doc = query.fetchone()
 print("doc.title: [%s]"%utf8string(doc.title))
+
+query.execute("onlynametestkeyword")
+doc = query.fetchone()
+print("HIGHLIGHT DEFAULT===============")
+s = query.makedocabstract(doc)
+print("%s" % s)
+
+print("HIGHLIGHT METHODS SET TO NONE ===============")
+s = query.makedocabstract(doc, methods=None)
+print("%s" % s)
+
+print("HIGHLIGHT NOHL TRUE ===============")
+s = query.makedocabstract(doc, nohl=True)
+print("%s" % s)
+
+print("HIGHLIGHT CUSTOM METHODS===============")
+class HlMeths:
+    def startMatch(self, idx):
+        return '<span class="CUSTOM search-result-highlight">'
+    def endMatch(self):
+        return '</span> CUSTOM'
+
+s = query.makedocabstract(doc, methods = HlMeths())
+print("%s" % s)
+    
+
