@@ -1,4 +1,7 @@
-#[[
+#[===========================================================================[.rst:
+
+Recoll CMake buildsystem
+------------------------
 
 Experimental CMake build.
 
@@ -9,9 +12,34 @@ Qt 5.15+ or Qt 6.4+
 CMake 3.25+
 C++11 (Qt5) or C++17 (Qt6) compiler
 
------------------------------------------------
-    Usage
------------------------------------------------
+Configuration
+^^^^^^^^^^^^^
+
+The build can be configured, either on the command line or in the cmake-gui,
+by defining the following options. (See GUI or code for defaults.)
+
+* ``RECOLL_ENABLE_X11MON`` (default: ``OFF``)
+* ``RECOLL_ENABLE_WEBENGINE`` (default: ``ON``)
+* ``RECOLL_ENABLE_LIBMAGIC`` (default: ``OFF``)
+* ``RECOLL_ENABLE_SYSTEMD`` (default: ``ON``, linux-only)
+* ``RECOLL_QT6_BUILD`` (default: ``OFF``)
+
+If ``RECOLL_ENABLE_SYSTEMD`` is true, the install paths can be overridden
+by setting these cache variables. (Values should be paths relative to the
+install prefix, e.g. ``lib/systemd/system``.)
+
+* ``SYSTEMD_SYSTEM_UNIT_DIR``
+* ``SYSTEMD_USER_UNIT_DIR``
+
+By default, pkg-config will be used to query the paths from ``systemd.pc``.
+
+If ``RECOLL_ENABLE_LIBMAGIC`` is false, the path to a suitable ``find``
+utility must be compiled into librecoll. By default it will be discovered
+in the system PATH, to override its location set ``FindProgram_EXECUTABLE``
+to a suitable path.
+
+Usage
+^^^^^
 
 cd .../recoll/src
 
@@ -22,6 +50,7 @@ cmake -S . -B build_dir \
       -DRECOLL_QT6_BUILD=1 \        # for Qt6
       -DRECOLL_ENABLE_WEBENGINE=1 \ # use QtWebEngine instead of QtWebKit
       -DRECOLL_ENABLE_X11MON=1 \    # turn on X11 session monitoring
+      -DFindProgram_EXECUTABLE=/opt/bin/find
 
 # omit `-G Ninja` to use classical unix makefile as generator
 
@@ -33,9 +62,8 @@ Toggling Options
 
 cmake -Dsome_option=ON .....
 
------------------------------------------------
-    macOS
------------------------------------------------
+macOS
+^^^^^
 
 To assemble a portable .app bundle, you must use the Qt from official installer.
 The Homebrew Qt doesn't work, this is a known bug and unlikely to be fixed in short time.
@@ -50,8 +78,7 @@ To completely avoid codesign problems, just force one #TODO: use personal codesi
 
 codesign --force --deep -s - recoll.app
 
-
-]]
+#]===========================================================================]
 
 cmake_minimum_required(VERSION 3.25)
 
@@ -78,6 +105,7 @@ option(RECOLL_ENABLE_WEBENGINE
 option(RECOLL_ENABLE_LIBMAGIC
     "Enable libmagic (avoids 'file' command requirement)" OFF)
 option(RECOLL_QT6_BUILD "Build using Qt6" OFF)
+option(RECOLL_ENABLE_SYSTEMD "Install systemd unit files (linux only)" ON)
 
 if (RECOLL_QT6_BUILD)
     set(QT_MAJOR_VERSION 6)
@@ -604,6 +632,15 @@ if (LINUX)
         INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/recoll"
         INSTALL_RPATH_USE_LINK_PATH TRUE
     )
+
+    if (RECOLL_ENABLE_SYSTEMD)
+        find_package(SystemdPaths)
+
+	install(FILES index/recollindex.service
+	    DESTINATION ${SYSTEMD_SYSTEM_UNIT_DIR})
+	install(FILES index/recollindex@.service
+            DESTINATION ${SYSTEMD_USER_UNIT_DIR})
+    endif()
 
     install(TARGETS librecoll recollindex recollq recoll
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
