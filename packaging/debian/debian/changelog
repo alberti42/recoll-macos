@@ -1,3 +1,9 @@
+recoll (1.34.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * repair rclaudio whisper integration broken in .4 and .5
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 09 Mar 2023 19:28:00 +0100
+
 recoll (1.34.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * recollq: repair -A option, broken from 1.34.0
