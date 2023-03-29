@@ -18,6 +18,9 @@
 /* dlopen function is available */
 #undef HAVE_DLOPEN
 
+/* Define to 1 if you have the <features.h> header file. */
+#undef HAVE_FEATURES_H
+
 /* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
 
