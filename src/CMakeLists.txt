@@ -658,7 +658,7 @@ if (LINUX)
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/pixmaps)
 
     install(FILES ${docs_files}
-        DESTINATION ${CMAKE_INSTALL_DOCDIR})
+       DESTINATION ${CMAKE_INSTALL_DATADIR}/recoll/doc)
 
     install(FILES
         doc/man/recollindex.1
