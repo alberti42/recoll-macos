@@ -28,6 +28,8 @@
 #include <QUrlQuery>
 #include <QStandardPaths>
 
+#include "kio_recoll.h"
+
 #include "rclconfig.h"
 #include "rcldb.h"
 #include "rclinit.h"
@@ -35,12 +37,8 @@
 #include "searchdata.h"
 #include "rclquery.h"
 #include "wasatorcl.h"
-#include "kio_recoll.h"
 #include "docseqdb.h"
-#include "readfile.h"
 #include "smallut.h"
-#include "textsplit.h"
-#include "guiutils.h"
 
 using namespace KIO;
 using namespace std;
@@ -77,7 +75,6 @@ RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
         return;
     }
     o_rclconfig->getConfParam("kioshowsubdocs", &m_showSubdocs);
-    rwSettings(false);
 
     m_rcldb = std::shared_ptr<Rcl::Db>(new Rcl::Db(o_rclconfig));
     if (!m_rcldb) {
@@ -335,7 +332,9 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     }
     sdata->setSubSpec(m_showSubdocs ? Rcl::SearchData::SUBDOC_ANY: Rcl::SearchData::SUBDOC_NO);
     std::shared_ptr<Rcl::Query>query(new Rcl::Query(m_rcldb.get()));
-    query->setCollapseDuplicates(prefs.collapseDuplicates);
+    bool collapsedups;
+    o_rclconfig->getConfParam("kiocollapseduplicates", &collapsedups);
+    query->setCollapseDuplicates(collapsedups);
     if (!query->setQuery(sdata)) {
         m_reason = "Query execute failed. Invalid query or syntax error?";
         error(KIO::ERR_SLAVE_DEFINED, u8s2qs(m_reason));

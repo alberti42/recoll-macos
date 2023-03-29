@@ -24,7 +24,6 @@
  * Stephan Binner <binner@kde.org>
  */
 
-#include "autoconfig.h"
 
 // Couldn't get listDir() to work with kde 4.0, konqueror keeps
 // crashing because of kdirmodel, couldn't find a workaround (not
@@ -40,7 +39,9 @@
 #include <kio_version.h>
 
 #include "kio_recoll.h"
+
 #include "pathut.h"
+#include "rclconfig.h"
 
 using namespace KIO;
 

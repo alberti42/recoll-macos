@@ -25,21 +25,21 @@
 
 #include <QStandardPaths>
 
+#include "plaintorich.h"
 #include "rclconfig.h"
-#include "rcldb.h"
 #include "rclinit.h"
-#include "pathut.h"
-#include "searchdata.h"
-#include "rclquery.h"
-#include "wasatorcl.h"
-#include "kio_recoll.h"
+#include "internfile.h"
 #include "docseqdb.h"
+#include "wasatorcl.h"
+#include "rcldb.h"
+#include "rclquery.h"
+#include "searchdata.h"
+#include "hldata.h"
+#include "pathut.h"
 #include "readfile.h"
 #include "smallut.h"
-#include "plaintorich.h"
-#include "internfile.h"
-#include "wipedir.h"
-#include "hldata.h"
+
+#include "kio_recoll.h"
 
 using namespace std;
 using namespace KIO;

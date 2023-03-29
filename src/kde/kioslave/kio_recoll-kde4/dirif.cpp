@@ -24,9 +24,9 @@
  * Stephan Binner <binner@kde.org>
  */
 
-#include "autoconfig.h"
-
 #include <kdeversion.h>
+
+#include <vector>
 
 #if KDE_IS_VERSION(4,1,0)
 // Couldn't get listDir() to work with kde 4.0, konqueror keeps
@@ -34,6 +34,7 @@
 // saying it's impossible)...
 
 #include <sys/stat.h>
+#include <vector>
 
 #include <kurl.h>
 #include <kio/global.h>
@@ -41,7 +42,10 @@
 #include <kdebug.h>
 
 #include "kio_recoll.h"
+
 #include "pathut.h"
+#include "docseq.h"
+#include "rclconfig.h"
 
 using namespace KIO;
 
@@ -287,7 +291,7 @@ void RecollProtocol::listDir(const KUrl& url)
     static const int pagesize = 200;
     int pagebase = 0;
     while (pagebase < maxentries) {
-        vector<ResListEntry> page;
+        std::vector<ResListEntry> page;
         int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
         UDSEntry entry;
         if (pagelen < 0) {

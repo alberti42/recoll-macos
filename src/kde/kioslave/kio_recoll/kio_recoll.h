@@ -25,13 +25,14 @@
 
 #include <kio/slavebase.h>
 
-#include "rclconfig.h"
-#include "rcldb.h"
-#include "docseq.h"
 #include "reslistpager.h"
-#include <memory>
 
 class RecollProtocol;
+class RclConfig;
+class DocSeq;
+namespace Rcl {
+class Db;
+}
 
 /** Specialize the recoll html pager for the kind of links we use etc. */
 class RecollKioPager : public ResListPager {

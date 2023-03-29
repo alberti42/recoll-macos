@@ -28,13 +28,14 @@
 #include <QIcon>
 #include <QMimeDatabase>
 
+#include "rclconfig.h"
 #include "rclinit.h"
-#include "rcldb.h"
 #include "rclquery.h"
 #include "wasatorcl.h"
-#include "log.h"
+#include "rcldb.h"
 #include "rcldoc.h"
 #include "searchdata.h"
+#include "log.h"
 
 QMimeDatabase mimeDb;
 

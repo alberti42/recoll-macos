@@ -19,6 +19,7 @@
 
 #include <string>
 using std::string;
+#include <memory>
 
 #include <qglobal.h>
 #include <qstring.h>
@@ -28,13 +29,14 @@ using std::string;
 #include <kio/slavebase.h>
 #include <kdeversion.h>
 
-#include "rclconfig.h"
-#include "rcldb.h"
 #include "reslistpager.h"
-#include "docseq.h"
-#include <memory>
 
 class RecollProtocol;
+class RclConfig;
+class DocSeq;
+namespace Rcl {
+class Db;
+}
 
 /** Specialize the recoll html pager for the kind of links we use etc. */
 class RecollKioPager : public ResListPager {

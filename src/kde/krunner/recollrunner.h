@@ -25,8 +25,10 @@
 
 #include <KRunner/AbstractRunner>
 
-#include "rclconfig.h"
-#include "rcldb.h"
+class RclConfig;
+namespace Rcl {
+class Db;
+}
 
 class RecollRunner : public Plasma::AbstractRunner
 {

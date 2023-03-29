@@ -21,8 +21,6 @@
 #include <errno.h> 
 
 #include <string>
-using namespace std;
-
 #include <qglobal.h>
 #include <qfile.h>
 #include <qtextstream.h>
@@ -32,20 +30,24 @@ using namespace std;
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 
-#include "rclconfig.h"
-#include "rcldb.h"
-#include "rclinit.h"
-#include "pathut.h"
-#include "searchdata.h"
-#include "rclquery.h"
-#include "wasatorcl.h"
 #include "kio_recoll.h"
-#include "docseqdb.h"
-#include "readfile.h"
-#include "smallut.h"
-#include "textsplit.h"
-#include "guiutils.h"
 
+#include "rclconfig.h"
+#include "rclinit.h"
+#include "docseqdb.h"
+#include "wasatorcl.h"
+#include "rcldb.h"
+#include "rclquery.h"
+#include "searchdata.h"
+#include "pathut.h"
+#include "smallut.h"
+
+inline QString u8s2qs(const std::string& us)
+{
+    return QString::fromUtf8(us.c_str(), us.size());
+}
+
+using namespace std;
 using namespace KIO;
 
 RclConfig *RecollProtocol::o_rclconfig;
@@ -68,7 +70,6 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
         m_reason = "No db directory in configuration ??";
         return;
     }
-    rwSettings(false);
 
     m_rcldb = std::shared_ptr<Rcl::Db>(new Rcl::Db(o_rclconfig));
     if (!m_rcldb) {
@@ -331,7 +332,10 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     }
 
     std::shared_ptr<Rcl::Query>query(new Rcl::Query(m_rcldb.get()));
-    query->setCollapseDuplicates(prefs.collapseDuplicates);
+    bool collapsedups;
+    o_rclconfig->getConfParam("kiocollapseduplicates", &collapsedups);
+    query->setCollapseDuplicates(collapsedups);
+
     if (!query->setQuery(sdata)) {
         m_reason = "Query execute failed. Invalid query or syntax error?";
         error(KIO::ERR_SLAVE_DEFINED, m_reason.c_str());
