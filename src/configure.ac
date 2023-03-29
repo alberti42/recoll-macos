@@ -54,6 +54,9 @@ AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h malloc.h mall
 #endif
 ])
 
+# Used with glibc for feature detection
+AC_CHECK_HEADERS([features.h])
+
 AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf malloc_trim posix_fadvise])
 AC_CHECK_FUNCS(mkdtemp)
 

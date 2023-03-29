@@ -73,7 +73,7 @@ typedef int ssize_t;
 #define REAL_GCC   __GNUC__ // probably
 #endif
 
-#ifdef REAL_GCC
+#if defined(REAL_GCC) && defined(HAVE_FEATURES_H)
 // Older gcc versions pretended to supply std::regex, but the resulting programs mostly crashed.
 #include <features.h>
 #if ! __GNUC_PREREQ(6,0)
