@@ -27,6 +27,7 @@
 #include "ecrontab.h"
 #include "smallut.h"
 #include "rclutil.h"
+#include "pathut.h"
 
 using std::string;
 using std::vector;
