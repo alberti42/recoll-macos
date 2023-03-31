@@ -633,8 +633,9 @@ bool RclConfig::updateMainConfig()
     auto newconf = std::make_unique<ConfStack<ConfTree>>("recoll.conf", m->m_cdirs, true);
 
     if (!newconf->ok()) {
-        std::cerr << "updateMainConfig: NEW CONFIGURATION READ FAILED\n";
-        if (m->m_conf->ok())
+        std::cerr << "updateMainConfig: NEW CONFIGURATION READ FAILED. dirs: " <<
+            stringsToString(m->m_cdirs) << "\n";
+        if (m->m_conf && m->m_conf->ok())
             return false;
         m->m_ok = false;
         m->initParamStale(0, 0);
