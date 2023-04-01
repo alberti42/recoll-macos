@@ -420,7 +420,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1594">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1614">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -3125,15 +3125,23 @@ file.
           <p>After starting a search, a list of results will
           instantly be displayed in the main window.</p>
           <p>By default, the document list is presented in order of
-          relevance (how well the system estimates that the
-          document matches the query). You can sort the result by
+          relevance (how well the application estimates that the
+          document matches the query). You can sort the results by
           ascending or descending date by using the vertical arrows
           in the toolbar.</p>
+          <p>Each result is displayed as a structured text
+          paragraph. The standard format is typically adequate, but
+          the content and presentation are <a class="link" href=
+          "#RCL.SEARCH.GUI.CUSTOM.RESLIST" title=
+          "The result list format">entirely customisable</a>.</p>
+          <p>Most results will contain <code class=
+          "literal">Preview</code> and <code class=
+          "literal">Open</code> clickable links.</p>
           <p>Clicking the <code class="literal">Preview</code> link
-          for an entry will open an internal preview window for the
-          document. Further <code class="literal">Preview</code>
-          clicks for the same search will open tabs in the existing
-          preview window. You can use <span class=
+          will open an internal preview window for the document.
+          Further <code class="literal">Preview</code> clicks for
+          the same search will open tabs in the existing preview
+          window. You can use <span class=
           "keycap"><strong>Shift</strong></span>+Click to force the
           creation of another preview window, which may be useful
           to view the documents side by side. (You can also browse
@@ -3148,38 +3156,60 @@ file.
           desktop choose the appropriate application for most
           document types. See <a class="link" href=
           "#RCL.SEARCH.GUI.RESLIST.APPLICATIONS" title=
-          "Customising the applications">further</a> for
-          customizing the applications.</p>
+          "Customising the viewers">further</a> for customizing the
+          applications.</p>
+          <p>The <code class="literal">Preview</code> and
+          <code class="literal">Open</code> links may not be
+          present for all entries. They are only available,
+          respectively, for documents with MIME types that
+          <span class="application">Recoll</span> can extract text
+          from, and for documents that have a configured viewer.
+          However, you can modify the configuration to adjust this
+          behavior. In more detail:</p>
+          <div class="itemizedlist">
+            <ul class="itemizedlist" style=
+            "list-style-type: disc;">
+              <li class="listitem">
+                <p>The <code class="literal">Preview</code> link
+                will appear for documents with a MIME type present
+                in the <code class="literal">[index]</code> section
+                of the <a class="link" href=
+                "#RCL.INSTALL.CONFIG.MIMECONF" title=
+                "5.4.5.&nbsp;The mimeconf file"><code class=
+                "filename">mimeconf</code></a> file, and, only if
+                the <code class="literal">textunknownasplain</code>
+                configuration variable is set, for all types
+                identified as a subtype of <code class=
+                "literal">text</code> (<code class=
+                "literal">text/*</code>).</p>
+              </li>
+              <li class="listitem">
+                <p>The <code class="literal">Open</code> link will
+                appear for documents with a MIME type present in
+                the <code class="literal">[view]</code> section of
+                the <a class="link" href=
+                "#RCL.INSTALL.CONFIG.MIMEVIEW" title=
+                "5.4.6.&nbsp;The mimeview file"><code class=
+                "filename">mimeview</code></a> configuration file.
+                If <code class="literal">textunknownasplain</code>
+                is set and no specific viewer is found for a
+                subtype of <code class="literal">text</code>, the
+                viewer for <code class="literal">text/plain</code>
+                will be used.</p>
+              </li>
+            </ul>
+          </div>
           <p>You can click on the <code class="literal">Query
           details</code> link at the top of the results page to see
-          the query actually performed, after stem expansion and
-          other processing.</p>
+          the actual <span class="application">Xapian</span> query,
+          after stem expansion and other processing.</p>
           <p>Double-clicking on any word inside the result list or
           a preview window will insert it into the simple search
           text.</p>
-          <p>The result list is divided into pages (the size of
-          which you can change in the preferences). Use the arrow
-          buttons in the toolbar or the links at the bottom of the
-          page to browse the results.</p>
-          <p>The <code class="literal">Preview</code> and
-          <code class="literal">Open</code> edit links may not be
-          present for all entries, meaning that <span class=
-          "application">Recoll</span> has no configured way to
-          preview a given file type (which was indexed by name
-          only), or no configured external editor for the file
-          type. This can sometimes be adjusted simply by tweaking
-          the <a class="link" href="#RCL.INSTALL.CONFIG.MIMEMAP"
-          title="5.4.4.&nbsp;The mimemap file"><code class=
-          "filename">mimemap</code></a> and <a class="link" href=
-          "#RCL.INSTALL.CONFIG.MIMEVIEW" title=
-          "5.4.6.&nbsp;The mimeview file"><code class=
-          "filename">mimeview</code></a> configuration files (the
-          latter can be modified with the user preferences
-          dialog).</p>
-          <p>The format of the result list entries is entirely
-          configurable by using the preference dialog to <a class=
-          "link" href="#RCL.SEARCH.GUI.CUSTOM.RESLIST" title=
-          "The result list format">edit an HTML fragment</a>.</p>
+          <p>The result list is divided into pages. You can change
+          the page size in the preferences. Use the arrow buttons
+          in the toolbar or the links at the bottom of the page to
+          browse the results.</p>
           <div class="simplesect">
             <div class="titlepage">
               <div>
@@ -3187,7 +3217,7 @@ file.
                   <h4 class="title"><a name=
                   "RCL.SEARCH.GUI.RESLIST.APPLICATIONS" id=
                   "RCL.SEARCH.GUI.RESLIST.APPLICATIONS"></a>Customising
-                  the applications</h4>
+                  the viewers</h4>
                 </div>
               </div>
             </div>
@@ -4338,7 +4368,7 @@ file.
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1594" id="idm1594"></a>
+            <a name="idm1614" id="idm1614"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">

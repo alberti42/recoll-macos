@@ -2018,67 +2018,76 @@ recollindex -c "$confdir"</programlisting>
       <sect2 id="RCL.SEARCH.GUI.RESLIST">
         <title>The result list</title>
 
-        <para>After starting a search, a list of results will instantly
-          be displayed in the main window.</para> 
+        <para>After starting a search, a list of results will instantly be displayed in the main
+          window.</para>  
 
-        <para>By default, the document list is presented in order of
-        relevance (how well the system estimates that the document
-        matches the query). You can sort the result by ascending or
-        descending date by using the vertical arrows in the toolbar.</para>
+        <para>By default, the document list is presented in order of relevance (how well the
+          application estimates that the document matches the query). You can sort the results by
+          ascending or descending date by using the vertical arrows in the toolbar.</para>
 
-        <para>Clicking the <literal>Preview</literal> link for an entry
-          will open an internal preview window for the document. Further
-          <literal>Preview</literal> clicks for the same search will open
-          tabs in the existing preview window. You can use
-          <keycap>Shift</keycap>+Click to force the creation of another
-          preview window, which may be useful to view the documents side
-          by side. (You can also browse successive results in a single
-          preview window by typing
-          <keycap>Shift</keycap>+<keycap>ArrowUp/Down</keycap> in the
-          window).</para> 
 
-        <para>Clicking the <literal>Open</literal> link will
-          start an external viewer for the document. By default, &RCL; lets
-          the desktop choose the appropriate application for most document
-          types. See 
-          <link linkend="RCL.SEARCH.GUI.RESLIST.APPLICATIONS">further</link>
-          for customizing the applications.</para>
+        <para>Each result is displayed as a structured text paragraph. The standard format is
+          typically adequate, but the content and presentation
+          are <link linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST">entirely customisable</link>.</para>
 
-        <para>You can click on the <literal>Query details</literal> link
-          at the top of the results page to see the query actually 
-          performed, after stem expansion and other processing.</para>
+        <para>Most results will contain <literal>Preview</literal>
+          and <literal>Open</literal> clickable links.</para> 
+        
+        <para>Clicking the <literal>Preview</literal> link will open an internal
+          preview window for the document. Further <literal>Preview</literal> clicks for the same
+          search will open tabs in the existing preview window. You can
+          use <keycap>Shift</keycap>+Click to force the creation of another preview window, which
+          may be useful to view the documents side by side. (You can also browse successive results
+          in a single preview window by typing <keycap>Shift</keycap>+<keycap>ArrowUp/Down</keycap>
+          in the window).</para>
+
+        <para>Clicking the <literal>Open</literal> link will start an external viewer for the
+          document. By default, &RCL; lets the desktop choose the appropriate application for most
+          document types. See <link linkend="RCL.SEARCH.GUI.RESLIST.APPLICATIONS">further</link> for
+          customizing the applications.</para>
+
+        <para>The <literal>Preview</literal> and <literal>Open</literal>
+          links may not be present for all entries. They are only available, respectively, for
+          documents with MIME types that &RCL; can extract text from, and for documents that have a
+          configured viewer. However, you can modify the configuration to adjust this behavior. 
+          In more detail:</para>
+        <para>
+          <itemizedlist>
+            <listitem><para>The <literal>Preview</literal> link will appear for documents with a
+                MIME type present in the <literal>[index]</literal> section of
+                the <link linkend="RCL.INSTALL.CONFIG.MIMECONF"><filename>mimeconf</filename></link>
+                file, and, only if the <literal>textunknownasplain</literal> configuration variable
+                is set, for all types identified as a subtype of
+                <literal>text</literal> (<literal>text/*</literal>).</para>
+            </listitem>
+            <listitem><para>The <literal>Open</literal> link will appear for documents with a
+                MIME type present in the <literal>[view]</literal> section of the
+                <link linkend="RCL.INSTALL.CONFIG.MIMEVIEW"><filename>mimeview</filename></link>
+                configuration file. If <literal>textunknownasplain</literal> is set and no specific
+                viewer is found for a subtype of <literal>text</literal>, the viewer
+                for <literal>text/plain</literal> will be used.</para>
+            </listitem>
+          </itemizedlist>
+        </para>
+
+        <para>You can click on the <literal>Query details</literal> link at the top of the results
+          page to see the actual <application>Xapian</application> query, after stem expansion and
+          other processing.</para> 
 
         <para>Double-clicking on any word inside the result list or a
           preview window will insert it into the simple search text.</para>
 
-        <para>The result list is divided into pages (the size of which
-          you can change in the preferences). Use the arrow buttons in the
-          toolbar or the links at the bottom of the page to browse the
-          results.</para>
+        <para>The result list is divided into pages. You can change the page size in the
+          preferences. Use the arrow buttons in the toolbar or the links at the bottom of the page
+          to browse the results.</para>
 
-        <para>The <literal>Preview</literal> and <literal>Open</literal>
-          edit links may not be present for all entries, meaning that
-          &RCL; has no configured way to preview a given file type (which
-          was indexed by name only), or no configured external editor for
-          the file type. This can sometimes be adjusted simply by tweaking
-          the <link linkend="RCL.INSTALL.CONFIG.MIMEMAP">
-            <filename>mimemap</filename></link>
-          and  <link linkend="RCL.INSTALL.CONFIG.MIMEVIEW">
-            <filename>mimeview</filename></link>
-          configuration files (the latter can be modified with the user
-          preferences dialog).</para>
 
-        <para>The format of the result list entries is entirely
-          configurable by using the preference dialog to 
-        <link linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST">
-          edit an HTML fragment</link>.</para>
 
         <simplesect id="RCL.SEARCH.GUI.RESLIST.APPLICATIONS">
-          <title>Customising the applications</title>
+          <title>Customising the viewers</title>
 
-          <para>By default &RCL; lets the desktop choose what
-            application should be used to open a given document, with
-            exceptions.</para> 
+          <para>By default &RCL; lets the desktop choose what application should be used to open a
+            given document, with exceptions.</para>  
 
           <para>The details of this behaviour can be customized with the
             <menuchoice>
