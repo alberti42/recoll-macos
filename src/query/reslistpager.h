@@ -127,6 +127,10 @@ public:
     virtual std::string absSep() {return "&hellip;";}
     virtual std::string linkPrefix() {return "";}
     virtual std::string bodyAttrs() {return std::string();}
+    // This is used for specifying if we should use the application/x-all entry when looking for a
+    // viewer
+    virtual bool useAll() {return false;}
+    
 private:
     int                  m_pagesize;
     bool                 m_alwaysSnippets;

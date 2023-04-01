@@ -182,6 +182,6 @@ extern bool canIntern(const std::string mimetype, RclConfig *cfg);
 /// Same, getting MIME from doc
 extern bool canIntern(Rcl::Doc *doc, RclConfig *cfg);
 /// Can this MIME type be opened (has viewer def) ?
-extern bool canOpen(Rcl::Doc *doc, RclConfig *cfg);
+extern bool canOpen(Rcl::Doc *doc, RclConfig *cfg, bool useall=false);
 
 #endif /* _MIMEHANDLER_H_INCLUDED_ */

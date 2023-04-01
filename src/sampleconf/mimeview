@@ -239,8 +239,8 @@ text/x-gaim-log = emacsclient --no-wait  %f
 text/x-purple-html-log = emacsclient --no-wait  %f
 text/x-purple-log = emacsclient --no-wait  %f
 
-# The video types will usually be handled by the desktop default, but they
-# need entries here to get an "Open" link
+# The video types will usually be handled by the desktop default, but they need entries here to get
+# an "Open" link (this is not the case any more). Anyway, could be used to set exceptions.
 video/3gpp = vlc --start-time %p %f
 video/mp2p = vlc --start-time %p %f
 video/mp2t = vlc --start-time %p %f

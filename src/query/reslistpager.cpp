@@ -245,7 +245,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
         linksbuf << "<a href=\""<< linkPrefix()<< "P" << docnumforlinks << "\">" 
                  << trans("Preview") << "</a>&nbsp;&nbsp;";
     }
-    if (canOpen(&doc, config)) {
+    if (canOpen(&doc, config, useAll())) {
         linksbuf << "<a href=\"" <<linkPrefix() + "E" <<docnumforlinks << "\">"  
                  << trans("Open") << "</a>";
     }

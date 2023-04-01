@@ -379,13 +379,14 @@ bool canIntern(Rcl::Doc *doc, RclConfig *cfg)
 }
 
 /// Can this MIME type be opened (has viewer def) ?
-bool canOpen(Rcl::Doc *doc, RclConfig *cfg) {
+bool canOpen(Rcl::Doc *doc, RclConfig *cfg, bool useall)
+{
     if (!doc) {
         return false;
     }
     string apptag;
     doc->getmeta(Rcl::Doc::keyapptg, &apptag);
-    return !cfg->getMimeViewerDef(doc->mimetype, apptag, false).empty();
+    return !cfg->getMimeViewerDef(doc->mimetype, apptag, useall).empty();
 }
 
 string RecollFilter::metadataAsString()

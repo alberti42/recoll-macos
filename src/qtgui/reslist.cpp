@@ -142,7 +142,7 @@ public:
     virtual void suggest(const vector<string>uterms, 
                          map<string, vector<string> >& sugg) override;
     virtual string absSep() override {return (const char *)(prefs.abssep.toUtf8());}
-
+    virtual bool useAll() override {return prefs.useDesktopOpen;} 
 #if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
     // We used to use http://localhost/. Now use file:/// as this is
     // what Webengine will prepend relative links with (as
