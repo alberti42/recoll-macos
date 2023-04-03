@@ -760,13 +760,13 @@ static int stringToMods(string& s)
  *   count)
  */
 bool SearchDataClauseSimple::processUserString(
-    Rcl::Db &db, const string &iq, string &ermsg, void *pq, int slack, bool useNear)
+    Rcl::Db &db, const string &iq, string &ermsg, void *pq, int slack0, bool useNear)
 {
     vector<Xapian::Query> &pqueries(*(vector<Xapian::Query>*)pq);
     int mods = m_modifiers;
 
     LOGDEB("StringToXapianQ:pUS:: qstr [" << iq << "] fld [" << m_field <<
-           "] mods 0x"<<mods<<" slack " << slack << " near " << useNear <<"\n");
+           "] mods 0x"<<mods<< " slack " << slack0 << " near " << useNear <<"\n");
     ermsg.erase();
     m_curcl = 0;
     const StopList stops = db.getStopList();
@@ -786,6 +786,7 @@ bool SearchDataClauseSimple::processUserString(
     try {
         for (auto& wordorphrase : phrases) {
             LOGDEB0("strToXapianQ: phrase/word: [" << wordorphrase << "]\n");
+            int slack = slack0;
             // Anchoring modifiers
             int amods = stringToMods(wordorphrase);
             int terminc = amods != 0 ? 1 : 0;
