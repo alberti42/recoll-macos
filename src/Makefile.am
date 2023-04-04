@@ -51,6 +51,11 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++14 \
     -D_GNU_SOURCE \
     $(DEFS)
 
+if COND_BTIME
+    CXXFLAGS += -DEXT4_BIRTH_TIME
+    ext4_birth_time =1
+endif
+
 ACLOCAL_AMFLAGS = -I m4
 
 if NOTHREADS
@@ -695,7 +700,7 @@ endif
 if MAKEQT
 all-local:: recollqt
 recollqt: librecoll.la
-	(cd $(QTGUI); ${QMAKE} PREFIX=${prefix} recoll.pro)
+	(cd $(QTGUI); ${QMAKE} PREFIX=${prefix} DEFINE_BTIME=${ext4_birth_time} recoll.pro)
 	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" prefix=$(prefix) \
                 exec_prefix=$(exec_prefix) libdir=$(libdir)
 clean-local:: recollqt-clean

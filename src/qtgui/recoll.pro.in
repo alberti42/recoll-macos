@@ -390,6 +390,10 @@ VPATH = @srcdir@
 
 @QMAKE_ENABLE_GUIDEBUG@CONFIG += force_debug_info
 
+  contains(DEFINE_BTIME, 1) {
+    DEFINES += EXT4_BIRTH_TIME
+  }
+
   HEADERS += crontool.h \
              rtitool.h
 

@@ -290,6 +290,11 @@ AC_ARG_ENABLE(xadump,
         enableXADUMP=$enableval, enableXADUMP="no")
 AM_CONDITIONAL(MAKEXADUMP, [test X$enableXADUMP = Xyes])
 
+AC_ARG_ENABLE(ext4-birthtime,
+    AS_HELP_STRING([--enable-ext4-birthtime],[Enable indexing to support birthtime metadata for ext4 file systems.]),
+        enableBirthtime=$enableval, enableBirthtime=no)
+AM_CONDITIONAL([COND_BTIME], [test "$enableBirthtime" = yes])
+
 AC_ARG_ENABLE(userdoc,
     AS_HELP_STRING([--disable-userdoc],[Disable building the user manual. (Avoids the need for docbook xml/xsl files and TeX tools.]),
         enableUserdoc=$enableval, enableUserdoc="yes")
