@@ -136,8 +136,8 @@
 #define RMDIR _wrmdir
 #define CHDIR _wchdir
 
-#define SYSPATH(PATH, SPATH) wchar_t PATH ## _buf[2048];      \
-    utf8towchar(PATH, PATH ## _buf, 2048);                    \
+#define SYSPATH(PATH, SPATH) wchar_t PATH ## _buf[2048];        \
+    utf8towchar(PATH, PATH ## _buf, 2048);                      \
     wchar_t *SPATH = PATH ## _buf;
 
 #define ftruncate _chsize_s
@@ -1070,32 +1070,105 @@ bool path_samefile(const std::string& p1, const std::string& p2)
 #endif
 }
 
+#if defined(STATX_TYPE)
+
+#include <sys/syscall.h>
+
+#define MINORBITS       20
+#define MKDEV(ma,mi)    (((ma) << MINORBITS) | (mi))
+
+static ssize_t _statx(int dfd, const char *filename, unsigned flags,
+               unsigned int mask, struct statx *buffer)
+{
+    return syscall(__NR_statx, dfd, filename, flags, mask, buffer);
+}
+
+static int statx(const char *filename, struct statx *buffer)
+{
+    int ret, atflag = 0;
+    unsigned int mask = STATX_BASIC_STATS | STATX_BTIME;
+
+    ret = _statx(AT_FDCWD, filename, atflag, mask,  buffer);
+    if (ret < 0) {
+        perror(filename);
+    }
+
+    return ret;
+}
+
+static int lstatx(const char *filename, struct statx *buffer)
+{
+    int ret, atflag = AT_SYMLINK_NOFOLLOW;
+    unsigned int mask = STATX_BASIC_STATS | STATX_BTIME;
+
+    ret = _statx(AT_FDCWD, filename, atflag, mask,  buffer);
+    if (ret < 0) {
+        perror(filename);
+    }
+
+    return ret;
+}
+
+#define ST_SIZE stx_size
+#define ST_MODE stx_mode
+#define ST_MTIME stx_mtime.tv_sec
+#define ST_CTIME stx_ctime.tv_sec
+#define ST_BTIME stx_btime.tv_sec
+#define ST_INO stx_ino
+#define ST_DEVICE(ST) MKDEV((ST).stx_dev_major, (ST).stx_dev_minor)
+#define ST_BLOCKS  stx_blocks
+#define ST_BLKSIZE stx_blksize
+#define ST_MODE stx_mode
+#define STATXSTRUCT statx
+#define STATXCALL statx
+#define LSTATXCALL lstatx
+
+#else /* -> !defined(STATX_TYPE) */
+
+/* Using traditional stat */
+#define ST_SIZE st_size
+#define ST_MODE st_mode
+#define ST_MTIME st_mtime
+#define ST_CTIME st_ctime
+#define ST_BTIME st_ctime
+#define ST_INO st_ino
+#define ST_DEVICE(ST) (ST).st_dev
+#define ST_BLOCKS  st_blocks
+#define ST_BLKSIZE st_blksize
+#define ST_MODE st_mode
+#define STATXSTRUCT STATBUF
+#define STATXCALL STAT
+#define LSTATXCALL LSTAT
+
+#endif  /* Not using statx */
+
 int path_fileprops(const std::string path, struct PathStat *stp, bool follow)
 {
     if (nullptr == stp) {
         return -1;
     }
     *stp = PathStat{PathStat::PST_INVALID,0,0,0,0,0,0,0,0};
-    struct STATBUF mst;
+    struct STATXSTRUCT mst;
     SYSPATH(path, syspath);
-    int ret = follow ? STAT(syspath, &mst) : LSTAT(syspath, &mst);
+    int ret = follow ? STATXCALL(syspath, &mst) : LSTATXCALL(syspath, &mst);
     if (ret != 0) {
         stp->pst_type = PathStat::PST_INVALID;
         return ret;
     }
-    stp->pst_size = mst.st_size;
-    stp->pst_mode = mst.st_mode;
-    stp->pst_mtime = mst.st_mtime;
+    stp->pst_size = mst.ST_SIZE;
+    stp->pst_mode = mst.ST_MODE;
+    stp->pst_mtime = mst.ST_MTIME;
+    stp->pst_btime = mst.ST_BTIME;
 #ifdef _WIN32
-    stp->pst_ctime = mst.st_mtime;
+    stp->pst_ctime = mst.ST_MTIME;
 #else
-    stp->pst_ino = mst.st_ino;
-    stp->pst_dev = mst.st_dev;
-    stp->pst_ctime = mst.st_ctime;
-    stp->pst_blocks = mst.st_blocks;
-    stp->pst_blksize = mst.st_blksize;
+    stp->pst_ino = mst.ST_INO;
+    stp->pst_dev = ST_DEVICE(mst);
+    stp->pst_ctime = mst.ST_CTIME;
+    stp->pst_blocks = mst.ST_BLOCKS;
+    stp->pst_blksize = mst.ST_BLKSIZE;
 #endif
-    switch (mst.st_mode & S_IFMT) {
+    switch (mst.ST_MODE & S_IFMT) {
     case S_IFDIR: stp->pst_type = PathStat::PST_DIR;break;
     case S_IFLNK:  stp->pst_type = PathStat::PST_SYMLINK;break;
     case S_IFREG: stp->pst_type = PathStat::PST_REGULAR;break;
