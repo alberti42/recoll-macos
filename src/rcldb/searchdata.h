@@ -194,10 +194,11 @@ private:
     // something else (date, size specs, etc.)
     bool           m_haveDates{false};
     DateInterval   m_dates; // Restrict to date interval
-#ifdef EXT4_BIRTH_TIME
+    // Note we don't use ifdef EXT4_BIRTH_TIME here because it would affect the unofficial
+    // librecollABI and force configuring the krunner and KIO worker in consequence.
     bool           m_haveBrDates{false};
     DateInterval   m_brdates; // Restrict to date interval
-#endif
+
     int64_t        m_maxSize{-1};
     int64_t        m_minSize{-1};
     // Filtering for subdocs: -1:any, 0: only free-standing, 1: only subdocs
