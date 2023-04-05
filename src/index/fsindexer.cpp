@@ -711,14 +711,18 @@ FsTreeWalker::Status FsIndexer::processonefile(
     string parent_udi = udi;
 
     Rcl::Doc doc;
-    char ascdate[30];
-    sprintf(ascdate, "%ld", long(stp.pst_mtime));
+
+    std::string ascdate;
+    lltodecstr(stp.pst_mtime, ascdate);
 
 #ifdef EXT4_BIRTH_TIME
-    char brdate[30];
-    sprintf(brdate, "%ld", long(stp.pst_btime));
+    std::string brdate;
+    if (stp.pst_btime) {
+        // Note that btime==0 is a valid date. At the moment though we reserve it for "no value"
+        // TBD if this is acceptable or not
+        lltodecstr(stp.pst_btime, brdate);
+    }
 #endif
-
 
     bool hadNullIpath = false;
     string mimetype;
@@ -777,16 +781,17 @@ FsTreeWalker::Status FsIndexer::processonefile(
             // file name).
             if (doc.fmtime.empty())
                 doc.fmtime = ascdate;
+
 #ifdef EXT4_BIRTH_TIME
-            if (doc.birtime.empty())
-                doc.birtime = brdate;
+            if (!brdate.empty() && !doc.hasmetavalue(Rcl::Doc::keybrt) ) {
+                doc.addmeta(Rcl::Doc::keybrt, brdate);
+            }
  #endif   
             if (doc.url.empty())
                 doc.url = path_pathtofileurl(fn);
-            const string *fnp{nullptr};
-            if (doc.ipath.empty()) {
-                if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
-                    doc.meta[Rcl::Doc::keyfn] = utf8fn;
+
+            if (doc.ipath.empty() && !doc.hasmetavalue(Rcl::Doc::keyfn)) {
+                doc.addmeta(Rcl::Doc::keyfn, utf8fn);
             } 
             // Set container file name for all docs, top or subdoc
             doc.meta[Rcl::Doc::keyctfn] = utf8fn;
@@ -882,7 +887,8 @@ FsTreeWalker::Status FsIndexer::processonefile(
         } else {
             fileDoc.fmtime = ascdate;
 #ifdef EXT4_BIRTH_TIME
-            fileDoc.birtime = brdate;
+            if (!brdate.empty()) 
+                fileDoc.addmeta(Rcl::Doc::keybrt, brdate);
 #endif
             fileDoc.meta[Rcl::Doc::keyfn] = fileDoc.meta[Rcl::Doc::keyctfn] = utf8fn;
             fileDoc.haschildren = true;

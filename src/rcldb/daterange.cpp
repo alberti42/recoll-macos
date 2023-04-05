@@ -43,14 +43,14 @@ static inline void bufprefix(char *buf, string pre)
 {
     const char* prechar = pre.c_str();
     if (o_index_stripchars) {
-       for (size_t i= 0; i< pre.length(); i++) {
+        for (size_t i= 0; i< pre.length(); i++) {
             buf[i] = prechar[i];
-       }
+        }
     } else {
         buf[0] = ':';
         for (size_t i= 1; i< pre.length()+1; i++) {
             buf[i] = prechar[i];
-       }
+        }
         buf[pre.length()+1] = ':';
     }
 }
@@ -60,7 +60,9 @@ static inline int bpoffs(string pre)
     return o_index_stripchars ? pre.length() : pre.length()+2;
 }
 
-Xapian::Query date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
+static Xapian::Query anydate_range_filter(
+    const std::string& daypref, const std::string& monpref, const std::string& yearpref,
+    int y1, int m1, int d1, int y2, int m2, int d2)
 {
     // Xapian uses a smallbuf and snprintf. Can't be bothered, we're
     // doing at most 3 %d's !
@@ -68,138 +70,80 @@ Xapian::Query date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
     vector<Xapian::Query> v;
 
     // Deal with days till the end of the first month if any
-    bufprefix(buf, xapday_prefix);
-    sprintf(buf + bpoffs(xapday_prefix), "%04d%02d", y1, m1);
+    bufprefix(buf, daypref);
+    sprintf(buf + bpoffs(daypref), "%04d%02d", y1, m1);
     int d_last = monthdays(m1, y1);
     int d_end = d_last;
     if (y1 == y2 && m1 == m2 && d2 < d_last) {
-    d_end = d2;
+        d_end = d2;
     }
     if (d1 > 1 || d_end < d_last) {
         for ( ; d1 <= d_end ; d1++) {
-        sprintf(buf + 6 + bpoffs(xapday_prefix), "%02d", d1);
-        v.push_back(Xapian::Query(buf));
-    }
+            sprintf(buf + 6 + bpoffs(daypref), "%02d", d1);
+            v.push_back(Xapian::Query(buf));
+        }
     } else {
-    bufprefix(buf, xapmonth_prefix);
-    v.push_back(Xapian::Query(buf));
+        bufprefix(buf, monpref);
+        v.push_back(Xapian::Query(buf));
     }
     
     if (y1 == y2 && m1 == m2) {
-    return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
+        return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
     }
 
     // Months till the end of first year
     int m_last = (y1 < y2) ? 12 : m2 - 1;
-    bufprefix(buf, xapmonth_prefix);
+    bufprefix(buf, monpref);
     while (++m1 <= m_last) {
-    sprintf(buf + 4 + bpoffs(xapmonth_prefix), "%02d", m1);
-    v.push_back(Xapian::Query(buf));
+        sprintf(buf + 4 + bpoffs(monpref), "%02d", m1);
+        v.push_back(Xapian::Query(buf));
     }
 
     // Years inbetween and first months of the last year
     if (y1 < y2) {
-        bufprefix(buf, xapyear_prefix);
-    while (++y1 < y2) {
-        sprintf(buf + bpoffs(xapyear_prefix), "%04d", y1);
-        v.push_back(Xapian::Query(buf));
-    }
-    bufprefix(buf, xapmonth_prefix);
-    sprintf(buf + bpoffs(xapmonth_prefix), "%04d", y2);
-    for (m1 = 1; m1 < m2; m1++) {
-        sprintf(buf + 4 + bpoffs(xapmonth_prefix), "%02d", m1);
-        v.push_back(Xapian::Query(buf));
-    }
+        bufprefix(buf, yearpref);
+        while (++y1 < y2) {
+            sprintf(buf + bpoffs(yearpref), "%04d", y1);
+            v.push_back(Xapian::Query(buf));
+        }
+        bufprefix(buf, monpref);
+        sprintf(buf + bpoffs(monpref), "%04d", y2);
+        for (m1 = 1; m1 < m2; m1++) {
+            sprintf(buf + 4 + bpoffs(monpref), "%02d", m1);
+            v.push_back(Xapian::Query(buf));
+        }
     }
 
     // Last month
-    sprintf(buf + 4 + bpoffs(xapmonth_prefix), "%02d", m2);
+    sprintf(buf + 4 + bpoffs(monpref), "%02d", m2);
 
     // Deal with any final partial month
     if (d2 < monthdays(m2, y2)) {
-    bufprefix(buf, xapday_prefix);
+        bufprefix(buf, daypref);
         for (d1 = 1 ; d1 <= d2; d1++) {
-        sprintf(buf + 6 + bpoffs(xapday_prefix), "%02d", d1);
-        v.push_back(Xapian::Query(buf));
-    }
+            sprintf(buf + 6 + bpoffs(daypref), "%02d", d1);
+            v.push_back(Xapian::Query(buf));
+        }
     } else {
-    bufprefix(buf, xapmonth_prefix);
-    v.push_back(Xapian::Query(buf));
+        bufprefix(buf, monpref);
+        v.push_back(Xapian::Query(buf));
     }
 
     return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
 }
 
+Xapian::Query date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
+{
+    return anydate_range_filter(xapday_prefix, xapmonth_prefix, xapyear_prefix,
+                                y1, m1, d1, y2, m2, d2);
+}
+
+#ifdef EXT4_BIRTH_TIME
 Xapian::Query brdate_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
 {
-    // Xapian uses a smallbuf and snprintf. Can't be bothered, we're
-    // doing at most 3 %d's !
-    char buf[200];
-    vector<Xapian::Query> v;
-
-    // Deal with days till the end of the first month if any
-    bufprefix(buf,xapbriday_prefix);
-    sprintf(buf + bpoffs(xapbriday_prefix), "%04d%02d", y1, m1);
-    int d_last = monthdays(m1, y1);
-    int d_end = d_last;
-    if (y1 == y2 && m1 == m2 && d2 < d_last) {
-    d_end = d2;
-    }
-    if (d1 > 1 || d_end < d_last) {
-        for ( ; d1 <= d_end ; d1++) {
-        sprintf(buf + 6 + bpoffs(xapbriday_prefix), "%02d", d1);
-        v.push_back(Xapian::Query(buf));
-    }
-    } else {
-    bufprefix(buf, xapbrimonth_prefix);
-    v.push_back(Xapian::Query(buf));
-    }
-
-    if (y1 == y2 && m1 == m2) {
-    return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
-    }
-
-    // Months till the end of first year
-    int m_last = (y1 < y2) ? 12 : m2 - 1;
-    bufprefix(buf, xapbrimonth_prefix);
-    while (++m1 <= m_last) {
-    sprintf(buf + 4 + bpoffs(xapbrimonth_prefix), "%02d", m1);
-    v.push_back(Xapian::Query(buf));
-    }
-
-    // Years inbetween and first months of the last year
-    if (y1 < y2) {
-        bufprefix(buf, xapbriyear_prefix);
-    while (++y1 < y2) {
-        sprintf(buf + bpoffs(xapbriyear_prefix), "%04d", y1);
-        v.push_back(Xapian::Query(buf));
-    }
-    bufprefix(buf, xapbrimonth_prefix);
-    sprintf(buf + bpoffs(xapbrimonth_prefix), "%04d", y2);
-    for (m1 = 1; m1 < m2; m1++) {
-        sprintf(buf + 4 + bpoffs(xapbrimonth_prefix), "%02d", m1);
-        v.push_back(Xapian::Query(buf));
-    }
-    }
-
-    // Last month
-    sprintf(buf + 4 + bpoffs(xapbrimonth_prefix), "%02d", m2);
-
-    // Deal with any final partial month
-    if (d2 < monthdays(m2, y2)) {
-    bufprefix(buf, xapbriday_prefix);
-        for (d1 = 1 ; d1 <= d2; d1++) {
-        sprintf(buf + 6 + bpoffs(xapbriday_prefix), "%02d", d1);
-        v.push_back(Xapian::Query(buf));
-    }
-    } else {
-    bufprefix(buf, xapbrimonth_prefix);
-    v.push_back(Xapian::Query(buf));
-    }
-
-    return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
+    return anydate_range_filter(xapbriday_prefix, xapbrimonth_prefix, xapbriyear_prefix,
+                                y1, m1, d1, y2, m2, d2);
 }
+#endif
 
 }
-
-

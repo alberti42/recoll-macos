@@ -195,10 +195,12 @@ void SearchData::simplify()
         // If this subquery has special attributes, it's not a
         // candidate for collapsing, except if it has no clauses, because
         // then, we just pick the attributes.
-        if (!clsubp->getSub()->m_filetypes.empty() || 
+        if (!clsubp->getSub()->m_filetypes.empty() ||
             !clsubp->getSub()->m_nfiletypes.empty() ||
-            clsubp->getSub()->m_haveDates || 
-            clsubp->getSub()->m_haveBrDates || 
+            clsubp->getSub()->m_haveDates ||
+#ifdef EXT4_BIRTH_TIME
+            clsubp->getSub()->m_haveBrDates ||
+#endif
             clsubp->getSub()->m_maxSize != -1 ||
             clsubp->getSub()->m_minSize != -1 ||
             clsubp->getSub()->m_subspec != SUBDOC_ANY ||
@@ -217,10 +219,12 @@ void SearchData::simplify()
                 m_dates = clsubp->getSub()->m_dates;
                 m_haveDates = 1;
             }
+#ifdef EXT4_BIRTH_TIME
             if (clsubp->getSub()->m_haveBrDates && !m_haveBrDates) {
                 m_brdates = clsubp->getSub()->m_brdates;
                 m_haveBrDates = 1;
             }
+#endif
             if (m_maxSize == -1)
                 m_maxSize = clsubp->getSub()->m_maxSize;
             if (m_minSize == -1)
@@ -278,7 +282,11 @@ void SearchData::dump(ostream& o) const
     o << dumptabs <<
         "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
         " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
-         " hd " << m_haveDates <<  " hbrd " << m_haveBrDates << " maxs " << m_maxSize << " mins " << 
+         " hd " << m_haveDates <<
+#ifdef EXT4_BIRTH_TIME
+        " hbrd " << m_haveBrDates <<
+#endif
+        " maxs " << m_maxSize << " mins " << 
         m_minSize << " wc " << m_haveWildCards << " subsp " << m_subspec << "\n";
     for (const auto& clausep : m_query) {
         o << dumptabs;

@@ -129,10 +129,11 @@ public:
     
     /** Set date span for filtering results */
     void setDateSpan(DateInterval *dip) {m_dates = *dip; m_haveDates = true;}
-
+#ifdef EXT4_BIRTH_TIME
     /** Set brtime span for filtering results */
     void setBrDateSpan(DateInterval *dip) {m_brdates = *dip; m_haveBrDates = true;}
-
+#endif
+    
     /** Add file type for filtering results */
     void addFiletype(const std::string& ft) {m_filetypes.push_back(ft);}
     /** Add file type to not wanted list */
@@ -193,8 +194,10 @@ private:
     // something else (date, size specs, etc.)
     bool           m_haveDates{false};
     DateInterval   m_dates; // Restrict to date interval
+#ifdef EXT4_BIRTH_TIME
     bool           m_haveBrDates{false};
     DateInterval   m_brdates; // Restrict to date interval
+#endif
     int64_t        m_maxSize{-1};
     int64_t        m_minSize{-1};
     // Filtering for subdocs: -1:any, 0: only free-standing, 1: only subdocs

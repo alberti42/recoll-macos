@@ -79,8 +79,10 @@ private:
     std::vector<std::string>  m_nfiletypes;
     bool                      m_haveDates{false};
     DateInterval              m_dates; // Restrict to date interval
+#ifdef EXT4_BIRTH_TIME
     bool                      m_haveBrDates{false};
     DateInterval              m_brdates; // Restrict to date interval
+#endif
     int64_t                   m_maxSize{-1};
     int64_t                   m_minSize{-1};
     int                       m_subSpec{Rcl::SearchData::SUBDOC_ANY};

@@ -49,7 +49,9 @@ const string Doc::keytp("mtype");
 const string Doc::keytt("title");
 const string Doc::keyudi("rcludi");
 const string Doc::keyurl("url");
+#ifdef EXT4_BIRTH_TIME
 const string Doc::keybrt("birtime");
+#endif
 
 void Doc::dump(bool dotext) const
 {
@@ -59,7 +61,6 @@ void Doc::dump(bool dotext) const
     LOGDEB("Rcl::Doc::dump: mimetype: [" << mimetype << "]\n");
     LOGDEB("Rcl::Doc::dump: fmtime: [" << fmtime << "]\n");
     LOGDEB("Rcl::Doc::dump: dmtime: [" << dmtime << "]\n");
-    LOGDEB("Rcl::Doc::dump: birtime: [" << birtime << "]\n");
     LOGDEB("Rcl::Doc::dump: origcharset: [" << origcharset << "]\n");
     LOGDEB("Rcl::Doc::dump: syntabs: [" << syntabs << "]\n");
     LOGDEB("Rcl::Doc::dump: pcbytes: [" << pcbytes << "]\n");
@@ -85,7 +86,6 @@ void Doc::copyto(Doc *d) const
     d->mimetype.assign(mimetype.begin(), mimetype.end());
     d->fmtime.assign(fmtime.begin(), fmtime.end());
     d->dmtime.assign(dmtime.begin(), dmtime.end());
-    d->birtime.assign(birtime.begin(), birtime.end());
     d->origcharset.assign(origcharset.begin(), origcharset.end());
     map_ss_cp_noshr(meta, &d->meta);
     d->syntabs = syntabs;

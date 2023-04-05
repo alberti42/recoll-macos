@@ -69,10 +69,6 @@ public:
     // Filter::metaData["modificationdate"]
     std::string dmtime;
 
-    //File creation time as decimal ascii unix time
-    // Set by FsIndexer::processone
-    std::string birtime;
-
     // Charset we transcoded the 'text' field from (in case we want back)
     // Possibly set by handler
     std::string origcharset;  
@@ -148,7 +144,6 @@ public:
         mimetype.erase();
         fmtime.erase();
         dmtime.erase();
-        birtime.erase();
         origcharset.erase();
         meta.clear();
         syntabs = false;
@@ -190,9 +185,17 @@ public:
             if (value)
                 *value = &(it->second);
             return true;
-        } else {
-            return false;
         }
+        return false;
+    }
+
+    /** Check if metadata is set and not empty */
+    bool hasmetavalue(const std::string& nm) {
+        const std::string *vp;
+        if (peekmeta(nm, &vp) && !vp->empty()) {
+            return true;
+        }
+        return false;
     }
 
     // Create entry or append text to existing entry.
@@ -243,7 +246,9 @@ public:
     static const std::string keytp;  // mime type
     static const std::string keyfmt; // file mtime
     static const std::string keydmt; // document mtime
+#ifdef EXT4_BIRTH_TIME
     static const std::string keybrt; // file birthtime
+#endif
     static const std::string keymt;  // mtime dmtime if set else fmtime
     static const std::string keyoc;  // original charset
     static const std::string keypcs; // document outer container size

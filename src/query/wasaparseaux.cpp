@@ -81,9 +81,11 @@ SearchData *WasaParserDriver::parse(const std::string& in)
     if (m_haveDates) {
         m_result->setDateSpan(&m_dates);
     }
+#ifdef EXT4_BIRTH_TIME
     if (m_haveBrDates) {
         m_result->setBrDateSpan(&m_brdates);
     }
+#endif
     if (m_minSize != -1) {
         m_result->setMinSize(m_minSize);
     }
@@ -173,35 +175,30 @@ bool WasaParserDriver::addClause(SearchData *sd, SearchDataClauseSimple* cl)
     }
 
     // Handle "date" spec
-    if (!fld.compare("date")) {
+    if (!fld.compare("date")
+#ifdef EXT4_BIRTH_TIME
+        || !fld.compare("birtime")
+#endif
+        ) {
         DateInterval di;
         if (!parsedateinterval(cl->gettext(), &di)) {
-            LOGERR("Bad date interval format: "  << (cl->gettext()) << "\n" );
+            LOGERR("Bad date interval format: " << cl->gettext() << "\n");
             m_reason = "Bad date interval format";
             delete cl;
             return false;
         }
-        LOGDEB("addClause:: date span:  " << di.y1 << "-" << di.m1 << "-"
+        LOGDEB("addClause:: date/brdate span:  " << di.y1 << "-" << di.m1 << "-"
                << di.d1 << "/" << di.y2 << "-" << di.m2 << "-" << di.d2 << "\n");
-        m_haveDates = true;
-        m_dates = di;
-        delete cl;
-        return false;
-    } 
-
-     // Handle "birtime" spec
-    if (!fld.compare("birtime")) {
-        DateInterval di;
-        if (!parsedateinterval(cl->gettext(), &di)) {
-            LOGERR("Bad date interval format: "  << (cl->gettext()) << "\n" );
-            m_reason = "Bad date interval format";
-            delete cl;
-            return false;
+#ifdef EXT4_BIRTH_TIME
+        if (fld.compare("date")) {
+            m_haveBrDates = true;
+            m_brdates = di;
+        } else
+#endif
+        {
+            m_haveDates = true;
+            m_dates = di;
         }
-        LOGDEB("addClause:: birtime span:  " << di.y1 << "-" << di.m1 << "-"
-               << di.d1 << "/" << di.y2 << "-" << di.m2 << "-" << di.d2 << "\n");
-        m_haveBrDates = true;
-        m_brdates = di;
         delete cl;
         return false;
     } 

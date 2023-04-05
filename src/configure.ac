@@ -294,6 +294,11 @@ AC_ARG_ENABLE(ext4-birthtime,
     AS_HELP_STRING([--enable-ext4-birthtime],[Enable indexing to support birthtime metadata for ext4 file systems.]),
         enableBirthtime=$enableval, enableBirthtime=no)
 AM_CONDITIONAL([COND_BTIME], [test "$enableBirthtime" = yes])
+if test x"$enableBirthtime" = xyes; then
+  DEF_EXT4_BIRTH_TIME=1
+else
+  DEF_EXT4_BIRTH_TIME=0
+fi
 
 AC_ARG_ENABLE(userdoc,
     AS_HELP_STRING([--disable-userdoc],[Disable building the user manual. (Avoids the need for docbook xml/xsl files and TeX tools.]),
@@ -492,6 +497,7 @@ RCLLIBVERSION=$RCLVERSION
 
 AC_SUBST(NO_UNDEF_LINK_FLAG)
 AC_SUBST(RECOLL_DATADIR)
+AC_SUBST(DEF_EXT4_BIRTH_TIME)
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)
 AC_SUBST(X_LIBS)

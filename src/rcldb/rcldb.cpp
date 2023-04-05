@@ -1765,24 +1765,27 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         newdocument.add_boolean_term(wrap_prefix(xapyear_prefix) + string(buf)); 
 
 #ifdef EXT4_BIRTH_TIME
-         // Fields used for selecting by birtime. Note that this only
+        // Fields used for selecting by birtime. Note that this only
         // works for years AD 0-9999 (no crash elsewhere, but things
         // won't work).
-        time_t birtime = atoll(doc.birtime.c_str());
-        struct tm tmbr;
-        localtime_r(&birtime, &tmbr);
-        char brbuf[50]; // It's actually 9, but use 50 to suppress warnings.
-        snprintf(brbuf, 50, "%04d%02d%02d",
-                 tmbr.tm_year+1900, tmbr.tm_mon + 1, tmbr.tm_mday);
+        std::string sbirtime;
+        doc.getmeta(Doc::keybrt, &sbirtime);
+        if (!sbirtime.empty()) {
+            time_t birtime = atoll(sbirtime.c_str());
+            struct tm tmbr;
+            localtime_r(&birtime, &tmbr);
+            char brbuf[50]; // It's actually 9, but use 50 to suppress warnings.
+            snprintf(brbuf, 50, "%04d%02d%02d", tmbr.tm_year+1900, tmbr.tm_mon + 1, tmbr.tm_mday);
             
-        // Date (YYYYMMDD)
-        newdocument.add_boolean_term(wrap_prefix(xapbriday_prefix) + string(brbuf)); 
-        // Month (YYYYMM)
-        brbuf[6] = '\0';
-        newdocument.add_boolean_term(wrap_prefix(xapbrimonth_prefix) + string(brbuf));
-        // Year (YYYY)
-        brbuf[4] = '\0';
-        newdocument.add_boolean_term(wrap_prefix(xapbriyear_prefix) + string(brbuf)); 
+            // Date (YYYYMMDD)
+            newdocument.add_boolean_term(wrap_prefix(xapbriday_prefix) + string(brbuf)); 
+            // Month (YYYYMM)
+            brbuf[6] = '\0';
+            newdocument.add_boolean_term(wrap_prefix(xapbrimonth_prefix) + string(brbuf));
+            // Year (YYYY)
+            brbuf[4] = '\0';
+            newdocument.add_boolean_term(wrap_prefix(xapbriyear_prefix) + string(brbuf));
+        }
 #endif
 
 
@@ -1808,8 +1811,14 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         leftzeropad(doc.fmtime, 11);
         RECORD_APPEND(record, Doc::keyfmt, doc.fmtime);
 #ifdef EXT4_BIRTH_TIME
-         leftzeropad(doc.birtime, 11);
-        RECORD_APPEND(record, Doc::keybrt, doc.birtime);
+        {
+            std::string birtime;
+            doc.getmeta(Doc::keybrt, &birtime);
+            if (!birtime.empty()) {
+                leftzeropad(birtime, 11);
+                RECORD_APPEND(record, Doc::keybrt, birtime);
+            }
+        }
 #endif
         if (!doc.dmtime.empty()) {
             leftzeropad(doc.dmtime, 11);

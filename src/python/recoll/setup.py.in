@@ -19,6 +19,10 @@ else:
 	libraries = ['recoll']
 	
 extra_compile_args = ['-std=c++11']
+define_macros = [('RECOLL_DATADIR', '"@RECOLL_DATADIR@"'),]
+DEF_EXT4_BIRTH_TIME =  @DEF_EXT4_BIRTH_TIME@
+if DEF_EXT4_BIRTH_TIME == 1:
+   define_macros.append(('EXT4_BIRTH_TIME', 1))
 
 VERSION = open(os.path.join(top, "RECOLL-VERSION.txt")).read().strip()
 
@@ -28,9 +32,7 @@ else:
     runtime_library_dirs = [os.path.join('@prefix@', 'lib', 'recoll')]
 
 module1 = Extension('_recoll',
-                    define_macros = [
-                                     ('RECOLL_DATADIR', '"@RECOLL_DATADIR@"')
-                                     ],
+                    define_macros = define_macros,
                     include_dirs = [
                                     os.path.join(localtop, 'common'),
                                     os.path.join(top, 'common'), 
