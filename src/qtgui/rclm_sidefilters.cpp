@@ -65,28 +65,30 @@ void RclMain::populateSideFilters(SideFilterUpdateReason reason)
         connect(dateFilterCB, SIGNAL(toggled(bool)), minDateFilterDTEDT, SLOT(setEnabled(bool)));
         connect(dateFilterCB, SIGNAL(toggled(bool)), maxDateFilterDTEDT, SLOT(setEnabled(bool)));
 
-        #ifdef EXT4_BIRTH_TIME
-            birthDateFilterCB->show();
-            minBirthDateFilterDTEDT->show();
-            maxBirthDateFilterDTEDT->show();
+#ifdef EXT4_BIRTH_TIME
+        birthDateFilterCB->show();
+        minBirthDateFilterDTEDT->show();
+        maxBirthDateFilterDTEDT->show();
 
-            minBirthDateFilterDTEDT->setCalendarPopup(true);
-            maxBirthDateFilterDTEDT->setCalendarPopup(true);
-            minBirthDateFilterDTEDT->setDate(QDate::currentDate());
-            maxBirthDateFilterDTEDT->setDate(QDate::currentDate());
-            connect(minBirthDateFilterDTEDT, SIGNAL(dateChanged(const QDate&)),
-                    this, SLOT(sideFilterChanged()));
-            connect(maxBirthDateFilterDTEDT, SIGNAL(dateChanged(const QDate&)),
-                    this, SLOT(sideFilterChanged()));
+        minBirthDateFilterDTEDT->setCalendarPopup(true);
+        maxBirthDateFilterDTEDT->setCalendarPopup(true);
+        minBirthDateFilterDTEDT->setDate(QDate::currentDate());
+        maxBirthDateFilterDTEDT->setDate(QDate::currentDate());
+        connect(minBirthDateFilterDTEDT, SIGNAL(dateChanged(const QDate&)),
+                this, SLOT(sideFilterChanged()));
+        connect(maxBirthDateFilterDTEDT, SIGNAL(dateChanged(const QDate&)),
+                this, SLOT(sideFilterChanged()));
 
-            connect(birthDateFilterCB, SIGNAL(toggled(bool)), this, SLOT(sideFilterChanged()));
-            connect(birthDateFilterCB, SIGNAL(toggled(bool)), minBirthDateFilterDTEDT, SLOT(setEnabled(bool)));
-            connect(birthDateFilterCB, SIGNAL(toggled(bool)), maxBirthDateFilterDTEDT, SLOT(setEnabled(bool)));
-        #else
-            birthDateFilterCB->hide();
-            minBirthDateFilterDTEDT->hide();
-            maxBirthDateFilterDTEDT->hide();
-        #endif
+        connect(birthDateFilterCB, SIGNAL(toggled(bool)), this, SLOT(sideFilterChanged()));
+        connect(birthDateFilterCB, SIGNAL(toggled(bool)),
+                minBirthDateFilterDTEDT, SLOT(setEnabled(bool)));
+        connect(birthDateFilterCB, SIGNAL(toggled(bool)),
+                maxBirthDateFilterDTEDT, SLOT(setEnabled(bool)));
+#else
+        birthDateFilterCB->hide();
+        minBirthDateFilterDTEDT->hide();
+        maxBirthDateFilterDTEDT->hide();
+#endif
 
     }
 }

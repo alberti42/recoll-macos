@@ -140,7 +140,7 @@ void AdvSearch::init()
 
 #ifdef EXT4_BIRTH_TIME 
     int birthminyear, birthmaxyear;
-        if (rcldb) {
+    if (rcldb) {
         rcldb->maxYearSpan(&birthminyear, &birthmaxyear);
         minBirthDateDTE->setDisplayFormat("yyyy-MM-dd");
         maxBirthDateDTE->setDisplayFormat("yyyy-MM-dd");
@@ -636,7 +636,7 @@ void AdvSearch::fromSearch(std::shared_ptr<SearchData> sdata)
         maxDateDTE->setDate(date);
     }
 #ifdef EXT4_BIRTH_TIME
-        if (sdata->m_haveBrDates) {
+    if (sdata->m_haveBrDates) {
         filterBirthDatesCB->setChecked(1);
         DateInterval &di(sdata->m_brdates);
         QDate mindate(di.y1, di.m1, di.d1);
