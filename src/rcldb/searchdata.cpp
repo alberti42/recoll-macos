@@ -198,6 +198,7 @@ void SearchData::simplify()
         if (!clsubp->getSub()->m_filetypes.empty() || 
             !clsubp->getSub()->m_nfiletypes.empty() ||
             clsubp->getSub()->m_haveDates || 
+            clsubp->getSub()->m_haveBrDates || 
             clsubp->getSub()->m_maxSize != -1 ||
             clsubp->getSub()->m_minSize != -1 ||
             clsubp->getSub()->m_subspec != SUBDOC_ANY ||
@@ -215,6 +216,10 @@ void SearchData::simplify()
             if (clsubp->getSub()->m_haveDates && !m_haveDates) {
                 m_dates = clsubp->getSub()->m_dates;
                 m_haveDates = 1;
+            }
+            if (clsubp->getSub()->m_haveBrDates && !m_haveBrDates) {
+                m_brdates = clsubp->getSub()->m_brdates;
+                m_haveBrDates = 1;
             }
             if (m_maxSize == -1)
                 m_maxSize = clsubp->getSub()->m_maxSize;
@@ -273,7 +278,7 @@ void SearchData::dump(ostream& o) const
     o << dumptabs <<
         "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
         " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
-        " hd " << m_haveDates << " maxs " << m_maxSize << " mins " << 
+         " hd " << m_haveDates <<  " hbrd " << m_haveBrDates << " maxs " << m_maxSize << " mins " << 
         m_minSize << " wc " << m_haveWildCards << " subsp " << m_subspec << "\n";
     for (const auto& clausep : m_query) {
         o << dumptabs;

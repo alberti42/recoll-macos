@@ -714,6 +714,12 @@ FsTreeWalker::Status FsIndexer::processonefile(
     char ascdate[30];
     sprintf(ascdate, "%ld", long(stp.pst_mtime));
 
+#ifdef EXT4_BIRTH_TIME
+    char brdate[30];
+    sprintf(brdate, "%ld", long(stp.pst_btime));
+#endif
+
+
     bool hadNullIpath = false;
     string mimetype;
 
@@ -771,6 +777,10 @@ FsTreeWalker::Status FsIndexer::processonefile(
             // file name).
             if (doc.fmtime.empty())
                 doc.fmtime = ascdate;
+#ifdef EXT4_BIRTH_TIME
+            if (doc.birtime.empty())
+                doc.birtime = brdate;
+ #endif   
             if (doc.url.empty())
                 doc.url = path_pathtofileurl(fn);
             const string *fnp{nullptr};
@@ -871,6 +881,9 @@ FsTreeWalker::Status FsIndexer::processonefile(
             fileDoc.onlyxattr = true;
         } else {
             fileDoc.fmtime = ascdate;
+#ifdef EXT4_BIRTH_TIME
+            fileDoc.birtime = brdate;
+#endif
             fileDoc.meta[Rcl::Doc::keyfn] = fileDoc.meta[Rcl::Doc::keyctfn] = utf8fn;
             fileDoc.haschildren = true;
             fileDoc.mimetype = mimetype;

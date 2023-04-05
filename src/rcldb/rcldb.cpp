@@ -66,6 +66,7 @@ using namespace std;
 #include "idxstatus.h"
 #include "rcldoc.h"
 #include "stoplist.h"
+#include "daterange.h"
 
 #ifndef XAPIAN_AT_LEAST
 // Added in Xapian 1.4.2. Define it here for older versions
@@ -91,9 +92,6 @@ namespace Rcl {
 // to ever change.
 static const string fileext_prefix = "XE";
 const string mimetype_prefix = "T";
-static const string xapday_prefix = "D";
-static const string xapmonth_prefix = "M";
-static const string xapyear_prefix = "Y";
 const string pathelt_prefix = "XP";
 static const string udi_prefix("Q");
 static const string parent_prefix("F");
@@ -1766,6 +1764,27 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         buf[4] = '\0';
         newdocument.add_boolean_term(wrap_prefix(xapyear_prefix) + string(buf)); 
 
+#ifdef EXT4_BIRTH_TIME
+         // Fields used for selecting by birtime. Note that this only
+        // works for years AD 0-9999 (no crash elsewhere, but things
+        // won't work).
+        time_t birtime = atoll(doc.birtime.c_str());
+        struct tm tmbr;
+        localtime_r(&birtime, &tmbr);
+        char brbuf[50]; // It's actually 9, but use 50 to suppress warnings.
+        snprintf(brbuf, 50, "%04d%02d%02d",
+                 tmbr.tm_year+1900, tmbr.tm_mon + 1, tmbr.tm_mday);
+            
+        // Date (YYYYMMDD)
+        newdocument.add_boolean_term(wrap_prefix(xapbriday_prefix) + string(brbuf)); 
+        // Month (YYYYMM)
+        brbuf[6] = '\0';
+        newdocument.add_boolean_term(wrap_prefix(xapbrimonth_prefix) + string(brbuf));
+        // Year (YYYY)
+        brbuf[4] = '\0';
+        newdocument.add_boolean_term(wrap_prefix(xapbriyear_prefix) + string(brbuf)); 
+#endif
+
 
         //////////////////////////////////////////////////////////////////
         // Document data record. omindex has the following nl separated fields:
@@ -1788,6 +1807,10 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         // We left-zero-pad the times so that they are lexico-sortable
         leftzeropad(doc.fmtime, 11);
         RECORD_APPEND(record, Doc::keyfmt, doc.fmtime);
+#ifdef EXT4_BIRTH_TIME
+         leftzeropad(doc.birtime, 11);
+        RECORD_APPEND(record, Doc::keybrt, doc.birtime);
+#endif
         if (!doc.dmtime.empty()) {
             leftzeropad(doc.dmtime, 11);
             RECORD_APPEND(record, Doc::keydmt, doc.dmtime);

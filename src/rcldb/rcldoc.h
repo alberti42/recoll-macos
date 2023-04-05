@@ -69,6 +69,10 @@ public:
     // Filter::metaData["modificationdate"]
     std::string dmtime;
 
+    //File creation time as decimal ascii unix time
+    // Set by FsIndexer::processone
+    std::string birtime;
+
     // Charset we transcoded the 'text' field from (in case we want back)
     // Possibly set by handler
     std::string origcharset;  
@@ -144,6 +148,7 @@ public:
         mimetype.erase();
         fmtime.erase();
         dmtime.erase();
+        birtime.erase();
         origcharset.erase();
         meta.clear();
         syntabs = false;
@@ -238,6 +243,7 @@ public:
     static const std::string keytp;  // mime type
     static const std::string keyfmt; // file mtime
     static const std::string keydmt; // document mtime
+    static const std::string keybrt; // file birthtime
     static const std::string keymt;  // mtime dmtime if set else fmtime
     static const std::string keyoc;  // original charset
     static const std::string keypcs; // document outer container size

@@ -228,6 +228,44 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
         }
     }
 
+    //handle birtime
+    if (m_haveBrDates) {
+        // If one of the extremities is unset, compute db extremas
+        if (m_brdates.y1 == 0 || m_brdates.y2 == 0) {
+            int minyear = 1970, maxyear = 2100;
+            if (!db.maxYearSpan(&minyear, &maxyear)) {
+                LOGERR("Can't retrieve index min/max dates\n");
+                //whatever, go on.
+            }
+
+            if (m_brdates.y1 == 0) {
+                m_brdates.y1 = minyear;
+                m_brdates.m1 = 1;
+                m_brdates.d1 = 1;
+            }
+            if (m_brdates.y2 == 0) {
+                m_brdates.y2 = maxyear;
+                m_brdates.m2 = 12;
+                m_brdates.d2 = 31;
+            }
+        }
+        LOGDEB("Db::toNativeQuery: birtime interval: " << m_brdates.y1 <<
+               "-" << m_brdates.m1 << "-" << m_brdates.d1 << "/" <<
+               m_brdates.y2 << "-" << m_brdates.m2 << "-" << m_brdates.d2 << "\n");
+        Xapian::Query dq = brdate_range_filter(m_brdates.y1, m_brdates.m1, m_brdates.d1,
+                                             m_brdates.y2, m_brdates.m2, m_brdates.d2);
+        if (dq.empty()) {
+            LOGINFO("Db::toNativeQuery: birtime filter is empty\n");
+        }
+        // If no probabilistic query is provided then promote the daterange
+        // filter to be THE query instead of filtering an empty query.
+        if (xq.empty()) {
+            LOGINFO("Db::toNativeQuery: proba query is empty\n");
+            xq = dq;
+        } else {
+            xq = Xapian::Query(Xapian::Query::OP_FILTER, xq, dq);
+        }
+    }
 
     if (m_minSize != -1 || m_maxSize != -1) {
         Xapian::Query sq;
