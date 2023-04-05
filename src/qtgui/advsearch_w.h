@@ -53,6 +53,7 @@ public slots:
     virtual void addAFiltypPB_clicked();
     virtual void guiListsToIgnTypes();
     virtual void filterDatesCB_toggled(bool);
+    virtual void filterBirthDatesCB_toggled(bool);
     virtual void filterSizesCB_toggled(bool);
     virtual void restrictFtCB_toggled(bool);
     virtual void restrictCtCB_toggled(bool);

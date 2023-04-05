@@ -87,6 +87,25 @@ void AdvSearch::init()
     connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
             this, SLOT(onNewShortcuts()));
 
+#ifdef EXT4_BIRTH_TIME
+    filterBirthDatesCB->show();
+    minBirthDateDTE->show();
+    maxBirthDateDTE->show();
+    label_birth_from->show();
+    label_birth_to->show();
+    line_birth->show();
+    connect(filterBirthDatesCB, SIGNAL(toggled(bool)),
+            this, SLOT(filterBirthDatesCB_toggled(bool)));
+#else
+    filterBirthDatesCB->hide();
+    minBirthDateDTE->hide();
+    maxBirthDateDTE->hide();
+    label_birth_from->hide();
+    label_birth_to->hide();
+    line_birth->hide();
+#endif
+
+
     conjunctCMB->insertItem(1, tr("All clauses"));
     conjunctCMB->insertItem(2, tr("Any clause"));
 
@@ -119,6 +138,17 @@ void AdvSearch::init()
         maxDateDTE->setDate(QDate(maxyear, 12, 31));
     }
 
+#ifdef EXT4_BIRTH_TIME 
+    int birthminyear, birthmaxyear;
+        if (rcldb) {
+        rcldb->maxYearSpan(&birthminyear, &birthmaxyear);
+        minBirthDateDTE->setDisplayFormat("yyyy-MM-dd");
+        maxBirthDateDTE->setDisplayFormat("yyyy-MM-dd");
+        minBirthDateDTE->setDate(QDate(birthminyear, 1, 1));
+        maxBirthDateDTE->setDate(QDate(birthmaxyear, 12, 31));
+    }
+#endif
+
     // Initialize lists of accepted and ignored mime types from config
     // and settings
     m_ignTypes = prefs.asearchIgnFilTyps;
@@ -139,6 +169,12 @@ void AdvSearch::init()
     bool calpop = 0;
     minDateDTE->setCalendarPopup(calpop);
     maxDateDTE->setCalendarPopup(calpop);
+
+#ifdef EXT4_BIRTH_TIME
+    bool birthcalpop = 0;
+    minBirthDateDTE->setCalendarPopup(birthcalpop);
+    maxBirthDateDTE->setCalendarPopup(birthcalpop);
+#endif
 
     // Translations for known categories
     cat_translations[QString::fromUtf8("texts")] = tr("text");
@@ -302,6 +338,12 @@ void AdvSearch::filterDatesCB_toggled(bool on)
     maxDateDTE->setEnabled(on);
 }
 
+void AdvSearch::filterBirthDatesCB_toggled(bool on)
+{
+    minBirthDateDTE->setEnabled(on);
+    maxBirthDateDTE->setEnabled(on);
+}
+
 void AdvSearch::restrictCtCB_toggled(bool on)
 {
     m_ignByCats = on;
@@ -455,6 +497,22 @@ void AdvSearch::runSearch()
         di.d2 = maxdate.day();
         sdata->setDateSpan(&di);
     }
+
+#ifdef EXT4_BIRTH_TIME
+    if (filterBirthDatesCB->isChecked()) {
+        QDate mindate = minBirthDateDTE->date();
+        QDate maxdate = maxBirthDateDTE->date();
+        DateInterval di;
+        di.y1 = mindate.year();
+        di.m1 = mindate.month();
+        di.d1 = mindate.day();
+        di.y2 = maxdate.year();
+        di.m2 = maxdate.month();
+        di.d2 = maxdate.day();
+        sdata->setBrDateSpan(&di);
+    }
+#endif
+
     if (filterSizesCB->isChecked()) {
         size_t size = stringToSize(minSizeLE->text());
         sdata->setMinSize(size);
@@ -577,7 +635,21 @@ void AdvSearch::fromSearch(std::shared_ptr<SearchData> sdata)
         minDateDTE->setDate(date);
         maxDateDTE->setDate(date);
     }
-
+#ifdef EXT4_BIRTH_TIME
+        if (sdata->m_haveBrDates) {
+        filterBirthDatesCB->setChecked(1);
+        DateInterval &di(sdata->m_brdates);
+        QDate mindate(di.y1, di.m1, di.d1);
+        QDate maxdate(di.y2, di.m2, di.d2);
+        minBirthDateDTE->setDate(mindate);
+        maxBirthDateDTE->setDate(maxdate);
+    } else {
+        filterBirthDatesCB->setChecked(0);
+        QDate date;
+        minBirthDateDTE->setDate(date);
+        maxBirthDateDTE->setDate(date);
+    }
+#endif
     if (sdata->m_maxSize != -1 || sdata->m_minSize != -1) {
         filterSizesCB->setChecked(1);
         QString sz;

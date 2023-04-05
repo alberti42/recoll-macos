@@ -20,8 +20,8 @@
    <string>Recoll</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="SSearch" name="sSearch" native="true">
@@ -86,6 +86,34 @@
            </layout>
           </item>
           <item>
+           <widget class="QCheckBox" name="birthDateFilterCB">
+            <property name="text">
+             <string>Filter birth dates</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="hLayoutDatesFilter_2">
+            <item>
+             <widget class="QDateEdit" name="minBirthDateFilterDTEDT">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDateEdit" name="maxBirthDateFilterDTEDT">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <widget class="QTreeView" name="idxTreeView">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -121,7 +149,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>32</height>
     </rect>
    </property>
    <addaction name="separator"/>

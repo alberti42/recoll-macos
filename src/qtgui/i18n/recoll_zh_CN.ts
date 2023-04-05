@@ -214,6 +214,10 @@
         <translation>过滤日期</translation>
     </message>
     <message>
+        <source>Filter birth dates</source>
+        <translation>过滤创建日期</translation>
+    </message>    
+    <message>
         <source>Find</source>
         <translation>查找</translation>
     </message>
@@ -2322,6 +2326,10 @@ Please check the desktop file</source>
         <source>Filter dates</source>
         <translation type="unfinished">过滤日期</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished">过滤创建日期</translation>
+    </message>    
     <message>
         <source>Assisted complex search</source>
         <translation type="unfinished"></translation>

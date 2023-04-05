@@ -1292,6 +1292,40 @@ void RclMain::setFiltSpec()
             m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
         }
     }
+#ifdef EXT4_BIRTH_TIME
+        if (birthDateFilterCB->isEnabled()) {
+        // The CB is only disabled when we are not in query language mode
+        auto treedirs = idxTreeGetDirs();
+        if (!treedirs.empty()) {
+            bool first{true};
+            const std::string prefix{"dir:"};
+            std::string clause;
+            for (const auto& dir : treedirs) {
+                if (first) {
+                    first = false;
+                } else {
+                    clause += " OR ";
+                }           
+#ifdef _WIN32
+                clause += prefix + makeCString(path_slashdrive(dir));
+#else
+                clause += prefix + makeCString(dir);
+#endif
+
+            }
+            LOGDEB0("Sidefilter dir clause: [" << clause << "]\n");
+            m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
+        }
+
+        if (birthDateFilterCB->isChecked()) {
+            QString mindate = minBirthDateFilterDTEDT->date().toString("yyyy-MM-dd");
+            QString maxdate = maxBirthDateFilterDTEDT->date().toString("yyyy-MM-dd");
+            std::string clause = std::string("birtime:") + qs2utf8s(mindate) + "/" + qs2utf8s(maxdate);
+            LOGDEB1("RclMain::setFiltSpec: birth date clause " << clause << "\n");
+            m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, clause);
+        }
+    }
+#endif
 
     m_source->setFiltSpec(m_filtspec);
 }
