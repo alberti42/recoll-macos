@@ -916,7 +916,7 @@ string path_canon(const string& is, const string* cwd)
     if (uncvolume.size()) {
         ret = uncvolume + ret;
     } else if (path_strlookslikedrive(ret)) {
-         // Raw drive needs a final /
+        // Raw drive needs a final /
         path_catslash(ret);
     }
 #endif
