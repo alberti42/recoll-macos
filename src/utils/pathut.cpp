@@ -473,6 +473,24 @@ std::string path_shortpath(const std::string& path)
     return shortpath;
 }
 
+bool path_isunc(const std::string& s, std::string& uncvolume)
+{
+    if (s.size() < 5 || s[0] != '/' || s[1] != '/') {
+        return false;
+    }
+    auto slash2 = s.find('/', 2);
+    if (slash2 == std::string::npos || slash2 == s.size() - 1) {
+        return false;
+    }
+    auto slash3 = s.find('/', slash2 + 1);
+    if (slash3 == std::string::npos) {
+        uncvolume = s;
+    } else {
+        uncvolume = s.substr(0, slash3);
+    }
+    return true;
+}
+
 #endif /* _WIN32 */
 
 bool fsocc(const string& path, int *pc, long long *avmbs)
@@ -845,9 +863,16 @@ string path_canon(const string& is, const string* cwd)
     string s = is;
 #ifdef _WIN32
     path_slashize(s);
-    // fix possible path from file: absolute url
-    if (s.size() && s[0] == '/' && path_hasdrive(s.substr(1))) {
-        s = s.substr(1);
+    std::string uncvolume;
+    if (path_isunc(s, uncvolume)) {
+        s = s.substr(uncvolume.size());
+        if (s.empty())
+            s = "/";
+    } else {
+        // fix possible path from file: absolute url
+        if (s.size() && s[0] == '/' && path_hasdrive(s.substr(1))) {
+            s = s.substr(1);
+        }
     }
 #endif
 
@@ -888,8 +913,10 @@ string path_canon(const string& is, const string* cwd)
     }
 
 #ifdef _WIN32
-    // Raw drive needs a final /
-    if (path_strlookslikedrive(ret)) {
+    if (uncvolume.size()) {
+        ret = uncvolume + ret;
+    } else if (path_strlookslikedrive(ret)) {
+         // Raw drive needs a final /
         path_catslash(ret);
     }
 #endif
