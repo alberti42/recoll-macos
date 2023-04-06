@@ -524,7 +524,7 @@ bool fsocc(const string& path, int *pc, long long *avmbs)
 }
 
 
-string path_PATHsep()
+const string& path_PATHsep()
 {
     static const string w(";");
     static const string u(":");

@@ -161,7 +161,7 @@ struct PathStat {
 extern int path_fileprops(const std::string path, struct PathStat *stp, bool follow = true);
 
 /// Return separator for PATH environment variable
-extern std::string path_PATHsep();
+extern const std::string& path_PATHsep();
 
 /// Directory reading interface. UTF-8 on Windows.
 class PathDirContents {
