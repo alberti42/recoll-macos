@@ -259,8 +259,8 @@ WebcacheEdit::WebcacheEdit(RclMain *parent)
 
     header = tableview->verticalHeader();
     if (header) {
-        header->setDefaultSectionSize(QApplication::fontMetrics().height() + 
-                                      ROWHEIGHTPAD);
+        QFontMetricsF fm(QApplication::font(header));
+        header->setDefaultSectionSize(fm.height() + ROWHEIGHTPAD);
     }
 
     int width = settings.value(wwnm, 0).toInt();
