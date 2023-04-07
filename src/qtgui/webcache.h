@@ -30,7 +30,7 @@ class WebcacheModelInternal;
 class QCloseEvent;
 
 class WebcacheModel : public QAbstractTableModel {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     WebcacheModel(QObject *parent = 0);
@@ -60,7 +60,7 @@ private:
 class RclMain;
 
 class WebcacheEdit : public QDialog, public Ui::Webcache {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     WebcacheEdit(RclMain *parent);

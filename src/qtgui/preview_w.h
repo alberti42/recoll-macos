@@ -63,7 +63,7 @@ class QEventLoop;
 class QProgressDialog;
 
 class PreviewTextEdit : public PREVIEW_PARENTCLASS {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     PreviewTextEdit(QWidget* parent, const char* name, Preview *pv);
     void moveToAnchor(const QString& name);
@@ -117,7 +117,7 @@ private:
 class QShortcut;
 
 class Preview : public QDialog, public Ui::Preview {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
 

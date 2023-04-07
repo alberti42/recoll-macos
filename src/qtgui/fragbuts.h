@@ -33,7 +33,7 @@ class QAbstractButton;
  */
 class FragButs : public QWidget
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
 

@@ -23,7 +23,7 @@ class QPushButton;
 class ExecCmd;
 
 class WinSchedToolW : public QDialog, public Ui::WinSchedToolW {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     WinSchedToolW(QWidget * parent = 0) 
         : QDialog(parent) {

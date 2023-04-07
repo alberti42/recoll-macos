@@ -55,7 +55,7 @@ private:
 
 /* A thread to convert to rich text (mark search terms) */
 class ToRichThread : public QThread {
-    Q_OBJECT;
+    Q_OBJECT
     
 public:
     ToRichThread(const std::string &i, const HighlightData& hd,
