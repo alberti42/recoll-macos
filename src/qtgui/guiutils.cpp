@@ -16,9 +16,8 @@
  */
 #include "autoconfig.h"
 
-#include <math.h>
-
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <sstream>
 
@@ -456,7 +455,7 @@ std::string PrefsPack::scaleFonts(const std::string& style, float multiplier)
         if (regex_match(line, m, fntsz_regex) && m.size() == 4) {
             //std::cerr << "Got match (sz " << m.size() << ") for " << line << "\n";
             int fs = atoi(m[2].str().c_str());
-            int nfs = round(fs * multiplier);
+            int nfs = std::round(fs * multiplier);
             char buf[20];
             snprintf(buf, 20, "%d", nfs);
             lines[ln] = m[1].str() + buf + m[3].str();
@@ -482,7 +481,7 @@ std::string PrefsPack::htmlHeaderContents()
     if (!prefs.reslistfontfamily.isEmpty()) {
         oss << "font-family: \"" << qs2utf8s(prefs.reslistfontfamily) << "\";\n";
     }
-    oss << "font-size: " <<  round(prefs.reslistfontsize * 1.1) << "px;\n";
+    oss << "font-size: " <<  std::round(prefs.reslistfontsize * 1.1) << "px;\n";
     oss << "}\n</style>\n";
     oss << qs2utf8s(prefs.darkreslistheadertext) << qs2utf8s(prefs.reslistheadertext);
 

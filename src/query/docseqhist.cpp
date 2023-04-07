@@ -18,11 +18,10 @@
 
 #include "docseqhist.h"
 
-#include <stdio.h>
-#include <math.h>
 #include <time.h>
 
 #include <cmath>
+#include <cstdlib>
 
 #include "rcldb.h"
 #include "fileudi.h"
@@ -33,7 +32,7 @@
 using std::vector;
 using std::string;
 
-// Encode document history entry: 
+// Encode document history entry:
 // U + Unix time + base64 of udi
 // The U distinguishes udi-based entries from older fn+ipath ones
 bool RclDHistoryEntry::encode(string& value)
@@ -59,7 +58,7 @@ bool RclDHistoryEntry::decode(const string &value)
     string fn, ipath;
     switch (vall.size()) {
     case 2:
-        // Old fn+ipath, null ipath case 
+        // Old fn+ipath, null ipath case
         unixtime = atoll((*it++).c_str());
         base64_decode(*it++, fn);
         break;
@@ -83,7 +82,7 @@ bool RclDHistoryEntry::decode(const string &value)
         base64_decode(*it++, udi);
         base64_decode(*it++, dbdir);
         break;
-    default: 
+    default:
         return false;
     }
 
@@ -123,7 +122,7 @@ vector<RclDHistoryEntry> getDocHistory(RclDynConf* dncf)
     return dncf->getEntries<std::vector, RclDHistoryEntry>(docHistSubKey);
 }
 
-bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh) 
+bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
 {
     // Retrieve history list
     if (!m_hist)
@@ -138,7 +137,7 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
     RclDHistoryEntry& hentry = m_history[m_history.size() - 1 - num];
 
     if (sh) {
-        if (m_prevtime < 0 || abs(m_prevtime - hentry.unixtime) > 86400) {
+        if (m_prevtime < 0 || std::abs(m_prevtime - hentry.unixtime) > 86400) {
             m_prevtime = hentry.unixtime;
             time_t t = (time_t)(hentry.unixtime);
             *sh = string(ctime(&t));
@@ -163,9 +162,8 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
 }
 
 int DocSequenceHistory::getResCnt()
-{    
+{
     if (m_history.empty())
         m_history = getDocHistory(m_hist);
     return int(m_history.size());
 }
-

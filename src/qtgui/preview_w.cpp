@@ -16,8 +16,7 @@
  */
 #include "autoconfig.h"
 
-#include <math.h>
-
+#include <cmath>
 #include <list>
 #include <utility>
 
@@ -134,7 +133,7 @@ void Preview::init()
     }
     if (prefs.reslistfontsize || prefs.wholeuiscale) {
         int fs = prefs.reslistfontsize ? prefs.reslistfontsize : m_font.pixelSize();
-        m_font.setPixelSize(round(fs * prefs.wholeuiscale));
+        m_font.setPixelSize(std::round(fs * prefs.wholeuiscale));
     }
 
     (void)new HelpClient(this);

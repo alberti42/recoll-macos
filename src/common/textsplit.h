@@ -17,8 +17,7 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
 
-#include <math.h>
-
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -139,7 +138,7 @@ public:
             Values v;
             v.count = count;
             v.avglen = double(totlen) / double(count);
-            v.sigma = sqrt(sigma_acc / count);
+            v.sigma = std::sqrt(sigma_acc / count);
             return v;
         }
     private:

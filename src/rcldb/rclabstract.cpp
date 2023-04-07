@@ -16,8 +16,7 @@
  */
 #include "autoconfig.h"
 
-#include <math.h>
-
+#include <cmath>
 #include <map>
 #include <unordered_map>
 #include <deque>
@@ -539,7 +538,7 @@ int Query::Native::abstractFromIndex(
         } else {
             // We give more slots to the better term groups
             q = mit->first / totalweight;
-            maxgrpoccs = int(ceil(maxtotaloccs * q));
+            maxgrpoccs = int(std::ceil(maxtotaloccs * q));
         }
         unsigned int grpoccs = 0;
 

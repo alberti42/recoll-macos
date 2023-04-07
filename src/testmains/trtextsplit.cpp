@@ -27,7 +27,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
-#include <math.h>
 
 #include <iostream>
 

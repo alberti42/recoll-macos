@@ -59,7 +59,6 @@
 #include <errno.h>
 #include <fstream>
 #include <iostream>
-#include <math.h>
 #include <regex>
 #include <set>
 #include <sstream>
