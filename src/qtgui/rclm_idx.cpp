@@ -258,7 +258,7 @@ bool RclMain::checkIdxPaths()
                "Click Ok to start indexing anyway "
                "(absent data will not be purged from the index):\n") +
             path2qs(badpaths),
-            QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
+            QMessageBox::Ok | QMessageBox::Cancel);
         if (rep == QMessageBox::Cancel)
             return false;
     }
@@ -384,7 +384,7 @@ void RclMain::rebuildIndex()
         if (path_exists(theconfig->getDbDir())) {
             rep = QMessageBox::warning(
                 0, tr("Erasing index"), tr("Reset the index and start from scratch ?"),
-                QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
+                QMessageBox::Ok | QMessageBox::Cancel);
         }
         if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
