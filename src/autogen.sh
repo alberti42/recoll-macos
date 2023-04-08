@@ -14,9 +14,16 @@ else
   exit 1
 fi
 
-$LIBTOOLIZE --copy
+# Back up ylwrap, which will be clobbered by autotools
+if [ -f ylwrap ]; then
+    cp -fp ylwrap .ylwrap.bak
+fi
 
+$LIBTOOLIZE --copy
 automake --add-missing --force-missing --copy
 autoconf
-# Our ylwrap gets clobbered by the above.
-git checkout ylwrap
+
+if [ -f .ylwrap.bak ]; then
+  mv -f .ylwrap.bak ylwrap
+fi
+
