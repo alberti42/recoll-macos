@@ -390,9 +390,6 @@ kde/kioslave/kio_recoll/htmlif.cpp \
 kde/kioslave/kio_recoll/kio_recoll.cpp \
 kde/kioslave/kio_recoll/kio_recoll.h \
 kde/kioslave/kio_recoll/recoll.json \
-kde/kioslave/kio_recoll/recoll.protocol \
-kde/kioslave/kio_recoll/recollf.protocol \
-kde/kioslave/kio_recoll/recollnolist.protocol \
 \
 kde/kioslave/kio_recoll-kde4/00README.txt \
 kde/kioslave/kio_recoll-kde4/CMakeLists.txt \
