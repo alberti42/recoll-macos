@@ -370,8 +370,10 @@ int main(int argc, char **argv)
     // Translations for Recoll
     string translatdir = path_cat(theconfig->getDatadir(), "translations");
     QTranslator translator(0);
-    translator.load( QString("recoll_") + slang, translatdir.c_str() );
-    app.installTranslator( &translator );
+    auto loaded = translator.load(QString("recoll_") + slang,
+                                  translatdir.c_str());
+    if (loaded)
+        app.installTranslator(&translator);
 
     //    fprintf(stderr, "Translations installed\n");
 
