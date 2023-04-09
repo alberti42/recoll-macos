@@ -221,6 +221,16 @@ if test X$idxthreadsEnabled = Xyes ; then
   AC_DEFINE(IDX_THREADS, 1, [Use multiple threads for indexing])
 fi
 
+AC_ARG_ENABLE(publiclib, AS_HELP_STRING([--enable-publiclib],
+[Install the recoll library in $libdir so that it will be usable by external builds.]),
+        publiclibEnabled=$enableval, publiclibEnabled=no)
+AM_CONDITIONAL(PUBLIC_LIB, [test X$publiclibEnabled = Xyes])
+if test X$publiclibEnabled = Xyes; then
+   RECOLL_PUBLIC_LIB=1
+else
+   RECOLL_PUBLIC_LIB=0
+fi
+
 # Enable CamelCase word splitting. This is optional because it causes 
 # problems with phrases: with camelcase enabled, "MySQL manual"
 # will be matched by "MySQL manual" and "my sql manual" but not 
@@ -471,6 +481,7 @@ fi
 #      "'$X_LIBS'" X_LIBX11 "'$X_LIBX11'" X_EXTRA_LIBS "'$X_EXTRA_LIBS'"
 
 # Check if anything needs Xapian. We also need to build the shared lib if this is the case.
+# Useful if building rclgrep alone for example.
 xapian_needed=yes
 if test X$buildtestmains = Xno -a X$pythonEnabled = Xno -a X$enableINDEXER = Xno \
    -a X$enableXADUMP = Xno -a X$enableQT = Xno -a X$enableRECOLLQ = Xno ; then
@@ -497,6 +508,7 @@ RCLLIBVERSION=$RCLVERSION
 
 AC_SUBST(NO_UNDEF_LINK_FLAG)
 AC_SUBST(RECOLL_DATADIR)
+AC_SUBST(RECOLL_PUBLIC_LIB)
 AC_SUBST(DEF_EXT4_BIRTH_TIME)
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)

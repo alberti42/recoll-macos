@@ -14,26 +14,41 @@ set(CMAKE_CXX_FLAGS "-fPIC ${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
+if (NOT RECOLL_PUBLIC_LIB)
 # Execute recoll configuration to create autoconfig.h and version.h and
 # generate a PIC lib
 execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --disable-python-chm --disable-python-module --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
 		WORKING_DIRECTORY ${rcltop}
 )
+add_custom_target(rcllib
+                 COMMAND make PicStatic
+                 WORKING_DIRECTORY ${rcltop}
+)
 
 link_directories(${rcltop}/.libs ${CMAKE_INSTALL_PREFIX}/lib)
+endif()
 
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
-  ${rcltop}/aspell 
-  ${rcltop}/bincimapmime
   ${rcltop}/common 
-  ${rcltop}/index 
   ${rcltop}/internfile 
   ${rcltop}/query 
   ${rcltop}/rcldb 
-  ${rcltop}/unac
   ${rcltop}/utils 
-  ${rcltop}/qtgui
 )
+
+if (RECOLL_PUBLIC_LIB)
+  include_directories (
+    ${CMAKE_INSTALL_PREFIX}/include/recoll
+  )
+  # Check if running inside a build tree, then use the not yet installed lib
+  if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
+    set(CMAKE_BUILD_RPATH ${CMAKE_BINARY_DIR}/../../.libs)
+    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../.libs)
+  elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
+    set(CMAKE_BUILD_RPATH ${CMAKE_BINARY_DIR}/../../../.libs)
+    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../.libs)
+  endif()
+endif()
 
 set(kio_recoll_SRCS  kio_recoll.cpp htmlif.cpp dirif.cpp ${rcltop}/qtgui/guiutils.cpp)
 
@@ -46,19 +61,11 @@ IF(PTHREAD_IN_LIBPTHREAD)
 	LIST(APPEND EXTRA_LIBS pthread)
 ENDIF(PTHREAD_IN_LIBPTHREAD)
 
-# Had the idea to add e.g. /usr/lib/recoll to the rpath so that the dyn lib 
-# will be found at run time. But this does not seem to work with debian 
-# which strips RPATH by default (I think there is a way for libs in app-specific
-# paths but I did not find it). Link with the .a instead.
-#SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/recoll")
-
 kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
 
-add_custom_target(rcllib
-                 COMMAND make PicStatic
-                 WORKING_DIRECTORY ${rcltop}
-)
-add_dependencies(kio_recoll rcllib)
+if (NOT RECOLL_PUBLIC_LIB)
+  add_dependencies(kio_recoll rcllib)
+endif()
 
 target_link_libraries(kio_recoll recoll xapian xslt xml2 z ${EXTRA_LIBS} ${KDE4_KIO_LIBS} X11)
 

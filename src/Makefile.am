@@ -64,10 +64,17 @@ else
     LIBTHREADS= $(LIBSYSTHREADS)
 endif
 
-librcldir = $(libdir)/recoll
-librcl_LTLIBRARIES =
+if PUBLIC_LIB
+  lib_LTLIBRARIES =
 if MAKE_RECOLL_LIB
-librcl_LTLIBRARIES += librecoll.la
+    lib_LTLIBRARIES += librecoll.la
+endif
+else
+  librcldir = $(libdir)/recoll
+  librcl_LTLIBRARIES =
+if MAKE_RECOLL_LIB
+    librcl_LTLIBRARIES += librecoll.la
+endif
 endif
 
 librecoll_la_SOURCES = \
@@ -294,31 +301,55 @@ xaposix/safeunistd.h
 BUILT_SOURCES = query/wasaparse.cpp
 AM_YFLAGS = -d
 
-# We use -release: the lib is only shared
-# between recoll programs from the same release. So the lib is just named
-# after the recoll version (e.g librecoll-1.27.1.so)
-# -version-info $(VERSION_INFO) would handle ABI compat issues, we don't
-# need it
+# We use -release: the lib is only shared between recoll programs from the same release.
+# So the lib is just named after the recoll version (e.g librecoll-1.27.1.so)
+# -version-info $(VERSION_INFO) would handle ABI compat issues, we don't need it
 librecoll_la_LDFLAGS = -release $(VERSION) -no-undefined @NO_UNDEF_LINK_FLAG@
 
 librecoll_la_LIBADD = $(XSLT_LIBS) $(XAPIAN_LIBS) $(LIBICONV) $(X_LIBX11) $(LIBTHREADS)
 
-# There is probably a better way to do this. The KIO needs to be linked
-# with librecoll, but librecoll is installed into a non-standard place
-# (/usr/lib/recoll). Debian packaging has something against setting an
-# rpath on the kio (cause it's not the same package as the lib), so I don't
-# know how to link it dynamically. The other thing I don't know is how to
-# force automake to build a static lib with the PIC objects. So the
-# following target, which is only used from the KIO build, deletes any .a
-# and .so and rebuilds the .a with the pic objs (the kio build calls
-# configured --disable-static).
-# Of course this is very uncomfortably close to automake/libtool internals
-# and may not work on all systems.
+if PUBLIC_LIB
+incdir = $(includedir)/recoll
+inc_HEADERS = \
+    common/plaintorich.h \
+    common/rclconfig.h \
+    common/rclinit.h \
+    index/idxstatus.h \
+    internfile/Filter.h \
+    internfile/internfile.h \
+    internfile/mimehandler.h \
+    query/docseq.h \
+    query/docseqdb.h \
+    query/qresultstore.h \
+    query/reslistpager.h \
+    query/wasatorcl.h \
+    rcldb/rcldb.h \
+    rcldb/rcldoc.h \
+    rcldb/rclquery.h \
+    rcldb/searchdata.h  \
+    utils/hldata.h \
+    utils/log.h \
+    utils/pathut.h \
+    utils/rclutil.h \
+    utils/readfile.h \
+    utils/smallut.h
+else
+  # There is probably a better way to do this. The KIO needs to be linked
+  # with librecoll, but librecoll is installed into a non-standard place
+  # (/usr/lib/recoll). Debian packaging has something against setting an
+  # rpath on the kio (cause it's not the same package as the lib), so I don't
+  # know how to link it dynamically. The other thing I don't know is how to
+  # force automake to build a static lib with the PIC objects. So the
+  # following target, which is only used from the KIO build, deletes any .a
+  # and .so and rebuilds the .a with the pic objs (the kio build calls
+  # configured --disable-static).
+  # Of course this is very uncomfortably close to automake/libtool internals
+  # and may not work on all systems.
 PicStatic: $(librecoll_la_OBJECTS)
 	rm -f .libs/librecoll.a
 	rm -f .libs/librecoll.so
-	$(LIBTOOL) --tag=LD --mode=link gcc -g -O -o librecoll.la \
-		$(librecoll_la_OBJECTS)
+	$(LIBTOOL) --tag=LD --mode=link gcc -g -O -o librecoll.la $(librecoll_la_OBJECTS)
+endif
 
 bin_PROGRAMS =
 if MAKEINDEXER

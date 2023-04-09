@@ -28,6 +28,8 @@ add_definitions(
     -DHAVE_CONFIG_H
 )
 
+
+if (NOT RECOLL_PUBLIC_LIB)
 # Execute recoll configuration to create autoconfig.h and version.h and
 # generate a PIC lib
 execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --disable-python-chm --disable-python-module --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
@@ -38,7 +40,7 @@ add_custom_target(rcllib
     WORKING_DIRECTORY ${rcltop}
 )
 link_directories(${rcltop}/.libs ${CMAKE_INSTALL_PREFIX}/lib)
-
+endif()
 
 include_directories (
   ${CMAKE_SOURCE_DIR}
@@ -49,9 +51,25 @@ include_directories (
   ${rcltop}/utils 
 )
 
+if (RECOLL_PUBLIC_LIB)
+  include_directories (
+    ${CMAKE_INSTALL_PREFIX}/include/recoll
+  )
+
+  # Check if running inside a build tree, then use the not yet installed lib
+  if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
+    set(CMAKE_BUILD_RPATH ${CMAKE_BINARY_DIR}/../../.libs)
+    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../.libs)
+  elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
+    set(CMAKE_BUILD_RPATH ${CMAKE_BINARY_DIR}/../../../.libs)
+    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../.libs)
+  endif()
+endif()
 
 kcoreaddons_add_plugin(runner_recoll SOURCES recollrunner.cpp INSTALL_NAMESPACE "kf5/krunner")
+if (NOT RECOLL_PUBLIC_LIB)
 add_dependencies(runner_recoll rcllib)
+endif()
 set_property(TARGET runner_recoll PROPERTY CXX_STANDARD 14)
 
 target_link_libraries(runner_recoll
