@@ -7,7 +7,7 @@ Jean-Francois Dockes <jfd@recoll.org>
 
 == Contributions:
 
-*For code using the Linux statx call and file Birth Date for indexing and searching (commits
+* Using the Linux statx call and file Birth Date for indexing and searching (commits
 3e20e093, 6a8810b6, 0a08689f, 8f46009e, 840ae091) :
 ** Zhijun Li <lizj@dingdao.com>
 ** Jianye Shi <shijy@dingdao.com>
