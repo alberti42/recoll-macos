@@ -20,7 +20,6 @@
 #include <cstring>
 #include <exception>
 #include "safeunistd.h"
-#include <math.h>
 #include <time.h>
 
 #include <string>

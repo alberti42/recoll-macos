@@ -26,7 +26,7 @@
 #include <QStandardItemModel>
 
 class IdxTreeModel : public QStandardItemModel {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     IdxTreeModel(int depth, const std::vector<std::string>& edbs, QWidget *parent = nullptr)
         : QStandardItemModel(0, 0, (QObject*)parent), m_depth(depth), m_extradbs(edbs) {}

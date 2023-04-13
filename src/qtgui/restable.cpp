@@ -18,12 +18,12 @@
 
 #include "restable.h"
 
-#include <math.h>
 #include <stdlib.h>
 #include <time.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <fstream>
 
@@ -570,7 +570,7 @@ int ResTable::fontsize()
     } else {
         fs = QWidget(this).font().pixelSize();
     }
-    fs = round(fs * prefs.wholeuiscale);
+    fs = std::round(fs * prefs.wholeuiscale);
     return fs;
 }
 

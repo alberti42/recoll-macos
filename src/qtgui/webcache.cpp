@@ -229,7 +229,7 @@ static const int ROWHEIGHTPAD = 2;
 static const char *cwnm = "/Recoll/prefs/webcachecolw";
 static const char *wwnm = "/Recoll/prefs/webcachew";
 static const char *whnm = "/Recoll/prefs/webcacheh";
-static const QKeySequence closeKS(Qt::ControlModifier+Qt::Key_W);
+static const QKeySequence closeKS(Qt::ControlModifier | Qt::Key_W);
 
 WebcacheEdit::WebcacheEdit(RclMain *parent)
     : QDialog(parent), m_recoll(parent), m_modified(false)
@@ -259,8 +259,8 @@ WebcacheEdit::WebcacheEdit(RclMain *parent)
 
     header = tableview->verticalHeader();
     if (header) {
-        header->setDefaultSectionSize(QApplication::fontMetrics().height() + 
-                                      ROWHEIGHTPAD);
+        QFontMetricsF fm(QApplication::font(header));
+        header->setDefaultSectionSize(fm.height() + ROWHEIGHTPAD);
     }
 
     int width = settings.value(wwnm, 0).toInt();

@@ -34,7 +34,6 @@
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
-#include <math.h>
 #include <errno.h>
 #include <sys/types.h>
 #include "safesysstat.h"

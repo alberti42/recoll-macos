@@ -49,7 +49,7 @@ class Doc;
  */
 class ResList : public RESLIST_PARENTCLASS
 {
-    Q_OBJECT;
+    Q_OBJECT
 
     friend class QtGuiResListPager;
 public:

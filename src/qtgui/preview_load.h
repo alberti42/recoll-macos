@@ -32,7 +32,7 @@
  */
 class LoadThread : public QThread {
 
-    Q_OBJECT;
+    Q_OBJECT
 
 public: 
     LoadThread(RclConfig *conf,

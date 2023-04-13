@@ -25,7 +25,7 @@
 #include "ui_spell.h"
 class SpellW : public QWidget, public Ui::SpellBase
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     SpellW(QWidget* parent = 0) 
         : QWidget(parent), m_prevmode(TYPECMB_NONE) {

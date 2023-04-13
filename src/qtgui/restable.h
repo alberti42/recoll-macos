@@ -37,7 +37,7 @@ typedef std::string (FieldGetter)(
 
 class RecollModel : public QAbstractTableModel {
 
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     RecollModel(const QStringList fields, ResTable *tb, QObject *parent = 0);
@@ -94,7 +94,7 @@ class ResTable;
 
 // Modified textBrowser for the detail area
 class ResTableDetailArea : public QTextBrowser {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     ResTableDetailArea(ResTable* parent = 0);
@@ -118,7 +118,7 @@ class QShortcut;
 // shortcuts with different data (e.g. Ctrl+1, Ctrl+2 etc.). Maybe
 // there is another way, but this one works.
 class SCData : public QObject {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     SCData(QObject* parent, std::function<void (int)> cb, int row)
         : QObject(parent), m_cb(cb), m_row(row) {}
@@ -133,7 +133,7 @@ private:
 
 class ResTable : public QWidget, public Ui::ResTable 
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     ResTable(QWidget* parent = 0, QStringList fields = QStringList()) 

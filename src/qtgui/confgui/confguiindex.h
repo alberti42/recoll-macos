@@ -70,7 +70,7 @@ private:
 
 /** A special panel for parameters which may change in subdirectories: */
 class ConfSubPanelW : public QWidget, public confgui::ConfPanelWIF {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     ConfSubPanelW(QWidget *parent, ConfNull **config, RclConfig *rclconf);

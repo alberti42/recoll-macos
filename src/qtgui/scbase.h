@@ -46,7 +46,7 @@
  * in the preferences screen).
  */
 class SCBase : public QObject {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     ~SCBase();
     SCBase(const SCBase&) = delete;

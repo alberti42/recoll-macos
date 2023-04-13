@@ -57,7 +57,7 @@ class IdxTreeModel;
 
 
 class RclMain : public QMainWindow, public Ui::RclMainBase {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     RclMain(QWidget * parent = 0)

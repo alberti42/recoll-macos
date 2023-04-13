@@ -31,7 +31,7 @@ class QAction;
 class QString;
 
 class ActSearchW : public QDialog, public Ui::ActSearchDLG {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     ActSearchW(QWidget* parent = 0) 
         : QDialog(parent) {

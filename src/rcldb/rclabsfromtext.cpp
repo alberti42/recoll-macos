@@ -16,8 +16,6 @@
  */
 #include "autoconfig.h"
 
-#include <math.h>
-
 #include <unordered_map>
 #include <deque>
 #include <algorithm>
