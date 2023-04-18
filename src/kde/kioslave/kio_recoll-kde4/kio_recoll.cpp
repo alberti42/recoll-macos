@@ -93,7 +93,8 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
     } else {
         m_stemlang = "english";
     }
-    m_pager.setParent(this);
+    m_pager = std::unique_ptr<RecollKioPager>(new RecollKioPager(o_rclconfig));
+    m_pager->setParent(this);
     m_initok = true;
     return;
 }
@@ -352,7 +353,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     m_source = std::shared_ptr<DocSequence>(src);
     // Reset pager in all cases. Costs nothing, stays at page -1 initially
     // htmldosearch will fetch the first page if needed.
-    m_pager.setDocSource(m_source);
+    m_pager->setDocSource(m_source);
     return true;
 }
 

@@ -41,12 +41,13 @@ class Db;
 /** Specialize the recoll html pager for the kind of links we use etc. */
 class RecollKioPager : public ResListPager {
 public:
-    RecollKioPager() : m_parent(0) {}
+    RecollKioPager(RclConfig *cnf)
+        : ResListPager(cnf), m_parent(0) {}
     void setParent(RecollProtocol *proto) {m_parent = proto;}
 
     virtual bool append(const string& data);
     virtual bool append(const string& data, int, const Rcl::Doc&)
-    {return append(data);}
+        {return append(data);}
     virtual string detailsLink();
     virtual const string &parFormat();
     virtual string nextUrl();
@@ -65,7 +66,7 @@ public:
     int page;
     bool isDetReq;
     bool sameQuery(const QueryDesc& o) const {
-    return !opt.compare(o.opt) && !query.compare(o.query);
+        return !opt.compare(o.opt) && !query.compare(o.query);
     }
 };
 
@@ -76,26 +77,26 @@ public:
     UrlIngester(RecollProtocol *p, const KUrl& url);
     enum RootEntryType {UIRET_NONE, UIRET_ROOT, UIRET_HELP, UIRET_SEARCH};
     bool isRootEntry(RootEntryType *tp) {
-    if (m_type != UIMT_ROOTENTRY) return false;
-    *tp = m_retType;
-    return true;
+        if (m_type != UIMT_ROOTENTRY) return false;
+        *tp = m_retType;
+        return true;
     }
     bool isQuery(QueryDesc *q) {
-    if (m_type != UIMT_QUERY) return false;
-    *q = m_query;
-    return true;
+        if (m_type != UIMT_QUERY) return false;
+        *q = m_query;
+        return true;
     }
     bool isResult(QueryDesc *q, int *num) {
-    if (m_type != UIMT_QUERYRESULT) return false;
-    *q = m_query;
-    *num = m_resnum;
-    return true;
+        if (m_type != UIMT_QUERYRESULT) return false;
+        *q = m_query;
+        *num = m_resnum;
+        return true;
     }
     bool isPreview(QueryDesc *q, int *num) {
-    if (m_type != UIMT_PREVIEW) return false;
-    *q = m_query;
-    *num = m_resnum;
-    return true;
+        if (m_type != UIMT_PREVIEW) return false;
+        *q = m_query;
+        *num = m_resnum;
+        return true;
     }
     bool endSlashQuery() {return m_slashend;}
     bool alwaysDir() {return m_alwaysdir;}
@@ -108,7 +109,7 @@ private:
     RootEntryType   m_retType;
     int             m_resnum;
     enum MyType {UIMT_NONE, UIMT_ROOTENTRY, UIMT_QUERY, UIMT_QUERYRESULT,
-         UIMT_PREVIEW};
+        UIMT_PREVIEW};
     MyType           m_type;
 };
 
@@ -139,7 +140,7 @@ private:
  * the form of the URL. 
  */
 class RecollProtocol : public KIO::SlaveBase {
- public:
+public:
     RecollProtocol(const QByteArray &pool, const QByteArray &app );
     virtual ~RecollProtocol();
     virtual void mimetype(const KUrl& url);
@@ -156,7 +157,7 @@ class RecollProtocol : public KIO::SlaveBase {
     friend class RecollKioPager;
     friend class UrlIngester;
 
- private:
+private:
     bool maybeOpenDb(string& reason);
     bool URLToQuery(const KUrl &url, QString& q, QString& opt, int *page=0);
     bool doSearch(const QueryDesc& qd);
@@ -182,7 +183,7 @@ class RecollProtocol : public KIO::SlaveBase {
     // much in actual use. One possible workaround for some scenarios
     // (one slave several konqueror windows) would be to have a small
     // cache of recent searches kept open.
-    RecollKioPager m_pager;
+    std::unique_ptr<RecollKioPager> m_pager;
     std::shared_ptr<DocSequence> m_source;
     // Note: page here is not used, current page always comes from m_pager.
     QueryDesc      m_query;
