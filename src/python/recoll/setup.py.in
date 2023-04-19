@@ -39,13 +39,13 @@ include_dirs = [
         os.path.join(top, 'utils'), 
 ]
 if not publiclib:
-    include_dirs.append('/usr/include/recoll')
-    runtime_library_dirs = list()
-else:
     if 'libdir' in os.environ and os.environ['libdir'] != "":
         runtime_library_dirs = [os.path.join(os.environ['libdir'], 'recoll')]
     else:
         runtime_library_dirs = [os.path.join('@prefix@', 'lib', 'recoll')]
+else:
+    include_dirs.append('/usr/include/recoll')
+    runtime_library_dirs = list()
     
 module1 = Extension('_recoll',
                     define_macros = define_macros,
