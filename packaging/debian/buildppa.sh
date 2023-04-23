@@ -5,17 +5,17 @@
 # sudo apt-get install pkg-kde-tools  cdbs
 
 # Active series:
-# 18.04LTS bionic 2023-04
 # 20.04LTS focal  2025-04
 # 22.04LTS jammy  2027-04
-# 2023-01 1.34 does not build on bionic.
-SERIES="bionic focal jammy kinetic"
+# 22.10   kinetic 2023-07
+# 23.04    lunar  2024-01
+SERIES="focal jammy kinetic lunar"
 
 PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.34.6
 GSSPVERS=1.1.1
-PPAVERS=1
+PPAVERS=2
 
 #
 #Y=/y
@@ -49,7 +49,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series=$SERIES
-#series=jammy
+series=lunar
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -70,6 +70,11 @@ for series in $series ; do
       cp -f -p $debdir/rules-$series recoll-${RCLVERS}/debian/rules
   else 
       cp -f -p $debdir/rules recoll-${RCLVERS}/debian/rules
+  fi
+  if test -f $debdir/patches/series-$series ; then
+      cp -f -p $debdir/patches/series-$series recoll-${RCLVERS}/debian/patches/series
+  else 
+      cp -f -p $debdir/patches/series recoll-${RCLVERS}/debian/patches/series
   fi
 
   sed -e s/SERIES/${series}/g \
