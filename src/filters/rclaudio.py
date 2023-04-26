@@ -428,7 +428,7 @@ class AudioTagExtractor(RclBaseHandler):
                 val = tobytes(val)
                 if ntag in minf:
                     # Note that it would be nicer to use proper CSV quoting
-                    minf[ntag] += b"," + val
+                    minf[ntag] += b" | " + val
                 else:
                     minf[ntag] = val
                 # self.em.rclog(f"Tag <{ntag}> -> <{val}>")
