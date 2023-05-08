@@ -7571,6 +7571,15 @@ for doc in results:
                   </li>
                 </ul>
               </div>
+              <p>Examples:</p>
+              <pre class="programlisting">from recoll import recoll
+
+# Opening the default db            
+db = recoll.connect()
+
+# Opening the default db and a pair of additional indexes            
+db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/otherconf/xapiandb"])
+</pre>
             </div>
             <div class="simplesect">
               <div class="titlepage">
@@ -7588,30 +7597,12 @@ for doc in results:
               connection to a Recoll index.</p>
               <div class="variablelist">
                 <dl class="variablelist">
-                  <dt><span class="term">Db.close()</span></dt>
-                  <dd>
-                    <p>Closes the connection. You can't do anything
-                    with the <code class="literal">Db</code> object
-                    after this.</p>
-                  </dd>
                   <dt><span class="term">Db.query(),
                   Db.cursor()</span></dt>
                   <dd>
-                    <p>These aliases return a blank <code class=
-                    "literal">Query</code> object for this
-                    index.</p>
-                  </dd>
-                  <dt><span class=
-                  "term">Db.setAbstractParams(maxchars,
-                  contextwords)</span></dt>
-                  <dd>
-                    <p>Set the parameters used to build snippets
-                    (sets of keywords in context text fragments).
-                    <code class="literal">maxchars</code> defines
-                    the maximum total size of the abstract.
-                    <code class="literal">contextwords</code>
-                    defines how many terms are shown around the
-                    keyword.</p>
+                    <p>These (synonym) methods return a blank
+                    <code class="literal">Query</code> object for
+                    this index.</p>
                   </dd>
                   <dt><span class="term">Db.termMatch(match_type,
                   expr, field='', maxlen=-1, casesens=False,
@@ -7626,6 +7617,24 @@ for doc in results:
                     <code class="literal">stem</code>. Returns a
                     list of terms expanded from the input
                     expression.</p>
+                  </dd>
+                  <dt><span class=
+                  "term">Db.setAbstractParams(maxchars,
+                  contextwords)</span></dt>
+                  <dd>
+                    <p>Set the parameters used to build snippets
+                    (sets of keywords in context text fragments).
+                    <code class="literal">maxchars</code> defines
+                    the maximum total size of the abstract.
+                    <code class="literal">contextwords</code>
+                    defines how many terms are shown around the
+                    keyword.</p>
+                  </dd>
+                  <dt><span class="term">Db.close()</span></dt>
+                  <dd>
+                    <p>Closes the connection. You can't do anything
+                    with the <code class="literal">Db</code> object
+                    after this.</p>
                   </dd>
                 </dl>
               </div>
@@ -7650,7 +7659,8 @@ for doc in results:
                   <dt><span class="term">Query.sortby(fieldname,
                   ascending=True)</span></dt>
                   <dd>
-                    <p>Sort results by <em class=
+                    <p>Sets the sorting order for future searches
+                    for using <em class=
                     "replaceable"><code>fieldname</code></em>, in
                     ascending or descending order. Must be called
                     before executing the search.</p>
@@ -7698,6 +7708,22 @@ for doc in results:
                     "literal">Doc</code> object from the current
                     search results. Generates a StopIteration
                     exception if there are no results left.</p>
+                  </dd>
+                  <dt><span class="term">Query.__iter__() and
+                  Query.next()</span></dt>
+                  <dd>
+                    <p>So that things like <code class=
+                    "literal">for doc in query:</code> will
+                    work.</p>Example:
+                    <pre class="programlisting">
+from recoll import recoll
+
+db = recoll.connect()
+q = db.query()
+nres = q.execute("some query")
+for doc in q:
+    print("%s" % doc.title)
+              </pre>
                   </dd>
                   <dt><span class="term">Query.close()</span></dt>
                   <dd>
@@ -7774,13 +7800,6 @@ for doc in results:
                     <code class="literal">ctxwords</code> allows
                     adjusting the individual snippet context
                     size.</p>
-                  </dd>
-                  <dt><span class="term">Query.__iter__() and
-                  Query.next()</span></dt>
-                  <dd>
-                    <p>So that things like <code class=
-                    "literal">for doc in query:</code> will
-                    work.</p>
                   </dd>
                 </dl>
               </div>
