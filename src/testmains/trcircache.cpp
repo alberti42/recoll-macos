@@ -23,13 +23,16 @@ using namespace std;
 static char *thisprog;
 
 static char usage [] =
+    " -b <dirname> <targetdir> : extract contents from <dirname> to <targetdir>\n"
+    "   This will create two files per entry, for the data and metadata. targetdir will be\n"
+    "   created if it does not exist.\n"
     " -c [-u] <dirname> <sizekbs>: create new store or possibly resize existing one\n"
     "   -u: set the 'unique' flag (else unset it)\n"
     "   None of this changes the existing data\n"
     " -p <dirname> <apath> [apath ...] : put files\n"
-    " -d <dirname> : dump\n"
+    " -d <dirname> : (dump) : print content list\n"
     " -g [-i instance] [-D] <dirname> <udi>: get\n"
-    "   -D: also dump data\n"
+    "   -D: also dump data to stdout (else just the metadata dictionary)\n"
     " -e <dirname> <udi> : erase\n"
     " -a <targetdir> <dir> [<dir> ...]: append content from existing cache(s) to target\n"
     "  The target should be first resized to hold all the data, else only\n"
@@ -104,7 +107,7 @@ b1:
         argv++;
     }
 
-    Logger::getTheLog("")->setLogLevel(Logger::LLDEB1);
+    Logger::getTheLog("")->setLogLevel(Logger::LLINF);
 
     if (argc < 1) {
         Usage();
@@ -213,6 +216,8 @@ b1:
             cerr << "Open failed: " << cc.getReason() << endl;
             exit(1);
         }
+        std::cout  << "CIRCACHE: size " << cc.size() << " maxsize " << cc.maxsize() <<
+            " writepos " << cc.writepos() << " uniqueentries " << cc.uniquentries() << "\n";
         cc.dump();
     } else {
         Usage();
