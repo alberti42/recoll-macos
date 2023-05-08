@@ -187,9 +187,8 @@ static bool rclMonAddTopWatches(
         return false;
     }
     // Walk the directory trees to add watches
-    WalkCB walkcb(&lconfig, mon, queue, walker);
-    for (const auto& dir : tdl) {
-        lconfig.setKeyDir(dir);
+    for (const auto& topdir : tdl) {
+        lconfig.setKeyDir(topdir);
         // Adjust the follow symlinks options
         bool follow{false};
         if (lconfig.getConfParam("followLinks", &follow) && follow) {
@@ -197,18 +196,20 @@ static bool rclMonAddTopWatches(
         } else {
             walker.setOpts(FsTreeWalker::FtwOptNone);
         }
-        // We always follow links for the topdirs members, and only use the config for subdirs
-        if (path_isdir(dir, true)) {
-            LOGDEB("rclMonRcvRun: walking " << dir << " monrecurs " << mon->isRecursive() << "\n");
+        if (path_isdir(topdir, true)) {
+            LOGDEB("rclMonRcvRun: walking " << topdir <<" monrecurs "<< mon->isRecursive() << "\n");
             // If the fs watcher is recursive, we add the watches for the topdirs here, and walk the
             // tree just for generating initial events.
-            if (mon->isRecursive() && !mon->addWatch(dir, true, true)) {
+            if (mon->isRecursive() && !mon->addWatch(topdir, true, true)) {
                 if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT) {
-                    LOGERR("rclMonAddTopWatches: addWatch failed for [" << dir << "]\n");
+                    LOGERR("rclMonAddTopWatches: addWatch failed for [" << topdir << "]\n");
                     return false;
                 }
             }
-            if (walker.walk(dir, walkcb) != FsTreeWalker::FtwOk) {
+            // Note: need to rebuild the walkcb each time to reset the initial followlinks (always
+            // true for the topdir)
+            WalkCB walkcb(&lconfig, mon, queue, walker);
+            if (walker.walk(topdir, walkcb) != FsTreeWalker::FtwOk) {
                 LOGERR("rclMonRcvRun: tree walk failed\n");
                 return false;
             }
@@ -218,9 +219,9 @@ static bool rclMonAddTopWatches(
         } else {
             // We have to special-case regular files which are part of the topdirs list because the
             // tree walker only adds watches for directories
-            MONDEB("rclMonRcvRun: adding watch for non dir topdir " << dir << "\n");
-            if (!mon->addWatch(dir, false, true)) {
-                LOGSYSERR("rclMonRcvRun", "addWatch", dir);
+            MONDEB("rclMonRcvRun: adding watch for non dir topdir " << topdir << "\n");
+            if (!mon->addWatch(topdir, false, true)) {
+                LOGSYSERR("rclMonRcvRun", "addWatch", topdir);
             }
         }
     }
