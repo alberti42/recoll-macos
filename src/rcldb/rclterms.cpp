@@ -352,21 +352,21 @@ void Db::spellExpand(
         if (wcf == 0) // ??
             wcf += 1;
         auto rarity = int(totlen / wcf);
-        LOGDEB0("RARITY FOR " << term << " " << rarity << "\n");
+        LOGDEB1("Db::spellExpand: rarity for [" << term << "] " << rarity << "\n");
         if (rarity < m_autoSpellRarityThreshold) {
-            LOGDEB0("Db::spellExpand: [" << term << "] is not rare.\n");
+            LOGDEB0("Db::spellExpand: [" << term << "] is not rare: " << rarity << "\n");
             return;
         }
         vector<string> suggs;
         TermMatchResult locres1;
         if (getSpellingSuggestions(term, suggs) && !suggs.empty()) {
-            LOGDEB0("Db::TermMatch: spelling suggestions for [" << term << "] : [" <<
+            LOGDEB0("Db::spellExpand: spelling suggestions for [" << term << "] : [" <<
                    stringsToString(suggs) << "]\n");
             // Only use spelling suggestions up to the chosen maximum distance
             for (int i = 0; i < int(suggs.size()) && i < 300;i++) {
                 auto d = u8DLDistance(suggs[i], term);
-                LOGDEB0("Db::TermMatch: spell: " << term << " -> " << suggs[i] << 
-                       " distance " << d << " (max " << m_maxSpellDistance << ")\n");
+                LOGDEB0("Db::spellExpand: spell: " << term << " -> " << suggs[i] << 
+                        " distance " << d << " (max " << m_maxSpellDistance << ")\n");
                 if (d <= m_maxSpellDistance) {
                   idxTermMatch(Rcl::Db::ET_NONE, suggs[i], locres1, 1);
                 }
@@ -375,11 +375,19 @@ void Db::spellExpand(
             if (!locres1.entries.empty()) {
                 TermMatchCmpByWcf wcmp;
                 sort(locres1.entries.begin(), locres1.entries.end(), wcmp);
-                LOGDEB1("SUGGWCF/WCF: for [" << locres1.entries[0].term << "] : " <<
-                        locres1.entries[0].wcf / wcf <<"\n");
-                if (locres1.entries[0].wcf > m_autoSpellSelectionThreshold * wcf) {
-                    LOGDEB1("SUGG SELECTED\n");
-                    neighbours.push_back(locres1.entries[0].term);
+                for (int i = 0; i < int(locres1.entries.size()); i++) {
+                    double freqratio = locres1.entries[i].wcf / wcf;
+                    LOGDEB0("Db::spellExpand: freqratio for [" << locres1.entries[i].term <<
+                            "] : " << freqratio <<"\n");
+                    if (locres1.entries[i].wcf > m_autoSpellSelectionThreshold * wcf) {
+                        LOGDEB0("Db::spellExpand: [" << locres1.entries[i].term <<
+                                "] selected (frequent enough)\n");
+                        neighbours.push_back(locres1.entries[i].term);
+                    } else {
+                        LOGDEB0("Db::spellExpand: [" << locres1.entries[i].term <<
+                                "] rejected (not frequent enough)\n");
+                        break;
+                    }
                 }
             }
         } else {
@@ -391,11 +399,11 @@ void Db::spellExpand(
         // for a close one ?
         vector<string> suggs;
         if (getSpellingSuggestions(term, suggs) && !suggs.empty()) {
-            LOGDEB0("Db::TermMatch: spelling suggestions for [" << term << "] : [" <<
+            LOGDEB0("Db::spellExpand: spelling suggestions for [" << term << "] : [" <<
                    stringsToString(suggs) << "]\n");
             for (int i = 0; i < int(suggs.size()) && i < 300;i++) {
                 auto d = u8DLDistance(suggs[i], term);
-                LOGDEB0("Db::TermMatch: spell: " << term << " -> " << suggs[i] << 
+                LOGDEB0("Db::spellExpand: spell: " << term << " -> " << suggs[i] << 
                        " distance " << d << " (max " << m_maxSpellDistance << ")\n");
                 if (d <= m_maxSpellDistance) {
                     neighbours.push_back(suggs[i]);
