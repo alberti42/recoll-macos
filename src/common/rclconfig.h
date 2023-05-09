@@ -94,6 +94,8 @@ public:
     bool getConfParam(const std::string& name, std::string& value, bool shallow=false) const;
     /** Variant with autoconversion to int */
     bool getConfParam(const std::string &name, int *value, bool shallow=false) const;
+    /** Variant with autoconversion to double */
+    bool getConfParam(const std::string &name, double *value, bool shallow=false) const;
     /** Variant with autoconversion to bool */
     bool getConfParam(const std::string &name, bool *value, bool shallow=false) const;
     /** Variant with conversion to vector<string>

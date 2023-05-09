@@ -762,10 +762,23 @@ bool RclConfig::getConfParam(const string &name, int *ivp, bool shallow) const
     if (!ivp || !getConfParam(name, value, shallow))
         return false;
     errno = 0;
-    long lval = strtol(value.c_str(), 0, 0);
+    long lval = strtol(value.c_str(), nullptr, 0);
     if (lval == 0 && errno)
-        return 0;
+        return false;
     *ivp = int(lval);
+    return true;
+}
+
+bool RclConfig::getConfParam(const string &name, double *dvp, bool shallow) const
+{
+    string value;
+    if (!dvp || !getConfParam(name, value, shallow))
+        return false;
+    errno = 0;
+    double dval = strtod(value.c_str(), nullptr);
+    if (errno)
+        return false;
+    *dvp = int(dval);
     return true;
 }
 
