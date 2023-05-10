@@ -26,7 +26,7 @@ static char usage [] =
     " -b <dirname> <targetdir> : extract contents from <dirname> to <targetdir>\n"
     "   This will create two files per entry, for the data and metadata. targetdir will be\n"
     "   created if it does not exist.\n"
-    " -c [-u] <dirname> <sizekbs>: create new store or possibly resize existing one\n"
+    " -c [-u] <dirname> <sizeinkilobytes>: create new store or possibly resize existing one\n"
     "   -u: set the 'unique' flag (else unset it)\n"
     "   None of this changes the existing data\n"
     " -p <dirname> <apath> [apath ...] : put files\n"

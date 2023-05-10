@@ -1527,6 +1527,17 @@ bool CCDataToFile::putFile(const std::string& udi, const ConfSimple *dicp, const
     if (!stringtofile(data, fn.c_str(), m_reason)) {
         return false;
     }
+    // Try to reset the original mtime on the data file.
+    std::string sfmtime;
+    if (dicp->get("fmtime", sfmtime)) {
+        time_t fmtime = atoll(sfmtime.c_str());
+        if (fmtime) {
+            struct path_timeval tv[2];
+            tv[0] = tv[1] = {fmtime, 0};
+            path_utimes(fn, tv);
+        }
+    }
+
     fn = path_cat(m_dir, "circache-" + hash + "-" + lltodecstr(dupnum) + ".dic");
     std::ostringstream str;
     dicp->write(str);
