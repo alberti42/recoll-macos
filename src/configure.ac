@@ -74,7 +74,7 @@ AC_SEARCH_LIBS([dlopen], [dl], [], [])
 if test X$ac_cv_search_function != Xno ; then
    AC_DEFINE(HAVE_DLOPEN, 1, [dlopen function is available])
 fi   
-AC_CHECK_LIB([z], [zlibVersion], [], [])
+AC_CHECK_LIB([z], [zlibVersion], [], [AC_MSG_ERROR([libz not found])])
 
 ############# Putenv
 AC_MSG_CHECKING(for type of string parameter to putenv)
