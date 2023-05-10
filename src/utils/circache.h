@@ -18,22 +18,22 @@
 #define _circache_h_included_
 
 /**
- * A data cache implemented as a circularly managed file
+ * A data cache implemented as a circularly managed file.
  *
- * A single file is used to stored objects. The file grows to a
- * specified maximum size, then is rewritten from the start,
- * overwriting older entries.
+ * A single file is used to serially store objects. The file grows to a specified maximum size, then
+ * is rewritten from the start, overwriting older entries.
  *
- * Data objects inside the cache each have two parts: a data segment and an
- * attribute (metadata) dictionary.
- * They are named using the same identifiers that are used inside the Recoll
- * index (the UDI).
+ * The file begins with a descriptive block, containing both static attributes (e.g. maximum storage
+ * size, store duplicate entries or not), and state information (e.g. position of the write pointer
+ * for the next entry).
  *
- * Inside the file. the UDIs are stored inside the entry dictionary
- * under the key "udi".
+ * The objects inside the cache each have two consecutive parts: an attribute (metadata) dictionary
+ * and a data segment. They are named using an externally chosen unique identifier set when storing
+ * them. Recoll uses the document UDI for this purpose.
  *
- * It is assumed that the dictionaries are small (they are routinely
- * read/parsed)
+ * The unique identifiers are stored inside the entry's dictionary under the key "udi".
+ *
+ * It is assumed that the dictionaries are small (they are routinely read/parsed)
  */
 
 #include <cstdint>
@@ -44,44 +44,62 @@ class CirCacheInternal;
 
 class CirCache {
 public:
+    /// Constructor: only performs initialization, it does not create or access the storage.
     CirCache(const std::string& dir);
+    /// Destructor: memory cleanup, no file access except for closing the fd.
     virtual ~CirCache();
+
     CirCache(const CirCache&) = delete;
     CirCache& operator=(const CirCache&) = delete;
 
+    /// Get an explanatory message for the last error.
     virtual std::string getReason();
 
     enum CreateFlags {CC_CRNONE = 0,
-                      // Unique entries: erase older instances when same udi
-                      // is stored.
+                      // Unique entries: erase older instances when same udi is stored.
                       CC_CRUNIQUE = 1,
                       // Truncate file (restart from scratch).
                       CC_CRTRUNCATE = 2
                      };
     virtual bool create(int64_t maxsize, int flags);
 
+    /// Open the storage file in the prescribed mode, and read the first (attributes) block.
     enum OpMode {CC_OPREAD, CC_OPWRITE};
     virtual bool open(OpMode mode);
 
-    virtual int64_t size();
-    virtual int64_t maxsize();
-    virtual int64_t writepos();
-    virtual bool    uniquentries();
-    
-    virtual std::string getpath();
+    /// Return the current file size (as from the storage file st_size)
+    virtual int64_t size() const;
+    /// Return the set maximum storage size in bytes.
+    virtual int64_t maxsize() const;
+    /// Return the current write position, as the start of the newest entry (nheadoffs). There
+    /// should be a way to get oheadoffs (actual next write position), but we can get it by reading
+    /// the header from writepos().
+    virtual int64_t writepos() const;
+    /// Return the 'unique' attribute, determining if we store duplicate UDIs.
+    virtual bool uniquentries() const;
+    /// Return the storage file path.
+    virtual std::string getpath() const;
 
-    // Set data to 0 if you just want the header
-    // instance == -1 means get latest. Otherwise specify from 1+
+    /// Get data and attributes for a given udi.
+    /// @param udi the object identifier.
+    /// @param dic the std::string where to store the metadata dictionary.
+    /// @param data std::string pointer where to store the data. Set to nullptr if you just want
+    ///   the header.
+    /// @param instance Specific instance to retrieve (if storing duplicates). Set to -1 to get
+    ///   latest. Otherwise specify from 1+
     virtual bool get(const std::string& udi, std::string& dic,
                      std::string *data = nullptr, int instance = -1);
 
-    // Note: the dicp MUST have an udi entry
+    /// Store a data object.
+    /// Note: the dicp MUST have an udi entry.
     enum PutFlags {
         NoCompHint = 1, // Do not attempt compression.
     };
     virtual bool put(const std::string& udi, const ConfSimple *dicp,
                      const std::string& data, unsigned int flags = 0);
 
+    /// Erase all instances for given udi. If reallyclear is set, actually overwrite the contents,
+    /// else just logically erase.
     virtual bool erase(const std::string& udi, bool reallyclear = false);
 
     /** Walk the archive.
@@ -93,45 +111,42 @@ public:
     /** Back to oldest */
     virtual bool rewind(bool& eof);
     /** Get entry under cursor */
-    virtual bool getCurrent(std::string& udi, std::string& dic,
-                            std::string *data = nullptr);
+    virtual bool getCurrent(std::string& udi, std::string& dic, std::string *data = nullptr);
     /** Get current entry udi only. Udi can be empty (erased empty), caller
      * should call again */
     virtual bool getCurrentUdi(std::string& udi);
     /** Skip to next. (false && !eof) -> error, (false&&eof)->EOF. */
     virtual bool next(bool& eof);
 
-    /* Debug. This writes the entry headers to stdout */
+    /** Write global header and all entry headers to stdout. Debug. */
     virtual bool dump();
 
-    /* Utility: append all entries from sdir to ddir. 
+    /** Utility: append all entries from sdir to ddir. 
      * 
-     * ddir must already exist. It will be appropriately resized if
-     * needed to avoid recycling while writing the new entries. 
-     * ** Note that if dest is not currently growing, this action
-     *   will recycle old dest entries between the current write
-     *   point and EOF (or up to wherever we need to write to store
-     *   the source data) **
-     * Also note that if the objective is just to compact (reuse the erased
-     * entries space) you should first create the new circache with the
-     * same maxsize as the old one, else the new maxsize will be the
-     * current file size (current erased+active entries, with
-     * available space corresponding to the old erased entries).
+     * ddir must already exist. It will be appropriately resized if needed to avoid recycling while
+     * writing the new entries.
+     *
+     * ** Note: if dest is not currently growing, this action will recycle old dest entries
+     *    between the current write point and EOF (or up to wherever we need to write to store 
+     *    the source data) **
+     *
+     * Also note that if the objective is just to compact (reuse the erased entries space) you
+     * should first create the new circache with the same maxsize as the old one, else the new
+     * maxsize will be the current file size (current erased+active entries, with available space
+     * corresponding to the old erased entries).
      *
      * @param ddir destination circache (must exist)
      * @param sdir source circache
-     * @ret number of entries copied or -a
+     * @return number of entries copied or -1
      */
     static int appendCC(const std::string& ddir, const std::string& sdir,
                         std::string *reason = nullptr);
 
-    /* Rewrite the cache so that the space wasted to erased
-     * entries is recovered. This may need to use temporarily twice
-     * the current cache disk space.
-     */
+    /** Utility: rewrite the cache so that the space wasted to erased entries is recovered. 
+     * This may need to temporarily use twice the current cache disk space. */
     static bool compact(const std::string& dir, std::string *reason = nullptr);
 
-    /* Extract all entries as metadata/data file pairs */
+    /** Utility: extract all entries as metadata/data file pairs */
     static bool burst(
         const std::string& ccdir, const std::string destdir, std::string *reason = nullptr);
     

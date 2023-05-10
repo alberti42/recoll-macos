@@ -83,16 +83,15 @@ using namespace std::placeholders;
  *     yyy bytes of data
  *     zzz bytes of padding up to next object (only one entry has non zero)
  *
- * There is a write position, which can be at eof while
- * the file is growing, or inside the file if we are recycling. This is stored
- * in the header (oheadoffs), together with the maximum size
+ * There is a write position, which can be at eof while the file is growing, or inside the file if
+ * we are recycling. This is stored in the header (oheadoffs), together with the maximum size. See
+ * the Internal class for more detailed comments.
  *
  * If we are recycling, we have to take care to compute the size of the
  * possible remaining area from the last object invalidated by the write,
  * pad it with neutral data and store the size in the new header. To help with
  * this, the address for the last object written is also kept in the header
  * (nheadoffs, npadsize)
- *
  */
 
 // First block size
@@ -373,8 +372,7 @@ public:
         char bf[CIRCACHE_FIRSTBLOCK_SIZE];
 
         lseek(m_fd, 0, 0);
-        if (read(m_fd, bf, CIRCACHE_FIRSTBLOCK_SIZE) !=
-            CIRCACHE_FIRSTBLOCK_SIZE) {
+        if (read(m_fd, bf, CIRCACHE_FIRSTBLOCK_SIZE) != CIRCACHE_FIRSTBLOCK_SIZE) {
             m_reason << "readfirstblock: read() failed: errno " << errno;
             return false;
         }
@@ -404,19 +402,16 @@ public:
         return true;
     }
 
-    bool writeEntryHeader(int64_t offset, const EntryHeaderData& d,
-                          bool eraseData = false) {
+    bool writeEntryHeader(int64_t offset, const EntryHeaderData& d, bool eraseData = false) {
         if (m_fd < 0) {
             m_reason << "writeEntryHeader: not open ";
             return false;
         }
         char bf[CIRCACHE_HEADER_SIZE];
         memset(bf, 0, CIRCACHE_HEADER_SIZE);
-        snprintf(bf, CIRCACHE_HEADER_SIZE,
-                 headerformat, d.dicsize, d.datasize, d.padsize, d.flags);
+        snprintf(bf, CIRCACHE_HEADER_SIZE, headerformat, d.dicsize, d.datasize, d.padsize, d.flags);
         if (lseek(m_fd, offset, 0) != offset) {
-            m_reason << "CirCache::weh: lseek(" << offset <<
-                ") failed: errno " << errno;
+            m_reason << "CirCache::weh: lseek(" << offset << ") failed: errno " << errno;
             return false;
         }
         if (write(m_fd, bf, CIRCACHE_HEADER_SIZE) !=  CIRCACHE_HEADER_SIZE) {
@@ -429,8 +424,7 @@ public:
                 return false;
             }
             string buf((size_t)d.padsize, ' ');
-            if (write(m_fd, buf.c_str(), (size_t)d.padsize) !=
-                (ssize_t)d.padsize) {
+            if (write(m_fd, buf.c_str(), (size_t)d.padsize) != (ssize_t)d.padsize) {
                 m_reason << "CirCache::weh: write failed. errno " << errno;
                 return false;
             }
@@ -656,7 +650,7 @@ public:
     }
 };
 
-string CirCache::getpath()
+string CirCache::getpath() const
 {
     return m_d->datafn(m_dir);
 }
@@ -754,7 +748,7 @@ bool CirCache::open(OpMode mode)
     return m_d->readfirstblock();
 }
 
-int64_t CirCache::size()
+int64_t CirCache::size() const
 {
     if (nullptr == m_d) {
         LOGERR("CirCache::open: null data\n");
@@ -781,7 +775,7 @@ int64_t CirCache::size()
     return sz;
 }
 
-int64_t CirCache::maxsize()
+int64_t CirCache::maxsize() const
 {
     if (nullptr == m_d) {
         LOGERR("CirCache::open: null data\n");
@@ -790,7 +784,7 @@ int64_t CirCache::maxsize()
     return m_d->m_maxsize;
 }
 
-int64_t CirCache::writepos()
+int64_t CirCache::writepos() const
 {
     if (nullptr == m_d) {
         LOGERR("CirCache::open: null data\n");
@@ -799,7 +793,7 @@ int64_t CirCache::writepos()
     return m_d->m_nheadoffs;
 }
 
-bool CirCache::uniquentries()
+bool CirCache::uniquentries() const
 {
     if (nullptr == m_d) {
         LOGERR("CirCache::open: null data\n");
@@ -1068,8 +1062,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     ZLibUtBuf buf;
     if (!(iflags & NoCompHint)) {
         if (deflateToBuf(data.c_str(), data.size(), buf)) {
-            // If compression succeeds, and the ratio makes sense,
-            // store compressed
+            // If compression succeeds, and the ratio makes sense, store compressed
             if (float(buf.getCnt()) < 0.9 * float(data.size())) {
                 datap = buf.getBuf();
                 datalen = buf.getCnt();
@@ -1521,11 +1514,20 @@ bool CCDataToFile::putFile(const std::string& udi, const ConfSimple *dicp, const
         dsuff = ".xxx";
     }
 
-    std::string fn = path_cat(m_dir, "circache-" + hash + dsuff);
+    int dupnum = 1;
+    std::string fn;
+    for (;;) {
+        fn = path_cat(m_dir, "circache-" + hash + "-" + lltodecstr(dupnum) + dsuff);
+        if (path_exists(fn)) {
+            dupnum++;
+        } else {
+            break;
+        }
+    }
     if (!stringtofile(data, fn.c_str(), m_reason)) {
         return false;
     }
-    fn = path_cat(m_dir, "circache-" + hash + ".dic");
+    fn = path_cat(m_dir, "circache-" + hash + "-" + lltodecstr(dupnum) + ".dic");
     std::ostringstream str;
     dicp->write(str);
     if (!stringtofile(str.str(), fn.c_str(), m_reason)) {
@@ -1548,6 +1550,8 @@ bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::s
         }
         return false;
     }
+
+    // This test may now actually be very optimistic because of compression ?
     long long avmbs;
     if (fsocc(destdir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
         msg << "not enough space on file system";
@@ -1557,6 +1561,7 @@ bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::s
         }
         return false;
     }
+
     if (!path_makepath(destdir, 0700)) {
         msg << "path_makepath failed with errno " << errno;
         LOGERR(msg.str() << "\n");
@@ -1565,6 +1570,7 @@ bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::s
         }
         return false;
     }
+
     int nentries;
     CCDataToFile copier(destdir);
     std::function<bool(const std::string, ConfSimple*, const std::string&)> cb =
@@ -1580,4 +1586,3 @@ bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::s
 
     return true;
 }
-

@@ -243,7 +243,7 @@ bool storeFile(CirCache& cc, const std::string fn)
     FILE *fp = popen(cmd.c_str(), "r");
     char* buf=0;
     size_t sz = 0;
-    if (::getline(&buf, &sz, fp) -1) {
+    if (::getline(&buf, &sz, fp) == -1) {
         std::cerr << "Could not read from xdg-mime output\n";
         return false;
     }
