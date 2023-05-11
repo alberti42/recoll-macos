@@ -347,7 +347,7 @@ inline void ExecCmd::Internal::dochild(const string& cmd, const char **argv, con
     // filter children for now though. To be fixed one day...  Note that resetting to SIG_DFL is a
     // portable use of signal(). No need for sigaction() here.
     //
-    // There is supposedely a risk of problems if another thread was calling a signal-affecting
+    // There is supposedly a risk of problems if another thread was calling a signal-affecting
     // function when vfork was called. This seems acceptable though as no self-respecting thread is
     // going to mess with the global process signal disposition.
 

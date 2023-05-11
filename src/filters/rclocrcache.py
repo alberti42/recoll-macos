@@ -76,7 +76,7 @@
 #      temporary document, we'd have no way to access the original document
 #      because the full ipath is not available. Changing this would be close to
 #      impossible because internfile...
-# In consequence the --purgedata option must be explicitely added for a data
+# In consequence the --purgedata option must be explicitly added for a data
 # purge to be performed. Only set it if re-OCRing all embedded documents is reasonable.
 
 

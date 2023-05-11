@@ -19,7 +19,7 @@
 
 /** Utility function to manage lines inside a user crontab 
  * 
- * Lines managed by this routine are marked with a hopefuly unique marker
+ * Lines managed by this routine are marked with a hopefully unique marker
  * and discriminated by a selector, both environment variable settings. 
  * Example:
  *  30 8 * * * RCLCRONTAB_RCLINDEX= RECOLL_CONFDIR=/path/to/dir recollindex ...
@@ -29,7 +29,7 @@
  * This approach allows leaving alone lines which do have a
  * RECOLL_CONFDIR value but not managed by us. The marker and selector
  * values are chosen by the caller, which should apply some thought to
- * chosing sane values.
+ * choosing sane values.
  */
 
 #include <string>
@@ -38,7 +38,7 @@
 /** Add, replace or delete a command inside a crontab file
  *
  * @param marker selects lines managed by this module and should take the form
- *  of a (possibly empty) environment variable assignement.
+ *  of a (possibly empty) environment variable assignment.
  * @param id selects the appropriate line to affect and will usually be an 
  *   actual variable assignment (see above)
  * @param sched is a standard cron schedule spec (ie: 30 8 * * *)
@@ -46,7 +46,7 @@
  *    Set it to an empty string to delete the line from the crontab
  * @param reason error message
  *
- * "marker" and "id" should look like reasonable env variable assignements. 
+ * "marker" and "id" should look like reasonable env variable assignments. 
  * Only ascii capital letters, numbers and _ before the '='
  */
 bool editCrontab(const std::string& marker, const std::string& id, const std::string& sched,

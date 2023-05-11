@@ -27,7 +27,7 @@ def equalsName (name, array):
 def isOleStream (dirname):
     """Determine whether or not a stream is an OLE stream.
 
-Accodring to the spec, an OLE stream is always named '\1Ole'."""
+According to the spec, an OLE stream is always named '\1Ole'."""
 
     name = [0x01, 0x4F, 0x6C, 0x65] # 0x01, 'Ole'
     return equalsName(dirname, name)

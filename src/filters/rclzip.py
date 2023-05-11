@@ -53,7 +53,7 @@ if not hasrclconfig:
 # directly as an index into the catalog.
 #
 # When we send the file name data to the indexer, we have to serialize
-# it as byte string, we can't pass unicode objects to and fro. This
+# it as byte string, we can't pass unicode objects to and from. This
 # means that we have to test if the name is unicode. If it is, we send
 # the string encoded as utf-8. When reading, if the input is utf-8, we
 # turn it to unicode and use this to access the zip member, else we

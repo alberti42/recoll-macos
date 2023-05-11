@@ -97,7 +97,7 @@ checkcmds grep awk sed
 # line except when there are embedded new lines in an attribute lie
 # 'comments'. The first version of the sed script joins line which does not
 # end with > with the next. It doesn't guard against an embedded '>'. The
-# seconf joins line not beginning with '<' with the previous. It is much
+# second joins line not beginning with '<' with the previous. It is much
 # slower for some reason.
 sedjoinprog=':a
 /[^>] *$/N; s/\n/ /; ta'

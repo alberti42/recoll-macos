@@ -826,7 +826,7 @@ class EventStreamReader(object):
         # next two bytes specify the format version
         # next two bytes specify the number of tracks
         # next two bytes specify the resolution/PPQ/Parts Per Quarter
-        # (in other words, how many ticks per quater note)
+        # (in other words, how many ticks per quarter note)
         data = unpack(">LHHH", self.instream.read(10))
         hdrsz = data[0]
         self.midistream.format = data[1]

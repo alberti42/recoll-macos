@@ -156,7 +156,7 @@ if test -f $metafile ; then
 
 <xsl:template match="kw:abstract|abstract">
   <meta>
-    <xsl:attribute name="name">abtract</xsl:attribute>
+    <xsl:attribute name="name">abstract</xsl:attribute>
     <xsl:attribute name="content">
     <xsl:value-of select="."/>
     </xsl:attribute>

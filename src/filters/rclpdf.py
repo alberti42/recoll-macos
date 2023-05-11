@@ -238,7 +238,7 @@ class PDFExtractor:
             # here with writing to stdout:
             #    Error occurred during initialization of VM
             #    Could not allocate metaspace: 1073741824 bytes
-            # Maybe unsufficient resources when started from Python ?
+            # Maybe insufficient resources when started from Python ?
             # In any case, the important thing is to discard the
             # output, until we fix the error or preferably find a way
             # to do it with poppler...

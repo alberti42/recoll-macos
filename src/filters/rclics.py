@@ -78,7 +78,7 @@ class IcalExtractor:
             try:
                 cal = vobject.readOne(calstr)
             except Exception as e:
-                self.em.rclog("Openfile: cant parse object: %s" % str(e))
+                self.em.rclog("Openfile: can't parse object: %s" % str(e))
                 return False
             for lstnm in ("vevent_list", "vtodo_list", "vjournal_list"):
                 lst = getattr(cal, lstnm, [])

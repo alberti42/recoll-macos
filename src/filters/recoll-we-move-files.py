@@ -123,7 +123,7 @@ for opt,val in opts:
 config = rclconfig.RclConfig(argcnf=configdir)
 
 # Get the directory where the browser extension creates the page files. Our user can set it as a
-# subdirectory of the default Downloads directory, for tidyness
+# subdirectory of the default Downloads directory, for tidiness
 downloadsdir = config.getConfParam("webdownloadsdir")
 if not downloadsdir:
     downloadsdir = "~/Downloads"
