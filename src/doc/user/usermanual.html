@@ -10142,9 +10142,11 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                   no reliable Linux way to limit the data space
                   only), so we need to be a bit generous here.
                   Anything over 2000 will be ignored on 32 bits
-                  machines. The previous default value of 2000
-                  would prevent java pdftk to work when executed
-                  from Python rclpdf.py.</p>
+                  machines. The high default value is needed
+                  because of java-based handlers (pdftk) which need
+                  a lot of VM (most of it text), esp. pdftk when
+                  executed from Python rclpdf.py. You can use a
+                  much lower value if you don't need Java.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.THRQSIZES" id=
