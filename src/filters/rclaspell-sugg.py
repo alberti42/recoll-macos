@@ -51,7 +51,11 @@ if len(args) != 1 or args[0] != "pipe":
 #[("lang","en"), ("encoding","utf-8"), ("master","/home/dockes/.recoll-prod/aspdict.en.rws"),
 # ("sug-mode", "fast")]
 
-speller = Speller(*options)
+try:
+    speller = Speller(*options)
+except Exception as ex:
+    deb(f"Aspell speller creation failed: {ex}")
+    sys.exit(1)
 
 print("@(#) International Ispell Version 3.1.20 (but really rclaspell-sugg 0.60.8)")
 sys.stdout.flush()
