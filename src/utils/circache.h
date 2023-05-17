@@ -71,9 +71,10 @@ public:
     virtual int64_t size() const;
     /// Return the set maximum storage size in bytes.
     virtual int64_t maxsize() const;
-    /// Return the current write position, as the start of the newest entry (nheadoffs). There
-    /// should be a way to get oheadoffs (actual next write position), but we can get it by reading
-    /// the header from writepos().
+    /// Return the position of the start of the newest entry (nheadoffs).
+    virtual int64_t nheadpos() const;
+    /// Return the current write position. This is the EOF if the file is not full, or the start of
+    /// the oldest entry (or possibly EOF) else.
     virtual int64_t writepos() const;
     /// Return the 'unique' attribute, determining if we store duplicate UDIs.
     virtual bool uniquentries() const;

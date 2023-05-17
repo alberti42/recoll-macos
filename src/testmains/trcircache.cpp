@@ -217,7 +217,8 @@ b1:
             exit(1);
         }
         std::cout  << "CIRCACHE: size " << cc.size() << " maxsize " << cc.maxsize() <<
-            " writepos " << cc.writepos() << " uniqueentries " << cc.uniquentries() << "\n";
+            " nheadpos " << cc.nheadpos() << " writepos " << cc.writepos() <<
+            " uniqueentries " << cc.uniquentries() << "\n";
         cc.dump();
     } else {
         Usage();

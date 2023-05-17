@@ -69,7 +69,6 @@ public:
 WebcacheModel::WebcacheModel(QObject *parent)
     : QAbstractTableModel(parent), m(new WebcacheModelInternal())
 {
-    reload();
 }
 WebcacheModel::~WebcacheModel()
 {
@@ -84,7 +83,7 @@ void WebcacheModel::reload()
     if (!(m->cache = std::unique_ptr<WebStore>(new WebStore(theconfig)))) {
         goto out;
     }
-    
+    emit headerChanged(m->cache.get());
     bool eof;
     m->cache->cc()->rewind(eof);
     while (!eof) {
@@ -172,8 +171,7 @@ int WebcacheModel::columnCount(const QModelIndex&) const
     return 4;
 }
 
-QVariant WebcacheModel::headerData (int col, Qt::Orientation orientation, 
-                                    int role) const
+QVariant WebcacheModel::headerData (int col, Qt::Orientation orientation, int role) const
 {
     // qDebug() << "WebcacheModel::headerData()";
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
@@ -254,8 +252,7 @@ WebcacheEdit::WebcacheEdit(RclMain *parent)
             }
         }
     }
-    connect(header, SIGNAL(sectionResized(int,int,int)),
-            this, SLOT(saveColState()));
+    connect(header, SIGNAL(sectionResized(int,int,int)), this, SLOT(saveColState()));
 
     header = tableview->verticalHeader();
     if (header) {
@@ -271,11 +268,20 @@ WebcacheEdit::WebcacheEdit(RclMain *parent)
 
     connect(searchLE, SIGNAL(textEdited(const QString&)),
             m_model, SLOT(setSearchFilter(const QString&)));
-    connect(new QShortcut(closeKS, this), SIGNAL (activated()), 
-            this, SLOT (close()));
+    connect(new QShortcut(closeKS, this), SIGNAL (activated()), this, SLOT (close()));
     connect(tableview, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
+    connect(m_model, SIGNAL(headerChanged(WebStore*)), this, SLOT(onHeaderChanged(WebStore*)));
+    m_model->reload();
+}
 
+void WebcacheEdit::onHeaderChanged(WebStore *ws)
+{
+    headerInfoLBL->setText(tr("Maximum size %1 (Index config.). Current size %2. Write position %3.")
+                           .arg(u8s2qs(displayableBytes(ws->cc()->maxsize())))
+                           .arg(u8s2qs(displayableBytes(ws->cc()->size())))
+                           .arg(u8s2qs(displayableBytes(ws->cc()->writepos())))
+        );
 }
 
 void WebcacheEdit::createPopupMenu(const QPoint& pos)
@@ -293,19 +299,14 @@ void WebcacheEdit::createPopupMenu(const QPoint& pos)
         RclMain::IndexerState ixstate = m_recoll->indexerState();
         switch (ixstate) {
         case RclMain::IXST_UNKNOWN:
-            QMessageBox::warning(0, "Recoll",
-                                 tr("Unknown indexer state. "
-                                    "Can't edit webcache file."));
+            QMessageBox::warning(0, "Recoll",tr("Unknown indexer state. Can't edit webcache file."));
             break;
         case RclMain::IXST_RUNNINGMINE:
         case RclMain::IXST_RUNNINGNOTMINE:
-            QMessageBox::warning(0, "Recoll",
-                                 tr("Indexer is running. "
-                                    "Can't edit webcache file."));
+            QMessageBox::warning(0, "Recoll", tr("Indexer is running. Can't edit webcache file."));
             break;
         case RclMain::IXST_NOTRUNNING:
-            popup->addAction(tr("Delete selection"),
-                             this, SLOT(deleteSelected()));
+            popup->addAction(tr("Delete selection"), this, SLOT(deleteSelected()));
             break;
         }
     }
@@ -363,7 +364,6 @@ void WebcacheEdit::saveColState()
         int li = header->logicalIndex(vi);
         newwidths.push_back(lltodecstr(header->sectionSize(li)).c_str());
     }
-    
     QSettings settings;
     settings.setValue(cwnm, newwidths);
 }
@@ -371,10 +371,8 @@ void WebcacheEdit::saveColState()
 void WebcacheEdit::closeEvent(QCloseEvent *event)
 {
     if (m_modified) {
-        QMessageBox::information(0, "Recoll",
-                                 tr("Webcache was modified, you will need "
-                                    "to run the indexer after closing this "
-                                    "window."));
+        QMessageBox::information(0, "Recoll", tr("Webcache was modified, you will need "
+                                    "to run the indexer after closing this window."));
     }
     if (!isFullScreen()) {
         QSettings settings;

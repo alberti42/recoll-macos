@@ -29,6 +29,8 @@
 class WebcacheModelInternal;
 class QCloseEvent;
 
+class WebStore;
+
 class WebcacheModel : public QAbstractTableModel {
     Q_OBJECT
 
@@ -43,8 +45,7 @@ public:
     virtual int columnCount(const QModelIndex& = QModelIndex()) const;
     virtual QVariant headerData (int col, Qt::Orientation orientation, 
                                  int role = Qt::DisplayRole) const;
-    virtual QVariant data(const QModelIndex& index, 
-                          int role = Qt::DisplayRole ) const;
+    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
     bool deleteIdx(unsigned int idx);
     std::string getURL(unsigned int idx);
     std::string getData(unsigned int idx);
@@ -52,7 +53,9 @@ public:
 public slots:
     void setSearchFilter(const QString&);
     void reload();
-
+signals:
+    void headerChanged(WebStore *);
+    
 private:
     WebcacheModelInternal *m;
 };
@@ -70,6 +73,7 @@ public slots:
     void deleteSelected();
     void copyURL();
     void saveToFile();
+    void onHeaderChanged(WebStore *);
 protected:
     void closeEvent(QCloseEvent *);
 private:

@@ -790,6 +790,15 @@ int64_t CirCache::writepos() const
         LOGERR("CirCache::open: null data\n");
         return -1;
     }
+    return m_d->m_oheadoffs;
+}
+
+int64_t CirCache::nheadpos() const
+{
+    if (nullptr == m_d) {
+        LOGERR("CirCache::open: null data\n");
+        return -1;
+    }
     return m_d->m_nheadoffs;
 }
 
