@@ -11,7 +11,7 @@
   <meta name="generator" content=
   "DocBook XSL Stylesheets Vsnapshot">
   <meta name="description" content=
-  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.34.">
+  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.35.">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084"
 alink="#0000FF">
@@ -54,7 +54,7 @@ alink="#0000FF">
             and describes the installation and use of the
             <span class="application">Recoll</span> application.
             This version describes <span class=
-            "application">Recoll</span> 1.34.</p>
+            "application">Recoll</span> 1.35.</p>
           </div>
         </div>
       </div>
@@ -435,7 +435,7 @@ alink="#0000FF">
       <p>This document introduces full text search notions and
       describes the installation and use of the <span class=
       "application">Recoll</span> application. It is updated for
-      <span class="application">Recoll</span> 1.34.</p>
+      <span class="application">Recoll</span> 1.35.</p>
       <p><span class="application">Recoll</span> was for a long
       time dedicated to Unix-like systems. It was only lately
       (2015) ported to <span class="application">MS-Windows</span>.
@@ -8608,7 +8608,8 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
           other systems is left to the sagacity of the reader.</p>
           <p>If you do not need the GUI, you can avoid all GUI
           dependencies by disabling its build. (See the configure
-          section further).</p>
+          section further down: <code class=
+          "literal">--disable-qtgui</code>).</p>
           <p>The shopping list follows:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
@@ -8646,9 +8647,10 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                 "command"><strong>make</strong></span>.</p>
               </li>
               <li class="listitem">
-                <p>A C++ compiler with at least C++11 compatibility
+                <p>A C++ compiler with at least C++14 compatibility
                 (<code class="literal">g++</code> or <code class=
-                "literal">clang</code>).</p>
+                "literal">clang</code>). Versions 1.33.4 and older
+                only require c++11.</p>
               </li>
               <li class="listitem">
                 <p>The <span class=
@@ -8663,7 +8665,7 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                 "literal">--disable-python-chm</code> option to the
                 <span class=
                 "command"><strong>configure</strong></span>
-                command</p>
+                command.</p>
               </li>
               <li class="listitem">
                 <p>For building the documentation: the <span class=
@@ -8704,6 +8706,15 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                 "literal">zlib1g-dev</code>).</p>
               </li>
               <li class="listitem">
+                <p>Development files for <span class=
+                "application">libaspell</span> (<code class=
+                "literal">libaspell-dev</code>). Can be avoided
+                with the <code class=
+                "literal">--disable-aspell</code> option to
+                <span class=
+                "command"><strong>configure</strong></span>.</p>
+              </li>
+              <li class="listitem">
                 <p>If you want to build the GUI: development files
                 for <a class="ulink" href=
                 "http://qt-project.org/downloads" target=
@@ -8712,24 +8723,33 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                 "literal">--disable-qtgui</code> option to the
                 <span class=
                 "command"><strong>configure</strong></span>
-                command. I can never remember what package to
-                install to get this, but installing the Qt5 Webkit,
-                (or Qt5 Webengine if you set <code class=
-                "literal">--enable-webengine</code>) will bring the
-                rest as dependencies (<code class=
+                command. You will probably need <code class=
+                "literal">qtbase5-dev</code> and <code class=
+                "literal">qttools5-dev-tools</code> I can never
+                remember what other packages to install, but
+                installing the Qt5 Webkit, (or Qt5 Webengine if you
+                set <code class=
+                "literal">--enable-webengine</code>) will usually
+                bring them as dependencies (<code class=
                 "literal">libqt5webkit5-dev</code> or <code class=
-                "literal">qtwebengine5dev</code>).</p>
+                "literal">qtwebengine5dev</code>). The <span class=
+                "application">Recoll</span> GUI can use either
+                Webkit or Webengine for displaying the results.</p>
               </li>
               <li class="listitem">
                 <p>Development files for <span class=
-                "application">Python</span> (<code class=
-                "literal">python2-dev</code>, <code class=
-                "literal">python-setuptools</code>, <code class=
+                "application">Python3</span> (<code class=
                 "literal">python3-all-dev</code>, <code class=
                 "literal">python3-setuptools</code>). You can use
                 the <code class=
                 "literal">--disable-python-module</code> option for
-                disabling the build of the Python extensions).</p>
+                disabling the build of the Python extension. On
+                older systems still supporting Python2, you can
+                also install <code class=
+                "literal">python2-dev</code> and <code class=
+                "literal">python-setuptools</code>. The build will
+                test for the presence of the python2 and/or python3
+                commands and behave accordingly.</p>
               </li>
               <li class="listitem">
                 <p>You may also need <a class="ulink" href=
@@ -8757,12 +8777,16 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
             </div>
           </div>
           <p><span class="application">Recoll</span> has been built
-          on Linux, FreeBSD, Mac OS X, and Solaris, most versions
+          on Linux, FreeBSD, MacOS, and Solaris, most versions
           after 2005 should be ok, maybe some older ones too
-          (Solaris 8 used to be ok). If you build on another
-          system, and need to modify things, <a class="ulink" href=
-          "mailto:jfd@recoll.org" target="_top">I would very much
-          welcome patches</a>.</p>
+          (Solaris 8 used to be ok). Current <span class=
+          "application">Recoll</span> versions (1.34 and later)
+          need a c++14 compiler and Qt5, so they will not build on
+          old systems, but if really needed, you can probably find
+          an older version which will work for you. If you build on
+          another system, and need to modify things, <a class=
+          "ulink" href="mailto:jfd@recoll.org" target="_top">I
+          would very much welcome patches</a>.</p>
           <div class="sect3">
             <div class="titlepage">
               <div>

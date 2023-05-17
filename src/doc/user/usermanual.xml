@@ -5,7 +5,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='https://www.lesbonscomptes.com/recoll/pages/features.html#doctypes'>http://www.recoll.org/pages/features.html</ulink>">
-<!ENTITY RCLVERSION "1.34">
+<!ENTITY RCLVERSION "1.35">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
@@ -6191,15 +6191,14 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
       <sect2 id="RCL.INSTALL.BUILDING.PREREQS">
         <title>Prerequisites</title>
 
-        <para>The following prerequisites are described in broad terms and
-          Debian package names. The dependencies should be available as packages on most common Unix
-          derivatives, and it should be quite uncommon that you would have to build one of them.
-          Finding the right package name for other systems is left to the sagacity of the
-          reader.</para>
+        <para>The following prerequisites are described in broad terms and Debian package names. The
+          dependencies should be available as packages on most common Unix derivatives, and it
+          should be quite uncommon that you would have to build one of them. Finding the right
+          package name for other systems is left to the sagacity of the reader.</para>
 
-        <para>If you do not need the GUI, you can avoid all GUI
-          dependencies by disabling its build. (See the configure section
-          further).</para>
+        <para>If you do not need the GUI, you can avoid all GUI dependencies by disabling its
+          build. (See the configure section further
+          down: <literal>--disable-qtgui</literal>).</para> 
         
         <para>The shopping list follows:</para>
 
@@ -6220,8 +6219,9 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
               error messages about dependency tracking from <command>configure</command>, you
               probably forgot to install <command>make</command>.</para></listitem>
 
-          <listitem><para>A C++ compiler with at least C++11 compatibility (<literal>g++</literal>
-              or <literal>clang</literal>).</para></listitem>
+          <listitem><para>A C++ compiler with at least C++14 compatibility (<literal>g++</literal>
+              or <literal>clang</literal>). Versions 1.33.4 and older only require
+              c++11.</para></listitem> 
 
           <listitem><para>The <command>bison</command> command is not generally needed, but might be
               if some file modification times are not right.</para></listitem>
@@ -6229,7 +6229,7 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
           <listitem><para>If you want to process CHM files, you will need libchm
               (<literal>libchm-dev</literal>), else you can set
               the <literal>--disable-python-chm</literal> option to the <command>configure</command>
-              command</para></listitem>
+              command.</para></listitem> 
 
           <listitem><para>For building the documentation: the
               <command>xsltproc</command> command, and the Docbook XML and
@@ -6241,36 +6241,44 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
           <listitem><para>Development files
               for <ulink url="http://www.xapian.org"> <application>Xapian
                   core</application></ulink> (<literal>libxapian-dev</literal>).</para> 
-          <important>
-            <para>If you are building Xapian for an older CPU (before Pentium 4 or Athlon 64), you
-              need to add the <option>--disable-sse</option> flag to
-              the <command>configure</command> command. Else all Xapian applications will crash with
-              an <literal>illegal instruction</literal>
-            error.</para>
-          </important>
+            <important>
+              <para>If you are building Xapian for an older CPU (before Pentium 4 or Athlon 64), you
+                need to add the <option>--disable-sse</option> flag to
+                the <command>configure</command> command. Else all Xapian applications will crash
+                with an <literal>illegal instruction</literal> error.</para>
+            </important>
           </listitem>
 
           <listitem><para>Development files for <application>libxslt</application>
               (<literal>libxslt1-dev</literal>).</para></listitem> 
 
           <listitem><para>Development files for
-              <application>zlib</application> (<literal>zlib1g-dev</literal>).</para> </listitem>
+              <application>zlib</application> (<literal>zlib1g-dev</literal>).</para></listitem>
+
+          <listitem><para>Development files for <application>libaspell</application>
+              (<literal>libaspell-dev</literal>). Can be avoided with
+              the <literal>--disable-aspell</literal> option
+              to <command>configure</command>.</para></listitem>
 
           <listitem><para>If you want to build the GUI: development files for 
             <ulink url="http://qt-project.org/downloads"><application>Qt 5</application></ulink>.
             Else give the <literal>--disable-qtgui</literal> option to
-            the <command>configure</command> command. I can never remember what package to install
-            to get this, but installing the Qt5 Webkit, (or Qt5 Webengine if you set
-            <literal>--enable-webengine</literal>) will bring the rest as dependencies
-            (<literal>libqt5webkit5-dev</literal>
-            or <literal>qtwebengine5dev</literal>).</para></listitem>
+            the <command>configure</command> command. You will probably
+            need <literal>qtbase5-dev</literal> and <literal>qttools5-dev-tools</literal> I can
+            never remember what other packages to install, but installing the Qt5 Webkit, (or Qt5
+            Webengine if you set <literal>--enable-webengine</literal>) will usually bring them as
+            dependencies (<literal>libqt5webkit5-dev</literal>
+            or <literal>qtwebengine5dev</literal>). The &RCL; GUI can use either Webkit or Webengine
+            for displaying the results.</para></listitem>
 
           <listitem><para>Development files for
-              <application>Python</application>
-              (<literal>python2-dev</literal>, <literal>python-setuptools</literal>, 
-              <literal>python3-all-dev</literal>, <literal>python3-setuptools</literal>). 
-              You can use the <literal>--disable-python-module</literal> option for disabling the
-              build of the Python extensions).</para></listitem>
+              <application>Python3</application>
+              (<literal>python3-all-dev</literal>, <literal>python3-setuptools</literal>).  You can
+              use the <literal>--disable-python-module</literal> option for disabling the build of
+              the Python extension. On older systems still supporting Python2, you can also
+              install <literal>python2-dev</literal> and <literal>python-setuptools</literal>. The
+              build will test for the presence of the python2 and/or python3 commands and behave
+              accordingly. </para></listitem>
 
           <listitem><para>You may also need 
             <ulink url="http://www.gnu.org/software/libiconv/">libiconv</ulink>.
@@ -6288,9 +6296,11 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
       <sect2 id="RCL.INSTALL.BUILDING.BUILDING">
         <title>Building</title>
 
-        <para>&RCL; has been built on Linux, FreeBSD, Mac OS X, and Solaris,
+        <para>&RCL; has been built on Linux, FreeBSD, MacOS, and Solaris,
           most versions after 2005 should be ok, maybe some older ones too (Solaris 8 used to be
-          ok). If you build on another system, and need to modify
+          ok). Current &RCL; versions (1.34 and later) need a c++14 compiler and Qt5, so they will
+          not build on old systems, but if really needed, you can probably find an older version
+          which will work for you. If you build on another system, and need to modify
           things, <ulink url="mailto:jfd@recoll.org">I would very much welcome
             patches</ulink>.</para>
 
