@@ -1492,6 +1492,19 @@ pdfocrlang = eng</programlisting>
 
       </sect2>
 
+      <sect2 id="RCL.INDEXING.STT">
+        <title>Running a speech to text program on audio files</title>
+
+        <para>If the <orgname>OpenAI</orgname> <application>Whisper</application> program is
+          available and the appropriate parameters set in the configuration files, the &RCL; audio
+          file handler will run speech to text recognition on audio files and the resulting text
+          will be indexed. See the
+          <ulink url="https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexAudioWhisper.html">
+            the FAQ entry</ulink> for more details.</para>
+        <para>The results of the speech recognition will be cached in the same manner as the results
+          of image OCR.</para>
+      </sect2>
+      
       <sect2 id="RCL.INDEXING.REMOVABLE">
         <title>Removable volumes</title>
 

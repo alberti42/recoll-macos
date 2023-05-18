@@ -930,7 +930,7 @@ script. Typical values: English, French... See the ABBYY documentation.
 <title>Parameters for running speech to text conversion </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SPEECHTOTEXT">
 <term><varname>speechtotext</varname></term>
-<listitem><para>Activate speech to text conversion The only posssible value at the moment is "whisper" for using the OpenAI whisper program
+<listitem><para>Activate speech to text conversion The only possible value at the moment is "whisper" for using the OpenAI whisper program.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.STTMODEL">
 <term><varname>sttmodel</varname></term>

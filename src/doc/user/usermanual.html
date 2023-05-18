@@ -162,17 +162,20 @@ alink="#0000FF">
                 "#RCL.INDEXING.OCR">Running OCR on image
                 documents</a></span></dt>
                 <dt><span class="sect2">2.5.3. <a href=
+                "#RCL.INDEXING.STT">Running a speech to text
+                program on audio files</a></span></dt>
+                <dt><span class="sect2">2.5.4. <a href=
                 "#RCL.INDEXING.REMOVABLE">Removable
                 volumes</a></span></dt>
-                <dt><span class="sect2">2.5.4. <a href=
+                <dt><span class="sect2">2.5.5. <a href=
                 "#RCL.INDEXING.WEBQUEUE"><span class=
                 "application">Unix</span>-like systems: indexing
                 visited Web pages</a></span></dt>
-                <dt><span class="sect2">2.5.5. <a href=
+                <dt><span class="sect2">2.5.6. <a href=
                 "#RCL.INDEXING.EXTATTR"><span class=
                 "application">Unix</span>-like systems: using
                 extended attributes</a></span></dt>
-                <dt><span class="sect2">2.5.6. <a href=
+                <dt><span class="sect2">2.5.7. <a href=
                 "#RCL.INDEXING.EXTTAGS"><span class=
                 "application">Unix</span>-like systems: importing
                 external tags</a></span></dt>
@@ -420,7 +423,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1614">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1622">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -1382,7 +1385,7 @@ indexedmimetypes = application/pdf</pre>
           parameters</span>, <span class="guilabel">Web
           history</span> (<a class="link" href=
           "#RCL.INDEXING.WEBQUEUE" title=
-          "2.5.4.&nbsp;Unix-like systems: indexing visited Web pages">details</a>)
+          "2.5.5.&nbsp;Unix-like systems: indexing visited Web pages">details</a>)
           and <span class="guilabel">Search parameters</span>.</p>
           <p>The <span class="guilabel">Global parameters</span>
           tab allows setting global variables, like the lists of
@@ -2384,9 +2387,32 @@ pdfocrlang = eng</pre>
           <div class="titlepage">
             <div>
               <div>
+                <h3 class="title"><a name="RCL.INDEXING.STT" id=
+                "RCL.INDEXING.STT"></a>2.5.3.&nbsp;Running a speech
+                to text program on audio files</h3>
+              </div>
+            </div>
+          </div>
+          <p>If the <span class="orgname">OpenAI</span>
+          <span class="application">Whisper</span> program is
+          available and the appropriate parameters set in the
+          configuration files, the <span class=
+          "application">Recoll</span> audio file handler will run
+          speech to text recognition on audio files and the
+          resulting text will be indexed. See the <a class="ulink"
+          href=
+          "https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexAudioWhisper.html"
+          target="_top">the FAQ entry</a> for more details.</p>
+          <p>The results of the speech recognition will be cached
+          in the same manner as the results of image OCR.</p>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
                 <h3 class="title"><a name="RCL.INDEXING.REMOVABLE"
                 id=
-                "RCL.INDEXING.REMOVABLE"></a>2.5.3.&nbsp;Removable
+                "RCL.INDEXING.REMOVABLE"></a>2.5.4.&nbsp;Removable
                 volumes</h3>
               </div>
             </div>
@@ -2610,7 +2636,7 @@ recollindex -c "$confdir"</pre>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.WEBQUEUE"
                 id=
-                "RCL.INDEXING.WEBQUEUE"></a>2.5.4.&nbsp;<span class="application">Unix</span>-like
+                "RCL.INDEXING.WEBQUEUE"></a>2.5.5.&nbsp;<span class="application">Unix</span>-like
                 systems: indexing visited Web pages</h3>
               </div>
             </div>
@@ -2694,7 +2720,7 @@ recollindex -c "$confdir"</pre>
             <div>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.EXTATTR"
-                id="RCL.INDEXING.EXTATTR"></a>2.5.5.&nbsp;<span class="application">Unix</span>-like
+                id="RCL.INDEXING.EXTATTR"></a>2.5.6.&nbsp;<span class="application">Unix</span>-like
                 systems: using extended attributes</h3>
               </div>
             </div>
@@ -2766,7 +2792,7 @@ file.
             <div>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.EXTTAGS"
-                id="RCL.INDEXING.EXTTAGS"></a>2.5.6.&nbsp;<span class="application">Unix</span>-like
+                id="RCL.INDEXING.EXTTAGS"></a>2.5.7.&nbsp;<span class="application">Unix</span>-like
                 systems: importing external tags</h3>
               </div>
             </div>
@@ -4368,7 +4394,7 @@ file.
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1614" id="idm1614"></a>
+            <a name="idm1622" id="idm1622"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -10834,8 +10860,8 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                 "RCL.INSTALL.CONFIG.RECOLLCONF.SPEECHTOTEXT"></a><span class="term"><code class="varname">speechtotext</code></span></dt>
                 <dd>
                   <p>Activate speech to text conversion The only
-                  posssible value at the moment is "whisper" for
-                  using the OpenAI whisper program</p>
+                  possible value at the moment is "whisper" for
+                  using the OpenAI whisper program.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.STTMODEL" id=
