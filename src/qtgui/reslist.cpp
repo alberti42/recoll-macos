@@ -237,36 +237,43 @@ string QtGuiResListPager::headerContent()
     return out + prefs.htmlHeaderContents();
 }
 
-void QtGuiResListPager::suggest(const vector<string>uterms, map<string, vector<string> >& sugg)
+void QtGuiResListPager::suggest(const vector<string>uterms, map<string, vector<string>>& sugg)
 {
     sugg.clear();
     bool issimple = m_reslist && m_reslist->m_rclmain && 
         m_reslist->m_rclmain->lastSearchSimple();
 
-    for (const auto& uit : uterms) {
-        vector<string> tsuggs;
+    for (const auto& userterm : uterms) {
+        vector<string> spellersuggs;
 
-        // If the term is in the dictionary, Aspell::suggest won't
-        // list alternatives. In fact we may want to check the
-        // frequencies and propose something anyway if a possible
-        // variation is much more common (as google does) ?
-        if (!rcldb->getSpellingSuggestions(uit, tsuggs)) {
+        // If the term is in the dictionary, by default, aspell won't list alternatives, but the
+        // recoll utility based on python-aspell. In any case, we might want to check the term
+        // frequencies and taylor our suggestions accordingly ? For example propose a replacement
+        // for a valid term only if the replacement is much more frequent ? (as google seems to do)?
+        // To mimick the old code, we could check for the user term presence in the suggestion list,
+        // but it's not clear that giving no replacements in this case would be better ?
+        //
+        // Also we should check that the term stems differently from the base word (else it's not
+        // useful to expand the search). Or is it ? This should depend if stemming is turned on or
+        // not
+        if (!rcldb->getSpellingSuggestions(userterm, spellersuggs)) {
             continue;
         }
-        // We should check that the term stems differently from the
-        // base word (else it's not useful to expand the search). Or
-        // is it ? This should depend if stemming is turned on or not
-
-        if (!tsuggs.empty()) {
-            sugg[uit] = vector<string>(tsuggs.begin(), tsuggs.end());
-            if (sugg[uit].size() > 5)
-                sugg[uit].resize(5);
-            // Set up the links as a <href="Sold|new">. 
-            for (auto& it : sugg[uit]) {
+        if (!spellersuggs.empty()) {
+            sugg[userterm] = vector<string>();
+            int cnt = 0;
+            for (auto subst : spellersuggs) {
+                if (subst == userterm)
+                    continue;
+                if (++cnt > 5)
+                    break;
                 if (issimple) {
-                    it = string("<a href=\"") + linkPrefix() + "S" + uit +
-                        "|" + it + "\">" + it + "</a>";
+                    // If this is a simple search, we set up links as a <href="Sold|new">, else we
+                    // just list the replacements.
+                    subst = string("<a href=\"") + linkPrefix() + "S" + userterm +
+                        "|" + subst + "\">" + subst + "</a>";
                 }
+                sugg[userterm].push_back(subst);
             }
         }
     }
