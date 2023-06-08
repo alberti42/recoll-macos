@@ -516,8 +516,7 @@ bool Db::Native::hasTerm(const string& udi, int idxi, const string& term)
 
 // Retrieve Xapian document, given udi. There may be several identical udis
 // if we are using multiple indexes.
-Xapian::docid Db::Native::getDoc(const string& udi, int idxi, 
-                                 Xapian::Document& xdoc)
+Xapian::docid Db::Native::getDoc(const string& udi, int idxi, Xapian::Document& xdoc)
 {
     string uniterm = make_uniterm(udi);
     for (int tries = 0; tries < 2; tries++) {
@@ -2513,7 +2512,7 @@ bool Db::getDoc(const string &udi, const Doc& idxdoc, Doc &doc)
     return getDoc(udi, idxi, doc);
 }
 
-bool Db::getDoc(const string &udi, const std::string& dbdir, Doc &doc)
+bool Db::getDoc(const string &udi, const std::string& dbdir, Doc &doc, bool fetchtext)
 {
     LOGDEB1("Db::getDoc(udi, dbdir): (" << udi << ", " << dbdir << ")\n");
     int idxi = -1;
@@ -2532,10 +2531,10 @@ bool Db::getDoc(const string &udi, const std::string& dbdir, Doc &doc)
         LOGERR("Db::getDoc(udi, dbdir): dbdir not in current extra dbs\n");
         return false;
     }
-    return getDoc(udi, idxi, doc);
+    return getDoc(udi, idxi, doc, fetchtext);
 }
 
-bool Db::getDoc(const string& udi, int idxi, Doc& doc)
+bool Db::getDoc(const string& udi, int idxi, Doc& doc, bool fetchtext)
 {
     // Initialize what we can in any case. If this is history, caller
     // will make partial display in case of error
@@ -2548,7 +2547,7 @@ bool Db::getDoc(const string& udi, int idxi, Doc& doc)
     if (idxi >= 0 && (docid = m_ndb->getDoc(udi, idxi, xdoc))) {
         string data = xdoc.get_data();
         doc.meta[Rcl::Doc::keyudi] = udi;
-        return m_ndb->dbDataToRclDoc(docid, data, doc);
+        return m_ndb->dbDataToRclDoc(docid, data, doc, fetchtext);
     } else {
         // Document found in history no longer in the
         // database.  We return true (because their might be

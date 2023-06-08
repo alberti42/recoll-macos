@@ -373,8 +373,7 @@ public:
 
     /** Get document for given udi and index directory. 
      *
-     * Used by the 'history' feature. This supposes that the extra db
-     * is still active.
+     * Used by the 'history' feature. This supposes that the extra db is still active.
      * @param udi The unique document identifier.
      * @param dbdir The index directory, from storage, as returned by 
      *   whatIndexForResultDoc() at the time of the query. Can be
@@ -383,7 +382,10 @@ public:
      * @param[out] doc The output Recoll document.
      * @return True for success.
      */
-    bool getDoc(const std::string &udi, const std::string& dbdir, Doc &doc);
+    bool getDoc(const std::string &udi, const std::string& dbdir, Doc &doc, bool fetchtext=false);
+
+    /** Same as from dbdir but use index integer index (main==0). Mostly for the python module */
+    bool getDoc(const std::string& udi, int idxi, Doc& doc, bool fetchtext=false);
 
     /** Test if documents has sub-documents. 
      *
@@ -550,7 +552,6 @@ private:
     bool maybeflush(int64_t moretext);
     bool docExists(const std::string& uniterm);
 
-    bool getDoc(const std::string& udi, int idxi, Doc& doc);
     void spellExpand(const std::string& term, const std::string& field,
                      std::vector<std::string>& expansion);
 };

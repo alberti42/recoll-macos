@@ -1765,6 +1765,36 @@ Db_doc(recoll_DbObject* self)
 }
 
 static PyObject *
+Db_getDoc(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
+{
+    LOGDEB("Db_doc\n");
+    if (self->db == 0) {
+        LOGERR("Db_doc: db not found " << self->db << "\n");
+        PyErr_SetString(PyExc_AttributeError, "db");
+        return 0;
+    }
+    int idxidx = 0;
+    char *cudi = 0;
+    static const char *kwlist[] = {"idxidx", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", (char**)kwlist, &cudi, &idxidx)) {
+        return 0;
+    }
+    std::string udi(cudi);
+
+    recoll_DocObject *pydoc =
+        (recoll_DocObject *)PyObject_CallObject((PyObject *)&recoll_DocType, 0);
+    if (!pydoc)
+        return 0;
+    pydoc->rclconfig = self->rclconfig;
+    if (!self->db->getDoc(std::string(udi), idxidx, *(pydoc->doc), true)) {
+        PyErr_SetString(PyExc_AttributeError, "Doc not found: bad UDI or idx index");
+        return 0;
+    }
+    Py_INCREF(self);
+    return (PyObject *)pydoc;
+}
+
+static PyObject *
 Db_setAbstractParams(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Db_setAbstractParams\n");
@@ -2056,11 +2086,14 @@ static PyMethodDef Db_methods[] = {
     {"doc", (PyCFunction)Db_doc, METH_NOARGS,
      "doc() -> Doc. Return a new, blank doc object for this index."
     },
+    {"getDoc",(PyCFunction)Db_getDoc, METH_VARARGS|METH_KEYWORDS,
+     "getDoc(udi, idxidx=0) -> Doc.\n"
+     "Retrieve document from given udi and index number (default 0, main index)."
+    },
     {"cursor", (PyCFunction)Db_query, METH_NOARGS,
      "cursor() -> Query. Alias for query(). Return query object."
     },
-    {"setAbstractParams", (PyCFunction)Db_setAbstractParams, 
-     METH_VARARGS|METH_KEYWORDS,
+    {"setAbstractParams", (PyCFunction)Db_setAbstractParams, METH_VARARGS|METH_KEYWORDS,
      "setAbstractParams(maxchars, contextwords).\n"
      "Set the parameters used to build 'keyword-in-context' abstracts"
     },
