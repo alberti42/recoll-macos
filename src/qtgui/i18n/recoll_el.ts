@@ -5,7 +5,7 @@
     <name>ActSearchDLG</name>
     <message>
         <source>Menu search</source>
-        <translation type="unfinished"></translation>
+        <translation>Μενού αναζήτησης</translation>
     </message>
 </context>
 <context>
@@ -123,7 +123,7 @@
     </message>
     <message>
         <source>Enter top directory for search</source>
-        <translation>Εισάγετε τον κατάλογο εκκίνησης της αναζήτησης</translation>
+        <translation>Εισαγάγετε τον κατάλογο εκκίνησης της αναζήτησης</translation>
     </message>
     <message>
         <source>Browse</source>
@@ -318,7 +318,7 @@
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>Το όνομα του καταλόγου αποθήκευσης του ευρετηρίου&lt;br&gt;Μια σχετική διαδρομή αναφερόμενη στη διαδρομή διαμόρφωσης. Η εξ&apos; ορισμού είναι «xapiandb». </translation>
+        <translation>Το όνομα του καταλόγου αποθήκευσης του ευρετηρίου&lt;br&gt;Μια σχετική διαδρομή αναφερόμενη στη διαδρομή διαμόρφωσης. Η εξ&apos; ορισμού είναι «xapiandb».</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
@@ -378,7 +378,7 @@
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation>Μέγιστος αριθμός ρητρών Xapian </translation>
+        <translation>Μέγιστος αριθμός ρητρών Xapian</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
@@ -410,23 +410,23 @@
     </message>
     <message>
         <source>Process the Web history queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Επεξεργασία της ουράς αναμονής ιστορικού ιστού</translation>
     </message>
     <message>
         <source> (by default, aspell suggests mispellings when a query has no results).</source>
-        <translation type="unfinished"></translation>
+        <translation> (εξ ορισμού, το aspell προτείνει ορθογραφικά λάθη όταν ένα ερώτημα δεν φέρει αποτελέσματα).</translation>
     </message>
     <message>
         <source>Page recycle interval</source>
-        <translation type="unfinished"></translation>
+        <translation>Χρονικό διάστημα ανακύκλωσης της σελίδας</translation>
     </message>
     <message>
         <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Εξ ορισμού, μόνο μια υπόσταση ενός URL διατηρείται στην κρυφή μνήμη. Αυτό μπορείτε να το αλλάξετε θέτοντας μια τιμή που καθορίζει την συχνότητα διατήρησης πολλαπλών υποστάσεων (&apos;ημέρα&apos;, &apos;εβδομάδα&apos;, &apos;μήνας&apos;, &apos;έτος&apos;). Σημειώστε ότι ξ αύξηση του χρονικού διαστήματος δεν διαγράφει τις υπάρχουσες καταχωρήσεις.</translation>
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Σημείωση: οι παλιές σελίδες θα διαγραφούν ούτως ώστε να δημιουργηθεί χώρος για νέες σελίδες όταν θα επιτευχθεί το μέγιστο μέγεθος. Τρέχον μέγεθος: %1</translation>
     </message>
 </context>
 <context>
@@ -482,7 +482,8 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation>Τα εξωτερικά φίλτρα σε λειτουργία μεγαλύτερη από αυτό θα διακόπτονται. Χρήσιμο για τη σπάνια περίπτωση (π.χ. postscript) όπου ένα έγγραφο μπορεί να προκαλέσει ένα βρόγχο στο φίλτρο. Ορίστε το σε -1 για να αφαιρέσετε το όριο.</translation>
+        <translation>Τα εξωτερικά φίλτρα σε λειτουργία μεγαλύτερη από αυτό θα διακόπτονται. Χρήσιμο για τη σπάνια περίπτωση (π.χ. postscript) όπου ένα έγγραφο μπορεί να προκαλέσει ένα βρόγχο στο φίλτρο. Ορίστε το σε -1 για να αφαιρέσετε το όριο.
+</translation>
     </message>
     <message>
         <source>Global</source>
@@ -512,7 +513,7 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; προγραμματισμός της περιοδικής ευρετηρίασης (cron) &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Κάθε πεδίο μπορεί να περιέχει ένα χαρακτήρα υποκατάστασης (*), μια απλή αριθμητική τιμή, λίστες διαχωρισμένες με κόμα (1,3,5) και εύρη (1-7). Γενικότερα, τα πεδία θα χρησιμοποιηθούν &lt;span style=&quot; font-style:italic;&quot;&gt;ως έχουν&lt;/span&gt; στο αρχείο crontab, και η γενική σύνταξη crontab μπορεί να χρησιμοποιηθεί, δείτε στη σελίδα του εγχειριδίου crontab(5).&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Κάθε πεδίο μπορεί να περιέχει ένα χαρακτήρα υποκατάστασης (*), μια απλή αριθμητική τιμή, λίστες διαχωρισμένες με κόμμα (1,3,5) και εύρη (1-7). Γενικότερα, τα πεδία θα χρησιμοποιηθούν &lt;span style=&quot; font-style:italic;&quot;&gt;ως έχουν&lt;/span&gt; στο αρχείο crontab, και η γενική σύνταξη crontab μπορεί να χρησιμοποιηθεί, δείτε στη σελίδα του εγχειριδίου crontab(5).&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Για παράδειγμα, εισάγοντας &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; στις &lt;span style=&quot; font-style:italic;&quot;&gt;Ημέρες, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; στις &lt;span style=&quot; font-style:italic;&quot;&gt;Ώρες&lt;/span&gt; και &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; στα &lt;span style=&quot; font-style:italic;&quot;&gt;Λεπτά&lt;/span&gt;, το recollindex θα ξεκινά κάθε μέρα στις 12:15 AM και 7:15 PM&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Ο προγραμματισμός με πολύ συχνές ενεργοποιήσεις είναι πιθανώς λιγότερο αποτελεσματικός από την ευρετηρίαση σε πραγματικό χρόνο.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
@@ -635,7 +636,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Φαίνεται ότι το ευρετήριο για αυτήν τη διαμόρφωση δεν υπάρχει ακόμα..&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;Αν θέλετε απλά να δεικτοδοτήσετε τον προσωπικό σας κατάλογο με ένα ικανοποιητικό σύνολοy προεπιλογών, πατήστε το κουμπί &lt;span style=&quot; font-style:italic;&quot;&gt;«Έναρξη της ευρετηρίασης τώρα»&lt;/span&gt;. Μπορείτε να ρυθμίσετε τις λεπτομέρειες αργότερα. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Φαίνεται ότι το ευρετήριο για αυτήν τη διαμόρφωση δεν υπάρχει ακόμα..&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;Αν θέλετε απλά να δεικτοδοτήσετε τον προσωπικό σας κατάλογο με ένα ικανοποιητικό σύνολο προεπιλογών, πατήστε το κουμπί &lt;span style=&quot; font-style:italic;&quot;&gt;«Έναρξη της ευρετηρίασης τώρα»&lt;/span&gt;. Μπορείτε να ρυθμίσετε τις λεπτομέρειες αργότερα. &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Αν επιθυμείτε περισσότερο έλεγχο, χρησιμοποιήστε τους παρακάτω συνδέσμους για να ρυθμίσετε τη διαμόρφωση της ευρετηρίασης και του προγραμματισμού.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
@@ -676,7 +677,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Fragment Buttons</source>
-        <translation type="vanished">Πλήκτρα Τεμαχίων</translation>
+        <translation type="vanished">Πλήκτρα θραυσμάτων</translation>
     </message>
     <message>
         <source>Query Fragments</source>
@@ -808,7 +809,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Missing helper program: </source>
-        <translation>Ελλείποντα εξωτερικά προγράμματα φίλτρου:</translation>
+        <translation>Ελλείποντα εξωτερικά προγράμματα φίλτρου: </translation>
     </message>
     <message>
         <source>Can&apos;t turn doc into internal representation for </source>
@@ -828,7 +829,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Tab 1</source>
-        <translation>Tab 1</translation>
+        <translation>Καρτέλα 1</translation>
     </message>
     <message>
         <source>Open</source>
@@ -896,7 +897,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Print tab</source>
-        <translation type="vanished">Print tab</translation>
+        <translation type="vanished">Εκτύπωση καρτέλας</translation>
     </message>
     <message>
         <source>Close preview window</source>
@@ -1140,15 +1141,15 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Copy Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Αντιγραφή κειμένου</translation>
     </message>
     <message>
         <source>Copy &amp;File Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Αντιγραφή της &amp;πλήρους διαδρομής αρχείου</translation>
     </message>
     <message>
         <source>Copy File Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Αντιγραφή του ονόματος του αρχείου</translation>
     </message>
 </context>
 <context>
@@ -1175,7 +1176,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Η ευρετηρίαση του &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; μπορεί να έχει ρυθμιστεί να εκτελείται στο παρασκήνιο, ενημερώνωντας το ευρετήριο σταδιακά κατά την τροποποίηση του αρχείου. Επωφελείστε από ένα ευρετήριο πάντα ενημερωμένο, αλλά καταναλόνωνται συνέχεια πόροι του συστήματος (μνήμη και επεξεργαστής).&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Η ευρετηρίαση του &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; μπορεί να έχει ρυθμιστεί να εκτελείται στο παρασκήνιο, ενημερώνοντας το ευρετήριο σταδιακά κατά την τροποποίηση του αρχείου. Επωφελείστε από ένα ευρετήριο πάντα ενημερωμένο, αλλά καταναλώνονται συνέχεια πόροι του συστήματος (μνήμη και επεξεργαστής).&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -1188,7 +1189,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Replacing: </source>
-        <translation>Αντικατάσταση του:</translation>
+        <translation>Αντικατάσταση του: </translation>
     </message>
     <message>
         <source>Replacing file</source>
@@ -1196,7 +1197,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Can&apos;t create: </source>
-        <translation>Αδυναμία δημιουργίας:</translation>
+        <translation>Αδυναμία δημιουργίας: </translation>
     </message>
     <message>
         <source>Warning</source>
@@ -1208,7 +1209,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Deleting: </source>
-        <translation>Διαγραφή:</translation>
+        <translation>Διαγραφή: </translation>
     </message>
     <message>
         <source>Deleting file</source>
@@ -1373,7 +1374,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Missing helper programs</source>
-        <translation>Εφαρμογές που λείπουν</translation>
+        <translation>Ελλείπουσες βοηθητικές εφαρμογές</translation>
     </message>
     <message>
         <source>Save file dialog</source>
@@ -1399,7 +1400,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Can&apos;t access file: </source>
-        <translation>Αδύνατη η πρόσβαση στο αρχείο:</translation>
+        <translation>Αδύνατη η πρόσβαση στο αρχείο: </translation>
     </message>
     <message>
         <source>Can&apos;t uncompress file: </source>
@@ -1509,7 +1510,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation type="vanished">Η δεικτοδότηση δεν έχει εκτελεστή εκόμα</translation>
+        <translation type="vanished">Η δεικτοδότηση δεν έχει εκτελεστή ακόμα</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
@@ -1517,7 +1518,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation type="vanished">Η δεικτοδότηση δεν είναι ενημερωμένηη για αυτό το αρχείο. Πιθανός κίνδυνος εμφάνισης μιας λανθασμένης εισαγωγής.</translation>
+        <translation type="vanished">Η δεικτοδότηση δεν είναι ενημερωμένη για αυτό το αρχείο. Πιθανός κίνδυνος εμφάνισης μιας λανθασμένης εισαγωγής.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
@@ -1545,7 +1546,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
-        <translation>Τα πράγματα θα βελτιωθούν μετά το πέρας της δεικτοδότησης.</translation>
+        <translation>Τα πράγματα θα βελτιωθούν μετά το πέρας της δεικτοδότησης. </translation>
     </message>
     <message>
         <source>The document belongs to an external indexwhich I can&apos;t update. </source>
@@ -1571,7 +1572,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Bad paths</source>
-        <translation>Λάθος μονοπάτια</translation>
+        <translation>Λανθασμένες διαδρομές</translation>
     </message>
     <message>
         <source>Bad paths in configuration file:
@@ -1645,11 +1646,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation type="vanished">Η τρέχουσα διαδικασία ευρετηρίασης δεν ξεκίνησε από αυτή τη διασύνδεση, μπορεί&apos;t σκοτώσει</translation>
+        <translation type="vanished">Η τρέχουσα διαδικασία ευρετηρίασης δεν ξεκίνησε από αυτή τη διασύνδεση· αδύνατη η διακοπή της.</translation>
     </message>
     <message>
         <source>The document belongs to an external index which I can&apos;t update. </source>
-        <translation>Το έγγραφο ανήκει σε εξωτερικό ευρετήριο που μπορώ&apos;t ενημέρωση. </translation>
+        <translation>Το έγγραφο ανήκει σε ένα εξωτερικό ευρετήριο το οποίο δεν μπορώ να ενημερώσω. </translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
@@ -1665,7 +1666,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Can&apos;t set synonyms file (parse error?)</source>
-        <translation>Μπορεί&apos;t να ορίσει αρχείο συνώνυμων (σφάλμα ανάλυσης?)</translation>
+        <translation>Αδύνατος ο ορισμός του αρχείου συνώνυμων (σφάλμα ανάλυσης;)</translation>
     </message>
     <message>
         <source>Index locked</source>
@@ -1673,11 +1674,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Unknown indexer state. Can&apos;t access webcache file.</source>
-        <translation>Άγνωστη κατάσταση ευρετηρίου. Μπορεί&apos;t πρόσβαση στο αρχείο webcache.</translation>
+        <translation>Άγνωστη κατάσταση ευρετηρίου. Αδύνατη η πρόσβαση στο webcache.</translation>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
-        <translation>Εκτελείται το ευρετήριο. Μπορεί&apos;t πρόσβαση στο αρχείο webcache.</translation>
+        <translation>Το ευρετήριο εκτελείται. Αδύνατη η πρόσβαση στο αρχείο webcache.</translation>
     </message>
     <message>
         <source> with additional message: </source>
@@ -1685,11 +1686,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Non-fatal indexing message: </source>
-        <translation>Μήνυμα μη θανατηφόρου ευρετηρίου: </translation>
+        <translation>Μη μοιραίο σφάλμα ευρετηρίασης: </translation>
     </message>
     <message>
         <source>Types list empty: maybe wait for indexing to progress?</source>
-        <translation>Κενή λίστα τύπων: ίσως περιμένετε για να προχωρήσει η ευρετηρίαση?</translation>
+        <translation>Κενή λίστα τύπων: αναμονή της εξέλιξης της ευρετηρίασης;</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
@@ -1723,7 +1724,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Can&apos;t update index: internal error</source>
-        <translation>Μπορέστε&apos;t να ενημερώσετε το ευρετήριο: εσωτερικό σφάλμα</translation>
+        <translation>Αδύνατη η ενημέρωση του ευρετηρίου: εσωτερικό σφάλμα</translation>
     </message>
     <message>
         <source>Index not up to date for this file.&lt;br&gt;</source>
@@ -1771,7 +1772,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>No information: initial indexing not yet performed.</source>
-        <translation>Δεν υπάρχουν πληροφορίες: αρχική ευρετηρίαση δεν έχει πραγματοποιηθεί ακόμα.</translation>
+        <translation>Δεν υπάρχουν πληροφορίες: η αρχική ευρετηρίαση δεν έχει πραγματοποιηθεί ακόμα.</translation>
     </message>
     <message>
         <source>Batch scheduling</source>
@@ -1779,7 +1780,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
-        <translation>Το εργαλείο θα σας επιτρέψει να αποφασίσετε ποια ώρα ευρετηρίασης θα λειτουργήσει. Χρησιμοποιεί τον προγραμματιστή εργασιών των Windows.</translation>
+        <translation>Χρησιμοποιήστε αυτό το εργαλείο για τον προγραμματισμό εκτέλεσης της ευρετηρίασης. Χρησιμοποιεί τον προγραμματιστή εργασιών των Windows.</translation>
     </message>
     <message>
         <source>Confirm</source>
@@ -1795,11 +1796,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>F&amp;ilter</source>
-        <translation>Έ&amp;πλασμα</translation>
+        <translation>Φί&amp;λτρο</translation>
     </message>
     <message>
         <source>Could not start recollindex (temp file error)</source>
-        <translation type="vanished">Αδυναμία εκκίνησης recollindex (προσωρινό σφάλμα αρχείου)</translation>
+        <translation type="vanished">Αδυναμία εκκίνησης του recollindex (προσωρινό σφάλμα αρχείου)</translation>
     </message>
     <message>
         <source>Could not read: </source>
@@ -1839,7 +1840,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Main Window</source>
-        <translation>Κύριο Παράθυρο</translation>
+        <translation>Κύριο παράθυρο</translation>
     </message>
     <message>
         <source>Focus to Search</source>
@@ -1851,7 +1852,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Clear Search</source>
-        <translation type="vanished">Καθαρισμός Αναζήτησης</translation>
+        <translation type="vanished">Καθαρισμός αναζήτησης</translation>
     </message>
     <message>
         <source>Focus to Result Table</source>
@@ -1879,27 +1880,27 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Flushing</source>
-        <translation type="unfinished"></translation>
+        <translation>Εγγραφή του δείκτη</translation>
     </message>
     <message>
         <source>Show menu search dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Εμφάνιση του διαλόγου του μενού αναζήτησης</translation>
     </message>
     <message>
         <source>Duplicates</source>
-        <translation type="unfinished"></translation>
+        <translation>Διπλότυπα</translation>
     </message>
     <message>
         <source>Filter directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Φιλτράρισμα καταλόγων</translation>
     </message>
     <message>
         <source>Main index open error: </source>
-        <translation type="unfinished"></translation>
+        <translation>Σφάλμα ανοίγματος του βασικού ευρετηρίου: </translation>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
-        <translation type="unfinished"></translation>
+        <translation>. Το ευρετήριο ίσως είναι κατεστραμμένο. Προσπαθήστε να εκτελέσετε το xapian-check ή την επανακατασκευή του ευρετηρίου.</translation>
     </message>
 </context>
 <context>
@@ -2106,11 +2107,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Index configuration</source>
-        <translation>Διαμόρφωση &amp;Ευρετηρίου</translation>
+        <translation>Διαμόρφωση &amp;ευρετηρίου</translation>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
-        <translation>Διαμόρφωση &amp;Περιβάλλοντος</translation>
+        <translation>Διαμόρφωση &amp;περιβάλλοντος</translation>
     </message>
     <message>
         <source>&amp;Results</source>
@@ -2134,7 +2135,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Save as CSV (spreadsheet) file</source>
-        <translation>Αποθήκευση ως αρχείο CVS (φύλλο εργασίας)</translation>
+        <translation>Αποθήκευση ως αρχείο CSV (φύλλο εργασίας)</translation>
     </message>
     <message>
         <source>Saves the result into a file which you can load in a spreadsheet</source>
@@ -2158,7 +2159,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>    With failed files retrying</source>
-        <translation>    Προσπάθεια εκ νέου με αποτυχημένα αρχεία</translation>
+        <translation>Με επανεπεξεργασία των αποτυχημένων αρχείων</translation>
     </message>
     <message>
         <source>Next update will retry previously failed files</source>
@@ -2174,15 +2175,15 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Special Indexing</source>
-        <translation>Ειδικό Ευρετήριο</translation>
+        <translation>Ειδική ευρετηρίαση</translation>
     </message>
     <message>
         <source>Indexing with special options</source>
-        <translation>Ευρετήριο με ειδικές επιλογές</translation>
+        <translation>Ευρετηρίαση με ειδικές επιλογές</translation>
     </message>
     <message>
         <source>Indexing &amp;schedule</source>
-        <translation>Προγραμματισμός Ευρετηρίου</translation>
+        <translation>&amp;Προγραμματισμός ευρετηρίου</translation>
     </message>
     <message>
         <source>Enable synonyms</source>
@@ -2194,7 +2195,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Missing &amp;helpers</source>
-        <translation>Λείπουν &amp;βοηθοί</translation>
+        <translation>Ελλείποντες &amp;βοηθοί</translation>
     </message>
     <message>
         <source>Indexed &amp;MIME types</source>
@@ -2202,7 +2203,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Index &amp;statistics</source>
-        <translation>Στατιστικά Δείκτη</translation>
+        <translation>&amp;Στατιστικά ευρετηρίου</translation>
     </message>
     <message>
         <source>Webcache Editor</source>
@@ -2210,11 +2211,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Trigger incremental pass</source>
-        <translation>Αυθητικό πέρασμα ενεργοποίησης</translation>
+        <translation>Ενεργοποίηση προοδευτικής ευρετηρίασης</translation>
     </message>
     <message>
         <source>E&amp;xport simple search history</source>
-        <translation>Εξαγωγή ιστορικού απλής αναζήτησης</translation>
+        <translation>&amp;Εξαγωγή ιστορικού απλής αναζήτησης</translation>
     </message>
     <message>
         <source>Use default dark mode</source>
@@ -2230,35 +2231,35 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Increase results text font size</source>
-        <translation type="unfinished"></translation>
+        <translation>Αύξηση μεγέθους γραμματοσειράς του κειμένου των αποτελεσμάτων</translation>
     </message>
     <message>
         <source>Increase Font Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Αύξηση μεγέθους γραμματοσειράς</translation>
     </message>
     <message>
         <source>Decrease results text font size</source>
-        <translation type="unfinished"></translation>
+        <translation>Μείωση μεγέθους γραμματοσειράς του κειμένου των αποτελεσμάτων</translation>
     </message>
     <message>
         <source>Decrease Font Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Μείωση μεγέθους γραμματοσειράς</translation>
     </message>
     <message>
         <source>Start real time indexer</source>
-        <translation type="unfinished"></translation>
+        <translation>Έναρξη ευρετηρίασης ανά διαστήματα</translation>
     </message>
     <message>
         <source>Query Language Filters</source>
-        <translation type="unfinished"></translation>
+        <translation>Φίλτρα αναζήτησης (λειτουργία γλώσσας)</translation>
     </message>
     <message>
         <source>Filter dates</source>
-        <translation type="unfinished">Φίλτρο ημερομηνίας</translation>
+        <translation>Φίλτρο ημερομηνίας</translation>
     </message>
     <message>
         <source>Assisted complex search</source>
-        <translation type="unfinished"></translation>
+        <translation>Υποβοηθούμενη σύνθετη αναζήτηση</translation>
     </message>
 </context>
 <context>
@@ -2304,7 +2305,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source> Ipath</source>
-        <translation type="vanished"> Διαδρομή</translation>
+        <translation type="vanished"> Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
@@ -2352,7 +2353,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Can&apos;t sort by inverse relevance</source>
-        <translation>Μπορεί&apos;t ταξινομήσετε με αντίστροφη συνάφεια</translation>
+        <translation>Αδύνατη η ταξινόμηση ανά αντίστροφή εγγύτητα</translation>
     </message>
 </context>
 <context>
@@ -2395,7 +2396,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>(show query)</source>
-        <translation>(αίτημα)</translation>
+        <translation>(ερώτημα)</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
@@ -2479,11 +2480,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>This spelling guess was added to the search:</source>
-        <translation type="unfinished"></translation>
+        <translation>Προσθήκη ορθογραφικής προσέγγισης στην αναζήτηση:</translation>
     </message>
     <message>
         <source>These spelling guesses were added to the search:</source>
-        <translation type="unfinished"></translation>
+        <translation>Προσθήκες ορθογραφικής προσέγγισης στην αναζήτηση:</translation>
     </message>
 </context>
 <context>
@@ -2510,7 +2511,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Can&apos;t open/create file: </source>
-        <translation>Αδύνατο το άνοιγμα/δημιουργία του αρχείου:</translation>
+        <translation>Αδύνατο το άνοιγμα/δημιουργία του αρχείου: </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -2570,7 +2571,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Show Snippets</source>
-        <translation type="vanished">Εμφάνιση Δείκτη</translation>
+        <translation type="vanished">Εμφάνιση αποσπασμάτων</translation>
     </message>
     <message>
         <source>Open current result document</source>
@@ -2598,15 +2599,15 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Use Shift+click to display the text instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>Χρησιμοποιήστε Shift +κλικ για την εμφάνιση του κειμένου.</translation>
     </message>
     <message>
         <source>%1 bytes copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 δυφιοσυλλαβές αντιγράφηκαν στο πρόχειρο</translation>
     </message>
     <message>
         <source>Copy result text and quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Αντιγραφή του κειμένου του αποτελέσματος και εγκατάλειψη της εφαρμογής</translation>
     </message>
 </context>
 <context>
@@ -2749,7 +2750,7 @@ Please check the desktop file</source>
   No actual parentheses allowed.&lt;br&gt;
 &lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase (must occur exactly). Possible modifiers:&lt;br&gt;
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
-Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
+Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&lt;F1&gt;) for more detail.
 </source>
         <translation type="vanished">Εισάγετε μια έκφραση γλώσσας ερωτήματος. Σκονάκι:&lt;br&gt;
 &lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; ΚΑΙ &apos;term2&apos; σε οποιοδήποτε πεδίο.&lt;br&gt;
@@ -2762,7 +2763,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
   ΜΗΝ βάλετε τις παρενθέσεις.&lt;br&gt;
 &lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : ακριβής πρόταση. Επιλογές:&lt;br&gt;
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : εγγύτητα (χωρίς σειρά).&lt;br&gt;
-Χρησιμοποιήστε το δεσμό &lt;b&gt;Λεπτομερειακή εμφάνιση του ερωτήματος&lt;/b&gt; σε περίπτωση που υπάρχει αμφιβολία στα αποτελέσματα και δείτε το εγχείρίδιο (στα αγγλικά) (&amp;lt;F1&gt;) για περισσότερες λεπτομέρειες.
+Χρησιμοποιήστε το δεσμό &lt;b&gt;Λεπτομερειακή εμφάνιση του ερωτήματος&lt;/b&gt; σε περίπτωση που υπάρχει αμφιβολία στα αποτελέσματα και δείτε το εγχείρίδιο (στα αγγλικά) (&lt;F1&gt;) για περισσότερες λεπτομέρειες.
 </translation>
     </message>
     <message>
@@ -2785,7 +2786,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
   You can use parentheses to make things clearer.&lt;br&gt;
 &lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase (must occur exactly). Possible modifiers:&lt;br&gt;
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
-Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
+Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&lt;F1&gt;) for more detail.
 </source>
         <translation type="vanished">Εισαγωγή έκφρασης γλώσσας ερωτήματος. «Σκονάκι»:&lt;br&gt;
 &lt;i&gt;όρος1 όρος2&lt;/i&gt; : &apos;όρος1&apos; και &apos;όρος2&apos; σε οποιοδήποτε πεδίο.&lt;br&gt;
@@ -2798,12 +2799,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
   Μπορείτε να χρησιμοποιείτε παρενθέσεις για πιο ευανάγνωστες εκφράσεις.&lt;br&gt;
 &lt;i&gt;&quot;όρος1 όρος2&quot;&lt;/i&gt; : φράση (πρέπει να αντιστοιχεί ακριβώς). Πιθανοί τροποποιητές:&lt;br&gt;
 &lt;i&gt;&quot;όρος1 όρος2&quot;p&lt;/i&gt; : αταξινόμητη και κατά προσέγγιση αναζήτηση με προκαθορισμένη απόσταση.&lt;br&gt;
-Χρησιμοποιήστε τον δεσμό &lt;b&gt;Εμφάνιση ερωτήματος&lt;/b&gt; σε περίπτωση αμφιβολίας σχετικά με το αποτέλεσμα και ανατρέξτε στο εγχειρίδιο χρήσης (&amp;lt;F1&gt;) για περισσότερες λεπτομέρειες.
+Χρησιμοποιήστε τον δεσμό &lt;b&gt;Εμφάνιση ερωτήματος&lt;/b&gt; σε περίπτωση αμφιβολίας σχετικά με το αποτέλεσμα και ανατρέξτε στο εγχειρίδιο χρήσης (&lt;F1&gt;) για περισσότερες λεπτομέρειες.
 </translation>
     </message>
     <message>
         <source>Stemming languages for stored query: </source>
-        <translation>Γλώσσα temming για το αποθηκευμένο ερώτημα: </translation>
+        <translation>Οι γλώσσες ριζικοποίησης για το αποθηκευμένο ερώτημα: </translation>
     </message>
     <message>
         <source> differ from current preferences (kept)</source>
@@ -2827,7 +2828,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here.</source>
-        <translation>Εισάγετε εδώ τους όρους αναζήτησης.</translation>
+        <translation>Εισαγάγετε εδώ τους όρους αναζήτησης.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
@@ -2839,11 +2840,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>border: 1px solid black;</source>
-        <translation>περίγραμμα: 1px συμπαγές μαύρο.</translation>
+        <translation>border: 1px solid black;</translation>
     </message>
     <message>
         <source>border-collapse: collapse;</source>
-        <translation>κατάρρευση συνόρων: κατάρρευση·</translation>
+        <translation>border-collapse: collapse;</translation>
     </message>
     <message>
         <source>}</source>
@@ -2863,7 +2864,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;Ερώτημα γλώσσα απατεώνες. Αναμφίβολα: κάντε κλικ στο κουμπί &lt;b&gt;Εμφάνιση ερωτήματος&lt;/b&gt;.&amp;nbsp;</translation>
+        <translation>&lt;p&gt;Σκονάκι γλώσσας ερωτημάτων. Σε περίπτωση αμφιβολίας κάντε κλικ στο &lt;b&gt;Εμφάνιση ερωτήματος&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2879,19 +2880,19 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Και&lt;/td&gt;&lt;td&gt;ένα δύο&amp;nbsp;&amp;nbsp;&amp;nbsp;ένα ΚΑΙ δύο&amp;nbsp;&amp;nbsp;&amp;nbsp;ένα &amp;&amp; δύο&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;ένα δύο&amp;nbsp;&amp;nbsp;&amp;nbsp;ένα AND δύο&amp;nbsp;&amp;nbsp;&amp;nbsp;ένα &amp;&amp; δύο&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Ή&lt;/td&gt;&lt;td&gt;ένα Ή δύο&amp;nbsp;&amp;nbsp;&amp;nbsp;ένα CO2&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;ένα OR δύο&amp;nbsp;&amp;nbsp;&amp;nbsp;ένα || δύο&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Σύνθετη boolean. Ή έχει προτεραιότητα, χρησιμοποιήστε παρένθεση&amp;nbsp;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Σύνθετη boolean. Το OR έχει προτεραιότητα, χρησιμοποιήστε παρένθεση&amp;nbsp;</translation>
     </message>
     <message>
         <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>όπου χρειαζόταν&lt;/td&gt;&lt;td&gt;(ένα ΚΑΙ δύο) Ή τρία&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>αν χρειάζεται&lt;/td&gt;&lt;td&gt;(ένα AND δύο) OR τρία&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2915,19 +2916,19 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Δεν υπάρχει επέκταση βλαστικών: κεφαλαιοποιήστε&lt;/td&gt;&lt;td&gt;Όροφος&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Ειδικό πεδίο&lt;/td&gt;&lt;td&gt;συγγραφέας:austen&amp;nbsp;&amp;nbsp;τίτλος:prejudice&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;ΚΑΙ εντός πεδίου (χωρίς παραγγελία)&lt;/td&gt;&lt;td&gt;συγγραφέας: jane,austen&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Ή εντός πεδίου&lt;/td&gt;&lt;td&gt;συγγραφέας:ωστεν/βρογχός&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2943,15 +2944,15 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Χρονικά διαστήματα&lt;/td&gt;&lt;td&gt;ημερομηνία:2018-01-01/2018-31-12&lt;br&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</translation>
     </message>
     <message>
         <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>ημερομηνία:2018&amp;nbsp;&amp;nbsp;ημερομηνία:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
-        <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
+        <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&gt;100k size&lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation>&lt;tr&gt;&lt;td&gt;Μέγεθος&lt;/td&gt;&lt;td&gt;size&gt;100k size&lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -2959,7 +2960,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Can&apos;t open index</source>
-        <translation>Μπορεί&apos;t ανοικτό ευρετήριο</translation>
+        <translation>Αδύνατο το άνοιγμα του ευρετηρίου</translation>
     </message>
     <message>
         <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
@@ -2967,7 +2968,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>???</source>
-        <translation>???</translation>
+        <translation>;;;</translation>
     </message>
     <message>
         <source>Using current preferences.</source>
@@ -2975,11 +2976,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Simple search</source>
-        <translation type="unfinished"></translation>
+        <translation>Απλός τύπος αναζήτησης</translation>
     </message>
     <message>
         <source>History</source>
-        <translation type="unfinished"></translation>
+        <translation>Ιστορικό</translation>
     </message>
 </context>
 <context>
@@ -3010,7 +3011,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation type="vanished">Εισάγετε εδώ τους όρους αναζήτησης. Πατήστε ESC SPC για να εμφανίσετε τις λέξεις που αρχίζουν από τον τρέχοντα όρο.</translation>
+        <translation type="vanished">Εισαγάγετε εδώ τους όρους αναζήτησης. Πατήστε ESC SPC για να εμφανίσετε τις λέξεις που αρχίζουν από τον τρέχοντα όρο.</translation>
     </message>
     <message>
         <source>Choose search type.</source>
@@ -3135,15 +3136,15 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Sort By Relevance</source>
-        <translation>Ταξινόμηση Κατά Συνάφεια</translation>
+        <translation>Ταξινόμηση ανά συνάφεια</translation>
     </message>
     <message>
         <source>Sort By Page</source>
-        <translation>Ταξινόμηση Κατά Σελίδα</translation>
+        <translation>Ταξινόμηση ανά σελίδα</translation>
     </message>
     <message>
         <source>Snippets Window</source>
-        <translation>Παράθυρο Δείγματα</translation>
+        <translation>Παράθυρο αποσπασμάτων</translation>
     </message>
     <message>
         <source>Find</source>
@@ -3155,11 +3156,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Find Next</source>
-        <translation type="vanished">Εύρεση Επόμενου</translation>
+        <translation type="vanished">Εύρεση επόμενου</translation>
     </message>
     <message>
         <source>Find Previous</source>
-        <translation type="vanished">Εύρεση Προηγούμενου</translation>
+        <translation type="vanished">Εύρεση προηγούμενου</translation>
     </message>
     <message>
         <source>Hide</source>
@@ -3220,7 +3221,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SpecIdxW</name>
     <message>
         <source>Special Indexing</source>
-        <translation>Ειδικό Ευρετήριο</translation>
+        <translation>Ειδική ευρετηρίαση</translation>
     </message>
     <message>
         <source>Do not retry previously failed files.</source>
@@ -3248,7 +3249,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
-        <translation>Αφήστε κενό για να επιλέξετε όλα τα αρχεία. Μπορείτε να χρησιμοποιήσετε πολλαπλά μοτίβα τύπου κελύφους χωρισμένα με κενό.&lt;br&gt;Μοτίβα με ενσωματωμένα κενά θα πρέπει να αναφέρονται με διπλά εισαγωγικά.&lt;br&gt;Μπορεί να χρησιμοποιηθεί μόνο αν έχει οριστεί ο στόχος έναρξης.</translation>
+        <translation>Αφήστε κενό για να επιλέξετε όλα τα αρχεία. Μπορείτε να χρησιμοποιήσετε πολλαπλές σχηματομορφές τύπου κελύφους χωρισμένα με κενό.&lt;br&gt;Σχηματομορφές με ενσωματωμένα κενά θα πρέπει να αναφέρονται με διπλά εισαγωγικά.&lt;br&gt;Μπορεί να χρησιμοποιηθεί μόνο αν έχει οριστεί ο κατάλογος πηγής.</translation>
     </message>
     <message>
         <source>Selection patterns:</source>
@@ -3276,11 +3277,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
-        <translation type="unfinished"></translation>
+        <translation>Αρχείο εξόδου διαγνώσεων. Περικομμένο αρχείο με τις διαγνώσεις της ευρετηρίασης (αιτίες μη δεικτοδότησης αρχείων).</translation>
     </message>
     <message>
         <source>Diagnostics file</source>
-        <translation type="unfinished"></translation>
+        <translation>Αρχείο διαγνώσεων</translation>
     </message>
 </context>
 <context>
@@ -3291,7 +3292,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&amp;Expand </source>
-        <translation>&amp;Ανάπτυξη</translation>
+        <translation>&amp;Ανάπτυξη </translation>
     </message>
     <message>
         <source>Alt+E</source>
@@ -3334,7 +3335,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SpellW</name>
     <message>
         <source>Wildcards</source>
-        <translation>Χαρακτήρες υποκατάστασης</translation>
+        <translation>Σύμβολα υποκατάστασης</translation>
     </message>
     <message>
         <source>Regexp</source>
@@ -3342,7 +3343,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Spelling/Phonetic</source>
-        <translation>Ορθογραφία/Φωνητικό</translation>
+        <translation>Ορθογραφία/Φωνητική</translation>
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
@@ -3438,7 +3439,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Results from last indexing:</source>
-        <translation>Αποτελέσματα από την τελευταία ευρετηρία:</translation>
+        <translation>Αποτελέσματα από την τελευταία ευρετηρίαση:</translation>
     </message>
     <message>
         <source>  Documents created/updated</source>
@@ -3450,11 +3451,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>  Unindexed files</source>
-        <translation>  Μη ευρετήριο αρχείων</translation>
+        <translation>  Μη δεικτοδοτημένα αρχεία</translation>
     </message>
     <message>
         <source>List files which could not be indexed (slow)</source>
-        <translation>Λίστα αρχείων που δεν μπορούν να ευρεθούν (αργά)</translation>
+        <translation>Εμφάνιση των αρχείων που δεν μπορούν να δεικτοδοτηθούν (αργό)</translation>
     </message>
     <message>
         <source>Spell expansion error. </source>
@@ -3481,7 +3482,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>error retrieving stemming languages</source>
-        <translation>σφάλμα κατά τη λήψη των γλωσσών επέκτασης</translation>
+        <translation>σφάλμα κατά τη λήψη των γλωσσών ριζικοποίησης</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -3553,7 +3554,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose QSS File</source>
-        <translation type="unfinished"></translation>
+        <translation>Επιλογή αρχείου QSS</translation>
     </message>
 </context>
 <context>
@@ -3720,7 +3721,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation type="vanished">Μεγ. μέγεθος τονισμένων κειμένων προς προεπισκόπηση (MB)</translation>
+        <translation type="vanished">Μέγιστο μέγεθος τονισμένων κειμένων προς προεπισκόπηση (MB)</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
@@ -3748,7 +3749,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="vanished">Εμφάνιση φίλτρ. κατηγορίας ως γρ. εργαλείων αντί για πίν. κουμπιών (απαιτεί επανεκκίνηση).</translation>
+        <translation type="vanished">Εμφάνιση φίλτρου. κατηγορίας ως γραμμή εργαλείων αντί για πίνακα κουμπιών (απαιτεί επανεκκίνηση).</translation>
     </message>
     <message>
         <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
@@ -3884,7 +3885,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Indexer is running. Can&apos;t edit webcache file.</source>
-        <translation>Εκτελείται το ευρετήριο. Μπορεί&apos;t επεξεργάζεται αρχείο webcache.</translation>
+        <translation>Η ευρετηρίαση εκτελείται. Αδύνατη η επεξεργασία του αρχείου webcache.</translation>
     </message>
     <message>
         <source>Delete selection</source>
@@ -3896,11 +3897,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Save to File</source>
-        <translation type="unfinished"></translation>
+        <translation>Αποθήκευση σε αρχείο</translation>
     </message>
     <message>
         <source>File creation failed: </source>
-        <translation type="unfinished"></translation>
+        <translation>Η δημιουργία του αρχείου απέτυχε: </translation>
     </message>
 </context>
 <context>
@@ -3915,11 +3916,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished">Ημερομηνία</translation>
+        <translation>Ημερομηνία</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Μέγεθος</translation>
     </message>
 </context>
 <context>
@@ -3985,7 +3986,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation type="vanished">Μέγ. μέγεθος της λανθάνουσας μνήμης ιστού (MB)</translation>
+        <translation type="vanished">Μέγιστο μέγεθος της κρυφής μνήμης ιστού (MB)</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
@@ -4100,7 +4101,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation type="vanished">Μεγ. μέγεθος αρχείων κειμένου (MB)</translation>
+        <translation type="vanished">Μέγιστο μέγεθος αρχείων κειμένου (MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
@@ -4120,7 +4121,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation type="vanished">Μεγ. χρόνος εκτέλεσης για ένα φίλτρο (S)</translation>
+        <translation type="vanished">Μέγιστος. χρόνος εκτέλεσης για ένα φίλτρο (Δ)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
@@ -4205,7 +4206,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation type="vanished">Μεγ. χρήση του δίσκου (%)</translation>
+        <translation type="vanished">Μέγιστη χρήση του δίσκου (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
@@ -4328,11 +4329,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation>Τα κείμενα μεγαλύτερα από αυτό το μέγεθος δεν θα τονιστούν στην προεπισκόπηση (πολύ αργό).</translation>
+        <translation>Τα κείμενα μεγαλύτερα από αυτό το μέγεθος δεν θα επισημαίνονται στην προεπισκόπηση (πολύ αργό).</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation type="vanished">Μεγ. μέγεθος τονισμένων κειμένων προς προεπισκόπηση (MB)</translation>
+        <translation type="vanished">Μέγιστο. μέγεθος επισημασμένων κειμένων προς προεπισκόπηση (MB)</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
@@ -4344,7 +4345,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="vanished">Εμφάνιση φίλτρ. κατηγορίας ως γρ. εργαλείων αντί για πίν. κουμπιών (απαιτεί επανεκκίνηση).</translation>
+        <translation type="vanished">Εμφάνιση φίλτρου. κατηγορίας ως γραμμή εργαλείων αντί για πίνακα κουμπιών (απαιτεί επανεκκίνηση).</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -4382,7 +4383,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation>Προσθήκη αυτόματα μιας φράσης στις απλές αναζητήσεις </translation>
+        <translation>Προσθήκη αυτόματα μιας φράσης στις απλές αναζητήσεις</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
@@ -4484,11 +4485,11 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Style sheet</source>
-        <translation type="vanished">Φύλλο στυλ</translation>
+        <translation type="vanished">Φύλλο αισθητικής επικάλυψης</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation type="vanished">Ανοίγει έναν διάλογο για την επιλογή ενός αρχείου φύλλου στυλ</translation>
+        <translation type="vanished">Ανοίγει έναν διάλογο για την επιλογή ενός αρχείου φύλλου αισθητικής επικάλυψης</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -4496,7 +4497,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Resets the style sheet to default</source>
-        <translation>Επαναφέρει την προκαθορισμένη τιμή για το φύλλο στυλ</translation>
+        <translation>Επαναφέρει την προκαθορισμένη τιμή για το φύλλο αισθητικής επικάλυψης</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
@@ -4638,11 +4639,11 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Highlight CSS style for query terms</source>
-        <translation>Επισήμανση CSS στυλ για όρους ερωτήματος</translation>
+        <translation>Τεχνοτροπία CSS για την επισήμανση των όρων ερωτήματος</translation>
     </message>
     <message>
         <source>Recoll - User Preferences</source>
-        <translation>Recoll - Προτιμήσεις Χρήστη</translation>
+        <translation>Recoll - Προτιμήσεις χρήστη</translation>
     </message>
     <message>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
@@ -4658,7 +4659,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Query terms highlighting in results. &lt;br&gt;Maybe try something like &quot;color:red;background:yellow&quot; for something more lively than the default blue...</source>
-        <translation>Ερώτημα όρων που τονίζουν τα αποτελέσματα. &lt;br&gt;Ίσως δοκιμάστε κάτι σαν &quot;χρώμα:κόκκινο;φόντο:κίτρινο&quot; για κάτι πιο ζωντανό από το προεπιλεγμένο μπλε...</translation>
+        <translation>Επισημασμένοι όροι ερωτήματος στα αποτελέσματα. &lt;br&gt;Δοκιμάστε &quot;color:red;background:yellow&quot; για κάτι πιο ζωντανό από το προεπιλεγμένο μπλε...</translation>
     </message>
     <message>
         <source>Start search on completer popup activation.</source>
@@ -4674,11 +4675,11 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Suppress all beeps.</source>
-        <translation>Καταστολή όλων των μπιπ.</translation>
+        <translation>Αθόρυβη λειτουργία.</translation>
     </message>
     <message>
         <source>Application Qt style sheet</source>
-        <translation>Εφαρμογή Qt φύλλο στυλ</translation>
+        <translation>Φύλλο αισθητικής επικάλυψης Qt για την εφαρμογή</translation>
     </message>
     <message>
         <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
@@ -4698,7 +4699,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="vanished">Εργασία γύρω από QTBUG-78923 με την εισαγωγή χώρου πριν από το κείμενο αγκύρωσης</translation>
+        <translation type="vanished">Παράκαμψη του σφάλματος QTBUG-78923 με την εισαγωγή διαστήματος πριν από το κείμενο αγκύρωσης</translation>
     </message>
     <message>
         <source>Display a Snippets link even if the document has no pages (needs restart).</source>
@@ -4706,7 +4707,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
-        <translation>Μέγιστο μέγεθος κειμένου τονισμένο για προεπισκόπηση (kilobytes)</translation>
+        <translation>Μέγιστο μέγεθος κειμένου επισημασμένο για προεπισκόπηση (kb)</translation>
     </message>
     <message>
         <source>Start with simple search mode: </source>
@@ -4758,115 +4759,115 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Hide some user interface elements.</source>
-        <translation type="unfinished"></translation>
+        <translation>Απόκρυψη ορισμένων στοιχείων του περιβάλλοντος χρήστη.</translation>
     </message>
     <message>
         <source>Hide:</source>
-        <translation type="unfinished"></translation>
+        <translation>Απόκρυψη:</translation>
     </message>
     <message>
         <source>Toolbars</source>
-        <translation type="unfinished"></translation>
+        <translation>Εργαλειοθήκες</translation>
     </message>
     <message>
         <source>Status bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Γραμμή κατάστασης</translation>
     </message>
     <message>
         <source>Show button instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>Εμφάνιση του κουμπιού.</translation>
     </message>
     <message>
         <source>Menu bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Γραμμή μενού</translation>
     </message>
     <message>
         <source>Show choice in menu only.</source>
-        <translation type="unfinished"></translation>
+        <translation>Εμφάνιση της επιλογής στο μενού μόνο.</translation>
     </message>
     <message>
         <source>Simple search type</source>
-        <translation type="unfinished">Απλός τύπος αναζήτησης</translation>
+        <translation>Απλός τύπος αναζήτησης</translation>
     </message>
     <message>
         <source>Clear/Search buttons</source>
-        <translation type="unfinished"></translation>
+        <translation>Κουμπιά εκκαθάρισης/αναζήτησης</translation>
     </message>
     <message>
         <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
-        <translation type="unfinished"></translation>
+        <translation>Απενεργοποιήστε τις συντομεύσεις Ctrl+[0-9]/Shift+[a-z] για να μεταβείτε σε γραμμές πίνακα.</translation>
     </message>
     <message>
         <source>None (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Κανένα (προκαθορισμένο)</translation>
     </message>
     <message>
         <source>Uses the default dark mode style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Χρήση του προκαθορισμένου φύλλου αισθητικής επικάλυψης σκοτεινής λειτουργίας</translation>
     </message>
     <message>
         <source>Dark mode</source>
-        <translation type="unfinished">Σκοτεινή λειτουργία</translation>
+        <translation>Σκοτεινή λειτουργία</translation>
     </message>
     <message>
         <source>Choose QSS File</source>
-        <translation type="unfinished"></translation>
+        <translation>Επιλογή αρχείου QSS</translation>
     </message>
     <message>
         <source>To display document text instead of metadata in result table detail area, use:</source>
-        <translation type="unfinished"></translation>
+        <translation>Για την εμφάνιση του κειμένου του εγγράφου αντί των μεταδεδομένων στην περιοχή των λεπτομερειών στον πίνακα των αποτελεσμάτων, χρησιμοποιήστε:</translation>
     </message>
     <message>
         <source>left mouse click</source>
-        <translation type="unfinished"></translation>
+        <translation>αριστερό κλικ του ποντικιού</translation>
     </message>
     <message>
         <source>Shift+click</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift+κλικ</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
-        <translation type="unfinished"></translation>
+        <translation>Άνοιγμα διαλόγου για την επιλογή του φύλλου αισθητικής επικάλυψης.&lt;br&gt;Ανατρέξτε στο /usr/share/recoll/examples/recoll[-dark].qss για να δείτε ένα παράδειγμα.</translation>
     </message>
     <message>
         <source>Result Table</source>
-        <translation type="unfinished">Πίνακας Αποτελεσμάτων</translation>
+        <translation>Πίνακας αποτελεσμάτων</translation>
     </message>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
-        <translation type="unfinished"></translation>
+        <translation>Να μην εμφανίζονται τα μεταδεδομένα κατά το πέρασμα του ποντικιού στις σειρές.</translation>
     </message>
     <message>
         <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="unfinished"></translation>
+        <translation>Παράκαμψη του σφάλματος Ταμίλ QTBUG-78923 με την εισαγωγή διαστήματος πριν από το κείμενο αγκύρωσης</translation>
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
-        <translation type="unfinished"></translation>
+        <translation>Αυτό το σφάλμα προκαλεί την εμφάνιση ενός παράξενου χαρακτήρα με κυκλικό σχήμα στο εσωτερικό Ταμίλ λέξεων. Για την παράκαμψη του προβλήματος γίνεται εισαγωγή ενός πρόσθετου χαρακτήρα διαστήματος και όπως φαίνεται λύνει το πρόβλημα.</translation>
     </message>
     <message>
         <source>Depth of side filter directory tree</source>
-        <translation type="unfinished"></translation>
+        <translation>Βάθος του δέντρου του φίλτρου των καταλόγων</translation>
     </message>
     <message>
         <source>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</source>
-        <translation type="unfinished"></translation>
+        <translation>Συντελεστής εστίασης για το περιβάλλον χρήστη. Αυτό είναι χρήσιμο όταν η προκαθορισμένη εστίαση δεν αρμόζει στην ανάλυση της οθόνης.</translation>
     </message>
     <message>
         <source>Display scale (default 1.0):</source>
-        <translation type="unfinished"></translation>
+        <translation>Κλίμακα προβολής (εξ ορισμού 1.0):</translation>
     </message>
     <message>
         <source>Automatic spelling approximation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Αυτόματη προσέγγιση ορθογραφίας.</translation>
     </message>
     <message>
         <source>Max spelling distance</source>
-        <translation type="unfinished"></translation>
+        <translation>Μέγιστη απόσταση ορθογραφίας</translation>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
-        <translation type="unfinished"></translation>
+        <translation>Προσθήκη συχνών όρων και με ορθογραφική προσέγγιση σπάνιων όρων αναζήτησης.</translation>
     </message>
 </context>
 </TS>
