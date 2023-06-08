@@ -62,7 +62,7 @@ static const std::string dirlistsep{":"};
 const char *PrefsPack::dfltResListFormat = 
     "<table class=\"respar\">\n"
     "<tr>\n"
-    "<td><a href='%U'><img src='%I' width='64'></a></td>\n"
+    "<td><a href='%U'><img draggable=\"false\" src='%I' width='64'></a></td>\n"
     "<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>\n"
     "<span style='white-space:nowrap'><i>%M</i>&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>\n"
     "%A %K</td>\n"
