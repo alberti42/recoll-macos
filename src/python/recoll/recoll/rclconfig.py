@@ -31,7 +31,7 @@ class RclConfig:
         self.mimemap = None
         platsys = platform.system()
         # Find configuration directory
-        if argcnf is not None:
+        if argcnf:
             self.confdir = os.path.abspath(argcnf)
         elif "RECOLL_CONFDIR" in os.environ:
             self.confdir = os.environ["RECOLL_CONFDIR"]
