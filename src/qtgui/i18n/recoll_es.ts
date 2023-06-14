@@ -225,6 +225,10 @@
         <source>Filter sizes</source>
         <translation>Filtro de tamaños</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfIndexW</name>
@@ -402,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>Porcentaje de umbral completo de disco en el que dejamos de indexar&lt;br&gt;p.e. 90% para parar al 90% lleno, 0 o 100 significa que no hay límite)</translation>
+        <translation type="vanished">Porcentaje de umbral completo de disco en el que dejamos de indexar&lt;br&gt;p.e. 90% para parar al 90% lleno, 0 o 100 significa que no hay límite)</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -426,6 +430,10 @@
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -761,6 +769,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>&quot;historial&quot; archivo está dañado, por favor compruébalo o quite: </translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -958,6 +971,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Open document</source>
         <translation>Abrir documento</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1223,6 +1244,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1282,7 +1310,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>Esta búsqueda no está activa</translation>
+        <translation type="vanished">Esta búsqueda no está activa</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1692,7 +1720,7 @@ Por favor, compruebe el archivo de escritorio</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>La línea de comandos del visor para %1 especifica el archivo padre, pero la URL es http[s]: no soportada</translation>
+        <translation type="vanished">La línea de comandos del visor para %1 especifica el archivo padre, pero la URL es http[s]: no soportada</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1898,6 +1926,14 @@ Por favor, compruebe el archivo de escritorio</translation>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2257,6 +2293,10 @@ Por favor, compruebe el archivo de escritorio</translation>
     </message>
     <message>
         <source>Assisted complex search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter birth dates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2863,7 +2903,7 @@ Usar &lt;b&gt;Mostrar consulta&lt;/b&gt; enlace cuando haya dudas sobre el resul
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;Consulta la hoja de trampas. En duda: haga clic en &lt;b&gt;Mostrar consulta&lt;/b&gt;.&amp;nbsp;</translation>
+        <translation type="vanished">&lt;p&gt;Consulta la hoja de trampas. En duda: haga clic en &lt;b&gt;Mostrar consulta&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2915,7 +2955,7 @@ Usar &lt;b&gt;Mostrar consulta&lt;/b&gt; enlace cuando haya dudas sobre el resul
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Sin expansión de tallo: capitalizar&lt;/td&gt;&lt;td&gt;Planta&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;Sin expansión de tallo: capitalizar&lt;/td&gt;&lt;td&gt;Planta&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2979,6 +3019,14 @@ Usar &lt;b&gt;Mostrar consulta&lt;/b&gt; enlace cuando haya dudas sobre el resul
     </message>
     <message>
         <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3458,7 +3506,11 @@ Usar &lt;b&gt;Mostrar consulta&lt;/b&gt; enlace cuando haya dudas sobre el resul
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>Error de expansión ortografía. </translation>
+        <translation type="vanished">Error de expansión ortografía. </translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3509,7 +3561,7 @@ Usar &lt;b&gt;Mostrar consulta&lt;/b&gt; enlace cuando haya dudas sobre el resul
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>No se puede agregar un índice con diferente opción para remover mayúsculas/minúsculas/diacríticos</translation>
+        <translation type="vanished">No se puede agregar un índice con diferente opción para remover mayúsculas/minúsculas/diacríticos</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3553,6 +3605,10 @@ Usar &lt;b&gt;Mostrar consulta&lt;/b&gt; enlace cuando haya dudas sobre el resul
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3871,6 +3927,10 @@ Esto dará mayor precedencia a los resultados en los cuales los términos de bú
         <source>Search regexp</source>
         <translation>Buscar regexp</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3902,6 +3962,10 @@ Esto dará mayor precedencia a los resultados en los cuales los términos de bú
         <source>File creation failed: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3911,7 +3975,7 @@ Esto dará mayor precedencia a los resultados en los cuales los términos de bú
     </message>
     <message>
         <source>Url</source>
-        <translation>Url</translation>
+        <translation type="vanished">Url</translation>
     </message>
     <message>
         <source>Date</source>
@@ -3921,32 +3985,40 @@ Esto dará mayor precedencia a los resultados en los cuales los términos de bú
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">URL</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">Error</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">Configuración no inicializada</translation>
+        <translation>Configuración no inicializada</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;Utilizamos el planificador de tareas estándar de Windows para esto. El programa se iniciará cuando haga clic en el botón de abajo.&lt;/p&gt;&lt;p&gt;Puede utilizar la interfaz completa (&lt;i&gt;Crear tarea&lt;/i&gt; en el menú de la derecha), o el asistente de &lt;i&gt;Crear tarea básica&lt;/i&gt; . En ambos casos Copiar/Pegar la ruta del archivo por lotes que aparece a continuación como la &lt;i&gt;Acción&lt;/i&gt; a realizar.&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;Utilizamos el planificador de tareas estándar de Windows para esto. El programa se iniciará cuando haga clic en el botón de abajo.&lt;/p&gt;&lt;p&gt;Puede utilizar la interfaz completa (&lt;i&gt;Crear tarea&lt;/i&gt; en el menú de la derecha), o el asistente de &lt;i&gt;Crear tarea básica&lt;/i&gt; . En ambos casos Copiar/Pegar la ruta del archivo por lotes que aparece a continuación como la &lt;i&gt;Acción&lt;/i&gt; a realizar.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">Comando ya iniciado</translation>
+        <translation>Comando ya iniciado</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">Indexación de Lote Recoll</translation>
+        <translation>Indexación de Lote Recoll</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">Iniciar la herramienta Planificador de tareas de Windows</translation>
+        <translation>Iniciar la herramienta Planificador de tareas de Windows</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4363,7 +4435,7 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Preferir HTML a texto simple para vista previa.</translation>
+        <translation type="vanished">Preferir HTML a texto simple para vista previa.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4865,6 +4937,26 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

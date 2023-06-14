@@ -225,6 +225,10 @@
         <source>Filter sizes</source>
         <translation>용량 필터</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfIndexW</name>
@@ -402,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>인덱싱을 중지할 디스크 전체 임계값 백분율&lt;br&gt;(E.g. 90% 로 설정하면 90% 도달시 멈춤, 0 또는 100 은 제한이 없는 것을 의미)</translation>
+        <translation type="vanished">인덱싱을 중지할 디스크 전체 임계값 백분율&lt;br&gt;(E.g. 90% 로 설정하면 90% 도달시 멈춤, 0 또는 100 은 제한이 없는 것을 의미)</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -427,6 +431,10 @@
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
         <translation>참고: 최대 크기에 도달하면 이전 페이지가 지워져 새 페이지를 위한 공간을 만듭니다. 현재 크기: %1</translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -763,6 +771,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>&quot;history&quot; 파일이 손상되었습니다. 점검 혹은 삭제해주세요.</translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -960,6 +973,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Open document</source>
         <translation>문서 열기</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1228,6 +1249,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1287,7 +1315,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>이 검색은 더 이상 유효하지 않습니다.</translation>
+        <translation type="vanished">이 검색은 더 이상 유효하지 않습니다.</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1697,7 +1725,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>%1를 위한 뷰어 명령줄은 상위 파일 특정짓지만, http[s]는 지원되지 않습니다.</translation>
+        <translation type="vanished">%1를 위한 뷰어 명령줄은 상위 파일 특정짓지만, http[s]는 지원되지 않습니다.</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1902,6 +1930,14 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2261,6 +2297,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Assisted complex search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter birth dates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2865,7 +2905,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation type="unfinished">&lt;p&gt;쿼리 언어 힌트. 결과에 대해 의심스럽다면 &lt;b&gt;쿼리 보기&lt;/b&gt;.&amp;nbsp; 링크를 사용하십시오.</translation>
+        <translation type="obsolete">&lt;p&gt;쿼리 언어 힌트. 결과에 대해 의심스럽다면 &lt;b&gt;쿼리 보기&lt;/b&gt;.&amp;nbsp; 링크를 사용하십시오.</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2917,7 +2957,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;형태소 확장 없음: 대문자화가 &lt;/td&gt;&lt;td&gt;너무 많습니다.&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;형태소 확장 없음: 대문자화가 &lt;/td&gt;&lt;td&gt;너무 많습니다.&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2981,6 +3021,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3460,7 +3508,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>철자 오류입니다. </translation>
+        <translation type="vanished">철자 오류입니다. </translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3511,7 +3563,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>다른 대소문자 / 분음 부호 제거 옵션으로 색인을 추가 할 수 없습니다.</translation>
+        <translation type="vanished">다른 대소문자 / 분음 부호 제거 옵션으로 색인을 추가 할 수 없습니다.</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3556,6 +3608,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Choose QSS File</source>
         <translation>QSS 파일 선택하기</translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3873,6 +3929,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>Search regexp</source>
         <translation>정규식 검색</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3904,6 +3964,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>File creation failed: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3913,7 +3977,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Url</source>
-        <translation>웹 주소</translation>
+        <translation type="vanished">웹 주소</translation>
     </message>
     <message>
         <source>Date</source>
@@ -3923,32 +3987,40 @@ This should give higher precedence to the results where the search terms appear 
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">웹 주소</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">오류</translation>
+        <translation>오류</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">구성이 초기화되지 않았습니다.</translation>
+        <translation>구성이 초기화되지 않았습니다.</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;h3&gt;Recoll 색인 일괄 예약&lt;/h3&gt;&lt;p&gt;우리는 이 작업을 위해 기본적으로 &apos;윈도우즈 작업 스케쥴러&apos;를 사용합니다. 아래 버튼을 클릭하여 스캐쥴러를 시작할 수 있습니다.&lt;/p&gt;&lt;p&gt;당신은 오른쪽의 메뉴 안에 &lt;i&gt;작업 만들기&lt;/i&gt;로 전체 인터페이스를 사용할 수 있으며, 혹은 간단하게 &lt;i&gt; 기본 작업 만들기&lt;/i&gt; 마법사를 사용할 수 있습니다.&lt;p&gt; 작업을 수행하기 위하여 아래 나열된 일괄 파일 경로를 복사/붙여넣기 하십시오.</translation>
+        <translation>&lt;h3&gt;Recoll 색인 일괄 예약&lt;/h3&gt;&lt;p&gt;우리는 이 작업을 위해 기본적으로 &apos;윈도우즈 작업 스케쥴러&apos;를 사용합니다. 아래 버튼을 클릭하여 스캐쥴러를 시작할 수 있습니다.&lt;/p&gt;&lt;p&gt;당신은 오른쪽의 메뉴 안에 &lt;i&gt;작업 만들기&lt;/i&gt;로 전체 인터페이스를 사용할 수 있으며, 혹은 간단하게 &lt;i&gt; 기본 작업 만들기&lt;/i&gt; 마법사를 사용할 수 있습니다.&lt;p&gt; 작업을 수행하기 위하여 아래 나열된 일괄 파일 경로를 복사/붙여넣기 하십시오.</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">명령이 이미 시작되었습니다.</translation>
+        <translation>명령이 이미 시작되었습니다.</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">Recoll 일괄 색인</translation>
+        <translation>Recoll 일괄 색인</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">윈도우즈 작업 스캐쥴러 도구 시작</translation>
+        <translation>윈도우즈 작업 스캐쥴러 도구 시작</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4367,7 +4439,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>미리보기에서 텍스트보다 HTML을 우선합니다.</translation>
+        <translation type="vanished">미리보기에서 텍스트보다 HTML을 우선합니다.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4864,6 +4936,26 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -225,6 +225,10 @@
         <source>Filter sizes</source>
         <translation>Filtrer les tailles</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfIndexW</name>
@@ -402,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>Pourcentage d&apos;occupation du disque provoquant l&apos;arrêt de l&apos;indexation&lt;br&gt;Ex: 90% pour arrêter quand le disque est 90% plein. 0 ou 100 signifient pas de limite</translation>
+        <translation type="vanished">Pourcentage d&apos;occupation du disque provoquant l&apos;arrêt de l&apos;indexation&lt;br&gt;Ex: 90% pour arrêter quand le disque est 90% plein. 0 ou 100 signifient pas de limite</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -427,6 +431,10 @@
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
         <translation>Remarque : les anciennes pages seront effacées pour faire de l&apos;espace pour les nouvelles lorsque la taille maximale est atteinte. Taille actuelle : %1</translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -764,6 +772,11 @@ Cliquez sur Annuler si vous voulez modifier le fichier de configuration avant le
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>Le fichier &quot;history&quot; est corrompu. Le detruire : </translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -961,6 +974,14 @@ Cliquez sur Annuler si vous voulez modifier le fichier de configuration avant le
     <message>
         <source>Open document</source>
         <translation>Ouvrir le document</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1226,6 +1247,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1285,7 +1313,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>Cette recherche n&apos;est plus active</translation>
+        <translation type="vanished">Cette recherche n&apos;est plus active</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1695,7 +1723,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>La ligne de commande pour %1 specifie l&apos;utilisation du fichier parent, mais l&apos;URL est http[s] : ne peut pas marcher</translation>
+        <translation type="vanished">La ligne de commande pour %1 specifie l&apos;utilisation du fichier parent, mais l&apos;URL est http[s] : ne peut pas marcher</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1901,6 +1929,14 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
         <translation>L&apos;index est peut-être corrompu. Essayer d&apos;exécuter xapian-check, ou reconstruire l&apos;index.</translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2260,6 +2296,10 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Assisted complex search</source>
         <translation>Recherche complexe assistée</translation>
+    </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2864,7 +2904,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;Langue de requête feuille de triche. En doute : cliquez sur &lt;b&gt;Afficher la requête&lt;/b&gt;.&amp;nbsp;</translation>
+        <translation type="vanished">&lt;p&gt;Langue de requête feuille de triche. En doute : cliquez sur &lt;b&gt;Afficher la requête&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2916,7 +2956,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2981,6 +3021,14 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>History</source>
         <translation>Historique</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3459,7 +3507,11 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>Erreur dans les suggestions orthographiques.</translation>
+        <translation type="vanished">Erreur dans les suggestions orthographiques.</translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3510,7 +3562,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>Impossible d&apos;ajouter un index avec une option differente de sensibilite a la casse et aux accents</translation>
+        <translation type="vanished">Impossible d&apos;ajouter un index avec une option differente de sensibilite a la casse et aux accents</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3555,6 +3607,10 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Choose QSS File</source>
         <translation>Choisir un fichier QSS</translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3872,6 +3928,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Search regexp</source>
         <translation>Recherche (regexp)</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3903,6 +3963,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>File creation failed: </source>
         <translation>La création du fichier a échoué : </translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3912,7 +3976,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Url</source>
-        <translation>Url</translation>
+        <translation type="vanished">Url</translation>
     </message>
     <message>
         <source>Date</source>
@@ -3922,32 +3986,40 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Size</source>
         <translation>Taille</translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">URL</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">Erreur</translation>
+        <translation>Erreur</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">Configuration non initialisée</translation>
+        <translation>Configuration non initialisée</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;h3&gt;Programmation de l&apos;indexation par lots&lt;/h3&gt;&lt;p&gt;Recoll utilise l&apos;outil standard Windows de programmation de tâches. Ce programme sera démarré quand vous cliquerez le bouton ci-dessous.&lt;/p&gt;&lt;p&gt;Vous pouvez utiliser soit l&apos;interface complète (&lt;i&gt;Créer&lt;/i&gt; dans le menu à droite), ou l&apos;interface simplifiée &lt;i&gt;Créer une tâche basique&lt;/i&gt;. Dans les deux cas, Copier/Coller le chemin du fichier de tâche listé ci-dessous comme l&apos;&lt;i&gt;Action&lt;/i&gt; à exécuter.&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;Programmation de l&apos;indexation par lots&lt;/h3&gt;&lt;p&gt;Recoll utilise l&apos;outil standard Windows de programmation de tâches. Ce programme sera démarré quand vous cliquerez le bouton ci-dessous.&lt;/p&gt;&lt;p&gt;Vous pouvez utiliser soit l&apos;interface complète (&lt;i&gt;Créer&lt;/i&gt; dans le menu à droite), ou l&apos;interface simplifiée &lt;i&gt;Créer une tâche basique&lt;/i&gt;. Dans les deux cas, Copier/Coller le chemin du fichier de tâche listé ci-dessous comme l&apos;&lt;i&gt;Action&lt;/i&gt; à exécuter.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">Commande déjà démarrée</translation>
+        <translation>Commande déjà démarrée</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">Indexation par lots</translation>
+        <translation>Indexation par lots</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">Démarrer l&apos;outil de programmation de tâches</translation>
+        <translation>Démarrer l&apos;outil de programmation de tâches</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4366,7 +4438,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Utiliser le format Html pour la previsualisation.</translation>
+        <translation type="vanished">Utiliser le format Html pour la previsualisation.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4873,6 +4945,26 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
         <translation>Ajouter des termes fréquents et proches orthographiquement des termes rares de la recherche.</translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

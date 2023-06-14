@@ -225,6 +225,10 @@
         <source>Filter sizes</source>
         <translation>Filtrera efter storlek</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfIndexW</name>
@@ -402,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>Tröskelvärde för full disk, i procent, då vi slutar indexera&lt;br&gt;T.ex 90% för att stoppa vid 90% full disk, (0 eller 100 betyder ingen begränsning).</translation>
+        <translation type="vanished">Tröskelvärde för full disk, i procent, då vi slutar indexera&lt;br&gt;T.ex 90% för att stoppa vid 90% full disk, (0 eller 100 betyder ingen begränsning).</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -426,6 +430,10 @@
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -764,6 +772,11 @@ Klicka på Avbryt om du vill redigera konfigurationsfilen innan indexering start
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>Historikfilen är skadad. Kontrollera eller ta bort den: </translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -961,6 +974,14 @@ Klicka på Avbryt om du vill redigera konfigurationsfilen innan indexering start
     <message>
         <source>Open document</source>
         <translation>Öppna dokument</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1226,6 +1247,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1285,7 +1313,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>Sökningen är inte aktiv längre</translation>
+        <translation type="vanished">Sökningen är inte aktiv längre</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1695,7 +1723,7 @@ Kolla desktop-filen.</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>Visarkommando för %1 anger överordnad fil men URL är http[s]: Stöds ej.</translation>
+        <translation type="vanished">Visarkommando för %1 anger överordnad fil men URL är http[s]: Stöds ej.</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1901,6 +1929,14 @@ Kolla desktop-filen.</translation>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2260,6 +2296,10 @@ Kolla desktop-filen.</translation>
     </message>
     <message>
         <source>Assisted complex search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter birth dates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2865,7 +2905,7 @@ Använd &lt;b&gt;Visa fråga&lt;/b&gt; länk när du är osäker på resultatet 
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;Query-språkets lathund. Vid tvivel: Klicka &lt;b&gt;Visa Query&lt;/b&gt;.&amp;nbsp;</translation>
+        <translation type="vanished">&lt;p&gt;Query-språkets lathund. Vid tvivel: Klicka &lt;b&gt;Visa Query&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2917,7 +2957,7 @@ Använd &lt;b&gt;Visa fråga&lt;/b&gt; länk när du är osäker på resultatet 
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Ingen stamexpansion: kapitalisera&lt;/td&gt;&lt;td&gt;Golv&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;Ingen stamexpansion: kapitalisera&lt;/td&gt;&lt;td&gt;Golv&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2981,6 +3021,14 @@ Använd &lt;b&gt;Visa fråga&lt;/b&gt; länk när du är osäker på resultatet 
     </message>
     <message>
         <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3460,7 +3508,11 @@ Använd &lt;b&gt;Visa fråga&lt;/b&gt; länk när du är osäker på resultatet 
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>Fel vif stavningsutvidgning. </translation>
+        <translation type="vanished">Fel vif stavningsutvidgning. </translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3511,7 +3563,7 @@ Använd &lt;b&gt;Visa fråga&lt;/b&gt; länk när du är osäker på resultatet 
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>Kan inte lägga till index med olika skiftläge / diakritiska strippningsalternativ</translation>
+        <translation type="vanished">Kan inte lägga till index med olika skiftläge / diakritiska strippningsalternativ</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3555,6 +3607,10 @@ Använd &lt;b&gt;Visa fråga&lt;/b&gt; länk när du är osäker på resultatet 
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3873,6 +3929,10 @@ Detta bör ge högre företräde till de träffar där söktermerna visas exakt 
         <source>Search regexp</source>
         <translation>Sök regexp</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3904,6 +3964,10 @@ Detta bör ge högre företräde till de träffar där söktermerna visas exakt 
         <source>File creation failed: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3913,7 +3977,7 @@ Detta bör ge högre företräde till de träffar där söktermerna visas exakt 
     </message>
     <message>
         <source>Url</source>
-        <translation>URL</translation>
+        <translation type="vanished">URL</translation>
     </message>
     <message>
         <source>Date</source>
@@ -3923,32 +3987,40 @@ Detta bör ge högre företräde till de träffar där söktermerna visas exakt 
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">URL</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">Fel</translation>
+        <translation>Fel</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">Konfigurationen är inte initierad</translation>
+        <translation>Konfigurationen är inte initierad</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;h3&gt;Återställa indexering batch schemaläggning&lt;/h3&gt;&lt;p&gt;Vi använder standard Windows uppgift schemaläggare för detta. Programmet kommer att startas när du klickar på knappen nedan.&lt;/p&gt;&lt;p&gt;Du kan använda antingen det fullständiga gränssnittet (&lt;i&gt;Skapa uppgift&lt;/i&gt; i menyn till höger) eller den förenklade &lt;i&gt;Skapa grundläggande uppgiften&lt;/i&gt; guiden. I båda fallen Kopiera/Klistra in sökvägen för kommandofilen som anges nedan som &lt;i&gt;Åtgärden&lt;/i&gt; som ska utföras.&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;Återställa indexering batch schemaläggning&lt;/h3&gt;&lt;p&gt;Vi använder standard Windows uppgift schemaläggare för detta. Programmet kommer att startas när du klickar på knappen nedan.&lt;/p&gt;&lt;p&gt;Du kan använda antingen det fullständiga gränssnittet (&lt;i&gt;Skapa uppgift&lt;/i&gt; i menyn till höger) eller den förenklade &lt;i&gt;Skapa grundläggande uppgiften&lt;/i&gt; guiden. I båda fallen Kopiera/Klistra in sökvägen för kommandofilen som anges nedan som &lt;i&gt;Åtgärden&lt;/i&gt; som ska utföras.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">Kommandot är redan startat</translation>
+        <translation>Kommandot är redan startat</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">Återskapa batch-indexering</translation>
+        <translation>Återskapa batch-indexering</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">Starta schemaläggningsverktyget för Windows</translation>
+        <translation>Starta schemaläggningsverktyget för Windows</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4368,7 +4440,7 @@ Detta kommer att underlätta vid genomsökning av mycket stora textfiler (t.ex. 
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Föredra HTML framför oformaterad text i förhandsgranskning.</translation>
+        <translation type="vanished">Föredra HTML framför oformaterad text i förhandsgranskning.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4870,6 +4942,26 @@ Standardvärdet är 2 (procent). </translation>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

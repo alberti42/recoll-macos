@@ -225,6 +225,10 @@
         <source>Filter sizes</source>
         <translation>Φίλτρο μεγέθους</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfIndexW</name>
@@ -402,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>Δίσκος πλήρες όριο ποσοστό στο οποίο σταματάμε ευρετηρίαση&lt;br&gt;Π.χ. 90% για να σταματήσει σε 90% πλήρη, 0 ή 100 σημαίνει χωρίς όριο)</translation>
+        <translation type="vanished">Δίσκος πλήρες όριο ποσοστό στο οποίο σταματάμε ευρετηρίαση&lt;br&gt;Π.χ. 90% για να σταματήσει σε 90% πλήρη, 0 ή 100 σημαίνει χωρίς όριο)</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -427,6 +431,10 @@
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
         <translation>Σημείωση: οι παλιές σελίδες θα διαγραφούν ούτως ώστε να δημιουργηθεί χώρος για νέες σελίδες όταν θα επιτευχθεί το μέγιστο μέγεθος. Τρέχον μέγεθος: %1</translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -764,6 +772,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>&quot;το ιστορικό&quot; το αρχείο είναι κατεστραμμένο, παρακαλώ ελέγξτε ή αφαιρέστε το: </translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -961,6 +974,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Open document</source>
         <translation>Άνοιγμα εγγράφου</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1225,6 +1246,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1284,7 +1312,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>Η αναζήτηση δεν είναι ενεργή πια</translation>
+        <translation type="vanished">Η αναζήτηση δεν είναι ενεργή πια</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1694,7 +1722,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>Η γραμμή εντολών προβολής για το %1 καθορίζει το γονικό αρχείο αλλά το URL είναι http[s]: δεν υποστηρίζεται</translation>
+        <translation type="vanished">Η γραμμή εντολών προβολής για το %1 καθορίζει το γονικό αρχείο αλλά το URL είναι http[s]: δεν υποστηρίζεται</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1901,6 +1929,14 @@ Please check the desktop file</source>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
         <translation>. Το ευρετήριο ίσως είναι κατεστραμμένο. Προσπαθήστε να εκτελέσετε το xapian-check ή την επανακατασκευή του ευρετηρίου.</translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2260,6 +2296,10 @@ Please check the desktop file</source>
     <message>
         <source>Assisted complex search</source>
         <translation>Υποβοηθούμενη σύνθετη αναζήτηση</translation>
+    </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2864,7 +2904,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;Σκονάκι γλώσσας ερωτημάτων. Σε περίπτωση αμφιβολίας κάντε κλικ στο &lt;b&gt;Εμφάνιση ερωτήματος&lt;/b&gt;.&amp;nbsp;</translation>
+        <translation type="vanished">&lt;p&gt;Σκονάκι γλώσσας ερωτημάτων. Σε περίπτωση αμφιβολίας κάντε κλικ στο &lt;b&gt;Εμφάνιση ερωτήματος&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2916,7 +2956,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2952,7 +2992,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&gt;100k size&lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Μέγεθος&lt;/td&gt;&lt;td&gt;size&gt;100k size&lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;Μέγεθος&lt;/td&gt;&lt;td&gt;size&gt;100k size&lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -2981,6 +3021,18 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>History</source>
         <translation>Ιστορικό</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3459,7 +3511,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>Σφάλμα επέκτασης ορθογραφίας. </translation>
+        <translation type="vanished">Σφάλμα επέκτασης ορθογραφίας. </translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3510,7 +3566,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>Αδύνατη η προσθήκη ευρετηρίου με διαφορετικές επιλογές διάκρισης πεζών / κεφαλαίων και αποσπασμάτων</translation>
+        <translation type="vanished">Αδύνατη η προσθήκη ευρετηρίου με διαφορετικές επιλογές διάκρισης πεζών / κεφαλαίων και αποσπασμάτων</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3555,6 +3611,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Choose QSS File</source>
         <translation>Επιλογή αρχείου QSS</translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3872,6 +3932,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>Search regexp</source>
         <translation>Αναζήτηση regexp</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3903,6 +3967,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>File creation failed: </source>
         <translation>Η δημιουργία του αρχείου απέτυχε: </translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3912,7 +3980,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Url</source>
-        <translation>URL</translation>
+        <translation type="vanished">URL</translation>
     </message>
     <message>
         <source>Date</source>
@@ -3922,32 +3990,40 @@ This should give higher precedence to the results where the search terms appear 
         <source>Size</source>
         <translation>Μέγεθος</translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">URL</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">Σφάλμα</translation>
+        <translation>Σφάλμα</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">Οι ρυθμίσεις δεν αρχικοποιήθηκαν</translation>
+        <translation>Οι ρυθμίσεις δεν αρχικοποιήθηκαν</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;Χρησιμοποιούμε τον τυπικό προγραμματισμό εργασιών των Windows για αυτό. Το πρόγραμμα θα ξεκινήσει όταν κάνετε κλικ στο παρακάτω κουμπί.&lt;/p&gt;&lt;p&gt;Μπορείτε να χρησιμοποιήσετε είτε την πλήρη διεπαφή (&lt;i&gt;Δημιουργία εργασίας&lt;/i&gt; στο μενού στα δεξιά), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. Και στις δύο περιπτώσεις Αντιγράψτε/Επικολλήστε τη διαδρομή του αρχείου δέσμης εντολών που αναφέρονται παρακάτω ως &lt;i&gt;Ενέργεια&lt;/i&gt; που θα εκτελεστεί.&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;Χρησιμοποιούμε τον τυπικό προγραμματισμό εργασιών των Windows για αυτό. Το πρόγραμμα θα ξεκινήσει όταν κάνετε κλικ στο παρακάτω κουμπί.&lt;/p&gt;&lt;p&gt;Μπορείτε να χρησιμοποιήσετε είτε την πλήρη διεπαφή (&lt;i&gt;Δημιουργία εργασίας&lt;/i&gt; στο μενού στα δεξιά), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. Και στις δύο περιπτώσεις Αντιγράψτε/Επικολλήστε τη διαδρομή του αρχείου δέσμης εντολών που αναφέρονται παρακάτω ως &lt;i&gt;Ενέργεια&lt;/i&gt; που θα εκτελεστεί.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">Η εντολή ξεκίνησε ήδη</translation>
+        <translation>Η εντολή ξεκίνησε ήδη</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">Recoll ευρετηρίαση παρτίδων</translation>
+        <translation>Recoll ευρετηρίαση παρτίδων</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">Ξεκινήστε το εργαλείο προγραμματισμού εργασιών των Windows</translation>
+        <translation>Ξεκινήστε το εργαλείο προγραμματισμού εργασιών των Windows</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4365,7 +4441,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Χρήση της μορφής HTML για την προεπισκόπηση.</translation>
+        <translation type="vanished">Χρήση της μορφής HTML για την προεπισκόπηση.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4868,6 +4944,26 @@ The default value is 2 (percent). </source>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
         <translation>Προσθήκη συχνών όρων και με ορθογραφική προσέγγιση σπάνιων όρων αναζήτησης.</translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

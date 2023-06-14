@@ -225,6 +225,10 @@
         <source>Filter sizes</source>
         <translation>Розмір фільтру</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfIndexW</name>
@@ -402,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>Відсоток повного порогу на диску, за якого ми припиняємо індексувати&lt;br&gt;Наприклад: 90% до повного заряду, 0 або 100 означає відсутність обмежень)</translation>
+        <translation type="vanished">Відсоток повного порогу на диску, за якого ми припиняємо індексувати&lt;br&gt;Наприклад: 90% до повного заряду, 0 або 100 означає відсутність обмежень)</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -426,6 +430,10 @@
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -765,6 +773,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>&quot;історія&quot; файл пошкоджений, будь ласка, перевірте або видаліть його: </translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -962,6 +975,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Open document</source>
         <translation>Відкритий документ</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1227,6 +1248,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1286,7 +1314,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>Цей пошук вже неактивний</translation>
+        <translation type="vanished">Цей пошук вже неактивний</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1696,7 +1724,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>Програма перегляду командного рядка %1 визначає батьківський файл, але URL-адреса - http[s]: не підтримується</translation>
+        <translation type="vanished">Програма перегляду командного рядка %1 визначає батьківський файл, але URL-адреса - http[s]: не підтримується</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1902,6 +1930,14 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2261,6 +2297,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Assisted complex search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter birth dates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2866,7 +2906,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;Чектор мови запиту. У сумніві: натисніть &lt;b&gt;Показати запит&lt;/b&gt;.&amp;nbsp;</translation>
+        <translation type="vanished">&lt;p&gt;Чектор мови запиту. У сумніві: натисніть &lt;b&gt;Показати запит&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2918,7 +2958,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Без розширення стей: великі&lt;/td&gt;&lt;td&gt;Поверх&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;Без розширення стей: великі&lt;/td&gt;&lt;td&gt;Поверх&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2982,6 +3022,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3461,7 +3509,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>Помилка розширення правопису. </translation>
+        <translation type="vanished">Помилка розширення правопису. </translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3512,7 +3564,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>Заборона додавання індексу з різними варіантами/діакритичними знаками</translation>
+        <translation type="vanished">Заборона додавання індексу з різними варіантами/діакритичними знаками</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3556,6 +3608,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3874,6 +3930,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>Search regexp</source>
         <translation>Шукати регулярний вираз</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3905,6 +3965,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>File creation failed: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3914,7 +3978,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Url</source>
-        <translation>URL-адреса</translation>
+        <translation type="vanished">URL-адреса</translation>
     </message>
     <message>
         <source>Date</source>
@@ -3924,32 +3988,40 @@ This should give higher precedence to the results where the search terms appear 
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">Адреса</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">Помилка</translation>
+        <translation>Помилка</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">Конфігурацію не ініціалізовано</translation>
+        <translation>Конфігурацію не ініціалізовано</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="obsolete">&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</translation>
+        <translation type="unfinished">&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">Команда вже розпочата</translation>
+        <translation>Команда вже розпочата</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">Повторна індексація батчів</translation>
+        <translation>Повторна індексація батчів</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">Запустити інструмент планувальника завдань Windows</translation>
+        <translation>Запустити інструмент планувальника завдань Windows</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4369,7 +4441,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Віддавати перевагу HTML над текстом для перегляду.</translation>
+        <translation type="vanished">Віддавати перевагу HTML над текстом для перегляду.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4871,6 +4943,26 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

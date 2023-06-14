@@ -225,6 +225,10 @@
         <source>Filter sizes</source>
         <translation>Filter grootte</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfIndexW</name>
@@ -402,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>Schijf volledige drempelpercentage waarmee we stoppen met het indexeren van&lt;br&gt;Bijv. 90% om 90% volledig, 0 of 100 betekent geen limiet)</translation>
+        <translation type="vanished">Schijf volledige drempelpercentage waarmee we stoppen met het indexeren van&lt;br&gt;Bijv. 90% om 90% volledig, 0 of 100 betekent geen limiet)</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -426,6 +430,10 @@
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -760,6 +768,11 @@ Klik op Annuleren als u het configuratiebestand wilt bewerken voordat u het inde
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>&quot;geschiedenis&quot; bestand is beschadigd, controleer of verwijder het: </translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -957,6 +970,14 @@ Klik op Annuleren als u het configuratiebestand wilt bewerken voordat u het inde
     <message>
         <source>Open document</source>
         <translation>Document openen</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1221,6 +1242,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1280,7 +1308,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>Deze zoekopdracht is niet meer aktief</translation>
+        <translation type="vanished">Deze zoekopdracht is niet meer aktief</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1686,7 +1714,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>Bekijken opdrachtregel voor %1 geeft het bovenliggende bestand aan, maar de URL is http[s]: niet ondersteund</translation>
+        <translation type="vanished">Bekijken opdrachtregel voor %1 geeft het bovenliggende bestand aan, maar de URL is http[s]: niet ondersteund</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1892,6 +1920,14 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2251,6 +2287,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Assisted complex search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter birth dates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2856,7 +2896,7 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;Query language cheat-sheet . Klik in twijfel: &lt;b&gt;Toon query&lt;/b&gt;.&amp;nbsp;</translation>
+        <translation type="vanished">&lt;p&gt;Query language cheat-sheet . Klik in twijfel: &lt;b&gt;Toon query&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2908,7 +2948,7 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Geen stamexpansie: hoofdletter&lt;/td&gt;&lt;td&gt;vloer&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;Geen stamexpansie: hoofdletter&lt;/td&gt;&lt;td&gt;vloer&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2972,6 +3012,14 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3451,7 +3499,11 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>Spel uitbreidingsfout. </translation>
+        <translation type="vanished">Spel uitbreidingsfout. </translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3502,7 +3554,7 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>Kan index met verschillende hoofdletters/ diakritisch tekens opties niet toevoegen</translation>
+        <translation type="vanished">Kan index met verschillende hoofdletters/ diakritisch tekens opties niet toevoegen</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3546,6 +3598,10 @@ Gebruik &lt;b&gt; Toon Zoekterm &lt;/b&gt; in geval van twijfel over de uitslag 
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3862,6 +3918,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>Search regexp</source>
         <translation>Zoek regexp</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3893,6 +3953,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>File creation failed: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3902,7 +3966,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Url</source>
-        <translation>URL</translation>
+        <translation type="vanished">URL</translation>
     </message>
     <message>
         <source>Date</source>
@@ -3912,32 +3976,40 @@ This should give higher precedence to the results where the search terms appear 
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">URL</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">Fout</translation>
+        <translation>Fout</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">Configuratie niet geïnitialiseerd</translation>
+        <translation>Configuratie niet geïnitialiseerd</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;h3&gt;Recoll indexeren van batchplanning&lt;/h3&gt;&lt;p&gt;We gebruiken hiervoor de standaard Windows taakplanner. Het programma wordt gestart wanneer je op de knop hieronder klikt.&lt;/p&gt;&lt;p&gt;U kunt ofwel de volledige interface gebruiken (&lt;i&gt;taak aanmaken&lt;/i&gt; in het menu aan de rechterkant) of de vereenvoudigde &lt;i&gt;Maak de basistaak&lt;/i&gt; wizard aan. In beide gevallen kopieer en plak je het bestandspad hieronder als de &lt;i&gt;actie&lt;/i&gt; om uit te voeren.&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;Recoll indexeren van batchplanning&lt;/h3&gt;&lt;p&gt;We gebruiken hiervoor de standaard Windows taakplanner. Het programma wordt gestart wanneer je op de knop hieronder klikt.&lt;/p&gt;&lt;p&gt;U kunt ofwel de volledige interface gebruiken (&lt;i&gt;taak aanmaken&lt;/i&gt; in het menu aan de rechterkant) of de vereenvoudigde &lt;i&gt;Maak de basistaak&lt;/i&gt; wizard aan. In beide gevallen kopieer en plak je het bestandspad hieronder als de &lt;i&gt;actie&lt;/i&gt; om uit te voeren.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">Commando is al gestart</translation>
+        <translation>Commando is al gestart</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">Recoll batchindexering</translation>
+        <translation>Recoll batchindexering</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">Start Windows Taakplanner tool</translation>
+        <translation>Start Windows Taakplanner tool</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4354,7 +4426,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Html voorkeur in plaats van gewoon tekst als preview</translation>
+        <translation type="vanished">Html voorkeur in plaats van gewoon tekst als preview</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4851,6 +4923,26 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -216,7 +216,7 @@
     <message>
         <source>Filter birth dates</source>
         <translation>过滤创建日期</translation>
-    </message>    
+    </message>
     <message>
         <source>Find</source>
         <translation>查找</translation>
@@ -406,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>磁盘完整的阈值百分比，我们将停止索引&lt;br&gt;例如, 90% 停止为 90% 完整, 0 或 100 表示没有限制)</translation>
+        <translation type="vanished">磁盘完整的阈值百分比，我们将停止索引&lt;br&gt;例如, 90% 停止为 90% 完整, 0 或 100 表示没有限制)</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -430,6 +430,10 @@
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -819,6 +823,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>&quot;history&quot;文件被损坏，请检查一下或者删除它：</translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -1016,6 +1025,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Open document</source>
         <translation>打开文档</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1295,6 +1312,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1354,7 +1378,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>这个查询已经不是活跃的了</translation>
+        <translation type="vanished">这个查询已经不是活跃的了</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1764,7 +1788,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>针对%1的查看程序命令中指定了父文件但是链接是http[s]：这是不支持的</translation>
+        <translation type="vanished">针对%1的查看程序命令中指定了父文件但是链接是http[s]：这是不支持的</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1969,6 +1993,14 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2329,7 +2361,7 @@ Please check the desktop file</source>
     <message>
         <source>Filter birth dates</source>
         <translation type="unfinished">过滤创建日期</translation>
-    </message>    
+    </message>
     <message>
         <source>Assisted complex search</source>
         <translation type="unfinished"></translation>
@@ -2946,7 +2978,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;查询语言作弊表。有疑问：点击 &lt;b&gt;显示查询&lt;/b&gt;。&amp;nbsp;</translation>
+        <translation type="vanished">&lt;p&gt;查询语言作弊表。有疑问：点击 &lt;b&gt;显示查询&lt;/b&gt;。&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2998,7 +3030,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;无干燥扩展：大写&lt;/td&gt;&lt;td&gt;地板&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;无干燥扩展：大写&lt;/td&gt;&lt;td&gt;地板&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -3062,6 +3094,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3541,7 +3581,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>拼写扩展出错</translation>
+        <translation type="vanished">拼写扩展出错</translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3592,7 +3636,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>无法添加带有不同的大小写/诊断信息裁剪方式的索引</translation>
+        <translation type="vanished">无法添加带有不同的大小写/诊断信息裁剪方式的索引</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3636,6 +3680,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3954,6 +4002,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>Search regexp</source>
         <translation>搜索正则表达式</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3985,6 +4037,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>File creation failed: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3994,7 +4050,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Url</source>
-        <translation>路径</translation>
+        <translation type="vanished">路径</translation>
     </message>
     <message>
         <source>Date</source>
@@ -4004,32 +4060,40 @@ This should give higher precedence to the results where the search terms appear 
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">路径</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">错误</translation>
+        <translation>错误</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">配置未初始化</translation>
+        <translation>配置未初始化</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;h3&gt;重新索引批处理计划&lt;/h3&gt;&lt;p&gt;我们为此使用标准的 Windows 任务调度器。 当您点击下面的按钮时，程序将启动。&lt;/p&gt;&lt;p&gt;您可以使用完整界面 (&lt;i&gt;在右边的菜单中创建任务&lt;/i&gt; ), 或简化的 &lt;i&gt;创建基本任务&lt;/i&gt; 向导。 在这两种情况下，下面列出的批处理文件路径为 &lt;i&gt;操作&lt;/i&gt; 需要执行。&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;重新索引批处理计划&lt;/h3&gt;&lt;p&gt;我们为此使用标准的 Windows 任务调度器。 当您点击下面的按钮时，程序将启动。&lt;/p&gt;&lt;p&gt;您可以使用完整界面 (&lt;i&gt;在右边的菜单中创建任务&lt;/i&gt; ), 或简化的 &lt;i&gt;创建基本任务&lt;/i&gt; 向导。 在这两种情况下，下面列出的批处理文件路径为 &lt;i&gt;操作&lt;/i&gt; 需要执行。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">命令已经开始</translation>
+        <translation>命令已经开始</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">重新批量索引</translation>
+        <translation>重新批量索引</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">启动 Windows 任务计划工具</translation>
+        <translation>启动 Windows 任务计划工具</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4449,7 +4513,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>预览中优先使用Html。</translation>
+        <translation type="vanished">预览中优先使用Html。</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4951,6 +5015,26 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

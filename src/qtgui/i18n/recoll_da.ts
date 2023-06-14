@@ -225,6 +225,10 @@
         <source>Filter sizes</source>
         <translation>Filtrer størrelser</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfIndexW</name>
@@ -402,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>Disk fuld tærskel procentdel, hvor vi stopper indeksering&lt;br&gt;F.eks. 90% at stoppe ved 90% fuld, 0 eller 100 betyder ingen grænse)</translation>
+        <translation type="vanished">Disk fuld tærskel procentdel, hvor vi stopper indeksering&lt;br&gt;F.eks. 90% at stoppe ved 90% fuld, 0 eller 100 betyder ingen grænse)</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -426,6 +430,10 @@
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -763,6 +771,11 @@ Klik på Annullér, hvis du ønsker at redigere konfigurationsfilen før indekse
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>&quot;historie&quot; fil er beskadiget, tjek eller fjern den: </translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -960,6 +973,14 @@ Klik på Annullér, hvis du ønsker at redigere konfigurationsfilen før indekse
     <message>
         <source>Open document</source>
         <translation>Åbn dokument</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1225,6 +1246,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1284,7 +1312,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>Denne søgning er ikke længere aktiv</translation>
+        <translation type="vanished">Denne søgning er ikke længere aktiv</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1693,7 +1721,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>Viewer kommandolinje for %1 angiver overordnet fil, men URL er http[s]: ikke understøttet</translation>
+        <translation type="vanished">Viewer kommandolinje for %1 angiver overordnet fil, men URL er http[s]: ikke understøttet</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1899,6 +1927,14 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2258,6 +2294,10 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Assisted complex search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter birth dates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2861,7 +2901,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;Forespørgsel sprog snydeplade. Klik på &lt;b&gt;Vis forespørgsel&lt;/b&gt;.&amp;nbsp;</translation>
+        <translation type="vanished">&lt;p&gt;Forespørgsel sprog snydeplade. Klik på &lt;b&gt;Vis forespørgsel&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2913,7 +2953,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Ingen stamudvidelse: kapitaliserer&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;Ingen stamudvidelse: kapitaliserer&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2977,6 +3017,14 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3456,7 +3504,11 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>Spell ekspansionsfejl. </translation>
+        <translation type="vanished">Spell ekspansionsfejl. </translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3507,7 +3559,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>Kan ikke tilføje indeks med en anden indstilling for fjernelse af store-bogstaver/diakritiske tegn</translation>
+        <translation type="vanished">Kan ikke tilføje indeks med en anden indstilling for fjernelse af store-bogstaver/diakritiske tegn</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3551,6 +3603,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3869,6 +3925,10 @@ Dette skulle give højere forrang til resultaterne, hvor søgeordene vises nøja
         <source>Search regexp</source>
         <translation>Regex søgning</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3900,6 +3960,10 @@ Dette skulle give højere forrang til resultaterne, hvor søgeordene vises nøja
         <source>File creation failed: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3909,7 +3973,7 @@ Dette skulle give højere forrang til resultaterne, hvor søgeordene vises nøja
     </message>
     <message>
         <source>Url</source>
-        <translation>URL</translation>
+        <translation type="vanished">URL</translation>
     </message>
     <message>
         <source>Date</source>
@@ -3919,32 +3983,40 @@ Dette skulle give højere forrang til resultaterne, hvor søgeordene vises nøja
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">URL</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">Fejl</translation>
+        <translation>Fejl</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">Konfiguration ikke initialiseret</translation>
+        <translation>Konfiguration ikke initialiseret</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;h3&gt;Rekoll indeksering batch scheduling&lt;/h3&gt;&lt;p&gt;Vi bruger standard Windows task scheduler til dette. Programmet vil blive startet, når du klikker på knappen nedenfor.&lt;/p&gt;&lt;p&gt;Du kan bruge enten den fulde grænseflade (&lt;i&gt;Opret opgave&lt;/i&gt; i menuen til højre), eller den forenklede &lt;i&gt;Opret grundlæggende opgave&lt;/i&gt; guide. I begge tilfælde Kopier/Indsæt batchfilstien nedenfor som &lt;i&gt;Handling&lt;/i&gt; der skal udføres.&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;Rekoll indeksering batch scheduling&lt;/h3&gt;&lt;p&gt;Vi bruger standard Windows task scheduler til dette. Programmet vil blive startet, når du klikker på knappen nedenfor.&lt;/p&gt;&lt;p&gt;Du kan bruge enten den fulde grænseflade (&lt;i&gt;Opret opgave&lt;/i&gt; i menuen til højre), eller den forenklede &lt;i&gt;Opret grundlæggende opgave&lt;/i&gt; guide. I begge tilfælde Kopier/Indsæt batchfilstien nedenfor som &lt;i&gt;Handling&lt;/i&gt; der skal udføres.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">Kommando allerede startet</translation>
+        <translation>Kommando allerede startet</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">Rekoll Batch indeksering</translation>
+        <translation>Rekoll Batch indeksering</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">Start Windows Opgavestyring værktøj</translation>
+        <translation>Start Windows Opgavestyring værktøj</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4363,7 +4435,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Foretræk Html til almindelig tekst for forhåndsvisning.</translation>
+        <translation type="vanished">Foretræk Html til almindelig tekst for forhåndsvisning.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4865,6 +4937,26 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

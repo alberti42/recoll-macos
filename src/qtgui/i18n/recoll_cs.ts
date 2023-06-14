@@ -225,6 +225,10 @@
         <source>Filter sizes</source>
         <translation>Filtrovat velikosti</translation>
     </message>
+    <message>
+        <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfIndexW</name>
@@ -402,7 +406,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation>Procento plného limitu disku, na kterém přestaneme indexovat&lt;br&gt;Např. 90% se zastaví na 90% plné, 0 nebo 100 znamená bez limitu)</translation>
+        <translation type="vanished">Procento plného limitu disku, na kterém přestaneme indexovat&lt;br&gt;Např. 90% se zastaví na 90% plné, 0 nebo 100 znamená bez limitu)</translation>
     </message>
     <message>
         <source>Web history</source>
@@ -426,6 +430,10 @@
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -764,6 +772,11 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation>Soubor &quot;history&quot; je poškozen. Prověřte jej, prosím, anebo jej odstraňte: </translation>
     </message>
+    <message>
+        <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -961,6 +974,14 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     <message>
         <source>Open document</source>
         <translation>Otevřít dokument</translation>
+    </message>
+    <message>
+        <source>Reload as Plain Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload as HTML</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1226,6 +1247,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>RclCompleterModel</name>
+    <message>
+        <source> Hits</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -1285,7 +1313,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>Toto hledání už není činné</translation>
+        <translation type="vanished">Toto hledání už není činné</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
@@ -1694,7 +1722,7 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>Příkaz pro prohlížeč pro %1 stanovuje rodičovský soubor, ale adresa (URL) je  http[s]: nepodporováno</translation>
+        <translation type="vanished">Příkaz pro prohlížeč pro %1 stanovuje rodičovský soubor, ale adresa (URL) je  http[s]: nepodporováno</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1900,6 +1928,14 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This search is not active anymore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2259,6 +2295,10 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Assisted complex search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter birth dates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2864,7 +2904,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation>&lt;p&gt;Jazyk dotazu. Kliknutím &lt;b&gt;Zobrazit dotaz&lt;/b&gt;.&amp;nbsp;</translation>
+        <translation type="vanished">&lt;p&gt;Jazyk dotazu. Kliknutím &lt;b&gt;Zobrazit dotaz&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
@@ -2916,7 +2956,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Žádné kmenové rozšíření: kapitalizovat&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation type="vanished">&lt;tr&gt;&lt;td&gt;Žádné kmenové rozšíření: kapitalizovat&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
@@ -2980,6 +3020,14 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3459,7 +3507,11 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation>Chyba v pravopisných návrzích. </translation>
+        <translation type="vanished">Chyba v pravopisných návrzích. </translation>
+    </message>
+    <message>
+        <source>Spell expansion error.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3510,7 +3562,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>Nelze přidat rejstřík s odlišnou volbou pro velikost písma/diakritiku</translation>
+        <translation type="vanished">Nelze přidat rejstřík s odlišnou volbou pro velikost písma/diakritiku</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -3554,6 +3606,10 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t add index with different case/diacritics stripping option.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3872,6 +3928,10 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <source>Search regexp</source>
         <translation>Hledat regulární výraz</translation>
     </message>
+    <message>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
@@ -3903,6 +3963,10 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <source>File creation failed: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3912,7 +3976,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Url</source>
-        <translation>URL</translation>
+        <translation type="vanished">URL</translation>
     </message>
     <message>
         <source>Date</source>
@@ -3922,32 +3986,40 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">Adresa (URL)</translation>
+    </message>
 </context>
 <context>
     <name>WinSchedToolW</name>
     <message>
         <source>Error</source>
-        <translation type="vanished">Chyba</translation>
+        <translation>Chyba</translation>
     </message>
     <message>
         <source>Configuration not initialized</source>
-        <translation type="vanished">Konfigurace nebyla inicializována</translation>
+        <translation>Konfigurace nebyla inicializována</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="vanished">&lt;h3&gt;Recoll indexování dávkového plánování&lt;/h3&gt;&lt;p&gt;K tomu používáme standardní plánovač úkolů pro Windows. Program bude spuštěn, když klepnete na tlačítko níže.&lt;/p&gt;&lt;p&gt;Můžete použít celé rozhraní (&lt;i&gt;Vytvořit úkol&lt;/i&gt; v menu vpravo), nebo průvodce zjednodušeným &lt;i&gt;, vytvořit základní úkol&lt;/i&gt; . V obou případech Kopírovat/Vložit cestu dávkového souboru uvedenou níže jako &lt;i&gt;Akce&lt;/i&gt; , která má být provedena.&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;Recoll indexování dávkového plánování&lt;/h3&gt;&lt;p&gt;K tomu používáme standardní plánovač úkolů pro Windows. Program bude spuštěn, když klepnete na tlačítko níže.&lt;/p&gt;&lt;p&gt;Můžete použít celé rozhraní (&lt;i&gt;Vytvořit úkol&lt;/i&gt; v menu vpravo), nebo průvodce zjednodušeným &lt;i&gt;, vytvořit základní úkol&lt;/i&gt; . V obou případech Kopírovat/Vložit cestu dávkového souboru uvedenou níže jako &lt;i&gt;Akce&lt;/i&gt; , která má být provedena.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Command already started</source>
-        <translation type="vanished">Příkaz byl již spuštěn</translation>
+        <translation>Příkaz byl již spuštěn</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation type="vanished">Přepočítat indexování dávky</translation>
+        <translation>Přepočítat indexování dávky</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="vanished">Spustit Windows Task Scheduler nástroj</translation>
+        <translation>Spustit Windows Task Scheduler nástroj</translation>
+    </message>
+    <message>
+        <source>Could not create batch file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4367,7 +4439,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Upřednostňovat pro náhled HTML před prostým textem</translation>
+        <translation type="vanished">Upřednostňovat pro náhled HTML před prostým textem</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -4869,6 +4941,26 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of history entries in completer list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of history entries in completer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays the total number of occurences of the term in the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show hit counts in completer popup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer HTML to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
