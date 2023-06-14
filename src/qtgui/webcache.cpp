@@ -181,7 +181,7 @@ QVariant WebcacheModel::headerData (int col, Qt::Orientation orientation, int ro
     case 0: return QVariant(tr("MIME"));
     case 1: return QVariant(tr("Date"));
     case 2: return QVariant(tr("Size"));
-    case 3: return QVariant(tr("Url"));
+    case 3: return QVariant(tr("URL"));
     default: return QVariant();
     }
 }

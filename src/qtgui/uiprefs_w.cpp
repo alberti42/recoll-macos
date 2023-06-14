@@ -777,8 +777,8 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     }
     if (o_index_stripchars != stripped) {
         QMessageBox::warning(0, "Recoll",
-                             tr("Cant add index with different case/diacritics"
-                                " stripping option"));
+                             tr("Can't add index with different case/diacritics
+                                " stripping option."));
         return;
     }
     if (path_samefile(dbdir, theconfig->getDbDir())) {

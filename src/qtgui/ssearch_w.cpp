@@ -431,7 +431,7 @@ void SSearch::onSearchTypeChanged(int typ)
             tr("text-align: center;") +
             tr("}") +
             tr("</style></head><body>") +
-            tr("<p>Query language cheat-sheet. In doubt: click <b>Show Query</b>.&nbsp;") +
+            tr("<p>Query language cheat-sheet. In doubt: click <b>Show Query Details</b>.&nbsp;") +
             tr("You should really look at the manual (F1)</p>") +
             tr("<table border='1' cellspacing='0'>") +
             tr("<tr><th>What</th><th>Examples</th>") +
@@ -444,7 +444,7 @@ void SSearch::onSearchTypeChanged(int typ)
             tr("<tr><td>Ordered proximity (slack=1)</td><td>\"pride prejudice\"o1</td></tr>") +
             tr("<tr><td>Unordered proximity (slack=1)</td><td>\"prejudice pride\"po1</td></tr>") +
             tr("<tr><td>Unordered prox. (default slack=10)</td><td>\"prejudice&nbsp;pride\"p</td></tr>") +
-            tr("<tr><td>No stem expansion: capitalize</td><td>Floor</td></tr>") +
+            tr("<tr><td>Capitalize to suppress stem expansion</td><td>Floor</td></tr>") +
             tr("<tr><td>Field-specific</td><td>author:austen&nbsp;&nbsp;title:prejudice</td></tr>") +
             tr("<tr><td>AND inside field (no order)</td><td>author:jane,austen</td></tr>") +
             tr("<tr><td>OR inside field</td><td>author:austen/bronte</td></tr>") +

@@ -243,8 +243,7 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
         return;
 
     if (sid != reslist->listId()) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("This search is not active any more"));
+        QMessageBox::warning(0, "Recoll", tr("This search is not active anymore"));
         return;
     }
 
@@ -264,8 +263,7 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 
     Rcl::Doc doc;
     if (!reslist->getDoc(docnum, doc)) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("Cannot retrieve document info from database"));
+        QMessageBox::warning(0, "Recoll", tr("Cannot retrieve document info from database"));
         return;
     }
         

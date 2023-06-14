@@ -193,7 +193,7 @@ void SpellW::doExpand()
         LOGDEB("SpellW::doExpand: spelling [" << expr << "]\n" );
         vector<string> suggs;
         if (!rcldb->getSpellingSuggestions(expr, suggs)) {
-            QMessageBox::warning(0, "Recoll", tr("Spell expansion error. "));
+            QMessageBox::warning(0, "Recoll", tr("Spell expansion error."));
         }
         for (const auto& it : suggs) {
             res.entries.push_back(Rcl::TermMatchEntry(it));
