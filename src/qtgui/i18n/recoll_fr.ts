@@ -227,7 +227,7 @@
     </message>
     <message>
         <source>Filter birth dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrer par date de création</translation>
     </message>
 </context>
 <context>
@@ -434,7 +434,7 @@
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation type="unfinished"></translation>
+        <translation>Pourcentage d&apos;occupation du disque provoquant l&apos;arrêt de l&apos;indexation&lt;br&gt;(Ex: 90% pour arrêter quand le disque est 90% plein. 0 ou 100 signifient pas de limite)</translation>
     </message>
 </context>
 <context>
@@ -775,7 +775,8 @@ Cliquez sur Annuler si vous voulez modifier le fichier de configuration avant le
     <message>
         <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Nécessite la préférence &quot;Afficher l&apos;icone dans la barre d&apos;état système¨!
+</translation>
     </message>
 </context>
 <context>
@@ -977,11 +978,11 @@ Cliquez sur Annuler si vous voulez modifier le fichier de configuration avant le
     </message>
     <message>
         <source>Reload as Plain Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher comme du texte pur</translation>
     </message>
     <message>
         <source>Reload as HTML</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher comme du HTML</translation>
     </message>
 </context>
 <context>
@@ -1250,7 +1251,7 @@ p, li { white-space: pre-wrap; }
     <name>RclCompleterModel</name>
     <message>
         <source> Hits</source>
-        <translation type="unfinished"></translation>
+        <translation>Résultats</translation>
     </message>
 </context>
 <context>
@@ -1932,11 +1933,11 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>This search is not active anymore</source>
-        <translation type="unfinished"></translation>
+        <translation>Cette recherche n&apos;est plus active</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
-        <translation type="unfinished"></translation>
+        <translation>La ligne de commande pour %1 specifie l&apos;utilisation du fichier parent, mais l&apos;URL n&apos;est pas file:// : ne peut pas marcher</translation>
     </message>
 </context>
 <context>
@@ -2299,7 +2300,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Filter birth dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrer par date de création</translation>
     </message>
 </context>
 <context>
@@ -3024,11 +3025,11 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Langue de requête feuille de triche. En doute : cliquez sur &lt;b&gt;Afficher la requête en détails&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Capitaliser pour une recherche littérale&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
 </context>
 <context>
@@ -3511,7 +3512,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Spell expansion error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur dans les suggestions orthographiques.</translation>
     </message>
 </context>
 <context>
@@ -3610,7 +3611,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Can&apos;t add index with different case/diacritics stripping option.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;ajouter un index avec une option differente de sensibilite a la casse et aux accents.</translation>
     </message>
 </context>
 <context>
@@ -3930,7 +3931,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation>TextLabel</translation>
     </message>
 </context>
 <context>
@@ -3965,7 +3966,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille maximum %1 (config. Index). Taille courante %2. Position d&apos;écriture %3.</translation>
     </message>
 </context>
 <context>
@@ -3988,7 +3989,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>URL</source>
-        <translation type="unfinished">URL</translation>
+        <translation>URL</translation>
     </message>
 </context>
 <context>
@@ -4019,7 +4020,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Could not create batch file</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de créer le fichier de commandes</translation>
     </message>
 </context>
 <context>
@@ -4948,23 +4949,23 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Maximum number of history entries in completer list</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre maximum d&apos;entrées dans la liste de complétions</translation>
     </message>
     <message>
         <source>Number of history entries in completer:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre d&apos;entrées historiques dans la liste de complétion:</translation>
     </message>
     <message>
         <source>Displays the total number of occurences of the term in the index</source>
-        <translation type="unfinished"></translation>
+        <translation>Affiche le nombre total d&apos;occurences du terme dans l&apos;index</translation>
     </message>
     <message>
         <source>Show hit counts in completer popup.</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher le nombre de correspondances dans la liste de complétion.</translation>
     </message>
     <message>
         <source>Prefer HTML to plain text for preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Utiliser le format HTML pour la previsualisation.</translation>
     </message>
 </context>
 </TS>
