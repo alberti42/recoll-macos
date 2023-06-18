@@ -6,6 +6,7 @@
 # It works not only for tar-files, but automatically for gzipped and
 # bzipped tar-files at well.
 
+import os
 import rclexecm
 
 try:
@@ -27,8 +28,7 @@ class TarExtractor:
             if info.size > self.em.maxmembersize:
                 # skip
                 docdata = b''
-                self.em.rclog("extractone: entry %s size %d too big" %
-                              (ipath, info.size))
+                self.em.rclog("extractone: entry %s size %d too big" % (ipath, info.size))
                 docdata = b'' # raise TarError("Member too big")
             else:
                 docdata = self.tar.extractfile(ipath).read()
@@ -38,7 +38,11 @@ class TarExtractor:
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.namen) -1:
             iseof = rclexecm.RclExecM.eofnext
-        return (ok, docdata, rclexecm.makebytes(ipath), iseof)
+        # We use fsencode, not makebytes, to convert to bytes. The latter would fail if the ipath
+        # was actually binary, because it tries to encode to utf-8 but python3 had used fsdecode for
+        # converting to str, and the result is not encodable to utf-8 (get: "surrogates
+        # not allowed). We use fsdecode in getipath to revert the process.
+        return (ok, docdata, os.fsencode(ipath), iseof)
 
     def closefile(self):
         self.tar = None
@@ -55,7 +59,7 @@ class TarExtractor:
             return False
 
     def getipath(self, params):
-        ipath = params["ipath"]
+        ipath = os.fsdecode(params["ipath"])
         ok, data, ipath, eof = self.extractone(ipath)
         if ok:
             return (ok, data, ipath, eof)
