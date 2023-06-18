@@ -53,8 +53,13 @@ public:
     // And the originating db. 0 is base, 1 first external etc.
     int idxi{0};
 
-    // Internal path for multi-doc files. Ascii
+    // Internal path for multi-doc files.
     // Set by FsIndexer::processone    
+    // Note: 2023-06: could be binary but all filters currently output UTF-8. This is not
+    // enforced though, and, for example, the tar handler, which is not enabled by default
+    // can output binary values (for binary Posix paths).
+    // This is an issue for the python module, because, at the moment, only the URL can be retrieved
+    // as as bytes. Maybe change doc.get() to return bytes if the key is bytes?
     std::string ipath;
 
     // Mime type. Set by FileInterner::internfile

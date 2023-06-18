@@ -125,7 +125,6 @@ class ZipExtractor:
                 pass
             ok = True
         except Exception as err:
-            self.em.rclog("extractone: failed: [%s]" % err)
             ok = False
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.zip.namelist()) -1:
@@ -173,6 +172,7 @@ class ZipExtractor:
             ipath = ipath.decode("utf-8")
             return self.extractone(ipath)
         except Exception as err:
+            self.em.rclog("extractone: failed: [%s]" % err)
             return (ok, data, ipath, eof)
         
     def getnext(self, params):
