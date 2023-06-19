@@ -365,14 +365,16 @@ Doc_setbinurl(recoll_DocObject *self, PyObject *value)
         PyErr_SetString(PyExc_AttributeError, "doc??");
         return 0;
     }
-    if (!PyByteArray_Check(value)) {
-        PyErr_SetString(PyExc_TypeError, "setbinurl needs byte array argument");
+    if (PyByteArray_Check(value)) {
+        self->doc->url = string(PyByteArray_AsString(value), PyByteArray_Size(value));
+    } else if (PyBytes_Check(value)) {
+        self->doc->url = string(PyBytes_AsString(value), PyBytes_Size(value));
+    } else {
+        PyErr_SetString(PyExc_TypeError, "setbinurl needs bytearray or bytes argument");
         return 0;
-    }
+    }        
 
-    self->doc->url = string(PyByteArray_AsString(value), PyByteArray_Size(value));
-    printableUrl(
-        self->rclconfig->getDefCharset(), self->doc->url, self->doc->meta[Rcl::Doc::keyurl]);
+    printableUrl(self->rclconfig->getDefCharset(), self->doc->url, self->doc->meta[Rcl::Doc::keyurl]);
     Py_RETURN_NONE;
 }
 
