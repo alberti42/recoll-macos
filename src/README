@@ -14,7 +14,7 @@ at the following location: GNU web site.
 
 This document introduces full text search notions and describes the
 installation and use of the Recoll application. This version describes Recoll
-1.34.
+1.35.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -58,10 +58,11 @@ Table of Contents
 
         2.5.1. The PDF input handler
         2.5.2. Running OCR on image documents
-        2.5.3. Removable volumes
-        2.5.4. Unix-like systems: indexing visited Web pages
-        2.5.5. Unix-like systems: using extended attributes
-        2.5.6. Unix-like systems: importing external tags
+        2.5.3. Running a speech to text program on audio files
+        2.5.4. Removable volumes
+        2.5.5. Unix-like systems: indexing visited Web pages
+        2.5.6. Unix-like systems: using extended attributes
+        2.5.7. Unix-like systems: importing external tags
 
 3. Searching
 
@@ -156,7 +157,7 @@ List of Tables
 Chapter 1. Introduction
 
 This document introduces full text search notions and describes the
-installation and use of the Recoll application. It is updated for Recoll 1.34.
+installation and use of the Recoll application. It is updated for Recoll 1.35.
 
 Recoll was for a long time dedicated to Unix-like systems. It was only lately
 (2015) ported to MS-Windows. Many references in this manual, especially file
@@ -1218,7 +1219,17 @@ handler. The new function has the following features:
   • The OCR is currently only called from the PDF handler, but there should be
     no problem using it for other image types.
 
-2.5.3. Removable volumes
+2.5.3. Running a speech to text program on audio files
+
+If the OpenAI Whisper program is available and the appropriate parameters set
+in the configuration files, the Recoll audio file handler will run speech to
+text recognition on audio files and the resulting text will be indexed. See the
+the FAQ entry for more details.
+
+The results of the speech recognition will be cached in the same manner as the
+results of image OCR.
+
+2.5.4. Removable volumes
 
 Recoll used to have no support for indexing removable volumes (portable disks,
 USB keys, etc.). Recent versions have improved the situation and support
@@ -1342,7 +1353,7 @@ The same set of modifications (Recoll 1.24) has also made it possible to run
 queries from a readonly configuration directory (with slightly reduced function
 of course, such as not recording the query history).
 
-2.5.4. Unix-like systems: indexing visited Web pages
+2.5.5. Unix-like systems: indexing visited Web pages
 
 With the help of a Firefox extension, Recoll can index the Internet pages that
 you visit. The extension has a long history: it was initially designed for the 
@@ -1383,7 +1394,7 @@ The recollindex command has two options to help manage the Web cache:
 You can find more details on Web indexing, its usage and configuration in a
 Recoll 'Howto' entry.
 
-2.5.5. Unix-like systems: using extended attributes
+2.5.6. Unix-like systems: using extended attributes
 
 User extended attributes are named pieces of information that most modern file
 systems can attach to any file.
@@ -1426,7 +1437,7 @@ parameter in Unix time format (seconds since the epoch).
 The date substitution will then be automatic, you do not need to customize the
 fields file.
 
-2.5.6. Unix-like systems: importing external tags
+2.5.7. Unix-like systems: importing external tags
 
 During indexing, it is possible to import metadata for each file by executing
 commands. This allows, for example, extracting tag data from an external
@@ -4017,24 +4028,24 @@ before any other call or object creation.
 
   • writable decides if we can index new data through this connection.
 
+Examples:
+
+from recoll import recoll
+
+# Opening the default db
+db = recoll.connect()
+
+# Opening the default db and a pair of additional indexes
+db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/otherconf/xapiandb"])
+
 The Db class
 
 A Db object is created by a connect() call and holds a connection to a Recoll
 index.
 
-Db.close()
-
-    Closes the connection. You can't do anything with the Db object after this.
-
 Db.query(), Db.cursor()
 
-    These aliases return a blank Query object for this index.
-
-Db.setAbstractParams(maxchars, contextwords)
-
-    Set the parameters used to build snippets (sets of keywords in context text
-    fragments). maxchars defines the maximum total size of the abstract.
-    contextwords defines how many terms are shown around the keyword.
+    These (synonym) methods return a blank Query object for this index.
 
 Db.termMatch(match_type, expr, field='', maxlen=-1, casesens=False, diacsens=
     False, lang='english')
@@ -4044,6 +4055,16 @@ Db.termMatch(match_type, expr, field='', maxlen=-1, casesens=False, diacsens=
     wildcard, regexp or stem. Returns a list of terms expanded from the input
     expression.
 
+Db.setAbstractParams(maxchars, contextwords)
+
+    Set the parameters used to build snippets (sets of keywords in context text
+    fragments). maxchars defines the maximum total size of the abstract.
+    contextwords defines how many terms are shown around the keyword.
+
+Db.close()
+
+    Closes the connection. You can't do anything with the Db object after this.
+
 The Query class
 
 A Query object (equivalent to a cursor in the Python DB API) is created by a
@@ -4051,8 +4072,8 @@ Db.query() call. It is used to execute index searches.
 
 Query.sortby(fieldname, ascending=True)
 
-    Sort results by fieldname, in ascending or descending order. Must be called
-    before executing the search.
+    Sets the sorting order for future searches for using fieldname, in
+    ascending or descending order. Must be called before executing the search.
 
 Query.execute(query_string, stemming=1, stemlang="english", fetchtext=False,
     collapseduplicates=False)
@@ -4077,6 +4098,21 @@ Query.fetchone()
 
     Fetches the next Doc object from the current search results. Generates a
     StopIteration exception if there are no results left.
+
+Query.__iter__() and Query.next()
+
+    So that things like for doc in query: will work.
+
+    Example:
+
+    from recoll import recoll
+
+    db = recoll.connect()
+    q = db.query()
+    nres = q.execute("some query")
+    for doc in q:
+        print("%s" % doc.title)
+
 
 Query.close()
 
@@ -4125,10 +4161,6 @@ Query.getsnippets(doc, maxoccs = -1, ctxwords = -1, sortbypage=False, methods =
     the fragments will be highlighted (see the highlight method). If maxoccs is
     set, it defines the maximum result list length. ctxwords allows adjusting
     the individual snippet context size.
-
-Query.__iter__() and Query.next()
-
-    So that things like for doc in query: will work.
 
 Query.arraysize
 
@@ -4528,7 +4560,7 @@ of them. Finding the right package name for other systems is left to the
 sagacity of the reader.
 
 If you do not need the GUI, you can avoid all GUI dependencies by disabling its
-build. (See the configure section further).
+build. (See the configure section further down: --disable-qtgui).
 
 The shopping list follows:
 
@@ -4543,13 +4575,14 @@ The shopping list follows:
     you get strange error messages about dependency tracking from configure,
     you probably forgot to install make.
 
-  • A C++ compiler with at least C++11 compatibility (g++ or clang).
+  • A C++ compiler with at least C++14 compatibility (g++ or clang). Versions
+    1.33.4 and older only require c++11.
 
   • The bison command is not generally needed, but might be if some file
     modification times are not right.
 
   • If you want to process CHM files, you will need libchm (libchm-dev), else
-    you can set the --disable-python-chm option to the configure command
+    you can set the --disable-python-chm option to the configure command.
 
   • For building the documentation: the xsltproc command, and the Docbook XML
     and style sheet files. You can avoid this dependency by disabling
@@ -4567,16 +4600,22 @@ The shopping list follows:
 
   • Development files for zlib (zlib1g-dev).
 
-  • If you want to build the GUI: development files for Qt 5. Else give the
-    --disable-qtgui option to the configure command. I can never remember what
-    package to install to get this, but installing the Qt5 Webkit, (or Qt5
-    Webengine if you set --enable-webengine) will bring the rest as
-    dependencies (libqt5webkit5-dev or qtwebengine5dev).
+  • Development files for libaspell (libaspell-dev). Can be avoided with the
+    --disable-aspell option to configure.
 
-  • Development files for Python (python2-dev, python-setuptools,
-    python3-all-dev, python3-setuptools). You can use the
-    --disable-python-module option for disabling the build of the Python
-    extensions).
+  • If you want to build the GUI: development files for Qt 5. Else give the
+    --disable-qtgui option to the configure command. You will probably need
+    qtbase5-dev and qttools5-dev-tools I can never remember what other packages
+    to install, but installing the Qt5 Webkit, (or Qt5 Webengine if you set
+    --enable-webengine) will usually bring them as dependencies
+    (libqt5webkit5-dev or qtwebengine5dev). The Recoll GUI can use either
+    Webkit or Webengine for displaying the results.
+
+  • Development files for Python3 (python3-all-dev, python3-setuptools). You
+    can use the --disable-python-module option for disabling the build of the
+    Python extension. On older systems still supporting Python2, you can also
+    install python2-dev and python-setuptools. The build will test for the
+    presence of the python2 and/or python3 commands and behave accordingly.
 
   • You may also need libiconv. On Linux systems, the iconv interface is part
     of libc and you should not need to do anything special.
@@ -4585,10 +4624,12 @@ Check the Recoll download page for up to date version information.
 
 5.3.2. Building
 
-Recoll has been built on Linux, FreeBSD, Mac OS X, and Solaris, most versions
+Recoll has been built on Linux, FreeBSD, MacOS, and Solaris, most versions
 after 2005 should be ok, maybe some older ones too (Solaris 8 used to be ok).
-If you build on another system, and need to modify things, I would very much
-welcome patches.
+Current Recoll versions (1.34 and later) need a c++14 compiler and Qt5, so they
+will not build on old systems, but if really needed, you can probably find an
+older version which will work for you. If you build on another system, and need
+to modify things, I would very much welcome patches.
 
 Configure options:
 
@@ -5390,9 +5431,10 @@ filtermaxmbytes
     Maximum virtual memory space for filter processes (setrlimit(RLIMIT_AS)),
     in megabytes. Note that this includes any mapped libs (there is no reliable
     Linux way to limit the data space only), so we need to be a bit generous
-    here. Anything over 2000 will be ignored on 32 bits machines. The previous
-    default value of 2000 would prevent java pdftk to work when executed from
-    Python rclpdf.py.
+    here. Anything over 2000 will be ignored on 32 bits machines. The high
+    default value is needed because of java-based handlers (pdftk) which need a
+    lot of VM (most of it text), esp. pdftk when executed from Python
+    rclpdf.py. You can use a much lower value if you don't need Java.
 
 thrQSizes
 
@@ -5751,8 +5793,8 @@ Parameters for running speech to text conversion
 
 speechtotext
 
-    Activate speech to text conversion The only posssible value at the moment
-    is "whisper" for using the OpenAI whisper program
+    Activate speech to text conversion The only possible value at the moment is
+    "whisper" for using the OpenAI whisper program.
 
 sttmodel
 
