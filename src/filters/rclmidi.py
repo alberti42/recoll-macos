@@ -26,7 +26,6 @@
 
 import sys
 from struct import unpack, pack
-import six
 
 def next_byte_as_int(data):
     return next(data)
@@ -93,8 +92,7 @@ class EventMeta(type):
         if name not in ['Event', 'MetaEvent', 'NoteEvent']:
             EventFactory.register_event(cls, bases)
 
-@six.add_metaclass(EventMeta)
-class Event(object):
+class Event(object, metaclass=EventMeta):
     length = 0
     name = "Generic MIDI Event"
     statusmsg = 0x0
