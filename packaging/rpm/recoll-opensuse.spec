@@ -3,28 +3,29 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.33.3
+Version:        1.35.0
 Release:        2%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
 URL:            http://www.lesbonscomptes.com/recoll/
 Source0:        http://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
-Source10:       qmake-qt5.sh
+Source10:       qmake-qt6.sh
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
 
-BuildRequires:  libQt5Gui-devel
-BuildRequires:  libqt5-qtwebengine-devel
-BuildRequires:  python310-devel
+BuildRequires:  qt6-gui-devel
+BuildRequires:  qt6-tools
+BuildRequires:  qt6-webenginewidgets-devel
+BuildRequires:  python3-devel
 BuildRequires:  libxapian-devel
 
 BuildRequires:  extra-cmake-modules
-BuildRequires:  python2-devel
 BuildRequires:  zlib-devel
 BuildRequires:  chmlib-devel
 BuildRequires:  libxslt-devel
 Requires:       xdg-utils
+Requires:       aspell
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -42,8 +43,8 @@ CXXFLAGS="%{optflags}"; export CXXFLAGS
 LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 
 # force use of custom/local qmake, to inject proper build flags (above)
-install -m755 -D %{SOURCE10} qmake-qt5.sh
-export QMAKE=qmake-qt5
+install -m755 -D %{SOURCE10} qmake-qt6.sh
+export QMAKE=qmake6
 
 %configure --enable-webengine
 make %{?_smp_mflags}
@@ -66,20 +67,10 @@ rm -f %{buildroot}/usr/share/man/man1/rclgrep.1.gz
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
 echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 
-# Mix of Python 2 and 3, needs special care
-
-py2_byte_compile () {
-    bytecode_compilation_path="$1"
-    find $bytecode_compilation_path -type f -a -name "*.py" -print0 | xargs -0 %{__python2} -O -c 'import py_compile, sys; [ py_compile.compile(f, dfile=f.partition("%{buildroot}")[2]) for f in sys.argv[1:] ]' || :
-    find $bytecode_compilation_path -type f -a -name "*.py" -print0 | xargs -0 %{__python2} -c 'import py_compile, sys; [ py_compile.compile(f, dfile=f.partition("%{buildroot}")[2]) for f in sys.argv[1:] ]' || :
-}
-
 py3_byte_compile () {
     bytecode_compilation_path="$1"
     find $bytecode_compilation_path -type f -a -name "*.py" -print0 | xargs -0 %{__python3} -O -c 'import py_compile, sys; [py_compile.compile(f, dfile=f.partition("%{buildroot}")[2], optimize=opt) for opt in range(2) for f in sys.argv[1:] ]' || :
 }
-
-py2_byte_compile %{buildroot}%{python2_sitearch}/recoll
 
 for py in %{buildroot}%{_datadir}/%{name}/filters/*.py; do
 	py3_byte_compile $py
@@ -119,8 +110,6 @@ exit 0
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png
 %{_libdir}/recoll
-%{python2_sitearch}/recoll
-%{python2_sitearch}/Recoll*.egg-info
 %{python3_sitearch}/recoll
 %{python3_sitearch}/Recoll*.egg-info
 %{python3_sitearch}/recollchm
@@ -128,7 +117,6 @@ exit 0
 %{_mandir}/man1/%{name}.1*
 %{_mandir}/man1/%{name}q.1*
 %{_mandir}/man1/%{name}index.1*
-%{_mandir}/man1/xadump.1*
 %{_mandir}/man5/%{name}.conf.5*
 
 
