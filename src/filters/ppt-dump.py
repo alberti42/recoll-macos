@@ -6,7 +6,7 @@
 #
 
 import sys, os.path, getopt, traceback
-sys.path.insert(0, sys.path[0]+"/msodump.zip")
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "msodump.zip"))
 from msodumper import ole, pptstream, globals, olestream
 from msodumper.globals import error
 
