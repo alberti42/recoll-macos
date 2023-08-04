@@ -64,6 +64,14 @@ rm -f %{buildroot}/usr/share/man/man1/rclgrep.1
 rm -f %{buildroot}/usr/share/man/man1/rclgrep.1.gz
 rm -f %{buildroot}/usr/*/librecoll.la
 
+# Mix of Python 2 and 3, needs special care
+
+py2_byte_compile () {
+    bytecode_compilation_path="$1"
+    find $bytecode_compilation_path -type f -a -name "*.py" -print0 | xargs -0 %{__python2} -O -c 'import py_compile, sys; [ py_compile.compile(f, dfile=f.partition("%{buildroot}")[2]) for f in sys.argv[1:] ]' || :
+    find $bytecode_compilation_path -type f -a -name "*.py" -print0 | xargs -0 %{__python2} -c 'import py_compile, sys; [ py_compile.compile(f, dfile=f.partition("%{buildroot}")[2]) for f in sys.argv[1:] ]' || :
+}
+
 py3_byte_compile () {
     bytecode_compilation_path="$1"
     find $bytecode_compilation_path -type f -a -name "*.py" -print0 | xargs -0 %{__python3} -O -c 'import py_compile, sys; [py_compile.compile(f, dfile=f.partition("%{buildroot}")[2], optimize=opt) for opt in range(2) for f in sys.argv[1:] ]' || :
