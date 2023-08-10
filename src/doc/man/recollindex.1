@@ -7,22 +7,22 @@ recollindex \- indexing command for the Recoll full text search system
 .br
 .B recollindex
 [
-.B \-c
-<cfdir>]
-[
 .B \-z|\-Z
 ]
 [
 .B \-k
 ]
 [
+.B \--nopurge
+]
+[
+.B \-P
+]
+[
 .B \--diagsfile
 <diagpath> ]
 .br
 .B recollindex
-[
-.B \-c
-<cfd>]
 .B \-m
 [
 .B \-w
@@ -41,9 +41,6 @@ recollindex \- indexing command for the Recoll full text search system
 ]
 .br
 .B recollindex
-[
-.B \-c
-<cfdir>]
 .B \-i
 [
 .B \-Z \-k \-f \-P
@@ -51,9 +48,6 @@ recollindex \- indexing command for the Recoll full text search system
 [<path [path ...]>]
 .br
 .B recollindex 
-[
-.B \-c
-<cfdir>]
 .B \-r
 [
 .B \-Z \-K \-e \-f
@@ -65,85 +59,49 @@ pattern
 <dirpath>
 .br
 .B recollindex 
-[
-.B \-c
-<cfdir>]
 .B \-e 
 [<path [path ...]>]
 .br
 .B recollindex
-[
-.B \-c
-<cfdir>]
 .B \-l|-S|-E
 .br
 .B recollindex
-[
-.B \-c
-<cfdir>]
 .B \-s 
 <lang>
 .br
 .B recollindex
-[
-.B \-c
-<cfdir>]
 .B \--webcache-compact
 .br
 .B recollindex
-[
-.B \-c
-<cfdir>]
 .B \--webcache-burst
 <destdir>
+.br
 .B recollindex
-[
-.B \-c
-<cfdir>]
 .B \--notindexed
 [path [path ...]]
 
 .SH DESCRIPTION
-The
-.B recollindex
-command is the Recoll indexer.
+Create or update a Recoll index.
 .PP
-As indexing can sometimes take a long time, the command can be interrupted
-by sending an interrupt (Ctrl-C, SIGINT) or terminate (SIGTERM)
-signal. Some time may elapse before the process exits, because it needs to
-properly flush and close the index. This can also be done from the recoll
-GUI (menu entry: File/Stop_Indexing). After such an interruption, the index
-will be somewhat inconsistent because some operations which are normally
-performed at the end of the indexing pass will have been skipped (for
-example, the stemming and spelling databases will be inexistent or out of
-date). You just need to restart indexing at a later time to restore
-consistency. The indexing will restart at the interruption point (the full
-file tree will be traversed, but files that were indexed up to the
-interruption and for which the index is still up to date will not need to
-be reindexed).
-.PP
-The 
+There are several modes of operation. All modes support an optional
 .B \-c 
-option specifies the configuration directory name, overriding the
-default or $RECOLL_CONFDIR.
+<cfgdir>
+option to specify the configuration directory name, overriding the
+default or $RECOLL_CONFDIR (or $HOME/.recoll by default).
+
 .PP
-There are several modes of operation. 
-.PP
-The normal mode will index the set of files described in the configuration
-file 
-.B recoll.conf.
-This will incrementally update the database with files that changed since
+The normal mode will index the set of files described in the configuration.
+This will incrementally update the index with files that changed since
 the last run. If option 
 .B \-z 
-is given, the database will be erased before starting. If option
+is given, the index will be erased before starting. If option
 .B \-Z 
-is given, the database will not be reset, but all files will be considered
+is given, the index will not be reset, but all files will be considered
 as needing reindexing (in place reset).
 .PP
-As of version 1.21, 
 .B recollindex
-usually does not process again files which previously failed to index (for
-example because of a missing helper program). If option
+does not process again files which previously failed to index (for example because of a missing
+helper program). If option
 .B \-k
 is given, 
 .B recollindex
@@ -153,7 +111,18 @@ may also decide to retry failed files if the auxiliary checking script
 defined by the "checkneedretryindexscript" configuration variable indicates
 that this should happen.
 .PP
-If option
+The
+.B \--nopurge
+option will disable the normal erasure of deleted documents from the index. This can be useful in
+special cases (when it is known that part of the document set is temporarily not accessible).
+.PP
+The
+.B \-P
+option will force the purge pass. This is useful only if the
+.B idxnoautopurge
+parameter is set in the configuration file.
+.PP
+If the option
 .B \--diagsfile
 is given, the path given as parameter will be truncated and indexing
 diagnostics will be written to it. Each line in the file will have a
@@ -222,7 +191,7 @@ disable this with option
 \-C
 .PP
 .B recollindex \-i
-will index individual files into the database. The stem expansion and
+will index individual files into the index. The stem expansion and
 aspell databases will not be updated. The skippedPaths and skippedNames
 configuration variables will be used, so that some files may be
 skipped. You can tell recollindex to ignore skippedPaths and skippedNames
@@ -238,7 +207,7 @@ the existing files. You can force a purge pass with
 \-P.
 .PP
 .B recollindex \-e
-will erase data for individual files from the database. The stem expansion
+will erase data for individual files from the index. The stem expansion
 databases will not be updated.
 .PP
 Options
@@ -349,6 +318,17 @@ will check each path and print out those which are absent from the index
 (with an "ABSENT" prefix), or caused an indexing error (with an "ERROR"
 prefix). If no paths are given on the command line, the command will read
 them, one per line, from stdin.
+.PP
+Interrupting the command: as indexing can sometimes take a long time, the command can be interrupted
+by sending an interrupt (Ctrl-C, SIGINT) or terminate (SIGTERM) signal. Some time may elapse before
+the process exits, because it needs to properly flush and close the index. This can also be done
+from the recoll GUI (menu entry: File/Stop_Indexing). After such an interruption, the index will be
+somewhat inconsistent because some operations which are normally performed at the end of the
+indexing pass will have been skipped (for example, the stemming and spelling databases will be
+inexistent or out of date). You just need to restart indexing at a later time to restore
+consistency. The indexing will restart at the interruption point (the full file tree will be
+traversed, but files that were indexed up to the interruption and for which the index is still up to
+date will not need to be reindexed).
 
 .SH SEE ALSO
 .PP 

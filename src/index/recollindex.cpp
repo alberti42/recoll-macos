@@ -95,12 +95,14 @@ static int     op_flags;
 #define OPTVAL_WEBCACHE_BURST 1001
 #define OPTVAL_DIAGS_NOTINDEXED 1002
 #define OPTVAL_DIAGS_DIAGSFILE 1003
+#define OPTVAL_NOPURGE 1004
 
 static struct option long_options[] = {
     {"webcache-compact", 0, nullptr, OPTVAL_WEBCACHE_COMPACT},
     {"webcache-burst", required_argument, nullptr, OPTVAL_WEBCACHE_BURST},
     {"notindexed", 0, nullptr, OPTVAL_DIAGS_NOTINDEXED},
     {"diagsfile", required_argument, nullptr, OPTVAL_DIAGS_DIAGSFILE},
+    {"nopurge", 0, nullptr, OPTVAL_NOPURGE},
     {nullptr, 0, nullptr, 0}
 };
 
@@ -236,11 +238,10 @@ public:
     const vector<string>& m_pats;
 };
 
-// Build a list of things to index, then call purgefiles and/or
-// indexfiles.  This is basically the same as find xxx | recollindex
-// -i [-e] without the find (so, simpler but less powerful)
-bool recursive_index(RclConfig *config, const string& top, 
-                     const vector<string>& selpats)
+// Build a list of things to index, then call purgefiles and/or indexfiles.
+// This is basically the same as find xxx | recollindex -i [-e] without the find (so, simpler but
+// less powerful)
+bool recursive_index(RclConfig *config, const string& top, const vector<string>& selpats)
 {
     list<string> files;
     MakeListWalkerCB cb(files, selpats);
@@ -252,7 +253,7 @@ bool recursive_index(RclConfig *config, const string& top,
             return ret;
         }
     }
-    if (!(op_flags & OPT_e) || ((op_flags & OPT_e) &&(op_flags & OPT_i))) {
+    if (!(op_flags & OPT_e) || ((op_flags & OPT_e) && (op_flags & OPT_i))) {
         ret = indexfiles(config, files);
     }
     return ret;
@@ -384,12 +385,13 @@ static const char usage [] =
 "\n"
 "recollindex [-h] \n"
 "    Print help\n"
-"recollindex [-z|-Z] [-k]\n"
+"recollindex [-z|-Z] [-k] [-P]\n"
 "    Index everything according to configuration file\n"
 "    -z : reset database before starting indexing\n"
 "    -Z : in place reset: consider all documents as changed. Can also\n"
 "         be combined with -i or -r but not -m\n"
 "    -k : retry files on which we previously failed\n"
+"    -P : useful if the index is configured for not purging by default: do purge\n"
 "    --diagsfile <outputpath> : list skipped or otherwise not indexed documents to <outputpath>\n"
 "       <outputpath> will be truncated\n"
 #ifdef RCL_MONITOR
@@ -405,10 +407,12 @@ static const char usage [] =
 "recollindex -e [<filepath [path ...]>]\n"
 "    Purge data for individual files. No stem database updates.\n"
 "    Reads paths on stdin if none is given as argument.\n"
-"recollindex -i [-f] [-Z] [<filepath [path ...]>]\n"
+"recollindex -i [-f] [-Z] [-P] [<filepath [path ...]>]\n"
 "    Index individual files. No database purge or stem database updates\n"
 "    Will read paths on stdin if none is given as argument\n"
 "    -f : ignore skippedPaths and skippedNames while doing this\n"
+"    -Z : force reindex of each file\n"    
+"    -P : force running a purge pass (very special use, don't do this if not sure)\n"    
 "recollindex -r [-K] [-f] [-Z] [-p pattern] <top> \n"
 "   Recursive partial reindex. \n"
 "     -p : filter file names, multiple instances are allowed, e.g.: \n"
@@ -566,6 +570,7 @@ int main(int argc, char *argv[])
     bool webcache_compact{false};
     bool webcache_burst{false};
     bool diags_notindexed{false};
+    bool opt_nopurge{false};
     
     std::string burstdir;
     std::string diagsfile;
@@ -610,6 +615,7 @@ int main(int argc, char *argv[])
         case OPTVAL_WEBCACHE_BURST: burstdir = optarg; webcache_burst = true;break;
         case OPTVAL_DIAGS_NOTINDEXED: diags_notindexed = true;break;
         case OPTVAL_DIAGS_DIAGSFILE: diagsfile = optarg;break;
+        case OPTVAL_NOPURGE: opt_nopurge = true;break;
         default: Usage(); break;
         }
     }
@@ -729,7 +735,7 @@ int main(int argc, char *argv[])
     // The default is not to retry previously failed files by default.
     // If -k is set, we do.
     // If the checker script says so, we do too, except if -K is set.
-    int indexerFlags = ConfIndexer::IxFNoRetryFailed;
+    int indexerFlags = ConfIndexer::IxFNoRetryFailed | ConfIndexer::IxFDoPurge;
     if (op_flags & OPT_k) {
         indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
     } else {
@@ -752,6 +758,17 @@ int main(int argc, char *argv[])
         indexerFlags |= ConfIndexer::IxFInPlaceReset;
     }
 
+    bool noautopurge{false};
+    config->getConfParam("idxnoautopurge", &noautopurge);
+    // If the index is configured for not purging by default and the purge force option is not set,
+    // or if the "no purge" command line option is set, unset the purge flag (set by default above).
+    if ((noautopurge && !(op_flags & OPT_P)) || opt_nopurge) {
+        indexerFlags &= ~ConfIndexer::IxFDoPurge;
+    }
+
+    LOGDEB("recollindex: the purge flag is " <<
+           ((indexerFlags & ConfIndexer::IxFDoPurge)?"SET":"NOT SET") << "\n");
+        
 #if defined(HAVE_POSIX_FADVISE)
     if (op_flags & OPT_d) {
         indexerFlags |= ConfIndexer::IxFCleanCache;

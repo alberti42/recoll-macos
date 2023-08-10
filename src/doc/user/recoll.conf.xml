@@ -232,7 +232,7 @@ as RECOLL_FILTER_MAXMEMBERKB.
 </para></listitem></varlistentry>
 </variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.TERMS">
-<title>Parameters affecting how we generate terms and organize the index </title><variablelist>
+<title>Parameters affecting how we generate terms and organize the index  </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTRIPCHARS">
 <term><varname>indexStripChars</varname></term>
 <listitem><para>Decide if we store
@@ -638,6 +638,12 @@ the log... values.
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PYLOGFILENAME">
 <term><varname>pylogfilename</varname></term>
 <listitem><para>Override logfilename for the python module. </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXNOAUTOPURGE">
+<term><varname>idxnoautopurge</varname></term>
+<listitem><para>Do not purge data for deleted or inaccessible files This can be overridden by recollindex command line options and may be useful if some parts
+of the document set may predictably be inaccessible at times, so that you would only run the purge
+after making sure that everything is there.
+</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">
 <term><varname>orgidxconfdir</varname></term>
 <listitem><para>Original location of the configuration directory. This is used exclusively for movable datasets. Locating the
@@ -717,12 +723,9 @@ space issues.
 which in turn is only useful if you want to perform proximity searches
 with such terms.
 </para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES">
-<term><varname>stemexpandphrases</varname></term>
-<listitem><para>Default to applying stem expansion to phrase terms. Recoll normally does not apply stem expansion to terms inside phrase searches.
-Setting this parameter will change the default behaviour to expanding terms inside
-phrases. If set, you can use a 'l' modifier to disable expansion for a specific
-instance.
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXNICEPRIO">
+<term><varname>idxniceprio</varname></term>
+<listitem><para>"nice" process priority for the indexing processes. Default: 19 (lowest) Appeared with 1.26.5. Prior versions were fixed at 19.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL">
 <term><varname>noaspell</varname></term>
@@ -744,18 +747,6 @@ values are the 2-letter language codes (e.g. 'en', 'fr'...)
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLKEEPSTDERR">
 <term><varname>aspellKeepStderr</varname></term>
 <listitem><para>Set this to have a look at aspell dictionary creation errors. There are always many, so this is mostly for debugging.
-</para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLRARITYTHRESHOLD">
-<term><varname>autoSpellRarityThreshold</varname></term>
-<listitem><para>Inverse of the ratio of term occurrence to total db terms over which we look for spell
-neighbours for automatic query expansion When a term is very uncommon, we may (depending on user choice) look for spelling
-variations which would be more common and possibly add them to the query.
-</para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLSELECTIONTHRESHOLD">
-<term><varname>autoSpellSelectionThreshold</varname></term>
-<listitem><para>Ratio of spell neighbour frequency over user input term frequency beyond which we include
-the neighbour in the query. When a term has been selected for spelling expansion because of its rarity, we only include
-spelling neighbours which are more common by this ratio.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MONAUXINTERVAL">
 <term><varname>monauxinterval</varname></term>
@@ -781,11 +772,6 @@ patterns are matched with fnmatch(pattern, path, 0) You can quote entries
 containing white space with double quotes (quote the whole entry, not the
 pattern). The default is empty.
 Example: mondelaypatterns = *.log:20 "*with spaces.*:30"
-</para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXNICEPRIO">
-<term><varname>idxniceprio</varname></term>
-<listitem><para>"nice" process priority for the indexing processes. Default: 19
-(lowest) Appeared with 1.26.5. Prior versions were fixed at 19.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASS">
 <term><varname>monioniceclass</varname></term>
@@ -848,6 +834,31 @@ arguments. Four arguments will be appended before execution: the document URL, M
 icon SIZE (e.g. 128), and output file PATH. The command should generate a thumbnail from these
 values. E.g. if the MIME is video, a script could use: ffmpegthumbnailer -iURL -oPATH
 -sSIZE.
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES">
+<term><varname>stemexpandphrases</varname></term>
+<listitem><para>Default to applying stem expansion to phrase terms. Recoll normally does not apply stem expansion to terms inside phrase searches.
+Setting this parameter will change the default behaviour to expanding terms inside
+phrases. If set, you can use a 'l' modifier to disable expansion for a specific
+instance.
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLRARITYTHRESHOLD">
+<term><varname>autoSpellRarityThreshold</varname></term>
+<listitem><para>Inverse of the ratio of term occurrence to total db terms over which we look for spell
+neighbours for automatic query expansion When a term is very uncommon, we may (depending on user choice) look for spelling
+variations which would be more common and possibly add them to the query.
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLSELECTIONTHRESHOLD">
+<term><varname>autoSpellSelectionThreshold</varname></term>
+<listitem><para>Ratio of spell neighbour frequency over user input term frequency beyond which we include
+the neighbour in the query. When a term has been selected for spelling expansion because of its rarity, we only include
+spelling neighbours which are more common by this ratio.
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.KIOSHOWSUBDOCS">
+<term><varname>kioshowsubdocs</varname></term>
+<listitem><para>Show embedded document results in KDE dolphin/kio and krunner Embedded documents may clutter the results and are not always easily usable from the kio or
+krunner environment. Setting this variable will restrict the results to standalone
+documents.
 </para></listitem></varlistentry>
 </variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.PDF">
@@ -940,16 +951,10 @@ script. Typical values: English, French... See the ABBYY documentation.
 <listitem><para>Name of the device to be used by for whisper </para></listitem></varlistentry>
 </variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.MISCHANDLERPARAMS">
-<title>Parameters for specific handlers </title><variablelist>
+<title>Parameters for miscellaneous specific handlers </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ORGMODESUBDOCS">
 <term><varname>orgmodesubdocs</varname></term>
 <listitem><para>Index org-mode level 1 sections as separate sub-documents This is the default. If set to false, org-mode files will be indexed as plain text
-</para></listitem></varlistentry>
-<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.KIOSHOWSUBDOCS">
-<term><varname>kioshowsubdocs</varname></term>
-<listitem><para>Show embedded document results in KDE dolphin/kio and krunner Embedded documents may clutter the results and are not always easily usable from the kio or
-krunner environment. Setting this variable will restrict the results to standalone
-documents.
 </para></listitem></varlistentry>
 </variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.SPECLOCATIONS">

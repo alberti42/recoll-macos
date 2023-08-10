@@ -189,9 +189,11 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         }
     }
 #endif
-    if (typestorun == IxTAll) {
-        // Get rid of all database entries that don't exist in the
-        // filesystem anymore. Only if all *configured* indexers ran.
+
+    // For a normal indexing pass on a normally configured index, the purge flag will be set.  Only
+    // if all *configured* indexers ran, get rid of all database entries that don't match an
+    // existing document anymore. An index configuration or command line option can disable this.
+    if (typestorun == IxTAll && (flags & IxFDoPurge)) {
         if (!statusUpdater()->update(DbIxStatus::DBIXS_PURGE, string())) {
             m_db.close();
             addIdxReason("indexer", "Index purge failed. See" + logloc);

@@ -54,8 +54,7 @@ public:
                  IxFQuickShallow = 4, 
                  // Do not retry files which previously failed ('+' sigs)
                  IxFNoRetryFailed = 8,
-                 // Do perform purge pass even if we can't be sure we saw
-                 // all files
+                 // Perform the purge pass (normally on).
                  IxFDoPurge = 16,
                  // Evict each indexed file from the page cache.
                  IxFCleanCache = 32,

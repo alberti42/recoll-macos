@@ -10322,6 +10322,18 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                   module.</p>
                 </dd>
                 <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXNOAUTOPURGE" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXNOAUTOPURGE"></a><span class="term"><code class="varname">idxnoautopurge</code></span></dt>
+                <dd>
+                  <p>Do not purge data for deleted or inaccessible
+                  files This can be overridden by recollindex
+                  command line options and may be useful if some
+                  parts of the document set may predictably be
+                  inaccessible at times, so that you would only run
+                  the purge after making sure that everything is
+                  there.</p>
+                </dd>
+                <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR"></a><span class="term"><code class="varname">orgidxconfdir</code></span></dt>
                 <dd>
@@ -10454,17 +10466,12 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                   terms.</p>
                 </dd>
                 <dt><a name=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES"
-                id=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES"></a><span class="term"><code class="varname">stemexpandphrases</code></span></dt>
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXNICEPRIO" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXNICEPRIO"></a><span class="term"><code class="varname">idxniceprio</code></span></dt>
                 <dd>
-                  <p>Default to applying stem expansion to phrase
-                  terms. Recoll normally does not apply stem
-                  expansion to terms inside phrase searches.
-                  Setting this parameter will change the default
-                  behaviour to expanding terms inside phrases. If
-                  set, you can use a 'l' modifier to disable
-                  expansion for a specific instance.</p>
+                  <p>"nice" process priority for the indexing
+                  processes. Default: 19 (lowest) Appeared with
+                  1.26.5. Prior versions were fixed at 19.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL" id=
@@ -10512,35 +10519,6 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                   is mostly for debugging.</p>
                 </dd>
                 <dt><a name=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLRARITYTHRESHOLD"
-                id=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLRARITYTHRESHOLD">
-                </a><span class="term"><code class=
-                "varname">autoSpellRarityThreshold</code></span></dt>
-                <dd>
-                  <p>Inverse of the ratio of term occurrence to
-                  total db terms over which we look for spell
-                  neighbours for automatic query expansion When a
-                  term is very uncommon, we may (depending on user
-                  choice) look for spelling variations which would
-                  be more common and possibly add them to the
-                  query.</p>
-                </dd>
-                <dt><a name=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLSELECTIONTHRESHOLD"
-                id=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLSELECTIONTHRESHOLD">
-                </a><span class="term"><code class=
-                "varname">autoSpellSelectionThreshold</code></span></dt>
-                <dd>
-                  <p>Ratio of spell neighbour frequency over user
-                  input term frequency beyond which we include the
-                  neighbour in the query. When a term has been
-                  selected for spelling expansion because of its
-                  rarity, we only include spelling neighbours which
-                  are more common by this ratio.</p>
-                </dd>
-                <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.MONAUXINTERVAL" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.MONAUXINTERVAL"></a><span class="term"><code class="varname">monauxinterval</code></span></dt>
                 <dd>
@@ -10578,14 +10556,6 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                   quotes (quote the whole entry, not the pattern).
                   The default is empty. Example: mondelaypatterns =
                   *.log:20 "*with spaces.*:30"</p>
-                </dd>
-                <dt><a name=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXNICEPRIO" id=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXNICEPRIO"></a><span class="term"><code class="varname">idxniceprio</code></span></dt>
-                <dd>
-                  <p>"nice" process priority for the indexing
-                  processes. Default: 19 (lowest) Appeared with
-                  1.26.5. Prior versions were fixed at 19.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASS" id=
@@ -10695,6 +10665,59 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                   generate a thumbnail from these values. E.g. if
                   the MIME is video, a script could use:
                   ffmpegthumbnailer -iURL -oPATH -sSIZE.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.STEMEXPANDPHRASES"></a><span class="term"><code class="varname">stemexpandphrases</code></span></dt>
+                <dd>
+                  <p>Default to applying stem expansion to phrase
+                  terms. Recoll normally does not apply stem
+                  expansion to terms inside phrase searches.
+                  Setting this parameter will change the default
+                  behaviour to expanding terms inside phrases. If
+                  set, you can use a 'l' modifier to disable
+                  expansion for a specific instance.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLRARITYTHRESHOLD"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLRARITYTHRESHOLD">
+                </a><span class="term"><code class=
+                "varname">autoSpellRarityThreshold</code></span></dt>
+                <dd>
+                  <p>Inverse of the ratio of term occurrence to
+                  total db terms over which we look for spell
+                  neighbours for automatic query expansion When a
+                  term is very uncommon, we may (depending on user
+                  choice) look for spelling variations which would
+                  be more common and possibly add them to the
+                  query.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLSELECTIONTHRESHOLD"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOSPELLSELECTIONTHRESHOLD">
+                </a><span class="term"><code class=
+                "varname">autoSpellSelectionThreshold</code></span></dt>
+                <dd>
+                  <p>Ratio of spell neighbour frequency over user
+                  input term frequency beyond which we include the
+                  neighbour in the query. When a term has been
+                  selected for spelling expansion because of its
+                  rarity, we only include spelling neighbours which
+                  are more common by this ratio.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.KIOSHOWSUBDOCS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.KIOSHOWSUBDOCS"></a><span class="term"><code class="varname">kioshowsubdocs</code></span></dt>
+                <dd>
+                  <p>Show embedded document results in KDE
+                  dolphin/kio and krunner Embedded documents may
+                  clutter the results and are not always easily
+                  usable from the kio or krunner environment.
+                  Setting this variable will restrict the results
+                  to standalone documents.</p>
                 </dd>
               </dl>
             </div>
@@ -10887,7 +10910,8 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                   "RCL.INSTALL.CONFIG.RECOLLCONF.MISCHANDLERPARAMS"
                   id=
                   "RCL.INSTALL.CONFIG.RECOLLCONF.MISCHANDLERPARAMS">
-                  </a>Parameters for specific handlers</h4>
+                  </a>Parameters for miscellaneous specific
+                  handlers</h4>
                 </div>
               </div>
             </div>
@@ -10901,17 +10925,6 @@ makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
                   sub-documents This is the default. If set to
                   false, org-mode files will be indexed as plain
                   text</p>
-                </dd>
-                <dt><a name=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.KIOSHOWSUBDOCS" id=
-                "RCL.INSTALL.CONFIG.RECOLLCONF.KIOSHOWSUBDOCS"></a><span class="term"><code class="varname">kioshowsubdocs</code></span></dt>
-                <dd>
-                  <p>Show embedded document results in KDE
-                  dolphin/kio and krunner Embedded documents may
-                  clutter the results and are not always easily
-                  usable from the kio or krunner environment.
-                  Setting this variable will restrict the results
-                  to standalone documents.</p>
                 </dd>
               </dl>
             </div>
