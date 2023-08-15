@@ -36,10 +36,11 @@ public:
     string bckid;
     vector<string> sfetch;
     vector<string> smkid;
-    bool docmd(const vector<string>& cmd, const Rcl::Doc& idoc, string& out) {
+    bool docmd(RclConfig *config, const vector<string>& cmd, const Rcl::Doc& idoc, string& out) {
         ExecCmd ecmd;
         // We're always called for preview (or Open)
         ecmd.putenv("RECOLL_FILTER_FORPREVIEW=yes");
+        ecmd.putenv(std::string("RECOLL_CONFDIR=") + config->getConfDir());
         string udi;
         idoc.getmeta(Rcl::Doc::keyudi, &udi);
         vector<string> args(cmd);
@@ -48,12 +49,11 @@ public:
         args.push_back(idoc.ipath);
         int status = ecmd.doexec(args, 0, &out);
         if (status == 0) {
-            LOGDEB("EXEDocFetcher::Internal: got [" << out << "]\n");
+            LOGDEB0("EXEDocFetcher::Internal: got [" << out << "]\n");
             return true;
         } else {
-            LOGERR("EXEDOcFetcher::fetch: " << bckid << ": " <<
-                   stringsToString(cmd) << " failed for " << udi << " " <<
-                   idoc.url << " " << idoc.ipath << "\n");
+            LOGERR("EXEDOcFetcher::fetch: " << bckid << ": " << stringsToString(cmd) <<
+                   " failed for " << udi << " " << idoc.url << " " << idoc.ipath << "\n");
             return false;
         }
     }
@@ -65,15 +65,15 @@ EXEDocFetcher::EXEDocFetcher(const EXEDocFetcher::Internal& _m)
     LOGDEB("EXEDocFetcher::EXEDocFetcher: fetch is " << stringsToString(m->sfetch) << "\n");
 }
 
-bool EXEDocFetcher::fetch(RclConfig*, const Rcl::Doc& idoc, RawDoc& out)
+bool EXEDocFetcher::fetch(RclConfig *cnf, const Rcl::Doc& idoc, RawDoc& out)
 {
     out.kind = RawDoc::RDK_DATADIRECT;
-    return m->docmd(m->sfetch, idoc, out.data);
+    return m->docmd(cnf, m->sfetch, idoc, out.data);
 }
 
-bool EXEDocFetcher::makesig(RclConfig*, const Rcl::Doc& idoc, string& sig)
+bool EXEDocFetcher::makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig)
 {
-    return m->docmd(m->smkid, idoc, sig);
+    return m->docmd(cnf, m->smkid, idoc, sig);
 }
 
 // Lookup bckid in the config and create an appropriate fetcher.
@@ -105,8 +105,7 @@ std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config, const string
     // We look up the command as we do for filters for now
     m.sfetch[0] = config->findFilter(m.sfetch[0]);
     if (!path_isabsolute(m.sfetch[0])) {
-        LOGERR("exeDocFetcherMake: " << m.sfetch[0] <<
-               " not found in exec path or filters dir\n");
+        LOGERR("exeDocFetcherMake: " << m.sfetch[0] << " not found in exec path or filters dir\n");
         return 0;
     }
 
@@ -118,8 +117,7 @@ std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config, const string
     stringToStrings(smkid, m.smkid);
     m.smkid[0] = config->findFilter(m.smkid[0]);
     if (!path_isabsolute(m.smkid[0])) {
-        LOGERR("exeDocFetcherMake: " << m.smkid[0] <<
-               " not found in exec path or filters dir\n");
+        LOGERR("exeDocFetcherMake: " << m.smkid[0] << " not found in exec path or filters dir\n");
         return 0;
     }
     return std::unique_ptr<EXEDocFetcher>(new EXEDocFetcher(m));
