@@ -5,7 +5,6 @@ itself can do this better (e.g. this script does not process
 attachments), but it shows the use of most of the Recoll interface
 features, except 'parent_udi' (we do not create a 'self' document to
 act as the parent)."""
-from __future__ import print_function
 
 import sys
 import glob
@@ -15,22 +14,16 @@ import mailbox
 import email.header
 import email.utils
 
-try:
-    from recoll import recoll
-except:
-    import recoll
+from recoll import recoll
 
+def logmsg(s):
+    print(f"{s}", file=sys.stderr)
+    
 # EDIT
 # Change this for some directory with mbox files, such as a
 # Thunderbird/Icedove mail storage directory.
 mbdir = os.path.expanduser("~/mail")
 #mbdir = os.path.expanduser("~/.icedove/n8n19644.default/Mail/Local Folders/")
-
-# EDIT
-# Change this to wherever you want your recoll data to live. Create
-# the directory with a (possibly empty) recoll.conf in it before first
-# running the script
-rclconf = os.path.expanduser("~/.recoll-extern")
 
 # Utility: extract text for named header
 def header_value(msg, nm, to_utf = False):
@@ -51,7 +44,7 @@ def header_value(msg, nm, to_utf = False):
                 else:
                     univalue += part[0] + u" "
         except Exception as err:
-            print("Failed decoding header: %s" % err, file=sys.stderr)
+            logmsg("Failed decoding header: %s" % err)
             pass
     if to_utf:
         return univalue.encode('utf-8')
@@ -61,17 +54,14 @@ def header_value(msg, nm, to_utf = False):
 # Utility: extract text parts from body
 def extract_text(msg):
     """Extract and decode all text/plain parts from the message"""
-    text = u""
+    text = ""
     # We only output the headers for previewing, else they're already
     # output/indexed as fields.
-    if "RECOLL_FILTER_FORPREVIEW" in os.environ and \
-           os.environ["RECOLL_FILTER_FORPREVIEW"] == "yes":
-        text += u"From: " + header_value(msg, "From") + u"\n"
-        text += u"To: " + header_value(msg, "To") + u"\n"
-        text += u"Subject: " + header_value(msg, "Subject") + u"\n"
-        # text += u"Content-Type: text/plain; charset=UTF-8\n"
-        #text += u"Message-ID: " + header_value(msg, "Message-ID") + u"\n"
-        text += u"\n"
+    if "RECOLL_FILTER_FORPREVIEW" in os.environ and os.environ["RECOLL_FILTER_FORPREVIEW"] == "yes":
+        text += "From: " + header_value(msg, "From") + "\n"
+        text += "To: " + header_value(msg, "To") + "\n"
+        text += "Subject: " + header_value(msg, "Subject") + "\n"
+        text += "\n"
     for part in msg.walk():
         if part.is_multipart():
             pass 
@@ -83,11 +73,9 @@ def extract_text(msg):
                     ntxt = part.get_payload(None, True).decode(charset)
                     text += ntxt
                 except Exception as err:
-                    print("Failed decoding payload: %s" % err,
-                          file=sys.stderr)
+                    logmsg("Failed decoding payload: %s" % err)
                     pass
     return text
-
 
 
 class mbox_indexer:
@@ -101,34 +89,42 @@ class mbox_indexer:
         self.fmtime = stdata[stat.ST_MTIME]
         self.fbytes = stdata[stat.ST_SIZE]
         self.msgnum = 1
+        self.parent_udi = self.udi(0)
 
     def sig(self):
-        """Create update verification value for mbox file:
-        modification time concatenated with size should cover most
-        cases"""
+        """Create an update verification value for an mbox file: we use 
+        the modification time concatenated with the size"""
         return str(self.fmtime) + ":" + str(self.fbytes)
 
     def udi(self, msgnum):
-        """Create unique document identifier for message. This should
+        """Create a unique document identifier for a given message. This should
         be shorter than 150 bytes, which we optimistically don't check
         here, as we just concatenate the mbox file name and message
         number"""
         return self.mbfile + ":" + str(msgnum)
 
     def index(self):
-        if not self.db.needUpdate(self.udi(1), self.sig()):
-            print("Index is up to date for %s"%self.mbfile, file=sys.stderr);
+        if not self.db.needUpdate(self.udi(0), self.sig()):
+            logmsg("Index is up to date for %s"%self.mbfile)
             return None
         mb = mailbox.mbox(self.mbfile)
         for msg in mb.values():
-            print("Indexing message %d" % self.msgnum, file=sys.stderr);
+            logmsg("Indexing message %d" % self.msgnum)
             self.index_message(msg)
             self.msgnum += 1
+        # Finally create and add the top doc (must be done after indexing the subdocs because, else,
+        # the up to date tests would succeed...
+        doc = recoll.Doc()
+        doc.mimetype = "text/x-mail"
+        doc.rclbes = "MBOX"
+        doc.url = "file://" + self.mbfile
+        doc.sig = self.sig()
+        self.db.addOrUpdate(self.parent_udi, doc)
         
     def getdata(self, ipath):
         """Implements the 'fetch' data access interface (called at
         query time from the command line)."""
-        #print("mbox::getdata: ipath: %s" % ipath, file=sys.stderr)
+        #logmsg("mbox::getdata: ipath: %s" % ipath)
         imsgnum = int(ipath)
         mb = mailbox.mbox(self.mbfile)
         msgnum = 0;
@@ -176,53 +172,52 @@ class mbox_indexer:
         # want to e.g. delete the document index data (and other ops).
         udi = self.udi(self.msgnum)
 
-        self.db.addOrUpdate(udi, doc)
+        self.db.addOrUpdate(udi, doc, parent_udi = self.parent_udi)
 
 # Index a directory containing mbox files
 def index_mboxdir(dir):
-    db = recoll.connect(confdir=rclconf, writable=1)
+    db = recoll.connect(writable=1)
+    db.preparePurge("MBOX")
     entries = glob.glob(dir + "/*")
-    for ent in entries:
-        if '.' in os.path.basename(ent):
-            # skip .log etc. our mboxes have no exts
+    for dirent in entries:
+        if os.path.basename(dirent)[0] == "." or not os.path.isfile(dirent):
             continue
-        if not os.path.isfile(ent):
-            continue
-        print("Processing %s"%ent)
-        mbidx = mbox_indexer(db, ent)
+        logmsg(f"Processing {dirent}")
+        mbidx = mbox_indexer(db, dirent)
         mbidx.index()
     db.purge()
 
 usage_string='''Usage:
-rclmbox.py
+rclmbox.py index
     Index the directory (the path is hard-coded inside the script)
-rclmbox.py [fetch|makesig] udi url ipath
+rclmbox.py <fetch|makesig> udi url ipath
     fetch subdoc data or make signature (query time)
 '''
+
 def usage():
     print("%s" % usage_string, file=sys.stderr)
     sys.exit(1)
 
-if len(sys.argv) == 1:
+if len(sys.argv) < 2:
+    usage()
+elif len(sys.argv) == 2 and sys.argv[1] == "index":
     index_mboxdir(mbdir)
-else:
-    # cmd [fetch|makesig] udi url ipath
-    if len(sys.argv) != 5:
-        usage()
+elif len(sys.argv) == 5:
     cmd = sys.argv[1]
     udi = sys.argv[2]
     url = sys.argv[3]
     ipath = sys.argv[4]
     
     mbfile = url.replace('file://', '')
-    # no need for a db for getdata or makesig.
+    # No need for a db for getdata or makesig.
     mbidx = mbox_indexer(None, mbfile)
 
     if cmd == 'fetch':
-        print("%s"%mbidx.getdata(ipath).encode('UTF-8'), end="")
+        print(f"{mbidx.getdata(ipath)}", end="")
     elif cmd == 'makesig':
         print(mbidx.sig(), end="")
     else:
         usage()
-
+else:
+    usage()
 sys.exit(0)
