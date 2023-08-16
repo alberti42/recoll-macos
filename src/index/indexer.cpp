@@ -149,6 +149,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         addIdxReason("indexer", m_db.getReason());
         return false;
     }
+
     if (flags & IxFInPlaceReset) {
         m_db.setInPlaceReset();
     }
@@ -162,6 +163,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     
     m_config->setKeyDir(cstr_null);
     if (typestorun & IxTFs) {
+        m_db.preparePurge("FS");
         if (runFirstIndexing()) {
             firstFsIndexingSequence();
         }
@@ -176,45 +178,90 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
             m_db.close();
             return false;
         }
+        if (flags & IxFDoPurge) {
+            // Status test absolutely necessary: don't want to run purge after an
+            // incomplete/interrupted indexing pass !
+            if (!statusUpdater()->update(DbIxStatus::DBIXS_PURGE, string())) {
+                m_db.close();
+                addIdxReason("indexer", "Index purge failed. See" + logloc);
+                return false;
+            }
+            m_db.purge();
+        }
     }
+
 #ifndef DISABLE_WEB_INDEXER
     if (m_doweb && (typestorun & IxTWebQueue)) {
         runWebFilesMoverScript(m_config);
         deleteZ(m_webindexer);
+        m_db.preparePurge("BGL");
         m_webindexer = new WebQueueIndexer(m_config, &m_db);
         if (!m_webindexer || !m_webindexer->index()) {
             m_db.close();
             addIdxReason("indexer", "Web index creation failed. See" + logloc);
             return false;
         }
+        if (flags & IxFDoPurge) {
+            // Status test absolutely necessary: don't want to run purge after an
+            // incomplete/interrupted indexing pass !
+            if (!statusUpdater()->update(DbIxStatus::DBIXS_PURGE, string())) {
+                m_db.close();
+                addIdxReason("indexer", "Index purge failed. See" + logloc);
+                return false;
+            }
+            m_db.purge();
+        }
     }
 #endif
 
-    // For a normal indexing pass on a normally configured index, the purge flag will be set.  Only
-    // if all *configured* indexers ran, get rid of all database entries that don't match an
-    // existing document anymore. An index configuration or command line option can disable this.
-    if (typestorun == IxTAll && (flags & IxFDoPurge)) {
-        if (!statusUpdater()->update(DbIxStatus::DBIXS_PURGE, string())) {
-            m_db.close();
-            addIdxReason("indexer", "Index purge failed. See" + logloc);
-            return false;
-        }
-        m_db.purge();
-    }
-
-    // The close would be done in our destructor, but we want status
-    // here. Makes no sense to check for cancel, we'll have to close
-    // anyway
+    // It makes no sense to check for cancel, we'll have to close anyway, do it to show status
     statusUpdater()->update(DbIxStatus::DBIXS_CLOSING, string());
     if (!m_db.close()) {
-        LOGERR("ConfIndexer::index: error closing database in " <<
-               m_config->getDbDir() << "\n");
+        LOGERR("ConfIndexer::index: error closing database in " <<  m_config->getDbDir() << "\n");
         addIdxReason("indexer", "Index close/flush failed. See" +logloc);
         return false;
     }
 
-    if (!statusUpdater()->update(DbIxStatus::DBIXS_CLOSING, string()))
+
+    // Check for external indexers and run them if needed.
+    string bconfname = path_cat(m_config->getConfDir(), "backends");
+    LOGDEB("ConfIndexer: using config in " << bconfname << "\n");
+    ConfSimple bconf(bconfname.c_str(), true);
+    if (bconf.ok()) {
+        auto bckids = bconf.getSubKeys();
+        for (const auto& bckid : bckids) {
+            string sindex;
+            if (!bconf.get("index", sindex, bckid) || sindex.empty()) {
+                LOGDEB0("ConfIndexer: no 'index' entry for [" << bckid << "]\n");
+                continue;
+            }
+            vector<string> vindex;
+            stringToStrings(sindex, vindex);
+            // We look up the command as we do for filters
+            vindex[0] = m_config->findFilter(vindex[0]);
+            if (!path_isabsolute(vindex[0])) {
+                LOGERR("ConfIndexer: "<<vindex[0] <<" not found in exec path or filters folder.\n");
+                continue;
+            }
+            if (!statusUpdater()->update(DbIxStatus::DBIXS_FILES, bckid)) {
+                return false;
+            }
+            LOGINF("ConfIndexer: starting indexing for " << bckid << "\n");
+            ExecCmd ecmd;
+            ecmd.putenv(std::string("RECOLL_CONFDIR=") + m_config->getConfDir());
+            auto status = ecmd.doexec(vindex);
+            if (status) {
+                LOGERR("ConfIndexer: " << bckid << ": " << stringsToString(vindex) << 
+                       " failed with status " << std::hex << status << std::dec << "\n");
+            } else {
+                LOGINF("ConfIndexer: indexing for " << bckid << " done.\n");
+            }
+        }
+    }
+    
+    if (!statusUpdater()->update(DbIxStatus::DBIXS_STEMDB, string()))
         return false;
+
     bool ret = true;
     if (!createStemmingDatabases()) {
         ret = false;
@@ -245,6 +292,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flags)
                m_config->getDbDir() << "\n");
         return false;
     }
+
     if (flags & IxFInPlaceReset) {
         m_db.setInPlaceReset();
     }

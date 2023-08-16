@@ -1980,6 +1980,24 @@ Db_delete(recoll_DbObject* self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
+Db_preparePurge(recoll_DbObject* self, PyObject *args, PyObject *kwds)
+{
+    LOGDEB0("Db_preparePurge\n");
+    char *backend = 0; // needs freeing
+    if (!PyArg_ParseTuple(args, "es:Db_preparePurge", "utf-8", &backend)) {
+        return 0;
+    }
+    if (self->db == 0) {
+        LOGERR("Db_preparePurge: db not found " << self->db << "\n");
+        PyErr_SetString(PyExc_AttributeError, "db");
+        PyMem_Free(backend);
+        return 0;
+    }
+    bool result = self->db->preparePurge(backend);
+    return Py_BuildValue("i", result);
+}
+
+static PyObject *
 Db_purge(recoll_DbObject* self)
 {
     LOGDEB0("Db_purge\n");
@@ -2043,16 +2061,18 @@ Db_createStemDbs(recoll_DbObject* self, PyObject* args) {
 #endif /* Python3 */
 
 static PyObject *
-Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
+Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Db_addOrUpdate\n");
+    static const char *kwlist[] = {"udi", "doc", "parent_udi", NULL};
     char *sudi = 0; // needs freeing
     char *sparent_udi = 0; // needs freeing
     recoll_DocObject *pydoc;
 
-    if (!PyArg_ParseTuple(args, "esO!|es:Db_addOrUpdate",
-                          "utf-8", &sudi, &recoll_DocType, &pydoc,
-                          "utf-8", &sparent_udi)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "esO!|es:Db_addOrUpdate",
+                                     (char **)kwlist,
+                                     "utf-8", &sudi, &recoll_DocType, &pydoc,
+                                     "utf-8", &sparent_udi)) {
         return 0;
     }
     string udi(sudi);
@@ -2117,6 +2137,13 @@ static PyMethodDef Db_methods[] = {
      "Purge index from all data for udi. If udi matches a container\n"
      "document, purge all subdocs (docs with a parent_udi matching udi)."
     },
+    {"preparePurge", (PyCFunction)Db_preparePurge, METH_VARARGS,
+     "preparePurge(backend_name) -> Bool.\n"
+     "Mark all documents which do *not* belong to this indexer as present.\n"
+     "Mandatory call before starting an update if there are other backends for\n"
+     "this index and you are going to call purge() after the update, else all\n"
+     "documents for other backends will be deleted from the index by the purge.\n"
+    },
     {"purge", (PyCFunction)Db_purge, METH_NOARGS,
      "purge() -> Bool.\n"
      "Delete all documents that were not touched during the just finished\n"
@@ -2124,7 +2151,7 @@ static PyMethodDef Db_methods[] = {
      "the needUpdate() call was not performed, indicating that they no\n"
      "longer exist in the primary storage system.\n"
     },
-    {"addOrUpdate", (PyCFunction)Db_addOrUpdate, METH_VARARGS,
+    {"addOrUpdate", (PyCFunction)Db_addOrUpdate, METH_VARARGS|METH_KEYWORDS,
      "addOrUpdate(udi, doc, parent_udi=None) -> None\n"
      "Add or update index data for a given document\n"
      "The udi string must define a unique id for the document. It is not\n"

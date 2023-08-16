@@ -2144,6 +2144,54 @@ void Db::i_setExistingFlags(const string& udi, unsigned int docid)
     }
 }
 
+// Before running indexing for a specific backend: set the existence bits for all backends except
+// the specified one, so that the corresponding documents are not purged after the update.  The "FS"
+// backend is special because the documents usually have no rclbes field (but we prepare for the
+// time when they might have one).
+//  - If this is the FS backend: unset all the bits, set them for all backends but FS (docs without
+//    a backend field will stay off).
+//  - Else set all the bits, unset them for the specified backend (docs without a backend field
+//    will stay on).
+bool Db::preparePurge(const std::string& _backend)
+{
+    auto backend = stringtolower(_backend);
+    TermMatchResult result;
+    if (!idxTermMatch(ET_WILD, "*", result, -1, Doc::keybcknd)) {
+        LOGERR("Rcl::Db:preparePurge: termMatch failed\n");
+        return false;
+    }
+    if ("fs" == backend) {
+        updated = vector<bool>(m_ndb->xwdb.get_lastdocid() + 1, false);
+        for (const auto& entry : result.entries) {
+            auto stripped = strip_prefix(entry.term);
+            if (stripped.empty() || "fs" == stripped)
+                continue;
+            Xapian::PostingIterator docid = m_ndb->xrdb.postlist_begin(entry.term);
+            while (docid != m_ndb->xrdb.postlist_end(entry.term)) {
+                if (*docid < updated.size()) {
+                    updated[*docid] = true;
+                }
+                docid++;
+            }
+        }
+    } else {
+        updated = vector<bool>(m_ndb->xwdb.get_lastdocid() + 1, true);
+        for (const auto& entry : result.entries) {
+            auto stripped = strip_prefix(entry.term);
+            if (stripped.empty() || backend != strip_prefix(entry.term))
+                continue;
+            Xapian::PostingIterator docid = m_ndb->xrdb.postlist_begin(entry.term);
+            while (docid != m_ndb->xrdb.postlist_end(entry.term)) {
+                if (*docid < updated.size()) {
+                    updated[*docid] = false;
+                }
+                docid++;
+            }
+        }
+    }
+    return true;
+}
+
 // Test if doc given by udi has changed since last indexed (test sigs)
 bool Db::needUpdate(const string &udi, const string& sig, unsigned int *docidp, string *osigp)
 {
@@ -2270,37 +2318,38 @@ bool Db::createStemDbs(const vector<string>& langs)
 }
 
 /**
- * This is called at the end of an indexing session, to delete the
- * documents for files that are no longer there. This can ONLY be called
- * after a full file-system tree walk, else the file existence flags will 
- * be wrong.
+ * This is called at the end of an indexing session, to delete the documents for files that are no
+ * longer there. It depends on the state of the 'updated' bitmap and will delete all documents 
+ * for which the existence bit is off.
+ * This can ONLY be called after an appropriate call to unsetExistbits() and a full backend document
+ * set walk, else the file existence flags will be wrong.
  */
 bool Db::purge()
 {
-    LOGDEB("Db::purge\n");
-    if (nullptr == m_ndb)
+    if (nullptr == m_ndb) {
+        LOGERR("Db::purge: null m_ndb??\n");
         return false;
-    LOGDEB("Db::purge: m_isopen " << m_ndb->m_isopen << " m_iswritable " <<
-           m_ndb->m_iswritable << "\n");
+    }
+    LOGDEB("Db::purge: m_isopen "<<m_ndb->m_isopen<<" m_iswritable "<<m_ndb->m_iswritable<<"\n");
     if (m_ndb->m_isopen == false || m_ndb->m_iswritable == false) 
         return false;
 
 #ifdef IDX_THREADS
     // If we manage our own write queue, make sure it's drained and closed
-    if (m_ndb->m_havewriteq)
+    if (m_ndb->m_havewriteq) {
         m_ndb->m_wqueue.setTerminateAndWait();
-    // else we need to lock out other top level threads. This is just
-    // a precaution as they should have been waited for by the top
-    // level actor at this point
+        // And restore state for a possible next backend.
+        m_ndb->maybeStartThreads();
+    }
+    // We need to lock out other top level threads. This is just a precaution as they should have
+    // been waited for by the top level actor at this point.
     std::unique_lock<std::mutex> lock(m_ndb->m_mutex);
 #endif // IDX_THREADS
 
-    // For xapian versions up to 1.0.1, deleting a non-existant
-    // document would trigger an exception that would discard any
-    // pending update. This could lose both previous added documents
-    // or deletions. Adding the flush before the delete pass ensured
-    // that any added document would go to the index. Kept here
-    // because it doesn't really hurt.
+    // For Xapian versions up to 1.0.1, deleting a non-existant document would trigger an exception
+    // that would discard any pending update. This could lose both previous added documents or
+    // deletions. Adding the flush before the delete pass ensured that any added document would go
+    // to the index. Kept here because it doesn't really hurt.
     m_reason.clear();
     try {
         statusUpdater()->update(DbIxStatus::DBIXS_FLUSH, "");
@@ -2312,8 +2361,8 @@ bool Db::purge()
         return false;
     }
 
-    // Walk the document array and delete any xapian document whose
-    // flag is not set (we did not see its source during indexing).
+    // Walk the 'updated' bitmap and delete any Xapian document whose flag is not set (we did not
+    // see its source during indexing).
     int purgecount = 0;
     for (Xapian::docid docid = 1; docid < updated.size(); ++docid) {
         if (!updated[docid]) {
@@ -2328,12 +2377,10 @@ bool Db::purge()
 
             try {
                 if (m_flushMb > 0) {
-                    // We use an average term length of 5 for
-                    // estimating the doc sizes which is probably not
-                    // accurate but gives rough consistency with what
-                    // we do for add/update. I should fetch the doc
-                    // size from the data record, but this would be
-                    // bad for performance.
+                    // We use an average term length of 5 for estimating the doc sizes which is
+                    // probably not accurate but gives rough consistency with what we do for
+                    // add/update. I should fetch the doc size from the data record, but this would
+                    // be bad for performance.
                     Xapian::termcount trms = m_ndb->xwdb.get_doclength(docid);
                     maybeflush(trms * 5);
                 }

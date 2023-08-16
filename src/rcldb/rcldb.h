@@ -193,7 +193,16 @@ public:
     bool needUpdate(const std::string &udi, const std::string& sig, 
                     unsigned int *xdocid = nullptr, std::string *osig = nullptr);
 
-    /** Set the existance flags for the document and its eventual subdocuments
+    /**
+     * Unset the existence bits for the documents from a specific backend, and set them for all the
+     * others. This must be called before indexing the backend, so that purge() can be called after
+     * indexing and only affect the documents for the specified backend.
+     *
+     * @param backend the backend name (e.g. "FS", "BGL", ...)
+     */
+    bool preparePurge(const std::string& backend);
+    
+    /** Set the existence flags for the document and its eventual subdocuments
      * 
      * This can be called by the indexer after needUpdate() has returned true,
      * if the indexer does not wish to actually re-index (e.g.: the doc is 
