@@ -635,7 +635,7 @@ python/samples/recollqsd.py \
 rclgrep/Makefile.am \
 rclgrep/rclgrep.cpp \
 \
-sampleconf/fields sampleconf/fragment-buttons.xml sampleconf/mimeconf \
+sampleconf/backends sampleconf/fields sampleconf/fragment-buttons.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/macos/mimeview \
 sampleconf/recoll.conf sampleconf/recoll.qss \
 sampleconf/recoll-common.css sampleconf/recoll-common.qss \
@@ -749,6 +749,7 @@ desktop/recollindex.desktop \
 index/rclmon.sh \
 index/recollindex.service \
 index/recollindex@.service \
+sampleconf/backends \
 sampleconf/fields \
 sampleconf/fragment-buttons.xml \
 sampleconf/mimeconf \
@@ -803,6 +804,7 @@ filters/rclimg \
 filters/rclimg.py \
 filters/rclinfo.py \
 filters/rclipynb.py \
+filters/rcljoplin.py \
 filters/rclkar.py \
 filters/rclkwd \
 filters/rcllatinclass.py \
