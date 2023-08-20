@@ -221,9 +221,9 @@ if test X$idxthreadsEnabled = Xyes ; then
   AC_DEFINE(IDX_THREADS, 1, [Use multiple threads for indexing])
 fi
 
-AC_ARG_ENABLE(publiclib, AS_HELP_STRING([--enable-publiclib],
-[Install the recoll library in $libdir so that it will be usable by external builds.]),
-        publiclibEnabled=$enableval, publiclibEnabled=no)
+AC_ARG_ENABLE(publiclib, AS_HELP_STRING([--disable-publiclib],
+[Do not install the recoll library in $libdir: use a private directory instead.]),
+        publiclibEnabled=$enableval, publiclibEnabled=yes)
 AM_CONDITIONAL(PUBLIC_LIB, [test X$publiclibEnabled = Xyes])
 if test X$publiclibEnabled = Xyes; then
    RECOLL_PUBLIC_LIB=1
