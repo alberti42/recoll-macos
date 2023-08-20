@@ -101,6 +101,7 @@ std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config, const string
         LOGERR("exeDocFetcherMake: no 'fetch' for [" << bckid << "]\n");
         return 0;
     }
+    sfetch = path_tildexpand(sfetch);
     stringToStrings(sfetch, m.sfetch);
     // We look up the command as we do for filters for now
     m.sfetch[0] = config->findFilter(m.sfetch[0]);
@@ -114,6 +115,7 @@ std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config, const string
         LOGDEB("exeDocFetcherMake: no 'makesig' for [" << bckid << "]\n");
         return 0;
     }
+    smkid = path_tildexpand(smkid);
     stringToStrings(smkid, m.smkid);
     m.smkid[0] = config->findFilter(m.smkid[0]);
     if (!path_isabsolute(m.smkid[0])) {

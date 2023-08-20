@@ -1,5 +1,21 @@
+# This configuration file has a description of the active external indexers. See the manual for more
+# detail: Programming interface -> Python API -> Creating Python external indexers
+#
+# This file should be copied to your configuration directory (e.g. ~/.recoll) and edited
+
+# The Joplin indexer is installed with recoll (filters/rcljoplin.py) but not activated by
+# default. Because the indexer script is in the "filters" directory, there is no need for absolute
+# paths
+#[JOPLIN]
+#fetch = rcljoplin.py fetch
+#makesig = rcljoplin.py makesig
+#index = rcljoplin.py index
+
+# The MBOX indexer is useless because it does the same thing as the internal mbox handler, but it is
+# an example of external indexer using ipaths. Change the paths to wherever you extracted the source
+# code.
 [MBOX]
-fetch = python \
-/home/dockes/projets/fulltext/recoll/src/python/samples/rclmbox.py fetch
-makesig = python \
-/home/dockes/projets/fulltext/recoll/src/python/samples/rclmbox.py makesig
+#fetch = ~/recoll/src/python/samples/rclmbox.py fetch
+#makesig = ~/recoll/src/python/samples/rclmbox.py makesig
+#index = ~/recoll/src/python/samples/rclmbox.py index
+

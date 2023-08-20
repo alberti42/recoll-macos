@@ -235,6 +235,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
                 LOGDEB0("ConfIndexer: no 'index' entry for [" << bckid << "]\n");
                 continue;
             }
+            sindex = path_tildexpand(sindex);
             vector<string> vindex;
             stringToStrings(sindex, vindex);
             // We look up the command as we do for filters
