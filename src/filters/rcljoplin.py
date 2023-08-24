@@ -39,6 +39,7 @@ import sys
 import os
 import sqlite3
 from getopt import getopt
+import signal
 
 from recoll import recoll
 from recoll import rclconfig
@@ -46,7 +47,18 @@ from recoll import conftree
 
 def msg(s):
     print(f"{s}", file=sys.stderr)
-    
+
+# Signal termination handling: try to cleanly close the index
+rcldb = None
+def handler(signum, frame):
+    logmsg(f"Got signal")
+    if rcldb:
+        rcldb.close()
+    logmsg(f"Exiting")
+    sys.exit(1)
+
+signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGTERM, handler)
 
 class joplin_indexer:
     def __init__(self, rclconfdir, sqfile):
@@ -75,6 +87,7 @@ class joplin_indexer:
 
     # Walk the table, check if index is up to date for each note, update the index if not
     def index(self):
+        global rcldb
         rcldb = recoll.connect(confdir=self.rclconfdir, writable=1)
         # Important: this marks all non-joplin documents as present. Else our call to purge() would
         # delete them. This can't happen in the recollindex process (because we're using our own db

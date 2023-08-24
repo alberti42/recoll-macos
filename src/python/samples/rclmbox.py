@@ -10,6 +10,7 @@ import sys
 import glob
 import os
 import stat
+import signal
 import mailbox
 import email.header
 import email.utils
@@ -17,7 +18,7 @@ import email.utils
 from recoll import recoll
 
 def logmsg(s):
-    print(f"{s}", file=sys.stderr)
+    print(f"rclmbox.py: {s}", file=sys.stderr)
     
 # EDIT
 # Change this for some directory with mbox files, such as a
@@ -174,8 +175,21 @@ class mbox_indexer:
 
         self.db.addOrUpdate(udi, doc, parent_udi = self.parent_udi)
 
+db = None
+def handler(signum, frame):
+    logmsg(f"Got signal")
+    if db:
+        db.close()
+    logmsg(f"Exiting")
+    sys.exit(1)
+
+signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGTERM, handler)
+
+
 # Index a directory containing mbox files
 def index_mboxdir(dir):
+    global db
     db = recoll.connect(writable=1)
     db.preparePurge("MBOX")
     entries = glob.glob(dir + "/*")

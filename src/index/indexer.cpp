@@ -248,7 +248,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
                 return false;
             }
             LOGINF("ConfIndexer: starting indexing for " << bckid << "\n");
-            ExecCmd ecmd;
+            ExecCmd ecmd(ExecCmd::EXF_NOSETPG);
             ecmd.putenv(std::string("RECOLL_CONFDIR=") + m_config->getConfDir());
             auto status = ecmd.doexec(vindex);
             if (status) {
