@@ -8209,13 +8209,16 @@ for i in range(nres):
             indexer: look for modified documents, extract their
             text, call the API for indexing them, and the one for
             purging the data for deleted documents.</p>
+            <p>You can jump ahead for a look at some sample
+            pseudo-code and a pair of actual implementations, one
+            of which does something useful.</p>
           </div>
           <div class="sect3">
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3321" id=
-                  "idm3321"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3322" id=
+                  "idm3322"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>
@@ -8496,9 +8499,55 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 </div>
               </div>
             </div>
+            <p>First a quick look at an indexer main part, using
+            pseudo-python code:</p>
+            <pre class="programlisting">
+    # Connect to the recoll index. This will use the <code class=
+"literal">RECOLL_CONFDIR</code> variable, set
+    # by <span class=
+"command"><strong>recollindex</strong></span>, to use the right index.
+    rcldb = recoll.connect(writable=1)
+
+    # Important: tell the Recoll db that we are going to update documents for the
+    # <em class=
+"replaceable"><code>MYBACK</code></em> backend. All other documents will be marked as present so as
+    # not to be affect by the subsequent purge.
+    rcldb.preparePurge("MYBACK")
+
+    # Walk your dataset (of course your code will not look like this)
+    for mydoc in mydoclist:
+        # Compute the doc unique identifier and the signature corresponding to its update state
+        # (e.g. mtime and size for a file).
+        udi = mydoc.udi()
+        sig = mydoc.sig()
+        # Check with recoll if the document needs updating. This has the side-effect or marking
+        # it present.
+        if not rcldb.needUpdate(udi, sig):
+            continue
+        # The document data does not exist in the index or needs updating. Create and add a Recoll
+        # Doc object
+        doc = recoll.Doc()
+        doc.mimetype = "text/whatever"
+        doc.rclbes = "MYBACK"
+        # The URL will be passed back to you if the <code class=
+"literal">fetch</code> method is called
+        # later on (for previewing). This maybe useful or not, maybe the udi (also given to 
+        # <code class=
+"literal">fetch</code>) is enough. The UDI has a maximum size because it is used as a
+        # Xapian term. The url has no such limitation.
+        doc.url = "someurl"
+        doc.sig = sig
+        # Of course add other fields like "text" (duh), "author" etc. See the samples.
+        doc.text = mydoc.text()
+        # [...]
+        # Then add or update the data in the index.
+        self.db.addOrUpdate(udi, doc)
+
+    # Finally call purge to delete the data for documents which were not seen at all.
+    db.purge()
+</pre>
             <p>The Recoll source tree has two samples of external
-            indexers in the <code class=
-            "filename">src/python/samples</code> directory.</p>
+            indexers.</p>
             <div class="itemizedlist">
               <ul class="itemizedlist" style=
               "list-style-type: disc;">
@@ -8513,7 +8562,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 Also it generates compound documents with actual
                 <code class="literal">ipath</code> values.</li>
                 <li class="listitem"><a class="ulink" href=
-                "https://framagit.org/medoc92/recoll/-/blob/master/src/python/samples/rcljoplin.py"
+                "https://framagit.org/medoc92/recoll/-/blob/master/src/filters/rcljoplin.py"
                 target="_top">rcljoplin.py</a> indexes a
                 <span class="application">Joplin</span> application
                 main <code class="literal">notes</code> SQL table.

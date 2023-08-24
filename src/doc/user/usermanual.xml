@@ -5918,6 +5918,9 @@ for i in range(nres):
           <para>An external indexer has to do the same as the &RCL; file system indexer:
             look for modified documents, extract their text, call the API for indexing them, and the
             one for purging the data for deleted documents.</para>
+
+          <para>You can jump ahead for a look at some sample pseudo-code and a pair of actual
+            implementations, one of which does something useful.</para>
         </sect3>
 
         <sect3>
@@ -6099,8 +6102,50 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES">
           <title>External indexer samples</title>
 
-          <para>The Recoll source tree has two samples of external indexers
-            in the <filename>src/python/samples</filename> directory.</para>
+          <para>First a quick look at an indexer main part, using pseudo-python code:
+<programlisting>
+    # Connect to the recoll index. This will use the <literal>RECOLL_CONFDIR</literal> variable, set
+    # by <command>recollindex</command>, to use the right index.
+    rcldb = recoll.connect(writable=1)
+
+    # Important: tell the Recoll db that we are going to update documents for the
+    # <replaceable>MYBACK</replaceable> backend. All other documents will be marked as present so as
+    # not to be affect by the subsequent purge.
+    rcldb.preparePurge("MYBACK")
+
+    # Walk your dataset (of course your code will not look like this)
+    for mydoc in mydoclist:
+        # Compute the doc unique identifier and the signature corresponding to its update state
+        # (e.g. mtime and size for a file).
+        udi = mydoc.udi()
+        sig = mydoc.sig()
+        # Check with recoll if the document needs updating. This has the side-effect or marking
+        # it present.
+        if not rcldb.needUpdate(udi, sig):
+            continue
+        # The document data does not exist in the index or needs updating. Create and add a Recoll
+        # Doc object
+        doc = recoll.Doc()
+        doc.mimetype = "text/whatever"
+        doc.rclbes = "MYBACK"
+        # The URL will be passed back to you if the <literal>fetch</literal> method is called
+        # later on (for previewing). This maybe useful or not, maybe the udi (also given to 
+        # <literal>fetch</literal>) is enough. The UDI has a maximum size because it is used as a
+        # Xapian term. The url has no such limitation.
+        doc.url = "someurl"
+        doc.sig = sig
+        # Of course add other fields like "text" (duh), "author" etc. See the samples.
+        doc.text = mydoc.text()
+        # [...]
+        # Then add or update the data in the index.
+        self.db.addOrUpdate(udi, doc)
+
+    # Finally call purge to delete the data for documents which were not seen at all.
+    db.purge()
+</programlisting>              
+          </para>
+          
+          <para>The Recoll source tree has two samples of external indexers.</para>
           <para>
           <itemizedlist>
             <listitem><ulink 
@@ -6111,7 +6156,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
               update interface, and has a data access interface. Also it generates compound
               documents with actual <literal>ipath</literal> values.</listitem>
             <listitem><ulink 
-             url="https://framagit.org/medoc92/recoll/-/blob/master/src/python/samples/rcljoplin.py">
+             url="https://framagit.org/medoc92/recoll/-/blob/master/src/filters/rcljoplin.py">
 		  rcljoplin.py</ulink> indexes a <application>Joplin</application>
               application main <literal>notes</literal> SQL table. <application>Joplin</application>
               sets an an update date attribute for each record in the table, so each note record can
