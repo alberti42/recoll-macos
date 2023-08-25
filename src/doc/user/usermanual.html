@@ -11,7 +11,7 @@
   <meta name="generator" content=
   "DocBook XSL Stylesheets Vsnapshot">
   <meta name="description" content=
-  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.35.">
+  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.36.">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084"
 alink="#0000FF">
@@ -54,7 +54,7 @@ alink="#0000FF">
             and describes the installation and use of the
             <span class="application">Recoll</span> application.
             This version describes <span class=
-            "application">Recoll</span> 1.35.</p>
+            "application">Recoll</span> 1.36.</p>
           </div>
         </div>
       </div>
@@ -438,7 +438,7 @@ alink="#0000FF">
       <p>This document introduces full text search notions and
       describes the installation and use of the <span class=
       "application">Recoll</span> application. It is updated for
-      <span class="application">Recoll</span> 1.35.</p>
+      <span class="application">Recoll</span> 1.36.</p>
       <p><span class="application">Recoll</span> was for a long
       time dedicated to Unix-like systems. It was only lately
       (2015) ported to <span class="application">MS-Windows</span>.
@@ -8204,21 +8204,25 @@ for i in range(nres):
             <span class=
             "command"><strong>recollindex</strong></span>
             program.</p>
-            <p>An external indexer has to do the same as the
+            <p>An external indexer has to do the same work as the
             <span class="application">Recoll</span> file system
             indexer: look for modified documents, extract their
             text, call the API for indexing them, and the one for
             purging the data for deleted documents.</p>
-            <p>You can jump ahead for a look at some sample
-            pseudo-code and a pair of actual implementations, one
-            of which does something useful.</p>
+            <p>A description of the API method follows, but you can
+            also <a class="link" href=
+            "#RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES" title=
+            "External indexer samples">jump ahead</a> for a look at
+            some sample pseudo-code and a pair of actual
+            implementations, one of which does something
+            useful.</p>
           </div>
           <div class="sect3">
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3322" id=
-                  "idm3322"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3323" id=
+                  "idm3323"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>
@@ -8248,216 +8252,222 @@ for i in range(nres):
             described in more detail a <a class="link" href=
             "#RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES" title=
             "External indexer samples">bit further</a>.</p>
-          </div>
-          <div class="sect4">
-            <div class="titlepage">
-              <div>
+            <div class="sect4">
+              <div class="titlepage">
                 <div>
-                  <h5 class="title"><a name=
-                  "RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE" id=
-                  "RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE"></a>Python
-                  indexing interface methods</h5>
+                  <div>
+                    <h5 class="title"><a name=
+                    "RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE" id=
+                    "RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE"></a>Python
+                    indexing interface methods</h5>
+                  </div>
                 </div>
               </div>
-            </div>
-            <p>The update methods are part of the <code class=
-            "filename">recoll</code> module. The connect() method
-            is used with a <code class=
-            "literal">writable=true</code> parameter to obtain a
-            writable <code class="literal">Db</code> object. The
-            following <code class="literal">Db</code> object
-            methods are then available.</p>
-            <div class="variablelist">
-              <dl class="variablelist">
-                <dt><span class="term">addOrUpdate(udi, doc,
-                parent_udi=None)</span></dt>
-                <dd>
-                  <p>Add or update index data for a given document.
-                  The <code class="literal"><a class="link" href=
-                  "#RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">udi</a></code>
-                  string must define a unique id for the document.
-                  It is an opaque interface element and not
-                  interpreted inside Recoll. <code class=
-                  "literal">doc</code> is a <code class=
-                  "literal"><a class="link" href=
-                  "#RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC"
-                  title="The Doc class">Doc</a></code> object,
-                  created from the data to be indexed (the main
-                  text should be in <code class=
-                  "literal">doc.text</code>). If <code class=
-                  "literal"><a class="link" href=
-                  "#RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">parent_udi</a></code>
-                  is set, this is a unique identifier for the
-                  top-level container, the document for which
-                  <code class="literal">needUpdate()</code> would
-                  be called (e.g. for the filesystem indexer, this
-                  would be the one which is an actual file). The
-                  <code class="literal">doc</code> <code class=
-                  "literal">url</code> and possibly <code class=
-                  "literal">ipath</code> fields should also be set
-                  to allow access to the actual document after a
-                  query. Other fields should also be set to allow
-                  further access to the data, see the description
-                  further down: <code class=
-                  "literal">rclbes</code>, <code class=
-                  "literal">sig</code>, <code class=
-                  "literal">mimetype</code>. Of course, any
-                  standard or custom <span class=
-                  "application">Recoll</span> field can also be
-                  added.</p>
-                </dd>
-                <dt><span class="term">delete(udi)</span></dt>
-                <dd>
-                  <p>Purge the index from all data for <code class=
-                  "literal">udi</code>, and all documents (if any)
-                  which have <code class="literal">udi</code> as
-                  <code class="literal">parent_udi</code>.</p>
-                </dd>
-                <dt><span class="term">needUpdate(udi,
-                sig)</span></dt>
-                <dd>
-                  <p>Test if the index needs to be updated for the
-                  document identified by <code class=
-                  "literal">udi</code>. If this call is to be used,
-                  the <code class="literal">doc.sig</code> field
-                  should contain a signature value when calling
-                  <code class="literal">addOrUpdate()</code>. The
-                  <code class="literal">needUpdate()</code> call
-                  then compares its parameter value with the stored
-                  <code class="literal">sig</code> for <code class=
-                  "literal">udi</code>. <code class=
-                  "literal">sig</code> is an opaque value, compared
-                  as a string.</p>
-                  <p>The filesystem indexer uses a concatenation of
-                  the decimal string values for file size and
-                  update time, but a hash of the contents could
-                  also be used.</p>
-                  <p>As a side effect, if the return value is false
-                  (the index is up to date), the call will set the
-                  existence flag for the document (and any
-                  subdocument defined by its <code class=
-                  "literal">parent_udi</code>), so that a later
-                  <code class="literal">purge()</code> call will
-                  preserve them.</p>
-                  <p>The use of <code class=
-                  "literal">needUpdate()</code> and <code class=
-                  "literal">purge()</code> is optional, and the
-                  indexer may use another method for checking the
-                  need to reindex or to delete stale entries.</p>
-                </dd>
-                <dt><span class=
-                "term">preparePurge(backend_name)</span></dt>
-                <dd>
-                  <p>Mark all documents which do *not* belong to
-                  <em class=
-                  "replaceable"><code>backend_name</code></em>.
-                  <em class=
-                  "replaceable"><code>backend_name</code></em> is
-                  the value chosen for the <code class=
-                  "literal">rclbes</code> field for the indexer
-                  documents (e.g. "MBOX", "JOPLIN"... for the
-                  samples). This is a mandatory call before
-                  starting an update if the index is shared with
-                  other backends and you are going to call purge()
-                  after the update, else all documents for other
-                  backends will be deleted from the index by the
-                  purge.</p>
-                </dd>
-                <dt><span class="term">purge()</span></dt>
-                <dd>
-                  <p>Delete all documents that were not touched
-                  during the just finished indexing pass (since
-                  <code class="literal">preparePurge()</code>).
-                  These are the documents for which the
-                  <code class="literal">needUpdate()</code> call
-                  was not performed, indicating that they no longer
-                  exist in the storage system.</p>
-                </dd>
-                <dt><span class="term">createStemDbs(lang|sequence
-                of langs)</span></dt>
-                <dd>
-                  <p>Create stemming dictionaries for query
-                  stemming expansion. Note that this is not needed
-                  at all if the indexing is done from the
-                  <span class=
-                  "command"><strong>recollindex</strong></span>
-                  program, as it will perform this action after
-                  calling all the external indexers. Should be
-                  called when done updating the index. Available
-                  only after <span class=
-                  "application">Recoll</span> 1.34.3. As an
-                  alternative, you can close the index and
-                  execute:</p>
-                  <pre class=
-                  "programlisting">recollindex -c &lt;confdir&gt; -s &lt;lang(s)&gt;</pre>
-                  <p>The Python module currently has no interface
-                  to the Aspell speller functions, so the same
-                  approach can be used for creating the spelling
-                  dictionary (with option <code class=
-                  "literal">-S</code>) (again, not needed if
-                  <span class=
-                  "command"><strong>recollindex</strong></span> is
-                  driving the indexing).</p>
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div class="sect4">
-            <div class="titlepage">
-              <div>
-                <div>
-                  <h5 class="title"><a name=
-                  "RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS" id=
-                  "RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS"></a>Query
-                  data access for external indexers</h5>
-                </div>
+              <p>The update methods are part of the <code class=
+              "filename">recoll</code> module. The connect() method
+              is used with a <code class=
+              "literal">writable=true</code> parameter to obtain a
+              writable <code class="literal">Db</code> object. The
+              following <code class="literal">Db</code> object
+              methods are then available.</p>
+              <div class="variablelist">
+                <dl class="variablelist">
+                  <dt><span class="term">addOrUpdate(udi, doc,
+                  parent_udi=None)</span></dt>
+                  <dd>
+                    <p>Add or update index data for a given
+                    document. The <code class="literal"><a class=
+                    "link" href=
+                    "#RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">udi</a></code>
+                    string must define a unique id for the
+                    document. It is an opaque interface element and
+                    not interpreted inside <span class=
+                    "application">Recoll</span>. <code class=
+                    "literal">doc</code> is a <code class=
+                    "literal"><a class="link" href=
+                    "#RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC"
+                    title="The Doc class">Doc</a></code> object,
+                    created from the data to be indexed (the main
+                    text should be in <code class=
+                    "literal">doc.text</code>). If <code class=
+                    "literal"><a class="link" href=
+                    "#RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">parent_udi</a></code>
+                    is set, this is a unique identifier for the
+                    top-level container, the document for which
+                    <code class="literal">needUpdate()</code> would
+                    be called (e.g. for the filesystem indexer,
+                    this would be the one which is an actual file).
+                    The <code class="literal">doc</code>
+                    <code class="literal">url</code> and possibly
+                    <code class="literal">ipath</code> fields
+                    should also be set to allow access to the
+                    actual document after a query. Other fields
+                    should also be set to allow further access to
+                    the data, see the description further down:
+                    <code class="literal">rclbes</code>,
+                    <code class="literal">sig</code>, <code class=
+                    "literal">mimetype</code>. Of course, any
+                    standard or custom <span class=
+                    "application">Recoll</span> field can also be
+                    added.</p>
+                  </dd>
+                  <dt><span class="term">delete(udi)</span></dt>
+                  <dd>
+                    <p>Purge the index from all data for
+                    <code class="literal">udi</code>, and all
+                    documents (if any) which have <code class=
+                    "literal">udi</code> as <code class=
+                    "literal">parent_udi</code>.</p>
+                  </dd>
+                  <dt><span class="term">needUpdate(udi,
+                  sig)</span></dt>
+                  <dd>
+                    <p>Test if the index needs to be updated for
+                    the document identified by <code class=
+                    "literal">udi</code>. If this call is to be
+                    used, the <code class="literal">doc.sig</code>
+                    field should contain a signature value when
+                    calling <code class=
+                    "literal">addOrUpdate()</code>. The
+                    <code class="literal">needUpdate()</code> call
+                    then compares its parameter value with the
+                    stored <code class="literal">sig</code> for
+                    <code class="literal">udi</code>. <code class=
+                    "literal">sig</code> is an opaque value,
+                    compared as a string.</p>
+                    <p>The filesystem indexer uses a concatenation
+                    of the decimal string values for file size and
+                    update time, but a hash of the contents could
+                    also be used.</p>
+                    <p>As a side effect, if the return value is
+                    false (the index is up to date), the call will
+                    set the existence flag for the document (and
+                    any subdocument defined by its <code class=
+                    "literal">parent_udi</code>), so that a later
+                    <code class="literal">purge()</code> call will
+                    preserve them.</p>
+                    <p>The use of <code class=
+                    "literal">needUpdate()</code> and <code class=
+                    "literal">purge()</code> is optional, and the
+                    indexer may use another method for checking the
+                    need to reindex or to delete stale entries.</p>
+                  </dd>
+                  <dt><span class=
+                  "term">preparePurge(backend_name)</span></dt>
+                  <dd>
+                    <p>Mark all documents which do *not* belong to
+                    <em class=
+                    "replaceable"><code>backend_name</code></em>.
+                    <em class=
+                    "replaceable"><code>backend_name</code></em> is
+                    the value chosen for the <code class=
+                    "literal">rclbes</code> field for the indexer
+                    documents (e.g. "MBOX", "JOPLIN"... for the
+                    samples). This is a mandatory call before
+                    starting an update if the index is shared with
+                    other backends and you are going to call
+                    purge() after the update, else all documents
+                    for other backends will be deleted from the
+                    index by the purge.</p>
+                  </dd>
+                  <dt><span class="term">purge()</span></dt>
+                  <dd>
+                    <p>Delete all documents that were not touched
+                    during the just finished indexing pass (since
+                    <code class="literal">preparePurge()</code>).
+                    These are the documents for which the
+                    <code class="literal">needUpdate()</code> call
+                    was not performed, indicating that they no
+                    longer exist in the storage system.</p>
+                  </dd>
+                  <dt><span class=
+                  "term">createStemDbs(lang|sequence of
+                  langs)</span></dt>
+                  <dd>
+                    <p>Create stemming dictionaries for query
+                    stemming expansion. Note that this is not
+                    needed at all if the indexing is done from the
+                    <span class=
+                    "command"><strong>recollindex</strong></span>
+                    program, as it will perform this action after
+                    calling all the external indexers. Should be
+                    called when done updating the index. Available
+                    only after <span class=
+                    "application">Recoll</span> 1.34.3. As an
+                    alternative, you can close the index and
+                    execute:</p>
+                    <pre class=
+                    "programlisting">recollindex -c &lt;confdir&gt; -s &lt;lang(s)&gt;</pre>
+                    <p>The Python module currently has no interface
+                    to the Aspell speller functions, so the same
+                    approach can be used for creating the spelling
+                    dictionary (with option <code class=
+                    "literal">-S</code>) (again, not needed if
+                    <span class=
+                    "command"><strong>recollindex</strong></span>
+                    is driving the indexing).</p>
+                  </dd>
+                </dl>
               </div>
             </div>
-            <p><span class="application">Recoll</span> has internal
-            methods to access document data for its internal
-            (filesystem) indexer. An external indexer needs to
-            provide data access methods if it needs integration
-            with the GUI (e.g. preview function), or support for
-            the <code class="filename">rclextract</code>
-            module.</p>
-            <p>An external indexer needs to provide two commands,
-            for fetching data (typically for previewing) and for
-            computing the document signature (for up-to-date checks
-            when opening or previewing). The sample MBOX and JOPLIN
-            implementations use the same script with different
-            parameters to perform both operations, but this is just
-            a choice. A third command must be provided for
-            performing the indexing proper.</p>
-            <p>The "fetch" and "makesig" scripts are called with
-            three additional arguments: <code class=
-            "literal">udi</code>, <code class="literal">url</code>,
-            <code class="literal">ipath</code>. These were set by
-            the indexer and stored with the document by the
-            <code class="literal">addOrUpdate()</code> call
-            described above. Not all arguments are needed in all
-            cases, the script will use what it needs to perform the
-            requested operation. The caller expects the result data
-            on <code class="literal">stdout</code>.</p>
-            <p><span class=
-            "command"><strong>recollindex</strong></span> will set
-            the <code class="literal">RECOLL_CONFDIR</code>
-            environment variable when executing the scripts, so
-            that the configuration can be created as</p>
-            <pre class=
-            "programlisting">rclconf = rclconfig.RclConfig()</pre>
-            <p>if needed, and the configuration directory obtained
-            as</p>
-            <pre class=
-            "programlisting">confdir = rclconf.getConfDir()</pre>
+            <div class="sect4">
+              <div class="titlepage">
+                <div>
+                  <div>
+                    <h5 class="title"><a name=
+                    "RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS" id=
+                    "RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS"></a>Query
+                    data access for external indexers</h5>
+                  </div>
+                </div>
+              </div>
+              <p><span class="application">Recoll</span> has
+              internal methods to access document data for its
+              internal (filesystem) indexer. An external indexer
+              needs to provide data access methods if it needs
+              integration with the GUI (e.g. preview function), or
+              support for the <code class=
+              "filename">rclextract</code> module.</p>
+              <p>An external indexer needs to provide two commands,
+              for fetching data (typically for previewing) and for
+              computing the document signature (for up-to-date
+              checks when opening or previewing). The sample MBOX
+              and JOPLIN implementations use the same script with
+              different parameters to perform both operations, but
+              this is just a choice. A third command must be
+              provided for performing the indexing proper.</p>
+              <p>The "fetch" and "makesig" scripts are called with
+              three additional arguments: <code class=
+              "literal">udi</code>, <code class=
+              "literal">url</code>, <code class=
+              "literal">ipath</code>. These were set by the indexer
+              and stored with the document by the <code class=
+              "literal">addOrUpdate()</code> call described above.
+              Not all arguments are needed in all cases, the script
+              will use what it needs to perform the requested
+              operation. The caller expects the result data on
+              <code class="literal">stdout</code>.</p>
+              <p><span class=
+              "command"><strong>recollindex</strong></span> will
+              set the <code class="literal">RECOLL_CONFDIR</code>
+              environment variable when executing the scripts, so
+              that the configuration can be created as</p>
+              <pre class=
+              "programlisting">rclconf = rclconfig.RclConfig()</pre>
+              <p>if needed, and the configuration directory
+              obtained as</p>
+              <pre class=
+              "programlisting">confdir = rclconf.getConfDir()</pre>
+            </div>
           </div>
-          <div class="sect4">
+          <div class="sect3">
             <div class="titlepage">
               <div>
                 <div>
-                  <h5 class="title"><a name=
+                  <h4 class="title"><a name=
                   "RCL.PROGRAM.PYTHONAPI.UPDATE.CONFIGURATION" id=
                   "RCL.PROGRAM.PYTHONAPI.UPDATE.CONFIGURATION"></a>External
-                  indexers configuration</h5>
+                  indexers configuration</h4>
                 </div>
               </div>
             </div>
@@ -8475,8 +8485,8 @@ for i in range(nres):
             in the configuration directory). This defines commands
             to execute to access data from the specified indexer.
             Example, for the mbox indexing sample found in the
-            Recoll source (which sets <code class=
-            "literal">rclbes="MBOX"</code>):</p>
+            <span class="application">Recoll</span> source (which
+            sets <code class="literal">rclbes="MBOX"</code>):</p>
             <pre class="programlisting">[MBOX]
 fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
 makesig = /path/to/recoll/src/python/samples/rclmbox.py makesig
@@ -8487,6 +8497,16 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
             execute the value of the the <code class=
             "literal">index</code> parameter, if present (it may
             not be present if this concerns an external index).</p>
+            <p>If an external indexer needs to store additional
+            configuration parameters, e.g. path to a specific
+            instance of the indexed application, etc., I suggest
+            storing them inside <code class=
+            "filename">recoll.conf</code>, with a backend-specific
+            prefix (e.g. <em class=
+            "replaceable"><code>joplin_db</code></em>, <em class=
+            "replaceable"><code>mbox_directory</code></em>) and
+            using methods from the <code class=
+            "filename">rclconfig</code> module to access them.</p>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -8500,12 +8520,11 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
               </div>
             </div>
             <p>First a quick look at an indexer main part, using
-            pseudo-python code:</p>
+            pseudo-Python3 code:</p>
             <pre class="programlisting">
     # Connect to the recoll index. This will use the <code class=
 "literal">RECOLL_CONFDIR</code> variable, set
-    # by <span class=
-"command"><strong>recollindex</strong></span>, to use the right index.
+    # by the parent recollindex process, to use the right index.
     rcldb = recoll.connect(writable=1)
 
     # Important: tell the Recoll db that we are going to update documents for the
@@ -8527,14 +8546,13 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         # The document data does not exist in the index or needs updating. Create and add a Recoll
         # Doc object
         doc = recoll.Doc()
-        doc.mimetype = "text/whatever"
+        doc.mimetype = "some/type"
+        # Say that the document belongs to this indexer
         doc.rclbes = "MYBACK"
-        # The URL will be passed back to you if the <code class=
-"literal">fetch</code> method is called
-        # later on (for previewing). This maybe useful or not, maybe the udi (also given to 
-        # <code class=
-"literal">fetch</code>) is enough. The UDI has a maximum size because it is used as a
-        # Xapian term. The url has no such limitation.
+        # The url will be passed back to you along with the udi if the <code class="literal">fetch</code>
+        # method is called later (for previewing), or may be used for opening the document with
+        # its native app from Recoll. The udi has a maximum size because it is used as a Xapian
+        # term. The url has no such limitation.
         doc.url = "someurl"
         doc.sig = sig
         # Of course add other fields like "text" (duh), "author" etc. See the samples.
@@ -8558,9 +8576,9 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 files. Of course it is not really useful because
                 <span class="application">Recoll</span> can do this
                 by itself, but it exercises most features in the
-                update interface, and has a data access interface.
-                Also it generates compound documents with actual
-                <code class="literal">ipath</code> values.</li>
+                update interface, and it has both top-level and
+                embedded documents so it demonstrates the uses of
+                the <code class="literal">ipath</code> values.</li>
                 <li class="listitem"><a class="ulink" href=
                 "https://framagit.org/medoc92/recoll/-/blob/master/src/filters/rcljoplin.py"
                 target="_top">rcljoplin.py</a> indexes a

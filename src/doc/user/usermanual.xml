@@ -5915,12 +5915,14 @@ for i in range(nres):
             fully integrated, and work on the main index, with updates triggered from the
             normal <command>recollindex</command> program.</para>
           
-          <para>An external indexer has to do the same as the &RCL; file system indexer:
+          <para>An external indexer has to do the same work as the &RCL; file system indexer:
             look for modified documents, extract their text, call the API for indexing them, and the
             one for purging the data for deleted documents.</para>
 
-          <para>You can jump ahead for a look at some sample pseudo-code and a pair of actual
-            implementations, one of which does something useful.</para>
+          <para>A description of the API method follows, but you can also
+            <link linkend="RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES">jump ahead</link> for a look at
+            some sample pseudo-code and a pair of actual implementations, one of which does
+            something useful.</para>
         </sect3>
 
         <sect3>
@@ -5939,9 +5941,7 @@ for i in range(nres):
           <para>Two sample scripts are included with the &RCL; source and described in more detail a
             <link linkend="RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES">bit further</link>.</para>
           
-        </sect3>
-        
-        <sect4 id="RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE">
+       <sect4 id="RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE">
           <title>Python indexing interface methods</title>
 
           <para>The update methods are part of the <filename>recoll</filename> module.
@@ -5956,7 +5956,7 @@ for i in range(nres):
               <listitem><para>Add or update index data for a given document. The
                   <literal><link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">udi</link></literal>
                   string must define a unique id for the document. It is an opaque interface element
-                  and not interpreted inside Recoll. <literal>doc</literal> is
+                  and not interpreted inside &RCL;. <literal>doc</literal> is
                   a <literal><link linkend="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC">Doc</link>
                   </literal> object, created from the data to be indexed (the main text should be in
                   <literal>doc.text</literal>). If
@@ -6072,8 +6072,9 @@ for i in range(nres):
             <programlisting>confdir = rclconf.getConfDir()</programlisting></para>
           
         </sect4>
+        </sect3>
 
-        <sect4 id="RCL.PROGRAM.PYTHONAPI.UPDATE.CONFIGURATION">
+        <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.CONFIGURATION">
           <title>External indexers configuration</title>
 
           <para>The index data and the access method are linked by the
@@ -6086,7 +6087,7 @@ for i in range(nres):
           <para>The link is actually performed inside a <filename>backends</filename> configuration
             file (stored in the configuration directory). This defines commands to execute to access
             data from the specified indexer. Example, for the mbox indexing sample found in the
-            Recoll source (which sets <literal>rclbes="MBOX"</literal>):
+            &RCL; source (which sets <literal>rclbes="MBOX"</literal>):
 
 <programlisting>[MBOX]
 fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
@@ -6097,15 +6098,23 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
           <para>When updating the index, the <command>recollindex</command> will execute the value
             of the the <literal>index</literal> parameter, if present (it may not be present if this
             concerns an external index).</para>
-        </sect4>
+
+          <para>If an external indexer needs to store additional configuration parameters, e.g. path
+            to a specific instance of the indexed application, etc., I suggest storing them
+            inside <filename>recoll.conf</filename>, with a backend-specific prefix
+            (e.g. <replaceable>joplin_db</replaceable>, <replaceable>mbox_directory</replaceable>)
+            and using methods from the <filename>rclconfig</filename> module to access them.</para>
+
+
+        </sect3>
         
         <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES">
           <title>External indexer samples</title>
 
-          <para>First a quick look at an indexer main part, using pseudo-python code:
+          <para>First a quick look at an indexer main part, using pseudo-Python3 code:
 <programlisting>
     # Connect to the recoll index. This will use the <literal>RECOLL_CONFDIR</literal> variable, set
-    # by <command>recollindex</command>, to use the right index.
+    # by the parent recollindex process, to use the right index.
     rcldb = recoll.connect(writable=1)
 
     # Important: tell the Recoll db that we are going to update documents for the
@@ -6126,12 +6135,13 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         # The document data does not exist in the index or needs updating. Create and add a Recoll
         # Doc object
         doc = recoll.Doc()
-        doc.mimetype = "text/whatever"
+        doc.mimetype = "some/type"
+        # Say that the document belongs to this indexer
         doc.rclbes = "MYBACK"
-        # The URL will be passed back to you if the <literal>fetch</literal> method is called
-        # later on (for previewing). This maybe useful or not, maybe the udi (also given to 
-        # <literal>fetch</literal>) is enough. The UDI has a maximum size because it is used as a
-        # Xapian term. The url has no such limitation.
+        # The url will be passed back to you along with the udi if the <literal>fetch</literal>
+        # method is called later (for previewing), or may be used for opening the document with
+        # its native app from Recoll. The udi has a maximum size because it is used as a Xapian
+        # term. The url has no such limitation.
         doc.url = "someurl"
         doc.sig = sig
         # Of course add other fields like "text" (duh), "author" etc. See the samples.
@@ -6153,8 +6163,8 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
 		  rclmbox.py</ulink> indexes a
               directory containing <literal>mbox</literal> folder files. Of course it is not really
               useful because &RCL; can do this by itself, but it exercises most features in the
-              update interface, and has a data access interface. Also it generates compound
-              documents with actual <literal>ipath</literal> values.</listitem>
+              update interface, and it has both top-level and embedded documents so it demonstrates
+              the uses of the <literal>ipath</literal> values.</listitem>
             <listitem><ulink 
              url="https://framagit.org/medoc92/recoll/-/blob/master/src/filters/rcljoplin.py">
 		  rcljoplin.py</ulink> indexes a <application>Joplin</application>
