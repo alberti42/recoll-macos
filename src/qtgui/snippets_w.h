@@ -56,12 +56,17 @@ protected slots:
     virtual void slotEditFindNext();
     virtual void slotEditFindPrevious();
     virtual void slotSearchTextChanged(const QString&);
+    virtual void slotZoomIn();
+    virtual void slotZoomOut();
     virtual void reloadByRelevance();
     virtual void reloadByPage();
+    virtual void onUiPrefsChanged();
     
 signals:
     void startNativeViewer(Rcl::Doc, int pagenum, QString term, int line);
-        
+    void zoomIn();
+    void zoomOut();
+
 private:
     void init();
     std::shared_ptr<DocSequence> m_source;
@@ -72,6 +77,8 @@ private:
     QShortcut *m_findnextsc{nullptr};
     QShortcut *m_findprevsc{nullptr};
     QShortcut *m_hidesc{nullptr};
+    QShortcut *m_zisc{nullptr};
+    QShortcut *m_zosc{nullptr};
 };
 
 #ifdef USING_WEBENGINE

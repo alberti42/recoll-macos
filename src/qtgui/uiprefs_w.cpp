@@ -558,8 +558,8 @@ void UIPrefsDialog::showFontDialog()
     QFont font;
     if (prefs.reslistfontfamily.length()) {
         font.setFamily(prefs.reslistfontfamily);
-        font.setPointSize(prefs.reslistfontsize);
     }
+    font.setPointSize(prefs.reslistfontsize);
 
     font = QFontDialog::getFont(&ok, font, this);
     if (ok) {
