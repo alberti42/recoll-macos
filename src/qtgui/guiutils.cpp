@@ -50,10 +50,10 @@ RclConfig *theconfig;
 #ifdef _WIN32
 static const std::string dirlistsep{";"};
 // The web default font family is too ugly on windows, set a different one
-static const std::string defaultfontfamily{"Arial"};
+static const char *defaultfontfamily = "Arial";
 #else
 static const std::string dirlistsep{":"};
-static const std::string defaultfontfamily;
+static const char *defaultfontfamily = "";
 #endif
 
 
