@@ -146,6 +146,12 @@ void SnippetsW::onNewShortcuts()
                 "Shift+F3", m_findprevsc, slotEditFindPrevious);
     SETSHORTCUT(this, "snippets:164", tr("Snippets Window"), tr("Close window"),
                 "Esc", m_hidesc, hide);
+    auto sseq = QKeySequence(QKeySequence::ZoomIn).toString();
+    SETSHORTCUT(this, "snippets:166", tr("Snippets Window"), tr("Increase font size"),
+                sseq, m_zisc, slotZoomIn);
+    sseq = QKeySequence(QKeySequence::ZoomOut).toString();
+    SETSHORTCUT(this, "snippets:168", tr("Snippets Window"), tr("Decrease font size"),
+                sseq, m_zosc, slotZoomOut);
 }
 
 void SnippetsW::listShortcuts()
@@ -160,6 +166,12 @@ void SnippetsW::listShortcuts()
                  "Shift+F3", m_find2sc, slotEditFindPrevious);
     LISTSHORTCUT(this, "snippets:164", tr("Snippets Window"), tr("Close window"),
                  "Esc", m_hidesc, hide);
+    auto sseq = QKeySequence(QKeySequence::ZoomIn).toString();
+    LISTSHORTCUT(this, "snippets:166", tr("Snippets Window"), tr("Increase font size"),
+                sseq, m_zisc, slotZoomIn);
+    sseq = QKeySequence(QKeySequence::ZoomOut).toString();
+    LISTSHORTCUT(this, "snippets:168", tr("Snippets Window"), tr("Decrease font size"),
+                sseq, m_zosc, slotZoomOut);
 }
 
 void SnippetsW::createPopupMenu(const QPoint& pos)
@@ -289,6 +301,15 @@ void SnippetsW::slotEditFindPrevious()
 #endif
 }
 
+void SnippetsW::onUiPrefsChanged()
+{
+    if (m_sortingByPage) {
+        reloadByPage();
+    } else {
+        reloadByRelevance();
+    }
+}
+
 void SnippetsW::slotSearchTextChanged(const QString& txt)
 {
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
@@ -301,6 +322,15 @@ void SnippetsW::slotSearchTextChanged(const QString& txt)
     browser->setTextCursor(cursor);
     browser->find(txt);
 #endif
+}
+
+void SnippetsW::slotZoomIn()
+{
+    emit zoomIn();
+}
+void SnippetsW::slotZoomOut()
+{
+    emit zoomOut();
 }
 
 void SnippetsW::onLinkClicked(const QUrl &url)

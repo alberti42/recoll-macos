@@ -49,8 +49,11 @@ RclConfig *theconfig;
 
 #ifdef _WIN32
 static const std::string dirlistsep{";"};
+// The web default font family is too ugly on windows, set a different one
+static const char *defaultfontfamily = "Arial";
 #else
 static const std::string dirlistsep{":"};
+static const char *defaultfontfamily = "";
 #endif
 
 
@@ -208,11 +211,12 @@ void rwSettings(bool writing)
         prefs.reslistdateformat = "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z";
 
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", 
-               String, "");
+               String, defaultfontfamily);
 
     // While building the kio, we don't really care about QT Gui
     // defaults and referencing QFont introduces a useless dependency
-#ifdef BUILDING_RECOLLGUI
+    // On Windows, the default font size is 8 as far as I can see, too small
+#if defined(BUILDING_RECOLLGUI) && !defined(_WIN32)
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, QFont().pointSize());
 #else
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 12);

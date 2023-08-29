@@ -466,7 +466,10 @@ void RclMain::showSnippets(Rcl::Doc doc)
         m_snippets = new SnippetsW(doc, m_source);
         connect(m_snippets, SIGNAL(startNativeViewer(Rcl::Doc, int, QString, int)),
                 this, SLOT(startNativeViewer(Rcl::Doc, int, QString, int)));
-        connect(new QShortcut(quitKeySeq, m_snippets), SIGNAL (activated()), 
+        connect(m_snippets, SIGNAL(zoomIn()), this, SLOT(zoomIn()));
+        connect(m_snippets, SIGNAL(zoomOut()), this, SLOT(zoomOut()));
+        connect(this, SIGNAL(uiPrefsChanged()), m_snippets, SLOT(onUiPrefsChanged()));
+        connect(new QShortcut(quitKeySeq, m_snippets), SIGNAL (activated()),
                 this, SLOT (fileExit()));
         connect(new QShortcut(closeKeySeq, m_snippets), SIGNAL (activated()), 
                 m_snippets, SLOT (close()));
