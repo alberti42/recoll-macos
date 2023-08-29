@@ -93,29 +93,16 @@ PrefsPack prefs;
  * the qt/recoll settings to defaults) */
 static bool havereadsettings;
 
-#ifdef _WIN32
-static void maybeCopyFromRegistry();
-#else /* ! _WIN32 */
+#ifndef _WIN32
 static void maybeRenameGUISettings();
 #endif /* ! _WIN32 */
 
 void rwSettings(bool writing)
 {
-#ifdef _WIN32
-    {
-        static int once = 1;
-        // Once conversion registry -> file. Only happens once ever, and
-        // also we only call the function at program startup (the once
-        // above).
-        if (once) {
-            maybeCopyFromRegistry();
-            once = 0;
-        }
-    }
-#else
+#ifndef _WIN32
     maybeRenameGUISettings();
 #endif /* !_WIN32 */
-    // Keep this AFTER maybecopy...()
+
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
     LOGDEB1("rwSettings: write " << writing << "\n");
@@ -521,38 +508,7 @@ string PrefsPack::stemlang()
     return stemLang;
 }
 
-#ifdef _WIN32
-// Once conversion of registry storage to file. If the file-specific
-// key does not exist, copy from registry to file and create the
-// file-specific key.
-void maybeCopyFromRegistry()
-{
-    const char* markerkey = "registryToFileDone";
-    std::map<QString, QVariant> settingsmap;
-    {
-        QSettings settings;
-        QStringList keys = settings.allKeys();
-        for (int ki = 0; ki < keys.count(); ki++) {
-            QString key = keys[ki];
-            settingsmap[keys[ki]] = settings.value(keys[ki]);
-        }
-    }
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-    QSettings settings;
-    if (settings.value(markerkey) != QVariant()) {
-        // Already done;
-        return;
-    }
-    for (const auto& entry : settingsmap) {
-        LOGDEB("maybeCopyFromRegistry: KEY [" <<
-               qs2utf8s(entry.first) << "] VALUE [" <<
-               qs2utf8s(entry.second.toString()) << "]\n");
-        settings.setValue(entry.first, entry.second);
-    }
-    settings.setValue(markerkey, 1);
-}
-
-#else /* ! _WIN32 -> */
+#ifndef _WIN32
 
 // The Linux settings name unvontarily changed from
 // ~/.config/Recoll.org/recoll.conf to ~/.config/Recoll.org/recoll.ini

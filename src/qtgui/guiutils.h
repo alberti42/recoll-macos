@@ -37,7 +37,7 @@ public:
     int filterCtlStyle;
     int idxFilterTreeDepth{2};
     int respagesize{8};
-    int historysize{0};
+    int historysize{-1};
     int maxhltextkbs;
     QString reslistfontfamily;
     int reslistfontsize;
