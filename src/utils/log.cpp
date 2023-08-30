@@ -25,8 +25,6 @@
 #define localtime_r(A,B) localtime_s(B,A)
 #endif
 
-using namespace std;
-
 Logger::Logger(const std::string& fn)
     : m_fn(fn)
 {
@@ -47,8 +45,8 @@ bool Logger::reopen(const std::string& fn)
     if (!m_fn.empty() && m_fn != "stderr") {
         m_stream.open(m_fn, std::fstream::out | std::ofstream::trunc);
         if (!m_stream.is_open()) {
-            cerr << "Logger::Logger: log open failed: for [" <<
-                 fn << "] errno " << errno << endl;
+            std::cerr << "Logger::Logger: log open failed: for [" <<
+                 fn << "] errno " << errno << "\n";
             m_tocerr = true;
         } else {
             m_tocerr = false;
@@ -72,7 +70,7 @@ const char *Logger::datestring()
 }
 static Logger *theLog;
 
-Logger *Logger::getTheLog(const string& fn)
+Logger *Logger::getTheLog(const std::string& fn)
 {
     if (nullptr == theLog)
         theLog = new Logger(fn);
