@@ -38,7 +38,7 @@ namespace MedocUtils {
 class Mat2 {
 public:
     Mat2(int w, int h, int xs = 0, int ys = 0)
-        : m_w(w), m_h(h), m_xs(xs), m_ys(ys) {
+        : m_w(w), m_xs(xs), m_ys(ys) {
         ds = (int*)malloc(sizeof(int) * w * h);
     }
     ~Mat2() {
@@ -48,7 +48,7 @@ public:
         return ds[(y - m_ys) * m_w + (x - m_xs)];
     }
 private:
-    int m_w, m_h, m_xs, m_ys;
+    int m_w, m_xs, m_ys;
     int *ds{nullptr};
 };
 

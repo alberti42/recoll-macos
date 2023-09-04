@@ -268,7 +268,7 @@ std::unique_ptr<wchar_t[]> utf8towchar(const std::string& in)
         LOGERR("utf8towchar: conversion error for [" << in << "]\n");
         return std::unique_ptr<wchar_t[]>();
     }
-    auto buf = unique_ptr<wchar_t[]>(new wchar_t[wcharcnt+1]);
+    auto buf = std::unique_ptr<wchar_t[]>(new wchar_t[wcharcnt+1]);
 
     wcharcnt = MultiByteToWideChar(
         CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(),
@@ -942,7 +942,7 @@ bool path_makepath(const std::string& ipath, int mode)
             LOGDEB1("path_makepath: creating directory ["  << path << "]\n");
             SYSPATH(path, syspath);
             if (MKDIR(syspath, mode) != 0)  {
-                //cerr << "mkdir " << path << " failed, errno " << errno << endl;
+                //cerr << "mkdir " << path << " failed, errno " << errno << "\n";
                 return false;
             }
         }
@@ -1255,7 +1255,7 @@ bool PathDirContents::opendir()
 #ifdef _WIN32
     if (nullptr == m->dirhdl) {
         int rc = GetLastError();
-        LOGERR("opendir failed: LastError " << rc << endl);
+        LOGERR("opendir failed: LastError " << rc << "\n");
         if (rc == ERROR_NETNAME_DELETED) {
             // 64: share disconnected.
             // Not too sure of the errno in this case.
@@ -1281,7 +1281,7 @@ const struct PathDirContents::Entry* PathDirContents::readdir()
 #ifdef _WIN32
     std::string sdname;
     if (!wchartoutf8(ent->d_name, sdname)) {
-        LOGERR("wchartoutf8 failed for " << ent->d_name << endl);
+        LOGERR("wchartoutf8 failed for " << ent->d_name << "\n");
         return nullptr;
     }
     const char *dname = sdname.c_str();
