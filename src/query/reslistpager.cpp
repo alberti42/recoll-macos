@@ -230,7 +230,6 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
         m_hiliter->set_inputhtml(false);
         m_docSource->getAbstract(doc, m_hiliter, snippets);
         for (const auto& snippet : snippets) {
-            bool ret = false;
             if (!snippet.empty()) {
                 richabst += snippet;
                 richabst += absSep();
