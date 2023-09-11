@@ -356,9 +356,8 @@ string url_gpath(const string& url)
         }
     }
 
-    // In addition we canonize the path to remove empty host parts
-    // (for compatibility with older versions of recoll where file://
-    // was hardcoded, but the local path was used for doc
+    // In addition we canonize the path to remove empty host parts (for compatibility with older
+    // versions of recoll where file:// was hardcoded, but the local path was used for doc
     // identification.
     return path_canon(url.substr(colon + 1));
 }
@@ -373,8 +372,7 @@ string url_parentfolder(const string& url)
     if (!isfileurl && parenturl == "/") {
         parenturl = url_gpath(url);
     }
-    return isfileurl ? string("file://") + parenturl :
-        string("http://") + parenturl;
+    return isfileurl ? cstr_fileu + parenturl : string("http://") + parenturl;
 }
 
 
@@ -383,7 +381,7 @@ string url_parentfolder(const string& url)
 // encoded/escaped
 string fileurltolocalpath(string url)
 {
-    if (url.find("file://") == 0) {
+    if (url.find(cstr_fileu) == 0) {
         url = url.substr(7, string::npos);
     } else {
         return string();
@@ -422,7 +420,7 @@ string path_pathtofileurl(const string& path)
 
 bool urlisfileurl(const string& url)
 {
-    return url.find("file://") == 0;
+    return url.find(cstr_fileu) == 0;
 }
 
 // Printable url: this is used to transcode from the system charset

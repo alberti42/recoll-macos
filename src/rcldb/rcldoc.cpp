@@ -19,6 +19,7 @@
 #include "rcldoc.h"
 #include "log.h"
 #include "rclutil.h"
+#include "cstr.h"
 
 using namespace std;
 
@@ -101,7 +102,6 @@ void Doc::copyto(Doc *d) const
     d->onlyxattr = onlyxattr;
 }
 
-static const string cstr_fileu("file://");
 bool docsToPaths(const vector<Rcl::Doc> &docs, vector<string> &paths)
 {
     for (const auto& idoc : docs) {
