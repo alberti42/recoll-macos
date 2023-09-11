@@ -863,7 +863,6 @@ std::string path_absolute(const std::string& is)
 
 std::string path_canon(const std::string& is, const std::string* cwd)
 {
-    LOGINF("path_canon: [" << is << "]\n");
     std::string s = is;
 #ifdef _WIN32
     path_slashize(s);
