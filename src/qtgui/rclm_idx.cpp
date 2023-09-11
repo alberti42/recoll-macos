@@ -573,8 +573,7 @@ void RclMain::specialIndex()
 void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 {
     if (m_idxproc) {
-        QMessageBox::warning(0, tr("Warning"), 
-                             tr("Can't update index: indexer running"),
+        QMessageBox::warning(0, tr("Warning"), tr("Can't update index: indexer running"),
                              QMessageBox::Ok, QMessageBox::NoButton);
         return;
     }
@@ -592,8 +591,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
         // Call periodic100 to update the menu entries states
         periodic100();
     } else {
-        QMessageBox::warning(0, tr("Warning"), 
-                             tr("Can't update index: internal error"),
+        QMessageBox::warning(0, tr("Warning"), tr("Can't update index: internal error"),
                              QMessageBox::Ok, QMessageBox::NoButton);
         return;
     }

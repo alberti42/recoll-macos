@@ -83,10 +83,6 @@ public:
     /** Index a list of files. No db cleaning or stemdb updating */
     bool indexFiles(std::list<std::string> &files, int f = IxFNone);
 
-    /** Update index for list of documents given as list of docs (out of query)
-     */
-    bool updateDocs(std::vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
-
     /** Purge a list of files. */
     bool purgeFiles(std::list<std::string> &files, int f = IxFNone);
 

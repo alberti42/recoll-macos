@@ -331,19 +331,6 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flags)
     return ret;
 }
 
-// Update index for specific documents. The docs come from an index
-// query, so the udi, backend etc. fields are filled.
-bool ConfIndexer::updateDocs(vector<Rcl::Doc> &docs, IxFlag flags)
-{
-    vector<string> paths;
-    docsToPaths(docs, paths);
-    list<string> files(paths.begin(), paths.end());
-    if (!files.empty()) {
-        return indexFiles(files, flags);
-    }
-    return true;
-}
-
 bool ConfIndexer::purgeFiles(list<string> &files, int flags)
 {
     list<string> myfiles;

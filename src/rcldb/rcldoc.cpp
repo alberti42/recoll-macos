@@ -116,12 +116,11 @@ bool docsToPaths(const vector<Rcl::Doc> &docs, vector<string> &paths)
             continue;
 
         // Filesystem document. The url has to be like file://
-        if (idoc.url.find(cstr_fileu) != 0) {
-            LOGERR("idx::docsToPaths: FS backend and non fs url: [" <<
-                   idoc.url << "]\n");
+        if (!urlisfileurl(idoc.url)) {
+            LOGERR("idx::docsToPaths: FS backend and non fs url: [" << idoc.url << "]\n");
             continue;
         }
-        paths.push_back(idoc.url.substr(7, string::npos));
+        paths.push_back(url_gpath(idoc.url));
     }
     return true;
 }
