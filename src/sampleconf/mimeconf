@@ -243,6 +243,7 @@ text/x-rpm-spec = internal text/plain
 text/x-ruby = internal
 text/x-shellscript = internal text/plain
 text/x-srt = internal text/plain
+text/x-tcl = internal text/plain
 text/x-tex = exec rcltex
 video/mp4 = execm rclaudio.py
 video/x-msvideo = execm rclimg
@@ -383,6 +384,7 @@ text/x-rpm-spec = source
 text/x-ruby = source
 text/x-shellscript = source
 text/x-srt = source
+text/x-tcl = source
 text/x-tex = wordprocessing
 text/xml = document
 video/3gpp = video
@@ -467,8 +469,9 @@ text = \
       text/x-rpm-spec \
       text/x-ruby \
       text/x-shellscript \
-      text/x-srt
-
+      text/x-srt \
+      text/x-tcl
+      
 spreadsheet = \
    application/vnd.ms-excel \
    application/vnd.oasis.opendocument.spreadsheet \
