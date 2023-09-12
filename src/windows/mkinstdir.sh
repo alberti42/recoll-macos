@@ -87,6 +87,7 @@ MUTAGEN=${RCLDEPS}mutagen-1.46/
 EPUB=${RCLDEPS}epub-0.5.2
 FUTURE=${RCLDEPS}python2-future
 POPPLER=${RCLDEPS}poppler-22.04.0/Library/
+POPPLER32=${RCLDEPS}poppler-0.68.0/bin/
 LIBWPD=${RCLDEPS}libwpd/libwpd-0.10.0/
 LIBREVENGE=${RCLDEPS}libwpd/librevenge-0.0.1.jfd/
 CHM=${RCLDEPS}pychm
@@ -271,11 +272,13 @@ copypyxslt()
 
 copypoppler()
 {
-    test -d $FILTERS/poppler || mkdir $FILTERS/poppler || \
-        fatal cant create poppler dir
-    for f in pdftotext.exe pdfinfo.exe pdftoppm.exe $POPPLER/bin/*.dll \
-             ; do
+    test -d $FILTERS/poppler || mkdir $FILTERS/poppler || fatal cant create poppler directory
+    for f in pdftotext.exe pdfinfo.exe pdftoppm.exe $POPPLER/bin/*.dll ; do
         chkcp $POPPLER/bin/`basename $f` $FILTERS/poppler
+    done
+    test -d $FILTERS/poppler32 || mkdir $FILTERS/poppler32 || fatal cant create poppler32 directory
+    for f in pdftotext.exe pdfinfo.exe pdftoppm.exe $POPPLER32/*.dll ; do
+        chkcp $POPPLER32/`basename $f` $FILTERS/poppler32
     done
 }
 

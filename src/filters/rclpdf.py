@@ -39,6 +39,12 @@ import rclexecm
 import rclconfig
 
 _mswindows = (sys.platform == "win32")
+if _mswindows:
+    import platform
+    if platform.machine().endswith('64'):
+        popplerdir = "poppler"
+    else:
+        popplerdir = "poppler32"
 
 # Test access to the poppler-glib python3 bindings ? This allows
 # extracting text from annotations.
@@ -111,12 +117,12 @@ class PDFExtractor:
         # Avoid picking up a default version on Windows, we want ours
         if not _mswindows:
             self.pdftotext = rclexecm.which("pdftotext")
+        if _mswindows and not self.pdftotext:
+            self.pdftotext = rclexecm.which(popplerdir + "/pdftotext")
         if not self.pdftotext:
-            self.pdftotext = rclexecm.which("poppler/pdftotext")
-            if not self.pdftotext:
-                # No need for anything else. openfile() will return an
-                # error at once
-                return
+            # No need for anything else. openfile() will return an
+            # error at once
+            return
         self.pdftotextversion = self._popplerutilversion(self.pdftotext)
         # Check if we need to escape portions of text: old versions of pdftotext output raw
         # HTML special characters. Don't know exactly when this changed but it's fixed in 0.26.5
@@ -128,8 +134,8 @@ class PDFExtractor:
         # pdfinfo may be used to extract XML metadata and custom PDF properties
         if not _mswindows:
             self.pdfinfo = rclexecm.which("pdfinfo")
-        if not self.pdfinfo:
-            self.pdfinfo = rclexecm.which("poppler/pdfinfo")
+        if _mswindows and not self.pdfinfo:
+            self.pdfinfo = rclexecm.which(popplerdir + "/pdfinfo")
         if self.pdfinfo:
             self.pdfinfoversion = self._popplerutilversion(self.pdfinfo)
             # The user can set a list of meta tags to be extracted from the XMP metadata
@@ -145,8 +151,8 @@ class PDFExtractor:
         if self.dooutline:
             if not _mswindows:
                 self.pdftohtml = rclexecm.which("pdftohtml")
-            if not self.pdftohtml:
-                self.pdftohtml = rclexecm.which("poppler/pdftohtml")
+            if _mswindows and not self.pdftohtml:
+                self.pdftohtml = rclexecm.which(popplerdir + "/pdftohtml")
             if not self.pdftohtml:
                 self.dooutline = False
             
