@@ -42,7 +42,8 @@ _mswindows = (sys.platform == "win32")
 if _mswindows:
     import platform
     if platform.machine().endswith('64'):
-        popplerdir = "poppler"
+        # See comments in ../windows/mkinstdir.sh about the setup of the poppler installation
+        popplerdir = "poppler/Library/bin"
     else:
         popplerdir = "poppler32"
 
