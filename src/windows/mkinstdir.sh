@@ -86,7 +86,7 @@ PYEXIV2=${RCLDEPS}pyexiv2
 MUTAGEN=${RCLDEPS}mutagen-1.46/
 EPUB=${RCLDEPS}epub-0.5.2
 FUTURE=${RCLDEPS}python2-future
-POPPLER=${RCLDEPS}poppler-22.04.0/Library/
+POPPLER=${RCLDEPS}poppler-22.04.0/
 POPPLER32=${RCLDEPS}poppler-0.68.0/bin/
 LIBWPD=${RCLDEPS}libwpd/libwpd-0.10.0/
 LIBREVENGE=${RCLDEPS}libwpd/librevenge-0.0.1.jfd/
@@ -272,10 +272,19 @@ copypyxslt()
 
 copypoppler()
 {
-    test -d $FILTERS/poppler || mkdir $FILTERS/poppler || fatal cant create poppler directory
-    for f in pdftotext.exe pdfinfo.exe pdftoppm.exe $POPPLER/bin/*.dll ; do
-        chkcp $POPPLER/bin/`basename $f` $FILTERS/poppler
+    # Note: the recent poppler build which we ship comes from conda builds, and it includes
+    # poppler-data, which has additional fonts and encodings, for, e.g. Chinese. The utilities
+    # (e.g. pdftotext) expect to find the data in a directory named shared/poppler, 2 levels above
+    # the exec. There is no way that I could find to explicitely designate the data location, so we
+    # have to keep the structure of the directories.
+    test -d $FILTERS/poppler/Library/bin || mkdir -p $FILTERS/poppler/Library/bin || \
+        fatal cant create poppler directory
+    for f in pdftotext.exe pdfinfo.exe pdftoppm.exe $POPPLER/Library/bin/*.dll ; do
+        chkcp $POPPLER/Library/bin/`basename $f` $FILTERS/poppler/Library/bin/
     done
+    cp -rp $POPPLER/share $FILTERS/poppler
+
+    # Old 32 bits poppler 0.68. Comes without poppler-data.
     test -d $FILTERS/poppler32 || mkdir $FILTERS/poppler32 || fatal cant create poppler32 directory
     for f in pdftotext.exe pdfinfo.exe pdftoppm.exe $POPPLER32/*.dll ; do
         chkcp $POPPLER32/`basename $f` $FILTERS/poppler32
