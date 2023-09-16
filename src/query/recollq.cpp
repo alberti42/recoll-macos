@@ -126,53 +126,58 @@ void output_fields(std::vector<std::string> fields, Rcl::Doc& doc,
 
 static char *thisprog;
 static char usage [] =
-    " -P: Show the date span for all the documents present in the index.\n"
-    " [-o|-a|-f] [-q] <query string>\n"
     " Runs a recoll query and displays result lines. \n"
-    "  Default: will interpret the argument(s) as a xesam query string.\n"
-    "  Query elements: \n"
+    "   By default, the argument(s) will be interpreted as a Recoll query language\n"
+    "   string. The -q option was kept for compatibility with the GUI and is just\n"
+    "   ignored: the query *must* be specified in the non-option arguments.\n"
+    "  Query language elements:\n"
     "   * Implicit AND, exclusion, field spec:  t1 -t2 title:t3\n"
     "   * OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)\n"
     "   * Phrase: \"t1 t2\" (needs additional quoting on cmd line)\n"
-    " -o Emulate the GUI simple search in ANY TERM mode.\n"
-    " -a Emulate the GUI simple search in ALL TERMS mode.\n"
-    " -f Emulate the GUI simple search in filename mode.\n"
-    " -q is just ignored (compatibility with the recoll GUI command line).\n"
-    "Common options:\n"
-    " -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR.\n"
-    " -C : collapse duplicates\n"            
-    " -d also dump file contents.\n"
-    " -n [first-]<cnt> define the result slice. The default value for [first]\n"
-    "    is 0. Without the option, the default max count is 2000.\n"
-    "    Use n=0 for no limit.\n"
-    " -b : basic. Just output urls, no mime types or titles.\n"
-    " -Q : no result lines, just the processed query and result count.\n"
-    " -m : dump the whole document meta[] array for each result.\n"
-    " -A : output the document abstracts.\n"
-    "    -p <cnt> : show <cnt> snippets, with page numbers instead of the concatenated abstract.\n"
-    "    -g <cnt> : show <cnt> snippets, with line numbers instead of the concatenated abstract.\n"
-    " -S fld : sort by field <fld>.\n"
-    "   -D : sort descending.\n"
-    " -s stemlang : set stemming language to use (must exist in index...).\n"
-    "    Use -s \"\" to turn off stem expansion.\n"
-    " -T <synonyms file>: use the parameter (Thesaurus) for word expansion.\n"
-    " -i <dbdir> : additional index, several can be given.\n"
-    " -e use url encoding (%xx) for urls.\n"
-    " -E use exact result count instead of lower bound estimate.\n"
-    " -F <field name list> : output exactly these fields for each result.\n"
-    "    The field values are encoded in base64, output in one line and \n"
-    "    separated by one space character. This is the recommended format \n"
-    "    for use by other programs. Use a normal query with option -m to \n"
-    "    see the field names. Use -F '' to output all fields, but you probably\n"
-    "    also want option -N in this case.\n"
-    "   -N : with -F, print the (plain text) field names before the field values.\n"
-    " --extract_to <filepath> : extract the first result to filepath, which must not exist.\n"
-    "      Use a -n option with an offset to select the appropriate result.\n"
+    " Other query modes :\n"
+    "  -o Emulate the GUI simple search in ANY TERM mode.\n"
+    "  -a Emulate the GUI simple search in ALL TERMS mode.\n"
+    "  -f Emulate the GUI simple search in filename mode.\n"
+    " Query and results options:\n"
+    "  -c <configdir> : specify configuration directory, overriding $RECOLL_CONFDIR.\n"
+    "  -C : collapse duplicates.\n"
+    "  -d also dump file contents.\n"
+    "  -n [first-]<cnt> define the result slice. The default value for [first] is 0.\n"
+    "     Without the option, the default max count is 2000. Use n=0 for no limit.\n"
+    "  -b : basic. Just output urls, no mime types or titles.\n"
+    "  -Q : no result lines, just the processed query and result count.\n"
+    "  -m : dump the whole document meta[] array for each result.\n"
+    "  -A : output the document abstracts.\n"
+    "     -p <cnt> : show <cnt> snippets, with page numbers instead of the\n"
+    "         concatenated abstract.\n"
+    "     -g <cnt> : show <cnt> snippets, with line numbers instead of the\n"
+    "         concatenated abstract.\n"
+    "  -S fld : sort by field <fld>.\n"
+    "    -D : sort descending.\n"
+    "  -s stemlang : set stemming language to use (must exist in index...).\n"
+    "     Use -s \"\" to turn off stem expansion.\n"
+    "  -T <synonyms file>: use the parameter (Thesaurus) for word expansion.\n"
+    "  -i <dbdir> : additional index, several can be given.\n"
+    "  -e use url encoding (%xx) for urls.\n"
+    "  -E use exact result count instead of lower bound estimate.\n"
+    "  -F <field name list> : output exactly these fields for each result.\n"
+    "     The field values are encoded in base64, output in one line and \n"
+    "     separated by one space character. This is the recommended format \n"
+    "     for use by other programs. Use a normal query with option -m to \n"
+    "     see the field names. Use -F '' to output all fields, but you probably\n"
+    "     also want option -N in this case.\n"
+    "    -N : with -F, print the (plain text) field names before the field values.\n"
+    "  --extract_to <filepath> : extract the first result to filepath, which must not\n"
+    "     exist. Use a -n option with an offset to select the appropriate result.\n"
+    "  --paths-only: only print results which would have a file:// scheme, and\n"
+    "     exclude the scheme.\n"
+    " Other non-query usages:\n"
+    "  -P: Show the date span for all the documents present in the index.\n"
     ;
 
 static void Usage(std::ostream &os = std::cerr)
 {
-    os << thisprog <<  ": usage:" << "\n" << usage;
+    os << "Usage: " << thisprog <<  " [options] [query elements]" << "\n" << usage;
     exit(1);
 }
 
@@ -204,9 +209,12 @@ static struct option long_options[] = {
 #define OPTION_EXTRACT 1000
 #define OPTION_AUTOSPELL 1001
 #define OPTION_AUTOSPELLMAXDIST 1002
+#define OPTION_PATHS_ONLY 1003
     {"extract-to", required_argument, 0, OPTION_EXTRACT},
     {"autospell", no_argument, nullptr, OPTION_AUTOSPELL},
     {"autospell-max-distance", required_argument, 0, OPTION_AUTOSPELLMAXDIST},
+    {"help", no_argument, 0, 'h'},
+    {"paths-only", no_argument, 0, OPTION_PATHS_ONLY},
     {nullptr, 0, nullptr, 0}
 };
 
@@ -226,6 +234,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     std::string extractfile;
     bool autospell{false};
     int autospellmaxdist{1};
+    bool paths_only{false};
     
     int ret;
     while ((ret = getopt_long(argc, argv, "+AabCc:DdEefF:hi:lmNn:oPp:g:QqS:s:tT:v",
@@ -299,6 +308,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         case OPTION_EXTRACT: extractfile = optarg;break;
         case OPTION_AUTOSPELL: autospell = true; break;
         case OPTION_AUTOSPELLMAXDIST: autospellmaxdist = atoi(optarg); break;
+        case OPTION_PATHS_ONLY: paths_only = true; op_flags |= OPT_b; break;
         }
     }
 
@@ -440,7 +450,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         Rcl::Doc doc;
         if (!query.getDoc(i, doc))
             break;
-
+        if (paths_only && doc.url.find("file://") != 0) {
+            continue;
+        }
         if (!extractfile.empty()) {
             if (path_exists(extractfile)) {
                 std::cerr << "Output file must not exist.\n";
@@ -461,7 +473,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             doc.url = url_encode(doc.url);
 
         if (op_flags & OPT_b) {
-            cout << doc.url << "\n";
+            cout << (paths_only ? doc.url.substr(7) : doc.url) << "\n";
         } else {
             std::string titleorfn = doc.meta[Rcl::Doc::keytt];
             if (titleorfn.empty())
