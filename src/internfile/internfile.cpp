@@ -77,8 +77,7 @@ static string colon_restore(const string& in)
 // (ie message having a given attachment)
 bool FileInterner::getEnclosingUDI(const Rcl::Doc &doc, string& udi)
 {
-    LOGDEB("FileInterner::getEnclosingUDI(): url [" << doc.url <<
-           "] ipath [" << doc.ipath << "]\n");
+    LOGDEB("FileInterner::getEnclosingUDI(): url [" << doc.url <<"] ipath [" << doc.ipath << "]\n");
     string eipath = doc.ipath;
     string::size_type colon;
     if (eipath.empty())

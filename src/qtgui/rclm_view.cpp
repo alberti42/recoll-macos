@@ -45,11 +45,9 @@ static const vector<string> browser_list{
     "opera", "google-chrome", "chromium-browser",
     "palemoon", "iceweasel", "firefox", "konqueror", "epiphany"};
 
-// Start native viewer or preview for input Doc. This is used to allow
-// using recoll from another app (e.g. Unity Scope) to view embedded
-// result docs (docs with an ipath). . We act as a proxy to extract
-// the data and start a viewer.  The Url are encoded as
-// file://path#ipath
+// Start native viewer or preview for input Doc. This is used to allow using recoll from another app
+// (e.g. Unity Scope) to view embedded result docs (docs with an ipath). We act as a proxy to
+// extract the data and start a viewer. The URLs are encoded as file://path#ipath
 void RclMain::viewUrl()
 {
     if (m_urltoview.isEmpty() || !rcldb)
@@ -75,17 +73,14 @@ void RclMain::viewUrl()
     // StartNativeViewer needs a db source to call getEnclosing() on.
     Rcl::Query *query = new Rcl::Query(rcldb.get());
     DocSequenceDb *src = new DocSequenceDb(
-        rcldb, std::shared_ptr<Rcl::Query>(query), "", 
-        std::make_shared<Rcl::SearchData>());
+        rcldb, std::shared_ptr<Rcl::Query>(query), "", std::make_shared<Rcl::SearchData>());
     m_source = std::shared_ptr<DocSequence>(src);
 
 
-    // Start a native viewer if the mimetype has one defined, else a
-    // preview.
+    // Start a native viewer if the mimetype has one defined, else a preview.
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
-    string viewer = theconfig->getMimeViewerDef(doc.mimetype, apptag, 
-                                                prefs.useDesktopOpen);
+    string viewer = theconfig->getMimeViewerDef(doc.mimetype, apptag, prefs.useDesktopOpen);
     if (viewer.empty()) {
         startPreview(doc);
     } else {
@@ -99,12 +94,12 @@ void RclMain::viewUrl()
         // prevent the temp file deletion completely, leaving it
         // around forever. Better to let the user save a copy if he
         // wants I think.
-        sleep(30);
+        sleep(60);
         fileExit();
     }
 }
 
-/* Look for html browser. We make a special effort for html because it's
+/* Look for HTML browser. We make a special effort for html because it's
  * used for reading help. This is only used if the normal approach 
  * (xdg-open etc.) failed */
 static bool lookForHtmlBrowser(string &exefile)
@@ -129,10 +124,9 @@ void RclMain::openWith(Rcl::Doc doc, string cmdspec)
     // Split the command line
     vector<string> lcmd;
     if (!stringToStrings(cmdspec, lcmd)) {
-        QMessageBox::warning(
-            0, "Recoll", tr("Bad desktop app spec for %1: [%2]\n"
-                            "Please check the desktop file")
-            .arg(u8s2qs(doc.mimetype)).arg(path2qs(cmdspec)));
+        QMessageBox::warning(0, "Recoll", tr("Bad desktop app spec for %1: [%2]\n"
+                                             "Please check the desktop file")
+                             .arg(u8s2qs(doc.mimetype)).arg(path2qs(cmdspec)));
         return;
     }
 
@@ -143,8 +137,7 @@ void RclMain::openWith(Rcl::Doc doc, string cmdspec)
     string url = doc.url;
     string fn = fileurltolocalpath(doc.url);
 
-    // Try to keep the letters used more or less consistent with the reslist
-    // paragraph format.
+    // Try to keep the letters used more or less consistent with the reslist paragraph format.
     map<string, string> subs;
 #ifdef _WIN32
     path_backslashize(fn);
@@ -177,19 +170,16 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
     LOGDEB("RclMain::startNativeViewer: mtype [" << doc.mimetype <<
            "] apptag ["  << apptag << "] page "  << pagenum << " term ["  <<
-           term << "] url ["  << doc.url << "] ipath [" <<
-           doc.ipath << "]\n");
+           term << "] url ["  << doc.url << "] ipath [" << doc.ipath << "]\n");
 
     // Look for appropriate viewer
-    string cmdplusattr = theconfig->getMimeViewerDef(doc.mimetype, apptag, 
-                                                     prefs.useDesktopOpen);
+    string cmdplusattr = theconfig->getMimeViewerDef(doc.mimetype, apptag, prefs.useDesktopOpen);
     if (cmdplusattr.empty()) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("No external viewer configured for mime type [")
+        QMessageBox::warning(0, "Recoll", tr("No external viewer configured for mime type [")
                              + doc.mimetype.c_str() + "]");
         return;
     }
-    LOGDEB("StartNativeViewer: viewerdef from config: " << cmdplusattr << endl);
+    LOGDEB("StartNativeViewer: viewerdef from config: " << cmdplusattr << "\n");
 
     // Separate command string and viewer attributes (if any)
     ConfSimple viewerattrs;
@@ -208,9 +198,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
     // Split the command line
     vector<string> lcmd;
     if (!stringToStrings(cmd, lcmd)) {
-        QMessageBox::warning(
-            0, "Recoll", tr("Bad viewer command line for %1: [%2]\n"
-                            "Please check the mimeview file")
+        QMessageBox::warning(0, "Recoll", tr("Bad viewer command line for %1: [%2]\n"
+                                             "Please check the mimeview file")
             .arg(u8s2qs(doc.mimetype)).arg(path2qs(cmd)));
         return;
     }
@@ -244,8 +233,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
     if (execpath.empty()) {
         QString mt = QString::fromUtf8(doc.mimetype.c_str());
         QString message = tr("The viewer specified in mimeview for %1: %2"
-                             " is not found.\nDo you want to start the "
-                             " preferences dialog ?")
+                             " is not found.\nDo you want to start the preferences dialog ?")
             .arg(mt).arg(path2qs(lcmd.front()));
 
         switch(QMessageBox::warning(0, "Recoll", message, 
@@ -289,16 +277,14 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
     } 
 
     if (wantsparentfile && !urlisfileurl(doc.url)) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("Viewer command line for %1 specifies "
-                                "parent file but URL is not file:// : unsupported")
+        QMessageBox::warning(0, "Recoll", tr("Viewer command line for %1 specifies "
+                                             "parent file but URL is not file:// : unsupported")
                              .arg(QString::fromUtf8(doc.mimetype.c_str())));
         return;
     }
     if (wantsfile && wantsparentfile) {
-        QMessageBox::warning(0, "Recoll", 
-                             tr("Viewer command line for %1 specifies both "
-                                "file and parent file value: unsupported")
+        QMessageBox::warning(0, "Recoll", tr("Viewer command line for %1 specifies both "
+                                             "file and parent file value: unsupported")
                              .arg(QString::fromUtf8(doc.mimetype.c_str())));
         return;
     }
@@ -346,8 +332,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
         Rcl::Doc& thedoc = wantsparentfile ? pdoc : doc;
         if (!FileInterner::idocToFile(temp, string(), theconfig, thedoc)) {
             QMessageBox::warning(0, "Recoll",
-                                 tr("Cannot extract document or create "
-                                    "temporary file"));
+                                 tr("Cannot extract document or create temporary file"));
             return;
         }
         enterHistory = true;
@@ -361,15 +346,13 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
     // compressed, we may need an uncompressed version
     if (!fn.empty() && theconfig->mimeViewerNeedsUncomp(doc.mimetype)) {
         if (!path_readable(fn)) {
-            QMessageBox::warning(0, "Recoll", 
-                                 tr("Can't access file: ") + u8s2qs(fn));
+            QMessageBox::warning(0, "Recoll", tr("Can't access file: ") + u8s2qs(fn));
             return;
         }
         TempFile temp;
         if (FileInterner::isCompressed(fn, theconfig)) {
             if (!FileInterner::maybeUncompressToTemp(temp, fn, theconfig,doc)) {
-                QMessageBox::warning(
-                    0, "Recoll", tr("Can't uncompress file: ") + path2qs(fn));
+                QMessageBox::warning(0, "Recoll", tr("Can't uncompress file: ") + path2qs(fn));
                 return;
             }
         }
@@ -386,13 +369,11 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
             QMessageBox::Warning, "Recoll",
             tr("Opening a temporary copy. Edits will be lost if you don't save"
                "<br/>them to a permanent location."),
-            tr("Do not show this warning next time (use GUI preferences "
-               "to restore)."));
+            tr("Do not show this warning next time (use GUI preferences to restore)."));
         confirm.setOverrideSettingsKey("/Recoll/prefs/showTempFileWarning");
         confirm.exec();
         QSettings settings;
-        prefs.showTempFileWarning =
-            settings.value("/Recoll/prefs/showTempFileWarning").toInt();
+        prefs.showTempFileWarning = settings.value("/Recoll/prefs/showTempFileWarning").toInt();
     }
 
     // If we are not called with a page number (which would happen for a call from the snippets
