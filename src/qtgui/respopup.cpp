@@ -44,10 +44,9 @@ QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source, Rcl::D
 {
     QMenu *popup = new QMenu(me);
 
-    LOGDEB("ResultPopup::create: opts " << opts << " haspages " <<
-           doc.haspages << " " <<(source ? "Source not null" : "Source is Null")
-           << " "  << (source ? (source->snippetsCapable() ? 
-                                 "snippetsCapable":"not snippetsCapable") : "")
+    LOGDEB("ResultPopup::create: opts " << opts << " haspages " << doc.haspages << " " <<
+           (source ? "Source not null" : "Source is Null") << " "  <<
+           (source ? (source->snippetsCapable() ? "snippetsCapable":"not snippetsCapable") : "")
            << "\n");
 
     string apptag;

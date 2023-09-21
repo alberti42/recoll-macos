@@ -2200,15 +2200,14 @@ recollindex -c "$confdir"</programlisting>
           the <literal>.desktop</literal> files
           in <filename>/usr/share/applications</filename>).</para>
 
-          <para><guilabel>Run Script</guilabel> (&LIN;) allows starting an
-          arbitrary command on the result file. It will only appear for
-          results which are top-level
-          files. See <link linkend="RCL.SEARCH.GUI.RUNSCRIPT">further</link>
-          for a more detailed description.</para>
+          <para><guilabel>Run Script</guilabel> allows starting an arbitrary command on the result
+            file. It will only appear for results which are top-level
+            files. See <link linkend="RCL.SEARCH.GUI.RUNSCRIPT">further</link> for a more detailed
+            description.</para> 
 
           <para>The <guilabel>Copy File Name</guilabel> and
-          <guilabel>Copy Url</guilabel> copy the relevant data to the
-          clipboard, for later pasting.</para> 
+            <guilabel>Copy Url</guilabel> copy the relevant data to the
+            clipboard, for later pasting.</para> 
 
           <para><guilabel>Save to File</guilabel> allows saving the
           contents of a result document to a chosen file. This entry
@@ -2322,7 +2321,7 @@ recollindex -c "$confdir"</programlisting>
 
 
       <sect2 id="RCL.SEARCH.GUI.RUNSCRIPT">
-        <title>&LIN;: running arbitrary commands on result files</title> 
+        <title>Running arbitrary commands on result files</title> 
 
         <para>Apart from the <guilabel>Open</guilabel> and <guilabel>Open
         With</guilabel> operations, which allow starting an application on a
