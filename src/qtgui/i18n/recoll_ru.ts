@@ -155,7 +155,7 @@
     <message>
         <location filename="../advsearch.ui" line="246"/>
         <source>Filter birth dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Фильтровать по дате рождения</translation>
     </message>
     <message>
         <location filename="../advsearch.ui" line="301"/>
@@ -220,7 +220,7 @@
     <message>
         <location filename="../advsearch.ui" line="454"/>
         <source>All ----&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Все ----&gt;</translation>
     </message>
     <message>
         <location filename="../advsearch.ui" line="467"/>
@@ -377,7 +377,7 @@
     <message>
         <location filename="../confgui/confguiindex.cpp" line="290"/>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation type="unfinished"></translation>
+        <translation>Степень заполнения диска в процентах, при которой прекратится индексирование&lt;br&gt;Например, 90% для останова на 90% заполнения; 0 или 100 снимает ограничение</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="292"/>
@@ -467,7 +467,7 @@
     <message>
         <location filename="../confgui/confguiindex.cpp" line="365"/>
         <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
-        <translation>&lt;p&gt;По умолчанию в кэше хренится только один экземпляр ссылки. Это можно изменить в настройках, где указывается значение длительности хранения нескольких экземпляров (&apos;день&apos;, &apos;неделя&apos;, &apos;месяц&apos;, &apos;год&apos;). Учтите, что увеличение интервала не сотрёт уже существующие записи.</translation>
+        <translation>&lt;p&gt;По умолчанию в кэше хранится только один экземпляр ссылки. Это можно изменить в настройках, где указывается значение длительности хранения нескольких экземпляров (&apos;день&apos;, &apos;неделя&apos;, &apos;месяц&apos;, &apos;год&apos;). Учтите, что увеличение интервала не сотрёт уже существующие записи.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="378"/>
@@ -887,7 +887,8 @@ p, li { white-space: pre-wrap; }
         <location filename="../main.cpp" line="419"/>
         <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Необходимо включить параметр настройки «Отображать значок в трее»!
+</translation>
     </message>
 </context>
 <context>
@@ -1075,12 +1076,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../preview_w.cpp" line="1040"/>
         <source>Reload as Plain Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Перезагрузить как простой текст</translation>
     </message>
     <message>
         <location filename="../preview_w.cpp" line="1041"/>
         <source>Reload as HTML</source>
-        <translation type="unfinished"></translation>
+        <translation>Перезагрузить как HTML</translation>
     </message>
     <message>
         <location filename="../preview_w.cpp" line="1042"/>
@@ -1393,7 +1394,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ssearch_w.cpp" line="106"/>
         <source> Hits</source>
-        <translation type="unfinished"></translation>
+        <translation> (количество нажатий)</translation>
     </message>
 </context>
 <context>
@@ -1665,7 +1666,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../rclm_preview.cpp" line="246"/>
         <source>This search is not active anymore</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот поиск больше не активен</translation>
     </message>
     <message>
         <source>This search is not active any more</source>
@@ -1765,7 +1766,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../rclm_view.cpp" line="293"/>
         <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
-        <translation type="unfinished"></translation>
+        <translation>В командной строке программы просмотра %1 указан родительский файл, а в URL — не file:// : не поддерживается</translation>
     </message>
     <message>
         <location filename="../rclm_view.cpp" line="300"/>
@@ -2098,7 +2099,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../rclmain.ui" line="91"/>
         <source>Filter birth dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Фильтровать по дате рождения</translation>
     </message>
     <message>
         <location filename="../rclmain.ui" line="159"/>
@@ -2893,12 +2894,12 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../ssearch_w.cpp" line="434"/>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Шпаргалка по языку запросов. Неясно — щёлкните &lt;b&gt;Показать сведения о запросе&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <location filename="../ssearch_w.cpp" line="447"/>
         <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Заглавные буквы для подавления словоформ&lt;/td&gt;&lt;td&gt;Слово&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <location filename="../ssearch_w.cpp" line="448"/>
@@ -3359,7 +3360,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../spell_w.cpp" line="196"/>
         <source>Spell expansion error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка поиска однокоренных слов.</translation>
     </message>
     <message>
         <location filename="../spell_w.cpp" line="201"/>
@@ -3556,7 +3557,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../uiprefs_w.cpp" line="780"/>
         <source>Can&apos;t add index with different case/diacritics stripping option.</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно добавить индекс с другими настройками учёта регистра и диакритических знаков.</translation>
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
@@ -3669,7 +3670,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../webcache.ui" line="20"/>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation>Текстовая подпись</translation>
     </message>
     <message>
         <location filename="../webcache.ui" line="29"/>
@@ -3682,7 +3683,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../webcache.cpp" line="280"/>
         <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>Предельный размер %1 (конф. индекса). Текущий размер %2. Позиция записи %3.</translation>
     </message>
     <message>
         <location filename="../webcache.cpp" line="295"/>
@@ -3740,7 +3741,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../webcache.cpp" line="184"/>
         <source>URL</source>
-        <translation type="unfinished">URL</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <source>Url</source>
@@ -3752,38 +3753,38 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../winschedtool.ui" line="14"/>
         <source>Recoll Batch indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Пакетное индексирование Recoll</translation>
     </message>
     <message>
         <location filename="../winschedtool.ui" line="41"/>
         <source>Start Windows Task Scheduler tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустить планировщик задач Windows</translation>
     </message>
     <message>
         <location filename="../winschedtool.cpp" line="41"/>
         <location filename="../winschedtool.cpp" line="65"/>
         <source>Error</source>
-        <translation type="unfinished">Ошибка</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../winschedtool.cpp" line="42"/>
         <source>Configuration not initialized</source>
-        <translation type="unfinished"></translation>
+        <translation>Конфигурация не инициализирована</translation>
     </message>
     <message>
         <location filename="../winschedtool.cpp" line="66"/>
         <source>Could not create batch file</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать пакетный файл</translation>
     </message>
     <message>
         <location filename="../winschedtool.cpp" line="70"/>
         <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Планирование пакетного индексирования Recoll&lt;/h3&gt;&lt;p&gt;Для этого используется стандартный планировщик задач Windows. Программа будет запущена после нажатия расположенной ниже кнопки.&lt;/p&gt;&lt;p&gt;Можно использовать либо полный интерфейс (&lt;i&gt;Создать задачу&lt;/i&gt; в меню справа), либо упрощённый мастер &lt;i&gt;Создать простую задачу&lt;/i&gt;. В обоих случаях следует Копировать/Вставить приведённый ниже путь к пакетному файлу как &lt;i&gt;Действие&lt;/i&gt; для выполнения.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../winschedtool.cpp" line="94"/>
         <source>Command already started</source>
-        <translation type="unfinished"></translation>
+        <translation>Команда уже запущена</translation>
     </message>
 </context>
 <context>
@@ -3832,7 +3833,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../uiprefs.ui" line="14"/>
         <source>Recoll - User Preferences</source>
-        <translation>Recoll - настройки пользователя</translation>
+        <translation>Recoll — настройки пользователя</translation>
     </message>
     <message>
         <location filename="../uiprefs.ui" line="27"/>
@@ -3947,7 +3948,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../uiprefs.ui" line="312"/>
         <source>Show system tray icon.</source>
-        <translation>Отображать иконку в трее</translation>
+        <translation>Отображать значок в трее</translation>
     </message>
     <message>
         <location filename="../uiprefs.ui" line="322"/>
@@ -3982,22 +3983,22 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../uiprefs.ui" line="398"/>
         <source>Maximum number of history entries in completer list</source>
-        <translation type="unfinished"></translation>
+        <translation>Предельное число записей журнала в списке автодополнения</translation>
     </message>
     <message>
         <location filename="../uiprefs.ui" line="401"/>
         <source>Number of history entries in completer:</source>
-        <translation type="unfinished"></translation>
+        <translation>Число записей журнала в автодополнении:</translation>
     </message>
     <message>
         <location filename="../uiprefs.ui" line="436"/>
         <source>Displays the total number of occurences of the term in the index</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывает общее количество вхождений термина в индексе</translation>
     </message>
     <message>
         <location filename="../uiprefs.ui" line="439"/>
         <source>Show hit counts in completer popup.</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать счётчик нажатий во всплывающем окне автодополнения.</translation>
     </message>
     <message>
         <location filename="../uiprefs.ui" line="466"/>
@@ -4016,7 +4017,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../uiprefs.ui" line="510"/>
         <source>Prefer HTML to plain text for preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Предпочитать для просмотра HTML простому тексту.</translation>
     </message>
     <message>
         <location filename="../uiprefs.ui" line="520"/>
