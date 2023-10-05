@@ -26,20 +26,7 @@ except:
         print("RECFILTERROR HELPERNOTFOUND python3:py7zr or python3:pylzma")
         sys.exit(1);
 
-try:
-    from recoll import rclconfig
-    hasrclconfig = True
-except:
-    hasrclconfig = False
-# As a temporary measure, we also look for rclconfig as a bare
-# module. This is so that the intermediate releases of the filter can
-# ship and use rclconfig.py with the filter code
-if not hasrclconfig:
-    try:
-        import rclconfig
-        hasrclconfig = True
-    except:
-        pass
+import rclconfig
 
 class SevenZipExtractor:
     def __init__(self, em):
@@ -75,12 +62,11 @@ class SevenZipExtractor:
         self.currentindex = -1
         self.skiplist = []
 
-        if hasrclconfig:
-            config = rclconfig.RclConfig()
-            config.setKeyDir(os.path.dirname(filename))
-            skipped = config.getConfParam("zipSkippedNames")
-            if skipped is not None:
-                self.skiplist = skipped.split(" ")
+        config = rclconfig.RclConfig()
+        config.setKeyDir(os.path.dirname(filename))
+        skipped = config.getConfParam("zipSkippedNames")
+        if skipped is not None:
+            self.skiplist = skipped.split(" ")
 
         try:
             self.fp = open(filename, 'rb')
@@ -126,7 +112,7 @@ class SevenZipExtractor:
 
         entryname = self.names[self.currentindex]
 
-        if hasrclconfig and len(self.skiplist) != 0:
+        if len(self.skiplist) != 0:
             while self.currentindex < len(self.names):
                 entryname = self.names[self.currentindex]
                 for pat in self.skiplist:

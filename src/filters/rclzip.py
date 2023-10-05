@@ -23,24 +23,11 @@ import posixpath
 import fnmatch
 import datetime
 
-import rclexecm
 from zipfile import ZipFile
 
-try:
-    from recoll import rclconfig
-    from recoll import conftree
-    hasrclconfig = True
-except:
-    hasrclconfig = False
-# As a temporary measure, we also look for rclconfig as a bare
-# module. This is so that the intermediate releases of the filter can
-# ship and use rclconfig.py with the filter code
-if not hasrclconfig:
-    try:
-        import rclconfig
-        hasrclconfig = True
-    except:
-        pass
+import rclexecm
+import rclconfig
+import conftree
 
 # Note about file names (python 2.6. 2.7, don't know about 3.)
 #
@@ -140,17 +127,16 @@ class ZipExtractor:
         self.currentindex = -1
         self.skiplist = []
 
-        if hasrclconfig:
-            config = rclconfig.RclConfig()
-            config.setKeyDir(os.path.dirname(filename))
-            usebaseskipped = config.getConfParam("zipUseSkippedNames")
-            if usebaseskipped:
-                skipped = config.getConfParam("skippedNames")
-                self.em.rclog("skippedNames: %s"%self.skiplist)
-                self.skiplist += conftree.stringToStrings(skipped)
-            skipped = config.getConfParam("zipSkippedNames")
-            if skipped is not None:
-                self.skiplist += conftree.stringToStrings(skipped)
+        config = rclconfig.RclConfig()
+        config.setKeyDir(os.path.dirname(filename))
+        usebaseskipped = config.getConfParam("zipUseSkippedNames")
+        if usebaseskipped:
+            skipped = config.getConfParam("skippedNames")
+            self.em.rclog("skippedNames: %s"%self.skiplist)
+            self.skiplist += conftree.stringToStrings(skipped)
+        skipped = config.getConfParam("zipSkippedNames")
+        if skipped is not None:
+            self.skiplist += conftree.stringToStrings(skipped)
         try:
             # Note: py3 ZipFile wants an str file name, which
             # is wrong: file names are binary. But it accepts an
@@ -198,7 +184,7 @@ class ZipExtractor:
             #fixedname = entryname.encode('cp437').decode('euc-kr')
             #self.em.rclog("REENCODED: %s"%fixedname)
 
-            if hasrclconfig and len(self.skiplist) != 0:
+            if len(self.skiplist) != 0:
                 while self.currentindex < len(self.zip.namelist()):
                     entryname = self.zip.namelist()[self.currentindex]
                     for pat in self.skiplist:
