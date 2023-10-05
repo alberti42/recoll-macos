@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import print_function
 
 import locale
 import re
@@ -13,6 +12,9 @@ try:
 except:
     import conftree
 
+def msg(s):
+    print(f"{s}", file=sys.stderr)
+    
 class RclDynConf:
     def __init__(self, fname):
         self.data = conftree.ConfSimple(fname)
@@ -44,16 +46,21 @@ class RclConfig:
                 self.confdir = os.path.join(dir, "Recoll")
             else:
                 self.confdir = os.path.expanduser("~/.recoll")
-        #print("Confdir: [%s]" % self.confdir, file=sys.stderr)
+        #msg(f"Confdir: [{self.confdir}]")
         
-        # Also find datadir. This is trickier because this is set by
-        # "configure" in the C code. We can only do our best. Have to
-        # choose a preference order. Use RECOLL_DATADIR if the order is wrong
+        # Find datadir to get at the base configuration files. This is tricky because this module
+        # could be loaded either from the recoll filters/ directory, or from the Recoll Python
+        # extension. In the first case, the base configuration should be in __file__/../examples.
+        # In the second case, if we are loaded from a recoll filter, we can use sys.argv[0],
+        # but else, we have to guess.
         self.datadir = None
         if "RECOLL_DATADIR" in os.environ:
             self.datadir = os.environ["RECOLL_DATADIR"]
         else:
             if platsys == "Windows":
+                # Note that this is not guaranteed to work if we come from the Python extension and
+                # not started from a recoll filter. Then we try a guess, which will fail if recoll
+                # is installed in a non-default (or multiple) place.
                 dirs = (os.path.join(os.path.dirname(sys.argv[0]), "..", ".."),
                         "C:/Program Files (X86)/Recoll/",
                         "C:/Program Files/Recoll/",
@@ -63,31 +70,43 @@ class RclConfig:
                         self.datadir = os.path.join(dir, "Share")
                         break
             elif platsys == "Darwin":
-                # Actually, I'm not sure why we don't do this on all platforms
-                self.datadir = os.path.join(os.path.dirname(sys.argv[0]), "..")
-                #print("Mac datadir: [%s]" % self.datadir, file=sys.stderr)
+                # On Darwin things are simpler because we don't supply a Python package. We are
+                # certainly loaded from filters/
+                self.datadir = os.path.join(os.path.dirname(__file__), "..")
             else:
-                dirs = ("/opt/local", "/opt", "/usr", "/usr/local")
-                for dir in dirs:
-                    dd = os.path.join(dir, "share/recoll")
-                    if os.path.exists(dd):
-                        self.datadir = dd
+                # Try to use __file__ and sys.argv[0]. This may fail if we're not a filter
+                for filtersdir in (os.path.dirname(__file__), os.path.dirname(sys.argv[0])):
+                    if filtersdir.find("recoll/filters") != -1:
+                        #msg("Using __file__ to compute datadir")
+                        self.datadir = os.path.dirname(filtersdir)
+                        break
+                if self.datadir is None:
+                    # On ux platforms, the datadir value is set by "configure" in the C code.
+                    # Try to guess
+                    #msg("Trying to guess datadir")
+                    dirs = ("/opt/local", "/opt", "/usr", "/usr/local", "/usr/pkg")
+                    for dir in dirs:
+                        dd = os.path.join(dir, "share/recoll")
+                        if os.path.exists(dd):
+                            self.datadir = dd
         if self.datadir is None:
+            #msg("DATADIR could not be computed. Trying /usr/share/recoll as last resort")
             self.datadir = "/usr/share/recoll"
+        #msg(f"DATADIR: [{self.datadir}]")
+        baseconfdir = os.path.join(self.datadir, "examples")
         f = None
         try:
-            f = open(os.path.join(self.datadir, "examples", "recoll.conf"), "r")
+            f = open(os.path.join(baseconfdir, "recoll.conf"), "r")
         except:
             pass
         if f is None:
             raise(Exception(
-                "Can't open default/system recoll.conf. " +
+                f"Can't open default/system recoll.conf in [{baseconfdir}]. " +
                 "Please set RECOLL_DATADIR in the environment to point " +
                 "to the installed recoll data files."))
         else:
             f.close()
 
-        #print("Datadir: [%s]" % self.datadir, file=sys.stderr)
         self.cdirs = []
         
         # Additional config directory, values override user ones
@@ -98,7 +117,7 @@ class RclConfig:
         if "RECOLL_CONFMID" in os.environ:
             self.cdirs.append(os.environ["RECOLL_CONFMID"])
         self.cdirs.append(os.path.join(self.datadir, "examples"))
-        #print("Config dirs: %s" % self.cdirs, file=sys.stderr)
+        #msg("Config dirs: {self.cdirs}")
         self.keydir = ''
 
     def getConfDir(self):
@@ -154,6 +173,6 @@ class RclExtraDbs:
     
 if __name__ == '__main__':
     config = RclConfig()
-    print("topdirs = %s" % config.getConfParam("topdirs"))
+    print(f"topdirs = {config.getConfParam('topdirs')}")
     extradbs = RclExtraDbs(config)
-    print(extradbs.getActDbs())
+    print(f"{extradbs.getActDbs()}")
