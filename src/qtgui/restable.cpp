@@ -73,7 +73,7 @@ static const int ROWHEIGHTPAD = 2;
 static const int TEXTINCELLVTRANS = -4;
 
 // Adjust font size from prefs, display is slightly different in the table??
-static const int fsadjustdetail = -1;
+static const int fsadjustdetail = 3;
 
 static PlainToRichQtReslist g_hiliter;
 
@@ -164,7 +164,7 @@ void ResTableDetailArea::setFont()
         QTextBrowser::setFont(nfont);
     } else {
         QFont font;
-        font.setPixelSize(fs);
+        font.setPointSize(fs);
         QTextBrowser::setFont(font);
     }
 }
@@ -391,13 +391,15 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
     // The font is actually set in the custom delegate, but we need
     // this to adjust the row height (there is probably a better way
     // to do it in the delegate?)
-    if (role == Qt::FontRole && (prefs.reslistfontsize > 0 || prefs.wholeuiscale != 1.0)) {
+    if (role == Qt::FontRole) {
         if (m_reslfntszforcached != m_table->fontsize() - fsadjustdetail) {
             m_reslfntszforcached = m_table->fontsize() - fsadjustdetail;
             m_table->setDefRowHeight();
             m_cachedfont = m_table->font();
-            m_cachedfont.setPixelSize(m_reslfntszforcached);
+            m_cachedfont.setPointSize(m_reslfntszforcached);
         }
+        LOGDEB1("ResTable: cachedfont pointsize " << m_cachedfont.pointSize() << " pixelsize " <<
+                m_cachedfont.pixelSize() << "\n");
         return m_cachedfont;
     }
 
@@ -538,8 +540,9 @@ public:
         QString seltextcolor =  opt.palette.color(QPalette::HighlightedText).name();
         QString fstyle;
         QFont fnt = qvariant_cast<QFont>(index.data(Qt::FontRole));
-        int fs = fnt.pixelSize();
-        fstyle = QString("font-size: %1px").arg(fs) + ";";
+        int fs = fnt.pointSize();
+        LOGDEB1("ResTable: delegate: Got fs " << fs << "\n";
+        fstyle = QString("font-size: %1pt").arg(fs) + ";";
         QString ntxt("<div style='");
         ntxt += " color:";
         ntxt += (opt.state & QStyle::State_Selected)? seltextcolor:textcolor;
@@ -567,9 +570,13 @@ int ResTable::fontsize()
     int fs;
     if (prefs.reslistfontsize > 0) {
         fs  = prefs.reslistfontsize;
+        LOGDEB1("ResTable::fontsize() got fs from prefs: " << fs << "\n");
     } else {
-        fs = QWidget(this).font().pixelSize();
+        fs = QWidget(this).font().pointSize();
+        LOGDEB1("ResTable::fontsize() got fs from defaults: " << fs << "\n");
     }
+    if (fs < 0)
+        fs = 12;
     fs = std::round(fs * prefs.wholeuiscale);
     return fs;
 }
@@ -588,7 +595,7 @@ void ResTable::setDefRowHeight()
         QFont font = tableView->font();
         int fs = fontsize() - fsadjustdetail;
         if (fs > 0)
-            font.setPixelSize(fs);
+            font.setPointSize(fs);
         QFontMetrics fm(font);
         header->setDefaultSectionSize(fm.height() + ROWHEIGHTPAD);
         header->setSectionResizeMode(QHeaderView::Fixed);

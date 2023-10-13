@@ -85,7 +85,7 @@ private:
     HighlightData m_hdata;
     // Things we cache because we are repeatedly asked for the same.
     mutable QFont m_cachedfont;
-    mutable int   m_reslfntszforcached{-1};
+    mutable int   m_reslfntszforcached{-1234};
     mutable Rcl::Doc m_cachedoc;
     mutable int m_rowforcachedoc{-1};
 };

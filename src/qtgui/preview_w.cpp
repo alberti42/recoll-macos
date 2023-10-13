@@ -131,10 +131,16 @@ void Preview::init()
     } else {
         m_font = QFont();
     }
-    if (prefs.reslistfontsize || prefs.wholeuiscale) {
-        int fs = prefs.reslistfontsize ? prefs.reslistfontsize : m_font.pixelSize();
-        m_font.setPixelSize(std::round(fs * prefs.wholeuiscale));
-    }
+
+    int fs = prefs.reslistfontsize ? prefs.reslistfontsize : m_font.pointSize();
+    if (fs <= 3)
+        fs = 12;
+    float scale = prefs.wholeuiscale > 0 ? prefs.wholeuiscale : 1.0;
+    // For some reason we need to adjust the font size down a bit ??
+    fs = std::round(fs * scale) - 2;
+    LOGDEB1("Preview: using font point size " << fs <<"\n");
+    m_font.setPointSize(fs);
+
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)objectName().toUtf8(), "RCL.SEARCH.GUI.PREVIEW");
