@@ -541,7 +541,7 @@ public:
         QString fstyle;
         QFont fnt = qvariant_cast<QFont>(index.data(Qt::FontRole));
         int fs = fnt.pointSize();
-        LOGDEB1("ResTable: delegate: Got fs " << fs << "\n";
+        LOGDEB1("ResTable: delegate: Got fs " << fs << "\n");
         fstyle = QString("font-size: %1pt").arg(fs) + ";";
         QString ntxt("<div style='");
         ntxt += " color:";
