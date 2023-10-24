@@ -69,11 +69,12 @@ static const QKeySequence closeKeySeq("Ctrl+w");
 
 // Compensate for the default and somewhat bizarre vertical placement
 // of text in cells
-static const int ROWHEIGHTPAD = 2;
+static const int ROWHEIGHTPAD = 3;
 static const int TEXTINCELLVTRANS = -4;
 
-// Adjust font size from prefs, display is slightly different in the table??
-static const int fsadjustdetail = 3;
+// Adjust font size from prefs, display is slightly different in the table because the cells are
+// displayed by qt HTML not webkit/view? We need the same adjustment in the preview.
+static const int fsadjustdown = 3;
 
 static PlainToRichQtReslist g_hiliter;
 
@@ -392,8 +393,8 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
     // this to adjust the row height (there is probably a better way
     // to do it in the delegate?)
     if (role == Qt::FontRole) {
-        if (m_reslfntszforcached != m_table->fontsize() - fsadjustdetail) {
-            m_reslfntszforcached = m_table->fontsize() - fsadjustdetail;
+        if (m_reslfntszforcached != m_table->fontsize()) {
+            m_reslfntszforcached = m_table->fontsize();
             m_table->setDefRowHeight();
             m_cachedfont = m_table->font();
             m_cachedfont.setPointSize(m_reslfntszforcached);
@@ -577,6 +578,7 @@ int ResTable::fontsize()
     }
     if (fs < 0)
         fs = 12;
+    fs -= fsadjustdown;
     fs = std::round(fs * prefs.wholeuiscale);
     return fs;
 }
@@ -593,7 +595,7 @@ void ResTable::setDefRowHeight()
 //        header->setSectionResizeMode(QHeaderView::ResizeToContents);
         // Compute ourselves instead, for one row.
         QFont font = tableView->font();
-        int fs = fontsize() - fsadjustdetail;
+        int fs = fontsize();
         if (fs > 0)
             font.setPointSize(fs);
         QFontMetrics fm(font);
