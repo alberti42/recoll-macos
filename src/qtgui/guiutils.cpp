@@ -205,10 +205,11 @@ void rwSettings(bool writing)
     // On Windows, the default font size is 8 as far as I can see, too small
 #if defined(BUILDING_RECOLLGUI) && !defined(_WIN32)
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, QFont().pointSize());
-    std::cerr << "GUIUTILS: font size points: " << prefs.reslistfontsize << "\n";
 #else
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 12);
 #endif
+    LOGDEB("Settings: font family: [" << qs2utf8s(prefs.reslistfontfamily) << "] " << " size " <<
+           prefs.reslistfontsize << " points.\n");
     
     QString rlfDflt = QString::fromUtf8(prefs.dfltResListFormat);
     if (writing) {
