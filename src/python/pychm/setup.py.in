@@ -10,9 +10,12 @@ Compressed Html Help files (.chm).
 
 # For shadow builds: references to the source tree
 import os
-top = os.path.join('@srcdir@', '..', '..')
-pytop = '@srcdir@'
+srcdir = '@srcdir@'
 
+# See setup.cfg.in
+if not os.path.exists('recollchm.egg-info'):
+   os.mkdir('recollchm.egg-info')
+   
 setup(name="recollchm",
       version="0.8.4.1+git",
       description="Python package to handle CHM files",
@@ -23,14 +26,14 @@ setup(name="recollchm",
       url="https://github.com/dottedmag/pychm",
       license="GPL",
       long_description=long_description,
-      package_dir = {'' : os.path.join(top, 'python', 'pychm')},
+      package_dir = {'' : srcdir},
       py_modules=["recollchm.chm", "recollchm.chmlib"],
       ext_modules=[Extension("recollchm._chmlib",
-                             [os.path.join(pytop, "recollchm/swig_chm.c")],
+                             [os.path.join(srcdir, "recollchm/swig_chm.c")],
                              libraries=["chm"],
                              extra_compile_args=["-DSWIG_COBJECT_TYPES"]),
                    Extension("recollchm.extra",
-                             [os.path.join(pytop, "recollchm/extra.c")],
+                             [os.path.join(srcdir, "recollchm/extra.c")],
                              extra_compile_args=["-D__PYTHON__"],
                              libraries=["chm"])]
       )

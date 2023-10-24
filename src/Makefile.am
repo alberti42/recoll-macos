@@ -673,8 +673,6 @@ recollpython-install:
          )
 recollpython-clean:
 	rm -f python/recoll/*.pyc
-	rm -rf python/pychm/build
-	rm -rf python/pychm/recollchm.egg-info
 	rm -rf python/recoll/Recoll.egg-info
 	rm -rf python/recoll/__pycache__
 	rm -rf python/recoll/build
@@ -699,7 +697,9 @@ rclpychm-install:
         )
 rclpychm-clean:
 	rm -rf python/pychm/build
+	rm -rf python/pychm/build
 	rm -rf python/pychm/dist/*
+	rm -rf python/pychm/recollchm.egg-info
 endif
 
 if MAKEPYTHONASPELL

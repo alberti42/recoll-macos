@@ -538,8 +538,8 @@ AC_SUBST(XSLT_LIBS)
 AC_SUBST([SYSTEMD_SYSTEM_UNIT_DIR])
 AC_SUBST([SYSTEMD_USER_UNIT_DIR])
 
-AC_CONFIG_FILES([Makefile python/recoll/setup.py
- python/pychm/setup.py python/pyaspell/setup.py])
+AC_CONFIG_FILES([Makefile python/recoll/setup.py python/recoll/setup.cfg
+ python/pychm/setup.py python/pychm/setup.cfg python/pyaspell/setup.py])
 
 if test X$buildtestmains = Xyes ; then
    AC_CONFIG_FILES([testmains/Makefile])

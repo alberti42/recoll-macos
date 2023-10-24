@@ -3,13 +3,12 @@ from setuptools import setup, Extension
 
 # For shadow builds: references to the source tree
 import os
-top = os.path.join('@srcdir@', '..', '..')
-pytop = '@srcdir@'
+srcdir = '@srcdir@'
 
 setup (name = 'recoll-aspell-python-py3',
     version = '1.15',
     ext_modules = [Extension('recollaspell',
-                             [os.path.join(pytop, "aspell.c")],
+                             [os.path.join(srcdir, "aspell.c")],
                              libraries = ["aspell"],
                              )],
     description      = "Wrapper around GNU Aspell for Python 3",

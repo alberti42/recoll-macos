@@ -4,6 +4,10 @@ import sys
 
 sysname = os.uname()[0]
 
+# See setup.cfg.in
+if not os.path.exists('Recoll.egg-info'):
+   os.mkdir('Recoll.egg-info')
+
 # For shadow builds: references to the source tree
 top = os.path.join('@srcdir@', '..', '..')
 pytop = '@srcdir@'
