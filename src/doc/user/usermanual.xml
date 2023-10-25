@@ -579,6 +579,11 @@ indexedmimetypes = application/pdf</programlisting>
         </orderedlist>
       </para>
 
+      <para>There are quite a few more parameters which can be set in the configuration file itself
+        for tailoring &RCL; data storage. They are described in a
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.STORE">section of the configuration
+          chapter</link>.</para> 
+        
       <para>The size of the index is determined by the size of the set of documents, but the ratio
         can vary a lot. For a typical mixed set of documents, the index size will often be close to
         the data set size. In specific cases (a set of compressed mbox files for example), the index
