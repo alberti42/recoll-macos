@@ -54,6 +54,7 @@
 #include "execmd.h"
 #include "md5.h"
 #include "idxdiags.h"
+#include "unacpp.h"
 
 using namespace std;
 
@@ -66,6 +67,27 @@ static const string confsysdir{"macos"};
 #else
 static const string confsysdir;
 #endif
+
+// This is only used for testing the lower-casing code on linux
+//#define NOCASE_PTRANS
+#ifdef NOCASE_PTRANS
+#warning NOCASE_PTRANS IS SET
+#endif
+
+#if defined(_WIN32) || defined(NOCASE_PTRANS)
+// The confsimple copies can't print themselves out: no conflines. Need to work around this one day.
+// For now: use a ConfSimple::sortwalk() callback. While we're at it, lowercase the values.
+ConfSimple::WalkerCode varprintlower(void *vstr, const std::string& nm, const std::string& val)
+{
+    std::string *str = (std::string *)vstr;
+    if (nm.empty()) {
+        *str += std::string("[") + unactolower(val) + "]\n";
+    } else {
+        *str += unactolower(nm) + " = " + val + "\n";
+    }
+    return ConfSimple::WALK_CONTINUE;
+}
+#endif // _WIN32
 
 // Things for suffix comparison. We define a string class and string 
 // comparison with suffix-only sensitivity
@@ -250,6 +272,10 @@ public:
     std::unique_ptr<ConfStack<ConfSimple>> mimeview; // 
     std::unique_ptr<ConfStack<ConfSimple>> m_fields;
     std::unique_ptr<ConfSimple>            m_ptrans; // Paths translations
+#if defined(_WIN32) || defined(NOCASE_PTRANS)
+    std::unique_ptr<ConfSimple> m_lptrans; // lowercased paths translations
+    bool m_lptrans_stale{true};
+#endif
     std::unique_ptr<SuffixStore> m_stopsuffixes;
     ///////////////////
 
@@ -403,6 +429,9 @@ void RclConfig::Internal::initFrom(const RclConfig& r)
         m_fields = std::make_unique<ConfStack<ConfSimple>>(*(r.m->m_fields));
     if (r.m->m_ptrans)
         m_ptrans = std::make_unique<ConfSimple>(*(r.m->m_ptrans));
+#if defined(_WIN32) || defined(NOCASE_PTRANS)
+    m_lptrans_stale = true;
+#endif
     if (r.m->m_stopsuffixes)
         m_stopsuffixes = std::make_unique<SuffixStore>(*(r.m->m_stopsuffixes));
     initParamStale(m_conf.get(), mimemap.get());
@@ -713,6 +742,9 @@ std::vector<std::string> RclConfig::getConfNames(const char *pattern) const
 
 ConfSimple *RclConfig::getPTrans()
 {
+#if defined(_WIN32) || defined(NOCASE_PTRANS)
+    m->m_lptrans_stale = true;
+#endif
     return m->m_ptrans.get();
 }
 
@@ -1133,11 +1165,13 @@ string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes, const
     if (filtertypes) {
         if(m->m_rmtstate.needrecompute()) {
             m->m_restrictMTypes.clear();
-            stringToStrings(stringtolower((const string&)m->m_rmtstate.getvalue()), m->m_restrictMTypes);
+            stringToStrings(stringtolower((const string&)m->m_rmtstate.getvalue()),
+                            m->m_restrictMTypes);
         }
         if (m->m_xmtstate.needrecompute()) {
             m->m_excludeMTypes.clear();
-            stringToStrings(stringtolower((const string&)m->m_xmtstate.getvalue()), m->m_excludeMTypes);
+            stringToStrings(stringtolower((const string&)m->m_xmtstate.getvalue()),
+                            m->m_excludeMTypes);
         }
         if (!m->m_restrictMTypes.empty() && !m->m_restrictMTypes.count(stringtolower(mtype))) {
             IdxDiags::theDiags().record(IdxDiags::NotIncludedMime, fn, mtype);
@@ -1811,10 +1845,25 @@ static string path_diffstems(const string& p1, const string& p2,
     return reason;
 }
 
-void RclConfig::urlrewrite(const string& dbdir, string& url) const
+void RclConfig::urlrewrite(const string& _dbdir, string& url) const
 {
-    LOGDEB1("RclConfig::urlrewrite: dbdir [" << dbdir << "] url [" << url <<
-            "]\n");
+    LOGDEB1("RclConfig::urlrewrite: dbdir [" << _dbdir << "] url [" << url << "]\n");
+
+#if defined(_WIN32) || defined(NOCASE_PTRANS)
+    // Under Windows we want case-insensitive comparisons. Create an all-lowercase version
+    // of m_ptrans (if not already done).
+    if (m->m_lptrans_stale) {
+        std::string str;
+        m->m_ptrans->sortwalk(varprintlower, &str);
+        m->m_lptrans = std::make_unique<ConfSimple>(ConfSimple::CFSF_FROMSTRING, str);
+        m->m_lptrans_stale = false;
+    }
+    std::string dbdir{unactolower(_dbdir)};
+    ConfSimple *ptrans = m->m_lptrans.get();
+#else
+    std::string dbdir{_dbdir};
+    ConfSimple *ptrans = m->m_ptrans.get();
+#endif
 
     // If orgidxconfdir is set, we assume that this index is for a
     // movable dataset, with the configuration directory stored inside
@@ -1831,17 +1880,16 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
                 " cur_confdir " << cur_confdir << "\n");
         string reason = path_diffstems(orig_confdir, cur_confdir, confstemorg, confstemrep);
         if (!reason.empty()) {
-            LOGERR("urlrewrite: path_diffstems failed: " << reason <<
-                   " : orig_confdir [" << orig_confdir <<
-                   "] cur_confdir [" << cur_confdir << "\n");
+            LOGERR("urlrewrite: path_diffstems failed: " << reason << " : orig_confdir [" <<
+                   orig_confdir << "] cur_confdir [" << cur_confdir << "\n");
             confstemorg = confstemrep = "";
         }
     }
     
     // Do path translations exist for this index ?
     bool needptrans = true;
-    if (!m->m_ptrans->ok() || !m->m_ptrans->hasSubKey(dbdir)) {
-        LOGDEB2("RclConfig::urlrewrite: no paths translations (m->m_ptrans " << m->m_ptrans << ")\n");
+    if (!ptrans->ok() || !ptrans->hasSubKey(dbdir)) {
+        LOGDEB2("RclConfig::urlrewrite: no paths translations for [" << _dbdir << "]\n");
         needptrans = false;
     }
 
@@ -1864,15 +1912,18 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
     }
 
     if (needptrans) {
+#if defined(_WIN32) || defined(NOCASE_PTRANS)
+        path = unactolower(path);
+#endif // _WIN32
+        
         // For each translation check if the prefix matches the input path,
         // replace and return the result if it does.
-        vector<string> opaths = m->m_ptrans->getNames(dbdir);
+        vector<string> opaths = ptrans->getNames(dbdir);
         for (const auto& opath: opaths) {
-            if (opath.size() <= path.size() &&
-                !path.compare(0, opath.size(), opath)) {
+            if (opath.size() <= path.size() && !path.compare(0, opath.size(), opath)) {
                 string npath;
                 // Key comes from getNames()=> call must succeed
-                if (m->m_ptrans->get(opath, npath, dbdir)) { 
+                if (ptrans->get(opath, npath, dbdir)) { 
                     path = path_canon(path.replace(0, opath.size(), npath));
                     computeurl = true;
                 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2023 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -32,5 +32,8 @@ extern bool unachasuppercase(const std::string& in);
 // approprialey ignores the characters from unac_except_chars which
 // are really separate letters
 extern bool unachasaccents(const std::string& in);
+
+// Simplified interface to unacmaybefold for cases where we just mimic tolower()
+extern std::string unactolower(const std::string& in);
 
 #endif /* _UNACPP_H_INCLUDED_ */
