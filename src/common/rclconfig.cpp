@@ -576,7 +576,10 @@ RclConfig::RclConfig(const string *argcnf)
     }
 
     // Other files
-    m->mimemap = std::make_unique<ConfStack<ConfTree>>("mimemap", m->m_cdirs, true);
+
+    // Note: no need to make mimemap case-insensitive, the caller code lowercases the suffixes, 
+    // which is more efficient.
+    m->mimemap = std::make_unique<ConfStack<ConfTree>>(ConfSimple::CFSF_RO, "mimemap", m->m_cdirs);
     if (!m->mimemap->ok()) {
         m->m_reason = string("No or bad mimemap file in: ") + cnferrloc;
         return;
@@ -599,14 +602,17 @@ RclConfig::RclConfig(const string *argcnf)
         }
     }
 
-    m->mimeconf = std::make_unique<ConfStack<ConfSimple>>("mimeconf", m->m_cdirs, true);
+    m->mimeconf = std::make_unique<ConfStack<ConfSimple>>(
+        ConfSimple::CFSF_RO, "mimeconf", m->m_cdirs);
     if (!m->mimeconf->ok()) {
         m->m_reason = string("No/bad mimeconf in: ") + cnferrloc;
         return;
     }
-    m->mimeview = std::make_unique<ConfStack<ConfSimple>>("mimeview", m->m_cdirs, false);
+    m->mimeview = std::make_unique<ConfStack<ConfSimple>>(
+        ConfSimple::CFSF_NONE, "mimeview", m->m_cdirs);
     if (!m->mimeview->ok())
-        m->mimeview = std::make_unique<ConfStack<ConfSimple>>("mimeview", m->m_cdirs, true);
+        m->mimeview = std::make_unique<ConfStack<ConfSimple>>(
+            ConfSimple::CFSF_RO, "mimeview", m->m_cdirs);
     if (!m->mimeview->ok()) {
         m->m_reason = string("No/bad mimeview in: ") + cnferrloc;
         return;
@@ -659,7 +665,8 @@ bool RclConfig::isDefaultConfig() const
 
 bool RclConfig::updateMainConfig()
 {
-    auto newconf = std::make_unique<ConfStack<ConfTree>>("recoll.conf", m->m_cdirs, true);
+    auto newconf = std::make_unique<ConfStack<ConfTree>>(
+        ConfSimple::CFSF_RO|ConfSimple::CFSF_KEYNOCASE, "recoll.conf", m->m_cdirs);
 
     if (!newconf->ok()) {
         std::cerr << "updateMainConfig: NEW CONFIGURATION READ FAILED. dirs: " <<
@@ -765,7 +772,7 @@ bool RclConfig::hasNameAnywhere(const std::string& nm) const
 
 ConfNull *RclConfig::cloneMainConfig()
 {
-    ConfNull *conf = new ConfStack<ConfTree>("recoll.conf", m->m_cdirs, false);
+    ConfNull *conf = new ConfStack<ConfTree>(ConfSimple::CFSF_KEYNOCASE, "recoll.conf", m->m_cdirs);
     if (!conf->ok()) {
         m->m_reason = string("Can't read config");
         return 0;
