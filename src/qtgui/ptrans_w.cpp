@@ -51,8 +51,8 @@ void EditTrans::init(const string& dbdir)
     lab.append(path2qs(m_dbdir));
     whatIdxLA->setText(lab);
 
-    QStringList labels(tr("Source path"));
-    labels.push_back(tr("Local path"));
+    QStringList labels(tr("Path in index"));
+    labels.push_back(tr("Translated path"));
     transTW->setHorizontalHeaderLabels(labels);
 
     ConfSimple *conftrans = theconfig->getPTrans();
