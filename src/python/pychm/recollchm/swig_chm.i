@@ -74,7 +74,7 @@ int dummy_enumerator (struct chmFile *h,
     /* Time to call the callback */
     arglist = Py_BuildValue("(OOO)", py_h, py_ui, py_c);
     if (arglist) {
-      result = PyEval_CallObject(my_callback, arglist);
+      result = PyObject_CallObject(my_callback, arglist);
       Py_DECREF(arglist);
       Py_DECREF(result);
 
