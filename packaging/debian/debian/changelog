@@ -1,3 +1,31 @@
+recoll (1.36.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * It is now possible to run external/foreign indexers on a single
+    index, with support for targeted purges (purges had been the
+    reason why this was not really feasible previously).  See
+    https://www.lesbonscomptes.com/recoll/usermanual/webhelp/docs/RCL.PROGRAM.PYTHONAPI.UPDATE.html
+    for more detail. A sample indexer for indexing a
+    'Joplin' notes database is distributed with the 'Recoll'
+    installation and described in the above chapter.
+  * The parameter names in the main configuration file are now
+    independent of character case. This was falsely claimed for an
+    earlier release, it should now be true.
+  * GUI: hopefully improve the font sizes consistency in the different
+    windows and panels.
+  * Installing the 'librecoll' library in the standard '$libdir'
+    location is now the default. Use the '--disable-publiclib'
+    'configure' option if you want to install it to the 'recoll'
+    lib sub-directory instead.
+  * New index configuration parameter 'idxnoautopurge' to disable the
+    deleted files purge pass after updating index. This can be useful
+    for configurations on which part of the data set is expected to be
+    unavailable at times. Use the '-P' 'recollindex' command line flag
+    to force a purge (with all the data present). If the parameter is
+    not set, you can also use the '--nopurge' 'recollindex' command
+    line flag to skip the purge.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 30 Oct 2023 15:24:00 +0100
+
 recoll (1.35.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Add support for installing the recoll library in the

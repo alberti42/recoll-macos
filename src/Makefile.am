@@ -725,7 +725,6 @@ rclpyaspell-clean:
 endif
 
 if MAKEQT
-clean-local:: recollqt-clean
 all-local:: recollqt
 recollqt: librecoll.la
 	(cd $(QTGUI); ${QMAKE} PREFIX=${prefix} DEFINE_BTIME=${ext4_birth_time} recoll.pro)
@@ -734,13 +733,12 @@ recollqt: librecoll.la
 clean-local:: recollqt-clean
 recollqt-clean:
 	-$(MAKE) -C $(QTGUI) clean
+	rm -rf qtgui/.qm
 install-exec-local:: recollqt-install
 recollqt-install:
 	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" INSTALL_ROOT=$(DESTDIR) \
                 prefix=$(prefix) exec_prefix=$(exec_prefix) libdir=$(libdir) \
                 install
-recollqt-clean:
-	rm -rf qtgui/.qm
 endif
 
 defconfdir = $(pkgdatadir)/examples

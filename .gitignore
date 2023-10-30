@@ -78,11 +78,14 @@ src/m4/ltsugar.m4
 src/m4/ltversion.m4
 src/m4/lt~obsolete.m4
 src/python/pyaspell/setup.py
+src/python/pyaspell/setup.cfg
 src/python/pychm/recollchm.egg-info
 src/python/pychm/setup.py
+src/python/pychm/setup.cfg
 src/python/recoll/Recoll.egg-info
 src/python/recoll/build
 src/python/recoll/setup.py
+src/python/recoll/setup.cfg
 src/python/samples/recollgui/rclmain.py
 src/qtgui/qrc_recoll.cpp
 src/qtgui/recoll.app

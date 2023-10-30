@@ -1,3 +1,9 @@
+krunner-recoll (1.36.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Follow Recoll version.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 30 Oct 2023 15:24:00 +0100
+
 krunner-recoll (1.35.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * New library installation location.
