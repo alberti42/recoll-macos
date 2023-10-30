@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import print_function
 
 import locale
 import re
@@ -13,7 +14,7 @@ except:
     import conftree
 
 def msg(s):
-    print(f"{s}", file=sys.stderr)
+    print("%s" % s, file=sys.stderr)
     
 class RclDynConf:
     def __init__(self, fname):
@@ -101,7 +102,7 @@ class RclConfig:
             pass
         if f is None:
             raise(Exception(
-                f"Can't open default/system recoll.conf in [{baseconfdir}]. " +
+                "Can't open default/system recoll.conf in [%s]. " % baseconfdir +
                 "Please set RECOLL_DATADIR in the environment to point " +
                 "to the installed recoll data files."))
         else:
@@ -173,6 +174,6 @@ class RclExtraDbs:
     
 if __name__ == '__main__':
     config = RclConfig()
-    print(f"topdirs = {config.getConfParam('topdirs')}")
+    print("topdirs = %s" % config.getConfParam('topdirs'))
     extradbs = RclExtraDbs(config)
-    print(f"{extradbs.getActDbs()}")
+    print("%s" % extradbs.getActDbs())
