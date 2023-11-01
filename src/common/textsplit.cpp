@@ -1017,8 +1017,12 @@ bool TextSplit::cjk_to_words(Utf8Iter& it, unsigned int *cp)
             int loopbeg = (m_flags & TXTS_NOSPANS) ? nchars-1 : 0;
             int loopend = (m_flags & TXTS_ONLYSPANS) ? 1 : nchars;
             for (int i = loopbeg; i < loopend; i++) {
-                if (!takeword(mybuf.substr(myboffs[i], mybuf.size()-myboffs[i]),
-                              m_wordpos - (nchars-i-1), boffs[i], btend)) {
+                // Because of the whitespace handling above there may be whitespace in the
+                // buffer. Strip it from the output words. This means that the offs/size will be
+                // slightly off (->highlights), to be fixed one day.
+                auto word = mybuf.substr(myboffs[i], mybuf.size() - myboffs[i]);
+                if (!takeword(trimstring(word, "\r\n\f \t"), 
+                              m_wordpos - (nchars - i - 1), boffs[i], btend)) {
                     return false;
                 }
             }
@@ -1038,9 +1042,9 @@ bool TextSplit::cjk_to_words(Utf8Iter& it, unsigned int *cp)
     // first
     if ((m_flags & TXTS_ONLYSPANS) && nchars > 0 && nchars != o_CJKNgramLen)  {
         int btend = int(it.getBpos()); // Current char is out
-        if (!takeword(mybuf.substr(myboffs[0], mybuf.size()-myboffs[0]),
-                      m_wordpos - nchars,
-                      boffs[0], btend)) {
+        // See comment before takeword above.
+        auto word = mybuf.substr(myboffs[0], mybuf.size() - myboffs[0]);
+        if (!takeword(trimstring(word, "\r\n\f \t"), m_wordpos - nchars, boffs[0], btend)) {
             return false;
         }
     }
