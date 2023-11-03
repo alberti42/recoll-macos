@@ -342,7 +342,7 @@ else
   # force automake to build a static lib with the PIC objects. So the
   # following target, which is only used from the KIO build, deletes any .a
   # and .so and rebuilds the .a with the pic objs (the kio build calls
-  # configured --disable-static).
+  # configure --disable-static).
   # Of course this is very uncomfortably close to automake/libtool internals
   # and may not work on all systems.
 PicStatic: $(librecoll_la_OBJECTS)
