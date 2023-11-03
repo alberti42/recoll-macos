@@ -10,13 +10,13 @@
 # 23.04    lunar  2024-01
 # 23.10    mantic 2024-07
 SERIES="focal jammy lunar mantic"
-SERIES=mantic
+SERIES="focal jammy"
 
 PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.36.0
 GSSPVERS=1.1.1
-PPAVERS=2
+PPAVERS=3
 
 #
 #Y=/y
