@@ -414,7 +414,7 @@ VPATH = @srcdir@
   # Note: libdir may be substituted with sthing like $(exec_prefix)/lib
   # at this point and will go as such in the Makefile. Expansion will be
   # completed at make time.
-  LIBS += -Wl,-rpath=@libdir@/recoll
+@PUBLIC_LIB_FALSE@LIBS += -Wl,-rpath=@libdir@/recoll
 
   LIBS +=  @XAPIAN_LIBS@ \
        @LIBICONV@ $(BDYNAMIC) @LIBQZEITGEIST@ @XSLT_LIBS@ -lz
