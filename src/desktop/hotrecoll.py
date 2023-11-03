@@ -39,10 +39,9 @@ def main():
     recollMain = ""
     recollwins = [];
     for window in screen.get_windows():
-        #deb("Got window class name: [%s] name [%s]" %
-        #    (window.get_class_group().get_name(), window.get_name()))
+        #deb(f"Win class name: [{window.get_class_group().get_name()}] name [{window.get_name()}]")
         if window.get_class_group().get_name().lower() == "recoll":
-            if window.get_name().lower().startswith("recoll - "):
+            if window.get_name().lower().startswith("recoll"):
                 recollMain = window
             recollwins.append(window)
 
