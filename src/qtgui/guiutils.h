@@ -41,6 +41,8 @@ public:
     int maxhltextkbs;
     QString reslistfontfamily;
     int reslistfontsize;
+    // Not saved
+    int zoomincr{0};
     QString qtermstyle; // CSS style for query terms in reslist and other places
     // Result list format string
     QString reslistformat;

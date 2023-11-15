@@ -324,14 +324,12 @@ void RclMain::onSSearchTypeChanged(int typ)
 
 void RclMain::zoomIn()
 {
-    prefs.reslistfontsize++;
+    prefs.zoomincr++;
     emit uiPrefsChanged();
 }
 void RclMain::zoomOut()
 {
-    if (prefs.reslistfontsize > 1) {
-        prefs.reslistfontsize--;
-    }
+    prefs.zoomincr--;
     emit uiPrefsChanged();
 }
 

@@ -66,10 +66,6 @@
 
 using std::string;
 
-// Adjust font size from prefs, display is slightly different because the text is
-// displayed by Qt HTML not webkit/view? We need the same adjustment in the result table.
-static const int fsadjustdown = 3;
-
 // Make an attempt at trimming wildcard exprs at both ends of string
 static void trimwildcards(string& elt)
 {
@@ -130,19 +126,22 @@ void Preview::init()
         resize(QSize(640, 480).expandedTo(minimumSizeHint()));
     }
 
+    int fs;
     if (prefs.reslistfontfamily != "") {
         m_font = QFont(prefs.reslistfontfamily);
+        fs = prefs.reslistfontsize;
+        float scale = prefs.wholeuiscale > 0 ? prefs.wholeuiscale : 1.0;
+        fs = std::round(fs * scale);
     } else {
-        m_font = QFont();
+        // Note: the default font is already scaled by the style sheet.
+        ensurePolished();
+        m_font = this->font();
+        fs = m_font.pointSize();
     }
 
-    int fs = prefs.reslistfontsize ? prefs.reslistfontsize : m_font.pointSize();
     if (fs <= 3)
         fs = 12;
-    fs -= fsadjustdown;
-    float scale = prefs.wholeuiscale > 0 ? prefs.wholeuiscale : 1.0;
-    fs = std::round(fs * scale);
-    LOGDEB("Preview: using font point size " << fs <<"\n");
+    LOGDEB0("Preview: using font point size " << fs <<"\n");
     m_font.setPointSize(fs);
 
     (void)new HelpClient(this);

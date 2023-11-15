@@ -469,14 +469,44 @@ std::string PrefsPack::htmlHeaderContents()
     std::ostringstream oss;
     oss << comcss << "\n";
     oss << "<style type=\"text/css\">\nhtml,body,form, fieldset,table,tr,td,img,select,input {\n";
-    if (!prefs.reslistfontfamily.isEmpty()) {
+    bool noscale{false};
+    int fontsize;
+    if (prefs.reslistfontfamily != "") {
+        fontsize = prefs.reslistfontsize;
         oss << "font-family: \"" << qs2utf8s(prefs.reslistfontfamily) << "\";\n";
+    } else {
+#ifdef BUILDING_RECOLLGUI
+        // If the reslist font is not set, use the default font family and size from the app. By
+        // default, the family comes from the platform and the size comes from the scaled
+        // recoll-common.qss style sheet (except if the latter was edited to suppress the size
+        // setting in which case the size also comes from the platform).
+        QWidget w;
+        w.ensurePolished();
+        QFont font = w.font();
+        LOGERR("PrefsPack::htmlHeaderContents: using family " << qs2utf8s(font.family()) <<
+               " size " << font.pointSize() << " from QWidget\n");
+        oss << "font-family: \"" << qs2utf8s(font.family()) << "\";\n";
+        fontsize = font.pointSize();
+        // The QWidget font is already scaled by the applied scaled qss style sheet
+        noscale = true;
+#endif
     }
-    oss << "font-size: " <<  std::round(prefs.reslistfontsize * 1.1) << "px;\n";
+
+    if (fontsize + prefs.zoomincr > 3)
+        fontsize += prefs.zoomincr;
+    else
+        fontsize = 3;
+    oss << "font-size: " << fontsize << "pt;\n";
     oss << "}\n</style>\n";
     oss << qs2utf8s(prefs.darkreslistheadertext) << qs2utf8s(prefs.reslistheadertext);
 
-    auto css = PrefsPack::scaleFonts(oss.str(), prefs.wholeuiscale);
+    std::string css = oss.str();
+    if  (!noscale) {
+        // Note that if there was a font size setting in the reslistheadertext, it won't be scaled
+        // in this case. Workaround: set a reslist font.
+        css = PrefsPack::scaleFonts(css, prefs.wholeuiscale);
+    }
+    LOGDEB1("PrefsPack::htmlHeaderContents: [" << css << "]\n");
     return css;
 }
 

@@ -67,14 +67,9 @@ using std::list;
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
 
-// Compensate for the default and somewhat bizarre vertical placement
-// of text in cells
-static const int ROWHEIGHTPAD = 3;
-static const int TEXTINCELLVTRANS = -4;
-
-// Adjust font size from prefs, display is slightly different in the table because the cells are
-// displayed by qt HTML not webkit/view? We need the same adjustment in the preview.
-static const int fsadjustdown = 3;
+// Compensate for the default and somewhat bizarre vertical placement of text in cells. 
+static const int ROWHEIGHTPAD = 2;
+static const int TEXTINCELLVTRANS = -1;
 
 static PlainToRichQtReslist g_hiliter;
 
@@ -569,17 +564,21 @@ public:
 int ResTable::fontsize()
 {
     int fs;
-    if (prefs.reslistfontsize > 0) {
+    if (prefs.reslistfontfamily != "") {
         fs  = prefs.reslistfontsize;
-        LOGDEB1("ResTable::fontsize() got fs from prefs: " << fs << "\n");
+        LOGDEB1("ResTable::fontsize() got font size from reslist prefs: " << fs << "\n");
+        fs = std::round(fs * prefs.wholeuiscale);
     } else {
-        fs = QWidget(this).font().pointSize();
-        LOGDEB1("ResTable::fontsize() got fs from defaults: " << fs << "\n");
+        /* The font size we get here is already scaled */
+        this->ensurePolished();
+        fs = this->font().pointSize();
+        LOGDEB1("ResTable::fontsize() got fs from widget: " << fs << "\n");
     }
-    if (fs < 0)
-        fs = 12;
-    fs -= fsadjustdown;
-    fs = std::round(fs * prefs.wholeuiscale);
+    if (fs + prefs.zoomincr > 3)
+        fs += prefs.zoomincr;
+    else
+        fs = 3;
+    LOGDEB1("ResTable::fontsize() returning: " << fs << "\n");
     return fs;
 }
 
