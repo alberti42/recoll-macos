@@ -92,7 +92,11 @@ public:
     virtual string absSep() override {
         return (const char *)(prefs.abssep.toUtf8());}
     virtual string headerContent() override {
-        return prefs.htmlHeaderContents();
+        // Using the CSS causes glitches in the QTextBrowser which currently handles the
+        // display. Let it set the font by itself in setFont(). To be changed if we ever switch to
+        // WebKit/Engine
+        //return prefs.htmlHeaderContents();
+        return "";
     }
 private:
     ResTable *m_parent;

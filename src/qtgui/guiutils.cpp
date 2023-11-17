@@ -483,7 +483,7 @@ std::string PrefsPack::htmlHeaderContents()
         QWidget w;
         w.ensurePolished();
         QFont font = w.font();
-        LOGERR("PrefsPack::htmlHeaderContents: using family " << qs2utf8s(font.family()) <<
+        LOGDEB0("PrefsPack::htmlHeaderContents: using family " << qs2utf8s(font.family()) <<
                " size " << font.pointSize() << " from QWidget\n");
         oss << "font-family: \"" << qs2utf8s(font.family()) << "\";\n";
         fontsize = font.pointSize();
