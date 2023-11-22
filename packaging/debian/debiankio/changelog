@@ -1,3 +1,9 @@
+kio-recoll (1.36.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Follow recoll version.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 22 Nov 2023 15:41:00 +0100
+
 kio-recoll (1.36.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Follow recoll version.

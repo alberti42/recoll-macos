@@ -1,3 +1,10 @@
+recoll (1.36.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix font size glitches inside the result table detail area.
+  * Fix miscellaneous issues around font sizes (e.g. px/pt mixups).
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 22 Nov 2023 15:41:00 +0100
+
 recoll (1.36.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Restore python2 compatibility in script part of the recoll python package (for backports).
