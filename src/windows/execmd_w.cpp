@@ -214,7 +214,6 @@ static void make_path_vec(const char *ep, vector<string>& vec)
         trimstring(eps, ";");
         stringToTokens(eps, vec, ";");
     }
-    vec.insert(vec.begin(), ".\\");
 }
 
 static std::string pipeUniqueName(std::string nClass, std::string prefix)

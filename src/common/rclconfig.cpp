@@ -1797,11 +1797,12 @@ string RclConfig::getPidfile() const
             MD5HexPrint(digest, hex);
             fn =  path_cat(base, "recoll-" + hex + "-index.pid");
             goto out;
-        }
+        } else
 #endif // ! _WIN32
-    
-        fn = path_cat(getCacheDir(), "index.pid");
-    out:
+        {
+            fn = path_cat(getCacheDir(), "index.pid");
+        }
+
         LOGINF("RclConfig: pid/lock file: " << fn << "\n");
     }
     return fn;
@@ -2068,10 +2069,11 @@ string RclConfig::findFilter(const string &icmd) const
     temp = path_cat(m->m_datadir, "filters");
     PATH = temp + path_PATHsep() + PATH;
 #ifdef _WIN32
-    // Windows only: use the bundled Python
+    // Windows only: use the bundled Python and our executable directory (to find rclstartw).
     temp = path_cat(m->m_datadir, "filters");
     temp = path_cat(temp, "python");
     PATH = temp + path_PATHsep() + PATH;
+    PATH = path_thisexecpath() + path_PATHsep() + PATH;
 #endif
     // Prepend possible configuration parameter?
     if (getConfParam(string("filtersdir"), temp)) {
