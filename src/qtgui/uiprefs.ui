@@ -184,6 +184,46 @@
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QLabel" name="sidefilterdateformatLBL">
+           <property name="toolTip">
+            <string>See Qt QDateTimeEdit documentation. E.g. yyyy-MM-dd. Leave empty to use the default Qt/System format.</string>
+           </property>
+           <property name="text">
+            <string>Side filter dates format (change needs restart)</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="sidefilterdateformatLE">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="sidefilterdateformatHSPC">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="Line" name="line2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -359,7 +399,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout1">
+        <layout class="QHBoxLayout" name="horizontalLayout11">
          <item>
           <widget class="QCheckBox" name="ssNoCompleteCB">
            <property name="text">
@@ -383,7 +423,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout1">
+        <layout class="QHBoxLayout" name="horizontalLayout12">
          <item>
           <layout class="QHBoxLayout" stretch="0,0,1">
            <item>
@@ -1532,7 +1572,7 @@ May be slow for big documents.</string>
             </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer_9">
+            <spacer name="horizontalSpacer_91">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -1818,7 +1858,7 @@ May be slow for big documents.</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

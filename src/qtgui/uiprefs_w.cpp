@@ -180,6 +180,7 @@ void UIPrefsDialog::setFromPrefs()
     autoSpellMaxDistSB->setEnabled(prefs.autoSpell);
     showcompleterhitcountsCB->setChecked(prefs.showcompleterhitcounts);
     ssearchCompleterHistCntSB->setValue(prefs.ssearchCompleterHistCnt);
+    sidefilterdateformatLE->setText(prefs.sidefilterdateformat);
     /*INSERTHERE_LOAD*/
 
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
@@ -461,6 +462,7 @@ void UIPrefsDialog::accept()
     prefs.autoSpellMaxDist = autoSpellMaxDistSB->value();
     prefs.showcompleterhitcounts = showcompleterhitcountsCB->isChecked();
     prefs.ssearchCompleterHistCnt = ssearchCompleterHistCntSB->value();
+    prefs.sidefilterdateformat = sidefilterdateformatLE->text();
     /*INSERTHERE_ACCEPT*/
 
     // -1 is the qxtconf... predefined value to show the dialog

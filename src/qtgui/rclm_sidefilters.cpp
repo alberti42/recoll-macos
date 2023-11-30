@@ -56,7 +56,12 @@ void RclMain::populateSideFilters(SideFilterUpdateReason reason)
         minDateFilterDTEDT->setCalendarPopup(true);
         maxDateFilterDTEDT->setCalendarPopup(true);
         minDateFilterDTEDT->setDate(QDate::currentDate());
+        auto dateformat = prefs.sidefilterdateformat;
+        if (!dateformat.isEmpty()) 
+            minDateFilterDTEDT->setDisplayFormat(dateformat);
         maxDateFilterDTEDT->setDate(QDate::currentDate());
+        if (!dateformat.isEmpty()) 
+            maxDateFilterDTEDT->setDisplayFormat(dateformat);
         connect(minDateFilterDTEDT, SIGNAL(dateChanged(const QDate&)),
                 this, SLOT(sideFilterChanged()));
         connect(maxDateFilterDTEDT, SIGNAL(dateChanged(const QDate&)),

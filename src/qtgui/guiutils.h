@@ -154,6 +154,7 @@ public:
     int autoSpellMaxDist{1};
     bool showcompleterhitcounts{false};
     int ssearchCompleterHistCnt{0};
+    QString sidefilterdateformat;
     /*INSERTHERE*/
 
     // See widgets/qxtconfirmationmessage.
