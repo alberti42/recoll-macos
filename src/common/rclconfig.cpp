@@ -1796,7 +1796,6 @@ string RclConfig::getPidfile() const
             MD5String(cfdir, digest);
             MD5HexPrint(digest, hex);
             fn =  path_cat(base, "recoll-" + hex + "-index.pid");
-            goto out;
         } else
 #endif // ! _WIN32
         {
