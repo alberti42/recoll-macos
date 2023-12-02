@@ -205,9 +205,6 @@ bool PlainToRich::plaintorich(
     out.push_back("");
     auto olit = out.begin();
 
-    // Rich text output
-    *olit = header();
-    
     // No term matches. Happens, for example on a snippet selected for
     // a term match when we are actually looking for a group match
     // (the snippet generator does this...).
@@ -244,6 +241,9 @@ bool PlainToRich::plaintorich(
     // My tag state
     int inrcltag = 0;
 
+    // If the input is plain text we trust our user to have set up a proper beginning for the
+    // document. Else, we expect a header appropriate for inserting at the end of the <head>
+    // section, and will insert it there.
     string::size_type headend = 0;
     if (m_inputhtml) {
         headend = in.find("</head>");
@@ -251,12 +251,20 @@ bool PlainToRich::plaintorich(
             headend = in.find("</HEAD>");
         if (headend != string::npos)
             headend += 7;
+    } else {
+        // Rich text output
+        *olit = header();
     }
 
     for (string::size_type pos = 0; pos != string::npos; pos = chariter++) {
         // Check from time to time if we need to stop
         if ((pos & 0xfff) == 0) {
             CancelCheck::instance().checkCancel();
+        }
+
+        if (m_inputhtml && headend != string::npos && chariter.getBpos() == headend - 7) {
+            // Insert the header text at the end of the <head> section.
+            *olit += header();
         }
 
         // If we still have terms positions, check (byte) position. If
