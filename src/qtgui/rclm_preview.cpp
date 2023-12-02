@@ -23,6 +23,7 @@
 #include "internfile.h"
 #include "rclzg.h"
 #include "rclmain_w.h"
+#include "preview_w.h"
 
 using std::string;
 using std::vector;

@@ -76,6 +76,7 @@
 #include "scbase.h"
 #include "idxmodel.h"
 #include "cstr.h"
+#include "preview_w.h"
 
 using std::string;
 using std::vector;

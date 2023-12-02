@@ -37,6 +37,7 @@
 #include "rclzg.h"
 #include "pathut.h"
 #include "unacpp.h"
+#include "uiprefs_w.h"
 
 using namespace std;
 

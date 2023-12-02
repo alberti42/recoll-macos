@@ -18,19 +18,18 @@
 #define RCLMAIN_W_H
 #include "autoconfig.h"
 
+#include <memory>
+
 #include <QVariant>
 #include <QMainWindow>
 #include <QFileSystemWatcher>
 
 #include "sortseq.h"
-#include "preview_w.h"
 #include "recoll.h"
 #include "advsearch_w.h"
-#include "uiprefs_w.h"
 #include "rcldb.h"
 #include "searchdata.h"
 #include "spell_w.h"
-#include <memory>
 #include "pathut.h"
 #include "guiutils.h"
 #include "rclutil.h"
@@ -52,6 +51,7 @@ class QShortcut;
 class QActionGroup;
 class ActSearchW;
 class IdxTreeModel;
+class UIPrefsDialog;
 
 #include "ui_rclmain.h"
 

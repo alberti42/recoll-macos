@@ -38,6 +38,7 @@
 #include "restable.h"
 #include "actsearch_w.h"
 #include "docseqdocs.h"
+#include "uiprefs_w.h"
 
 using namespace std;
 
