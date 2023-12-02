@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes 
+/* Copyright (C) 2005-2023 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -177,29 +177,6 @@ private:
     bool scrollIsAtTop();
     bool scrollIsAtBottom();
 };
-
-#ifdef USING_WEBENGINE
-
-// Subclass the page to hijack the link clicks
-class RclWebPage : public QWebEnginePage {
-    Q_OBJECT
-
-public:
-    RclWebPage(ResList *parent) 
-        : QWebEnginePage((QWidget *)parent), m_reslist(parent) {}
-
-protected:
-    virtual bool acceptNavigationRequest(
-        const QUrl& url, NavigationType tp, bool isMainFrame);
-private:
-    ResList *m_reslist;
-};
-
-#else // Using Qt Webkit
-
-#define RclWebPage QWebPage
-
-#endif
 
 class PlainToRichQtReslist : public PlainToRich {
 public:

@@ -30,6 +30,7 @@ HEADERS += \
         ptrans_w.h \
         rclhelp.h \
         rclmain_w.h \
+        rclwebpage.h \
         reslist.h \
         restable.h \
         scbase.h \

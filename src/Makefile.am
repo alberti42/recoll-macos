@@ -540,6 +540,7 @@ qtgui/rclm_wins.cpp \
 qtgui/rclmain.ui \
 qtgui/rclmain_w.cpp \
 qtgui/rclmain_w.h \
+qtgui/rclwebpage.h \
 qtgui/rclzg.cpp \
 qtgui/rclzg.h \
 qtgui/recoll.h \

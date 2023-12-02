@@ -59,6 +59,7 @@
 #include "appformime.h"
 #include "respopup.h"
 #include "reslistpager.h"
+#include "rclwebpage.h"
 
 using std::string;
 using std::vector;
@@ -112,18 +113,6 @@ function saveLoc(ev)
 }
 )raw");
 
-bool RclWebPage::acceptNavigationRequest(const QUrl& url, NavigationType tp, bool isMainFrame)
-{ 
-    Q_UNUSED(isMainFrame);
-    LOGDEB0("QWebEnginePage::acceptNavigationRequest. Type: " <<
-            tp << " isMainFrame " << isMainFrame << std::endl);
-    if (tp == QWebEnginePage::NavigationTypeLinkClicked) {
-        m_reslist->onLinkClicked(url);
-        return false;
-    } else {
-        return true;
-    }
-}
 #endif // WEBENGINE
 
 
@@ -316,7 +305,6 @@ ResList::ResList(QWidget* parent, const char* name)
         setObjectName(name);
     
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
-    setPage(new RclWebPage(this));
     settings()->setAttribute(QWEBSETTINGS::JavascriptEnabled, true);
 #ifdef USING_WEBKIT
     LOGDEB("Reslist: using Webkit\n");
@@ -325,6 +313,8 @@ ResList::ResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(linkClicked(const QUrl &)), this, SLOT(onLinkClicked(const QUrl &)));
 #else
     LOGDEB("Reslist: using Webengine\n");
+    setPage(new RclWebPage(this));
+    connect(page(), SIGNAL(linkClicked(const QUrl &)), this, SLOT(onLinkClicked(const QUrl &)));
     connect(page(), SIGNAL(loadFinished(bool)), this, SLOT(runStoredJS(bool)));
     // These appear to get randomly disconnected or never connected.
     connect(page(), SIGNAL(scrollPositionChanged(const QPointF &)),
@@ -413,7 +403,7 @@ void ResList::runJS(const QString& js)
 #if defined(USING_WEBKIT)
     page()->mainFrame()->evaluateJavaScript(js);
 #elif defined(USING_WEBENGINE)
-        page()->runJavaScript(js);
+    page()->runJavaScript(js);
 //    page()->runJavaScript(js, [](const QVariant &v) {qDebug() << v.toString();});
 #endif
 }
