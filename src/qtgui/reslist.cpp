@@ -332,7 +332,6 @@ ResList::ResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(onLinkClicked(const QUrl &)));
 #endif
 
-    setFont();
     languageChange();
 
     (void)new HelpClient(this);
@@ -459,7 +458,6 @@ static void maybeDump(const QString& text)
 
 void ResList::onUiPrefsChanged()
 {
-    setFont();
     displayPage();
 }
 
@@ -878,7 +876,8 @@ void ResList::displayPage()
     m_progress = &progress;
     m_text = "";
 #else
-    clear();    
+    clear();
+    setFont();
 #endif
     
     m_pager->displayPage(theconfig);

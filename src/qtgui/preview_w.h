@@ -18,12 +18,6 @@
 #define _PREVIEW_W_H_INCLUDED_
 #include "autoconfig.h"
 
-// Always use a qtextbrowser for now, there is no compelling reason to
-// switch to webkit here
-#if 1 || defined(RESLIST_TEXTBROWSER)
-#define PREVIEW_TEXTBROWSER
-#endif
-
 #include <stdio.h>
 
 #include <memory>
@@ -33,13 +27,17 @@
 #include <QWidget>
 #include <QFont>
 
-#ifdef PREVIEW_TEXTBROWSER
-#include <QTextBrowser>
-#define PREVIEW_PARENTCLASS QTextBrowser
+#if defined(USING_WEBENGINE)
+#  include <QWebEngineView>
+#  define PREVIEW_PARENTCLASS QWebEngineView
+#elif defined(USING_WEBKIT)
+#  include <QWebView>
+#  define PREVIEW_PARENTCLASS QWebView
 #else
-#include <QtWebKit/QWebView>
-#define PREVIEW_PARENTCLASS QWebView
+#  include <QTextBrowser>
+#  define PREVIEW_PARENTCLASS QTextBrowser
 #endif
+
 #include <qimage.h>
 
 #include "rcldb.h"
@@ -92,26 +90,26 @@ private:
     std::string m_ipath; // Internal doc path inside file
     int    m_docnum;  // Index of doc in db search results.
 
-    // doc out of internfile (previous fields come from the index) with
-    // main text erased (for space).
+    // doc out of internfile (previous fields come from the index) with main text erased (for
+    // space).
     Rcl::Doc m_fdoc; 
 
     // The input doc out of the index/query list
     Rcl::Doc m_dbdoc; 
 
-    // Saved rich (or plain actually) text: the textedit seems to
-    // sometimes (but not always) return its text stripped of tags, so
-    // this is needed (for printing for example)
+    // Saved rich (or plain actually) text: the textedit seems to sometimes (but not always) return
+    // its text stripped of tags, so this is needed (for printing for example)
     QString  m_richtxt;
     Qt::TextFormat m_format;
 
-    // Temporary file name (possibly, if displaying image). The
-    // TempFile itself is kept inside main.cpp (because that's where
-    // signal cleanup happens), but we use its name to ask for release
-    // when the tab is closed.
-    std::string m_tmpfilename;
+    // If displaying image, file name. This can be a temporary file. The TempFile itself is kept
+    // inside main.cpp (because that's where signal cleanup happens), but we use its name to ask for
+    // release when the tab is closed.
+    std::string m_imgfilename;
     QImage m_image;
-    DspType m_curdsp;
+
+    // What are we currently displaying: text/fields/image
+    DspType m_curdsp{PTE_DSPTXT};
 };
 
 class QShortcut;
@@ -149,8 +147,7 @@ public:
 public slots:
     // Search stuff
     virtual void searchTextChanged(const QString& text);
-    virtual void doSearch(const QString& str, bool next, bool reverse,
-                          bool wo = false);
+    virtual void doSearch(const QString& str, bool next, bool reverse, bool wo = false);
     virtual void nextPressed();
     virtual void prevPressed();
 
