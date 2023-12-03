@@ -63,6 +63,13 @@
 #include "rclmain_w.h"
 #include "scbase.h"
 #include "appformime.h"
+#include "readfile.h"
+#include "rclwebpage.h"
+#include "rcldb.h"
+
+#if defined(PREVIEW_WEBKIT) || defined(PREVIEW_WEBENGINE)
+const static QUrl baseUrl("file:///");
+#endif
 
 using std::string;
 
@@ -126,24 +133,6 @@ void Preview::init()
         resize(QSize(640, 480).expandedTo(minimumSizeHint()));
     }
 
-    int fs;
-    if (prefs.reslistfontfamily != "") {
-        m_font = QFont(prefs.reslistfontfamily);
-        fs = prefs.reslistfontsize;
-        float scale = prefs.wholeuiscale > 0 ? prefs.wholeuiscale : 1.0;
-        fs = std::round(fs * scale);
-    } else {
-        // Note: the default font is already scaled by the style sheet.
-        ensurePolished();
-        m_font = this->font();
-        fs = m_font.pointSize();
-    }
-
-    if (fs <= 3)
-        fs = 12;
-    LOGDEB0("Preview: using font point size " << fs <<"\n");
-    m_font.setPointSize(fs);
-
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)objectName().toUtf8(), "RCL.SEARCH.GUI.PREVIEW");
 
@@ -164,7 +153,34 @@ void Preview::init()
 
     connect(nextInTabPB, SIGNAL (clicked()), this, SLOT (emitShowNext()));
     connect(prevInTabPB, SIGNAL (clicked()), this, SLOT (emitShowPrev()));
+    onUiPrefsChanged();
     currentChanged(pvTab->currentIndex());
+}
+
+void Preview::onUiPrefsChanged()
+{
+    LOGINF("Preview::onUiPrefsChanged\n");
+    int fs;
+    if (prefs.reslistfontfamily != "") {
+        m_font = QFont(prefs.reslistfontfamily);
+        fs = prefs.reslistfontsize;
+        float scale = prefs.wholeuiscale > 0 ? prefs.wholeuiscale : 1.0;
+        fs = std::round(fs * scale);
+    } else {
+        // Note: the default font is already scaled by the style sheet.
+        ensurePolished();
+        m_font = this->font();
+        fs = m_font.pointSize();
+    }
+
+    if (fs <= 3)
+        fs = 12;
+    LOGDEB0("Preview: using font point size " << fs <<"\n");
+    m_font.setPointSize(fs);
+
+    for (int i = 0;  i < pvTab->count(); i++) {
+        editor(i)->redisplay();
+    }
 }
 
 void Preview::onNewShortcuts()
@@ -252,7 +268,7 @@ void Preview::closeEvent(QCloseEvent *e)
     for (int i = 0; i < pvTab->count(); i++) {
         PreviewTextEdit *edit = editor(i);
         if (edit) {
-            forgetTempFile(edit->m_tmpfilename);
+            forgetTempFile(edit->m_imgfilename);
         }
     }
     emit previewExposed(this, m_searchId, -1);
@@ -264,41 +280,47 @@ extern const char *eventTypeToStr(int tp);
 
 bool Preview::eventFilter(QObject *target, QEvent *event)
 {
-    if (event->type() != QEvent::KeyPress) {
+    if (event->type() != QEvent::KeyPress && event->type() != QEvent::ShortcutOverride) {
 #if 0
-        LOGDEB("Preview::eventFilter(): " << eventTypeToStr(event->type()) <<
-               "\n");
+        LOGDEB0("Preview::eventFilter(): " << eventTypeToStr(event->type()) << "\n");
         if (event->type() == QEvent::MouseButtonRelease) {
             QMouseEvent *mev = (QMouseEvent *)event;
-            LOGDEB("Mouse: GlobalY " << mev->globalY() << " y " << mev->y() <<
-                   "\n");
+            LOGDEB("Mouse: GlobalY " << mev->globalY() << " y " << mev->y() << "\n");
         }
 #endif
         return false;
     }
 
     PreviewTextEdit *edit = currentEditor();
-    QKeyEvent *keyEvent = (QKeyEvent *)event;
+    QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
 
     if (m_dynSearchActive) {
         if (keyEvent->key() == Qt::Key_F3) {
             LOGDEB2("Preview::eventFilter: got F3\n");
-            doSearch(searchTextCMB->currentText(), true, 
+            doSearch(searchTextCMB->currentText(), true,
                      (keyEvent->modifiers() & Qt::ShiftModifier) != 0);
             return true;
         }
         if (target != searchTextCMB)
             return QApplication::sendEvent(searchTextCMB, event);
     } else {
+        LOGDEB1("Preview::eventFilter: target: " << target << " edit " << edit << "\n");
         if (edit && 
-            (target == edit || target == edit->viewport())) {
+            (target == edit
+#ifdef PREVIEW_TEXTBROWSER
+             || target == edit->viewport()
+#endif
+                )) {
+            LOGDEB1("preview::eventFilter:: in target\n");
             if (keyEvent->key() == Qt::Key_Slash ||
                 (keyEvent->key() == Qt::Key_F && (keyEvent->modifiers() & Qt::ControlModifier))) {
                 LOGDEB2("Preview::eventFilter: got / or C-F\n");
                 searchTextCMB->setFocus();
                 m_dynSearchActive = true;
                 return true;
-            } else if (keyEvent->key() == Qt::Key_Space) {
+            }
+#ifdef PREVIEW_TEXTBROWSER
+            else if (keyEvent->key() == Qt::Key_Space) {
                 LOGDEB2("Preview::eventFilter: got Space\n");
                 int value = edit->verticalScrollBar()->value();
                 value += edit->verticalScrollBar()->pageStep();
@@ -311,6 +333,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
                 edit->verticalScrollBar()->setValue(value);
                 return true;
             }
+#endif
         }
     }
 
@@ -363,19 +386,19 @@ void Preview::emitEditRequested()
 // current search, trying to advance and possibly wrapping around. If next is
 // false, the search string has been modified, we search for the new string, 
 // starting from the current position
-void Preview::doSearch(const QString &_text, bool next, bool reverse, 
-                       bool wordOnly)
+void Preview::doSearch(const QString &_text, bool next, bool reverse, bool wordOnly)
 {
-    LOGDEB("Preview::doSearch: text [" << qs2utf8s(_text) << "] idx " << m_searchTextFromIndex <<
+    LOGINF("Preview::doSearch: text [" << qs2utf8s(_text) << "] idx " << m_searchTextFromIndex <<
            " next " << next << " rev " << reverse << " word " << wordOnly << "\n");
-    QString text = _text;
 
     bool matchCase = casematchCB->isChecked();
     PreviewTextEdit *edit = currentEditor();
     if (edit == 0) {
+        LOGERR("Preview::doSearch: no current editor\n");
         // ??
         return;
     }
+    QString text = _text;
 
     if (text.isEmpty() || m_searchTextFromIndex != -1) {
         if (!edit->m_plaintorich->haveAnchors()) {
@@ -390,15 +413,38 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
             edit->m_plaintorich->nextAnchorNum(m_searchTextFromIndex);
         }
         QString aname = edit->m_plaintorich->curAnchorName();
+#ifdef PREVIEW_TEXTBROWSER
         LOGDEB("Calling scrollToAnchor(" << qs2utf8s(aname) << ")\n");
         edit->scrollToAnchor(aname);
         // Position the cursor approximately at the anchor (top of
         // viewport) so that searches start from here
         QTextCursor cursor = edit->cursorForPosition(QPoint(0, 0));
         edit->setTextCursor(cursor);
+#else
+        LOGDEB1("Highlighting anchor name " << qs2utf8s(aname) << "\n");
+        std::string sjs = R"-(
+            var elements = document.getElementsByClassName('rclhighlight');
+            for (let i = 0; i < elements.length; i++) {
+                elements.item(i).classList.remove('rclhighlight');
+            }
+            var element  = document.getElementById('%1');
+            if (element) {
+                element.classList.add('rclhighlight');
+                element.scrollIntoView();
+            }
+        )-";
+        QString js = QString::fromUtf8(sjs.c_str()).arg(aname);
+        LOGDEB2("Running JS: " << qs2utf8s(js) << "\n");
+#if defined(PREVIEW_WEBKIT)
+        edit->page()->mainFrame()->evaluateJavaScript(js);
+#elif defined(PREVIEW_WEBENGINE)
+        edit->page()->runJavaScript(js);
+#endif
+#endif // !TEXTBROWSER
         return;
     }
 
+#ifdef PREVIEW_TEXTBROWSER
     // If next is false, the user added characters to the current
     // search string.  We need to reset the cursor position to the
     // start of the previous match, else incremental search is going
@@ -444,6 +490,14 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
             QApplication::beep();
         m_canBeep = false;
     }
+#else
+    WEBPAGE::FindFlags flags;
+    if (reverse)
+        flags |= WEBPAGE::FindBackward;
+    if (matchCase)
+        flags |= WEBPAGE::FindCaseSensitively;
+    edit->findText(text, flags);
+#endif // !TEXTBROWSER
     LOGDEB("Preview::doSearch: return\n");
 }
 
@@ -479,7 +533,21 @@ void Preview::currentChanged(int index)
     disconnect(this, SIGNAL(printCurrentPreviewRequest()), 0, 0);
     connect(this, SIGNAL(printCurrentPreviewRequest()), edit, SLOT(print()));
     edit->installEventFilter(this);
+#ifdef PREVIEW_TEXTBROWSER
     edit->viewport()->installEventFilter(this);
+#else
+    QWidget* evWidget = nullptr;
+    foreach(QObject* obj, edit->children()) {
+        QWidget* wgt = qobject_cast<QWidget*>(obj);
+        if (wgt) {
+            evWidget = wgt;
+            break;
+        }
+    }
+    if (evWidget) {
+        evWidget->installEventFilter(this);
+    }
+#endif
     searchTextCMB->installEventFilter(this);
     emit(previewExposed(this, m_searchId, edit->m_docnum));
 }
@@ -503,7 +571,7 @@ void Preview::closeTab(int index)
     }
     PreviewTextEdit *edit = editor(index);
     if (edit)
-        forgetTempFile(edit->m_tmpfilename);
+        forgetTempFile(edit->m_imgfilename);
     if (pvTab->count() > 1) {
         pvTab->removeTab(index);
     } else {
@@ -526,8 +594,10 @@ PreviewTextEdit *Preview::addEditorTab()
 {
     LOGDEB1("PreviewTextEdit::addEditorTab()\n");
     PreviewTextEdit *editor = new PreviewTextEdit(pvTab, "pvEdit", this);
+#ifdef PREVIEW_TEXTBROWSER
     editor->setReadOnly(true);
     editor->setUndoRedoEnabled(false );
+#endif
     pvTab->addTab(editor, "Tab");
     pvTab->setCurrentIndex(pvTab->count() - 1);
     return editor;
@@ -833,7 +903,6 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     editor->setFont(m_font);
     editor->setHtml("");
-    editor->m_format = Qt::RichText;
     bool inputishtml = !lthr.fdoc.mimetype.compare("text/html");
     QStringList qrichlst;
     editor->m_plaintorich->set_activatelinks(prefs.previewActiveLinks);
@@ -884,14 +953,14 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         // top is displayed faster), but we must not cut tags, and
         // it's too difficult on html. For text we do the splitting on
         // a QString to avoid utf8 issues.
-        QString qr = QString::fromUtf8(lthr.fdoc.text.c_str(),
-                                       lthr.fdoc.text.length());
-        int l = 0;
+        QString qr = u8s2qs(lthr.fdoc.text);
         if (inputishtml) {
             qrichlst.push_back(qr);
         } else {
+#ifdef PREVIEW_TEXTBROWSER
             editor->setPlainText("");
-            editor->m_format = Qt::PlainText;
+#endif
+            int l = 0;
             for (int pos = 0; pos < (int)qr.length(); pos += l) {
                 l = MIN(CHUNKL, qr.length() - pos);
                 qrichlst.push_back(qr.mid(pos, l));
@@ -904,6 +973,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // Load text into editor window.
     progress.setLabelText(tr("Loading preview text into editor"));
     qApp->processEvents();
+#ifdef PREVIEW_TEXTBROWSER
     editor->m_richtxt.clear();
     for (QStringList::iterator it = qrichlst.begin(); it != qrichlst.end(); it++) {
         qApp->processEvents();
@@ -919,7 +989,15 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             break;
         }
     }
-
+#else
+    editor->m_richtxt.clear();
+    for (const auto& chunk : qrichlst) {
+        editor->m_richtxt.append(chunk);
+    }
+    LOGINF("HTML: " << qs2utf8s(editor->m_richtxt).substr(0, 5000) << "\n");
+    editor->setHtml(editor->m_richtxt, baseUrl);
+#endif
+    
     progress.close();
     editor->m_curdsp = PreviewTextEdit::PTE_DSPTXT;
 
@@ -954,11 +1032,13 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             if (temp.ok()) {
                 rememberTempFile(temp);
                 fn = temp.filename();
-                editor->m_tmpfilename = fn;
+                editor->m_imgfilename = fn;
             } else {
-                editor->m_tmpfilename.erase();
+                editor->m_imgfilename.erase();
                 fn.erase();
             }
+        } else {
+            editor->m_imgfilename = fn;
         }
 
         if (!fn.empty()) {
@@ -970,7 +1050,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
 
     // Position the editor so that the first search term is visible
-    if (searchTextCMB->currentText().length() != 0) {
+    if (!searchTextCMB->currentText().isEmpty()) {
         // If there is a current search string, perform the search.
         // Do not beep for an automatic search, this is ennoying.
         m_canBeep = false;
@@ -980,14 +1060,17 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         if (editor->m_plaintorich->haveAnchors()) {
             QString aname = editor->m_plaintorich->curAnchorName();
             LOGDEB2("Call movetoanchor(" << qs2utf8s(aname) << ")\n");
+#ifdef PREVIEW_TEXTBROWSER
             editor->scrollToAnchor(aname);
             // Position the cursor approximately at the anchor (top of
             // viewport) so that searches start from here
             QTextCursor cursor = editor->cursorForPosition(QPoint(0, 0));
             editor->setTextCursor(cursor);
+#else
+            doSearch("", false, false);
+#endif
         }
     }
-
 
     // Enter document in document history
     historyEnterDoc(rcldb.get(), g_dynconf, idoc);
@@ -999,7 +1082,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 }
 
 PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv) 
-    : QTextBrowser(parent), m_preview(pv),
+    : PREVIEW_PARENTCLASS(parent), m_preview(pv),
       m_plaintorich(new PlainToRichQtPreview()),
       m_dspflds(false), m_docnum(-1) 
 {
@@ -1007,15 +1090,24 @@ PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv)
     setObjectName(nm);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
-    connect(this, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(onAnchorClicked(const QUrl&)));
+
+#if defined(PREVIEW_WEBKIT)
+    page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    connect(this, SIGNAL(linkClicked(const QUrl &)), this, SLOT(onAnchorClicked(const QUrl &)));
+#elif defined(PREVIEW_WEBENGINE)
+    setPage(new RclWebPage(this));
+    connect(page(), SIGNAL(linkClicked(const QUrl &)), this, SLOT(onAnchorClicked(const QUrl &)));
+#else
     setOpenExternalLinks(false);
     setOpenLinks(false);
+    connect(this, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(onAnchorClicked(const QUrl&)));
+#endif
+
 }
 
 void PreviewTextEdit::onAnchorClicked(const QUrl& url)
 {
-    LOGDEB("PreviewTextEdit::onAnchorClicked: " << qs2utf8s(url.toString())
-           << std::endl);
+    LOGDEB("PreviewTextEdit::onAnchorClicked: " << qs2utf8s(url.toString()) << "\n");
     if (prefs.previewActiveLinks && m_preview->m_rclmain) {
         Rcl::Doc doc;
         doc.url = qs2utf8s(url.toString()).c_str();
@@ -1047,8 +1139,10 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
     }
     popup->addAction(tr("Reload as Plain Text"), this, SLOT(reloadAsPlainText()));
     popup->addAction(tr("Reload as HTML"), this, SLOT(reloadAsHTML()));
+#ifdef PREVIEW_TEXTBROWSER    
     popup->addAction(tr("Select All"), this, SLOT(selectAll()));
     popup->addAction(tr("Copy"), this, SLOT(copy()));
+#endif
     popup->addAction(tr("Print"), this, SLOT(print()));
     if (prefs.previewPlainPre) {
         popup->addAction(tr("Fold lines"), m_preview, SLOT(togglePlainPre()));
@@ -1080,24 +1174,34 @@ void PreviewTextEdit::reloadAsHTML()
     prefs.previewHtml = saved;
 }
 
+void PreviewTextEdit::redisplay()
+{
+    switch(m_curdsp) {
+    case PTE_DSPTXT:
+        displayText();
+        break;
+    case PTE_DSPFLDS:
+        displayFields();
+        break;
+    case PTE_DSPIMG:
+        displayImage();
+        break;
+    }
+}
+
 // Display main text
 void PreviewTextEdit::displayText()
 {
-    LOGDEB1("PreviewTextEdit::displayText()\n");
-
     // Ensuring that the view does not move when changing the font
     // size and redisplaying the text: can't find a good way to do
     // it. The only imperfect way I found was to get the position for
     // the last line (approximately), and make the position visible
     // after the change.
+#ifdef PREVIEW_TEXTBROWSER
     auto c = cursorForPosition(QPoint(0,height()-20));
     int pos = c.position();
     setFont(m_preview->m_font);
-    if (m_format == Qt::PlainText) {
-        setPlainText(m_richtxt);
-    } else {
-        setHtml(m_richtxt);
-    }
+    setHtml(m_richtxt);
     if (m_curdsp == PTE_DSPTXT) {
         auto cursor = textCursor();
         cursor.setPosition(pos);
@@ -1105,6 +1209,9 @@ void PreviewTextEdit::displayText()
         ensureCursorVisible();
     }
     m_curdsp = PTE_DSPTXT;
+#else
+    setHtml(m_richtxt, baseUrl);
+#endif
 }
 
 // Display field values
@@ -1137,6 +1244,7 @@ void PreviewTextEdit::displayImage()
     if (m_image.isNull())
         displayText();
 
+#ifdef PREVIEW_TEXTBROWSER
     setPlainText("");
     if (m_image.width() > width() || 
         m_image.height() > height()) {
@@ -1144,29 +1252,50 @@ void PreviewTextEdit::displayImage()
     }
     document()->addResource(QTextDocument::ImageResource, QUrl("image"), m_image);
     textCursor().insertImage("image");
+#else
+    LOGINF("Reading image: MIME " << m_dbdoc.mimetype << " from " << m_imgfilename << "\n");
+    std::string content;
+    if (!m_imgfilename.empty() && file_to_string(m_imgfilename, content)) {
+        LOGINF("Read content ok, size " << content.size() << "\n");
+        QByteArray qcontent(content.c_str(), content.size());
+        setContent(qcontent, u8s2qs(m_dbdoc.mimetype));
+    }
+#endif
     m_curdsp = PTE_DSPIMG;
 }
 
 void PreviewTextEdit::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
     LOGDEB2("PreviewTextEdit::mouseDoubleClickEvent\n");
+#ifdef PREVIEW_TEXTBROWSER
     QTextEdit::mouseDoubleClickEvent(event);
     if (textCursor().hasSelection() && m_preview)
         m_preview->emitWordSelect(textCursor().selectedText());
+#endif
 }
 
 void PreviewTextEdit::print()
 {
+#ifndef QT_NO_PRINTER
+
     LOGDEB("PreviewTextEdit::print\n");
     if (!m_preview)
         return;
-        
-#ifndef QT_NO_PRINTER
-    QPrinter printer;
-    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    QPrinter *printer = new QPrinter();
+    QPrintDialog *dialog = new QPrintDialog(printer, this);
     dialog->setWindowTitle(tr("Print Current Preview"));
     if (dialog->exec() != QDialog::Accepted)
         return;
-    QTextEdit::print(&printer);
+
+#if defined(PREVIEW_WEBENGINE)
+    // Deleting the printer crashes (declaring it statically also does). so let it be
+    page()->print(printer, [&printer](bool){/*delete printer;*/});
+#elif defined(PREVIEW_WEBKIT)
+    page()->mainFrame()->print(printer);
+#else
+    QTextEdit::print(printer);
 #endif
+    
+#endif // No printer
 }

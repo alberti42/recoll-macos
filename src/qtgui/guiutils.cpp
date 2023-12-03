@@ -462,7 +462,7 @@ std::string PrefsPack::scaleFonts(const std::string& style, float multiplier)
     return nstyle;
 }
 
-std::string PrefsPack::htmlHeaderContents()
+std::string PrefsPack::htmlHeaderContents(bool nouser)
 {
     auto comfn = path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-common.css");
     std::string comcss;
@@ -499,7 +499,9 @@ std::string PrefsPack::htmlHeaderContents()
         fontsize = 3;
     oss << "font-size: " << fontsize << "pt;\n";
     oss << "}\n</style>\n";
-    oss << qs2utf8s(prefs.darkreslistheadertext) << qs2utf8s(prefs.reslistheadertext);
+    oss << qs2utf8s(prefs.darkreslistheadertext);
+    if (!nouser)
+        oss << qs2utf8s(prefs.reslistheadertext);
 
     std::string css = oss.str();
     if  (!noscale) {

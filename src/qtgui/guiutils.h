@@ -172,7 +172,7 @@ public:
     void setupDarkCSS();
 
     // HTML Header contents for both the result list, the snippets window and others
-    std::string htmlHeaderContents();
+    std::string htmlHeaderContents(bool nouser=false);
     
     // MIME types for which we prefer to use stored text from preview
     // rather than extracting the possibly nicer HTML because the

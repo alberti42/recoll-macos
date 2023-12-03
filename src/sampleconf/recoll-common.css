@@ -1,6 +1,6 @@
 <style>
 /* Default font size for the HTML widgets */
-html, body, form, fieldset, table, tr, td, img {
+html, body, form, fieldset, table, tr, td, img, pre {
     font-size: 12pt;
 }
 </style>

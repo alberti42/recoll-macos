@@ -25,6 +25,7 @@
 #include <QSettings>
 
 #include "preview_plaintorich.h"
+#include "preview_w.h"
 
 #include "recoll.h"
 #include "plaintorich.h"
@@ -58,31 +59,40 @@ bool PlainToRichQtPreview::haveAnchors()
 
 string  PlainToRichQtPreview::PlainToRichQtPreview::header()
 {
+    std::string fontstyle, hstyle;
+
+#if defined(PREVIEW_WEBKIT) || defined(PREVIEW_WEBENGINE)
+    hstyle = std::string{R"-(
+<style>
+.rclhighlight {
+    color: red;
+    background-color: yellow;
+    font-size :150%;
+}
+</style>
+)-"};
+    fontstyle = prefs.htmlHeaderContents(true);
+#endif
+    
     if (m_inputhtml) {
-        return cstr_null;
+        return fontstyle + hstyle;
     }
-    std::string fontstyle;
-    if (prefs.reslistfontfamily != "") {
-        fontstyle = std::string("font-family: ") + qs2utf8s(prefs.reslistfontfamily);
-    }
-    std::string ret{"<qt><head><title></title></head><body>"};
+
+    std::string ret = std::string("<html><head><title></title>") + fontstyle + hstyle +
+        "</head><body>";
+
     switch (prefs.previewPlainPre) {
     case PrefsPack::PP_BR:
         m_eolbr = true;
         break;
     case PrefsPack::PP_PRE:
         m_eolbr = false;
-        ret += std::string("<pre");
-        if (!fontstyle.empty()) {
-            ret += std::string(" ") + "style=\"" + fontstyle;
-        }
-        ret += "\">";
+        ret += std::string("<pre>");
         break;
     case PrefsPack::PP_PREWRAP:
     default:
         m_eolbr = false;
         ret += std::string("<pre style=\"white-space: pre-wrap;");
-        ret += fontstyle;
         ret += "\">";
     }
     return ret;
@@ -97,19 +107,18 @@ string PlainToRichQtPreview::startMatch(unsigned int grpidx)
     m_groupcuranchors[grpidx] = 0;
     // We used to create the region as:
     //     <span style="..."><a name="...">term</a></span>
-    // For some reason, this caused problems with the display of some
-    // Tamil text (qt bug?). Just inserting a space character after
-    // the opening <a tag, before the text, clears the problem, reason
-    // unknown. We also inverted the <span and <a tags to avoid
-    // highlighting the spurious space. The space hack only work in a
-    // <pre> section. Also: having <a name=xxx></a> before the match
-    // term causes the same problem (so not a possible fix).
-    // Space does not seem to work any more (2021-04) ?
+    // For some reason, when using a QTextBrowser, this caused problems with the display of some
+    // Tamil text (qt bug?). Just inserting a space character after the opening <a tag, before the
+    // text, clears the problem, reason unknown. We also inverted the <span and <a tags to avoid
+    // highlighting the spurious space. The space hack only work in a <pre> section. Also: having <a
+    // name=xxx></a> before the match term causes the same problem (so not a possible fix).  Space
+    // does not seem to work any more (2021-04) ?
     //   Zero Width Non Joiner works but is displayed as ? sometimes on windows.
     //  nbsp seems to now work !
     string hackspace = m_spacehack? "&nbsp;" : "";
     string startmarker{
-        "<a name='" + termAnchorName(m_lastanchor) + "'>" +
+        "<a name='" + termAnchorName(m_lastanchor) + "'" +
+        "id='" + termAnchorName(m_lastanchor) + "'" +  ">" +
         hackspace +
         "<span style='" + qs2utf8s(prefs.qtermstyle) + "'>" 
     };

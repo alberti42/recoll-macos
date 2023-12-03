@@ -26,26 +26,29 @@
 #include <QVariant>
 #include <QWidget>
 #include <QFont>
+#include <QImage>
 
-#if defined(USING_WEBENGINE)
+#define PREVIEW_FORCETEXTBROWSER
+
+#if defined(USING_WEBENGINE) && !defined(PREVIEW_FORCETEXTBROWSER)
 #  include <QWebEngineView>
 #  define PREVIEW_PARENTCLASS QWebEngineView
-#elif defined(USING_WEBKIT)
+#  define PREVIEW_WEBENGINE
+#elif defined(USING_WEBKIT) && !defined(PREVIEW_FORCETEXTBROWSER)
 #  include <QWebView>
 #  define PREVIEW_PARENTCLASS QWebView
+#  define PREVIEW_WEBKIT
 #else
 #  include <QTextBrowser>
 #  define PREVIEW_PARENTCLASS QTextBrowser
+#  define PREVIEW_TEXTBROWSER
 #endif
-
-#include <qimage.h>
-
-#include "rcldb.h"
-#include "rclmain_w.h"
-#include "internfile.h"
 
 #include "ui_preview.h"
 
+#include "rcldoc.h"
+#include "hldata.h"
+#include "internfile.h"
 
 class QTabWidget;
 class QLabel;
@@ -59,6 +62,7 @@ class LoadThread;
 class QTimer;
 class QEventLoop;
 class QProgressDialog;
+
 
 class PreviewTextEdit : public PREVIEW_PARENTCLASS {
     Q_OBJECT
@@ -76,7 +80,8 @@ public slots:
     void onAnchorClicked(const QUrl& url);
     void reloadAsPlainText();
     void reloadAsHTML();
-
+    void redisplay();
+    
     friend class Preview;
 protected:
     void mouseDoubleClickEvent(QMouseEvent *);
@@ -114,7 +119,7 @@ private:
 
 class QShortcut;
 
-class Preview : public QDialog, public Ui::Preview {
+class Preview : public QWidget, public Ui::Preview {
     Q_OBJECT
 
 public:
@@ -165,6 +170,7 @@ public slots:
     // Other
     virtual void zoomIn();
     virtual void zoomOut();
+    virtual void onUiPrefsChanged();
     
 signals:
     void previewClosed(Preview *);
@@ -204,8 +210,7 @@ private:
     virtual PreviewTextEdit *currentEditor();
     virtual PreviewTextEdit *addEditorTab();
     virtual bool loadDocInCurrentTab(const Rcl::Doc& idoc, int dnm);
-    void displayLoadError(
-        FileInterner::ErrorPossibleCause explain, bool canGetRawText);
+    void displayLoadError(FileInterner::ErrorPossibleCause explain, bool canGetRawText);
     bool runLoadThread(LoadThread& lthr, QTimer& tT, QEventLoop& loop,
                        QProgressDialog& progress, bool canGetRawText);
 };
