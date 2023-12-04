@@ -994,7 +994,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     for (const auto& chunk : qrichlst) {
         editor->m_richtxt.append(chunk);
     }
-    LOGINF("HTML: " << qs2utf8s(editor->m_richtxt).substr(0, 5000) << "\n");
+    LOGDEB2("HTML: " << qs2utf8s(editor->m_richtxt).substr(0, 5000) << "\n");
     editor->setHtml(editor->m_richtxt, baseUrl);
 #endif
     

@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <list>
 #include <iostream>
+#include <memory>
 
 #include <qapplication.h>
 #include <qtranslator.h>
@@ -30,7 +31,7 @@
 #include <QLibraryInfo>
 #include <QFileDialog>
 #include <QUrl>
-#include <memory>
+#include <QNetworkProxy>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -254,8 +255,13 @@ int main(int argc, char **argv)
         }
     }
 
-#ifdef USING_WEBENGINE
-    // This is necessary for allowing webengine to load local resources (icons)
+#ifdef USING_WEBENGINE_nono
+    // Note: this is not used any more because we use a file:// baseUrl so that local access is
+    // allowed (and network access should not, but it fact it is, so we forbid it by setting a
+    // bogus proxy).
+
+    // Old comment, kept around in case we change baseurl again:
+    // The following is necessary for allowing webengine to load local resources (icons)
     // It is not an issue because we never access remote sites.
     char arg_disable_web_security[] = "--disable-web-security";
     int appargc = argc + 1;
@@ -270,6 +276,20 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 #endif
 
+#if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
+    // Prevent WebEngine HTTP connections by setting a bogus proxy. This is for preventing network
+    // accesses from webengine when it is used to implement the preview window: depending on the
+    // loaded document, these could be unsafe. Otoh this also means that the display will be less
+    // nice than it could be if we let the engine load necessary javascript etc.  Note that this may
+    // still be less safe than using a QTextBrowser (or webkit probably) for the Preview.
+    QNetworkProxy proxy;
+    proxy.setType(QNetworkProxy::Socks5Proxy);
+    proxy.setHostName("127.0.0.1");
+    proxy.setUser("recoll");
+    proxy.setPassword("");
+    QNetworkProxy::setApplicationProxy(proxy);
+#endif // Real browser engines
+    
     QCoreApplication::setOrganizationName("Recoll.org");
     QCoreApplication::setApplicationName("recoll");
 
