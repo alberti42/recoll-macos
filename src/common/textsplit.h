@@ -26,9 +26,12 @@ class RclConfig;
 
 /** 
  * Split text into words. 
- * See comments at top of .cpp for more explanations.
- * This uses a callback function. It could be done with an iterator instead,
- * but 'ts much simpler this way...
+ * 
+ * This is a virtual base class. The takeword() method must be implemented to do something with the
+ * generated terms. 
+ *
+ * Call text_to_words() to process a text. This can be called multiple times to process
+ * unrelated texts, the state is reset each time.
  */
 class TextSplit {
 public:
@@ -46,7 +49,7 @@ public:
         TXTS_KEEPWILD = 4 
     };
     
-    TextSplit(Flags flags = Flags(TXTS_NONE))
+    TextSplit(int flags = TXTS_NONE)
         : m_flags(flags) {}
     virtual ~TextSplit() {}
     TextSplit(const TextSplit&) = delete;
@@ -75,10 +78,13 @@ public:
     /** Called when we encounter newline \n 0x0a. Override to use the event. */
     virtual void newline(int /*pos*/) {}
 
+    int flags() {return m_flags;}
+    int maxwordlength() {return o_maxWordLength;}
+    
     // Static utility functions:
 
     /** Count words in string, as the splitter would generate them */
-    static int countWords(const std::string &in, Flags flgs = TXTS_ONLYSPANS);
+    static int countWords(const std::string &in, int flgs = TXTS_ONLYSPANS);
 
     /** Check if this is visibly not a single block of text */
     static bool hasVisibleWhite(const std::string &in);
@@ -90,8 +96,7 @@ public:
      * non-utf-8 input (iso-8859 config files work ok). This hopefully
      * handles all Unicode whitespace, but needs correct utf-8 input
      */
-    static bool stringToStrings(const std::string &s,
-                                std::vector<std::string> &tokens);
+    static bool stringToStrings(const std::string &s, std::vector<std::string> &tokens);
 
     /** Is char CJK ? */
     static bool isCJK(int c);
@@ -99,18 +104,15 @@ public:
     static bool isHANGUL(int c);
     /* Not split in words */
     static bool isNGRAMMED(int c);
+    static bool isSpace(int c);
     
-    /** Statistics about word length (average and dispersion) can
-     * detect bad data like undecoded base64 or other mis-identified
-     * pieces of data taken as text. In practise, this keeps some junk out 
-     * of the index, but does not decrease the index size much, and is
-     * probably not worth the trouble in general. Code kept because it
-     * probably can be useful in special cases. Base64 data does has
-     * word separators in it (+/) and is characterised by high average
-     * word length (>10, often close to 20) and high word length
-     * dispersion (avg/sigma > 0.8). In my tests, most natural
-     * language text has average word lengths around 5-8 and avg/sigma
-     * < 0.7
+    /** Statistics about word length (average and dispersion) can detect bad data like undecoded
+     * base64 or other mis-identified pieces of data taken as text. In practise, this keeps some
+     * junk out of the index, but does not decrease the index size much, and is probably not worth
+     * the trouble in general. Code kept because it probably can be useful in special cases. Base64
+     * data does has word separators in it (+/) and is characterised by high average word length
+     * (>10, often close to 20) and high word length dispersion (avg/sigma > 0.8). In my tests, most
+     * natural language text has average word lengths around 5-8 and avg/sigma < 0.7
      */
 #ifdef TEXTSPLIT_STATS
     class Stats {
@@ -163,7 +165,7 @@ private:
     static int o_maxWordLength; // 40
     static int o_maxWordsInSpan; // 6
 
-    Flags         m_flags;
+    int         m_flags;
 
     // Current span. Might be jf.dockes@wanadoo.f
     std::string        m_span; 
@@ -207,11 +209,8 @@ private:
             m_prevlen = m_wordChars = 0;
     }
 
-    // This processes cjk text:
-    bool cjk_to_words(Utf8Iter& it, unsigned int *cp);
-
     // Experimental Korean splitter. This uses an external Python tokenizer
-    bool ko_to_words(Utf8Iter *it, unsigned int *cp);
+    bool ko_to_words(Utf8Iter& it, unsigned int *cp);
     
     bool emitterm(bool isspan, std::string &term, int pos, size_t bs,size_t be);
     bool doemit(bool spanerase, size_t bp);
@@ -220,4 +219,14 @@ private:
     bool words_from_span(size_t bp);
 };
 
+class ExtSplitter {
+public:
+    ExtSplitter(TextSplit& sink)
+        : m_sink(sink) {}
+    virtual ~ExtSplitter() {};
+    virtual bool text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos) = 0;
+protected:
+    TextSplit& m_sink;
+};
+    
 #endif /* _TEXTSPLIT_H_INCLUDED_ */

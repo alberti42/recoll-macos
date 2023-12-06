@@ -24,6 +24,8 @@
 
 #include "autoconfig.h"
 
+#include "kosplitter.h"
+
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -118,17 +120,18 @@ static bool initCmd()
                                 (c >= 'a' && c <= 'z') ||             \
                                 (c >= '0' && c <= '9')))
 
-bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
+bool KOSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
 {
     LOGDEB1("ko_to_words\n");
+    int flags = m_sink.flags();
+    
     std::unique_lock<std::mutex> mylock(o_mutex);
     initCmd();
     if (nullptr == o_talker) {
         return false;
     }
 
-    LOGDEB1("k_to_words: m_wordpos " << m_wordpos << "\n");
-    Utf8Iter &it = *itp;
+    LOGDEB1("k_to_words: wordpos " << wordpos << "\n");
     unsigned int c = 0;
 
     unordered_map<string, string> args;
@@ -153,7 +156,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     std::vector<std::pair<STRSZT, STRSZT>> spans;
     for (; !it.eof() && !it.error(); it++) {
         c = *it;
-        if (!isHANGUL(c) && !ISASCIIPUNCTORCTL(c)) {
+        if (!TextSplit::isHANGUL(c) && !ISASCIIPUNCTORCTL(c)) {
             // Non-Korean: we keep on if encountering space and other
             // ASCII punctuation. Allows sending longer pieces of text
             // to the splitter (perf). Else break, process this piece,
@@ -255,7 +258,7 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
         trimstring(word);
         if (word == magicpage) {
             LOGDEB1("ko_to_words: NEWPAGE\n");
-            newpage(m_wordpos);
+            m_sink.newpage(wordpos);
             bytepos += word.size() + 1;
             pagefix += word.size();
             continue;
@@ -276,33 +279,32 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
                                });
         if (it != spans.end()) {
             span = inputdata.substr(it->first, it->second-it->first);
-            LOGKO("KO: SPAN: [" << span << "] pos " << m_wordpos <<
+            LOGKO("KO: SPAN: [" << span << "] pos " << wordpos <<
                    " bytepos " << bytepos << "\n");
             // Xapian max term length is 245 bytes. textsplit default
             // max word is 40 bytes. Let's take into account the
             // longer utf-8 Korean chars (usually 3 bytes).
-            if (int(span.size()) > 3 * o_maxWordLength) {
+            if (int(span.size()) > 3 * m_sink.maxwordlength()) {
                 LOGINF("kosplitter: dropping span too long: " << span);
-            } else if (!takeword(
-                           span, m_wordpos, abspos, abspos + span.size())) {
+            } else if (!m_sink.takeword(span, wordpos, abspos, abspos + span.size())) {
                 return false;
             }
         }
 
         // Possibly emit a part of span word.
-        LOGKO("KO: WORD: [" << word << "] pos " << m_wordpos <<
+        LOGKO("KO: WORD: [" << word << "] pos " << wordpos <<
                 " bytepos " << bytepos << "\n");
         // Emit words only if not in onlyspans mode, and different
         // from span. Else, just increase the position
-        if (!(m_flags & TXTS_ONLYSPANS) &&
+        if (!(flags & TextSplit::TXTS_ONLYSPANS) &&
             (it == spans.end() || word != span)) {
-            if (!takeword(word, m_wordpos, abspos, abspos + word.size())) {
+            if (!m_sink.takeword(word, wordpos, abspos, abspos + word.size())) {
                 return false;
             }
         } else {
             LOGKO("KO: WORD: SKIP\n");
         }
-        m_wordpos++;
+        wordpos++;
         bytepos += word.size();
     }
 
@@ -317,12 +319,8 @@ bool TextSplit::ko_to_words(Utf8Iter *itp, unsigned int *cp)
     }
 #endif
     
-    // Reset state, saving term position, and return the found non-cjk
-    // Unicode character value. The current input byte offset is kept
-    // in the utf8Iter
-    int pos = m_wordpos;
-    clearsplitstate();
-    m_spanpos = m_wordpos = pos;
+    // Return the found non-cjk Unicode character value. The current input byte offset is kept in
+    // the utf8Iter
     *cp = c;
     LOGDEB1("ko_to_words: returning\n");
     return true;

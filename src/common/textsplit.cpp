@@ -33,6 +33,8 @@
 #include "uproplist.h"
 #include "smallut.h"
 #include "rclconfig.h"
+#include "cjksplitter.h"
+#include "kosplitter.h"
 
 using namespace std;
 /**
@@ -83,7 +85,6 @@ bool          TextSplit::o_deHyphenate{false};
 int           TextSplit::o_maxWordLength{40};
 int           TextSplit::o_maxWordsInSpan{6};
 
-static const int o_CJKMaxNgramLen{5};
 bool o_exthangultagger{false};
 
 // This is changed to 0 if _ is processed as a letter
@@ -101,8 +102,8 @@ void TextSplit::staticConfInit(RclConfig *config)
         o_processCJK = true;
         int ngramlen;
         if (config->getConfParam("cjkngramlen", &ngramlen)) {
-            o_CJKNgramLen = (unsigned int)(ngramlen <= o_CJKMaxNgramLen ?
-                                           ngramlen : o_CJKMaxNgramLen);
+            o_CJKNgramLen = (unsigned int)(ngramlen <= CJKSplitter::max_ngramlen() ?
+                                           ngramlen : CJKSplitter::max_ngramlen());
         }
     }
 
@@ -325,6 +326,10 @@ for (int i = 0; i < ntest; i++) {
 #define UNICODE_IS_HANGUL(p) false
 #endif
 
+bool TextSplit::isSpace(int c)
+{
+    return whatcc(c) == SPACE;
+}
 bool TextSplit::isCJK(int c)
 {
     PRETEND_USE(c);
@@ -639,16 +644,24 @@ bool TextSplit::text_to_words(const string &in)
             }
             // Hand off situation to the appropriate routine.
             if (csc == CSC_HANGUL) {
-                if (!ko_to_words(&it, &c)) {
+                KOSplitter splt(*this, o_CJKNgramLen);
+                if (!splt.text_to_words(it, &c, m_wordpos)) {
                     LOGERR("Textsplit: scan error in korean handler\n");
                     return false;
                 }
             } else {
-                if (!cjk_to_words(it, &c)) {
+                CJKSplitter splt(*this, o_CJKNgramLen);
+                if (!splt.text_to_words(it, &c, m_wordpos)) {
                     LOGERR("Textsplit: scan error in cjk handler\n");
                     return false;
                 }
             }
+            // Reset state, saving term position, and return the found non-cjk
+            // unicode character value. The current input byte offset is kept
+            // in the utf8Iter
+            int pos = m_wordpos;
+            clearsplitstate();
+            m_spanpos = m_wordpos = pos;
             // Check for eof, else c contains the first non-cjk
             // character after the cjk sequence, just go on.
             if (it.eof() || it.error())
@@ -943,134 +956,18 @@ bool TextSplit::text_to_words(const string &in)
     return true;
 }
 
-// We output ngrams for exemple for char input a b c and ngramlen== 2, 
-// we generate: a ab b bc c as words
-//
-// This is very different from the normal behaviour, so we don't use
-// the doemit() and emitterm() routines
-//
-// The routine is sort of a mess and goes to show that we'd probably
-// be better off converting the whole buffer to utf32 on entry...
-bool TextSplit::cjk_to_words(Utf8Iter& it, unsigned int *cp)
-{
-    LOGDEB1("cjk_to_words: m_wordpos " << m_wordpos << "\n");
-
-    // We use an offset buffer to remember the starts of the utf-8
-    // characters which we still need to use.
-    assert(o_CJKNgramLen < o_CJKMaxNgramLen);
-    string::size_type boffs[o_CJKMaxNgramLen+1];
-    string mybuf;
-    string::size_type myboffs[o_CJKMaxNgramLen+1];
-    
-    // Current number of valid offsets;
-    unsigned int nchars = 0;
-    unsigned int c = 0;
-    bool spacebefore{false};
-    for (; !it.eof() && !it.error(); it++) {
-        c = *it;
-        // We had a version which ignored whitespace for some time,
-        // but this was a bad idea. Only break on a non-cjk
-        // *alphabetic* character, except if following punctuation, in
-        // which case we return for any non-cjk. This allows compound
-        // cjk+numeric spans, or punctuated cjk spans to be
-        // continually indexed as cjk. The best approach is a matter
-        // of appreciation...
-        if (!UNICODE_IS_CJK(c) &&
-            (spacebefore || (c > 255 || isalpha(c)))) {
-            // Return to normal handler
-            break;
-        }
-        if (whatcc(c) == SPACE) {
-            // Flush the ngram buffer and go on
-            nchars = 0;
-            mybuf.clear();
-            spacebefore = true;
-            continue;
-        } else {
-            spacebefore = false;
-        }
-        if (nchars == o_CJKNgramLen) {
-            // Offset buffer full, shift it. Might be more efficient
-            // to have a circular one, but things are complicated
-            // enough already...
-            for (unsigned int i = 0; i < nchars-1; i++) {
-                boffs[i] = boffs[i+1];
-            }
-            for (unsigned int i = 0; i < nchars-1; i++) {
-                myboffs[i] = myboffs[i+1];
-            }
-        }  else {
-            nchars++;
-        }
-
-        // Copy to local buffer, and note local offset
-        myboffs[nchars-1] = mybuf.size();
-        it.appendchartostring(mybuf);
-        // Take note of document byte offset for this character.
-        boffs[nchars-1] = it.getBpos();
-
-        // Output all new ngrams: they begin at each existing position
-        // and end after the new character. onlyspans->only output
-        // maximum words, nospans=> single chars
-        if (!(m_flags & TXTS_ONLYSPANS) || nchars == o_CJKNgramLen) {
-            int btend = it.getBpos() + it.getBlen();
-            int loopbeg = (m_flags & TXTS_NOSPANS) ? nchars-1 : 0;
-            int loopend = (m_flags & TXTS_ONLYSPANS) ? 1 : nchars;
-            for (int i = loopbeg; i < loopend; i++) {
-                // Because of the whitespace handling above there may be whitespace in the
-                // buffer. Strip it from the output words. This means that the offs/size will be
-                // slightly off (->highlights), to be fixed one day.
-                auto word = mybuf.substr(myboffs[i], mybuf.size() - myboffs[i]);
-                if (!takeword(trimstring(word, "\r\n\f \t"), 
-                              m_wordpos - (nchars - i - 1), boffs[i], btend)) {
-                    return false;
-                }
-            }
-
-            if ((m_flags & TXTS_ONLYSPANS)) {
-                // Only spans: don't overlap: flush buffer
-                nchars = 0;
-                mybuf.clear();
-            }
-        }
-        // Increase word position by one, other words are at an
-        // existing position. This could be subject to discussion...
-        m_wordpos++;
-    }
-
-    // If onlyspans is set, there may be things to flush in the buffer
-    // first
-    if ((m_flags & TXTS_ONLYSPANS) && nchars > 0 && nchars != o_CJKNgramLen)  {
-        int btend = int(it.getBpos()); // Current char is out
-        // See comment before takeword above.
-        auto word = mybuf.substr(myboffs[0], mybuf.size() - myboffs[0]);
-        if (!takeword(trimstring(word, "\r\n\f \t"), m_wordpos - nchars, boffs[0], btend)) {
-            return false;
-        }
-    }
-
-    // Reset state, saving term position, and return the found non-cjk
-    // unicode character value. The current input byte offset is kept
-    // in the utf8Iter
-    int pos = m_wordpos;
-    clearsplitstate();
-    m_spanpos = m_wordpos = pos;
-    *cp = c;
-    return true;
-}
-
 // Specialization for countWords 
 class TextSplitCW : public TextSplit {
 public:
     int wcnt;
-    TextSplitCW(Flags flags) : TextSplit(flags), wcnt(0) {}
+    TextSplitCW(int flags) : TextSplit(flags), wcnt(0) {}
     bool takeword(const string &, int, int, int) {
         wcnt++;
         return true;
     }
 };
 
-int TextSplit::countWords(const string& s, TextSplit::Flags flgs)
+int TextSplit::countWords(const string& s, int flgs)
 {
     TextSplitCW splitter(flgs);
     splitter.text_to_words(s);
