@@ -58,7 +58,6 @@ public:
     /** Call at program initialization to read non default values from the 
         configuration */
     static void staticConfInit(RclConfig *config);
-    static void koStaticConfInit(RclConfig *config, const std::string& tagger);
     
     /** Split text, emit words and positions. */
     virtual bool text_to_words(const std::string &in);
@@ -102,6 +101,7 @@ public:
     static bool isCJK(int c);
     static bool isKATAKANA(int c);
     static bool isHANGUL(int c);
+    static bool isCHINESE(int c);
     /* Not split in words */
     static bool isNGRAMMED(int c);
     static bool isSpace(int c);
@@ -161,7 +161,7 @@ private:
     static bool o_processCJK; // true
     static bool o_noNumbers;  // false
     static bool o_deHyphenate; // false
-    static unsigned int o_CJKNgramLen; // 2
+    static int o_CJKNgramLen; // 2
     static int o_maxWordLength; // 40
     static int o_maxWordsInSpan; // 6
 
