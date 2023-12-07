@@ -290,10 +290,8 @@ public:
      * 2 elements with the python exe and script path under Windows.
      * @param script the script name
      * @param[output] cmd Linux: single-element vector with the script path. Windows: interpreter 
-     *   and script paths
-    */
-    bool pythonCmd(
-        const std::string& script,  std::vector<std::string>& cmd) const;
+     *   and script paths */
+    bool pythonCmd(const std::string& script,  std::vector<std::string>& cmd) const;
     
     /** Find exec file for external filter. 
      *
