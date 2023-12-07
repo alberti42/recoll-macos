@@ -285,8 +285,13 @@ public:
      * interpreter name */
     bool processFilterCmd(std::vector<std::string>& cmd) const;
 
-    /** Build command vector for python script, possibly prepending 
-        interpreter on Windows */
+    /** Build a command vector for a Python script, possibly prepending an interpreter path on
+     * Windows. E.g., on return, the vector would contain just the script path under Linux, or have
+     * 2 elements with the python exe and script path under Windows.
+     * @param script the script name
+     * @param[output] cmd Linux: single-element vector with the script path. Windows: interpreter 
+     *   and script paths
+    */
     bool pythonCmd(
         const std::string& script,  std::vector<std::string>& cmd) const;
     
