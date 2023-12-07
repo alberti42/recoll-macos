@@ -21,19 +21,20 @@
 #ifndef _KOSPLITTER_H_INCLUDED_
 #define _KOSPLITTER_H_INCLUDED_
 
+#include <string>
 
 #include "textsplit.h"
 
 class KOSplitter : public ExtSplitter {
 public:
-    KOSplitter(TextSplit& sink, int ngramlen)
-        : ExtSplitter(sink), m_ngramlen(ngramlen) {}
+    KOSplitter(TextSplit& sink)
+        : ExtSplitter(sink) {}
     virtual ~KOSplitter() = default;
     virtual bool text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos) override;
-    static int max_ngramlen();
-protected:
-    int m_ngramlen;
 };
+
+class RclConfig;
+void koStaticConfInit(RclConfig *config, const std::string& tagger);
 
 
 #endif /* _KOSPLITTER_H_INCLUDED_ */

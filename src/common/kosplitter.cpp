@@ -50,7 +50,7 @@ static CmdTalk *o_talker;
 static bool o_starterror{false};
 static string o_cmdpath;
 static vector<string> o_cmdargs;
-std::mutex o_mutex;
+static std::mutex o_mutex;
 static string o_taggername{"Okt"};
 static bool isKomoran{false};
 
@@ -60,7 +60,7 @@ static uint64_t restartthreshold = 5 * 1000 * 1000;
 
 static const string magicpage{"NEWPPPAGE"};
 
-void TextSplit::koStaticConfInit(RclConfig *config, const string& tagger)
+void koStaticConfInit(RclConfig *config, const string& tagger)
 {
     std::vector<std::string> cmdvec;
     if (config->pythonCmd("kosplitter.py", cmdvec)) {
@@ -74,8 +74,7 @@ void TextSplit::koStaticConfInit(RclConfig *config, const string& tagger)
         if (tagger == "Komoran")
             isKomoran = true;
     } else {
-        LOGERR("TextSplit::koStaticConfInit: unknown tagger [" << tagger <<
-               "], using Okt\n");
+        LOGERR("TextSplit::koStaticConfInit: unknown tagger [" << tagger << "], using Okt\n");
     }
 }
 
