@@ -92,6 +92,8 @@ bincimapmime/mime.h \
 common/cjksplitter.cpp \
 common/cjksplitter.h \
 common/conf_post.h \
+common/cnsplitter.cpp \
+common/cnsplitter.h \
 common/cstr.cpp \
 common/cstr.h \
 common/kosplitter.cpp \
@@ -772,6 +774,7 @@ filters/cmdtalk.py \
 filters/fb2.xsl \
 filters/gnumeric.xsl \
 filters/kosplitter.py \
+filters/cnsplitter.py \
 filters/msodump.zip \
 filters/okular-note.xsl \
 filters/opendoc-body.xsl \
