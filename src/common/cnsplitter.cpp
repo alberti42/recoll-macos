@@ -101,7 +101,7 @@ static bool initCmd()
     return true;
 }
 
-#define LOGCN LOGDEB0
+#define LOGCN LOGDEB1
 
 using StrSz = std::string::size_type;
 
@@ -239,7 +239,6 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
             wordpos++;
         }
         if (pagebreakidx < pagebreaks.size() && wc.startpos > pagebreaks[pagebreakidx]) {
-            LOGERR("NEWPAGE\n");
             m_sink.newpage(wordpos);
             pagebreakidx++;
         }
@@ -263,6 +262,5 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
     // Return the found non-chinese Unicode character value. The current input byte offset is kept
     // in the utf8Iter
     *cp = c;
-    LOGDEB1("cn_to_words: returning\n");
     return true;
 }
