@@ -24,13 +24,11 @@
 
 #include <iostream>
 #include <string>
-#include <cstring>
-#include <unordered_set>
 #include <mutex>
 #include <algorithm>
 
 #include "textsplit.h"
-#define LOGGER_LOCAL_LOGINC 3
+//#define LOGGER_LOCAL_LOGINC 3
 #include "log.h"
 //#define UTF8ITER_CHECK
 #include "utf8iter.h"
@@ -50,7 +48,8 @@ static vector<string> o_cmdargs;
 static std::mutex o_mutex;
 static string o_taggername{"Jieba"};
 
-// The Python/Java splitter may be leaking memory. We restart it from time to time
+// The external splitter process may be leaking memory. We restart it from time to time. It costs a
+// couple seconds every time.
 static uint64_t restartcount;
 static uint64_t restartthreshold = 5 * 1000 * 1000;
 
@@ -102,12 +101,20 @@ static bool initCmd()
     return true;
 }
 
-#define LOGCN LOGDEB
+#define LOGCN LOGDEB0
 
 using StrSz = std::string::size_type;
-using WordChars = std::tuple<std::string,int,int>;
 
-// 160 is nbsp
+struct WordAndPos {
+    WordAndPos(const std::string& w, int s, int e)
+        : word(w), startpos(s), endpos(e) {}
+    std::string word;
+    int startpos;
+    int endpos;
+};
+
+// Characters which will trigger a return to the caller: don't do it for ascii punctuation or
+// control chars: only do it for ASCII alphanum or non chinese unicode. 160 is nbsp.
 #define ISASCIIPUNCTORCTL(c) ((c <= 0x7f || c == 160) &&               \
                               ! ((c >= 'A' && c <= 'Z') ||             \
                                  (c >= 'a' && c <= 'z') ||             \
@@ -115,62 +122,67 @@ using WordChars = std::tuple<std::string,int,int>;
 
 bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
 {
-    LOGDEB1("CNSplitter::text_to_words\n");
-    int flags = m_sink.flags();
-    
+    LOGDEB0("CNSplitter::text_to_words: wordpos " << wordpos << "\n");
     std::unique_lock<std::mutex> mylock(o_mutex);
+
+    int flags = m_sink.flags();
     initCmd();
     if (nullptr == o_talker) {
         return false;
     }
 
-    LOGDEB1("cn_to_words: wordpos " << wordpos << "\n");
     unsigned int c = 0;
 
+    // Args for the cmdtalk input to our subprocess. 
     unordered_map<string, string> args;
-
+    // Input data. We use a reference to the string to avoid a copy
     args.insert(pair<string,string>{"data", string()});
     string& inputdata(args.begin()->second);
-
     // We send the tagger name every time but it's only used the first
     // one: can't change it after init. We could avoid sending it
     // every time, but I don't think that the performance hit is
     // significant
     args.insert(pair<string,string>{"tagger", o_taggername});
     
-    // Walk the Chinese characters section, and accumulate tagger input.
-    // While doing this, we compute spans (space-less chunks), which
-    // we will index in addition to the parts.
-    // We also strip some useless chars, and prepare page number computations.
-    StrSz orgbytepos = it.getBpos();
-    // We keep a char offset to byte offset translation
+
+    // We keep a Unicode character offset to byte offset translation
     std::vector<int> chartobyte;
+    // And we record the page breaks (TBD use it !)
     std::vector<int> pagebreaks;
+
+    // Walk the Chinese characters section, and accumulate tagger input.
     for (; !it.eof() && !it.error(); it++) {
         c = *it;
-        chartobyte.push_back(it.getBpos());
 
         if (!TextSplit::isCHINESE(c) && !ISASCIIPUNCTORCTL(c)) {
             // Non-Chinese: we keep on if encountering space and other ASCII punctuation. Allows
             // sending longer pieces of text to the splitter (perf). Else break, process this piece,
             // and return to the main splitter
-//            LOGCN("cn_to_words: broke on [" << (std::string)it << "] code " << c << "\n");
+            //LOGCN("cn_to_words: broke on [" << (std::string)it << "] code " << c << "\n");
             break;
         } else {
             if (c == '\f') {
                 inputdata += ' ';
-                pagebreaks.push_back(it.getBpos());
+                pagebreaks.push_back(chartobyte.size());
             } else {
                 if (ISASCIIPUNCTORCTL(c)) {
                     inputdata += ' ';
                 } else {
-                    it.appendchartostring(inputdata);
+                    if (TextSplit::whatcc(c) == TextSplit::SPACE) {
+                        // Avoid Jieba returning tokens for punctuation. Easier to remove here than
+                        // later
+                        inputdata += ' ';
+                    } else {
+                        it.appendchartostring(inputdata);
+                    }
                 }
             }
+            chartobyte.push_back(it.getBpos());
         }
     }
+    chartobyte.push_back(it.getBpos());
         
-// LOGCN("TextSplit::cn_to_words: sending out " << inputdata.size() << " bytes " << inputdata << "\n");
+    LOGCN("CNSplitter::text_to_words: send " << inputdata.size() << " bytes " << inputdata << "\n");
 
     // Overall data counter for worker restarts
     restartcount += inputdata.size();
@@ -181,86 +193,73 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
         return false;
     }
 
-    // Split the resulting words and positions strings into vectors. This could be optimized for
-    // less data copying...
-
-    auto resit = result.find("text");
+    // Split the resulting words and positions string into vectors of structs.
+    auto resit = result.find("wordsandpos");
     if (resit == result.end()) {
-        LOGERR("No text found in Python splitter for Chinese output\n");
+        LOGERR("No values found in output from Python splitter for Chinese.\n");
         return false;
     }        
-    string& outtext = resit->second;
-    vector<string> words;
-    stringToTokens(outtext, words, sepchars);
-
-    resit = result.find("charoffsets");
-    if (resit == result.end()) {
-        LOGERR("No positions in Python splitter for Chinese output\n");
-        return false;
-    }        
-    string& spos = resit->second;
-    vector<string> scharoffsets;
-    stringToTokens(spos, scharoffsets, sepchars);
-    if (scharoffsets.size() != words.size() * 2) {
-        LOGERR("CNSplitter: words sz " << words.size() << " offsets sz " <<scharoffsets.size() << "\n");
-        return false;
-    }
-    LOGINF("CNSplitter got back " << words.size() << " words\n");
-    
-    vector<int> charoffsets;
-    charoffsets.reserve(scharoffsets.size());
-    for (const auto& s: scharoffsets) {
-        charoffsets.push_back(atoi(s.c_str()));
-    }
-
-    std::vector<WordChars> wordchars;
-    for (int i = 0; i < int(words.size()); i++) {
-        auto w = words[i];
-        trimstring(w);
-        if (w.empty())
-            continue;
-        wordchars.push_back(std::tuple<std::string,int,int>(w, charoffsets[i*2], charoffsets[i*2+1]));
-    }
-    // The splitter sends words and spans. Span come after the words, but we prefer spans first
-    std::sort(wordchars.begin(), wordchars.end(), [](WordChars& a, WordChars& b) {
-        return std::get<1>(a) < std::get<1>(b) || ((std::get<1>(a) == std::get<1>(b)) &&
-                                                   (std::get<2>(a) > std::get<2>(b)));
-    });
-    for (const auto& wc : wordchars) {
-        auto w = std::get<0>(wc);
-        std::cerr << w << "\t" << std::get<1>(wc) << " " << std::get<2>(wc) << "\n";
-        if (w.size() == 1) {
-            std::cerr << "CHARACTER " << int(w[0]) << "\n";
+    char *data = const_cast<char *>(resit->second.c_str());
+    vector<WordAndPos> words;
+    char *saveptr{nullptr};
+    for (;;) {
+        auto w = strtok_r(data, "\t", &saveptr);
+        data = nullptr;
+        if (nullptr == w) {
+            break;
         }
+        auto s = strtok_r(nullptr, "\t", &saveptr);
+        if (nullptr == s) {
+            break;
+        }
+        auto e = strtok_r(nullptr, "\t", &saveptr);
+        if (nullptr == e) {
+            break;
+        }
+        std::string word(w);
+        trimstring(word);
+        if (word.empty())
+            continue;
+        words.emplace_back(w, atoi(s), atoi(e));
     }
+    // The splitter sends words and spans. Jieba emits spans after the words they cover, but we
+    // prefer spans first
+    std::sort(words.begin(), words.end(), [](WordAndPos& a, WordAndPos& b) {
+        return a.startpos < b.startpos || ((a.startpos == b.startpos) && (a.endpos > b.endpos));
+    });
+
     // Process the words and positions
-    // Current span
-    int spanstart{0}, spanend{0};
-    for (const auto& wc : wordchars) {
-        if (std::get<2>(wc) > spanend) {
-            // This is either a standalone word or a span
-            if (std::get<1>(wc) != spanstart)
-                wordpos++;
-            spanstart = std::get<1>(wc);
-            spanend = std::get<2>(wc);
-            std::cerr << std::get<0>(wc) << " AT POS " << wordpos << "\n";
-            if (!m_sink.takeword(std::get<0>(wc), wordpos, orgbytepos + chartobyte[spanstart],
-                                 orgbytepos + chartobyte[spanend])) {
+    int wstart{0}, spanend{0};
+    unsigned int pagebreakidx{0};
+    for (const auto& wc : words) {
+        LOGCN(wc.word << " " << wc.startpos << " " << wc.endpos << "\n");
+        // startpos is monotonic because it's the 1st sort key.
+        if (wc.startpos > wstart) {
+            wstart = wc.startpos;
+            wordpos++;
+        }
+        if (pagebreakidx < pagebreaks.size() && wc.startpos > pagebreaks[pagebreakidx]) {
+            LOGERR("NEWPAGE\n");
+            m_sink.newpage(wordpos);
+            pagebreakidx++;
+        }
+        if (wc.endpos > spanend) {
+            spanend = wc.endpos;
+            LOGCN("SPAN " << wc.word << " AT POS " << wordpos << "\n");
+            if (!m_sink.takeword(wc.word, wordpos, chartobyte[wc.startpos], chartobyte[wc.endpos])) {
                 return false;
             }
         } else {
             // This word is covered by a span
-            if (std::get<1>(wc) != spanstart)
-                wordpos++;
-            std::cerr << std::get<0>(wc) << " AT POS " << wordpos << "\n";
+            LOGCN("WORD " << wc.word << " AT POS " << wordpos << "\n");
             if (!(flags & TextSplit::TXTS_ONLYSPANS) &&
-                !m_sink.takeword(std::get<0>(wc), wordpos, chartobyte[std::get<1>(wc)],
-                                 chartobyte[std::get<2>(wc)])) {
+                !m_sink.takeword(wc.word, wordpos, chartobyte[wc.startpos], chartobyte[wc.endpos])) {
                 return false;
             }
         }
     }
-
+    wordpos++;
+    
     // Return the found non-chinese Unicode character value. The current input byte offset is kept
     // in the utf8Iter
     *cp = c;

@@ -72,7 +72,6 @@ using namespace std;
 // Only the lower 127 slots are now used, but keep it at 256 because it makes some tests in the code
 // simpler.
 const unsigned int charclasses_size = 256;
-enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259, A_ULETTER=260, A_LLETTER=261, SKIP=262};
 static int charclasses[charclasses_size];
 
 
@@ -164,23 +163,23 @@ public:
 
         // Set default value for all: SPACE
         for (i = 0 ; i < 256 ; i ++)
-            charclasses[i] = SPACE;
+            charclasses[i] = TextSplit::SPACE;
 
         char digits[] = "0123456789";
         for (i = 0; i  < strlen(digits); i++)
-            charclasses[int(digits[i])] = DIGIT;
+            charclasses[int(digits[i])] = TextSplit::DIGIT;
 
         char upper[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         for (i = 0; i  < strlen(upper); i++)
-            charclasses[int(upper[i])] = A_ULETTER;
+            charclasses[int(upper[i])] = TextSplit::A_ULETTER;
 
         char lower[] = "abcdefghijklmnopqrstuvwxyz";
         for (i = 0; i  < strlen(lower); i++)
-            charclasses[int(lower[i])] = A_LLETTER;
+            charclasses[int(lower[i])] = TextSplit::A_LLETTER;
 
         char wild[] = "*?[]";
         for (i = 0; i  < strlen(wild); i++)
-            charclasses[int(wild[i])] = WILD;
+            charclasses[int(wild[i])] = TextSplit::WILD;
 
         // Characters with special treatment:
         //
@@ -221,7 +220,8 @@ static inline bool isvisiblewhite(int c)
     return visiblewhite.find(c) != visiblewhite.end();
 }
 
-static inline int whatcc(unsigned int c)
+// Character class: if we do not find it to be special, process as letter.
+int TextSplit::whatcc(unsigned int c)
 {
     if (c <= 127) {
         return charclasses[c]; 
@@ -585,13 +585,13 @@ void TextSplit::discardspan()
 
 static inline bool isalphanum(int what, unsigned int flgs)
 {
-    return what == A_LLETTER || what == A_ULETTER ||
-        what == DIGIT || what == LETTER ||
-        ((flgs & TextSplit::TXTS_KEEPWILD) && what == WILD);
+    return what == TextSplit::A_LLETTER || what == TextSplit::A_ULETTER ||
+        what == TextSplit::DIGIT || what == TextSplit::LETTER ||
+        ((flgs & TextSplit::TXTS_KEEPWILD) && what == TextSplit::WILD);
 }
 static inline bool isdigit(int what, unsigned int flgs)
 {
-    return what == DIGIT || ((flgs & TextSplit::TXTS_KEEPWILD) && what == WILD);
+    return what == TextSplit::DIGIT || ((flgs & TextSplit::TXTS_KEEPWILD) && what == TextSplit::WILD);
 }
 
 #ifdef TEXTSPLIT_STATS
@@ -614,7 +614,7 @@ vector<CharFlags> splitFlags{
  */
 bool TextSplit::text_to_words(const string &in)
 {
-    LOGDEB("TextSplit::text_to_words: docjk " << o_processCJK << "(" <<
+    LOGDEB1("TextSplit::text_to_words: docjk " << o_processCJK << "(" <<
             o_CJKNgramLen <<  ") " << flagsToString(splitFlags, m_flags) <<
             " [" << in.substr(0,50) << "]\n");
 

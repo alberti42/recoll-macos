@@ -50,17 +50,12 @@ class Processor(object):
         if not self.init:
             self._init_tagger(params["tagger"]);
 
-        result = jieba.tokenize(params["data"], mode="search")
-        text = ""
-        charoffsets = ""
-        for e in result:
+        tokens = jieba.tokenize(params["data"], mode="search")
+        result = ""
+        for e in tokens:
             # proto.log(f"term: {e}")
-            word = e[0]
-            # Make sure there are no tabs in there, we use them as separators.
-            word = word.replace('\t', ' ')
-            text += word + "\t"
-            charoffsets += str(e[1]) + "\t" + str(e[2]) + "\t"
-        return {"text": text, "charoffsets": charoffsets}
+            result += e[0].replace('\t', ' ') + "\t" + str(e[1]) + "\t" + str(e[2]) + "\t"
+        return {"wordsandpos": result}
 
 
 proto = cmdtalk.CmdTalk()

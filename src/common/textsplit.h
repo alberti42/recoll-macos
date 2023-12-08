@@ -81,7 +81,9 @@ public:
     int maxwordlength() {return o_maxWordLength;}
     
     // Static utility functions:
-
+    enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259, A_ULETTER=260, A_LLETTER=261, SKIP=262};
+    static int whatcc(unsigned int c);
+    
     /** Count words in string, as the splitter would generate them */
     static int countWords(const std::string &in, int flgs = TXTS_ONLYSPANS);
 
