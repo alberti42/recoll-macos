@@ -28,6 +28,7 @@ import rclexecm
 from rclbasehandler import RclBaseHandler
 import rclxslt
 import re
+import os
 
 #
 # Common style sheet for the openxml metadata
@@ -166,7 +167,7 @@ content_stylesheet = '''<?xml version="1.0"?>
 class OXExtractor(RclBaseHandler):
     def __init__(self, em):
         super(OXExtractor, self).__init__(em)
-
+        self.forpreview = os.environ.get("RECOLL_FILTER_FORPREVIEW", "no")
 
     # Replace values inside data style sheet, depending on type of doc
     def computestylesheet(self, nm):
@@ -214,16 +215,18 @@ class OXExtractor(RclBaseHandler):
         try:
             stl = None
             # Extract number suffix for numeric sort
-            prefix = "ppt/slides/slide"
-            exp = prefix + '[0-9]+' + '.xml'
-            names = [fn for fn in zip.namelist() if re.match(exp, fn)]
-            for fn in sorted(
-                    names,
-                    key=lambda e,prefix=prefix: int(e[len(prefix):len(e)-4])):
-                if stl is None:
-                    stl = self.computestylesheet('pp')
-                content = zip.read(fn)
-                docdata += rclxslt.apply_sheet_data(stl, content)
+            for prefix in ("ppt/slides/slide","ppt/notesSlides/notesSlide"):
+                exp = prefix + '[0-9]+' + '.xml'
+                names = [fn for fn in zip.namelist() if re.match(exp, fn)]
+                for fn in sorted(
+                        names,
+                        key=lambda e,prefix=prefix: int(e[len(prefix):len(e)-4])):
+                    if stl is None:
+                        stl = self.computestylesheet('pp')
+                    content = zip.read(fn)
+                    if self.forpreview == "yes":
+                        docdata += b"<h2>" + fn.encode("utf-8",errors="ignore") + b"</h2>"
+                    docdata += rclxslt.apply_sheet_data(stl, content)
         except Exception as ex:
             #self.em.rclog("PPT Exception: %s" % ex)
             pass
