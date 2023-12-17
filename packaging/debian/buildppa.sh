@@ -14,7 +14,7 @@ SERIES="focal jammy lunar mantic"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.36.2
+RCLVERS=1.37.0pre1
 GSSPVERS=1.1.1
 PPAVERS=1
 
@@ -25,8 +25,8 @@ RCLSRC=${Y}/home/dockes/projets/fulltext/recoll/src
 GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
 RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
 
-PPANAME=recoll15-ppa
-#PPANAME=recollexp-ppa
+#PPANAME=recoll15-ppa
+PPANAME=recollexp-ppa
 #PPANAME=recoll-webengine-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"

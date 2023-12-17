@@ -1,3 +1,11 @@
+recoll (1.37.0pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Restructure tokenizer to make it easier to use external modules
+  * Jieba-based tokenizer for Chinese
+  * PPT: also index the slide notes.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 17 Dec 2023 08:41:00 +0100
+
 recoll (1.36.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix font size glitches inside the result table detail area.
