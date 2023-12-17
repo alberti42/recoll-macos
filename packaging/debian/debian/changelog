@@ -1,4 +1,4 @@
-recoll (1.37.0pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.37.0pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Restructure tokenizer to make it easier to use external modules
   * Jieba-based tokenizer for Chinese

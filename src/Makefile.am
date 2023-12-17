@@ -863,7 +863,7 @@ endif
 
 install-data-hook:
 	(cd $(DESTDIR)/$(filterdir); \
-	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
+	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py cnsplitter.py; \
 	chmod a+x recoll-we-move-files.py ../examples/rclmon.sh kosplitter.py; \
 	chmod a+x thunderbird-open-message.sh rclaspell-sugg.py; \
 	chmod 0644 msodump.zip recollepub.zip rclexecm.py rcllatinstops.zip \
