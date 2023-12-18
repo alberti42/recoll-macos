@@ -5,7 +5,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='https://www.lesbonscomptes.com/recoll/pages/features.html#doctypes'>http://www.recoll.org/pages/features.html</ulink>">
-<!ENTITY RCLVERSION "1.36">
+<!ENTITY RCLVERSION "1.37">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
@@ -173,13 +173,19 @@
       display documents that still exist at the place from which they were
       indexed.</para>
 
-      <para>&RCL; stores all internal data in <application>Unicode
-      UTF-8</application> format, and it can index many types of files
-      with different character sets, encodings, and languages into the
-      same index. It can process documents embedded inside other
-      documents (for example a PDF document stored inside a Zip
-      archive sent as an email attachment...), down to an arbitrary
+      <para>&RCL; stores all internal data in <application>Unicode UTF-8</application> format, and
+      it can index many types of files with different character sets, encodings, and languages into
+      the same index. It can process documents embedded inside other documents (for example a PDF
+      document stored inside a Zip archive sent as an email attachment...), down to an arbitrary
       depth.</para>
+
+      <para>By default. &RCL; processes east asian texts by generating terms as arbitrary sequences
+        of consecutive characters (n-grams). However, it has provisions to integrate with
+        language-aware text segmenters for
+        <ulink url="https://www.lesbonscomptes.com/recoll/pages/recoll-chinese.html">Chinese</ulink> 
+        and
+        <ulink url="https://www.lesbonscomptes.com/recoll/pages/recoll-korean.html">Korean</ulink>
+        which will produce a smaller index and improved search.</para>
       
       <para>Stemming is the process by which &RCL; reduces words to
       their radicals so that searching does not depend, for example, on a

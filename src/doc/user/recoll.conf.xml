@@ -216,13 +216,10 @@ browser plugins create the copies of visited pages.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEPAGEKBS">
 <term><varname>textfilepagekbs</varname></term>
-<listitem><para>Page size for text
-files. If this is set, text/plain files will be divided
-into documents of approximately this size. Will reduce memory usage at
-index time and help with loading data in the preview window at query
-time. Particularly useful with very big files, such as application or
-system logs. Also see textfilemaxmbs and
-compressedfilemaxkbs.
+<listitem><para>Page size for text files. If this is set, text/plain files will be divided into documents of approximately this
+size. Will reduce memory usage at index time and help with loading data in the preview window at
+query time. Particularly useful with very big files, such as application or system logs. Also see
+textfilemaxmbs and compressedfilemaxkbs.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MEMBERMAXKBS">
 <term><varname>membermaxkbs</varname></term>
@@ -326,6 +323,18 @@ n-grams used for indexing CJK text. The default value of 2 is
 probably appropriate in most cases. A value of 3 would allow more precision
 and efficiency on longer words, but the index will be approximately twice
 as large.
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.HANGULTAGGER">
+<term><varname>hangultagger</varname></term>
+<listitem><para>External tokenizer for Korean Hangul. This allows using an language specific processor for extracting terms from Korean text,
+instead of the generic n-gram term generator.
+See https://www.lesbonscomptes.com/recoll/pages/recoll-korean.html for instructions.
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.CHINESETAGGER">
+<term><varname>chinesetagger</varname></term>
+<listitem><para>External tokenizer for Chinese. This allows using the language specific Jieba tokenizer for extracting
+meaningful terms from Chinese text, instead of the generic n-gram term generator.
+See https://www.lesbonscomptes.com/recoll/pages/recoll-chinese.html for instructions.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTEMMINGLANGUAGES">
 <term><varname>indexstemminglanguages</varname></term>
@@ -572,26 +581,21 @@ need Java.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.THRQSIZES">
 <term><varname>thrQSizes</varname></term>
-<listitem><para>Stage input queues configuration. There are three
-internal queues in the indexing pipeline stages (file data extraction,
-terms generation, index update). This parameter defines the queue depths
-for each stage (three integer values). If a value of -1 is given for a
-given stage, no queue is used, and the thread will go on performing the
-next stage. In practise, deep queues have not been shown to increase
-performance. Default: a value of 0 for the first queue tells Recoll to
-perform autoconfiguration based on the detected number of CPUs (no need
-for the two other values in this case).  Use thrQSizes = -1 -1 -1 to
-disable multithreading entirely.
+<listitem><para>Task queue depths for each stage and threading configuration control. There are three internal queues in the indexing pipeline stages (file data extraction,
+terms generation, index update). This parameter defines the queue depths for each stage (three
+integer values). In practise, deep queues have not been shown to increase performance. The first
+value is also used to control threading autoconfiguration or disabling multithreading.  If the
+first queue depth is set to 0 Recoll will set the queue depths and thread counts based on the
+detected number of CPUs. The arbitrarily chosen values are as follows (depth,nthread). 1 CPU -> no
+threading. Less than 4 CPUs: (2, 2) (2, 2) (2, 1). Less than 6: (2, 4), (2, 2), (2, 1). Else (2,
+5), (2, 3), (2, 1).  If the first queue depth is set to -1, multithreading will be disabled
+entirely. The second and third values are ignored in both these cases.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.THRTCOUNTS">
 <term><varname>thrTCounts</varname></term>
-<listitem><para>Number of threads used for each indexing stage. The
-three stages are: file data extraction, terms generation, index
-update). The use of the counts is also controlled by some special values
-in thrQSizes: if the first queue depth is 0, all counts are ignored
-(autoconfigured); if a value of -1 is used for a queue depth, the
-corresponding thread count is ignored. It makes no sense to use a value
-other than 1 for the last stage because updating the Xapian index is
+<listitem><para>Number of threads used for each indexing stage. If the first entry in thrQSizes is not 0 or -1, these three values define the number of
+threads used for each stage (file data extraction, term generation, index update).  It makes no
+sense to use a value other than 1 for the last stage because updating the Xapian index is
 necessarily single-threaded (and protected by a mutex).
 </para></listitem></varlistentry>
 </variablelist></sect3>
