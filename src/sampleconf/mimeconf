@@ -152,6 +152,7 @@ application/vnd.sun.xml.writer.template = \
 #application/x-mobipocket-ebook = execm rclmobi
 #application/x-tar = execm rcltar.py
 
+application/x-sfz = execm rclsfz.py
 application/epub+zip = execm rclepub.py
 application/x-ipynb+json = exec jupyter nbconvert --to html --stdout ; mimetype = text/html
 application/javascript = internal text/plain
@@ -324,6 +325,7 @@ application/x-rar = archive
 application/x-ruby = source
 application/x-scribus = document
 application/x-scribus = wordprocessing
+application/x-sfz = html
 application/x-shellscript = source
 application/x-tar = archive
 application/x-tex = wordprocessing
@@ -435,6 +437,7 @@ text = \
       application/x-perl \
       application/x-php \
       application/x-ruby \
+      application/x-sfz \
       application/x-scribus \
       application/x-shellscript \
       application/x-tex \

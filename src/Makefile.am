@@ -832,6 +832,7 @@ filters/rclpython.py \
 filters/rclrar.py \
 filters/rclrtf.py \
 filters/rclscribus \
+filters/rclsfz.py \
 filters/rclshowinfo \
 filters/rcltar.py \
 filters/rcltex \

@@ -238,6 +238,7 @@
 .fb2 = text/x-fictionbook
 
 .war = application/x-webarchive
+.zip.html = application/x-sfz
 .mht = application/x-mimehtml
 .mhtml = application/x-mimehtml
 
