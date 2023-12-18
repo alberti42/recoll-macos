@@ -385,6 +385,15 @@ if test X$enableQT = Xyes ; then
    QMAKE_DISABLE_WEBENGINE=""
   fi
 
+  AC_ARG_ENABLE(webpreview,
+    AS_HELP_STRING([--disable-webpreview], [Implement the GUI preview windows with webkit or
+    webengine instead of qtextbrowser. This will usually produce a better display, but will
+    sometimes fail to display anything because of JS issues.]),
+    enableWebpreview=$enableval, enableWebpreview="yes")
+if test "$enableWebpreview" != "yes" ; then    
+   AC_DEFINE([PREVIEW_FORCETEXTBROWSER], [], [Use QTextBrowser to implement the preview windows])
+fi
+
  ##### Using QZeitGeist lib ? Default no for now
   AC_ARG_WITH(qzeitgeist,
     AS_HELP_STRING([--with-qzeitgeist],[Enable the use of the qzeitgeist library to send zeitgeist events.]),

@@ -28,8 +28,6 @@
 #include <QFont>
 #include <QImage>
 
-#define PREVIEW_FORCETEXTBROWSER
-
 #if defined(USING_WEBENGINE) && !defined(PREVIEW_FORCETEXTBROWSER)
 #  include <QWebEngineView>
 #  define PREVIEW_PARENTCLASS QWebEngineView

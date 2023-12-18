@@ -159,7 +159,7 @@ void Preview::init()
 
 void Preview::onUiPrefsChanged()
 {
-    LOGINF("Preview::onUiPrefsChanged\n");
+    LOGDEB("Preview::onUiPrefsChanged\n");
     int fs;
     if (prefs.reslistfontfamily != "") {
         m_font = QFont(prefs.reslistfontfamily);
@@ -388,7 +388,7 @@ void Preview::emitEditRequested()
 // starting from the current position
 void Preview::doSearch(const QString &_text, bool next, bool reverse, bool wordOnly)
 {
-    LOGINF("Preview::doSearch: text [" << qs2utf8s(_text) << "] idx " << m_searchTextFromIndex <<
+    LOGDEB0("Preview::doSearch: text [" << qs2utf8s(_text) << "] idx " << m_searchTextFromIndex <<
            " next " << next << " rev " << reverse << " word " << wordOnly << "\n");
 
     bool matchCase = casematchCB->isChecked();
@@ -1253,10 +1253,9 @@ void PreviewTextEdit::displayImage()
     document()->addResource(QTextDocument::ImageResource, QUrl("image"), m_image);
     textCursor().insertImage("image");
 #else
-    LOGINF("Reading image: MIME " << m_dbdoc.mimetype << " from " << m_imgfilename << "\n");
+    LOGDEB("Reading image: MIME " << m_dbdoc.mimetype << " from " << m_imgfilename << "\n");
     std::string content;
     if (!m_imgfilename.empty() && file_to_string(m_imgfilename, content)) {
-        LOGINF("Read content ok, size " << content.size() << "\n");
         QByteArray qcontent(content.c_str(), content.size());
         setContent(qcontent, u8s2qs(m_dbdoc.mimetype));
     }
