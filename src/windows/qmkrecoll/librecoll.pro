@@ -21,13 +21,15 @@ SOURCES += \
 ../../bincimapmime/mime-parseonlyheader.cc \
 ../../bincimapmime/mime-printbody.cc \
 ../../bincimapmime/mime.cc \
+../../common/cjksplitter.cpp \
+../../common/cnsplitter.cpp \
+../../common/kosplitter.cpp \
 ../../common/cstr.cpp \
 ../../common/plaintorich.cpp \
 ../../common/rclconfig.cpp \
 ../../common/rclinit.cpp \
 ../../common/syngroups.cpp \
 ../../common/textsplit.cpp \
-../../common/textsplitko.cpp \
 ../../common/unacpp.cpp \
 ../../common/utf8fn.cpp \
 ../../common/webstore.cpp \

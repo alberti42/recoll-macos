@@ -47,6 +47,7 @@ typedef int ssize_t;
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
 #define chdir _chdir
+#define strtok_r strtok_s
 
 #ifndef R_OK
 #define R_OK 4
