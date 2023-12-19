@@ -22,16 +22,18 @@
 #define _CNSPLITTER_H_INCLUDED_
 
 #include <string>
+#include <memory>
 
 #include "textsplit.h"
 
 class CNSplitter : public ExtSplitter {
 public:
-    CNSplitter(TextSplit& sink)
-        : ExtSplitter(sink) {}
-    virtual ~CNSplitter() = default;
+    CNSplitter(TextSplit& sink);
+    virtual ~CNSplitter();
     virtual bool text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos) override;
-
+    class Internal;
+private:
+    std::unique_ptr<Internal> m;
 };
 
 class RclConfig;

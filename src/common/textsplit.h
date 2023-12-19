@@ -20,9 +20,11 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <memory>
 
 class Utf8Iter;
 class RclConfig;
+class CNSplitter;
 
 /** 
  * Split text into words. 
@@ -49,12 +51,10 @@ public:
         TXTS_KEEPWILD = 4 
     };
     
-    TextSplit(int flags = TXTS_NONE)
-        : m_flags(flags) {}
-    virtual ~TextSplit() {}
+    TextSplit(int flags = TXTS_NONE);
     TextSplit(const TextSplit&) = delete;
     TextSplit& operator=(const TextSplit&) = delete;
-
+    ~TextSplit();
     /** Call at program initialization to read non default values from the 
         configuration */
     static void staticConfInit(RclConfig *config);
@@ -219,6 +219,7 @@ private:
     void discardspan();
     bool span_is_acronym(std::string *acronym);
     bool words_from_span(size_t bp);
+    std::unique_ptr<CNSplitter> m_cnsplitter;
 };
 
 class ExtSplitter {

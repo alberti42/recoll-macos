@@ -38,68 +38,8 @@
 
 using namespace std;
 
-// Separator char used in words and tags lists.
+// Separator char used in words and tags lists sent by the subprocess
 static const string sepchars("\t");
-
-static CmdTalk *o_talker;
-static bool o_starterror{false};
-static string o_cmdpath;
-static vector<string> o_cmdargs;
-static std::mutex o_mutex;
-static string o_taggername{"Jieba"};
-
-// The external splitter process may be leaking memory. We restart it from time to time. It costs a
-// couple seconds every time.
-static uint64_t restartcount;
-static uint64_t restartthreshold = 5 * 1000 * 1000;
-
-void cnStaticConfInit(RclConfig *config, const string& tagger)
-{
-    LOGDEB0("cnStaticConfInit\n")
-    std::vector<std::string> cmdvec;
-    if (config->pythonCmd("cnsplitter.py", cmdvec)) {
-        auto it = cmdvec.begin();
-        o_cmdpath = *it++;
-        o_cmdargs.clear();
-        o_cmdargs.insert(o_cmdargs.end(), it, cmdvec.end());
-    } else {
-        LOGERR("cnStaticConfInit: cnsplitter.py Python script not found.\n");
-        o_starterror = true;
-        return;
-    }
-    o_taggername = tagger;
-    LOGDEB0("cnStaticConfInit: tagger name " << tagger << " cmd " << o_cmdpath << " args " <<
-            stringsToString(o_cmdargs) << "\n")
-}
-
-// Start the Python subprocess
-static bool initCmd()
-{
-    if (o_starterror) {
-        // No use retrying
-        return false;
-    }
-    if (o_talker) {
-        if (restartcount > restartthreshold) {
-            delete o_talker;
-            o_talker = nullptr;
-            restartcount = 0;
-        } else {
-            return true;
-        }
-    }
-    if (nullptr == (o_talker = new CmdTalk(300))) {
-        o_starterror = true;
-        return false;
-    }
-    if (!o_talker->startCmd(o_cmdpath, o_cmdargs)) {
-        delete o_talker;
-        o_talker = nullptr;
-        o_starterror = true;
-        return false;
-    }
-    return true;
-}
 
 #define LOGCN LOGDEB1
 
@@ -120,14 +60,92 @@ struct WordAndPos {
                                  (c >= 'a' && c <= 'z') ||             \
                                  (c >= '0' && c <= '9')))
 
+static bool o_starterror{false};
+static string o_cmdpath;
+static vector<string> o_cmdargs;
+static string o_taggername{"Jieba"};
+
+// Jieba processes are expensive, we maintain a cache.
+static std::mutex o_mutex;
+static std::vector<CmdTalk*> o_talkers;
+
+void cnStaticConfInit(RclConfig *config, const string& tagger)
+{
+    LOGDEB0("cnStaticConfInit\n")
+    std::vector<std::string> cmdvec;
+    if (config->pythonCmd("cnsplitter.py", cmdvec)) {
+        auto it = cmdvec.begin();
+        o_cmdpath = *it++;
+        o_cmdargs.clear();
+        o_cmdargs.insert(o_cmdargs.end(), it, cmdvec.end());
+    } else {
+        LOGERR("cnStaticConfInit: cnsplitter.py Python script not found.\n");
+        o_starterror = true;
+        return;
+    }
+    o_taggername = tagger;
+    LOGDEB0("cnStaticConfInit: tagger name " << tagger << " cmd " << o_cmdpath << " args " <<
+            stringsToString(o_cmdargs) << "\n")
+}
+
+class CNSplitter::Internal {
+public:
+    Internal() = default;
+    ~Internal() {
+        if (talker)
+            o_talkers.push_back(talker);
+    }
+    
+    // Either get the Python subprocess from the cache or start it.
+    bool initCmd() {
+        std::unique_lock<std::mutex> mylock(o_mutex);
+        
+        if (o_starterror) {
+            // No use retrying
+            return false;
+        }
+
+        if (talker)
+            return true;
+
+        if (!o_talkers.empty()) {
+            talker = o_talkers.back();
+            o_talkers.pop_back();
+            return true;
+        }
+
+        if (nullptr == (talker = new CmdTalk(300))) {
+            o_starterror = true;
+            return false;
+        }
+        if (!talker->startCmd(o_cmdpath, o_cmdargs)) {
+            delete talker;
+            talker = nullptr;
+            o_starterror = true;
+            return false;
+        }
+        return true;
+    }
+    
+    CmdTalk *talker{nullptr};
+};
+
+
+CNSplitter::CNSplitter(TextSplit& sink)
+    : ExtSplitter(sink), m(std::make_unique<Internal>())
+{
+}
+
+CNSplitter::~CNSplitter()
+{
+}
+
 bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
 {
     LOGDEB0("CNSplitter::text_to_words: wordpos " << wordpos << "\n");
-    std::unique_lock<std::mutex> mylock(o_mutex);
 
     int flags = m_sink.flags();
-    initCmd();
-    if (nullptr == o_talker) {
+    if (!m->initCmd() || nullptr == m->talker) {
         return false;
     }
 
@@ -158,7 +176,7 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
             // Non-Chinese: we keep on if encountering space and other ASCII punctuation. Allows
             // sending longer pieces of text to the splitter (perf). Else break, process this piece,
             // and return to the main splitter
-            //LOGCN("cn_to_words: broke on [" << (std::string)it << "] code " << c << "\n");
+            //LOGINF("cn_to_words: broke on [" << (std::string)it << "] code " << c << "\n");
             break;
         } else {
             if (c == '\f') {
@@ -184,11 +202,9 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
         
     LOGCN("CNSplitter::text_to_words: send " << inputdata.size() << " bytes " << inputdata << "\n");
 
-    // Overall data counter for worker restarts
-    restartcount += inputdata.size();
     // Have the worker analyse the data, check that we get a result,
     unordered_map<string,string> result;
-    if (!o_talker->talk(args, result)) {
+    if (!m->talker->talk(args, result)) {
         LOGERR("Python splitter for Chinese failed for [" << inputdata << "]\n");
         return false;
     }

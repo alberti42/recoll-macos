@@ -606,6 +606,14 @@ vector<CharFlags> splitFlags{
     {TextSplit::TXTS_KEEPWILD, "keepwild"}
 };
 
+TextSplit::TextSplit(int flags)
+    : m_flags(flags)
+{
+}
+TextSplit::~TextSplit()
+{
+}
+
 /** 
  * Splitting a text into terms to be indexed.
  * We basically emit a word every time we see a separator, but some chars are
@@ -677,8 +685,10 @@ bool TextSplit::text_to_words(const string &in)
                     return false;
                 }
             } else if (csc == CSC_CHINESE) {
-                CNSplitter splt(*this);
-                if (!splt.text_to_words(it, &c, m_wordpos)) {
+                if (!m_cnsplitter) {
+                    m_cnsplitter = std::make_unique<CNSplitter>(*this);
+                }
+                if (!m_cnsplitter->text_to_words(it, &c, m_wordpos)) {
                     LOGERR("Textsplit: scan error in chinese handler\n");
                     return false;
                 }
