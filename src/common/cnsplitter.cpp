@@ -64,6 +64,7 @@ static bool o_starterror{false};
 static string o_cmdpath;
 static vector<string> o_cmdargs;
 static string o_taggername{"Jieba"};
+static bool o_noreturn{false};
 
 // Jieba processes are expensive, we maintain a cache.
 static std::mutex o_mutex;
@@ -84,6 +85,7 @@ void cnStaticConfInit(RclConfig *config, const string& tagger)
         return;
     }
     o_taggername = tagger;
+    config->getConfParam("cntnoreturn", &o_noreturn);
     LOGDEB0("cnStaticConfInit: tagger name " << tagger << " cmd " << o_cmdpath << " args " <<
             stringsToString(o_cmdargs) << "\n")
 }
@@ -172,7 +174,7 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
     for (; !it.eof() && !it.error(); it++) {
         c = *it;
 
-        if (!TextSplit::isCHINESE(c) && !ISASCIIPUNCTORCTL(c)) {
+        if (!o_noreturn && !TextSplit::isCHINESE(c) && !ISASCIIPUNCTORCTL(c)) {
             // Non-Chinese: we keep on if encountering space and other ASCII punctuation. Allows
             // sending longer pieces of text to the splitter (perf). Else break, process this piece,
             // and return to the main splitter
@@ -236,6 +238,10 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
         trimstring(word);
         if (word.empty())
             continue;
+        if (int(word.size()) > m_sink.maxwordlength()) {
+            LOGERR("CNSplitter: discarding long word [" << word << "]\n");
+            continue;
+        }
         words.emplace_back(w, atoi(s), atoi(e));
     }
     // The splitter sends words and spans. Jieba emits spans after the words they cover, but we
