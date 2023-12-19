@@ -86,8 +86,8 @@ void cnStaticConfInit(RclConfig *config, const string& tagger)
     }
     o_taggername = tagger;
     config->getConfParam("cntnoreturn", &o_noreturn);
-    LOGDEB0("cnStaticConfInit: tagger name " << tagger << " cmd " << o_cmdpath << " args " <<
-            stringsToString(o_cmdargs) << "\n")
+    LOGINF("cnStaticConfInit: tagger name " << tagger << " cmd " << o_cmdpath << " args " <<
+           stringsToString(o_cmdargs) << " cntnoreturn " << o_noreturn << "\n")
 }
 
 class CNSplitter::Internal {
@@ -239,7 +239,7 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
         if (word.empty())
             continue;
         if (int(word.size()) > m_sink.maxwordlength()) {
-            LOGERR("CNSplitter: discarding long word [" << word << "]\n");
+            LOGDEB1("CNSplitter: discarding long word [" << word << "]\n");
             continue;
         }
         words.emplace_back(w, atoi(s), atoi(e));
