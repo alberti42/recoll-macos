@@ -19,37 +19,26 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # Indexer for "SingleFileZ" files. These are single-file web archives stored in a file with a
-# .zip.html extension, which manages to be both sort of an html and sort of a zip
-# file. Unfortunately the Python zip interface does not like the hack so that we have to use an
-# unzip or 7z command to extract the index.html member.
+# .zip.html extension, which manages to be both sort of an html and sort of a zip file. These could
+# be processed just by adding .zip.html = application/zip in mimemap, but then we'd also index all
+# the useless aux files in there. Use this filter to just extract the index.html
 
 import rclexecm
 from rclbasehandler import RclBaseHandler
 import sys
-import subprocess
+from zipfile import ZipFile
 
-unzip = None
-sevenz = None
 
 class SFZExtractor(RclBaseHandler):
     def __init__(self, em):
         super(SFZExtractor, self).__init__(em)
     def html_text(self, fn):
-        if unzip:
-            cmd = [unzip, "-p", rclexecm.subprocfile(fn), "index.html"]
-        else:
-            cmd = [sevenz, "e", "-so", rclexecm.subprocfile(fn), "index.html"]
-
-        data = subprocess.check_output(cmd)
+        zipf = ZipFile(fn.decode('utf-8'))
+        #self.em.rclog(f"ZipFile({fn}) ok")
+        data = zipf.read("index.html")
         return data
 
 if __name__ == '__main__':
-    unzip = rclexecm.which("unzip")
-    if not unzip:
-        sevenz = rclexecm.which("7z")
-        if not sevenz:
-            print("RECFILTERROR HELPERNOTFOUND unzip|7z")
-            sys.exit(1)
     proto = rclexecm.RclExecM()
     extract = SFZExtractor(proto)
     rclexecm.main(proto, extract)
