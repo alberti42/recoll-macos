@@ -329,6 +329,10 @@ private:
 // reset. When using multiple indexes, all must have the same value
 extern bool o_index_stripchars;
 
+// Do we generate term positions. The default is yes, to enable phrase and proximity searches, but
+// it is possible to disable it for index size or performance reasons if they are not needed.
+extern bool o_no_term_positions;
+
 // Store document text in index. Allows extracting snippets from text
 // instead of building them from index position data. Has become
 // necessary for versions of Xapian 1.6, which have dropped support

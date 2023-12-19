@@ -138,6 +138,8 @@ bool o_index_stripchars = true;
 // snippets.
 bool o_index_storedoctext = true;
 
+bool o_no_term_positions = false;
+
 bool o_uptodate_test_use_mtime = false;
 
 bool o_expand_phrases = false;
@@ -699,6 +701,7 @@ bool RclConfig::updateMainConfig()
         getConfParam("indexStoreDocText", &o_index_storedoctext);
         getConfParam("testmodifusemtime", &o_uptodate_test_use_mtime);
         getConfParam("stemexpandphrases", &o_expand_phrases);
+        getConfParam("notermpositions", &o_no_term_positions);
         m_index_stripchars_init = 1;
     }
 

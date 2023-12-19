@@ -1279,14 +1279,16 @@ public:
     {
         string ermsg;
 
-        try {
-            // Index the possibly prefixed start term.
-            doc.add_posting(ft.pfx + start_of_field_term, basepos, ft.wdfinc);
-            ++basepos;
-        } XCATCHERROR(ermsg);
-        if (!ermsg.empty()) {
-            LOGERR("Db: xapian add_posting error " << ermsg << "\n");
-            goto out;
+        if (!o_no_term_positions) {
+            try {
+                // Index the possibly prefixed start term.
+                doc.add_posting(ft.pfx + start_of_field_term, basepos, ft.wdfinc);
+                ++basepos;
+            } XCATCHERROR(ermsg);
+            if (!ermsg.empty()) {
+                LOGERR("Db: xapian add_posting error " << ermsg << "\n");
+                goto out;
+            }
         }
 
         if (!TextSplitP::text_to_words(in)) {
@@ -1294,15 +1296,16 @@ public:
             goto out;
         }
 
-        try {
-            // Index the possibly prefixed end term.
-            doc.add_posting(ft.pfx + end_of_field_term, basepos + curpos + 1,
-                            ft.wdfinc);
-            ++basepos;
-        } XCATCHERROR(ermsg);
-        if (!ermsg.empty()) {
-            LOGERR("Db: xapian add_posting error " << ermsg << "\n");
-            goto out;
+        if (!o_no_term_positions) {
+            try {
+                // Index the possibly prefixed end term.
+                doc.add_posting(ft.pfx + end_of_field_term, basepos + curpos + 1, ft.wdfinc);
+                ++basepos;
+            } XCATCHERROR(ermsg);
+            if (!ermsg.empty()) {
+                LOGERR("Db: xapian add_posting error " << ermsg << "\n");
+                goto out;
+            }
         }
 
     out:
@@ -1342,8 +1345,13 @@ public:
         try {
             // Index without prefix, using the field-specific weighting
             LOGDEB1("Emitting term at " << pos << " : [" << term << "]\n");
-            if (!m_ts->ft.pfxonly)
-                m_ts->doc.add_posting(term, pos, m_ts->ft.wdfinc);
+            if (!m_ts->ft.pfxonly) {
+                if (!o_no_term_positions) {
+                    m_ts->doc.add_posting(term, pos, m_ts->ft.wdfinc);
+                } else {
+                    m_ts->doc.add_term(term, m_ts->ft.wdfinc);
+                }
+            }
 
 #ifdef TESTING_XAPIAN_SPELL
             if (Db::isSpellingCandidate(term, false)) {
@@ -1352,8 +1360,11 @@ public:
 #endif
             // Index the prefixed term.
             if (!m_ts->ft.pfx.empty()) {
-                m_ts->doc.add_posting(m_ts->ft.pfx + term, pos, 
-                                      m_ts->ft.wdfinc);
+                if (!o_no_term_positions) {
+                    m_ts->doc.add_posting(m_ts->ft.pfx + term, pos, m_ts->ft.wdfinc);
+                } else {
+                    m_ts->doc.add_term(m_ts->ft.pfx + term, m_ts->ft.wdfinc);
+                }
             }
             return true;
         } XCATCHERROR(ermsg);
@@ -1368,7 +1379,8 @@ public:
             return;
         }
 
-        m_ts->doc.add_posting(m_ts->ft.pfx + page_break_term, pos);
+        if (!o_no_term_positions) 
+            m_ts->doc.add_posting(m_ts->ft.pfx + page_break_term, pos);
         if (pos == m_lastpagepos) {
             m_pageincr++;
             LOGDEB2("newpage: same pos, pageincr " << m_pageincr <<
