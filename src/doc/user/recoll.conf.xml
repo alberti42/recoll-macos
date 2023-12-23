@@ -284,6 +284,11 @@ documents with huge amounts of numbers in them, where setting nonumbers
 will reduce the index size. This can only be set for a whole index, not
 for a subtree.
 </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOTERMPOSITIONS">
+<term><varname>notermpositions</varname></term>
+<listitem><para>Do not store term positions. Term positions allow for phrase and proximity searches, but make the index much bigger.
+In some special circumstances, you may want to dispense with them.
+</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.DEHYPHENATE">
 <term><varname>dehyphenate</varname></term>
 <listitem><para>Determines if we index 'coworker'
@@ -303,9 +308,9 @@ not be the default.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMLENGTH">
 <term><varname>maxtermlength</varname></term>
-<listitem><para>Maximum term length. Words longer than this will be discarded.
+<listitem><para>Maximum term length in bytes. Words longer than this will be discarded.
 The default is 40 and used to be hard-coded, but it can now be
-adjusted. You need an index reset if you change the value.
+adjusted. You may need an index reset if you change the value.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCJK">
 <term><varname>nocjk</varname></term>

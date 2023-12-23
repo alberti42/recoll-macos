@@ -9944,6 +9944,16 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                   subtree.</p>
                 </dd>
                 <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOTERMPOSITIONS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOTERMPOSITIONS"></a><span class="term"><code class="varname">notermpositions</code></span></dt>
+                <dd>
+                  <p>Do not store term positions. Term positions
+                  allow for phrase and proximity searches, but make
+                  the index much bigger. In some special
+                  circumstances, you may want to dispense with
+                  them.</p>
+                </dd>
+                <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.DEHYPHENATE" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.DEHYPHENATE"></a><span class="term"><code class="varname">dehyphenate</code></span></dt>
                 <dd>
@@ -9975,10 +9985,11 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 "RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMLENGTH" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMLENGTH"></a><span class="term"><code class="varname">maxtermlength</code></span></dt>
                 <dd>
-                  <p>Maximum term length. Words longer than this
-                  will be discarded. The default is 40 and used to
-                  be hard-coded, but it can now be adjusted. You
-                  need an index reset if you change the value.</p>
+                  <p>Maximum term length in bytes. Words longer
+                  than this will be discarded. The default is 40
+                  and used to be hard-coded, but it can now be
+                  adjusted. You may need an index reset if you
+                  change the value.</p>
                 </dd>
                 <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.NOCJK"
                 id=

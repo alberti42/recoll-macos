@@ -1,12 +1,17 @@
-recoll (1.37.0pre3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.37.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Restructure tokenizer to make it easier to use external modules
   * Jieba-based tokenizer for Chinese
   * PPT: also index the slide notes.
   * Add handler for the .zip.html files produced by the SingleFileZ
     browser extension.
-  
- -- Jean-Francois Dockes <jf@dockes.org>  Mon, 18 Dec 2023 15:03:00 +0100
+  * Display previews using the main HTML engine (webkit or webengine)
+    instead of a QTextBrowser. Improves highlighting search terms while
+    walking them with the Prev/Next buttons.
+  * Add configuration option to not store term positions, yielding a much
+    smaller index, but forbidding phrase/proximity searches.
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 23 Dec 2023 15:03:00 +0100
 
 recoll (1.36.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
