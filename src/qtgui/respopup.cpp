@@ -196,7 +196,7 @@ void copyURL(const Rcl::Doc &doc)
     if (utf8check(doc.url)) {
         url = u8s2qs(doc.url);
     } else {
-        url = u8s2qs(url_encode(doc.url));
+        url = u8s2qs(path_pcencode(doc.url));
     }
 #endif
     QApplication::clipboard()->setText(url, QClipboard::Selection);

@@ -39,7 +39,7 @@ bool StrWildMatcher::match(const string& val) const
     case FNM_NOMATCH: return false;
     default:
         LOGINFO("StrWildMatcher::match:err: e [" << m_sexp << "] s [" << val
-                << "] (" << url_encode(val) << ") ret " << ret << "\n");
+                << "] (" << path_pcencode(val) << ") ret " << ret << "\n");
         return false;
     }
 }

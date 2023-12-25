@@ -145,7 +145,9 @@ void RclMain::openWith(Rcl::Doc doc, string cmdspec)
 #endif
     subs["F"] = fn;
     subs["f"] = fn;
-    subs["U"] = url_encode(url);
+    // Note that our HTTP urls are properly encoded, but our file: ones are actually raw paths. So
+    // only encode the latter
+    subs["U"] = url[0] == 'f' ? path_pcencode(url) : url;
     subs["u"] = url;
 
     execViewer(subs, false, execname, lcmd, cmdspec, doc);
@@ -413,7 +415,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
     subs["M"] = doc.mimetype;
     subs["p"] = ulltodecstr(pagenum);
     subs["s"] = term;
-    subs["U"] = url_encode(url);
+    // Note that our HTTP urls are properly encoded, but our file: ones are actually raw paths. So
+    // only encode the latter
+    subs["U"] = url[0] == 'f' ? path_pcencode(url) : url;
     subs["u"] = url;
     // Let %(xx) access all metadata.
     for (const auto& ent :doc.meta) {

@@ -470,7 +470,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         }
 
         if (op_flags & OPT_e) 
-            doc.url = url_encode(doc.url);
+            doc.url = path_pcencode(doc.url);
 
         if (op_flags & OPT_b) {
             cout << (paths_only ? doc.url.substr(7) : doc.url) << "\n";

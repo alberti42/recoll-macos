@@ -82,7 +82,7 @@ bool RclMain::updateIdxStatus()
     // If already UTF-8 let it be, else try to transcode, or url-encode
     if (!transcode(status.fn, mf, "UTF-8", "UTF-8", &ecnt) || ecnt) {
         if (!transcode(status.fn, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
-            mf = url_encode(status.fn, 0);
+            mf = path_pcencode(status.fn, 0);
         }
     }
     msg += QString::fromUtf8(mf.c_str());

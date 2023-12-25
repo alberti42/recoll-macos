@@ -297,16 +297,14 @@ const string& path_pkgdatadir()
     return datadir;
 }
 
-/* There is a lot of vagueness about what should be percent-encoded or
- * not in a file:// url. The constraint that we have is that we may use
- * the encoded URL to compute (MD5) a thumbnail path according to the
- * freedesktop.org thumbnail spec, which itself does not define what
- * should be escaped. We choose to exactly escape what gio does, as
- * implemented in glib/gconvert.c:g_escape_uri_string(uri, UNSAFE_PATH). 
- * Hopefully, the other desktops have the same set of escaped chars. 
- * Note that $ is not encoded, so the value is not shell-safe.
+/* 
+  Encode the path part of a file:// url so that we can use it to compute (MD5) a thumbnail path
+  according to the freedesktop.org thumbnail spec, which itself does not define what should be
+  escaped. We choose to exactly escape what gio does, as implemented in
+  glib/gconvert.c:g_escape_uri_string(uri, UNSAFE_PATH).  Hopefully, the other desktops have the
+  same set of escaped chars.  Note that $ is not encoded, so the value is not shell-safe.
  */
-string url_encode(const string& url, string::size_type offs)
+string path_pcencode(const string& url, string::size_type offs)
 {
     string out = url.substr(0, offs);
     const char *cp = url.c_str();
@@ -434,7 +432,7 @@ bool printableUrl(const string& fcharset, const string& in, string& out)
 #else
     int ecnt = 0;
     if (!transcode(in, out, fcharset, "UTF-8", &ecnt) || ecnt) {
-        out = url_encode(in, 7);
+        out = path_pcencode(in, 7);
     }
 #endif
     return true;
@@ -772,7 +770,7 @@ static const vector<string> thmbdirs{thmbdirxxlarge, thmbdirxlarge, thmbdirlarge
 static void thumbname(const string& url, string& name)
 {
     string digest;
-    string l_url = url_encode(url);
+    string l_url = path_pcencode(url);
     MD5String(l_url, digest);
     MD5HexPrint(digest, name);
     name += ".png";

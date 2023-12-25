@@ -42,8 +42,12 @@ extern const std::string& path_pkgdatadir();
 extern std::string path_thisexecpath();
 #endif
 
-/// Encode according to rfc 1738
-extern std::string url_encode(const std::string& url, std::string::size_type offs = 0);
+/// Encode the path in a manner compatible to freedesktop thumbnail path computation. In addition to
+/// some printable punctuation (SPC"#%;<>?[\]^`{|}), this will also encode unprintable characters
+/// (control or 8 bit set), so it can be used as a general unprintable data encoder. This is
+/// absolutely not a general URL processor though as it will happily trash query and fragment.
+extern std::string path_pcencode(const std::string& url, std::string::size_type offs = 0);
+
 //// Convert to file path if url is like file://. This modifies the
 //// input (and returns a copy for convenience)
 extern std::string fileurltolocalpath(std::string url);

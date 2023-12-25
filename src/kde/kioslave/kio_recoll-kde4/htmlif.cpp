@@ -57,7 +57,7 @@ string RecollProtocol::makeQueryUrl(int page, bool isdet)
 {
     ostringstream str;
     str << "recoll://search/query?q=" << 
-        url_encode((const char*)m_query.query.toUtf8()) <<
+        path_pcencode((const char*)m_query.query.toUtf8()) <<
         "&qtp=" << (const char*)m_query.opt.toUtf8();
     if (page >= 0)
         str << "&p=" << page;
@@ -104,14 +104,14 @@ const string& RecollKioPager::parFormat()
 string RecollKioPager::pageTop()
 {
     string pt = "<p align=\"center\"> <a href=\"recoll:///search.html?q=";
-    pt += url_encode(string(m_parent->m_query.query.toUtf8()));
+    pt += path_pcencode(string(m_parent->m_query.query.toUtf8()));
     pt += "\">New Search</a>";
     return pt;
 // Would be nice to have but doesnt work because the query may be executed
 // by another kio instance which has no idea of the current page o
 #if 0 && KDE_IS_VERSION(4,1,0)
     " &nbsp;&nbsp;&nbsp;<a href=\"recoll:///" + 
-        url_encode(string(m_parent->m_query.query.toUtf8())) +
+        path_pcencode(string(m_parent->m_query.query.toUtf8())) +
         "/\">Directory view</a> (you may need to reload the page)"
 #endif
         }

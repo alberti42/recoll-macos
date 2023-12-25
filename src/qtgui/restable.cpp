@@ -431,7 +431,7 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
         int ecnt;
         string data1;
         if (!transcode(data, data1, "UTF-8", "UTF-8", &ecnt) || ecnt > 0) {
-            data = url_encode(data, 7);
+            data = path_pcencode(data, 7);
         }
     }
 #endif

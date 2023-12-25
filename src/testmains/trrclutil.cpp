@@ -120,7 +120,7 @@ int main(int argc, char **argv)
         if (optind != argc) {
             return 1;
         }
-        cout << "url_encode(" << s << ", " << offs << ") -> [" << url_encode(s, offs) << "]\n";
+        cout << "url_encode(" << s << ", " << offs << ") -> [" << path_pcencode(s, offs) << "]\n";
     } else if (options["growmime"]) {
         if (optind < argc) {
             Usage();
