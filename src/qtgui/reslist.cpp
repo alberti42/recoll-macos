@@ -1019,17 +1019,14 @@ void ResList::showQueryDetails()
 
 void ResList::onLinkClicked(const QUrl &qurl)
 {
-    // qt5: url.toString() does not accept FullyDecoded, but that's what we
-    // want. e.g. Suggestions links are like Sterm|spelling which we
-    // receive as Sterm%7CSpelling
-    string strurl = url_decode(qs2utf8s(qurl.toString()));
+    // qt5: url.toString() does not accept FullyDecoded, but that's what we want. e.g. Suggestions
+    // links are like Sterm|spelling which we receive as Sterm%7CSpelling
+    string strurl = pc_decode(qs2utf8s(qurl.toString()));
 
-    // Link prefix remark: it used to be that webengine refused to
-    // acknowledge link clicks on links like "%P1", it needed an
-    // absolute URL like http://localhost/P1. This does not seem to be
-    // the case any more, probably because we now set baseUrl (to fix
-    // icons display which had stopped working). So the linkprefix
-    // thing could probably go away. OTOH, we'd have to substract the
+    // Link prefix remark: it used to be that webengine refused to acknowledge link clicks on links
+    // like "%P1", it needed an absolute URL like http://localhost/P1. This does not seem to be the
+    // case any more, probably because we now set baseUrl (to fix icons display which had stopped
+    // working). So the linkprefix thing could probably go away. OTOH, we'd have to substract the
     // baseUrl because we receive links like baseUrl+P1 instead.
     LOGDEB1("ResList::onLinkClicked: [" << strurl << "] prefix " << m_pager->linkPrefix() << "\n");
     if (m_pager->linkPrefix().size() > 0 &&
