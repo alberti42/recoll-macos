@@ -1,7 +1,7 @@
-diff --git a/src/qtgui/rclmain_w.cpp b/src/qtgui/rclmain_w.cpp
+diff --git a/qtgui/rclmain_w.cpp b/qtgui/rclmain_w.cpp
 index 0b93dcfa..549f0d5f 100644
---- a/src/qtgui/rclmain_w.cpp
-+++ b/src/qtgui/rclmain_w.cpp
+--- a/qtgui/rclmain_w.cpp
++++ b/qtgui/rclmain_w.cpp
 @@ -737,7 +737,14 @@ void RclMain::fileExit()
      rwSettings(true);
  

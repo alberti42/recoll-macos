@@ -25,8 +25,8 @@ RCLSRC=${Y}/home/dockes/projets/fulltext/recoll/src
 GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
 RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
 
-#PPANAME=recoll15-ppa
-PPANAME=recollexp-ppa
+PPANAME=recoll15-ppa
+#PPANAME=recollexp-ppa
 #PPANAME=recoll-webengine-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
