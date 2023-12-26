@@ -229,8 +229,10 @@ void Preview::listShortcuts()
                  tr("Show previous result"), "Shift+Up",m_prevdocsc, emitShowPrev);
     LISTSHORTCUT(null, "preview:159", tr("Preview Window"),
                  tr("Close tab"), "Ctrl+W", m_closetabsc, closeCurrentTab);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     LISTSHORTCUT(null, "preview:162", tr("Preview Window"),
                  tr("Print"), "Ctrl+P", m_printtabsc, print);
+#endif
 }
 
 void Preview::emitShowNext()
@@ -528,10 +530,12 @@ void Preview::currentChanged(int index)
 
     editPB->setEnabled(canOpen(&edit->m_dbdoc, theconfig));
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     // Disconnect the print signal and reconnect it to the current editor
     LOGDEB1("Disconnecting reconnecting print signal\n");
     disconnect(this, SIGNAL(printCurrentPreviewRequest()), 0, 0);
     connect(this, SIGNAL(printCurrentPreviewRequest()), edit, SLOT(print()));
+#endif
     edit->installEventFilter(this);
 #ifdef PREVIEW_TEXTBROWSER
     edit->viewport()->installEventFilter(this);
@@ -1143,7 +1147,9 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
     popup->addAction(tr("Select All"), this, SLOT(selectAll()));
     popup->addAction(tr("Copy"), this, SLOT(copy()));
 #endif
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     popup->addAction(tr("Print"), this, SLOT(print()));
+#endif
     if (prefs.previewPlainPre) {
         popup->addAction(tr("Fold lines"), m_preview, SLOT(togglePlainPre()));
     } else {
@@ -1276,6 +1282,8 @@ void PreviewTextEdit::mouseDoubleClickEvent(QMouseEvent *event)
 
 void PreviewTextEdit::print()
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0)) && !defined(PREVIEW_FORCETEXTBROWSER)
+    // Qt6 has a print to pdf file instead which we could use
 #ifndef QT_NO_PRINTER
 
     LOGDEB("PreviewTextEdit::print\n");
@@ -1297,4 +1305,5 @@ void PreviewTextEdit::print()
 #endif
     
 #endif // No printer
+#endif // Qt version < 6
 }
