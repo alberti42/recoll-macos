@@ -378,14 +378,15 @@ int main(int argc, char **argv)
         slang = QLocale::system().name().left(2);
     }
     QTranslator qt_trans(0);
-    qt_trans.load(QString("qt_%1").arg(slang), 
+    if (qt_trans.load(QString("qt_%1").arg(slang), 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-                  QLibraryInfo::path
+                      QLibraryInfo::path
 #else
-                  QLibraryInfo::location
+                      QLibraryInfo::location
 #endif
-                  (QLibraryInfo::TranslationsPath));
-    app.installTranslator(&qt_trans);
+                      (QLibraryInfo::TranslationsPath))) {
+        app.installTranslator(&qt_trans);
+    }
 
     // Translations for Recoll
     string translatdir = path_cat(theconfig->getDatadir(), "translations");
