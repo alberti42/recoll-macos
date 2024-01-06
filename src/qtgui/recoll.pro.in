@@ -10,7 +10,7 @@ TARGET          = recoll
 DEFINES += BUILDING_RECOLL
 DEFINES += BUILDING_RECOLLGUI
 
-QT += xml widgets printsupport
+QT += xml widgets printsupport network
 
 CONFIG  += qt warn_on thread release lrelease
 
