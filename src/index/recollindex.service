@@ -4,9 +4,10 @@ Description=Recoll real-time document indexing
 After=gnome-session-manager.target
 
 [Service]
-Type=simple
+Type=exec
 ExecStart=/usr/bin/recollindex -m -D -x -w 30 -c %h/.recoll/
 Restart=on-failure
+RestartSec=60
 
 [Install]
 WantedBy=graphical-session.target
