@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright  (C) 2006 J.F.Dockes
+# Copyright  (C) 2006-2023 J.F.Dockes
 #######################################################
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +19,13 @@
 
 ###################
 # Start/stop a recollindex program running as permanent real time indexer.
-# The running program writes its pid in $RECOLL_CONFDIR/index.pid
-# The portability of this script has not been fully tested.
 #
+# The running program writes its pid in
+# /var/run/${uid}/recoll-${hash}-index.pid where 'hash' is computed from
+# the configuration directory path (see rclconfig.cpp, getPidFile()).
+#
+# The portability of this script has not been fully tested.
+
 
 fatal()
 {
@@ -38,43 +42,47 @@ test $# -eq 1 || usage
 export LANG=C
 
 RECOLL_CONFDIR=${RECOLL_CONFDIR:-$HOME/.recoll}
-#echo RECOLL_CONFDIR = ${RECOLL_CONFDIR}
 
-pidfile="${RECOLL_CONFDIR}/index.pid"
+# Compute the pid file path as recollindex does: XDG runtime dir, then
+# file name based on a hash of the configuration directory name
+myrtdir=/run/user/`id -u`
+runtimedir=${XDG_RUNTIME_DIR:-"$myrtdir"}
+rclconf=`(cd "$RECOLL_CONFDIR";pwd)`/
+sum=`printf "%s" "$rclconf" | md5sum | cut -d' ' -f1`
+pidfile="$runtimedir/recoll-$sum"-index.pid
+
+# Read possible process id of running process, and test for existence
 opid=0
-
-
 if test -f $pidfile ; then
-   read opid junk < $pidfile
+    read opid junk < $pidfile
 fi
-
 if test $opid -gt 0; then
-   out=`kill -0 ${opid} 2>&1`
-   if test $? -ne 0 ; then
-      if test `expr "$out" : '.*such *process.*'` -ne 0 ; then	
-	 opid=0
-      else 
-	 fatal cant test existence of running process 
-      fi
-   fi
+    out=`kill -0 ${opid} 2>&1`
+    if test $? -ne 0 ; then
+        if test `expr "$out" : '.*such *process.*'` -ne 0 ; then    
+            opid=0
+        else 
+            fatal cant test existence of running process 
+        fi
+    fi
 fi
 
 #echo "Existing pid $opid"
 
 case $1 in
-     start)
-	if test "$opid" -ne 0 ; then
-	   fatal "Already running process: $opid"
-	fi
-	recollindex -m
-     ;;
-     stop)
-	if test "$opid" -eq 0 ; then
-	   fatal "No process running"
-	fi
-	kill $opid
-     ;;
-     *)
-     usage
+    start)
+        if test "$opid" -ne 0 ; then
+            fatal "Already running process: $opid"
+        fi
+        recollindex -m
+        ;;
+    stop)
+        if test "$opid" -eq 0 ; then
+            fatal "No process running"
+        fi
+        kill $opid
+        ;;
+    *)
+        usage
 esac
 
