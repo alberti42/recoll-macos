@@ -17,7 +17,7 @@
 #ifndef _LOG_H_X_INCLUDED_
 #define _LOG_H_X_INCLUDED_
 
-#include <string.h>
+#include <string.h>  // for strerror
 #include <fstream> 
 #include <iostream>
 #include <string>
@@ -49,6 +49,7 @@ public:
      * call changes the state, further ones just return the Logger
      * pointer. */
     static Logger *getTheLog(const std::string& fn = std::string());
+    static void cleanup();
 
     /** Close and reopen the output file. For rotating the log: rename
      * then reopen. */
@@ -127,6 +128,8 @@ private:
     Logger(const std::string& fn);
     Logger(const Logger &);
     Logger& operator=(const Logger &);
+
+    ~Logger();
 };
 
 #define LOGGER_PRT (Logger::getTheLog()->getstream())

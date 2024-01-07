@@ -31,6 +31,13 @@ Logger::Logger(const std::string& fn)
     reopen(fn);
 }
 
+Logger::~Logger()
+{
+    if (!m_tocerr && m_stream.is_open()) {
+        m_stream.close();
+    }
+}
+
 bool Logger::reopen(const std::string& fn)
 {
 #if LOGGER_THREADSAFE
@@ -75,5 +82,11 @@ Logger *Logger::getTheLog(const std::string& fn)
     if (nullptr == theLog)
         theLog = new Logger(fn);
     return theLog;
+}
+
+void Logger::cleanup()
+{
+    delete theLog;
+    theLog = nullptr;
 }
 
