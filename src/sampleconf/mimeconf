@@ -172,6 +172,7 @@ application/x-gnote = execm rclxml.py
 application/x-gnuinfo = execm rclinfo.py
 application/x-gnumeric = internal xsltproc gnumeric.xsl
 application/x-hwp = execm rclhwp.py
+application/x-joplin-note = internal text/plain
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-mimehtml = internal message/rfc822
@@ -213,7 +214,8 @@ message/rfc822 = internal
 text/calendar = execm rclics.py;mimetype=text/plain
 text/css = internal text/plain
 text/html  = internal 
-text/plain = internal 
+text/plain = internal
+# See comment in mh_execm.cpp about text/plain1
 text/plain1 = internal 
 text/rtf = exec unrtf --nopict --html;mimetype=text/html
 application/rtf = exec unrtf --nopict --html;mimetype=text/html

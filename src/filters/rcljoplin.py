@@ -1,15 +1,20 @@
 #!/usr/bin/python3
-"""This sample uses the Recoll Python API to index  the notes table from a Joplin database"""
+"""Using the Recoll Python API to index the notes table from a Joplin database"""
 
-# This is an example of an indexer for which the embedded documents are standalone ones, not
-# subdocuments of a main file. This is possible because the notes have update timestamps so that we
-# can decide individually if they need a reindex. See rclmbox.py for an example with subdocs.
+# This is an external indexer, not a Recoll document handler. It manages the documents inside the
+# index all by itself. The documents are marked with a backend identifier (JOPLIN) so that the main
+# indexer will leave them alone. See the manual section about the indexing API for more information.
+#
+# The Joplin notes are processed as standalone documents, not embedded ones (subdocuments of a main
+# file). This is possible because the notes have update timestamps so that we can decide
+# individually if they need a reindex. See rclmbox.py for an example with subdocs.
 #
 # Configuration files: Note that the mimeconf and mimeview additions, and the backends file need to
 # exist for any index which would add the Joplin one as an external index.
 #
 # rcljoplin.py -c will take care to update the chosen configuration for you. Here follows a
-# description anyway:
+# description anyway. As of Recoll 1.37.1, the data exists in the default configuration (no change
+# needed, except for creating the "backends" file to activate the backend).
 #
 # mimeconf: this tells recoll that the data from this indexer, to which we give a specific MIME
 # type, should be turned into text by a null operation. We could also choose to format the notes in
@@ -26,14 +31,18 @@
 #    [view]
 #    application/x-joplin-note = xdg-open %u
 #
-# backends: this is the link between recoll and this script. Fix the path of course, or copy the
-# script somewhere in the PATH or the Recoll filters directory and use just the script name. Recoll
-# will add parameters to the base commands.
+# backends: this is the link between recoll and this script. The rcljoplin.py script is no installed
+# with the standard Recoll doc. handlers, so that there is no need for a path to the script. One
+# could be used if the script was modified and stored elsewhere.
+# Recoll will add parameters to the base commands.
 #
 #    [JOPLIN]
-#    fetch = /path/to/rcljoplin.py fetch
-#    makesig = /path/to/rcljoplin.py makesig
-#    index = /path/to/rcljoplin.py index
+#    fetch = rcljoplin.py fetch
+#    makesig = rcljoplin.py makesig
+#    index = rcljoplin.py index
+#
+# By default the script looks for the Joplin db in ~/.config/joplin-desktop/database.sqlite
+# This can be changed by setting "joplindbpath" in recoll.conf
 
 import sys
 import os
@@ -85,7 +94,7 @@ class joplin_indexer:
         here, as we just use the note id (which we also assume to be globally unique)"""
         return note["id"]
 
-    # Walk the table, check if index is up to date for each note, update the index if not
+    # Walk the table, check if the index is up to date for each note, update if needed.
     def index(self):
         global rcldb
         rcldb = recoll.connect(confdir=self.rclconfdir, writable=1)
@@ -182,15 +191,6 @@ def update_config(confdir):
 # main code with a specific command line for retrieving data, checking up-to-date-ness (for
 # previewing mostly), or updating the index.
 
-# We hard-code the path to the joplin db for simplicity. It could also be set in the recoll
-# configuration file and retrieved with something like the following,
-#
-#    from recoll import rclconfig
-#    config = rclconfig.RclConfig(argcnf=rclconfdir)
-#    joplindb = config.getConfParam("joplindbpath")
-# Or any other approach...
-joplindb = os.path.expanduser("~/.config/joplin-desktop/database.sqlite")
-    
 usage_string="""Usage:
 rcljoplin.py config Update the recoll configuration to include the Joplin parameters.
 rcljoplin.py index
@@ -223,6 +223,10 @@ cmd = args[0]
 
 rclconfig = rclconfig.RclConfig(argcnf=confdir)
 confdir = rclconfig.getConfDir()
+
+joplindb = rclconfig.getConfParam("joplindbpath")
+if not joplindb:
+    joplindb = os.path.expanduser("~/.config/joplin-desktop/database.sqlite")
 
 if cmd == "index":
     indexer = joplin_indexer(confdir, joplindb)

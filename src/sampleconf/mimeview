@@ -25,7 +25,7 @@ xallexcepts = application/pdf application/postscript application/x-dvi \
  text/html|gnuinfo text/html|chm text/html|epub text/html|rclman \
  application/x-fsdirectory|parentopen inode/directory|parentopen \
  application/vnd.ms-visio.drawing application/x-ipynb+json \
- text/x-orgmode text/x-orgmode-sub
+ text/x-orgmode text/x-orgmode-sub application/x-joplin-note
 
 
 [view]
@@ -33,7 +33,7 @@ xallexcepts = application/pdf application/postscript application/x-dvi \
 # Note that we use %U to url-encode the parameter
 application/x-all = xdg-open %U
 # But do use the uncoded url for help (F1) because the fragment in there must
-# actually be processed.
+# actually be processed. The way we process URLs is preposterous and needs a complete overhaul
 text/html|rclman = xdg-open %u
 
 application/epub+zip = ebook-viewer %f
@@ -44,6 +44,9 @@ text/html|epub = ebook-viewer %F;ignoreipath=1
 application/x-ipynb+json = jupyter notebook %f
 
 application/x-gnote = gnote %f
+
+# Note %u not U hence the exception?
+application/x-joplin-note = xdg-open %u
 
 application/x-mobipocket-ebook = ebook-viewer %f
 
