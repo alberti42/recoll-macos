@@ -6184,8 +6184,9 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
               sample has full preview and open support (the latter using
               a <application>Joplin</application> callback URL which allows displaying the result
               note inside the native app), so it could actually be useful to perform a unified
-              search of the <application>Joplin</application> data and the regular &RCL;
-              data.</listitem>
+              search of the <application>Joplin</application> data and the regular &RCL; data. As of
+              &RCL; 1.37.0, the Joplin indexer is part of the default installation (see the features
+              section of the Web site for more information).</listitem>
           </itemizedlist>
           </para>
           <para>See the comments inside the scripts for more information.</para>
