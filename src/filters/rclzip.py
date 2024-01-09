@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) 2014 J.F.Dockes
+# Copyright (C) 2014-2024 J.F.Dockes
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -20,14 +20,12 @@
 
 import os
 import posixpath
-import fnmatch
 import datetime
 
 from zipfile import ZipFile
 
 import rclexecm
-import rclconfig
-import conftree
+import rclnamefilter
 
 # Note about file names (python 2.6. 2.7, don't know about 3.)
 #
@@ -75,7 +73,8 @@ class ZipExtractor:
         self.zip = None
         self.currentindex = 0
         self.em = em
-
+        self.namefilter = rclnamefilter.NameFilter(em)
+        
     def closefile(self):
         #self.em.rclog("Closing %s" % self.filename)
         if self.zip:
@@ -125,18 +124,7 @@ class ZipExtractor:
         filename = params["filename"]
         self.filename = filename
         self.currentindex = -1
-        self.skiplist = []
-
-        config = rclconfig.RclConfig()
-        config.setKeyDir(os.path.dirname(filename))
-        usebaseskipped = config.getConfParam("zipUseSkippedNames")
-        if usebaseskipped:
-            skipped = config.getConfParam("skippedNames")
-            self.em.rclog("skippedNames: %s"%self.skiplist)
-            self.skiplist += conftree.stringToStrings(skipped)
-        skipped = config.getConfParam("zipSkippedNames")
-        if skipped is not None:
-            self.skiplist += conftree.stringToStrings(skipped)
+        self.namefilter.setforlocation(filename)
         try:
             # Note: py3 ZipFile wants an str file name, which
             # is wrong: file names are binary. But it accepts an
@@ -173,34 +161,22 @@ class ZipExtractor:
                 eof = rclexecm.RclExecM.noteof
             return (True, "", "", eof)
 
-        if self.currentindex >= len(self.zip.namelist()):
-            #self.em.rclog("getnext: EOF hit")
+        while self.currentindex < len(self.zip.namelist()):
+            entryname = self.zip.namelist()[self.currentindex]
+            if self.namefilter.shouldprocess(entryname):
+                break
+            entryname = None
+            self.currentindex += 1
+
+        if entryname is None:
             self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            entryname = self.zip.namelist()[self.currentindex]
-            # This is how we'd fix a badly decoded entry, but then
-            # this can't be used as ipath any more
-            #fixedname = entryname.encode('cp437').decode('euc-kr')
-            #self.em.rclog("REENCODED: %s"%fixedname)
-
-            if len(self.skiplist) != 0:
-                while self.currentindex < len(self.zip.namelist()):
-                    entryname = self.zip.namelist()[self.currentindex]
-                    for pat in self.skiplist:
-                        if fnmatch.fnmatch(entryname, pat):
-                            entryname = None
-                            break
-                    if entryname is not None:
-                        break
-                    self.currentindex += 1
-                if entryname is None:
-                    self.closefile()
-                    return (False, "", "", rclexecm.RclExecM.eofnow)
-                
-            ret= self.extractone(entryname)
-            self.currentindex += 1
-            return ret
+            
+        ret = self.extractone(entryname)
+        self.currentindex += 1
+        if ret[3] != rclexecm.RclExecM.noteof:
+            self.closefile()
+        return ret
 
 # Main program: create protocol handler and extractor and run them
 proto = rclexecm.RclExecM()

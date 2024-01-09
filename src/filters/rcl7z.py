@@ -12,8 +12,8 @@
 
 import sys
 import os
-import fnmatch
 import rclexecm
+import rclnamefilter
 
 usingpy7zr = False
 try:
@@ -33,6 +33,7 @@ class SevenZipExtractor:
         self.currentindex = 0
         self.fp = None
         self.em = em
+        self.namefilter = rclnamefilter.NameFilter(em)
             
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
@@ -60,13 +61,7 @@ class SevenZipExtractor:
     def openfile(self, params):
         filename = params["filename"]
         self.currentindex = -1
-        self.skiplist = []
-
-        config = rclconfig.RclConfig()
-        config.setKeyDir(os.path.dirname(filename))
-        skipped = config.getConfParam("zipSkippedNames")
-        if skipped is not None:
-            self.skiplist = skipped.split(" ")
+        self.namefilter.setforlocation(filename)
 
         try:
             self.fp = open(filename, 'rb')
@@ -105,32 +100,21 @@ class SevenZipExtractor:
                 eof = rclexecm.RclExecM.noteof
             return (True, "", "", eof)
 
-        if self.currentindex >= len(self.names):
-            #self.em.rclog("getnext: EOF hit")
+        while self.currentindex < len(self.names):
+            entryname = self.names[self.currentindex]
+            if self.namefilter.shouldprocess(entryname):
+                break
+            entryname = None
+            self.currentindex += 1
+
+        if entryname is None:
             self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
-
-        entryname = self.names[self.currentindex]
-
-        if len(self.skiplist) != 0:
-            while self.currentindex < len(self.names):
-                entryname = self.names[self.currentindex]
-                for pat in self.skiplist:
-                    if fnmatch.fnmatch(entryname, pat):
-                        entryname = None
-                        break
-                if entryname is not None:
-                    break
-                self.currentindex += 1
-            if entryname is None:
-                self.closefile()
-                return (False, "", "", rclexecm.RclExecM.eofnow)
                 
         ret = self.extractone(entryname)
-        if ret[3] == rclexecm.RclExecM.eofnext or \
-           ret[3] == rclexecm.RclExecM.eofnow:
-            self.closefile()
         self.currentindex += 1
+        if ret[3] != rclexecm.RclExecM.noteof:
+            self.closefile()
         return ret
 
 # Main program: create protocol handler and extractor and run them

@@ -21,6 +21,7 @@
 import sys
 import rclexecm
 import os
+import rclnamefilter
 
 # We can use two different unrar python modules. Either python3-rarfile
 # which is a wrapper over the the unrar command line, or python3-unrar
@@ -64,6 +65,7 @@ class RarExtractor:
     def __init__(self, em):
         self.currentindex = 0
         self.em = em
+        self.namefilter = rclnamefilter.NameFilter(em)
 
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
@@ -113,20 +115,22 @@ class RarExtractor:
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
         self.currentindex = -1
+        filename = params["filename"]
+        self.namefilter.setforlocation(filename)
         try:
             if using_unrar:
                 # There might be a way to avoid the decoding which is
                 # wrong on Unix, but I'd have to dig further in the
                 # lib than I wish to. This is used on Windows anyway,
                 # where all Recoll paths are utf-8
-                fn = params["filename"].decode("UTF-8")
+                fn = filename.decode("UTF-8")
                 self.rar = rarfile.RarFile(fn, 'rb')
             else:
                 # The previous versions passed the file name to
                 # RarFile. But the py3 version of this wants an str as
                 # input, which is wrong of course, as filenames are
                 # binary. Circumvented by passing the open file
-                f = open(params["filename"], 'rb')
+                f = open(filename, 'rb')
                 self.rar = RarFile(f)
             return True
         except Exception as err:
@@ -146,7 +150,6 @@ class RarExtractor:
             return (ok, data, ipath, eof)
         
     def getnext(self, params):
-
         if self.currentindex == -1:
             # Return "self" doc
             self.currentindex = 0
@@ -158,17 +161,23 @@ class RarExtractor:
                 eof = rclexecm.RclExecM.noteof
             return (True, "", "", eof)
 
-        if self.currentindex >= len(self.rar.namelist()):
-            #self.em.rclog("getnext: EOF hit")
+        while self.currentindex < len(self.rar.namelist()):
+            entryname = self.rar.namelist()[self.currentindex]
+            if self.namefilter.shouldprocess(entryname):
+                break
+            entryname = None
+            self.currentindex += 1
+
+        if entryname is None:
             self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret = self.extractone(self.rar.namelist()[self.currentindex])
-            self.currentindex += 1
-            if ret[3] == rclexecm.RclExecM.eofnext or \
-               ret[3] == rclexecm.RclExecM.eofnow:
-                self.closefile()
-            return ret
+
+        ret = self.extractone(entryname)
+        self.currentindex += 1
+        if ret[3] != rclexecm.RclExecM.noteof:
+            self.closefile()
+        return ret
+
 
 # Main program: create protocol handler and extractor and run them
 proto = rclexecm.RclExecM()

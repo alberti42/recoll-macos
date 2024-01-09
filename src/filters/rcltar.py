@@ -8,6 +8,7 @@
 
 import os
 import rclexecm
+import rclnamefilter
 
 try:
     import tarfile
@@ -20,6 +21,7 @@ class TarExtractor:
         self.currentindex = 0
         self.em = em
         self.namen = []
+        self.namefilter = rclnamefilter.NameFilter(em)
 
     def extractone(self, ipath):
         docdata = b''
@@ -49,11 +51,12 @@ class TarExtractor:
 
     def openfile(self, params):
         self.currentindex = -1
+        filename = params["filename"]
+        self.namefilter.setforlocation(filename)
         try:
-            self.tar = tarfile.open(name=params["filename"], mode='r')
+            self.tar = tarfile.open(name=filename, mode='r')
             #self.namen = [ y.name for y in filter(lambda z:z.isfile(),self.tar.getmembers())]
             self.namen = [ y.name for y in [z for z in self.tar.getmembers() if z.isfile()]]
-
             return True
         except:
             return False
@@ -82,17 +85,23 @@ class TarExtractor:
                 eof = rclexecm.RclExecM.noteof
             return (True, "", "", eof)
 
-        if self.currentindex >= len(self.namen):
+        while self.currentindex < len(self.namen):
+            entryname = self.namen[self.currentindex]
+            if self.namefilter.shouldprocess(entryname):
+                break
+            entryname = None
+            self.currentindex += 1
+
+        if entryname is None:
             self.namen=[]
             self.closefile()
             return (False, "", "", rclexecm.RclExecM.eofnow)
-        else:
-            ret = self.extractone(self.namen[self.currentindex])
-            self.currentindex += 1
-            if ret[3] == rclexecm.RclExecM.eofnext or \
-               ret[3] == rclexecm.RclExecM.eofnow:
-                self.closefile()
-            return ret
+
+        ret = self.extractone(entryname)
+        self.currentindex += 1
+        if ret[3] != rclexecm.RclExecM.noteof:
+            self.closefile()
+        return ret
 
 
 proto = rclexecm.RclExecM()
