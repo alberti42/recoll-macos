@@ -1,2 +1,6 @@
-usr/lib/python3*/*-packages/Recoll*.egg-info
-usr/lib/python3*/*-packages/recoll/*
+# Ubuntu jammy and later, debian trixie and later: use local (even if, only for debian, finally
+# installed to /usr)
+#usr/lib/python3*/*-packages/Recoll*.egg-info
+#usr/lib/python3*/*-packages/recoll/*
+usr/local/lib/python3*/*-packages/Recoll*.egg-info
+usr/local/lib/python3*/*-packages/recoll/*
