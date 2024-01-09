@@ -12,9 +12,9 @@
 # Configuration files: Note that the mimeconf and mimeview additions, and the backends file need to
 # exist for any index which would add the Joplin one as an external index.
 #
-# rcljoplin.py -c will take care to update the chosen configuration for you. Here follows a
-# description anyway. As of Recoll 1.37.1, the data exists in the default configuration (no change
-# needed, except for creating the "backends" file to activate the backend).
+# rcljoplin.py [-c pathtoconfdir] config will take care to update the chosen configuration for
+# you. Here follows a description anyway. As of Recoll 1.37.1, the data exists in the default
+# configuration (no change needed, except for creating the "backends" file to activate the backend).
 #
 # mimeconf: this tells recoll that the data from this indexer, to which we give a specific MIME
 # type, should be turned into text by a null operation. We could also choose to format the notes in
