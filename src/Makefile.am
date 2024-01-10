@@ -786,6 +786,7 @@ filters/openxml-meta.xsl \
 filters/ppt-dump.py \
 filters/rcl7z.py \
 filters/rclaptosidman \
+filters/rclarchive.py \
 filters/rclaspell-sugg.py \
 filters/rclaudio.py \
 filters/rclbasehandler.py \
@@ -817,6 +818,7 @@ filters/rcllatinstops.zip \
 filters/rcllyx \
 filters/rclman \
 filters/rclmidi.py \
+filters/rclnamefilter.py \
 filters/rclocrcache.py \
 filters/rclocr.py \
 filters/rclocrabbyy.py \
@@ -867,7 +869,7 @@ install-data-hook:
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py cnsplitter.py; \
 	chmod a+x recoll-we-move-files.py ../examples/rclmon.sh kosplitter.py; \
 	chmod a+x thunderbird-open-message.sh rclaspell-sugg.py; \
-	chmod 0644 msodump.zip recollepub.zip rclexecm.py rcllatinstops.zip \
+	chmod 0644 msodump.zip recollepub.zip rclexecm.py rcllatinstops.zip rclnamefilter.py \
         rclconfig.py conftree.py rclmidi.py rclexec1.py rcluncomp.py rclxslt.py)
 
 if MAKEUSERDOC

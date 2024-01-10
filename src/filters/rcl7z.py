@@ -12,8 +12,10 @@
 
 import sys
 import os
+
 import rclexecm
-import rclnamefilter
+from rclarchive import ArchiveExtractor
+
 
 usingpy7zr = False
 try:
@@ -28,12 +30,10 @@ except:
 
 import rclconfig
 
-class SevenZipExtractor:
+class SevenZipExtractor(ArchiveExtractor):
     def __init__(self, em):
-        self.currentindex = 0
         self.fp = None
-        self.em = em
-        self.namefilter = rclnamefilter.NameFilter(em)
+        super().__init__(em)
             
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
@@ -76,47 +76,13 @@ class SevenZipExtractor:
             self.em.rclog("openfile: failed: [%s]" % err)
             return False
 
-    def getipath(self, params):
-        ipath = params["ipath"]
-        ok, data, ipath, eof = self.extractone(ipath)
-        if ok:
-            return (ok, data, ipath, eof)
-        # Not found. Maybe we need to decode the path?
-        try:
-            ipath = ipath.decode("utf-8")
-            return self.extractone(ipath)
-        except Exception as err:
-            return (ok, data, ipath, eof)
-        
-    def getnext(self, params):
-        if self.currentindex == -1:
-            # Return "self" doc
-            self.currentindex = 0
-            self.em.setmimetype('text/plain')
-            if len(self.names) == 0:
-                self.closefile()
-                eof = rclexecm.RclExecM.eofnext
-            else:
-                eof = rclexecm.RclExecM.noteof
-            return (True, "", "", eof)
+    def namelist(self):
+        return self.names
+    
+    # getipath from ArchiveExtractor
+    # getnext from ArchiveExtractor
 
-        while self.currentindex < len(self.names):
-            entryname = self.names[self.currentindex]
-            if self.namefilter.shouldprocess(entryname):
-                break
-            entryname = None
-            self.currentindex += 1
-
-        if entryname is None:
-            self.closefile()
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-                
-        ret = self.extractone(entryname)
-        self.currentindex += 1
-        if ret[3] != rclexecm.RclExecM.noteof:
-            self.closefile()
-        return ret
-
+    
 # Main program: create protocol handler and extractor and run them
 proto = rclexecm.RclExecM()
 extract = SevenZipExtractor(proto)

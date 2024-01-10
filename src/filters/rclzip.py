@@ -25,7 +25,7 @@ import datetime
 from zipfile import ZipFile
 
 import rclexecm
-import rclnamefilter
+from rclarchive import ArchiveExtractor
 
 # Note about file names (python 2.6. 2.7, don't know about 3.)
 #
@@ -66,14 +66,12 @@ import rclnamefilter
 # occurs in process.c:GetUnicodeData(), which succeeds in finding an
 # utf-8 string which zipfile does not see (to be checked: was a quick look). 
 # Anyway: this is a python zipfile issue.
-class ZipExtractor:
+class ZipExtractor(ArchiveExtractor):
     def __init__(self, em):
         self.filename = None
         self.f = None
         self.zip = None
-        self.currentindex = 0
-        self.em = em
-        self.namefilter = rclnamefilter.NameFilter(em)
+        super().__init__(em)
         
     def closefile(self):
         #self.em.rclog("Closing %s" % self.filename)
@@ -136,47 +134,12 @@ class ZipExtractor:
             self.em.rclog("openfile: failed: [%s]" % err)
             return False
 
-    def getipath(self, params):
-        ipath = params["ipath"]
-        ok, data, ipath, eof = self.extractone(ipath)
-        if ok:
-            return (ok, data, ipath, eof)
-        # Not found. Maybe we need to decode the path?
-        try:
-            ipath = ipath.decode("utf-8")
-            return self.extractone(ipath)
-        except Exception as err:
-            self.em.rclog("extractone: failed: [%s]" % err)
-            return (ok, data, ipath, eof)
-        
-    def getnext(self, params):
-        if self.currentindex == -1:
-            # Return "self" doc
-            self.currentindex = 0
-            self.em.setmimetype('text/plain')
-            if len(self.zip.namelist()) == 0:
-                self.closefile()
-                eof = rclexecm.RclExecM.eofnext
-            else:
-                eof = rclexecm.RclExecM.noteof
-            return (True, "", "", eof)
-
-        while self.currentindex < len(self.zip.namelist()):
-            entryname = self.zip.namelist()[self.currentindex]
-            if self.namefilter.shouldprocess(entryname):
-                break
-            entryname = None
-            self.currentindex += 1
-
-        if entryname is None:
-            self.closefile()
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-            
-        ret = self.extractone(entryname)
-        self.currentindex += 1
-        if ret[3] != rclexecm.RclExecM.noteof:
-            self.closefile()
-        return ret
+    def namelist(self):
+        return self.zip.namelist()
+    
+    # getipath from ArchiveExtractor
+    # getnext inherited from ArchiveExtractor
+    
 
 # Main program: create protocol handler and extractor and run them
 proto = rclexecm.RclExecM()

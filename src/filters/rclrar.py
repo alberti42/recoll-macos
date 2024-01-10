@@ -19,9 +19,11 @@
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import sys
-import rclexecm
 import os
-import rclnamefilter
+
+import rclexecm
+from rclarchive import ArchiveExtractor
+
 
 # We can use two different unrar python modules. Either python3-rarfile
 # which is a wrapper over the the unrar command line, or python3-unrar
@@ -61,11 +63,10 @@ except Exception as ex:
 # 
 # This is identical to rclzip.py except I did a search/replace from zip
 # to rar, and changed this comment.
-class RarExtractor:
+class RarExtractor(ArchiveExtractor):
     def __init__(self, em):
-        self.currentindex = 0
-        self.em = em
-        self.namefilter = rclnamefilter.NameFilter(em)
+        super().__init__(em)
+
 
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
@@ -137,47 +138,12 @@ class RarExtractor:
             self.em.rclog("RarFile: %s"%err)
             return False
 
-    def getipath(self, params):
-        ipath = params["ipath"]
-        ok, data, ipath, eof = self.extractone(ipath)
-        if ok:
-            return (ok, data, ipath, eof)
-        # Not found. Maybe we need to decode the path?
-        try:
-            ipath = ipath.decode("utf-8")
-            return self.extractone(ipath)
-        except Exception as err:
-            return (ok, data, ipath, eof)
-        
-    def getnext(self, params):
-        if self.currentindex == -1:
-            # Return "self" doc
-            self.currentindex = 0
-            self.em.setmimetype('text/plain')
-            if len(self.rar.namelist()) == 0:
-                self.closefile()
-                eof = rclexecm.RclExecM.eofnext
-            else:
-                eof = rclexecm.RclExecM.noteof
-            return (True, "", "", eof)
+    def namelist(self):
+        return self.rar.namelist()
 
-        while self.currentindex < len(self.rar.namelist()):
-            entryname = self.rar.namelist()[self.currentindex]
-            if self.namefilter.shouldprocess(entryname):
-                break
-            entryname = None
-            self.currentindex += 1
-
-        if entryname is None:
-            self.closefile()
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-
-        ret = self.extractone(entryname)
-        self.currentindex += 1
-        if ret[3] != rclexecm.RclExecM.noteof:
-            self.closefile()
-        return ret
-
+    # getipath from ArchiveExtractor
+    # getnext from ArchiveExtractor
+    
 
 # Main program: create protocol handler and extractor and run them
 proto = rclexecm.RclExecM()

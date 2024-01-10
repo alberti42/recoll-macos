@@ -51,7 +51,7 @@ def logmsg(msg):
 
 # Convert to bytes if not already such.
 def makebytes(data):
-    if type(data) == type(u''):
+    if type(data) == type(''):
         return data.encode("UTF-8")
     return data
 
@@ -95,10 +95,97 @@ def htmlescape(txt):
     return txt
 
 
+# Helper routine to test for program accessibility
+# Note that this works a bit differently from Linux 'which', which
+# won't search the PATH if there is a path part in the program name,
+# even if not absolute (e.g. will just try subdir/cmd in current
+# dir). We will find such a command if it exists in a matching subpath
+# of any PATH element.
+# This is very useful esp. on Windows so that we can have several bin
+# filter directories under filters (to avoid dll clashes). The
+# corresponding c++ routine in recoll execcmd works the same.
+def which(program):
+    def is_exe(fpath):
+        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+    def ext_candidates(fpath):
+        yield fpath
+        for ext in os.environ.get("PATHEXT", "").split(os.pathsep):
+            yield fpath + ext
+
+    def path_candidates():
+        yield os.path.dirname(sys.argv[0])
+        rclpath = _g_config.getConfParam("recollhelperpath")
+        if rclpath:
+            for path in rclpath.split(os.pathsep):
+                yield path
+        for path in os.environ["PATH"].split(os.pathsep):
+            yield path
+
+    if os.path.isabs(program):
+        if is_exe(program):
+            return program
+    else:
+        for path in path_candidates():
+            exe_file = os.path.join(path, program)
+            for candidate in ext_candidates(exe_file):
+                if is_exe(candidate):
+                    return candidate
+    return None
+
+# Execute Python script. cmd is a list with the script name as first elt.
+def execPythonScript(icmd):
+    import subprocess
+    cmd = list(icmd)
+    if _g_mswindows:
+        if not os.path.isabs(cmd[0]):
+            cmd[0] = os.path.join(_g_execdir, cmd[0])
+        cmd = [sys.executable] + cmd
+    return subprocess.check_output(cmd)
+    
+# Temp dir helper
+class SafeTmpDir:
+    def __init__(self, tag, em=None):
+        self.tag = tag
+        self.em = em
+        self.toptmp = None
+        self.tmpdir = None
+
+    def __del__(self):
+        if self.toptmp:
+            try:
+                if self.tmpdir:
+                    shutil.rmtree(self.tmpdir, True)
+                os.rmdir(self.toptmp)
+            except Exception as err:
+                if self.em:
+                    self.em.rclog("delete dir failed for " + self.toptmp)
+
+    def vacuumdir(self):
+        if self.tmpdir:
+            for fn in os.listdir(self.tmpdir):
+                path = os.path.join(self.tmpdir, fn)
+                if os.path.isfile(path):
+                    os.unlink(path)
+        return True
+    
+    def getpath(self):
+        if not self.tmpdir:
+            envrcltmp = os.getenv('RECOLL_TMPDIR')
+            if envrcltmp:
+                self.toptmp = tempfile.mkdtemp(prefix='rcltmp', dir=envrcltmp)
+            else:
+                self.toptmp = tempfile.mkdtemp(prefix='rcltmp')
+
+            self.tmpdir = os.path.join(self.toptmp, self.tag)
+            os.makedirs(self.tmpdir)
+
+        return self.tmpdir
+   
+
+
 ############################################
-# RclExecM implements the communication protocol with the recollindex
-# process. It calls the object specific of the document type to
-# actually get the data.
+# RclExecM implements the communication protocol with the recollindex process. It calls the object
+# specific of the document type to actually get the data.
 class RclExecM(cmdtalk.CmdTalk):
     noteof = 0
     eofnext = 1
@@ -197,107 +284,8 @@ class RclExecM(cmdtalk.CmdTalk):
         else:
             self.answer("", "", eof, RclExecM.subdocerror)
 
-    # Main routine: loop on messages from our master
-    def mainloop(self, processor):
-        while 1:
-            params = dict()
-            # Read at most 10 parameters (normally 1 or 2), stop at empty line
-            # End of message is signalled by empty paramname
-            for i in range(10):
-                paramname, paramdata = self.readparam()
-                if paramname == "":
-                    break
-                params[paramname] = paramdata
-            # Got message, act on it
-            self.processmessage(processor, params)
+    # We inherit the mainloop() from cmdtalk.
 
-
-# Helper routine to test for program accessibility
-# Note that this works a bit differently from Linux 'which', which
-# won't search the PATH if there is a path part in the program name,
-# even if not absolute (e.g. will just try subdir/cmd in current
-# dir). We will find such a command if it exists in a matching subpath
-# of any PATH element.
-# This is very useful esp. on Windows so that we can have several bin
-# filter directories under filters (to avoid dll clashes). The
-# corresponding c++ routine in recoll execcmd works the same.
-def which(program):
-    def is_exe(fpath):
-        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
-    def ext_candidates(fpath):
-        yield fpath
-        for ext in os.environ.get("PATHEXT", "").split(os.pathsep):
-            yield fpath + ext
-
-    def path_candidates():
-        yield os.path.dirname(sys.argv[0])
-        rclpath = _g_config.getConfParam("recollhelperpath")
-        if rclpath:
-            for path in rclpath.split(os.pathsep):
-                yield path
-        for path in os.environ["PATH"].split(os.pathsep):
-            yield path
-
-    if os.path.isabs(program):
-        if is_exe(program):
-            return program
-    else:
-        for path in path_candidates():
-            exe_file = os.path.join(path, program)
-            for candidate in ext_candidates(exe_file):
-                if is_exe(candidate):
-                    return candidate
-    return None
-
-# Execute Python script. cmd is a list with the script name as first elt.
-def execPythonScript(icmd):
-    import subprocess
-    cmd = list(icmd)
-    if _g_mswindows:
-        if not os.path.isabs(cmd[0]):
-            cmd[0] = os.path.join(_g_execdir, cmd[0])
-        cmd = [sys.executable] + cmd
-    return subprocess.check_output(cmd)
-    
-# Temp dir helper
-class SafeTmpDir:
-    def __init__(self, tag, em=None):
-        self.tag = tag
-        self.em = em
-        self.toptmp = None
-        self.tmpdir = None
-
-    def __del__(self):
-        if self.toptmp:
-            try:
-                if self.tmpdir:
-                    shutil.rmtree(self.tmpdir, True)
-                os.rmdir(self.toptmp)
-            except Exception as err:
-                if self.em:
-                    self.em.rclog("delete dir failed for " + self.toptmp)
-
-    def vacuumdir(self):
-        if self.tmpdir:
-            for fn in os.listdir(self.tmpdir):
-                path = os.path.join(self.tmpdir, fn)
-                if os.path.isfile(path):
-                    os.unlink(path)
-        return True
-    
-    def getpath(self):
-        if not self.tmpdir:
-            envrcltmp = os.getenv('RECOLL_TMPDIR')
-            if envrcltmp:
-                self.toptmp = tempfile.mkdtemp(prefix='rcltmp', dir=envrcltmp)
-            else:
-                self.toptmp = tempfile.mkdtemp(prefix='rcltmp')
-
-            self.tmpdir = os.path.join(self.toptmp, self.tag)
-            os.makedirs(self.tmpdir)
-
-        return self.tmpdir
-   
 
 
 # Common main routine for all python execm filters: either run the

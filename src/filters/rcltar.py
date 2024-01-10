@@ -7,8 +7,9 @@
 # bzipped tar-files at well.
 
 import os
+
 import rclexecm
-import rclnamefilter
+from rclarchive import ArchiveExtractor
 
 try:
     import tarfile
@@ -16,12 +17,11 @@ except:
     print("RECFILTERROR HELPERNOTFOUND python3:tarfile")
     sys.exit(1);
 
-class TarExtractor:
+class TarExtractor(ArchiveExtractor):
     def __init__(self, em):
-        self.currentindex = 0
-        self.em = em
         self.namen = []
-        self.namefilter = rclnamefilter.NameFilter(em)
+        super().__init__(em)
+
 
     def extractone(self, ipath):
         docdata = b''
@@ -48,7 +48,8 @@ class TarExtractor:
 
     def closefile(self):
         self.tar = None
-
+        self.namen = []
+        
     def openfile(self, params):
         self.currentindex = -1
         filename = params["filename"]
@@ -72,36 +73,10 @@ class TarExtractor:
         except Exception as err:
             return (ok, data, ipath, eof)
 
-    def getnext(self, params):
-
-        if self.currentindex == -1:
-            # Return "self" doc
-            self.currentindex = 0
-            self.em.setmimetype('text/plain')
-            if len(self.namen) == 0:
-                self.closefile()
-                eof = rclexecm.RclExecM.eofnext
-            else:
-                eof = rclexecm.RclExecM.noteof
-            return (True, "", "", eof)
-
-        while self.currentindex < len(self.namen):
-            entryname = self.namen[self.currentindex]
-            if self.namefilter.shouldprocess(entryname):
-                break
-            entryname = None
-            self.currentindex += 1
-
-        if entryname is None:
-            self.namen=[]
-            self.closefile()
-            return (False, "", "", rclexecm.RclExecM.eofnow)
-
-        ret = self.extractone(entryname)
-        self.currentindex += 1
-        if ret[3] != rclexecm.RclExecM.noteof:
-            self.closefile()
-        return ret
+    def namelist(self):
+        return self.namen
+    
+    # getnext from ArchiveExtractor
 
 
 proto = rclexecm.RclExecM()
