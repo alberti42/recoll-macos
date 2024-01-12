@@ -324,7 +324,7 @@ template <class T> std::string commonprefix(const T& values)
     if (values.size() == 1)
         return *values.begin();
     unsigned int i = 0;
-    for (;;i++) {
+    for (;;++i) {
         auto it = values.begin();
         if (it->size() <= i) {
             goto out;
@@ -597,8 +597,7 @@ std::string makeCString(const std::string& in)
 // Substitute printf-like percent cmds inside a string
 bool pcSubst(const std::string& in, std::string& out, const std::map<char, std::string>& subs)
 {
-    std::string::const_iterator it;
-    for (it = in.begin(); it != in.end(); it++) {
+    for (auto it = in.begin(); it != in.end(); ++it) {
         if (*it == '%') {
             if (++it == in.end()) {
                 out += '%';
@@ -625,8 +624,8 @@ bool pcSubst(const std::string& in, std::string& out,
              const std::function<std::string(const std::string&)>& mapper)
 {
     out.erase();
-    std::string::size_type i;
-    for (i = 0; i < in.size(); i++) {
+
+    for (std::string::size_type i = 0; i < in.size(); ++i) {
         if (in[i] == '%') {
             if (++i == in.size()) {
                 out += '%';
@@ -642,7 +641,7 @@ bool pcSubst(const std::string& in, std::string& out,
                     out += std::string("%(");
                     break;
                 }
-                std::string::size_type j = in.find_first_of(')', i);
+                auto j = in.find_first_of(')', i);
                 if (j == std::string::npos) {
                     // ??concatenate remaining part and stop
                     out += in.substr(i - 2);
@@ -780,7 +779,7 @@ std::string breakIntoLines(const std::string& in, unsigned int ll, unsigned int 
                     ss = query;
                 }
             } else {
-                ss = ss.substr(0, pos + 1);
+                ss.resize(pos + 1);
             }
         }
         // This cant happen, but anyway. Be very sure to avoid an infinite loop
@@ -935,7 +934,7 @@ static void cerrdip(const std::string& s, DateInterval *dip)
 // or pre-1970 dates. Just convert everything to unixtime and
 // seconds (with average durations for months/years), add and convert
 // back
-static bool addperiod(DateInterval *dp, DateInterval *pp)
+static bool addperiod(DateInterval* dp, const DateInterval* pp)
 {
     // Create a struct tm with possibly non normalized fields and let
     // timegm sort it out
@@ -1123,7 +1122,7 @@ std::string hexprint(const std::string& in, char separ)
     out.reserve(separ ? (3 *in.size()) : (2 * in.size()));
     static const char hex[]="0123456789abcdef";
     auto cp = reinterpret_cast<const unsigned char*>(in.c_str());
-    for (unsigned int i = 0; i < in.size(); i++) {
+    for (unsigned int i = 0; i < in.size(); ++i) {
         out.append(1, hex[cp[i] >> 4]);
         out.append(1, hex[cp[i] & 0x0f]);
         if (separ && i != in.size() - 1)
@@ -1250,9 +1249,7 @@ std::string SimpleRegexp::simpleSub(
         return {};
     }
 
-    int err;
-    if ((err = regexec(&m->expr, in.c_str(),
-                       m->nmatch + 1, &m->matches[0], 0))) {
+    if (int err = regexec(&m->expr, in.c_str(), m->nmatch + 1, &m->matches[0], 0)) {
 #if SIMPLESUB_DBG
         const int ERRSIZE = 200;
         char errbuf[ERRSIZE + 1];
@@ -1362,7 +1359,7 @@ std::string pc_decode(const std::string &in)
     out.reserve(in.size());
     const char *cp = in.c_str();
     std::string::size_type i = 0;
-    for (; i < in.size() - 2; i++) {
+    for (; i < in.size() - 2; ++i) {
         if (cp[i] == '%') {
             int d1 = h2d(cp[i+1]);
             int d2 = h2d(cp[i+2]);
