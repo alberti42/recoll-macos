@@ -22,7 +22,7 @@ import sys
 import os
 
 import rclexecm
-from rclarchive import ArchiveExtractor
+from archivextract import ArchiveExtractor
 
 
 # We can use two different unrar python modules. Either python3-rarfile

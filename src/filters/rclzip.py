@@ -25,7 +25,7 @@ import datetime
 from zipfile import ZipFile
 
 import rclexecm
-from rclarchive import ArchiveExtractor
+from archivextract import ArchiveExtractor
 
 # Note about file names (python 2.6. 2.7, don't know about 3.)
 #

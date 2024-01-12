@@ -770,6 +770,7 @@ filterdir = $(pkgdatadir)/filters
 dist_filter_DATA = \
 desktop/hotrecoll.py \
 filters/abiword.xsl \
+filters/archivextract.py \
 filters/cmdtalk.py \
 filters/fb2.xsl \
 filters/gnumeric.xsl \
@@ -786,7 +787,6 @@ filters/openxml-meta.xsl \
 filters/ppt-dump.py \
 filters/rcl7z.py \
 filters/rclaptosidman \
-filters/rclarchive.py \
 filters/rclaspell-sugg.py \
 filters/rclaudio.py \
 filters/rclbasehandler.py \

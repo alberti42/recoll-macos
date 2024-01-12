@@ -14,7 +14,7 @@ import sys
 import os
 
 import rclexecm
-from rclarchive import ArchiveExtractor
+from archivextract import ArchiveExtractor
 
 
 usingpy7zr = False

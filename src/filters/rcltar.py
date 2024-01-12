@@ -9,7 +9,7 @@
 import os
 
 import rclexecm
-from rclarchive import ArchiveExtractor
+from archivextract import ArchiveExtractor
 
 try:
     import tarfile
