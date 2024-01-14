@@ -15,6 +15,9 @@ INCICONV=$CPPFLAGS
 LIBICONV=$LTLIBICONV
 
 AC_PROG_CXX
+CPP_STD=-std=c++17
+AC_SUBST(CPP_STD)
+
 # AC_PROG_CXX used to set CXX to C when no compiler was found, but now it's
 # g++. So actually try to build a program to verify the compiler.
 if test C$CXX = C ; then

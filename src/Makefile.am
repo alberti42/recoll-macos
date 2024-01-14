@@ -40,7 +40,7 @@ COMMONCPPFLAGS = -I. \
     -I$(top_srcdir)/xaposix \
     -DBUILDING_RECOLL
 
-AM_CPPFLAGS = -Wall -Wno-unused -std=c++14 \
+AM_CPPFLAGS = -Wall -Wextra -Wno-unused \
     $(COMMONCPPFLAGS) \
     $(INCICONV) \
     $(XAPIAN_CFLAGS) \
@@ -50,6 +50,9 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++14 \
     -DREADFILE_ENABLE_ZLIB -DREADFILE_ENABLE_MINIZ -DREADFILE_ENABLE_MD5 \
     -D_GNU_SOURCE \
     $(DEFS)
+
+CPP_STD=@CPP_STD@
+AM_CXXFLAGS=$(CPP_STD)
 
 if COND_BTIME
     CXXFLAGS += -DEXT4_BIRTH_TIME
