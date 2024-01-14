@@ -1,4 +1,4 @@
-/* Copyright (C) 2004-2019 J.F.Dockes
+/* Copyright (C) 2004-2024 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -63,7 +63,7 @@ using namespace std;
 // https://github.com/fxsjy/jieba
 #define CHINESE_AS_WORDS
 
-// Ascii character classes: we have three main groups, and then some chars are their own class
+// ASCII character classes: we have three main groups, and then some chars are their own class
 // because they want special handling.
 // 
 // We have an array with 256 slots where we keep the character types. 
@@ -147,10 +147,9 @@ void TextSplit::staticConfInit(RclConfig *config)
 }
 
 
-// Non-ascii UTF-8 characters are handled with sets holding all
-// characters with interesting properties. This is far from full-blown
-// management of Unicode properties, but seems to do the job well
-// enough in most common cases
+// Non-ASCII UTF-8 characters are handled with sets holding all characters with interesting
+// properties. This is far from full-blown management of Unicode properties, but seems to do the job
+// well enough in most common cases
 static vector<unsigned int> vpuncblocks;
 static std::unordered_set<unsigned int> spunc;
 static std::unordered_set<unsigned int> visiblewhite;
@@ -247,25 +246,11 @@ int TextSplit::whatcc(unsigned int c)
     }
 }
 
-// testing whatcc...
-#if 0
-unsigned int testvalues[] = {'a', '0', 0x80, 0xbf, 0xc0, 0x05c3, 0x1000, 
-                             0x2000, 0x2001, 0x206e, 0x206f, 0x20d0, 0x2399, 
-                             0x2400, 0x2401, 0x243f, 0x2440, 0xff65};
-int ntest = sizeof(testvalues) / sizeof(int);
-for (int i = 0; i < ntest; i++) {
-    int ret = whatcc(testvalues[i]);
-    printf("Tested value 0x%x, returned value %d %s\n",
-           testvalues[i], ret, ret == LETTER ? "LETTER" : 
-           ret == SPACE ? "SPACE" : "OTHER");
-}
-#endif
-
-// CJK Unicode character detection. CJK text is generally indexed using an n-gram
-// method, we do not try to extract words.
+// CJK Unicode character detection. CJK text is generally indexed using an n-gram method.
 // Exceptions:
 //  Hangul: we can use an external text linguistic-aware segmenter.
-//  Katakana: not successful for now.
+//  Chinese: same. Using Jieba
+//  Katakana: not successful for now. n-grams.
 //
 // 1100..11FF; Hangul Jamo (optional: see UNICODE_IS_HANGUL)
 // 2E80..2EFF; CJK Radicals Supplement
@@ -316,6 +301,8 @@ for (int i = 0; i < ntest; i++) {
 #define UNICODE_IS_KATAKANA(p) false
 #endif
 
+// Hangul detection and options. If no external tagger is configured, we process HANGUL as generic
+// CJK (n-grams)
 #define UNICODE_IN_HANGUL_RANGE(p)             \
         (((p) >= 0x1100 && (p) <= 0x11FF) ||   \
          ((p) >= 0x3130 && (p) <= 0x318F) ||   \
@@ -324,19 +311,16 @@ for (int i = 0; i < ntest; i++) {
          ((p) >= 0x3281 && (p) <= 0x32BF) ||   \
          ((p) >= 0xAC00 && (p) <= 0xD7AF))
 #ifdef HANGUL_AS_WORDS
-// If no external tagger is configured, we process HANGUL as generic CJK (n-grams)
-#define UNICODE_IS_HANGUL(p) (                                  \
-        o_exthangultagger &&  UNICODE_IN_HANGUL_RANGE(p)        \
-        )
+#define UNICODE_IS_HANGUL(p) (o_exthangultagger &&  UNICODE_IN_HANGUL_RANGE(p))
 #else
 #define UNICODE_IS_HANGUL(p) false
 #endif
 
+// Same for Chinese
 #define UNICODE_IN_CHINESE_RANGE(p) \
     (UNICODE_IS_CJK(p) && !(UNICODE_IN_KATAKANA_RANGE(p) || UNICODE_IN_HANGUL_RANGE(p)))
 #ifdef CHINESE_AS_WORDS
-#define UNICODE_IS_CHINESE(p)     \
-    (o_extchinesetagger && UNICODE_IN_CHINESE_RANGE(p))
+#define UNICODE_IS_CHINESE(p) (o_extchinesetagger && UNICODE_IN_CHINESE_RANGE(p))
 #else
 #define UNICODE_IS_CHINESE(p) false
 #endif
@@ -368,13 +352,12 @@ bool TextSplit::isCHINESE(int c)
 bool TextSplit::isNGRAMMED(int c)
 {
     PRETEND_USE(c);
-    return UNICODE_IS_CJK(c) && !UNICODE_IS_KATAKANA(c) &&
-        !UNICODE_IS_HANGUL(c);
+    return UNICODE_IS_CJK(c) && !UNICODE_IS_KATAKANA(c) && !UNICODE_IS_HANGUL(c);
 }
 
 
 // This is used to detect katakana/other transitions, which must trigger a word split (there is not
-// always a separator, and katakana is otherwise treated like other, in the same routine, unless cjk
+// always a separator, and katakana is otherwise treated like other, in the same routine, unless CJK
 // which has its span reader causing a word break)
 enum CharSpanClass {CSC_HANGUL, CSC_CHINESE, CSC_CJK, CSC_KATAKANA, CSC_OTHER};
 std::vector<CharFlags> csc_names {
@@ -383,11 +366,9 @@ std::vector<CharFlags> csc_names {
 
 // Final term checkpoint: do some checking (the kind which is simpler to do here than in the main
 // loop), then send term to our client.
-inline bool TextSplit::emitterm(bool isspan, string &w, int pos, size_t btstart, size_t btend)
+inline bool TextSplit::emitterm(bool isspan, const string& w, int pos, size_t btstart, size_t btend)
 {
     LOGDEB2("TextSplit::emitterm: [" << w << "] pos " << pos << "\n");
-
-    int l = int(w.length());
 
 #ifdef TEXTSPLIT_STATS
     // Update word length statistics. Do this before we filter out
@@ -398,21 +379,22 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos, size_t btstart,
     PRETEND_USE(isspan);
 #endif
 
+    int l = int(w.length());
     if (l == 0 || l > o_maxWordLength) {
         return true;
     }
     if (l == 1) {
-        // 1 byte word: we index single ascii letters and digits, but nothing else. We might want to
-        // turn this into a test for a single utf8 character instead ?
+        // 1 byte word: we index single ASCII letters and digits, but nothing else. We might want to
+        // turn this into a test for a single utf8 character instead ? TBD: the calling code should
+        // know the size in characters, so turning this to an Unicode test could be for free.
         unsigned int c = ((unsigned int)w[0]) & 0xff;
-        if (charclasses[c] != A_ULETTER && charclasses[c] != A_LLETTER && 
-            charclasses[c] != DIGIT &&
-            (!(m_flags & TXTS_KEEPWILD) || charclasses[c] != WILD)
-            ) {
-            //cerr << "ERASING single letter term " << c << endl;
+        if (charclasses[c] != A_ULETTER && charclasses[c] != A_LLETTER && charclasses[c] != DIGIT &&
+            (!(m_flags & TXTS_KEEPWILD) || charclasses[c] != WILD)  ) {
+            LOGDEB2("TextSplit::emitterm: erasing single letter term " << c << "\n");
             return true;
         }
     }
+    // Detect doublons. Happens...?
     if (pos != m_prevpos || l != m_prevlen) {
         bool ret = takeword(w, pos, int(btstart), int(btend));
         m_prevpos = pos;
@@ -423,38 +405,34 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos, size_t btstart,
     return true;
 }
 
-// Check for an acronym/abbreviation ie I.B.M. This only works with ascii (we do not detect
-// non-ascii utf-8 acronyms)
-bool TextSplit::span_is_acronym(string *acronym)
+// Check for an acronym/abbreviation spelled like I.B.M. This only works with ASCII.
+bool TextSplit::span_is_initials(string& initials)
 {
-    bool acron = false;
+    LOGDEB1("span_is_initials: wordlen " << m_wordLen << " spanlen " << m_span.length() <<
+            " span ["<< m_span << "]\n");
+    if (m_wordLen == m_span.length() || (m_span.length() & 1) ||
+        m_span.length() <= 2 || m_span.length() > 20) {
+        return false;
+    }
 
-    if (m_wordLen != m_span.length() && m_span.length() > 2 && m_span.length() <= 20) {
-        acron = true;
-        // Check odd chars are '.'
-        for (unsigned int i = 1 ; i < m_span.length(); i += 2) {
-            if (m_span[i] != '.') {
-                acron = false;
-                break;
-            }
-        }
-        if (acron) {
-            // Check that even chars are letters
-            for (unsigned int i = 0 ; i < m_span.length(); i += 2) {
-                int c = m_span[i];
-                if (!((c >= 'a' && c <= 'z')||(c >= 'A' && c <= 'Z'))) {
-                    acron = false;
-                    break;
-                }
-            }
+    // Check odd chars are '.'
+    for (unsigned int i = 1 ; i < m_span.length(); i += 2) {
+        if (m_span[i] != '.') {
+            return false;
         }
     }
-    if (acron) {
-        for (unsigned int i = 0; i < m_span.length(); i += 2) {
-            *acronym += m_span[i];
+    // Check that even chars are letters
+    for (unsigned int i = 0 ; i < m_span.length(); i += 2) {
+        int c = m_span[i];
+        if (!((c >= 'a' && c <= 'z')||(c >= 'A' && c <= 'Z'))) {
+            return false;
         }
     }
-    return acron;
+    initials.reserve(m_span.length()/2 + 1);
+    for (unsigned int i = 0; i < m_span.length(); i += 2) {
+        initials += m_span[i];
+    }
+    return true;
 }
 
 
@@ -462,13 +440,10 @@ bool TextSplit::span_is_acronym(string *acronym)
 bool TextSplit::words_from_span(size_t bp)
 {
 #if 0
-    cerr << "Span: [" << m_span << "] " << " bp " << bp <<
-        " w_i_s size: " << m_words_in_span.size() <<  " : ";
-    for (unsigned int i = 0; i < m_words_in_span.size(); i++) {
-        cerr << " [" << m_words_in_span[i].first << " " << m_words_in_span[i].second << "] ";
-                
-    }
-    cerr << endl;
+    std::cerr<<"Span: ["<<m_span<<"] "<<" bp "<<bp<<" w_i_s size: "<<m_words_in_span.size()<<" :";
+    for (const auto& [beg, nd] : m_words_in_span)
+        std::cerr << " [" << beg << " " << nd << "] ";
+    cerr << "\n";
 #endif
     int spanwords = int(m_words_in_span.size());
     // It seems that something like: tv_combo-sample_util.Po@am_quote can get the splitter to call
@@ -493,19 +468,15 @@ bool TextSplit::words_from_span(size_t bp)
     }
 
     for (int i = 0; i < ((m_flags&TXTS_ONLYSPANS) ? 1 : spanwords); i++) {
-
         int deb = m_words_in_span[i].first;
         bool noposinc = m_words_in_span[i].second == deb;
         for (int j = ((m_flags&TXTS_ONLYSPANS) ? spanwords-1 : i);
              j < ((m_flags&TXTS_NOSPANS) ? i+1 : spanwords);
              j++) {
-
             int fin = m_words_in_span[j].second;
-            //cerr << "i " << i << " j " << j << " deb " << deb << " fin " << fin << endl;
             if (fin - deb > int(m_span.size()))
                 break;
-            string word(m_span.substr(deb, fin-deb));
-            if (!emitterm(j != i+1, word, pos, spboffs+deb, spboffs+fin))
+            if (!emitterm(j != i+1, m_span.substr(deb, fin-deb), pos, spboffs+deb, spboffs+fin))
                 return false;
         }
         if (!noposinc)
@@ -514,23 +485,21 @@ bool TextSplit::words_from_span(size_t bp)
     return true;
 }
 
-/**
- * A method called at word boundaries (different places in
- * text_to_words()), to adjust the current state of the parser, and
- * possibly generate term(s). While inside a span (words linked by
- * glue characters), we just keep track of the word boundaries. Once
- * actual white-space is reached, we get called with spanerase set to
- * true, and we process the span, calling the emitterm() routine for
- * each generated term.
- * 
- * The object flags can modify our behaviour, deciding if we only emit
- * single words (bill, recoll, org), only spans (bill@recoll.org), or
- * words and spans (bill@recoll.org, recoll.org, jf, recoll...)
- * 
- * @return true if ok, false for error. Splitting should stop in this case.
- * @param spanerase Set if the current span is at its end. Process it.
- * @param bp        The current BYTE position in the stream (it's beyond the current span data).
- */
+// A method called at word boundaries (different places in text_to_words()), to adjust the current
+// state of the parser, and possibly generate term(s).
+//
+// While inside a span (words linked by glue characters), we just keep track of the word boundaries.
+//
+// Once actual white-space is reached, we get called with spanerase set to true, and we process the
+// span, calling words_from_span() to actually compute and emit the terms.
+// 
+// The object flags can modify our behaviour, deciding if we only emit single words (bill, recoll,
+// org), only spans (bill@recoll.org), or words and spans (bill@recoll.org, recoll.org, jf,
+// recoll...)
+// 
+// @return true if ok, false for error. Splitting should stop in this case.
+// @param spanerase Set if the current span is at its end. Process it.
+// @param bp        The current BYTE position in the stream (it's beyond the current span data).
 inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 {
     int bp = int(_bp);
@@ -561,9 +530,9 @@ inline bool TextSplit::doemit(bool spanerase, size_t _bp)
     }
 
     // Span is done (too long or span-terminating character). Produce terms and reset it.
-    string acronym;
-    if (span_is_acronym(&acronym)) {
-        if (!emitterm(false, acronym, m_spanpos, bp - m_span.length(), bp))
+    string initials;
+    if (span_is_initials(initials)) {
+        if (!emitterm(false, initials, m_spanpos, bp - m_span.length(), bp))
             return false;
     }
 
@@ -591,7 +560,7 @@ static inline bool isalphanum(int what, unsigned int flgs)
 }
 static inline bool isdigit(int what, unsigned int flgs)
 {
-    return what == TextSplit::DIGIT || ((flgs & TextSplit::TXTS_KEEPWILD) && what == TextSplit::WILD);
+    return what == TextSplit::DIGIT || ((flgs & TextSplit::TXTS_KEEPWILD)&& what == TextSplit::WILD);
 }
 
 #ifdef TEXTSPLIT_STATS
@@ -614,12 +583,15 @@ TextSplit::~TextSplit()
 {
 }
 
-/** 
- * Splitting a text into terms to be indexed.
- * We basically emit a word every time we see a separator, but some chars are
- * handled specially so that special cases, ie, c++ and jfd@recoll.com etc, 
- * are handled properly,
- */
+// Splitting a text into terms to be indexed.
+//
+// We mostly emit a word every time we see a separator, but some chars are handled specially so that
+// special cases, ie, c++, jfd@recoll.org etc, are handled properly.
+//
+// Esp. we generate "spans". e.g. jfd@recoll.org, in addition to the individual words. This was
+// quite useful with old Xapian versions, which were slow with frequent word phrase searches
+// (e.g. the com in .com). This is not so useful now because Xapian performance has much improved,
+// but, it does not hurt much either, as these "spans" are infrequent in real text.
 bool TextSplit::text_to_words(const string &in)
 {
     LOGDEB1("TextSplit::text_to_words: docjk " << o_processCJK << "(" <<
@@ -679,6 +651,8 @@ bool TextSplit::text_to_words(const string &in)
             }
             // Hand off situation to the appropriate routine.
             if (csc == CSC_HANGUL) {
+                // Note: at the moment, the real ko splitter is a lock-protected singleton which is
+                // why we just recreate it here: no real initialisation.
                 KOSplitter splt(*this);
                 if (!splt.text_to_words(it, &c, m_wordpos)) {
                     LOGERR("Textsplit: scan error in korean handler\n");
@@ -842,8 +816,13 @@ bool TextSplit::text_to_words(const string &in)
                 // Found '.' while not in number
 
                 // Only letters and digits make sense after
-                if (!isalphanum(nextwhat, m_flags))
+                if (!isalphanum(nextwhat, m_flags)) {
+                    // Do append the dot to the span: for abbrev recognition.
+                    it.appendchartostring(m_span);
+                    // Set the iterator to point to the look-ahead char.
+                    it++;
                     goto SPACE;
+                }
 
                 // Keep an initial '.' for catching .net, and .34 (aka
                 // 0.34) but this adds quite a few spurious terms !

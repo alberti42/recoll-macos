@@ -28,6 +28,7 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include <string>
 #include <iostream>
 
 #include "readfile.h"
@@ -90,6 +91,20 @@ Usage(void)
 
 static int        op_flags;
 
+
+#if 0
+// testing whatcc... Extracted from textsplit.cpp, needs work
+unsigned int testvalues[] = {'a', '0', 0x80, 0xbf, 0xc0, 0x05c3, 0x1000, 
+                             0x2000, 0x2001, 0x206e, 0x206f, 0x20d0, 0x2399, 
+                             0x2400, 0x2401, 0x243f, 0x2440, 0xff65};
+int ntest = sizeof(testvalues) / sizeof(int);
+for (int i = 0; i < ntest; i++) {
+    int ret = whatcc(testvalues[i]);
+    printf("Tested value 0x%x, returned value %d %s\n",
+           testvalues[i], ret, ret == LETTER ? "LETTER" : 
+           ret == SPACE ? "SPACE" : "OTHER");
+}
+#endif
 
 class myTermProc : public Rcl::TermProc {
     int first;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2024 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -54,9 +54,8 @@ public:
     TextSplit(int flags = TXTS_NONE);
     TextSplit(const TextSplit&) = delete;
     TextSplit& operator=(const TextSplit&) = delete;
-    ~TextSplit();
-    /** Call at program initialization to read non default values from the 
-        configuration */
+    ~TextSplit(); // Using default here would need a definition for cnsplitter.
+    /** Call at program initialization to read non default values from the configuration */
     static void staticConfInit(RclConfig *config);
     
     /** Split text, emit words and positions. */
@@ -81,7 +80,8 @@ public:
     int maxwordlength() {return o_maxWordLength;}
     
     // Static utility functions:
-    enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259, A_ULETTER=260, A_LLETTER=261, SKIP=262};
+    enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259, A_ULETTER=260, A_LLETTER=261,
+        SKIP=262};
     static int whatcc(unsigned int c);
     
     /** Count words in string, as the splitter would generate them */
@@ -211,13 +211,10 @@ private:
             m_prevlen = m_wordChars = 0;
     }
 
-    // Experimental Korean splitter. This uses an external Python tokenizer
-    bool ko_to_words(Utf8Iter& it, unsigned int *cp);
-    
-    bool emitterm(bool isspan, std::string &term, int pos, size_t bs,size_t be);
+    bool emitterm(bool isspan, const std::string &term, int pos, size_t bs, size_t be);
     bool doemit(bool spanerase, size_t bp);
     void discardspan();
-    bool span_is_acronym(std::string *acronym);
+    bool span_is_initials(std::string& initials);
     bool words_from_span(size_t bp);
     std::unique_ptr<CNSplitter> m_cnsplitter;
 };
