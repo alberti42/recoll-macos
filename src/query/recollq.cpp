@@ -255,7 +255,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             // GUI: -f same
         case 'f': op_flags |= OPT_f; break;
             // GUI: -h same
-        case 'h': Usage(std::cout); // Usage exits
+        case 'h': Usage(std::cout); break; // Usage exits. break to avoid warnings
         case 'i': extra_dbs.push_back(optarg); break;
             // GUI uses -L to set language of messages
             // GUI: -l specifies query language, which is the default. Accept and ignore
