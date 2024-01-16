@@ -2,7 +2,7 @@
 QT       -= core gui
 
 TARGET = recollindex
-CONFIG += console
+CONFIG += console c++17
 CONFIG -= app_bundle
 TEMPLATE = app
 

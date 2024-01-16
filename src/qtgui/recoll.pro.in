@@ -12,7 +12,7 @@ DEFINES += BUILDING_RECOLLGUI
 
 QT += xml widgets printsupport network
 
-CONFIG  += qt warn_on thread release lrelease
+CONFIG  += qt c++17 warn_on thread release lrelease
 
 HEADERS += \
         actsearch_w.h \

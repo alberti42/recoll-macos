@@ -9,6 +9,8 @@ QT       -= core gui
 TARGET = librecoll
 TEMPLATE = lib
 
+CONFIG += c++17
+
 DEFINES += LIBRECOLL_LIBRARY BUILDING_RECOLL
 DEFINES += READFILE_ENABLE_MINIZ
 DEFINES += READFILE_ENABLE_MD5
@@ -179,7 +181,7 @@ unix:!mac {
 }
 
 mac {
-    CONFIG += staticlib c++14
+    CONFIG += staticlib
     DEFINES += RECOLL_AS_MAC_BUNDLE
     QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
     # This is necessary to avoid an undefined impl__xmlFree.

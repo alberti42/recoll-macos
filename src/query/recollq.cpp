@@ -69,7 +69,7 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
 }
 
 std::string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
-                     int snipcount, bool showlines, HighlightData& hldata)
+                     int snipcount, bool showlines, HighlightData&)
 {
     std::vector<Rcl::Snippet> snippets;
     std::ostringstream str;

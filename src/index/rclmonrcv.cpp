@@ -919,7 +919,7 @@ public:
     virtual bool isRecursive() const override {
         return true;
     }
-    virtual void handleFileAction(WatchID watchid, const std::string& dir, const std::string& fn,
+    virtual void handleFileAction(WatchID /*watchid*/, const std::string& dir, const std::string& fn,
                                   Action action, bool isdir, std::string oldfn = "") {
         MONDEB("RclMonitorWin32::handleFileAction: dir [" << dir << "] fn [" << fn << "] act " <<
                int(action) << " isdir " << isdir << " oldfn [" << oldfn << "]\n");

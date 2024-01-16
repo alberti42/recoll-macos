@@ -156,7 +156,7 @@ void ResListPager::resultPageFor(int docnum)
 static const SimpleRegexp pagenumre("(^ *\\[[pP]\\.* [0-9]+])", 0);
 
 void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc, 
-                              const HighlightData& hdata, const string& sh)
+                              const HighlightData&, const string& sh)
 {
     ostringstream chunk;
 

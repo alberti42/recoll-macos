@@ -341,7 +341,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 }
 
 void Db::spellExpand(
-    const std::string& term, const std::string& field, std::vector<std::string>& neighbours)
+    const std::string& term, const std::string& /*field*/, std::vector<std::string>& neighbours)
 {
     TermMatchResult matchResult;
     idxTermMatch(Rcl::Db::ET_NONE, term, matchResult, 1);
