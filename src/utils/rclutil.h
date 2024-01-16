@@ -48,8 +48,7 @@ extern std::string path_thisexecpath();
 /// absolutely not a general URL processor though as it will happily trash query and fragment.
 extern std::string path_pcencode(const std::string& url, std::string::size_type offs = 0);
 
-//// Convert to file path if url is like file://. This modifies the
-//// input (and returns a copy for convenience)
+//// Convert to file path if url is like file://. Else returns empty string.
 extern std::string fileurltolocalpath(std::string url);
 /// Test for file:/// url
 extern bool urlisfileurl(const std::string& url);
@@ -62,8 +61,7 @@ extern std::string url_gpath(const std::string& url);
 extern std::string path_pathtofileurl(const std::string& path);
 
 /// Transcode to utf-8 if possible or url encoding, for display.
-extern bool printableUrl(const std::string& fcharset,
-                         const std::string& in, std::string& out);
+extern bool printableUrl(const std::string& fcharset, const std::string& in, std::string& out);
 /// Same but, in the case of a Windows local path, also turn "c:/" into
 /// "/c/" This should be used only for splitting the path in rcldb.
 #ifdef _WIN32
