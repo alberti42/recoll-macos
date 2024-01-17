@@ -14,7 +14,6 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef TEST_IDFILE
 #include "autoconfig.h"
 
 #include <stdlib.h>
@@ -50,8 +49,7 @@ static InitTMAR initTM;
 
 // Mail headers we compare to:
 static const char *mailhs[] = {"From: ", "Received: ", "Message-Id: ", "To: ", 
-    "Date: ", "Subject: ", "Status: ", 
-    "In-Reply-To: "};
+    "Date: ", "Subject: ", "Status: ", "In-Reply-To: "};
 static const int mailhsl[] = {6, 10, 12, 4, 6, 9, 8, 13};
 static const int nmh = sizeof(mailhs) / sizeof(char *);
 
@@ -76,7 +74,7 @@ static string idFileInternal(istream& input, const char *fn)
         input.getline(cline, LL-1);
         if (input.fail()) {
             if (input.bad()) {
-                LOGERR("idfile: error while reading ["  << (fn) << "]\n" );
+                LOGERR("idfile: error while reading ["  << (fn) << "]\n");
                 return string();
             }
             // Must be eof ?
@@ -88,7 +86,7 @@ static string idFileInternal(istream& input, const char *fn)
         if (ll > 0)
             gotnonempty = true;
 
-        LOGDEB2("idfile: lnum "  << (lnum) << " ll "  << ((unsigned int)ll) << ": ["  << (cline) << "]\n" );
+        LOGDEB2("idfile: lnum " << lnum << " ll " << ll << ": [" << cline << "]\n");
 
         // Check for a few things that can't be found in a mail file,
         // (optimization to get a quick negative)
@@ -98,7 +96,7 @@ static string idFileInternal(istream& input, const char *fn)
             // Accept a few empty lines at the beginning of the file,
             // otherwise this is the end of headers
             if (gotnonempty || lnum > 10) {
-                LOGDEB2("Got empty line\n" );
+                LOGDEB2("Got empty line\n");
                 break;
             } else {
                 // Don't increment the line counter for initial empty lines.
@@ -109,7 +107,7 @@ static string idFileInternal(istream& input, const char *fn)
 
         // emacs vm can insert VERY long header lines.
         if (ll > LL - 20) {
-            LOGDEB2("idFile: Line too long\n" );
+            LOGDEB2("idFile: Line too long\n");
             return string();
         }
 
@@ -117,7 +115,7 @@ static string idFileInternal(istream& input, const char *fn)
         if (lnum == 1 && !strncmp("From ", cline, 5)) {
             if (treat_mbox_as_rfc822 == -1) {
                 line1HasFrom = true;
-                LOGDEB2("idfile: line 1 has From_\n" );
+                LOGDEB2("idfile: line 1 has From_\n");
             }
             continue;
         } 
@@ -130,7 +128,7 @@ static string idFileInternal(istream& input, const char *fn)
         if (!isspace((unsigned char)cline[0])) {
             char *cp = strchr(cline, ':');
             if (nullptr == cp || (cp - cline) > 70) {
-                LOGDEB2("idfile: can't be mail header line: ["  << (cline) << "]\n" );
+                LOGDEB2("idfile: can't be mail header line: ["  << (cline) << "]\n");
                 break;
             }
         }
@@ -160,7 +158,7 @@ string idFile(const char *fn)
     ifstream input;
     input.open(fn, ios::in);
     if (!input.is_open()) {
-        LOGERR("idFile: could not open ["  << (fn) << "]\n" );
+        LOGERR("idFile: could not open [" << fn << "]\n");
         return string();
     }
     return idFileInternal(input, fn);
@@ -171,37 +169,4 @@ string idFileMem(const string& data)
     stringstream s(data, stringstream::in);
     return idFileInternal(s, "");
 }
-
-#else
-
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <string>
-#include <iostream>
-
-#include <fcntl.h>
-
-using namespace std;
-
-#include "log.h"
-
-#include "idfile.h"
-
-int main(int argc, char **argv)
-{
-    if (argc < 2) {
-        cerr << "Usage: idfile filename" << endl;
-        exit(1);
-    }
-    DebugLog::getdbl()->setloglevel(DEBDEB1);
-    DebugLog::setfilename("stderr");
-    for (int i = 1; i < argc; i++) {
-        string mime = idFile(argv[i]);
-        cout << argv[i] << " : " << mime << endl;
-    }
-    exit(0);
-}
-
-#endif
 
