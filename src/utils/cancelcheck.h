@@ -17,7 +17,6 @@
 #ifndef _CANCELCHECK_H_INCLUDED_
 #define _CANCELCHECK_H_INCLUDED_
 
-
 /**
  * Common cancel checking mechanism
  *
@@ -38,18 +37,18 @@
 class CancelExcept {};
 
 class CancelCheck {
- public:
+public:
     static CancelCheck& instance();
     void setCancel(bool on = true) {
-    cancelRequested = on;
+        cancelRequested = on;
     }
     void checkCancel() {
-    if (cancelRequested) {
-        throw CancelExcept();
-    }
+        if (cancelRequested) {
+            throw CancelExcept();
+        }
     }
     bool cancelState() {return cancelRequested;}
- private:
+private:
     bool cancelRequested;
 
     CancelCheck() : cancelRequested(false) {}

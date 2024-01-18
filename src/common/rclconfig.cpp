@@ -43,6 +43,7 @@
 
 #include "cstr.h"
 #include "pathut.h"
+#include "copyfile.h"
 #include "rclutil.h"
 #include "rclconfig.h"
 #include "conftree.h"
@@ -378,6 +379,22 @@ bool RclConfig::Internal::initUserConfig()
             }
         }
     }
+
+    // Backends is handled differently. At run time, only the data from the user configuration is
+    // used, nothing comes from the shared directory. We copy the default file to the user
+    // directory.
+#ifndef _WIN32
+    // Not on Windows yet: the joplin indexer was not tested there
+    std::string src = path_cat(m_datadir, {"examples", "backends"});
+    std::string dst = path_cat(m_confdir, "backends");
+    if (!path_exists(dst)) {
+        std::string reason;
+        if (!copyfile(src.c_str(), dst.c_str(), reason)) {
+            m_reason += std::string("Copying the backends file: ") + reason;
+        }
+    }
+#endif // !_WIN32
+    
     return true;
 }
 
