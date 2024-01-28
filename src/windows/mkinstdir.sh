@@ -77,6 +77,7 @@ RCLIDX=$RCLW/build-recollindex-${QTA}/${qtsdir}/recollindex.exe
 RCLQ=$RCLW/build-recollq-${QTA}/${qtsdir}/recollq.exe
 RCLS=$RCLW/build-rclstartw-${QTA}/${qtsdir}/rclstartw.exe
 XAPC=$RCLW/build-xapian-check-${QTA}/xapian-check.exe
+PYTHONMINOR=11
 PYTHON=${RCLDEPS}python-3.11.4-embed-win32
 UNRTF=${RCLDEPS}unrtf
 ANTIWORD=${RCLDEPS}antiword
@@ -368,6 +369,11 @@ copypyrecoll()
                 popd
             fi
             chkcp ${PYRCLDIST} $DEST
+            # If this is the right version for our embedded python, install the extension
+            #(needed, e.g. for the Joplin indexer).
+            if test "$v" = "$PYTHONMINOR";then
+                ${DESTDIR}/Share/filters/python/python -m pip install ${PYRCLDIST}
+            fi
         done
     fi
 }
@@ -391,7 +397,6 @@ done
 
 # copyrecoll must stay before copyqt so that windeployqt can do its thing
 copyrecoll
-copypyrecoll
 copyqt
 copyaspell
 copypoppler
@@ -401,6 +406,7 @@ copymutagen
 copywpd
 copypff
 copypython
+copypyrecoll
 copymagic
 
 echo "MKINSTDIR OK"

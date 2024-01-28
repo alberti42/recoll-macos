@@ -2132,11 +2132,6 @@ bool RclConfig::processFilterCmd(std::vector<std::string>& cmd) const
     }
 #endif
     
-    // Note that, if the cmd vector size is 1, post-incrementing the
-    // iterator in the following statement, which works on x86, leads
-    // to a crash on ARM with gcc 6 and 8 (at least), which does not
-    // seem right (it should just become cmd.end() ?) but
-    // whatever... We do it later then.
     *it = findFilter(*it);
 
     LOGDEB0("processFilterCmd: out: " << stringsToString(cmd) << "\n");

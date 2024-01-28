@@ -103,10 +103,10 @@ std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config, const string
     }
     sfetch = path_tildexpand(sfetch);
     stringToStrings(sfetch, m.sfetch);
-    // We look up the command as we do for filters for now
-    m.sfetch[0] = config->findFilter(m.sfetch[0]);
-    if (!path_isabsolute(m.sfetch[0])) {
-        LOGERR("exeDocFetcherMake: " << m.sfetch[0] << " not found in exec path or filters dir\n");
+    // We look up the command as we do for filters
+    if (!config->processFilterCmd(m.sfetch)) {
+        LOGERR("exeDocFetcherMake: command not found in exec path or filters dir: " <<
+               stringsToString(m.sfetch) << "\n");
         return 0;
     }
 
@@ -117,9 +117,9 @@ std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config, const string
     }
     smkid = path_tildexpand(smkid);
     stringToStrings(smkid, m.smkid);
-    m.smkid[0] = config->findFilter(m.smkid[0]);
-    if (!path_isabsolute(m.smkid[0])) {
-        LOGERR("exeDocFetcherMake: " << m.smkid[0] << " not found in exec path or filters dir\n");
+    if (!config->processFilterCmd(m.smkid)) {
+        LOGERR("exeDocFetcherMake: command not found in exec path or filters dir: " <<
+               stringsToString(m.smkid) << "\n");
         return 0;
     }
     return std::unique_ptr<EXEDocFetcher>(new EXEDocFetcher(m));

@@ -239,9 +239,9 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
             vector<string> vindex;
             stringToStrings(sindex, vindex);
             // We look up the command as we do for filters
-            vindex[0] = m_config->findFilter(vindex[0]);
-            if (!path_isabsolute(vindex[0])) {
-                LOGERR("ConfIndexer: "<<vindex[0] <<" not found in exec path or filters folder.\n");
+            if (!m_config->processFilterCmd(vindex)) {
+                LOGERR("ConfIndexer: command not found in exec path or filters folder: "  <<
+                       stringsToString(vindex) << "\n");
                 continue;
             }
             if (!statusUpdater()->update(DbIxStatus::DBIXS_FILES, bckid)) {
