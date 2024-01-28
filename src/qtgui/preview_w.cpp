@@ -1046,9 +1046,15 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         }
 
         if (!fn.empty()) {
+            // Check if this might be an image, display it then.
             editor->m_image = QImage(fn.c_str());
-            if (!editor->m_image.isNull())
+            if (!editor->m_image.isNull()) {
+#ifndef PREVIEW_TEXTBROWSER
+                // The QImage is not actually used, so free the memory. Keep m_image set as a flag.
+                editor->m_image = QImage();
+#endif
                 editor->displayImage();
+            }
         }
     }
 
@@ -1247,10 +1253,12 @@ void PreviewTextEdit::displayImage()
 {
     LOGDEB1("PreviewTextEdit::displayImage()\n");
     setFont(m_preview->m_font);
-    if (m_image.isNull())
-        displayText();
 
 #ifdef PREVIEW_TEXTBROWSER
+    if (m_image.isNull()) {
+        displayText();
+        return;
+    }
     setPlainText("");
     if (m_image.width() > width() || 
         m_image.height() > height()) {
@@ -1258,13 +1266,29 @@ void PreviewTextEdit::displayImage()
     }
     document()->addResource(QTextDocument::ImageResource, QUrl("image"), m_image);
     textCursor().insertImage("image");
-#else
-    LOGDEB("Reading image: MIME " << m_dbdoc.mimetype << " from " << m_imgfilename << "\n");
+#elif defined(PREVIEW_WEBENGINE_not)
+    // Webengine can directly display an image type, without an HTML container but the size it will
+    // display is limited to a couple Mpix. Big images will fail to display. This is documented on
+    // the QWebenginePage doc actually:
+    //    Warning: The content will be percent encoded before being sent to the renderer via
+    //    IPC. This may increase its size. The maximum size of the percent encoded content is 2
+    //    megabytes minus 6 bytes plus the length of the mime type string.
+    // We could load a QImage, scale it, then convert to data stream, but it's just simpler to use
+    // the HTML way, which we need for webkit anyway.
+    LOGDEB("Reading image (webengine): " << m_dbdoc.mimetype << " from " << m_imgfilename << "\n");
     std::string content;
     if (!m_imgfilename.empty() && file_to_string(m_imgfilename, content)) {
         QByteArray qcontent(content.c_str(), content.size());
         setContent(qcontent, u8s2qs(m_dbdoc.mimetype));
     }
+#else
+    // Webkit can't display bare images (will crash actually...), need to embed in HTML
+    LOGDEB("Displaying image: " << m_dbdoc.mimetype << " from " << m_imgfilename << "\n");
+    QUrl baseUrl = QUrl::fromLocalFile(path2qs(path_getfather(m_imgfilename)));
+    QString html = QString("<html><body><img src='%1' "
+                           "style='max-width:100%;max-height:100%;object-fit: scale-down;' />"
+                           "</body></html>").arg(path2qs(m_imgfilename));
+    setHtml(html, baseUrl);
 #endif
     m_curdsp = PTE_DSPIMG;
 }
