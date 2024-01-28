@@ -389,6 +389,7 @@ bool RclConfig::Internal::initUserConfig()
         std::string reason;
         if (!copyfile(src.c_str(), dst.c_str(), reason)) {
             m_reason += std::string("Copying the backends file: ") + reason;
+            LOGERR(m_reason);
         }
     }
     
