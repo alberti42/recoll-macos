@@ -10,7 +10,8 @@ recoll (1.37.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
     same code for skipping names (skippednames, onlynames,etc.).
   * GUI: Fix image preview (would crash with webkit, not display big images
     with webengine).
-    
+  * Improve the Joplin indexer to run on Windows and enable it by default.
+  
  -- Jean-Francois Dockes <jf@dockes.org>  Sun, 28 Jan 2024 11:03:00 +0100
 
 recoll (1.37.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
