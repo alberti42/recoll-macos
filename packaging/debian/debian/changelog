@@ -1,3 +1,18 @@
+recoll (1.37.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix apparent Qt bug which would prevent Cinnamon desktop shutdown by
+    avoiding calling
+    qApp->exit() with qt5 (apparently fixed by qt6).
+  * Fix rclmon.sh script detection of running recollindex.
+  * Add the Joplin variable to the default configuration.
+  * Enable the Joplin indexer by default on Linux.
+  * Modify the archive container handlers (7z,rar,tar,zip) to all use the
+    same code for skipping names (skippednames, onlynames,etc.).
+  * GUI: Fix image preview (would crash with webkit, not display big images
+    with webengine).
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 28 Jan 2024 11:03:00 +0100
+
 recoll (1.37.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Restructure tokenizer to make it easier to use external modules
