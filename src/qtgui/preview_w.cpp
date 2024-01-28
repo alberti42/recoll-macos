@@ -1281,15 +1281,20 @@ void PreviewTextEdit::displayImage()
         QByteArray qcontent(content.c_str(), content.size());
         setContent(qcontent, u8s2qs(m_dbdoc.mimetype));
     }
-#else
+#else // -> WEBKIT or WEBENGINE actually because of the above
     // Webkit can't display bare images (will crash actually...), need to embed in HTML
     LOGDEB("Displaying image: " << m_dbdoc.mimetype << " from " << m_imgfilename << "\n");
     QUrl baseUrl = QUrl::fromLocalFile(path2qs(path_getfather(m_imgfilename)));
     QString html = QString("<html><body><img src='%1' "
                            "style='max-width:100%;max-height:100%;object-fit: scale-down;' />"
                            "</body></html>").arg(path2qs(m_imgfilename));
+#ifdef PREVIEW_WEBENGINE
+    // It seems that if we ever get an image display error, it becomes impossible to display
+    // another image (tried setHtml("") with no luck). So just use a new QWebPage every time
+    setPage(new QWebEnginePage(this));
+#endif // WEBENGINE
     setHtml(html, baseUrl);
-#endif
+#endif //WEBKIT
     m_curdsp = PTE_DSPIMG;
 }
 
