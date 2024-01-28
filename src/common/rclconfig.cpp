@@ -383,8 +383,6 @@ bool RclConfig::Internal::initUserConfig()
     // Backends is handled differently. At run time, only the data from the user configuration is
     // used, nothing comes from the shared directory. We copy the default file to the user
     // directory.
-#ifndef _WIN32
-    // Not on Windows yet: the joplin indexer was not tested there
     std::string src = path_cat(m_datadir, {"examples", "backends"});
     std::string dst = path_cat(m_confdir, "backends");
     if (!path_exists(dst)) {
@@ -393,7 +391,6 @@ bool RclConfig::Internal::initUserConfig()
             m_reason += std::string("Copying the backends file: ") + reason;
         }
     }
-#endif // !_WIN32
     
     return true;
 }
@@ -517,10 +514,13 @@ RclConfig::RclConfig(const string *argcnf)
         }
     }
 
-    if (!path_exists(m->m_confdir)) {
-        if (!m->initUserConfig()) 
-            return;
-    }
+    // We used to test for the confdir not existing to call initUserConfig() but it's
+    // actually better to call initUserConfig() always: it does not clobber existing
+    // files, and will copy possibly missing ones to an existing directory. The only
+    // problem is that removing, e.g. backends, will be reverted on the next program exec:
+    // the user needs to edit or truncate the file instead of removing it.
+    if (!m->initUserConfig())
+        return;
 
     // This can't change once computed inside a process. It would be
     // nicer to move this to a static class initializer to avoid
