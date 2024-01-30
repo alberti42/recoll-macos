@@ -352,12 +352,32 @@ bool RclConfig::Internal::initUserConfig()
     // Explanatory text
     std::string blurb = blurb0 + path_cat(m_datadir, "examples") + blurb1;
 
+    auto direxisted = path_exists(m_confdir);
     // Use protective 700 mode to create the top configuration
     // directory: documents can be reconstructed from index data.
-    if (!path_exists(m_confdir) && !path_makepath(m_confdir, 0700)) {
+    if (!direxisted && !path_makepath(m_confdir, 0700)) {
         m_reason += string("mkdir(") + m_confdir + ") failed: "+ strerror(errno);
         return false;
     }
+
+    // Backends is handled differently. At run time, only the data from the user configuration is
+    // used, nothing comes from the shared directory. We copy the default file to the user
+    // directory. It's the only one which we recreate if absent, mostly because, otherwise, it would
+    // never have been enabled on existing config when the Joplin indexer came out.
+    std::string src = path_cat(m_datadir, {"examples", "backends"});
+    std::string dst = path_cat(m_confdir, "backends");
+    if (!path_exists(dst)) {
+        std::string reason;
+        if (!copyfile(src.c_str(), dst.c_str(), reason)) {
+            m_reason += std::string("Copying the backends file: ") + reason;
+            LOGERR(m_reason);
+        }
+    }
+
+    // Recreating the other optional files after the user may have removed them is ennoying, don't
+    if (direxisted)
+        return true;
+    
     string lang = localelang();
     for (const auto& cnff : configfiles) {
         string dst = path_cat(m_confdir, string(cnff));
@@ -380,18 +400,6 @@ bool RclConfig::Internal::initUserConfig()
         }
     }
 
-    // Backends is handled differently. At run time, only the data from the user configuration is
-    // used, nothing comes from the shared directory. We copy the default file to the user
-    // directory.
-    std::string src = path_cat(m_datadir, {"examples", "backends"});
-    std::string dst = path_cat(m_confdir, "backends");
-    if (!path_exists(dst)) {
-        std::string reason;
-        if (!copyfile(src.c_str(), dst.c_str(), reason)) {
-            m_reason += std::string("Copying the backends file: ") + reason;
-            LOGERR(m_reason);
-        }
-    }
     
     return true;
 }
