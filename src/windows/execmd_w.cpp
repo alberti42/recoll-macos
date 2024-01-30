@@ -253,7 +253,7 @@ static WaitResult Wait(HANDLE hdl, int timeout)
         LOGDEB0("Wait: returning Quit\n" );
         return Quit;
     } else if (res == WAIT_TIMEOUT) {
-        LOGDEB0("Wait: returning Timeout\n" );
+        LOGDEB0("Wait: returning Timeout (" << timeout << " ms)\n" );
         return Timeout;
     }
     printError("Wait: WaitForMultipleObjects: unknown, returning Timout\n");
@@ -1080,24 +1080,22 @@ bool ExecCmd::maybereap(int *status)
         return true;
     }
 
-    WaitResult res = Wait(m->m_piProcInfo.hProcess, 1);
     DWORD exit_code = -1;
-    switch (res) {
-    case Ok:
-        exit_code = 0;
-        GetExitCodeProcess(m->m_piProcInfo.hProcess, &exit_code);
-        *status = (int)exit_code;
-        CloseHandle(m->m_piProcInfo.hProcess);
-        m->m_piProcInfo.hProcess = NULL;
-        if (m->m_piProcInfo.hThread) {
-            CloseHandle(m->m_piProcInfo.hThread);
-            m->m_piProcInfo.hThread = NULL;
-        }
-        return true;
-    default:
+    auto ret = GetExitCodeProcess(m->m_piProcInfo.hProcess, &exit_code);
+
+    if (ret) {
+        // Process still here
         e.inactivate();
         return false;
     }
+    *status = (int)exit_code;
+    CloseHandle(m->m_piProcInfo.hProcess);
+    m->m_piProcInfo.hProcess = NULL;
+    if (m->m_piProcInfo.hThread) {
+        CloseHandle(m->m_piProcInfo.hThread);
+        m->m_piProcInfo.hThread = NULL;
+    }
+    return true;
 }
 
 int ExecCmd::doexec(const string &cmd, const vector<string>& args,
