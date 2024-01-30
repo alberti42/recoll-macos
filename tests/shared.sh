@@ -89,8 +89,8 @@ checkresult() {
     else
         rm -f $mydiffs
 
-        # for tests with a local index
-        rm -rf history idxstatus.txt index.pid missing recoll.conf xapiandb mimeview
+        # for tests with a local index. Will need adjusting if some files need to be kept.
+        rm -rf history idxstatus.txt index.pid missing recoll.conf xapiandb mimeview backends
         rm -rf aspdict.* 
         exit 0
     fi

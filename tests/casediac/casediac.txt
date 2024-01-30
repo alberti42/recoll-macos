@@ -1,33 +1,33 @@
-+ recollq -s french éviter
++ recollq -S url -s french éviter
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
-+ recollq -s french èviter
++ recollq -S url -s french èviter
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
-+ recollq -s french "èviter"D
++ recollq -S url -s french "èviter"D
 0 results
-+ recollq -s french "eviter"D
++ recollq -S url -s french "eviter"D
 0 results
-+ recollq -s french eviter
++ recollq -S url -s french eviter
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
-+ recollq -s french evite
++ recollq -S url -s french evite
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
-+ recollq -s french Evite
++ recollq -S url -s french Evite
 0 results
-+ recollq -s french MAJUSCULESXX
++ recollq -S url -s french MAJUSCULESXX
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
-+ recollq -s french MAjUSCULESXX
++ recollq -S url -s french MAjUSCULESXX
 0 results
-+ recollq -s french majusculesxx
++ recollq -S url -s french majusculesxx
 2 results
-text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile1.html]	[testfile1.html]	132	bytes	
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
-+ recollq -s french Majusculesxx
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile1.html]	[testfile1.html]	132	bytes	
++ recollq -S url -s french Majusculesxx
 2 results
-text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile1.html]	[testfile1.html]	132	bytes	
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
-+ recollq -s french "Majusculesxx"C
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile1.html]	[testfile1.html]	132	bytes	
++ recollq -S url -s french "Majusculesxx"C
 0 results
