@@ -134,16 +134,9 @@ public:
     virtual string absSep() override {return (const char *)(prefs.abssep.toUtf8());}
     virtual bool useAll() override {return prefs.useDesktopOpen;} 
 #if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
-    // We used to use http://localhost/. Now use file:/// as this is
-    // what Webengine will prepend relative links with (as
-    // baseURL). This is for the case where a user adds a link like
-    // P%N, which would not work if linkPrefix and baseURL were not
-    // the same.
-    //
-    // Now also set for webkit because, as we set baseURL to file://,
-    // the relative links we set in the list will also be prefixed (by
-    // the HTML engine)
-    virtual string linkPrefix() override {return "file:///recoll-links/";}
+    // We now set baseURL to file:///, The relative links will be received as e.g. file:///E%N we
+    // don't set the linkPrefix() anymore (it was "file:///recoll-links/" at some point but this
+    // broke links added by users).
     virtual string bodyAttrs() override {
         return "onload=\"addEventListener('contextmenu', saveLoc)\"";
     }
@@ -863,10 +856,12 @@ void ResList::append(const QString &text)
 #endif
 }
 
+const static QUrl baseUrl("file:///");
+const static std::string sBaseUrl{"file:///"};
+
 void ResList::displayPage()
 {
 #if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
-    const static QUrl baseUrl("file:///");
 
     QProgressDialog progress("Generating text snippets...", "", 0, prefs.respagesize, this);
     m_residx = 0;
@@ -1024,17 +1019,20 @@ void ResList::onLinkClicked(const QUrl &qurl)
     string strurl = pc_decode(qs2utf8s(qurl.toString()));
 
     // Link prefix remark: it used to be that webengine refused to acknowledge link clicks on links
-    // like "%P1", it needed an absolute URL like http://localhost/P1. This does not seem to be the
-    // case any more, probably because we now set baseUrl (to fix icons display which had stopped
-    // working). So the linkprefix thing could probably go away. OTOH, we'd have to substract the
-    // baseUrl because we receive links like baseUrl+P1 instead.
-    LOGDEB1("ResList::onLinkClicked: [" << strurl << "] prefix " << m_pager->linkPrefix() << "\n");
-    if (m_pager->linkPrefix().size() > 0 &&
-        (strurl.size() <= m_pager->linkPrefix().size() ||
-         !beginswith(strurl, m_pager->linkPrefix()))) {
+    // like "%P1", it needed an absolute URL like file:///recoll-links/P1. So, for a time this is
+    // what the links looked like. However this broke the function of the "edit paragraph format"
+    // thing because the manual still specified relative links (E%N). We now set baseUrl to file:///
+    // to fix icons display which had stopped working). So linkprefix() is now empty, but the code
+    // has been kept around. We now receive absolute links baseUrl+relative (e.g. file:///E1), and
+    // substract the baseUrl.
+    auto prefix = m_pager->linkPrefix().size() ? m_pager->linkPrefix() : sBaseUrl;
+    if (prefix.size() && (strurl.size() <= prefix.size() || !beginswith(strurl, prefix))) {
+        LOGINF("ResList::onLinkClicked: bad URL [" << strurl << "] (prefix [" << prefix << "]\n");
         return;
     }
-    strurl = strurl.substr(m_pager->linkPrefix().size());
+    if (prefix.size()) 
+        strurl = strurl.substr(prefix.size());
+    LOGDEB("ResList::onLinkClicked: processed URL: [" << strurl << "]\n");
 
     if (strurl.size() == 0) {
         return;
@@ -1128,11 +1126,11 @@ void ResList::onLinkClicked(const QUrl &qurl)
     {
         if (!havedoc)
             return;
-        QString s = qurl.toString();
-        int bar = s.indexOf("|");
-        if (bar == -1 || bar >= s.size()-1)
+        auto bar = strurl.find('|');
+        if (bar == std::string::npos)
             break;
-        string cmdname = qs2utf8s(s.right(s.size() - (bar + 1)));
+        auto cmdname = strurl.substr(bar + 1);
+        LOGDEB0("Run script: cmdname: [" << cmdname << "]\n");
         DesktopDb ddb(path_cat(theconfig->getConfDir(), "scripts"));
         DesktopDb::AppDef app;
         if (ddb.appByName(cmdname, app)) {
@@ -1145,25 +1143,24 @@ void ResList::onLinkClicked(const QUrl &qurl)
     }
     break;
 
-    // Spelling: replacement suggestion clicked
+    // Spelling: replacement suggestion clicked. strurl is like: Sorograpphic|orographic
     case 'S':
     {
-        string s;
-        if (!strurl.empty())
-            s = strurl.substr(1);
-        string::size_type bar = s.find_first_of("|");
-        if (bar != string::npos && bar < s.size() - 1) {
-            string o = s.substr(0, bar);
-            string n = s.substr(bar+1);
-            LOGDEB2("Emitting wordreplace " << o << " -> " << n << std::endl);
+        // 
+        if (strurl.empty())
+            break;
+        string::size_type bar = strurl.find_first_of("|");
+        if (bar != string::npos && bar > 1 && bar < strurl.size() - 1) {
+            string o = strurl.substr(1, bar-1);
+            string n = strurl.substr(bar+1);
+            LOGDEB2("Emitting wordreplace " << o << " -> " << n << "\n");
             emit wordReplace(u8s2qs(o), u8s2qs(n));
         }
     }
     break;
 
     default: 
-        LOGERR("ResList::onLinkClicked: bad link [" << strurl.substr(0,20) <<
-               "]\n");
+        LOGERR("ResList::onLinkClicked: bad link [" << strurl.substr(0,20) << "]\n");
         break;
     }
 }

@@ -1099,23 +1099,22 @@ void ResTable::readDocSource(bool resetPos)
     m_detaildocnum = -1;
 }
 
-void ResTable::linkWasClicked(const QUrl &url)
+void ResTable::linkWasClicked(const QUrl &qurl)
 {
     if (m_detaildocnum < 0) {
         return;
     }
-    QString s = url.toString();
-    const char *ascurl = s.toUtf8();
-    LOGDEB("ResTable::linkWasClicked: [" << ascurl << "]\n");
+    auto strurl = pc_decode(qs2utf8s(qurl.toString()));
+    LOGDEB("ResTable::linkWasClicked: [" << strurl << "]\n");
 
-    int docseqnum = atoi(ascurl+1) -1;
+    auto docseqnum = atoi(strurl.c_str()+1) -1;
     if (m_detaildocnum != docseqnum) {
         //? Really we should abort...
         LOGERR("ResTable::linkWasClicked: m_detaildocnum != docseqnum !\n");
         return;
     }
     
-    int what = ascurl[0];
+    int what = strurl[0];
     switch (what) {
         // Open abstract/snippets window
     case 'A':
@@ -1155,10 +1154,11 @@ void ResTable::linkWasClicked(const QUrl &url)
     // Run script. Link format Rnn|Script Name
     case 'R':
     {
-        int bar = s.indexOf("|");
-        if (bar == -1 || bar >= s.size()-1)
+        auto bar = strurl.find('|');
+        if (bar == std::string::npos)
             break;
-        string cmdname = qs2utf8s(s.right(s.size() - (bar + 1)));
+        auto cmdname = strurl.substr(bar + 1);
+        LOGDEB0("Run script: cmdname: [" << cmdname << "]\n");
         DesktopDb ddb(path_cat(theconfig->getConfDir(), "scripts"));
         DesktopDb::AppDef app;
         if (ddb.appByName(cmdname, app)) {
@@ -1171,7 +1171,7 @@ void ResTable::linkWasClicked(const QUrl &url)
     break;
 
     default:
-        LOGERR("ResTable::linkWasClicked: bad link [" << ascurl << "]\n");
+        LOGERR("ResTable::linkWasClicked: bad link [" << strurl << "]\n");
         break;// ??
     }
 }
