@@ -15,6 +15,8 @@ Build-Depends: bison,
                libxslt1-dev,
                libz-dev,
                pkg-config,
+               python2-dev (>= 2.6.6-3~),
+               python-setuptools,
                python3-all-dev,
                python3-setuptools,
                qtbase5-dev,
@@ -78,6 +80,21 @@ Architecture: any
 Depends: recollcmd (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
 Description: GUI program and elements for recoll
  Main recoll GUI for configuring, controlling and querying recoll indexes.
+
+Package: python-recoll
+Architecture: any
+Section: python
+Depends: python2,
+         librecoll (= ${binary:Version}), 
+         ${misc:Depends},
+         ${python:Depends},
+         ${shlibs:Depends}
+Description: Python extension for recoll
+ Personal full text search package which is based on a very strong backend
+ (Xapian), for which it provides an easy to use and feature-rich interface.
+ .
+ This package provides Python extension module for recoll which can be use to
+ extend recoll such as an Ubuntu Unity Lens.
 
 Package: python3-recoll
 Architecture: any

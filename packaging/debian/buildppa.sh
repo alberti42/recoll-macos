@@ -9,14 +9,15 @@
 # 22.04LTS jammy  2027-04
 # 23.04    lunar  2024-01
 # 23.10    mantic 2024-07
-SERIES="focal jammy lunar mantic"
-#SERIES="focal jammy"
+# 24.04    noble  2029-05
+SERIES="focal jammy lunar mantic noble"
+SERIES="noble"
 
 PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.37.2
 GSSPVERS=1.1.1
-PPAVERS=1
+PPAVERS=4
 
 #
 #Y=/y
@@ -64,18 +65,15 @@ for series in $series ; do
 
   if test -f $debdir/control-$series ; then
       cp -f -p $debdir/control-$series recoll-${RCLVERS}/debian/control
-  else 
-      cp -f -p $debdir/control recoll-${RCLVERS}/debian/control
   fi
   if test -f $debdir/rules-$series ; then
       cp -f -p $debdir/rules-$series recoll-${RCLVERS}/debian/rules
-  else 
-      cp -f -p $debdir/rules recoll-${RCLVERS}/debian/rules
+  fi
+  if test -f $debdir/python3-recoll.install-$series ; then
+     cp -f -p $debdir/python3-recoll.install-$series recoll-${RCLVERS}/debian/python3-recoll.install
   fi
   if test -f $debdir/patches/series-$series ; then
       cp -f -p $debdir/patches/series-$series recoll-${RCLVERS}/debian/patches/series
-  else 
-      cp -f -p $debdir/patches/series recoll-${RCLVERS}/debian/patches/series
   fi
 
   sed -e s/SERIES/${series}/g \
