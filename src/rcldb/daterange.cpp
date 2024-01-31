@@ -24,6 +24,8 @@
  */
 #include "autoconfig.h"
 
+#include "daterange.h"
+
 #include <stdio.h>
 
 #include <vector>
@@ -33,7 +35,7 @@
 #include "log.h"
 #include "rclconfig.h"
 #include "smallut.h"
-#include "daterange.h"
+#include "rclutil.h"
 
 using namespace std;
 

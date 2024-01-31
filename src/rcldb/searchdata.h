@@ -32,6 +32,7 @@
 #include "rcldb.h"
 #include "smallut.h"
 #include "hldata.h"
+#include "rclutil.h"
 
 class RclConfig;
 class AdvSearch;

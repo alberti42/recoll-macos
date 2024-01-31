@@ -21,7 +21,7 @@
 #include <stack>
 #include <vector>
 
-#include "smallut.h"
+#include "rclutil.h"
 #include "searchdata.h"
 
 class WasaParserDriver;

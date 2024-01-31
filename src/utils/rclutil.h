@@ -150,4 +150,26 @@ extern int u8DLDistance(const std::string& str1, const std::string str2);
 // "file -i" output after the path has been removed). Exported here so that it can be unit-tested.
 extern std::string growmimearoundslash(std::string mime);
 
+// Parse date interval specifier into pair of y,m,d dates.  The format
+// for the time interval is based on a subset of iso 8601 with
+// the addition of open intervals, and removal of all time indications.
+// 'P' is the Period indicator, it's followed by a length in
+// years/months/days (or any subset thereof)
+// Dates: YYYY-MM-DD YYYY-MM YYYY
+// Periods: P[nY][nM][nD] where n is an integer value.
+// At least one of YMD must be specified
+// The separator for the interval is /. Interval examples
+// YYYY/ (from YYYY) YYYY-MM-DD/P3Y (3 years after date) etc.
+// This returns a pair of y,m,d dates.
+struct DateInterval {
+    int y1;
+    int m1;
+    int d1;
+    int y2;
+    int m2;
+    int d2;
+};
+extern bool parsedateinterval(const std::string& s, DateInterval *di);
+extern int monthdays(int mon, int year);
+
 #endif /* _RCLUTIL_H_INCLUDED_ */
