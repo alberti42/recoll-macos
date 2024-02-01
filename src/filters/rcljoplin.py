@@ -72,14 +72,26 @@ signal.signal(signal.SIGTERM, handler)
 class joplin_indexer:
     def __init__(self, rclconfdir, sqfile):
         self.rclconfdir = rclconfdir
-        self.sqconn = sqlite3.connect(sqfile)
+        self.sqconn = None
+        try:
+            if os.path.exists(sqfile):
+                self.sqconn = sqlite3.connect(sqfile)
+        except:
+            pass
 
+    def ok(self):
+        if self.sqconn:
+            return True
+        return False
+    
     def _sig(self, note):
         """Create update verification value for note: updated_time looks ok"""
         return str(note["updated_time"])
 
     def sigfromid(self, id):
         #msg(f"sigfromid: {id}")
+        if not self.sqconn:
+            return ""
         c = self.sqconn.cursor()
         stmt = "SELECT updated_time FROM notes WHERE id = ?"
         c.execute(stmt, (id,))
@@ -96,6 +108,8 @@ class joplin_indexer:
 
     # Walk the table, check if the index is up to date for each note, update if needed.
     def index(self):
+        if not self.sqconn:
+            return 
         global rcldb
         rcldb = recoll.connect(confdir=self.rclconfdir, writable=1)
         # Important: this marks all non-joplin documents as present. Else our call to purge() would
@@ -154,6 +168,8 @@ class joplin_indexer:
     def getdata(self, sqfile, id):
         """Implements the 'fetch' data access interface (called at
         query time from the command line)."""
+        if not self.sqconn:
+            return ""
         c = self.sqconn.cursor()
         stmt = "SELECT body FROM notes WHERE id = ?"
         c.execute(stmt, (id,))
@@ -230,7 +246,8 @@ if not joplindb:
 
 if cmd == "index":
     indexer = joplin_indexer(confdir, joplindb)
-    indexer.index()
+    if indexer.ok():
+        indexer.index()
     sys.exit(0)
 elif cmd == "config":
     update_config(confdir)
