@@ -230,6 +230,8 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     if (bconf.ok()) {
         auto bckids = bconf.getSubKeys();
         for (const auto& bckid : bckids) {
+            if (bckid.empty())
+                continue;
             string sindex;
             if (!bconf.get("index", sindex, bckid) || sindex.empty()) {
                 LOGDEB0("ConfIndexer: no 'index' entry for [" << bckid << "]\n");
