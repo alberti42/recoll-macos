@@ -83,20 +83,14 @@ extern "C" {
  * on error, in which case the errno variable is set to the
  * corresponding error code.
  */
-int unac_string_utf16(const char* in, size_t in_length,
-        char** out, size_t* out_length);
-int unacfold_string_utf16(const char* in, size_t in_length,
-              char** out, size_t* out_length);
-int fold_string_utf16(const char* in, size_t in_length,
-              char** out, size_t* out_length);
-int unacmaybefold_string_utf16(const char* in, size_t in_length,
-                               char** outp, size_t* out_lengthp, int what);
-int unacmaybefold_string(const char* charset, const char* in, size_t in_length,
-                         char** outp, size_t* out_lengthp, int what);
-
+int unac_string_utf16(const char* in, size_t in_length, char** out, size_t* out_length);
+int unacfold_string_utf16(const char* in, size_t in_length, char** out, size_t* out_length);
+int fold_string_utf16(const char* in, size_t in_length, char** out, size_t* out_length);
+int unacmaybefold_string_utf16(
+    const char* in, size_t in_length, char** outp, size_t* out_lengthp, int what);
 /*
- * The semantic of this function is stricly equal to the function
- * unac_string_utf16. The <charset> argument applies to the content of the
+ * The semantic of these function is stricly equal to the _utf16-suffixed ones
+ * The <charset> argument applies to the content of the
  * input string. It is converted to UTF-16 using iconv(3) before calling
  * the unac_string function and the result is converted from UTF-16 to
  * the specified <charset> before returning it in the <out> pointer.
@@ -105,15 +99,20 @@ int unacmaybefold_string(const char* charset, const char* in, size_t in_length,
  * The return value is 0 on success and -1 on error, in which case
  * the errno variable is set to the corresponding error code.
  */
-int unac_string(const char* charset,
-        const char* in, size_t in_length,
-        char** out, size_t* out_length);
-int unacfold_string(const char* charset,
-        const char* in, size_t in_length,
-        char** out, size_t* out_length);
-int fold_string(const char* charset,
-        const char* in, size_t in_length,
-        char** out, size_t* out_length);
+int unac_string(
+    const char* charset, const char* in, size_t in_length, char** out, size_t* out_length);
+int unacfold_string(
+    const char* charset, const char* in, size_t in_length, char** out, size_t* out_length);
+int fold_string(
+    const char* charset, const char* in, size_t in_length, char** out, size_t* out_length);
+int unacmaybefold_string(
+    const char* charset, const char* in, size_t in_length,char** outp,size_t* out_lengthp,int what);
+
+int unac_u8string(const char* in, size_t in_length, char** out, size_t* out_length);
+int unacfold_u8string(const char* in, size_t in_length, char** out, size_t* out_length);
+int fold_u8string(const char* in, size_t in_length, char** out, size_t* out_length);
+int unacmaybefold_u8string(const char* in,size_t in_length,char** outp,size_t* out_lengthp,int what);
+
 
 #ifdef BUILDING_RECOLL
 #include <string>

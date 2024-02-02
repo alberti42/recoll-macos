@@ -54,7 +54,7 @@ public:
 
     virtual std::string operator()(const std::string& in) {
         std::string out;
-        unacmaybefold(in, out, "UTF-8", m_op);
+        unacmaybefold(in, out, m_op);
         LOGDEB2("SynTermTransUnac(" << m_op << "): in [" << in << "] out [" << out << "]\n");
         return out;
     }

@@ -169,7 +169,7 @@ public:
 
         string dumb;
         if (o_index_stripchars) {
-            if (!unacmaybefold(term, dumb, "UTF-8", UNACOP_UNACFOLD)) {
+            if (!unacmaybefold(term, dumb, UNACOP_UNACFOLD)) {
                 LOGINFO("abstract: unac failed for [" << term << "]\n");
                 return true;
             }
@@ -505,7 +505,7 @@ public:
     bool takeword(const std::string& _term, int, int, int) override {
         std::string term;
         if (o_index_stripchars) {
-            if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
+            if (!unacmaybefold(_term, term, UNACOP_UNACFOLD)) {
                 LOGINFO("PlainToRich::takeword: unac failed for [" << term << "]\n");
                 return true;
             }

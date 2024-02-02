@@ -37,7 +37,7 @@ void add_field_value(Xapian::Document& xdoc, const FieldTraits& ft,
     switch (ft.valuetype) {
     case FieldTraits::STR:
         if (o_index_stripchars) {
-            if (!unacmaybefold(data, ndata, "UTF-8", UNACOP_UNACFOLD)) {
+            if (!unacmaybefold(data, ndata, UNACOP_UNACFOLD)) {
                 LOGDEB("Rcl::add_field_value: unac failed for ["<<data<< "]\n");
                 ndata = data;
             } 

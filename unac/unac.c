@@ -14474,7 +14474,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
 
     out = *outp;
     out = (char*)realloc(out, out_size + 1);
-    if(out == 0) {
+    if (nullptr == out) {
         if(debug_level >= UNAC_DEBUG_LOW)
             DEBUG("realloc %d bytes failed\n", out_size+1);
         /* *outp is still valid. Let the caller free it */
@@ -14507,7 +14507,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
             is_except_char(c, trans)) {
             if (what == UNAC_UNAC) {
                 // Unaccent only. Do nothing
-                p = 0;
+                p = nullptr;
                 l = 0;
             } else {
                 // Has to be UNAC_UNACFOLD: use table
@@ -14524,10 +14524,11 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
         /*
          * Explain what's done in great detail
          */
-        if(debug_level == UNAC_DEBUG_HIGH) {
+        if (debug_level == UNAC_DEBUG_HIGH) {
             unsigned short index = unac_indexes[(c) >> UNAC_BLOCK_SHIFT];
             unsigned char position = (c) & UNAC_BLOCK_MASK;
-            DEBUG("unac_data%d[%d] & unac_positions[%d][%d]: ", index, unac_positions[index][position], index, position+1);
+            DEBUG("unac_data%d[%d] & unac_positions[%d][%d]: ", index,
+                  unac_positions[index][position], index, position+1);
             DEBUG_APPEND("0x%04x => ", (c));
             if(l == 0) {
                 DEBUG_APPEND("untouched\n");
@@ -14599,6 +14600,10 @@ int fold_string_utf16(const char* in, size_t in_length, char** outp, size_t* out
     return unacmaybefold_string_utf16(in, in_length, outp, out_lengthp, UNAC_FOLD);
 }
 
+// Note: when using iconv in multithread mode, iconv_open/close is expensive enough that
+// it is significantly faster to use two static iconv descriptors for the common utf-8
+// input case and mutual exclusion. Possibly it would be even better to have a cache of
+// open descriptors to allow for parallel conversion.
 static const char *utf16be = "UTF-16BE";
 static iconv_t u8tou16_cd = (iconv_t)-1;
 static iconv_t u16tou8_cd = (iconv_t)-1;
@@ -14606,91 +14611,32 @@ static iconv_t u16tou8_cd = (iconv_t)-1;
 static std::mutex o_unac_mutex;
 #endif
 
-/*
- * Convert buffer <in> containing string encoded in charset <from> into
- * a string in charset <to> and return it in buffer <outp>. The <outp>
- * points to a malloced string large enough to hold the conversion result.
- * It is the responsibility of the caller to free this array.
- * The out string is always null terminated.
- */
-static int convert(const char* from, const char* to,
-                   const char* in, size_t in_length,
-                   char** outp, size_t* out_lengthp)
-{
-    int ret = -1;
-    iconv_t cd;
-    char* out;
-    size_t out_remain;
-    size_t out_size;
-    char* out_base;
-    int from_utf16, from_utf8, to_utf16, to_utf8, u8tou16, u16tou8;
-    const char space[] = { 0x00, 0x20 };
-
-#ifdef __cplusplus
-    std::unique_lock<std::mutex> lock(o_unac_mutex);
+#ifdef USE_SIMDUTF
+#include "simdutf.cpp"
+#include "simdutf.h"
 #endif
-    
-    if (!strcmp(utf16be, from)) {
-        from_utf8 = 0;
-        from_utf16 = 1;
-    } else if (!strcasecmp("UTF-8", from)) {
-        from_utf8 = 1;
-        from_utf16 = 0;
-    } else {
-        from_utf8 = from_utf16 = 0;
-    }
-    if (!strcmp(utf16be, to)) {
-        to_utf8 = 0;
-        to_utf16 = 1;
-    } else if (!strcasecmp("UTF-8", to)) {
-        to_utf8 = 1;
-        to_utf16 = 0;
-    } else {
-        to_utf8 = to_utf16 = 0;
-    }
-    u16tou8 = from_utf16 && to_utf8;
-    u8tou16 = from_utf8 && to_utf16;
 
-    out_size = in_length > 0 ? in_length : 1024;
+static int run_iconv(iconv_t cd, bool from_utf16, const char* in, size_t in_length,
+                     char** outp, size_t *out_lengthp)
+{
+    const char space[] = {0x00, 0x20};
+    size_t out_size = in_length > 0 ? in_length : 1024;
+    char *out = *outp;
+    size_t out_remain;
+    char* out_base;
 
-    out = *outp;
     out = (char *)realloc(out, out_size + 1);
     if(out == 0) {
         /* *outp still valid, no freeing */
         if(debug_level >= UNAC_DEBUG_LOW)
             DEBUG("realloc %d bytes failed\n", out_size+1);
-        goto out;
+        return -1;
     }
 
     out_remain = out_size;
     out_base = out;
-
-    if (u8tou16) {
-        if (u8tou16_cd == (iconv_t)-1) {
-            if((u8tou16_cd = iconv_open(to, from)) == (iconv_t)-1) {
-                goto out;
-            }
-        } else {
-            iconv(u8tou16_cd, 0, 0, 0, 0);
-        }
-        cd = u8tou16_cd;
-    } else if (u16tou8) {
-        if (u16tou8_cd == (iconv_t)-1) {
-            if((u16tou8_cd = iconv_open(to, from)) == (iconv_t)-1) {
-                goto out;
-            }
-        } else {
-            iconv(u16tou8_cd, 0, 0, 0, 0);
-        }
-        cd = u16tou8_cd;
-    } else {
-        if((cd = iconv_open(to, from)) == (iconv_t)-1) {
-            goto out;
-        }
-    }
-
     do {
-        if(iconv(cd, (ICONV_CONST char **) &in, &in_length, &out, &out_remain) == (size_t)-1) {
+        if (iconv(cd, (ICONV_CONST char **) &in, &in_length, &out, &out_remain) == (size_t)-1) {
             switch(errno) {
             case EILSEQ:
                 /*
@@ -14717,10 +14663,10 @@ static int convert(const char* from, const char* to,
                     size_t tmp_length = 2;
                     if (iconv(cd, (ICONV_CONST char **)&tmp, &tmp_length, &out, &out_remain) ==
                         (size_t)-1) {
-                        if(errno == E2BIG) {
+                        if (errno == E2BIG) {
                             /* fall thru to the E2BIG case below */;
                         } else {
-                            goto out;
+                            return -1;
                         }
                     } else {
                         /* The offending character was replaced by a SPACE, skip it. */
@@ -14730,8 +14676,9 @@ static int convert(const char* from, const char* to,
                         break;
                     }
                 } else {
-                    goto out;
+                    return -1;
                 }
+                /* FALLTHROUGH */
             case E2BIG:
             {
                 /*
@@ -14750,7 +14697,7 @@ static int convert(const char* from, const char* to,
                             DEBUG("realloc %d bytes failed\n", out_size+1);
                         free(saved);
                         *outp = 0;
-                        goto out;
+                        return -1;
                     }
                 }
                 out = out_base + length;
@@ -14758,31 +14705,181 @@ static int convert(const char* from, const char* to,
             }
             break;
             default:
-                goto out;
+                return -1;
                 break;
             }
         }
     } while(in_length > 0);
-
-    if (!u8tou16 && !u16tou8)
-        iconv_close(cd);
-
     *outp = out_base;
     *out_lengthp = out - out_base;
     (*outp)[*out_lengthp] = '\0';
+    return 0;
+}
 
-    ret = 0;
+/*
+ * Convert buffer <in> containing string encoded in charset <from> into
+ * a string in charset <to> and return it in buffer <outp>. The <outp>
+ * points to a malloced string large enough to hold the conversion result.
+ * It is the responsibility of the caller to free this array.
+ * The out string is always null terminated.
+ */
+static int convert(const char* from, const char* to,
+                   const char* in, size_t in_length,
+                   char** outp, size_t* out_lengthp)
+{
+    int ret = -1;
+    iconv_t cd;
+    int from_utf16, from_utf8, to_utf16, to_utf8, u8tou16, u16tou8;
+
+    if (!strcmp(utf16be, from)) {
+        from_utf8 = 0;
+        from_utf16 = 1;
+    } else if (!strcasecmp("UTF-8", from)) {
+        from_utf8 = 1;
+        from_utf16 = 0;
+    } else {
+        from_utf8 = from_utf16 = 0;
+    }
+    if (!strcmp(utf16be, to)) {
+        to_utf8 = 0;
+        to_utf16 = 1;
+    } else if (!strcasecmp("UTF-8", to)) {
+        to_utf8 = 1;
+        to_utf16 = 0;
+    } else {
+        to_utf8 = to_utf16 = 0;
+    }
+    u16tou8 = from_utf16 && to_utf8;
+    u8tou16 = from_utf8 && to_utf16;
+
+#ifdef __cplusplus
+        std::unique_lock<std::mutex> lock(o_unac_mutex);
+#endif
+    if (u8tou16) {
+        if (u8tou16_cd == (iconv_t)-1) {
+            if((u8tou16_cd = iconv_open(to, from)) == (iconv_t)-1) {
+                goto out;
+            }
+        } else {
+            iconv(u8tou16_cd, 0, 0, 0, 0);
+        }
+        cd = u8tou16_cd;
+    } else if (u16tou8) {
+        if (u16tou8_cd == (iconv_t)-1) {
+            if((u16tou8_cd = iconv_open(to, from)) == (iconv_t)-1) {
+                goto out;
+            }
+        } else {
+            iconv(u16tou8_cd, 0, 0, 0, 0);
+        }
+        cd = u16tou8_cd;
+    } else {
+        if((cd = iconv_open(to, from)) == (iconv_t)-1) {
+            goto out;
+        }
+    }
+
+    ret = run_iconv(cd, from_utf16, in, in_length, outp, out_lengthp);
+    
+    if (!u8tou16 && !u16tou8)
+        iconv_close(cd);
+
 out:
     return ret;
+}
+
+int unacmaybefold_u8string(const char* in, size_t in_length,
+                           char** outp, size_t* out_lengthp, int what)
+{
+    /* When converting an empty string, skip everything but alloc the buffer if NULL pointer. */
+    if (in_length <= 0) {
+        if(!*outp) {
+            if ((*outp = (char*)malloc(32)) == 0)
+                return -1;
+        }
+        (*outp)[0] = '\0';
+        *out_lengthp = 0;
+    } else {
+        char* utf16_unaccented = 0;
+        size_t utf16_unaccented_length = 0;
+        size_t utf16_length = 0;
+
+#ifndef  USE_SIMDUTF
+#ifdef __cplusplus
+        std::unique_lock<std::mutex> lock(o_unac_mutex);
+#endif
+        char* utf16 = 0;
+        iconv_t cd;
+        if (u8tou16_cd == (iconv_t)-1) {
+            if((u8tou16_cd = iconv_open(utf16be, "UTF-8")) == (iconv_t)-1) {
+                return -1;
+            }
+        } else {
+            iconv(u8tou16_cd, 0, 0, 0, 0);
+        }
+        if (u16tou8_cd == (iconv_t)-1) {
+            if((u16tou8_cd = iconv_open("UTF-8", utf16be)) == (iconv_t)-1) {
+                return -1;
+            }
+        } else {
+            iconv(u16tou8_cd, 0, 0, 0, 0);
+        }
+  
+        cd = u8tou16_cd;
+#endif // !USE_SIMDUTF
+
+#ifdef USE_SIMDUTF
+        size_t expected_utf16words = simdutf::utf16_length_from_utf8(in, in_length);
+        char16_t *utf16 = (char16_t*)malloc(sizeof(char16_t) * expected_utf16words);
+        size_t utf16words = simdutf::convert_utf8_to_utf16be(in, in_length, utf16);
+        utf16_length = utf16words * sizeof(char16_t);
+#else
+        if (run_iconv(cd, false, in, in_length, &utf16, &utf16_length) < 0) {
+            return -1;
+        }
+#endif
+
+        unacmaybefold_string_utf16(
+            (const char *)utf16, utf16_length, &utf16_unaccented, &utf16_unaccented_length, what);
+        free(utf16);
+
+#ifdef USE_SIMDUTF
+        size_t expected_utf8words = simdutf::utf8_length_from_utf16be(
+            (const char16_t*)utf16_unaccented, utf16_unaccented_length / sizeof(char16_t));
+        char *utf8_output = (char*)malloc(expected_utf8words);
+        size_t utf8words = simdutf::convert_utf16be_to_utf8(
+            (const char16_t*)utf16_unaccented, utf16_unaccented_length / sizeof(char16_t),
+            utf8_output);
+        *outp = utf8_output;
+        *out_lengthp = utf8words;
+#else
+        cd = u16tou8_cd;
+        if (run_iconv(cd, true, utf16_unaccented, utf16_unaccented_length, outp, out_lengthp) < 0) {
+            return -1;
+        }
+#endif
+        free(utf16_unaccented);
+    }
+    return 0;
+}
+
+int unac_u8string(const char* in, size_t in_length, char** outp, size_t* out_lengthp)
+{
+    return unacmaybefold_u8string(in, in_length, outp, out_lengthp, UNAC_UNAC);
+}
+int unacfold_u8string(const char* in, size_t in_length, char** outp, size_t* out_lengthp)
+{
+    return unacmaybefold_u8string(in, in_length, outp, out_lengthp, UNAC_UNACFOLD);
+}
+int fold_u8string(const char* in, size_t in_length, char** outp, size_t* out_lengthp)
+{
+    return unacmaybefold_u8string(in, in_length, outp, out_lengthp, UNAC_FOLD);
 }
 
 int unacmaybefold_string(const char* charset, const char* in, size_t in_length,
                          char** outp, size_t* out_lengthp, int what)
 {
-    /*
-     * When converting an empty string, skip everything but alloc the
-     * buffer if NULL pointer.
-     */
+    /* When converting an empty string, skip everything but alloc the buffer if NULL pointer. */
     if (in_length <= 0) {
         if(!*outp) {
             if ((*outp = (char*)malloc(32)) == 0)
@@ -14800,17 +14897,16 @@ int unacmaybefold_string(const char* charset, const char* in, size_t in_length,
             return -1;
         }
 
-        unacmaybefold_string_utf16(utf16, utf16_length, &utf16_unaccented, 
-                                   &utf16_unaccented_length, what);
+        unacmaybefold_string_utf16(
+            utf16, utf16_length, &utf16_unaccented, &utf16_unaccented_length, what);
         free(utf16);
 
-        if(convert(utf16be, charset, utf16_unaccented, utf16_unaccented_length, 
-                   outp, out_lengthp) < 0) {
+        if(convert(
+               utf16be, charset, utf16_unaccented, utf16_unaccented_length, outp, out_lengthp) < 0) {
             return -1;
         }
         free(utf16_unaccented);
     }
-
     return 0;
 }
 

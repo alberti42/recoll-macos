@@ -1070,7 +1070,7 @@ int Db::termDocCnt(const string& _term)
 
     string term = _term;
     if (o_index_stripchars)
-        if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
+        if (!unacmaybefold(_term, term, UNACOP_UNACFOLD)) {
             LOGINFO("Db::termDocCnt: unac failed for [" << _term << "]\n");
             return 0;
         }
@@ -1509,7 +1509,7 @@ bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
         // Was not aspell candidate (e.g.: katakana). Maybe use Xapian speller?
         if (isSpellingCandidate(term, false)) {
             if (!o_index_stripchars) {
-                if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
+                if (!unacmaybefold(word, term, UNACOP_UNACFOLD)) {
                     LOGINFO("Db::getSpelling: unac failed for [" << word << "]\n");
                     return false;
                 }
@@ -1623,7 +1623,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
             // Windows file names are case-insensitive, so we
             // translate to UTF-8 and lowercase
             string upath = compute_utf8fn(m_config, path, false);            
-            unacmaybefold(upath, path, "UTF-8", UNACOP_FOLD);
+            unacmaybefold(upath, path, UNACOP_FOLD);
 #endif
 
             vector<string> vpath;
@@ -1733,7 +1733,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         string utf8fn;
         if (doc.getmeta(Doc::keyfn, &utf8fn) && !utf8fn.empty()) {
             string fn;
-            if (unacmaybefold(utf8fn, fn, "UTF-8", UNACOP_UNACFOLD)) {
+            if (unacmaybefold(utf8fn, fn, UNACOP_UNACFOLD)) {
                 // We should truncate after extracting the extension,
                 // but this is a pathological case anyway
                 if (fn.size() > 230)
@@ -1757,8 +1757,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         // Fields used for selecting by date. Note that this only
         // works for years AD 0-9999 (no crash elsewhere, but things
         // won't work).
-        time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
-                             doc.dmtime.c_str());
+        time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : doc.dmtime.c_str());
         struct tm tmb;
         localtime_r(&mtime, &tmb);
         char buf[50]; // It's actually 9, but use 50 to suppress warnings.

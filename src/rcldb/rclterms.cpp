@@ -60,7 +60,7 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
     // approach with file names and wild cards. termMatch does
     // stripping conditionally on indexstripchars.
     string pat1;
-    if (unacmaybefold(pattern, pat1, "UTF-8", UNACOP_UNACFOLD)) {
+    if (unacmaybefold(pattern, pat1, UNACOP_UNACFOLD)) {
         pattern.swap(pat1);
     }
 
@@ -183,7 +183,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     string term = _term;
     if (o_index_stripchars) {
         diac_sensitive = case_sensitive = true;
-        if (!pathelt && !unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
+        if (!pathelt && !unacmaybefold(_term, term, UNACOP_UNACFOLD)) {
             LOGERR("Db::termMatch: unac failed for [" << _term << "]\n");
             return false;
         }
@@ -256,7 +256,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
             // expansion for input to stemdb.
             for (auto& term : lexp) {
                 string lower;
-                unacmaybefold(term, lower, "UTF-8", UNACOP_FOLD);
+                unacmaybefold(term, lower, UNACOP_FOLD);
                 term.swap(lower);
             }
             sort(lexp.begin(), lexp.end());

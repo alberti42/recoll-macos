@@ -82,7 +82,7 @@ public:
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
         string dumb = term;
         if (o_index_stripchars) {
-            if (!unacmaybefold(term, dumb, "UTF-8", UNACOP_UNACFOLD)) {
+            if (!unacmaybefold(term, dumb, UNACOP_UNACFOLD)) {
                 LOGINFO("PlainToRich::takeword: unac failed for [" << term << "]\n");
                 return true;
             }

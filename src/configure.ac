@@ -234,6 +234,13 @@ else
    RECOLL_PUBLIC_LIB=0
 fi
 
+AC_ARG_ENABLE(simdutf, AS_HELP_STRING([--disable-simdutf],
+[Use the simdutf library (as a single header embedding) for fast Unac Unicode conversions.]),
+        simdutfEnabled=$enableval, simdutfEnabled=yes)
+if test X$simdutfEnabled = Xyes ; then
+  AC_DEFINE(USE_SIMDUTF, 1, [Use the simdutf library for fast Unicode conversions.])
+fi
+
 # Enable CamelCase word splitting. This is optional because it causes 
 # problems with phrases: with camelcase enabled, "MySQL manual"
 # will be matched by "MySQL manual" and "my sql manual" but not 

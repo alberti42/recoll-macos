@@ -1035,7 +1035,7 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
     string ltext;
 #ifdef _WIN32
     // Windows file names are case-insensitive, so we lowercase (same as when indexing)
-    unacmaybefold(m_text, ltext, "UTF-8", UNACOP_FOLD);
+    unacmaybefold(m_text, ltext, UNACOP_FOLD);
 #else
     ltext = m_text;
 #endif

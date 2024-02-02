@@ -114,7 +114,7 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb, const vector<string>& lan
             // stripped term to the cased and accented one, for accent
             // and case expansion at query time
             if (!o_index_stripchars) {
-                unacmaybefold(term, lower, "UTF-8", UNACOP_FOLD);
+                unacmaybefold(term, lower, UNACOP_FOLD);
                 diacasedb.addSynonym(term);
             }
 
@@ -137,7 +137,7 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb, const vector<string>& lan
             // way on a raw index
             if (!o_index_stripchars) {
                 string unac;
-                unacmaybefold(lower, unac, "UTF-8", UNACOP_UNAC);
+                unacmaybefold(lower, unac, UNACOP_UNAC);
                 if (unac != lower) {
                     for (unsigned int i = 0; i < langs.size(); i++) {
                         unacstemdbs[i].addSynonym(unac);

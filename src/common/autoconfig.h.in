@@ -164,6 +164,9 @@
 /* Use posix_spawn() */
 #undef USE_POSIX_SPAWN
 
+/* Use the simdutf library for fast Unicode conversions. */
+#undef USE_SIMDUTF
+
 /* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING
 

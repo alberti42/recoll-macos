@@ -123,7 +123,7 @@ public:
         m_totalterms++;
         std::string otrm;
 
-        if (!unacmaybefold(itrm, otrm, "UTF-8", UNACOP_UNACFOLD)) {
+        if (!unacmaybefold(itrm, otrm, UNACOP_UNACFOLD)) {
             LOGDEB("splitter::takeword: unac [" << itrm << "] failed\n");
             m_unacerrors++;
             // We don't generate a fatal error because of a bad term,

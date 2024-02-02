@@ -28,21 +28,21 @@
 
 using namespace std;
 
-bool unacmaybefold(const string &in, string &out, const char *encoding, UnacOp what)
+bool unacmaybefold(const string &in, string &out, UnacOp what)
 {
     char *cout = 0;
     size_t out_len;
     int status = -1;
-
+    
     switch (what) {
     case UNACOP_UNAC:
-        status = unac_string(encoding, in.c_str(), in.length(), &cout, &out_len);
+        status = unac_u8string(in.c_str(), in.length(), &cout, &out_len);
         break;
     case UNACOP_UNACFOLD:
-        status = unacfold_string(encoding, in.c_str(), in.length(), &cout, &out_len);
+        status = unacfold_u8string(in.c_str(), in.length(), &cout, &out_len);
         break;
     case UNACOP_FOLD:
-        status = fold_string(encoding, in.c_str(), in.length(), &cout, &out_len);
+        status = fold_u8string(in.c_str(), in.length(), &cout, &out_len);
         break;
     }
 
@@ -64,7 +64,7 @@ bool unacmaybefold(const string &in, string &out, const char *encoding, UnacOp w
 std::string unactolower(const std::string& in)
 {
     std::string out;
-    unacmaybefold(in, out, "UTF-8", UNACOP_FOLD);
+    unacmaybefold(in, out, UNACOP_FOLD);
     return out;
 }
 
@@ -81,7 +81,7 @@ bool unaciscapital(const string& in)
     it.appendchartostring(shorter);
 
     string lower;
-    if (!unacmaybefold(shorter, lower, "UTF-8", UNACOP_FOLD)) {
+    if (!unacmaybefold(shorter, lower, UNACOP_FOLD)) {
         LOGINFO("unaciscapital: unac/fold failed for [" << in << "]\n");
         return false;
     } 
@@ -125,7 +125,7 @@ bool unachasuppercase(const string& _in)
     LOGDEB("unachasuppercase: folded: [" << in << "]\n");
     
     string lower;
-    if (!unacmaybefold(in, lower, "UTF-8", UNACOP_FOLD)) {
+    if (!unacmaybefold(in, lower, UNACOP_FOLD)) {
         LOGINFO("unachasuppercase: unac/fold failed for [" << in << "]\n");
         return false;
     } 
@@ -143,7 +143,7 @@ bool unachasaccents(const string& in)
         return false;
 
     string noac;
-    if (!unacmaybefold(in, noac, "UTF-8", UNACOP_UNAC)) {
+    if (!unacmaybefold(in, noac, UNACOP_UNAC)) {
         LOGINFO("unachasaccents: unac/unac failed for ["  << (in) << "]\n" );
         return false;
     } 

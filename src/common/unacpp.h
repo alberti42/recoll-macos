@@ -19,17 +19,18 @@
 
 #include <string>
 
+// All the following function take an UTF-8 input and output UTF-8
+
 // A small stringified wrapper for unac.c
 enum UnacOp {UNACOP_UNAC = 1, UNACOP_FOLD = 2, UNACOP_UNACFOLD = 3};
-extern bool unacmaybefold(const std::string& in, std::string& out, 
-              const char *encoding, UnacOp what);
+extern bool unacmaybefold(const std::string& in, std::string& out, UnacOp what);
 
 // Utility function to determine if string begins with capital
 extern bool unaciscapital(const std::string& in);
 // Utility function to determine if string has upper-case anywhere
 extern bool unachasuppercase(const std::string& in);
 // Utility function to determine if any character is accented. This
-// approprialey ignores the characters from unac_except_chars which
+// appropriately ignores the characters from unac_except_chars which
 // are really separate letters
 extern bool unachasaccents(const std::string& in);
 

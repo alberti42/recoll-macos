@@ -194,7 +194,7 @@ public:
             }
             if (!o_index_stripchars) {
                 string lower;
-                if (!unacmaybefold(*m_input, lower, "UTF-8", UNACOP_FOLD))
+                if (!unacmaybefold(*m_input, lower, UNACOP_FOLD))
                     continue;
                 m_input->swap(lower);
             }
@@ -329,7 +329,7 @@ bool Aspell::suggest(
 
     if (!o_index_stripchars) {
         string lower;
-        if (!unacmaybefold(mterm, lower, "UTF-8", UNACOP_FOLD)) {
+        if (!unacmaybefold(mterm, lower, UNACOP_FOLD)) {
             LOGERR("Aspell::check : cant lowercase input\n");
             return false;
         }

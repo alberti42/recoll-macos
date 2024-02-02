@@ -35,7 +35,7 @@ using namespace std;
 static char *thisprog;
 
 static char usage [] = "\n"
-    "[-c|-C] <encoding> <infile> <outfile>\n"
+    "[-c|-C] <infile> <outfile>\n"
     "   Default : unaccent\n"
     "   -c : unaccent and casefold\n"
     "   -C : casefold only\n"
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
         std::cout << out << "\n";
         return 0;
     } else {
-        if (argc != 3)
+        if (argc != 2)
             Usage();
         if (op_flags & OPT_c) {
             op = UNACOP_UNACFOLD;
@@ -115,7 +115,6 @@ int main(int argc, char **argv)
             op = UNACOP_FOLD;
         }
 
-        const char *encoding = *argv++; argc--;
         string ifn = *argv++; argc--;
         if (!ifn.compare("stdin") || !ifn.compare("-")) {
             // file_read interprets an empty fn as "use stdin"
@@ -132,7 +131,7 @@ int main(int argc, char **argv)
             return 1;
         }
         string ndata;
-        if (!unacmaybefold(odata, ndata, encoding, op)) {
+        if (!unacmaybefold(odata, ndata, op)) {
             cerr << "unac: " << ndata << endl;
             return 1;
         }

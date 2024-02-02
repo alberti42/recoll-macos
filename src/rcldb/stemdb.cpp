@@ -52,7 +52,7 @@ bool StemDb::stemExpand(const std::string& langs, const std::string& _term, vect
     // would be more logical for the term transformers to perform before doing the stemming, but
     // this would be inefficient when there are several stemming languages
     string term;
-    unacmaybefold(_term, term, "UTF-8", UNACOP_FOLD);
+    unacmaybefold(_term, term, UNACOP_FOLD);
 
     for (const auto& lang : llangs) {
         SynTermTransStem stemmer(lang);
@@ -62,7 +62,7 @@ bool StemDb::stemExpand(const std::string& langs, const std::string& _term, vect
 
     if (!o_index_stripchars) {
         string unac;
-        unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
+        unacmaybefold(term, unac, UNACOP_UNAC);
         // Expand the unaccented stem, using the unaccented stem db. Because it's a different db, We
         // need to do it even if the input has no accent (unac == term)
         for (const auto& lang : llangs) {
