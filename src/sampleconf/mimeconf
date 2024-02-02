@@ -272,6 +272,7 @@ application/ogg = sownd
 application/pdf = pdf
 application/postscript = postscript
 application/sql = source
+application/x-joplin-note = document
 application/x-ipynb+json = document
 application/vnd.ms-excel = spreadsheet
 application/vnd.ms-office = document
@@ -432,6 +433,7 @@ text = \
       application/x-gnote \
       application/x-gnuinfo \
       application/x-ipynb+json \
+      application/x-joplin-note \
       application/x-kword \
       application/x-lyx \
       application/x-mobipocket-ebook \
