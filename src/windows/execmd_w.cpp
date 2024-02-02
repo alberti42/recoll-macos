@@ -1077,17 +1077,25 @@ bool ExecCmd::maybereap(int *status)
 
     if (m->m_piProcInfo.hProcess == NULL) {
         // Already waited for ??
+        LOGERR("MAYBEREAP: ALREADY DONE\n");
         return true;
     }
 
     DWORD exit_code = -1;
+    // Returns non-zero for success
     auto ret = GetExitCodeProcess(m->m_piProcInfo.hProcess, &exit_code);
 
-    if (ret) {
+    if (ret == 0 || (ret && exit_code == STILL_ACTIVE)) {
+        if (ret == 0) {
+            LOGDEB1("ExecCmd::maybereap GetExitCodeProcess failed: err: " << GetLastError() << "\n");
+        } else {
+            LOGDEB1("ExecCmd::maybereap: GetExitCodeProcess returned STILL_ACTIVE\n");
+        }
         // Process still here
         e.inactivate();
         return false;
     }
+    LOGDEB0("ExecCmd::maybereap: process exited. status: " << exit_code << "\n");
     *status = (int)exit_code;
     CloseHandle(m->m_piProcInfo.hProcess);
     m->m_piProcInfo.hProcess = NULL;
