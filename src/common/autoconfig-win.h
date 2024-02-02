@@ -115,7 +115,7 @@
 #define PACKAGE_NAME "Recoll"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Recoll 1.37.2"
+#define PACKAGE_STRING "Recoll 1.37.4"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "recoll"
@@ -124,7 +124,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.37.2"
+#define PACKAGE_VERSION "1.37.4"
 
 /* Use QTextBrowser to implement the preview windows */
 #undef PREVIEW_FORCETEXTBROWSER

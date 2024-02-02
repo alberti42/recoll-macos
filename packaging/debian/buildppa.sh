@@ -11,13 +11,13 @@
 # 23.10    mantic 2024-07
 # 24.04    noble  2029-05
 SERIES="focal jammy lunar mantic noble"
-SERIES="noble"
+#SERIES="noble"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.37.2
+RCLVERS=1.37.4
 GSSPVERS=1.1.1
-PPAVERS=4
+PPAVERS=1
 
 #
 #Y=/y

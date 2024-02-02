@@ -38,6 +38,7 @@
 #include "pathut.h"
 #include "unacpp.h"
 #include "uiprefs_w.h"
+#include "cstr.h"
 
 using namespace std;
 
