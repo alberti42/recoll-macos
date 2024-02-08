@@ -1,4 +1,4 @@
-/* Copyright (C) 2004-2019 J.F.Dockes 
+/* Copyright (C) 2004-2024 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -59,8 +59,8 @@ public:
 class FsTreeWalker::Internal {
 public:
     Internal(int opts)
-        : options(opts), depthswitch(4), maxdepth(-1), errors(0) {
-    }
+        : options(opts), depthswitch(4), maxdepth(-1), errors(0)
+        {}
     int options;
     int depthswitch;
     int maxdepth;
@@ -78,8 +78,7 @@ public:
 #endif
     void logsyserr(const char *call, const string &param) {
         errors++;
-        reason << call << "(" << param << ") : " << errno << " : " << 
-            strerror(errno) << endl;
+        reason << call << "(" << param << ") : " << errno << " : " << strerror(errno) << "\n";
     }
 };
 
@@ -184,10 +183,9 @@ bool FsTreeWalker::addSkippedPath(const string& ipath)
 bool FsTreeWalker::setSkippedPaths(const vector<string> &paths)
 {
     data->skippedPaths = paths;
-    for (vector<string>::iterator it = data->skippedPaths.begin();
-         it != data->skippedPaths.end(); it++)
-        if (!(data->options & FtwNoCanon))
-            *it = path_canon(*it);
+    if (!(data->options & FtwNoCanon))
+        for (auto& path : data->skippedPaths)
+            path = path_canon(path);
     return true;
 }
 bool FsTreeWalker::inSkippedPaths(const string& path, bool ckparents)
@@ -198,19 +196,18 @@ bool FsTreeWalker::inSkippedPaths(const string& path, bool ckparents)
         fnmflags |= FNM_LEADING_DIR;
 #endif
 
-    for (vector<string>::const_iterator it = data->skippedPaths.begin(); 
-         it != data->skippedPaths.end(); it++) {
+    for (const auto& skpath : data->skippedPaths) {
 #ifndef FNM_LEADING_DIR
         if (ckparents) {
             string mpath = path;
             while (mpath.length() > 2) {
-                if (fnmatch(it->c_str(), mpath.c_str(), fnmflags) == 0) 
+                if (fnmatch(skpath.c_str(), mpath.c_str(), fnmflags) == 0) 
                     return true;
                 mpath = path_getfather(mpath);
             }
         } else 
 #endif /* FNM_LEADING_DIR */
-            if (fnmatch(it->c_str(), path.c_str(), fnmflags) == 0) {
+            if (fnmatch(skpath.c_str(), path.c_str(), fnmflags) == 0) {
                 return true;
             }
     }
@@ -350,7 +347,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(
 
     int curdepth = slashcount(top) - data->basedepth;
     if (data->maxdepth >= 0 && curdepth >= data->maxdepth) {
-        LOGDEB1("FsTreeWalker::iwalk: Maxdepth reached: ["  << (top) << "]\n" );
+        LOGDEB1("FsTreeWalker::iwalk: Maxdepth reached: [" << top << "]\n");
         return status;
     }
 
@@ -366,8 +363,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(
     if (data->options & FtwFollow) {
         DirId dirid(stp.pst_dev, stp.pst_ino);
         if (data->donedirs.find(dirid) != data->donedirs.end()) {
-            LOGINFO("Not processing [" << top <<
-                    "] (already seen as other path)\n");
+            LOGINF("Not processing [" << top << "] (already seen as other path)\n");
             return status;
         }
         data->donedirs.insert(dirid);
@@ -410,26 +406,20 @@ FsTreeWalker::Status FsTreeWalker::iwalk(
             continue;
 
         // Skipped file names match ?
-        if (!data->skippedNames.empty()) {
-            if (inSkippedNames(dname)) {
-                cb.processone(path_cat(top, dname), FtwSkipped);
-                continue;
-            }
+        if (!data->skippedNames.empty() && inSkippedNames(dname)) {
+            cb.processone(path_cat(top, dname), FtwSkipped);
+            continue;
         }
 
         fn = path_cat(top, dname);
 
         // Skipped file paths match ?
-        if (!data->skippedPaths.empty()) {
-            // We do not check the ancestors. This means that you can have
-            // a topdirs member under a skippedPath, to index a portion of
-            // an ignored area. This is the way it had always worked, but
-            // this was broken by 1.13.00 and the systematic use of 
-            // FNM_LEADING_DIR
-            if (inSkippedPaths(fn, false)) {
-                cb.processone(fn, FtwSkipped);
-                continue;
-            }
+        // We do not check the ancestors. This means that you can have a topdirs member under a
+        // skippedPath, to index a portion of an ignored area. This is the way it had always worked,
+        // but this was broken by 1.13.00 and the systematic use of FNM_LEADING_DIR
+        if (!data->skippedPaths.empty() && inSkippedPaths(fn, false)) {
+            cb.processone(fn, FtwSkipped);
+            continue;
         }
 
         int statret =  path_fileprops(fn.c_str(), &st, data->options&FtwFollow);
@@ -437,7 +427,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(
             data->logsyserr("stat", fn);
 #ifdef _WIN32
             int rc = GetLastError();
-            LOGERR("stat failed: LastError " << rc << endl);
+            LOGERR("stat(" << fn << ") failed. LastError: " << rc << "\n");
             if (rc == ERROR_NETNAME_DELETED) {
                 status = FtwError;
                 goto out;
@@ -484,8 +474,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(
                         goto out;
                     }
                 }
-        } else if (st.pst_type == PathStat::PST_REGULAR ||
-                   st.pst_type == PathStat::PST_SYMLINK) {
+        } else if (st.pst_type == PathStat::PST_REGULAR || st.pst_type == PathStat::PST_SYMLINK) {
             // Filtering patterns match ?
             if (!data->onlyNames.empty()) {
                 if (!inOnlyNames(dname))
@@ -505,7 +494,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(
         data->logsyserr("readdir", top);
 #ifdef _WIN32
         int rc = GetLastError();
-        LOGERR("Readdir failed: LastError " << rc << endl);
+        LOGERR("Readdir(" << top << ") failed: LastError " << rc << "\n");
         if (rc == ERROR_NETNAME_DELETED) {
             status = FtwError;
             goto out;
@@ -524,8 +513,7 @@ int64_t fsTreeBytes(const string& topdir)
     public:
         FsTreeWalker::Status processone(
             const string &, FsTreeWalker::CbFlag flg, const struct PathStat& st) override {
-            if (flg == FsTreeWalker::FtwDirEnter ||
-                flg == FsTreeWalker::FtwRegular) {
+            if (flg == FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwRegular) {
 #ifdef _WIN32
                 totalbytes += st.pst_size;
 #else
@@ -540,7 +528,7 @@ int64_t fsTreeBytes(const string& topdir)
     bytesCB cb;
     FsTreeWalker::Status status = walker.walk(topdir, cb);
     if (status != FsTreeWalker::FtwOk) {
-        LOGERR("fsTreeBytes: walker failed: " << walker.getReason() << endl);
+        LOGERR("fsTreeBytes: walker failed: " << walker.getReason() << "\n");
         return -1;
     }
     return cb.totalbytes;

@@ -234,6 +234,11 @@ bool FsIndexer::index(int flags)
             walkok = false;
             break;
         }
+        auto reason = m_walker.getReason();
+        // Log walker events at a lower level
+        if (!reason.empty()) {
+            LOGINF("FsIndexer::index: walker events:\n" << reason << "\n");
+        }
     }
 
     shutdownQueues(walkok);
