@@ -247,9 +247,9 @@ int main(int argc, char **argv)
     // if we are named recollq or option "-t" is present at all, we
     // don't do the GUI thing and pass the whole to recollq for
     // command line / pipe usage.
-    if (!strcmp(argv[0], "recollq"))
+    if (path_getsimple(argv[0]) == "recollq")
         exit(recollq(&theconfig, argc, argv));
-    for (int i = 0; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-t")) {
             exit(recollq(&theconfig, argc, argv));
         }
