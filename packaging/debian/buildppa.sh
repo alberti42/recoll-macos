@@ -7,16 +7,15 @@
 # Active series:
 # 20.04LTS focal  2025-04
 # 22.04LTS jammy  2027-04
-# 23.04    lunar  2024-01
 # 23.10    mantic 2024-07
 # 24.04    noble  2029-05
-SERIES="focal jammy lunar mantic noble"
+SERIES="focal jammy mantic noble"
 #SERIES="noble"
 
 PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.37.4
-GSSPVERS=1.1.1
+GSSPVERS=1.1.3
 PPAVERS=1
 
 #
@@ -51,7 +50,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series=$SERIES
-#series=
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -161,7 +160,7 @@ done
 
 ### GSSP
 series=$SERIES
-series=
+#series=
 
 debdir=debiangssp
 if test ! -d ${debdir}/ ; then
