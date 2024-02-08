@@ -190,5 +190,5 @@ mac {
     RECOLLDEPS = ../../../../
     QMAKE_CXXFLAGS += -pthread -Wno-unused-parameter
     INCLUDEPATH += \
-      $$RECOLLDEPS/xapian-core-1.4.18/include 
+      $$RECOLLDEPS/xapian-core-1.4.24/include
 }

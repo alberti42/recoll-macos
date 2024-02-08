@@ -11,7 +11,7 @@ windows {
     DEFINES += UNICODE
 }
 mac {
-    XAPIANDIR = ../../../../xapian-core-1.4.18/
+    XAPIANDIR = ../../../../xapian-core-1.4.24/
     CONFIG += staticlib
     QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
 }
@@ -216,11 +216,11 @@ $$XAPIANDIR/net/replicatetcpserver.cc \
 $$XAPIANDIR/net/serialise-error.cc \
 $$XAPIANDIR/net/tcpclient.cc \
 $$XAPIANDIR/net/tcpserver.cc \
-$$XAPIANDIR/queryparser/cjk-tokenizer.cc \
 $$XAPIANDIR/queryparser/queryparser.cc \
 $$XAPIANDIR/queryparser/queryparser_internal.cc \
 $$XAPIANDIR/queryparser/termgenerator.cc \
 $$XAPIANDIR/queryparser/termgenerator_internal.cc \
+$$XAPIANDIR/queryparser/word-breaker.cc \
 $$XAPIANDIR/unicode/description_append.cc \
 $$XAPIANDIR/unicode/unicode-data.cc \
 $$XAPIANDIR/unicode/utf8itor.cc \
