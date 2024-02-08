@@ -173,8 +173,9 @@ alink="#0000FF">
                 visited Web pages</a></span></dt>
                 <dt><span class="sect2">2.5.6. <a href=
                 "#RCL.INDEXING.EXTATTR"><span class=
-                "application">Unix</span>-like systems: using
-                extended attributes</a></span></dt>
+                "application">Unix</span>-like systems and
+                <span class="application">Mac OS</span>-like
+                systems: using extended attributes</a></span></dt>
                 <dt><span class="sect2">2.5.7. <a href=
                 "#RCL.INDEXING.EXTTAGS"><span class=
                 "application">Unix</span>-like systems: importing
@@ -2737,7 +2738,9 @@ recollindex -c "$confdir"</pre>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.EXTATTR"
                 id="RCL.INDEXING.EXTATTR"></a>2.5.6.&nbsp;<span class="application">Unix</span>-like
-                systems: using extended attributes</h3>
+                systems and <span class="application">Mac
+                OS</span>-like systems: using extended
+                attributes</h3>
               </div>
             </div>
           </div>
@@ -2776,7 +2779,7 @@ recollindex -c "$confdir"</pre>
           <p>On Linux, the <code class="literal">user</code> prefix
           is removed from the name.</p>
           <p>The name translation can be configured more precisely,
-          also inside the <a class="link" href=
+          inside the <a class="link" href=
           "#RCL.INSTALL.CONFIG.FIELDS.XATTR" title=
           "Extended attributes in the fields file"><code class=
           "filename">fields</code> configuration file</a>.</p>
@@ -2784,23 +2787,24 @@ recollindex -c "$confdir"</pre>
           "margin-left: 0.5in; margin-right: 0.5in;">
             <h3 class="title">Setting the document
             modification/creation date</h3>
-            <p>Date fields are processed specially by <span class=
-            "application">Recoll</span>. For obscure and
-            uninteresting reasons, you should use <code class=
-            "literal">modificationdate</code> as extended attribute
-            name for setting this value. Also, the date string
-            should be an ASCII integer representing the Unix time
-            (seconds since the epoch). An example Linux command
-            line for setting this particular field follow. The
-            substituted <span class=
-            "command"><strong>date</strong></span> prints the
-            example date parameter in Unix time format (seconds
-            since the epoch).</p>
+            <p>Some documents have an internal date attribute (e.g.
+            emails), but most get their date from the file
+            modification time. It is possible to set a document
+            date different from the file's by setting a specific
+            extended attribute. For obscure and uninteresting
+            reasons, the harcoded name of the attribute is
+            <code class="literal">modificationdate</code>. Its
+            contents should be the ASCII representation of a
+            decimal integer representing the Unix time (seconds
+            since the epoch). An example Linux command line for
+            setting this particular field follow. The substituted
+            <span class="command"><strong>date</strong></span>
+            prints the example date parameter in Unix time format
+            (seconds since the epoch).</p>
             <pre class="programlisting">
-              setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/file
-            </pre>The date substitution will then be automatic, you
-do not need to customize the <code class="filename">fields</code>
-file.
+setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/file</pre>The
+date substitution will then be automatic, you do not need to
+customize the <code class="filename">fields</code> file.
           </div>
         </div>
         <div class="sect2">
@@ -7334,9 +7338,10 @@ C: = Z:</pre>
           </div>
           <p>The <span class="application">Recoll</span> Python
           programming interface can be used both for searching and
-          for creating/updating an index. Bindings exist for
-          Python2 and Python3 (Jan 2021: python2 support will be
-          dropped soon).</p>
+          for creating/updating an index with a program run by the
+          Python3 interpreter. It is available on all platforms
+          (<span class="application">Unix</span>-like systems, MS
+          Windows, Mac OS).</p>
           <p>The search interface is used in a number of active
           projects: the <a class="ulink" href=
           "https://www.lesbonscomptes.com/recoll/pages/download.html#gssp"
@@ -7349,14 +7354,17 @@ C: = Z:</pre>
           "https://www.lesbonscomptes.com/upmpdcli/upmpdcli-manual.html#UPRCL"
           target="_top">upmpdcli UPnP Media Server</a>, in addition
           to many small scripts.</p>
-          <p>The index update section of the API may be used to
+          <p>The index updating part of the API can be used to
           create and update <span class="application">Recoll</span>
-          indexes on specific configurations (separate from the
-          ones created by <span class=
-          "command"><strong>recollindex</strong></span>). The
-          resulting databases can be queried alone, or in
-          conjunction with regular ones, through the GUI or any of
-          the query interfaces.</p>
+          indexes. Up to <span class="application">Recoll</span>
+          1.37 these needed to use separate configurations (but
+          could be queried in conjunction with the regular index).
+          As of <span class="application">Recoll</span> 1.37, an
+          external indexer based on the Python extension can update
+          the main index. For example the <span class=
+          "application">Recoll</span> indexer for the <span class=
+          "application">Joplin</span> notes application is using
+          this method.</p>
           <p>The search API is modeled along the Python database
           API version 2.0 specification (early versions used the
           version 1.0 spec).</p>
@@ -7367,15 +7375,15 @@ C: = Z:</pre>
             "list-style-type: disc;">
               <li class="listitem">
                 <p>The <code class="literal">recoll</code> module
-                contains functions and classes used to query (or
-                update) the index.</p>
+                contains functions and classes used to query or
+                update the index.</p>
               </li>
               <li class="listitem">
                 <p>The <code class="literal">rclextract</code>
                 module contains functions and classes used at query
-                time to access document data. The <code class=
-                "literal">recoll</code> module must be imported
-                before <code class="literal">rclextract</code></p>
+                time to access document data. This can be used, for
+                example, for extracting embedded documents into
+                standalone files.</p>
               </li>
             </ul>
           </div>
@@ -7384,15 +7392,16 @@ C: = Z:</pre>
           package separate from the main one (maybe named something
           like python-recoll). Else refer to the <a class="link"
           href="#RCL.INSTALL.BUILDING" title=
-          "5.3.&nbsp;Building from source">Building from source
-          chapter</a>.</p>
-          <p>As an introduction, the following small sample will
-          run a query and list the title and url for each of the
-          results. The <code class="filename">python/samples</code>
-          source directory contains several examples of Python
-          programming with <span class="application">Recoll</span>,
-          exercising the extension more completely, and especially
-          its data extraction features.</p>
+          "5.3.&nbsp;Building from source">Building from source</a>
+          chapter.</p>
+          <p>As an introduction sample, the following small program
+          will run a query and list the title and url for each of
+          the results. The <code class=
+          "filename">python/samples</code> source directory
+          contains several examples of Python programming with
+          <span class="application">Recoll</span>, exercising the
+          extension more completely, and especially its data
+          extraction features.</p>
           <pre class="programlisting">
 #!/usr/bin/python3
 
@@ -7405,15 +7414,15 @@ results = query.fetchmany(20)
 for doc in results:
     print("%s %s" % (doc.url, doc.title))
 </pre>
-          <p>You can also take a look at the source for the
+          <p>You can also take a look at the source for (in order
+          of complexity) the Recoll <a class="ulink" href=
+          "https://framagit.org/medoc92/recoll-gssp/-/blob/master/gssp-recoll.py"
+          target="_top">Gnome Shell Search Provider</a> or
           <a class="ulink" href=
           "https://framagit.org/medoc92/recollwebui/-/blob/master/webui.py"
-          target="_top">Recoll WebUI</a>, the <a class="ulink"
-          href="https://framagit.org/medoc92/upmpdcli/-/blob/master/src/mediaserver/cdplugins/uprcl/uprclfolders.py"
-          target="_top">upmpdcli local media server</a>, or the
-          <a class="ulink" href=
-          "https://framagit.org/medoc92/recoll-gssp/-/blob/master/gssp-recoll.py"
-          target="_top">Gnome Shell Search Provider</a>.</p>
+          target="_top">WebUI</a>, and the <a class="ulink" href=
+          "https://framagit.org/medoc92/upmpdcli/-/blob/master/src/mediaserver/cdplugins/uprcl/uprclfolders.py"
+          target="_top">upmpdcli local media server</a> .</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -7433,12 +7442,15 @@ for doc in results:
               <dt><a name="RCL.PROGRAM.PYTHONAPI.ELEMENTS.IPATH"
               id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.IPATH"></a><span class="term">ipath</span></dt>
               <dd>
-                <p>This data value (set as a field in the Doc
-                object) is stored, along with the URL, but not
-                indexed by <span class="application">Recoll</span>.
-                Its contents are not interpreted by the index
-                layer, and its use is up to the application. For
-                example, the <span class=
+                <p>An <code class="literal">ipath</code> identifies
+                an embedded document inside a standalone one
+                (designated by an URL). The value, if needed, is
+                stored along with the URL, but not indexed. It is
+                accessible or set as a field in the Doc object.</p>
+                <p><code class="literal">ipath</code>s are opaque
+                values for the lower index layers (Doc objects
+                producers or consumers), and their use is up to the
+                specific indexer. For example, the <span class=
                 "application">Recoll</span> file system indexer
                 uses the <code class="literal">ipath</code> to
                 store the part of the document access path internal
@@ -7448,18 +7460,25 @@ for doc in results:
                 could be a path inside a zip file to an archive
                 member which happens to be an mbox file, the second
                 element would be the message sequential number
-                inside the mbox etc.). <code class=
-                "literal">url</code> and <code class=
-                "literal">ipath</code> are returned in every search
-                result and define the access to the original
-                document. <code class="literal">ipath</code> is
-                empty for top-level document/files (e.g. a PDF
-                document which is a filesystem file). The
+                inside the mbox etc.). The index itself has no
+                knowledge of this hierarchical structure.</p>
+                <p>At the moment, only the filesystem indexer uses
+                hierarchical <code class="literal">ipath</code>s
+                (neither the Web nor the Joplin one do), and there
+                are some assumptions in the upper software layers
+                about their structure. For example, the
                 <span class="application">Recoll</span> GUI knows
-                about the structure of the <code class=
-                "literal">ipath</code> values used by the
-                filesystem indexer, and uses it for such functions
-                as opening the parent of a given document.</p>
+                about using an FS indexer <code class=
+                "literal">ipath</code> for such functions as
+                opening the immediate parent of a given
+                document.</p>
+                <p><code class="literal">url</code> and
+                <code class="literal">ipath</code> are returned in
+                every search result and define the access to the
+                original document. <code class=
+                "literal">ipath</code> is empty for top-level
+                document/files (e.g. a PDF document which is a
+                filesystem file).</p>
               </dd>
               <dt><a name="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI" id=
               "RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI"></a><span class=
@@ -7468,19 +7487,24 @@ for doc in results:
                 <p>An <code class="literal">udi</code> (unique
                 document identifier) identifies a document. Because
                 of limitations inside the index engine, it is
-                restricted in length (to 200 bytes), which is why a
-                regular URI cannot be used. The structure and
-                contents of the <code class="literal">udi</code> is
-                defined by the application and opaque to the index
-                engine. For example, the internal file system
-                indexer uses the complete document path (file path
-                + internal path), truncated to length, the
-                suppressed part being replaced by a hash value. The
-                <code class="literal">udi</code> is not explicit in
-                the query interface (it is used "under the hood" by
-                the <code class="filename">rclextract</code>
-                module), but it is an explicit element of the
-                update interface.</p>
+                restricted in length (to 200 bytes). The structure
+                and contents of the <code class=
+                "literal">udi</code> is defined by the application
+                and opaque to the index engine. For example, the
+                internal file system indexer uses the complete
+                document path (file path + internal path),
+                truncated to a maximum length, the suppressed part
+                being replaced by a hash value to retain practical
+                unicity.</p>
+                <p>To rephrase, and hopefully clarify: the
+                filesystem indexer can't use the URL+ipath as a
+                unique document-identifying term because this may
+                be too big: it derives a shorter <code class=
+                "literal">udi</code> from URL+ipath. Another
+                indexer could use a completely different method.
+                For example, the <span class=
+                "application">Joplin</span> indexer uses the note
+                ID.</p>
               </dd>
               <dt><a name=
               "RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI" id=
@@ -7586,10 +7610,10 @@ for doc in results:
                   </div>
                 </div>
               </div>
-              <p>The <code class="literal">connect()</code>
+              <p>The <code class="function">connect()</code>
               function connects to one or several <span class=
               "application">Recoll</span> index(es) and returns a
-              <code class="literal">Db</code> object.</p>
+              <code class="classname">Db</code> object.</p>
               <p>This call initializes the recoll module, and it
               should always be performed before any other call or
               object creation.</p>
@@ -7597,23 +7621,28 @@ for doc in results:
                 <ul class="itemizedlist" style=
                 "list-style-type: disc;">
                   <li class="listitem">
-                    <p><code class="literal">confdir</code> may
-                    specify a configuration directory. The usual
-                    defaults apply.</p>
+                    <p><em class=
+                    "parameter"><code>confdir</code></em>
+                    designates the main index configuration
+                    directory. The usual system-dependant defaults
+                    apply if the value is empty.</p>
                   </li>
                   <li class="listitem">
-                    <p><code class="literal">extra_dbs</code> is a
-                    list of additional indexes (Xapian
-                    directories).</p>
+                    <p><em class=
+                    "parameter"><code>extra_dbs</code></em> is a
+                    list of additional external indexes (Xapian
+                    directories). These will be queried, but supply
+                    no configuration values.</p>
                   </li>
                   <li class="listitem">
-                    <p><code class="literal">writable</code>
-                    decides if we can index new data through this
+                    <p><em class=
+                    "parameter"><code>writable</code></em> decides
+                    if we can index new data through this
                     connection.</p>
                   </li>
                 </ul>
               </div>
-              <p>Examples:</p>
+              <p>Example:</p>
               <pre class="programlisting">from recoll import recoll
 
 # Opening the default db            
@@ -7634,17 +7663,31 @@ db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/othercon
                   </div>
                 </div>
               </div>
-              <p>A Db object is created by a <code class=
-              "literal">connect()</code> call and holds a
-              connection to a Recoll index.</p>
+              <p>A <code class="classname">Db</code> object is
+              created by a <code class="function">connect()</code>
+              call and holds a connection to a <span class=
+              "application">Recoll</span> index.</p>
               <div class="variablelist">
                 <dl class="variablelist">
                   <dt><span class="term">Db.query(),
                   Db.cursor()</span></dt>
                   <dd>
                     <p>These (synonym) methods return a blank
-                    <code class="literal">Query</code> object for
+                    <code class="classname">Query</code> object for
                     this index.</p>
+                  </dd>
+                  <dt><span class="term">Db.getdoc(udi,
+                  idxidx=0)</span></dt>
+                  <dd>
+                    <p>Retrieve a document given its unique
+                    document identifier, and its index if external
+                    indexes are in use. The main index is always
+                    index 0. The <em class=
+                    "parameter"><code>udi</code></em> value could
+                    have been obtained from an earlier query as
+                    <span class="property">doc.rcludi</span>, or
+                    would be known because the application is the
+                    indexer and generates the values.</p>
                   </dd>
                   <dt><span class="term">Db.termMatch(match_type,
                   expr, field='', maxlen=-1, casesens=False,
@@ -7652,13 +7695,15 @@ db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/othercon
                   <dd>
                     <p>Expand an expression against the index term
                     list. Performs the basic function from the GUI
-                    term explorer tool. <code class=
-                    "literal">match_type</code> can be one of
-                    <code class="literal">wildcard</code>,
+                    term explorer tool. <em class=
+                    "parameter"><code>match_type</code></em> can be
+                    one of <code class="literal">wildcard</code>,
                     <code class="literal">regexp</code> or
-                    <code class="literal">stem</code>. Returns a
-                    list of terms expanded from the input
-                    expression.</p>
+                    <code class="literal">stem</code>. <em class=
+                    "parameter"><code>field</code></em>, if set,
+                    restricts the matches to the contents of the
+                    specified metadata field. Returns a list of
+                    terms expanded from the input expression.</p>
                   </dd>
                   <dt><span class=
                   "term">Db.setAbstractParams(maxchars,
@@ -7666,17 +7711,19 @@ db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/othercon
                   <dd>
                     <p>Set the parameters used to build snippets
                     (sets of keywords in context text fragments).
-                    <code class="literal">maxchars</code> defines
+                    <em class=
+                    "parameter"><code>maxchars</code></em> defines
                     the maximum total size of the abstract.
-                    <code class="literal">contextwords</code>
+                    <em class=
+                    "parameter"><code>contextwords</code></em>
                     defines how many terms are shown around the
                     keyword.</p>
                   </dd>
                   <dt><span class="term">Db.close()</span></dt>
                   <dd>
                     <p>Closes the connection. You can't do anything
-                    with the <code class="literal">Db</code> object
-                    after this.</p>
+                    with the <code class="classname">Db</code>
+                    object after this.</p>
                   </dd>
                 </dl>
               </div>
@@ -7692,18 +7739,18 @@ db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/othercon
                   </div>
                 </div>
               </div>
-              <p>A <code class="literal">Query</code> object
+              <p>A <code class="classname">Query</code> object
               (equivalent to a cursor in the Python DB API) is
-              created by a <code class="literal">Db.query()</code>
+              created by a <code class="function">Db.query()</code>
               call. It is used to execute index searches.</p>
               <div class="variablelist">
                 <dl class="variablelist">
                   <dt><span class="term">Query.sortby(fieldname,
                   ascending=True)</span></dt>
                   <dd>
-                    <p>Sets the sorting order for future searches
-                    for using <em class=
-                    "replaceable"><code>fieldname</code></em>, in
+                    <p>Set the sorting order for future searches to
+                    using <em class=
+                    "parameter"><code>fieldname</code></em>, in
                     ascending or descending order. Must be called
                     before executing the search.</p>
                   </dd>
@@ -7712,14 +7759,22 @@ db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/othercon
                   stemlang="english", fetchtext=False,
                   collapseduplicates=False)</span></dt>
                   <dd>
-                    <p>Starts a search for <em class=
-                    "replaceable"><code>query_string</code></em>, a
+                    <p>Start a search for <em class=
+                    "parameter"><code>query_string</code></em>, a
                     <span class="application">Recoll</span> search
                     language string. If the index stores the
-                    document texts and <code class=
-                    "literal">fetchtext</code> is True, store the
-                    document extracted text in <code class=
-                    "literal">doc.text</code>.</p>
+                    documents texts and <em class=
+                    "parameter"><code>fetchtext</code></em> is
+                    True, the <code class="classname">Doc</code>
+                    objects in the query result will store the
+                    document extracted text in <span class=
+                    "property">doc.text</span>. Else, the
+                    <span class="property">doc.text</span> fields
+                    will be empty. If <em class=
+                    "parameter"><code>collapseduplicates</code></em>
+                    is true, only one of multiple identical
+                    documents (defined by having the same MD5 hash)
+                    will appear in the result list.</p>
                   </dd>
                   <dt><span class=
                   "term">Query.executesd(SearchData,
@@ -7727,36 +7782,34 @@ db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/othercon
                   collapseduplicates=False)</span></dt>
                   <dd>
                     <p>Starts a search for the query defined by the
-                    SearchData object. If the index stores the
-                    document texts and <code class=
-                    "literal">fetchtext</code> is True, store the
-                    document extracted text in <code class=
-                    "literal">doc.text</code>.</p>
+                    <code class="classname">SearchData</code>
+                    object. See above for a description of the
+                    other parameters.</p>
                   </dd>
                   <dt><span class=
                   "term">Query.fetchmany(size=query.arraysize)</span></dt>
                   <dd>
-                    <p>Fetches the next <code class=
-                    "literal">Doc</code> objects in the current
-                    search results, and returns them as an array of
-                    the required size, which is by default the
-                    value of the <code class=
-                    "literal">arraysize</code> data member.</p>
+                    <p>Fetch the next <code class=
+                    "classname">Doc</code> objects from the current
+                    search result list, and return them as an array
+                    of the required size, which is by default the
+                    value of the <span class=
+                    "property">arraysize</span> data member.</p>
                   </dd>
                   <dt><span class=
                   "term">Query.fetchone()</span></dt>
                   <dd>
-                    <p>Fetches the next <code class=
-                    "literal">Doc</code> object from the current
-                    search results. Generates a StopIteration
-                    exception if there are no results left.</p>
+                    <p>Fetch the next <code class=
+                    "classname">Doc</code> object from the current
+                    search result list. Generates a <code class=
+                    "classname">StopIteration</code> exception if
+                    there are no results left.</p>
                   </dd>
                   <dt><span class="term">Query.__iter__() and
                   Query.next()</span></dt>
                   <dd>
-                    <p>So that things like <code class=
-                    "literal">for doc in query:</code> will
-                    work.</p>Example:
+                    <p>So that things like <code class="code">for
+                    doc in query:</code> will work. Example:</p>
                     <pre class="programlisting">
 from recoll import recoll
 
@@ -7769,27 +7822,28 @@ for doc in q:
                   </dd>
                   <dt><span class="term">Query.close()</span></dt>
                   <dd>
-                    <p>Closes the query. The object is unusable
+                    <p>Close the query. The object is unusable
                     after the call.</p>
                   </dd>
                   <dt><span class="term">Query.scroll(value,
                   mode='relative')</span></dt>
                   <dd>
-                    <p>Adjusts the position in the current result
-                    set. <code class="literal">mode</code> can be
+                    <p>Adjust the position in the current result
+                    set. <em class=
+                    "parameter"><code>mode</code></em> can be
                     <code class="literal">relative</code> or
                     <code class="literal">absolute</code>.</p>
                   </dd>
                   <dt><span class=
                   "term">Query.getgroups()</span></dt>
                   <dd>
-                    <p>Retrieves the expanded query terms as a list
+                    <p>Retrieve the expanded query terms as a list
                     of pairs. Meaningful only after executexx In
                     each pair, the first entry is a list of user
                     terms (of size one for simple terms, or more
                     for group and phrase clauses), the second a
-                    list of query terms as derived from the user
-                    terms and used in the Xapian Query.</p>
+                    list of query terms derived from the user terms
+                    and used in the Xapian Query.</p>
                   </dd>
                   <dt><span class=
                   "term">Query.getxquery()</span></dt>
@@ -7801,45 +7855,60 @@ for doc in q:
                   <dt><span class="term">Query.highlight(text,
                   ishtml = 0, methods = object)</span></dt>
                   <dd>
-                    <p>Will insert &lt;span "class=rclmatch"&gt;,
-                    &lt;/span&gt; tags around the match areas in
-                    the input text and return the modified text.
-                    <code class="literal">ishtml</code> can be set
+                    <p>Will insert <code class="literal">&lt;span
+                    "class=rclmatch"&gt;</code>, and <code class=
+                    "literal">&lt;/span&gt;</code> tags around the
+                    match areas in the input text and return the
+                    modified text. <em class=
+                    "parameter"><code>ishtml</code></em> can be set
                     to indicate that the input text is HTML and
                     that HTML special characters should not be
-                    escaped. <code class="literal">methods</code>
-                    if set should be an object with methods
-                    startMatch(i) and endMatch() which will be
-                    called for each match and should return a begin
-                    and end tag</p>
+                    escaped. <em class=
+                    "parameter"><code>methods</code></em>, if set,
+                    should be an object having methods <code class=
+                    "function">startMatch(i)</code> and
+                    <code class="function">endMatch()</code> which
+                    will be called for each match and should return
+                    a begin and end tag. Example:</p>
+                    <pre class="programlisting">
+class MyHighlighter:
+    def startMatch(self, idx):
+        return "&lt;span style='color:red;background:yellow;'&gt;"
+    def endMatch(self):
+        return "&lt;/span&gt;"
+</pre>
                   </dd>
                   <dt><span class="term">Query.makedocabstract(doc,
                   methods = object))</span></dt>
                   <dd>
                     <p>Create a snippets abstract for <code class=
-                    "literal">doc</code> (a <code class=
-                    "literal">Doc</code> object) by selecting text
-                    around the match terms. If methods is set, will
-                    also perform highlighting. See the highlight
+                    "varname">doc</code> (a <code class=
+                    "classname">Doc</code> object) by selecting
+                    text around the match terms. If methods is set,
+                    will also perform highlighting. See the
+                    <code class="function">highlight()</code>
                     method.</p>
                   </dd>
                   <dt><span class="term">Query.getsnippets(doc,
                   maxoccs = -1, ctxwords = -1, sortbypage=False,
-                  methods = object)</span></dt>
+                  methods=object)</span></dt>
                   <dd>
-                    <p>Will return a list of extracts from the
-                    result document by selecting text around the
-                    match terms. Each entry in the result list is a
+                    <p>Return a list of extracts from the result
+                    document by selecting text around the match
+                    terms. Each entry in the result list is a
                     triple: page number, term, text. By default,
                     the most relevants snippets appear first in the
-                    list. Set <code class=
-                    "literal">sortbypage</code> to sort by page
-                    number instead. If <code class=
-                    "literal">methods</code> is set, the fragments
-                    will be highlighted (see the highlight method).
-                    If <code class="literal">maxoccs</code> is set,
+                    list. Set <em class=
+                    "parameter"><code>sortbypage</code></em> to
+                    sort by page number instead. If <em class=
+                    "parameter"><code>methods</code></em> is set,
+                    the fragments will be highlighted (see the
+                    <code class="function">highlight()</code>
+                    method). If <em class=
+                    "parameter"><code>maxoccs</code></em> is set,
                     it defines the maximum result list length.
-                    <code class="literal">ctxwords</code> allows
+                    <em class=
+                    "parameter"><code>ctxwords</code></em> allows
                     adjusting the individual snippet context
                     size.</p>
                   </dd>
@@ -7850,8 +7919,9 @@ for doc in q:
                   <dt><span class=
                   "term">Query.arraysize</span></dt>
                   <dd>
-                    <p>Default number of records processed by
-                    fetchmany (r/w).</p>
+                    <p>(r/w). Default number of records processed
+                    by <code class=
+                    "function">fetchmany()</code>.</p>
                   </dd>
                   <dt><span class="term">Query.rowcount</span></dt>
                   <dd>
@@ -7862,10 +7932,11 @@ for doc in q:
                   "term">Query.rownumber</span></dt>
                   <dd>
                     <p>Next index to be fetched from results.
-                    Normally increments after each fetchone() call,
-                    but can be set/reset before the call to effect
-                    seeking (equivalent to using <code class=
-                    "literal">scroll()</code>). Starts at 0.</p>
+                    Normally increments after each <code class=
+                    "function">fetchone()</code> call, but can be
+                    set/reset before the call to effect seeking
+                    (equivalent to using <code class=
+                    "function">scroll()</code>). Starts at 0.</p>
                   </dd>
                 </dl>
               </div>
@@ -7881,8 +7952,8 @@ for doc in q:
                   </div>
                 </div>
               </div>
-              <p>A <code class="literal">Doc</code> object contains
-              index data for a given document. The data is
+              <p>A <code class="classname">Doc</code> object
+              contains index data for a given document. The data is
               extracted from the index when searching, or set by
               the indexer program when updating. The Doc object has
               many attributes to be read or set by its user. It
@@ -7929,7 +8000,17 @@ for doc in q:
                     document MIME type.</p>
                   </li>
                   <li class="listitem">
-                    <p>Fields stored by default: <code class=
+                    <p><code class="literal">text</code> holds the
+                    document processed text, if the index itself is
+                    configured to store it (true by default) and if
+                    the <code class="literal">fetchtext</code>
+                    query <code class="literal">execute()</code>
+                    option was true. See also the <code class=
+                    "literal">rclextract</code> module for
+                    accessing document contents.</p>
+                  </li>
+                  <li class="listitem">
+                    <p>Other fields stored by default: <code class=
                     "literal">author</code>, <code class=
                     "literal">filename</code>, <code class=
                     "literal">keywords</code>, <code class=
@@ -7941,13 +8022,7 @@ for doc in q:
               <code class="literal">stored</code> either by default
               or in the <code class="filename">fields</code>
               configuration file will be meaningful in the
-              <code class="literal">Doc</code> object. The document
-              processed text may be present or not, depending if
-              the index stores the text at all, and if it does, on
-              the <code class="literal">fetchtext</code> query
-              execute option. See also the <code class=
-              "literal">rclextract</code> module for accessing
-              document contents.</p>
+              <code class="literal">Doc</code> object.</p>
               <div class="variablelist">
                 <dl class="variablelist">
                   <dt><span class="term">get(key), []
@@ -7969,7 +8044,9 @@ for doc in q:
                   <dd>
                     <p>Retrieve the URL in byte array format (no
                     transcoding), for use as parameter to a system
-                    call.</p>
+                    call. This is useful for the filesystem indexer
+                    <code class="literal">file://</code> URLs which
+                    are stored unencoded, as binary data.</p>
                   </dd>
                   <dt><span class="term">setbinurl(url)</span></dt>
                   <dd>
@@ -8235,8 +8312,8 @@ for i in range(nres):
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3328" id=
-                  "idm3328"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3362" id=
+                  "idm3362"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>
@@ -11301,9 +11378,9 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 </div>
               </div>
             </div>
-            <p><span class="application">Recoll</span> versions
-            1.19 and later process user extended file attributes as
-            documents fields by default.</p>
+            <p><span class="application">Recoll</span> processes
+            user extended file attributes as documents fields by
+            default.</p>
             <p>Attributes are processed as fields of the same name,
             after removing the <code class="literal">user</code>
             prefix on Linux.</p>
@@ -11311,9 +11388,23 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
             section of the <code class="filename">fields</code>
             file allows specifying translations from extended
             attributes names to <span class=
-            "application">Recoll</span> field names. An empty
-            translation disables use of the corresponding attribute
-            data.</p>
+            "application">Recoll</span> field names.</p>
+            <p>Name translations are set as <code class=
+            "code">xattrname = fieldname</code>. They are
+            case-sensitive. E.g. the following would map a quite an
+            extended attribute named "tags" into the "keywords"
+            field: <code class="code">tags = keywords</code>.</p>
+            <p>Entering an empty translation will disable any use
+            of the attribute.</p>
+            <p>The values from the extended attributes will not
+            replace the data found from equivalent fields inside
+            the document, instead they are concatenated.</p>
+            <p>Special case: an extended attribute named
+            <code class="literal">modificationdate</code> will set
+            the <code class="varname">dmtime</code> field (document
+            date) only if it is not set by an internal document
+            field (e.g. email <code class=
+            "literal">Date:</code>).</p>
           </div>
         </div>
         <div class="sect2">
