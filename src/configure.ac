@@ -286,6 +286,16 @@ if test X$pythonChmEnabled = Xyes; then
 fi
 AM_CONDITIONAL(MAKEPYTHONCHM, [test X$pythonChmEnabled = Xyes])
 
+# Disable using libmagic instead of executing 'file'
+AC_ARG_ENABLE(libmagic,
+    AS_HELP_STRING([--disable-libmagic], [Do not use libmagic (execute xdg-mime/file instead).]),
+    libmagicEnabled=$enableval, libmagicEnabled=yes)
+if test X$libmagicEnabled = Xyes; then
+    AC_CHECK_LIB([magic], [magic_open], [],
+      [AC_MSG_ERROR([libmagic is enabled but libmagic is not found])])
+    AC_DEFINE(ENABLE_LIBMAGIC, 1, [Use libmagic])
+fi
+
 # Disable building the aspell python wrapper. This DISABLES aspell usage in recoll. The default
 # aspell "pipe" interface is inadequate for recoll use because it does not list suggestions for
 # words which are part of the dictionary, which is usually the case for common mispellings (which

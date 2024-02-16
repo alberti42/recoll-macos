@@ -1,14 +1,17 @@
-# (C) 2004 J.F.Dockes
-# Associations of file name extensions to mime types
+# (C) 2004-2024 J.F.Dockes - GPL v2
+# 
+# Associations of file name extensions to MIME types. This is the first identification method tried
+# by recollindex, and it stops there if it succeeds.
+# If a file has no extension or an unknown extension, recollindex then checks internally if it
+# might be an mbox, then possibly executes the "file" or "xdg-mime" command, or, either on Windows
+# or on Linux for recent versions (1.38+), uses libmagic.
 #
-# All entries must be in lower case characters. File name extensions are
-# lower-cased for comparison during indexing, meaning that an upper or
-# mixed case entry will never be matched.
+# All entries must be in lower case characters. File name extensions are lower-cased for comparison
+# during indexing, meaning that an upper or mixed case entry will never be matched.
 #
-# When creating a temporary file for a MIME type (e.g. temp file for
-# display), the FIRST entry for the MIME type will be used to determine the
-# file suffix. This may be important if the app used does not grok all the
-# possible suffixes.
+# When creating a temporary file for a MIME type (e.g. temp file for display), the FIRST entry for
+# the MIME type will be used to determine the file suffix. This may be important if the app used
+# does not grok all the possible suffixes.
 
 .txt = text/plain
 .text = text/plain

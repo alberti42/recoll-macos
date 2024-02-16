@@ -26,6 +26,7 @@ BuildRequires:  kf5-knotifications-devel
 BuildRequires:  kf5-kpackage-devel
 
 BuildRequires:  libxslt-devel
+BuildRequires:  file-libs
 BuildRequires:  make
 BuildRequires:  python-rpm-macros
 BuildRequires:  python3-devel

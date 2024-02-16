@@ -37,6 +37,12 @@
 
 using namespace std;
 
+// Some document types have losely defined MIME types, about which xdg-mime, file, and libmagic may
+// differ. Map them to our own choice.
+static std::map<std::string, std::string> mimealiases{
+    {"text/xml", "application/xml"}, // libmagic wrong. We right: rfc7303
+};
+
 /// Identification of file from contents. This is called for files with
 /// unrecognized extensions.
 ///
@@ -50,7 +56,6 @@ using namespace std;
 /// current/interesting file types.
 /// As a last resort we execute 'file' or its configured replacement
 /// (except if forbidden by config)
-
 static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 {
     LOGDEB1("mimetypefromdata: fn [" << fn << "]\n");
@@ -156,6 +161,9 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 
 #endif // Not libmagic
 
+    auto it = mimealiases.find(mime);
+    if (it != mimealiases.end())
+        return it->second;
     return mime;
 }
 

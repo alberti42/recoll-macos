@@ -193,20 +193,17 @@ type.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.USESYSTEMFILECOMMAND">
 <term><varname>usesystemfilecommand</varname></term>
-<listitem><para>Use a system command
-for file MIME type guessing as a final step in file type
-identification This is generally useful, but will usually
-cause the indexing of many bogus 'text' files. See 'systemfilecommand'
-for the command used.
+<listitem><para>Use a system mechanism as last resort to guess a MIME type. Depending on platform and version, a compile-time configuration will decide if this
+executes a command or uses libmagic. This is generally useful, but will usually cause the indexing
+of many bogus extension-less 'text' files. See 'systemfilecommand' for the command
+used.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SYSTEMFILECOMMAND">
 <term><varname>systemfilecommand</varname></term>
-<listitem><para>Command used to guess
-MIME types if the internal methods fails This should be a
-"file -i" workalike.  The file path will be added as a last parameter to
-the command line. "xdg-mime" works better than the traditional "file"
-command, and is now the configured default (with a hard-coded fallback to
-"file")
+<listitem><para>Command to use for guessing the MIME type if the internal methods fail. This is ignored on Windows or with Recoll 1.38+ if compiled with --enable-libmagic (the
+default). Otherwise, this should be a "file -i" workalike.  The file path will be added as a last
+parameter to the command line. "xdg-mime" works better than the traditional "file" command, and is
+now the configured default (with a hard-coded fallback to "file")
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PROCESSWEBQUEUE">
 <term><varname>processwebqueue</varname></term>

@@ -6,6 +6,9 @@
 /* No X11 session monitoring support */
 #undef DISABLE_X11MON
 
+/* Use libmagic */
+#undef ENABLE_LIBMAGIC
+
 /* Path to the fam api include file */
 #undef FAM_INCLUDE
 
@@ -35,6 +38,9 @@
 
 /* Define to 1 if you have the `chm' library (-lchm). */
 #undef HAVE_LIBCHM
+
+/* Define to 1 if you have the `magic' library (-lmagic). */
+#undef HAVE_LIBMAGIC
 
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD

@@ -7007,14 +7007,14 @@ C: = Z:</pre>
           "filename">mimemap</code> file</a>. Example:</p>
           <pre class="programlisting">
 
-            .doc = application/msword
-          </pre>
+.doc = application/msword</pre>
           <p>If no suffix association is found for the file name,
-          <span class="application">Recoll</span> will try to
-          execute a system command (typically <span class=
-          "command"><strong>file -i</strong></span> or <span class=
-          "command"><strong>xdg-mime</strong></span>) to determine
-          a MIME type.</p>
+          recent <span class="application">Recoll</span> will use
+          <span class="application">libmagic</span>. Older versions
+          or specially built ones may try to execute a system
+          command (typically <span class="command"><strong>file
+          -i</strong></span> or <span class=
+          "command"><strong>xdg-mime</strong></span>).</p>
           <p>The second element is the association of MIME types to
           handlers in the <a class="link" href=
           "#RCL.INSTALL.CONFIG.MIMECONF" title=
@@ -8323,8 +8323,8 @@ for i in range(nres):
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3366" id=
-                  "idm3366"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3367" id=
+                  "idm3367"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>
@@ -9899,10 +9899,12 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 </a><span class="term"><code class=
                 "varname">usesystemfilecommand</code></span></dt>
                 <dd>
-                  <p>Use a system command for file MIME type
-                  guessing as a final step in file type
-                  identification This is generally useful, but will
-                  usually cause the indexing of many bogus 'text'
+                  <p>Use a system mechanism as last resort to guess
+                  a MIME type. Depending on platform and version, a
+                  compile-time configuration will decide if this
+                  executes a command or uses libmagic. This is
+                  generally useful, but will usually cause the
+                  indexing of many bogus extension-less 'text'
                   files. See 'systemfilecommand' for the command
                   used.</p>
                 </dd>
@@ -9911,13 +9913,16 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.SYSTEMFILECOMMAND"></a><span class="term"><code class="varname">systemfilecommand</code></span></dt>
                 <dd>
-                  <p>Command used to guess MIME types if the
-                  internal methods fails This should be a "file -i"
-                  workalike. The file path will be added as a last
-                  parameter to the command line. "xdg-mime" works
-                  better than the traditional "file" command, and
-                  is now the configured default (with a hard-coded
-                  fallback to "file")</p>
+                  <p>Command to use for guessing the MIME type if
+                  the internal methods fail. This is ignored on
+                  Windows or with Recoll 1.38+ if compiled with
+                  --enable-libmagic (the default). Otherwise, this
+                  should be a "file -i" workalike. The file path
+                  will be added as a last parameter to the command
+                  line. "xdg-mime" works better than the
+                  traditional "file" command, and is now the
+                  configured default (with a hard-coded fallback to
+                  "file")</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.PROCESSWEBQUEUE" id=
@@ -11432,9 +11437,11 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
           <p><code class="filename">mimemap</code> specifies the
           file name extension to MIME type mappings.</p>
           <p>For file names without an extension, or with an
-          unknown one, a system command (<span class=
-          "command"><strong>file</strong></span> <code class=
-          "option">-i</code>, or <span class=
+          unknown one, recent <span class=
+          "application">Recoll</span> versions will use libmagic.
+          Older versions would execute a system command
+          (<span class="command"><strong>file</strong></span>
+          <code class="option">-i</code>, or <span class=
           "command"><strong>xdg-mime</strong></span>) will be
           executed to determine the MIME type (this can be switched
           off, or the command changed inside the main configuration

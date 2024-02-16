@@ -5014,15 +5014,16 @@ C: = Z:</programlisting></para></note>
         Example:
           <programlisting>
 
-            .doc = application/msword
-          </programlisting>
-          If no suffix association is found for the file name, &RCL; will try
-          to execute a system command (typically <command>file -i</command> or
-        <command>xdg-mime</command>) to determine a MIME type.</para>
+.doc = application/msword</programlisting>
 
-        <para>The second element is the association of MIME types to handlers
-        in the <link linkend="RCL.INSTALL.CONFIG.MIMECONF"><filename>mimeconf</filename> file</link>. 
-        A sample will probably be  better than a long explanation:</para>
+          If no suffix association is found for the file name, recent &RCL; will
+          use <application>libmagic</application>. Older versions or specially built ones
+          may try to execute a system command (typically <command>file -i</command>
+          or <command>xdg-mime</command>).</para>
+
+        <para>The second element is the association of MIME types to handlers in
+        the <link linkend="RCL.INSTALL.CONFIG.MIMECONF"><filename>mimeconf</filename> file</link>.
+        A sample will probably be better than a long explanation:</para>
         <programlisting>
 
           [index]
@@ -7005,10 +7006,10 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         file name extension to MIME type mappings.</para> 
         
         <para>For file names without an extension, or with an unknown one,
-        a system command (<command>file</command> <option>-i</option>, or
-        <command>xdg-mime</command>) will be executed to determine the MIME
-        type (this can be switched off, or the command changed inside the
-        main configuration file).</para>
+          recent &RCL; versions will use libmagic. Older versions would execute a system command
+          (<command>file</command> <option>-i</option>, or <command>xdg-mime</command>) will be
+          executed to determine the MIME type (this can be switched off, or the command changed
+          inside the main configuration file).</para>
 
         <para>All extension values in <filename>mimemap</filename> must be
         entered in lower case. File names extensions are lower-cased for
