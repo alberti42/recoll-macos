@@ -50,12 +50,17 @@ import sqlite3
 from getopt import getopt
 import signal
 
-from recoll import recoll
-from recoll import rclconfig
-from recoll import conftree
 
 def msg(s):
     print(f"{s}", file=sys.stderr)
+
+try:
+    from recoll import recoll
+    from recoll import rclconfig
+    from recoll import conftree
+except:
+    msg("rcljoplin: the recoll python extension was not found.")
+    sys.exit(0)
 
 # Signal termination handling: try to cleanly close the index
 rcldb = None
