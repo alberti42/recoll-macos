@@ -93,11 +93,11 @@ alink="#0000FF">
                 "#RCL.INDEXING.INTRODUCTION.CONFIG">Configurations,
                 multiple indexes</a></span></dt>
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idm236">Document types</a></span></dt>
+                "#idm240">Document types</a></span></dt>
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idm287">Indexing failures</a></span></dt>
+                "#idm291">Indexing failures</a></span></dt>
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idm297">Recovery</a></span></dt>
+                "#idm301">Recovery</a></span></dt>
               </dl>
             </dd>
             <dt><span class="sect1">2.2. <a href=
@@ -423,7 +423,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1627">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1631">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -596,8 +596,11 @@ alink="#0000FF">
         <p>The <span class="application">Xapian</span> index can be
         big (roughly the size of the original document set), but it
         is not a document archive. <span class=
-        "application">Recoll</span> can only display documents that
-        still exist at the place from which they were indexed.</p>
+        "application">Recoll</span> can only fully display
+        documents that still exist at the place from which they
+        were indexed. However, recent <span class=
+        "application">Recoll</span> version do store the plain text
+        from all indexed documents.</p>
         <p><span class="application">Recoll</span> stores all
         internal data in <span class="application">Unicode
         UTF-8</span> format, and it can index many types of files
@@ -771,6 +774,14 @@ alink="#0000FF">
         performance optimization, and the command line option
         <code class="option">-k</code> can be set to retry failed
         files, for example after updating an input handler.</p>
+        <p>When a file has been deleted, <span class=
+        "command"><strong>recollindex</strong></span> removes the
+        corresponding data from the index. The exact moment when
+        this happens depends on the indexing mode. There are
+        provisions to <a class="link" href=
+        "#RCL.INDEXING.REMOVABLE" title=
+        "2.5.4.&nbsp;Removable volumes">avoid deleting data</a> for
+        an umounted removable volume.</p>
         <p>The following sections give an overview of different
         aspects of the indexing processes and configuration, with
         links to detailed sections.</p>
@@ -838,8 +849,8 @@ alink="#0000FF">
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm193" id=
-                  "idm193"></a>Choosing an indexing mode</h4>
+                  <h4 class="title"><a name="idm197" id=
+                  "idm197"></a>Choosing an indexing mode</h4>
                 </div>
               </div>
             </div>
@@ -953,8 +964,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm236" id=
-                "idm236"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idm240" id=
+                "idm240"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1064,8 +1075,8 @@ indexedmimetypes = application/pdf</pre>
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm287" id=
-                "idm287"></a>2.1.4.&nbsp;Indexing failures</h3>
+                <h3 class="title"><a name="idm291" id=
+                "idm291"></a>2.1.4.&nbsp;Indexing failures</h3>
               </div>
             </div>
           </div>
@@ -1095,8 +1106,8 @@ indexedmimetypes = application/pdf</pre>
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm297" id=
-                "idm297"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idm301" id=
+                "idm301"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -1512,8 +1523,8 @@ indexedmimetypes = application/pdf</pre>
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm449" id=
-                  "idm449"></a>Creating and using an additional
+                  <h4 class="title"><a name="idm453" id=
+                  "idm453"></a>Creating and using an additional
                   index: example</h4>
                 </div>
               </div>
@@ -4412,7 +4423,7 @@ customize the <code class="filename">fields</code> file.
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1627" id="idm1627"></a>
+            <a name="idm1631" id="idm1631"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -8312,8 +8323,8 @@ for i in range(nres):
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3362" id=
-                  "idm3362"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3366" id=
+                  "idm3366"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>

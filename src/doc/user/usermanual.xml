@@ -167,12 +167,12 @@
       interpreting user queries and presenting results.</para>
 
       <para>In a shorter way, &RCL; does the dirty footwork, &XAP;
-      deals with the intelligent parts of the process.</para>
+        deals with the intelligent parts of the process.</para>
 
-      <para>The &XAP; index can be big (roughly the size of the original
-      document set), but it is not a document archive. &RCL; can only
-      display documents that still exist at the place from which they were
-      indexed.</para>
+      <para>The &XAP; index can be big (roughly the size of the original document set), but it is
+      not a document archive. &RCL; can only fully display documents that still exist at the place
+      from which they were indexed. However, recent &RCL; version do store the plain text from all
+      indexed documents.</para>
 
       <para>&RCL; stores all internal data in <application>Unicode UTF-8</application> format, and
       it can index many types of files with different character sets, encodings, and languages into
@@ -188,13 +188,11 @@
         <ulink url="https://www.lesbonscomptes.com/recoll/pages/recoll-korean.html">Korean</ulink>
         which will produce a smaller index and improved search.</para>
       
-      <para>Stemming is the process by which &RCL; reduces words to
-      their radicals so that searching does not depend, for example, on a
-      word being singular or plural (floor, floors), or on a verb tense
-      (flooring, floored). Because the mechanisms used for stemming
-      depend on the specific grammatical rules for each language, there
-      is a separate &XAP; stemmer module for most common languages where
-      stemming makes sense.</para>
+      <para>Stemming is the process by which &RCL; reduces words to their radicals so that searching
+        does not depend, for example, on a word being singular or plural (floor, floors), or on a
+        verb tense (flooring, floored). Because the mechanisms used for stemming depend on the
+        specific grammatical rules for each language, there is a separate &XAP; stemmer module for
+        most common languages where stemming makes sense.</para>
 
       <para>&RCL; stores the unstemmed versions of terms in the main index
       and uses auxiliary databases for term expansion (one for each
@@ -295,6 +293,11 @@
         pass. This is a performance optimization, and the command line option <option>-k</option>
         can be set to retry failed files, for example after updating an input handler.</para>
 
+      <para>When a file has been deleted, <command>recollindex</command> removes the corresponding
+        data from the index. The exact moment when this happens depends on the indexing mode. 
+        There are provisions to <link linkend="RCL.INDEXING.REMOVABLE">avoid deleting data</link>
+        for an umounted removable volume.</para> 
+      
       <para>The following sections give an overview of different aspects of the indexing processes
         and configuration, with links to detailed sections.</para>
 
