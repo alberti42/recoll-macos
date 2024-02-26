@@ -129,8 +129,7 @@ public:
     virtual string nextUrl() override;
     virtual string prevUrl() override;
     virtual string headerContent() override;
-    virtual void suggest(const vector<string>uterms, 
-                         map<string, vector<string> >& sugg) override;
+    virtual void suggest(const vector<string>uterms, map<string, vector<string> >& sugg) override;
     virtual string absSep() override {return (const char *)(prefs.abssep.toUtf8());}
     virtual bool useAll() override {return prefs.useDesktopOpen;} 
 #if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
@@ -222,8 +221,7 @@ string QtGuiResListPager::headerContent()
 void QtGuiResListPager::suggest(const vector<string>uterms, map<string, vector<string>>& sugg)
 {
     sugg.clear();
-    bool issimple = m_reslist && m_reslist->m_rclmain && 
-        m_reslist->m_rclmain->lastSearchSimple();
+    bool issimple = m_reslist && m_reslist->m_rclmain && m_reslist->m_rclmain->lastSearchSimple();
 
     for (const auto& userterm : uterms) {
         vector<string> spellersuggs;
@@ -252,7 +250,7 @@ void QtGuiResListPager::suggest(const vector<string>uterms, map<string, vector<s
                 if (issimple) {
                     // If this is a simple search, we set up links as a <href="Sold|new">, else we
                     // just list the replacements.
-                    subst = string("<a href=\"") + linkPrefix() + "S" + userterm +
+                    subst = string("<a href=\"") + linkPrefix() + "S-1|" + userterm +
                         "|" + subst + "\">" + subst + "</a>";
                 }
                 sugg[userterm].push_back(subst);
@@ -265,19 +263,16 @@ void QtGuiResListPager::suggest(const vector<string>uterms, map<string, vector<s
 
 string PlainToRichQtReslist::startMatch(unsigned int idx)
 {
-    (void)idx;
+    PRETEND_USE(idx);
 #if 0
     if (m_hdata) {
         string s1, s2;
         stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
-        stringsToString<vector<string> >(
-            m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
-        LOGDEB2("Reslist startmatch: group " << s1 << " user group " <<
-                s2 << "\n");
+        stringsToString<vector<string> >(m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
+        LOGDEB2("Reslist startmatch: group " << s1 << " user group " << s2 << "\n");
     }
 #endif                
-    return string("<span class='rclmatch' style='")
-        + qs2utf8s(prefs.qtermstyle) + string("'>");
+    return string("<span class='rclmatch' style='") + qs2utf8s(prefs.qtermstyle) + string("'>");
 }
 
 string PlainToRichQtReslist::endMatch()
@@ -1014,8 +1009,6 @@ void ResList::showQueryDetails()
 
 void ResList::onLinkClicked(const QUrl &qurl)
 {
-    // qt5: url.toString() does not accept FullyDecoded, but that's what we want. e.g. Suggestions
-    // links are like Sterm|spelling which we receive as Sterm%7CSpelling
     string strurl = pc_decode(qs2utf8s(qurl.toString()));
 
     // Link prefix remark: it used to be that webengine refused to acknowledge link clicks on links
@@ -1033,41 +1026,29 @@ void ResList::onLinkClicked(const QUrl &qurl)
     if (prefix.size()) 
         strurl = strurl.substr(prefix.size());
     LOGDEB("ResList::onLinkClicked: processed URL: [" << strurl << "]\n");
-
-    if (strurl.size() == 0) {
+    auto [what, docnum, origorscript, replacement] = internal_link(strurl);
+    if (what == 0) {
         return;
     }
-    int docnum{-1};
     bool havedoc{false};
     Rcl::Doc doc;
-    if (strurl.size() > 1) {
-        // If an integer follows interpret as doc number
-        const char *bptr = strurl.c_str() + 1;
-        char *eptr;
-        docnum = strtol(bptr, &eptr, 10) - 1;
-        if (docnum >= 0) {
-            if (getDoc(docnum, doc)) {
-                havedoc = true;
-            } else {
-                LOGERR("ResList::onLinkClicked: can't get doc for "<< docnum << "\n");
-            }
+    if (docnum >= 0) {
+        if (getDoc(docnum, doc)) {
+            havedoc = true;
+        } else {
+            LOGERR("ResList::onLinkClicked: can't get doc for "<< docnum << "\n");
         }
     }
 
-    int what = strurl[0];
     switch (what) {
-
-        // Open abstract/snippets window
-    case 'A':
-    {
+    case 'A': // Open abstract/snippets window
+    { 
         if (!havedoc)
             return;
         emit(showSnippets(doc));
     }
     break;
-
-    // Show duplicates
-    case 'D':
+    case 'D': // Show duplicates
     {
         if (!m_source || !havedoc) 
             return;
@@ -1077,26 +1058,20 @@ void ResList::onLinkClicked(const QUrl &qurl)
         }
     }
     break;
-
-    // Open parent folder
-    case 'F':
+    case 'F': // Open parent folder
     {
         if (!havedoc)
             return;
         emit editRequested(ResultPopup::getFolder(doc));
     }
     break;
-
-    // Show query details
-    case 'h':
+    case 'h': // Show query details
     case 'H':
     {
         showQueryDetails();
         break;
     }
-
-    // Preview and edit
-    case 'P': 
+    case 'P': // Preview and edit
     case 'E': 
     {
         if (!havedoc)
@@ -1112,28 +1087,20 @@ void ResList::onLinkClicked(const QUrl &qurl)
         }
     }
     break;
-
-    // Next/prev page
-    case 'n':
+    case 'n': // Next/prev page
         resultPageNext();
         break;
     case 'p':
         resultPageBack();
         break;
-
-        // Run script. Link format Rnn|Script Name
-    case 'R':
+    case 'R':// Run script. Link format Rnn|Script Name
     {
         if (!havedoc)
             return;
-        auto bar = strurl.find('|');
-        if (bar == std::string::npos)
-            break;
-        auto cmdname = strurl.substr(bar + 1);
-        LOGDEB0("Run script: cmdname: [" << cmdname << "]\n");
+        LOGERR("Run script: [" << origorscript << "]\n");
         DesktopDb ddb(path_cat(theconfig->getConfDir(), "scripts"));
         DesktopDb::AppDef app;
-        if (ddb.appByName(cmdname, app)) {
+        if (ddb.appByName(origorscript, app)) {
             QAction act(QString::fromUtf8(app.name.c_str()), this);
             QVariant v(QString::fromUtf8(app.command.c_str()));
             act.setData(v);
@@ -1142,23 +1109,15 @@ void ResList::onLinkClicked(const QUrl &qurl)
         }
     }
     break;
-
-    // Spelling: replacement suggestion clicked. strurl is like: Sorograpphic|orographic
-    case 'S':
+    case 'S': // Spelling: replacement suggestion clicked. strurl is like:
+        // S-1|orograpphic|orographic
     {
-        // 
-        if (strurl.empty())
-            break;
-        string::size_type bar = strurl.find_first_of("|");
-        if (bar != string::npos && bar > 1 && bar < strurl.size() - 1) {
-            string o = strurl.substr(1, bar-1);
-            string n = strurl.substr(bar+1);
-            LOGDEB2("Emitting wordreplace " << o << " -> " << n << "\n");
-            emit wordReplace(u8s2qs(o), u8s2qs(n));
-        }
+        if (origorscript.empty() || replacement.empty())
+            return;
+        LOGDEB2("Emitting wordreplace " << origorscript << " -> " << replacement << "\n");
+        emit wordReplace(u8s2qs(origorscript), u8s2qs(replacement));
     }
     break;
-
     default: 
         LOGERR("ResList::onLinkClicked: bad link [" << strurl.substr(0,20) << "]\n");
         break;

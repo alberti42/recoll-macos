@@ -18,13 +18,7 @@
 #include <cmath>
 #include <cstdio>
 #include <sstream>
-
-// Programs built with gcc 4.8.4 (e.g.: Ubuntu Trusty), crash at startup while initializing stdc++
-// regular expression objects (and also crash if we make them non-static).
-#if defined(__clang__) || defined(_WIN32) || __GNUC__ > 4
-#define USE_REGEX
 #include <regex>
-#endif
 
 #include "recoll.h"
 #include "log.h"
@@ -425,21 +419,18 @@ void rwSettings(bool writing)
         havereadsettings = true;
 }
 
-#ifdef USE_REGEX
 /* font-size: 10px; */
 static const std::string fntsz_exp(
     R"((\s*font-size\s*:\s*)([0-9]+)(p[tx]\s*;\s*))"
     );
 
 static std::regex fntsz_regex(fntsz_exp);
-#endif // USE_REGEX
 
 std::string PrefsPack::scaleFonts(const std::string& style, float multiplier)
 {
     //cerr << "scale_fonts: multiplier: " << multiplier << "\n";
     std::vector<std::string> lines;
     stringToTokens(style, lines, "\n");
-#ifdef USE_REGEX
     for (unsigned int ln = 0; ln < lines.size(); ln++) {
         const string& line = lines[ln];
         std::smatch m;
@@ -454,13 +445,37 @@ std::string PrefsPack::scaleFonts(const std::string& style, float multiplier)
             //std::cerr << "New line: [" << lines[ln] << "]\n";
         }
     }
-#endif // USE_REGEX
     string nstyle = string();
     for (auto& ln : lines) {
         nstyle += ln + "\n";
     }
     return nstyle;
 }
+
+static const std::string link_exp(R"(([ADFhHPEnpRS])([-0-9]*)(\|([^|]+)(\|(.*))?)?)");
+static std::regex link_regex(link_exp);
+std::tuple<char, int, std::string, std::string> internal_link(std::string url)
+{
+    LOGDEB1("internal_link: url: [" << url << "]\n");
+    std::smatch m;
+    char c = 0;
+    int i = -1;
+    std::string origorscript;
+    std::string replacement;
+    if (regex_match(url, m, link_regex) && m.size() == 7) {
+        c = m[1].str()[0];
+        if (!m[2].str().empty()) {
+            // The link nums start from 1, but the seq from 0
+            i = atoi(m[2].str().c_str()) - 1;
+        }
+        origorscript = m[4];
+        replacement = m[6];
+    }
+    LOGDEB1("internal_link: returning c [" << c << "] i [" << i << "] origorscript [" <<
+            origorscript << "] replace [" << replacement << "]\n");
+    return {c, i, origorscript, replacement};
+}
+
 
 std::string PrefsPack::htmlHeaderContents(bool nouser)
 {

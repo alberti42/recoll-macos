@@ -694,7 +694,7 @@ void ResTable::init(QStringList _ifields)
     m_detail->setOpenLinks(false);
     m_detail->init();
     // signals and slots connections
-    connect(m_detail, SIGNAL(anchorClicked(const QUrl&)), this, SLOT(linkWasClicked(const QUrl&)));
+    connect(m_detail, SIGNAL(anchorClicked(const QUrl&)), this, SLOT(onLinkClicked(const QUrl&)));
     splitter->addWidget(m_detail);
     splitter->setOrientation(Qt::Vertical);
     QVariant saved = settings.value(settingskey_splittersizes);
@@ -1099,22 +1099,23 @@ void ResTable::readDocSource(bool resetPos)
     m_detaildocnum = -1;
 }
 
-void ResTable::linkWasClicked(const QUrl &qurl)
+void ResTable::onLinkClicked(const QUrl &qurl)
 {
     if (m_detaildocnum < 0) {
         return;
     }
     auto strurl = pc_decode(qs2utf8s(qurl.toString()));
-    LOGDEB("ResTable::linkWasClicked: [" << strurl << "]\n");
-
-    auto docseqnum = atoi(strurl.c_str()+1) -1;
+    LOGDEB("ResTable::onLinkClicked: [" << strurl << "]\n");
+    auto [what, docseqnum, origorscript, replacement] = internal_link(strurl);
+    if (what == 0) {
+        return;
+    }
     if (m_detaildocnum != docseqnum) {
         //? Really we should abort...
-        LOGERR("ResTable::linkWasClicked: m_detaildocnum != docseqnum !\n");
+        LOGERR("ResTable::onLinkClicked: m_detaildocnum != docseqnum !\n");
         return;
     }
     
-    int what = strurl[0];
     switch (what) {
         // Open abstract/snippets window
     case 'A':
@@ -1171,8 +1172,8 @@ void ResTable::linkWasClicked(const QUrl &qurl)
     break;
 
     default:
-        LOGERR("ResTable::linkWasClicked: bad link [" << strurl << "]\n");
-        break;// ??
+        LOGERR("ResTable::onLinkClicked: bad link [" << strurl << "]\n");
+        break;
     }
 }
 

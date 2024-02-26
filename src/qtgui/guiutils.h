@@ -21,6 +21,7 @@
 #include <list>
 #include <vector>
 #include <set>
+#include <tuple>
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -192,5 +193,8 @@ extern PrefsPack prefs;
 extern void rwSettings(bool dowrite);
 
 extern QString g_stringAllStem, g_stringNoStem;
+
+/** Check that url is one of our internal links. returns char==0 else */
+std::tuple<char, int, std::string, std::string> internal_link(std::string url);
 
 #endif /* _GUIUTILS_H_INCLUDED_ */

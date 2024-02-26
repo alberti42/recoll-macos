@@ -186,7 +186,7 @@ public slots:
     virtual void addColumn();
     virtual void resetSort(); // Revert to natural (relevance) order
     virtual void saveAsCSV(); 
-    virtual void linkWasClicked(const QUrl&);
+    virtual void onLinkClicked(const QUrl&);
     virtual void makeRowVisible(int row);
     virtual void takeFocus();
     virtual void onUiPrefsChanged();

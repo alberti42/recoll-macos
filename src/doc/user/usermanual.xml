@@ -3763,10 +3763,13 @@ setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/f
             </para>
 
             <para>A link target defined as
-            <literal>R%N|<replaceable>scriptname</replaceable></literal> will
-            run the corresponding script on the result file (if the document is
-            embedded, the script will be started on the top-level parent).
-            See the <link linkend="RCL.SEARCH.GUI.RUNSCRIPT">section about defining scripts</link>.</para>
+              <literal>R%N|<replaceable>scriptname</replaceable></literal> will run the
+              corresponding script on the result file (if the document is embedded, the script will
+              be started on the top-level parent). See
+              the <link linkend="RCL.SEARCH.GUI.RUNSCRIPT">section about defining
+                scripts</link>. Note that <replaceable>scriptname</replaceable> value should be
+              the value of the <literal>Name</literal> field of the desktop file, and not the
+              desktop file name.</para>
 
             <para>The default value for the paragraph format string is:
             <screen><![CDATA[
