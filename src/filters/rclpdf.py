@@ -111,7 +111,15 @@ class PDFExtractor:
         self.tesseract = None
         self.extrameta = None
         self.re_head = None
-
+        # Base Metadata elements names replacements: eRecoll treats "Subject" as a "title" element
+        # (based on emails). The PDF "Subject" metadata field is more like an HTML "description".
+        # "Producer" is the name of the software package used to convert to PDF (e.g. "Writer")
+        # "Creator" is the name of the Software used to create the original format (e.g. "MSWord")
+        # There is a lot of confusion in actual docs about these, and in general "creator" is more
+        # likely to be understood as a synonym for author (explicitely the case for dc:creator
+        # actually). So we replace Producer and Creator with PDF-specific names
+        self.metareplace = {b"Creator" : b"PDFCreator", b"Producer" : b"PDFProducer",
+                            b"Subject" : b"Description"}
         self.config = rclconfig.RclConfig()
         self.confdir = self.config.getConfDir()
 
@@ -219,12 +227,11 @@ class PDFExtractor:
         if self.extrametafix:
             try:
                 import importlib.util
-                spec = importlib.util.spec_from_file_location(
-                    'pdfextrametafix', self.extrametafix)
+                spec = importlib.util.spec_from_file_location("pdfextrametafix", self.extrametafix)
                 EMF = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(EMF)
             except Exception as err:
-                self.em.rclog("Import extrametafix failed: %s" % err)
+                self.em.rclog(f"Import extrametafix failed: {err}")
                 EMF = None
                 pass
 
@@ -291,53 +298,58 @@ class PDFExtractor:
         inheader = False
         inbody = False
         didcs = False
-        output = []
+        output = b''
         isempty = True
         fields = {}
         if self.pdfinfoversion > 211000:
             fields = self._customfields()
         for line in input.split(b'\n'):
-            if re.search(b'</head>', line):
+            if line.find(b'</head>') != -1:
                 inheader = False
-            if re.search(b'</pre>', line):
+            if line.find(b'</pre>') != -1:
                 inbody = False
             if inheader:
                 if not didcs:
-                    output.append(b'<meta http-equiv="Content-Type"' + \
-                              b'content="text/html; charset=UTF-8">\n')
+                    output +=b'<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">\n'
                     for fld,val in fields.items():
-                        output.append(self._metatag(fld, val))
+                        output += self._metatag(fld, val) + b"\n"
                     didcs = True
+                m = None
                 if self.needescape:
+                    # Look for a title line and escape the data
                     m = re.search(b'''(.*<title>)(.*)(<\/title>.*)''', line)
-                    if not m:
-                        m = re.search(b'''(.*content=")(.*)(".*/>.*)''', line)
                     if m:
-                        line = m.group(1) + rclexecm.htmlescape(m.group(2)) + \
-                               m.group(3)
-
-                # Recoll treats "Subject" as a "title" element
-                # (based on emails). The PDF "Subject" metadata
-                # field is more like an HTML "description"
-                line = re.sub(b'name="Subject"', b'name="Description"', line, 1)
+                        line = m.group(1) + rclexecm.htmlescape(m.group(2)) + m.group(3)
+                if not m:
+                    # Not a title line. Look for a meta one, possibly replace the name and escape
+                    # the data if needed
+                    m = re.search(b'''(.*name=")([^"]*)(.*content=")(.*)(".*/>.*)''', line)
+                    if m:
+                        nm = m.group(2)
+                        data = m.group(4)
+                        if self.needescape:
+                            data = rclexecm.htmlescape(data)
+                        if nm in self.metareplace:
+                            nm = self.metareplace[nm]
+                        line = b'<meta name="' +  nm + b'" content="' + data + b'"/>'
 
             elif inbody:
                 s = line[0:1]
                 if s != b"\x0c" and s != b"<":
                     isempty = False
-                # We used to remove end-of-line hyphenation (and join
-                # lines), but but it's not clear that we should do
-                # this as pdftotext without the -layout option does it ?
+                # We used to remove end-of-line hyphenation (and join lines), but but it's not clear
+                # that we should do this as pdftotext without the -layout option does it ?
+                # pdftotext -htmlmeta v 22.02.0 2024-02 *still* does not escape the body text !
                 line = rclexecm.htmlescape(line)
 
-            if re.search(b'<head>', line):
+            if line.find(b'<head>') != -1:
                 inheader = True
-            if re.search(b'<pre>', line):
+            if line.find(b'<pre>') != -1:
                 inbody = True
 
-            output.append(line)
+            output += line + b"\n"
 
-        return b'\n'.join(output), isempty
+        return output, isempty
 
 
     def _metatag(self, nm, val):
