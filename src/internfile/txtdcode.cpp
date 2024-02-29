@@ -85,7 +85,7 @@ static string bomtocode(const string& itext)
     if (itext.size() >= 3 && utxt[0] == 0xEF && utxt[1] == 0xBB &&
         utxt[2] == 0xBF) {
         LOGDEB("txtdcode:bomtocode: UTF-8\n");
-        return "UTF-8";
+        return cstr_utf8;
     } else if (itext.size() >= 2 && utxt[0] == 0xFE && utxt[1] == 0xFF) {
         return "UTF-16BE";
     } else if (itext.size() >= 2 && utxt[0] == 0xFF && utxt[1] == 0xFE) {

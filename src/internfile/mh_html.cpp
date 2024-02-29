@@ -114,7 +114,7 @@ bool MimeHandlerHtml::next_document()
 
         // Try transcoding. If it fails, use original text.
         int ecnt;
-        if (!transcode(m_html, transcoded, charset, "UTF-8", &ecnt)) {
+        if (!transcode(m_html, transcoded, charset, cstr_utf8, &ecnt)) {
             LOGDEB("textHtmlToDoc: transcode failed from cs '" <<
                    charset << "' to UTF-8 for[" << (fn.empty()?"unknown":fn) << "]");
             transcoded = m_html;
@@ -133,7 +133,7 @@ bool MimeHandlerHtml::next_document()
             }
             // charset has the putative source charset, transcoded is now
             // in utf-8
-            p.set_charsets(charset, "utf-8");
+            p.set_charsets(charset, cstr_utf8);
         }
 
         try {
@@ -160,7 +160,7 @@ bool MimeHandlerHtml::next_document()
                     if (idx != string::npos)
                         m_html.replace(idx+6, 0, 
                                        "<meta http-equiv=\"content-type\" "
-                                       "content=\"text/html; charset=utf-8\">");
+                                       "content=\"text/html; charset=UTF-8\">");
                 }
 
                 break;

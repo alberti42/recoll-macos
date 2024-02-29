@@ -1610,7 +1610,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
             // There is no way in hell we could have an idea of the
             // charset here, so let's hope it's ascii or utf-8. We call
             // transcode to strip the bad chars and pray
-            if (transcode(path_getsimple(doc.ipath), utf8ipathlast, "UTF-8", "UTF-8")) {
+            if (transcode(path_getsimple(doc.ipath), utf8ipathlast, cstr_utf8, cstr_utf8)) {
                 splitter.text_to_words(utf8ipathlast);
             }
         }

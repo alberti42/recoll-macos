@@ -451,7 +451,7 @@ void RclMain::execViewer(
         prcmd = ncmd;
 #else
         string fcharset = theconfig->getDefCharset(true);
-        transcode(ncmd, prcmd, fcharset, "UTF-8");
+        transcode(ncmd, prcmd, fcharset, cstr_utf8);
 #endif
         QString msg = tr("Executing: [") + u8s2qs(prcmd) + "]";
         stb->showMessage(msg, 10000);

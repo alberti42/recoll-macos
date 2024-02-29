@@ -90,7 +90,7 @@ bool rfc2231_decode(const string &in, string &out, string &charset)
     string raw;
     qp_decode(in.substr(pos2), raw, '%');
     // fprintf(stderr, "raw [%s]\n", raw.c_str());
-    if (!transcode(raw, out, charset, "UTF-8"))
+    if (!transcode(raw, out, charset, cstr_utf8))
         return false;
     return true;
 }
@@ -455,7 +455,7 @@ static bool rfc2047_decodeParsed(const std::string& charset,
         return false;
     }
 
-    if (!transcode(decoded, utf8, charset, "UTF-8")) {
+    if (!transcode(decoded, utf8, charset, cstr_utf8)) {
         DPRINT((stderr, "Transcode failed\n"));
         return false;
     }
@@ -508,7 +508,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
                 // we sometimes find 8-bit chars in
                 // there. Interpret as Iso8859.
                 if (value.length() > 0) {
-                    transcode(value, utf8, "ISO-8859-1", "UTF-8");
+                    transcode(value, utf8, "ISO-8859-1", cstr_utf8);
                     out += utf8;
                     value.clear();
                 }
@@ -576,7 +576,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
     }
 
     if (value.length() > 0) {
-        transcode(value, utf8, "CP1252", "UTF-8");
+        transcode(value, utf8, "CP1252", cstr_utf8);
         out += utf8;
         value.clear();
     }

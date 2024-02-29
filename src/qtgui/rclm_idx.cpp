@@ -80,8 +80,8 @@ bool RclMain::updateIdxStatus()
     string mf;int ecnt = 0;
     string fcharset = theconfig->getDefCharset(true);
     // If already UTF-8 let it be, else try to transcode, or url-encode
-    if (!transcode(status.fn, mf, "UTF-8", "UTF-8", &ecnt) || ecnt) {
-        if (!transcode(status.fn, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
+    if (!transcode(status.fn, mf, cstr_utf8, cstr_utf8, &ecnt) || ecnt) {
+        if (!transcode(status.fn, mf, fcharset, cstr_utf8, &ecnt) || ecnt) {
             mf = path_pcencode(status.fn, 0);
         }
     }

@@ -376,7 +376,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         std::string uq;
         std::string charset = rclconfig->getDefCharset(true);
         int ercnt;
-        if (!transcode(qs, uq, charset, "UTF-8", &ercnt)) {
+        if (!transcode(qs, uq, charset, cstr_utf8, &ercnt)) {
             std::cerr << "Can't convert command line args to utf-8\n";
             return 1;
         } else if (ercnt) {

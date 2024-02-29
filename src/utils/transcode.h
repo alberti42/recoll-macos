@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include "cstr.h"
+
 /**
  * c++ized interface to iconv
  *

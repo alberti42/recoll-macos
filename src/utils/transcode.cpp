@@ -1,4 +1,4 @@
-/* Copyright (C) 2004-2019 J.F.Dockes
+/* Copyright (C) 2004-2024 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -26,23 +26,42 @@
 
 #include "transcode.h"
 #include "log.h"
+#include "rclutil.h"
+#include "simdutf.h"
 
 using namespace std;
 
-// We gain approximately 25% exec time for word at a time conversions by
-// caching the iconv_open thing. 
+// iconv_open caching
+// We used to? gain approximately 25% exec time for word at a time conversions by caching the
+// iconv_open result (except if this was all an error). On modern Linux (2024) there is not much
+// gain any more probably because the translation data is pre-cached in .so gconv modules.
 //
-// We may also lose some concurrency on multiproc because of the
-// necessary locking, but we only have one processing-intensive
-// possible thread for now (the indexing one), so this is probably not
-// an issue (and could be worked around with a slightly more
-// sohisticated approach).
+// We may also lose some concurrency on multiproc because of the necessary locking, but
+// all in all it's still very marginally better in all cases.
 #define ICONV_CACHE_OPEN
 
-bool transcode(const string &in, string &out, const string &icode,
-               const string &ocode, int *ecnt)
+// Using simdutf for the common utf-8 to utf-8 case (just check and copy) yields a very marginal
+// improvement, but why not, it it's configured in anyway.
+#ifdef USE_SIMDUTF
+#define UTF8_UTF8_USE_SIMDUTF 1
+#endif
+
+bool transcode(const string &in, string &out, const string &icode, const string &ocode, int *ecnt)
 {
     LOGDEB2("Transcode: " << icode << " -> " << ocode << "\n");
+
+#if UTF8_UTF8_USE_SIMDUTF
+    // For the very common utf-8 -> utf-8 case (because the doc handlers usually produce utf-8 and
+    // we just check it here): tried to use simdutf: if the encoding is valid, just copy and return,
+    // else do the full thing.
+    if (ecnt)
+        *ecnt = 0;
+    if (icode == cstr_utf8 && ocode == cstr_utf8 && simdutf::validate_utf8(in.c_str(), in.size())) {
+        out = in;
+        return true;
+    }
+#endif
+
 #ifdef ICONV_CACHE_OPEN
     static iconv_t ic = (iconv_t)-1;
     static string cachedicode;

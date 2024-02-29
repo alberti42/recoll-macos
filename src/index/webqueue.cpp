@@ -139,7 +139,7 @@ public:
                 // locale charset (not too sure). No idea what to do
                 // for other types, would have to check the plugin.
                 string charset = m_conf->getDefCharset(true);
-                transcode(value, cvalue, charset,  "UTF-8"); 
+                transcode(value, cvalue, charset,  cstr_utf8); 
                 valuep = &cvalue;
             }
                 

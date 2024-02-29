@@ -416,7 +416,7 @@ bool printableUrl(const string& fcharset, const string& in, string& out)
     out = in;
 #else
     int ecnt = 0;
-    if (!transcode(in, out, fcharset, "UTF-8", &ecnt) || ecnt) {
+    if (!transcode(in, out, fcharset, cstr_utf8, &ecnt) || ecnt) {
         out = path_pcencode(in, 7);
     }
 #endif
@@ -466,7 +466,7 @@ std::string utf8datestring(const std::string& format, struct tm *tm)
 #else
     char datebuf[200];
     strftime(datebuf, 199, format.c_str(), tm);
-    transcode(datebuf, u8date, RclConfig::getLocaleCharset(), "UTF-8");
+    transcode(datebuf, u8date, RclConfig::getLocaleCharset(), cstr_utf8);
 #endif
     return u8date;
 }

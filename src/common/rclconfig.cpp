@@ -541,7 +541,7 @@ RclConfig::RclConfig(const string *argcnf)
 #ifdef _WIN32
         m->o_localecharset = winACPName();
 #elif defined(__APPLE__)
-        m->o_localecharset = "UTF-8";
+        m->o_localecharset = cstr_utf8;
 #else
         const char *cp;
         cp = nl_langinfo(CODESET);

@@ -201,7 +201,7 @@ void MyHtmlParser::decode_entities(string &s)
     // This has no meaning whatsoever if the character encoding is unknown,
     // so don't do it. If charset known, caller has converted text to utf-8, 
     // and this is also how we translate entities
-    //    if (tocharset != "utf-8")
+    //    if (tocharset != cstr_utf8)
     //      return;
 
     // We need a const_iterator version of s.end() - otherwise the
@@ -241,7 +241,7 @@ void MyHtmlParser::decode_entities(string &s)
             string utf16be;
             utf16be += char(val / 256);
             utf16be += char(val % 256);
-            transcode(utf16be, subs, "UTF-16BE", "UTF-8");
+            transcode(utf16be, subs, "UTF-16BE", cstr_utf8);
         } 
 
         if (subs.length() > 0) {
