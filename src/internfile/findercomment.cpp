@@ -41,6 +41,9 @@ static inline uint32_t char4toint(const unsigned char *f)
 // either bytes or unicode (not sure about the encoding, probably ucs-2?).
 std::pair<std::string, std::string> decode_comment_plist(const unsigned char *cp0, int sz)
 {
+    if (sz < 9) {
+        return {"", "input size too small"};
+    }
     if (memcmp(cp0, "bplist00", 8) != 0) {
         return {"", "not bplist00"};
     }
@@ -60,6 +63,10 @@ std::pair<std::string, std::string> decode_comment_plist(const unsigned char *cp
     if (numchars == 15) {
         // Then the actual length is in the following bytes.
         cp++;
+        if (cp - cp0 > sz) {
+            return {"", "input size too small"};
+        }
+            
         // std::cerr << "*cp now " << std::hex << (unsigned int)*cp << std::dec << "\n";
         if (((*cp) & 0xf0)>>4 != 1) {
             return {"", "Int len high nibble not 1"};
@@ -72,6 +79,9 @@ std::pair<std::string, std::string> decode_comment_plist(const unsigned char *cp
             return {"", "Bad integer size " + std::to_string(ilen)};
         }
         cp++;
+        if (cp - cp0 > sz) {
+            return {"", "input size too small"};
+        }
         unsigned char ar[4] = {0,0,0,0};
         // Fill the array down from lsb (byte 3) down to msb depending on ilen
         for (int i = ilen-1; i >= 0; i--) {
@@ -81,8 +91,15 @@ std::pair<std::string, std::string> decode_comment_plist(const unsigned char *cp
         cp += ilen;
     } else {
         cp++;
+        if (cp - cp0 > sz) {
+            return {"", "input size too small"};
+        }
     }
     auto bytelen = unicode ? numchars * 2 : numchars;
+    if (cp + bytelen - cp0 > sz) {
+        return {"", "input size too small"};
+    }
+    
     // std::cerr << "numchars " << numchars << " numbytes " << bytelen << "\n";
     return {std::string((const char *)cp, bytelen), ""};
 }
