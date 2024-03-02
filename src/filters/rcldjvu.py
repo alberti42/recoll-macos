@@ -43,37 +43,38 @@ class DJVUExtractor(RclBaseHandler):
         if self.djvused:
             try:
                 metadata = subprocess.check_output(
-                    [self.djvused, fn, "-e", "select 1;print-meta"])
+                    [self.djvused, fn, "-u", "-e", "select;print-meta;select 1;print-meta"])
             except Exception as e:
                 self.em.rclog("djvused failed: %s" % e)
-        author = ""
-        title = ""
-        metadata = metadata.decode('UTF-8', 'replace')
-        for line in metadata.split('\n'):
-            line = line.split('"')
-            if len(line) >= 2:
-                nm = line[0].strip()
-                if nm == "author":
-                    author = ' '.join(line[1:])
-                elif nm == "title":
-                    title = ' '.join(line[1:])
+        fields = (b"author", b"title", b"booktitle", b"publisher", b"editor", b"year",
+                  b"creationdate")
+        metadic = {}
+        for f in fields:
+            metadic[f] = b""
+        for line in metadata.split(b"\n"):
+            ll = line.split(b"\t")
+            if len(ll) >= 2:
+                nm = ll[0].strip().lower()
+                if nm in fields:
+                    value = (b" ".join(ll[1:])).strip(b' \t"')
+                    metadic[nm] += value + b" "
+        #self.em.rclog(f"METADIC: {metadic}")
 
         # Main text
         txtdata = subprocess.check_output([self.djvutxt, fn])
 
-        txtdata = txtdata.decode('UTF-8', 'replace')
-
-        data = '''<html><head>'''
-        data += '''<title>''' + rclexecm.htmlescape(title) + '''</title>'''
-        data += '''<meta http-equiv="Content-Type" '''
-        data += '''content="text/html;charset=UTF-8">'''
-        if author:
-            data += '''<meta name="author" content="''' + \
-                    rclexecm.htmlescape(author) + '''">'''
-        data += '''</head><body><pre>'''
+        data = b"<html><head>"
+        if metadic[b"title"]:
+            data += b"<title>" + rclexecm.htmlescape(metadic[b"title"]) + b"</title>\n"
+        data += b'<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">\n'
+        for nm in [nm for nm in fields if nm != b"title"]:
+            if metadic[nm]:
+                data += b'<meta name="' + nm + b'" content="' + \
+                    rclexecm.htmlescape(metadic[nm].strip()) + b'">\n' 
+        data += b"</head><body><pre>"
 
         data += rclexecm.htmlescape(txtdata)
-        data += '''</pre></body></html>'''
+        data += b"</pre></body></html>"
         return data
 
 
