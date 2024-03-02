@@ -22,7 +22,12 @@ import sys
 import re
 import rclexecm
 import subprocess
+import codecs
+
 from rclbasehandler import RclBaseHandler
+
+    
+_BOMLEN = len(codecs.BOM_UTF8)
 
 class DJVUExtractor(RclBaseHandler):
 
@@ -45,13 +50,16 @@ class DJVUExtractor(RclBaseHandler):
                 metadata = subprocess.check_output(
                     [self.djvused, fn, "-u", "-e", "select;print-meta;select 1;print-meta"])
             except Exception as e:
-                self.em.rclog("djvused failed: %s" % e)
+                self.em.rclog(f"djvused failed: {e}")
         fields = (b"author", b"title", b"booktitle", b"publisher", b"editor", b"year",
                   b"creationdate")
         metadic = {}
         for f in fields:
             metadic[f] = b""
-        for line in metadata.split(b"\n"):
+        if metadata.startswith(codecs.BOM_UTF8):
+            metadata = metadata[_BOMLEN:]
+        
+        for line in metadata.splitlines():
             ll = line.split(b"\t")
             if len(ll) >= 2:
                 nm = ll[0].strip().lower()
@@ -63,9 +71,9 @@ class DJVUExtractor(RclBaseHandler):
         # Main text
         txtdata = subprocess.check_output([self.djvutxt, fn])
 
-        data = b"<html><head>"
+        data = b"<html><head>\n"
         if metadic[b"title"]:
-            data += b"<title>" + rclexecm.htmlescape(metadic[b"title"]) + b"</title>\n"
+            data += b"<title>" + rclexecm.htmlescape(metadic[b"title"].strip()) + b"</title>\n"
         data += b'<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">\n'
         for nm in [nm for nm in fields if nm != b"title"]:
             if metadic[nm]:
