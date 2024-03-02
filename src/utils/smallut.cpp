@@ -17,7 +17,6 @@
  */
 #include "smallut.h"
 
-#include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <cstdio>
@@ -823,7 +822,7 @@ static void unsetenv(const char* name)
 time_t portable_timegm(struct tm *tm)
 {
     time_t ret;
-    char *tz;
+    const char *tz;
 
     tz = getenv("TZ");
     setenv("TZ", "", 1);
