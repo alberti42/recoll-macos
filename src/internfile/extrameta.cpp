@@ -29,6 +29,11 @@
 #include "execmd.h"
 #include "conftree.h"
 
+#ifdef __APPLE__
+#include "transcode.h"
+#include "findercomment.h"
+#endif // __APPLE__
+
 using std::string;
 using std::map;
 using std::vector;
@@ -40,19 +45,24 @@ static void docfieldfrommeta(RclConfig* cfg, const string& name, const string &v
     if (fieldname == cstr_dj_keymd) {
         doc.dmtime = value;
     } else {
-        doc.meta[fieldname] = value;
+        doc.addmeta(fieldname, value);
     }
 }
 
 void reapXAttrs(const RclConfig* cfg, const string& path,  map<string, string>& xfields)
 {
+#ifdef _WIN32
+    PRETEND_USE(cfg);
+    PRETEND_USE(path);
+    PRETEND_USE(xfields);
+#endif
     LOGDEB2("reapXAttrs: [" << path << "]\n");
-#ifndef _WIN32
+    
     // Retrieve xattrs names from files and mapping table from config
     vector<string> xnames;
     if (!pxattr::list(path, &xnames)) {
         if (errno == ENOTSUP) {
-            LOGDEB("FileInterner::reapXattrs: pxattr::list: errno " << errno << "\n");
+            LOGDEB("FileInterner::reapXattrs: pxattr::list: errno ENOTSUP\n");
         } else {
             LOGSYSERR("FileInterner::reapXattrs", "pxattr::list", path);
         }
@@ -60,9 +70,8 @@ void reapXAttrs(const RclConfig* cfg, const string& path,  map<string, string>& 
     }
     const map<string, string>& xtof = cfg->getXattrToField();
 
-    // Record the xattrs: names found in the config are either skipped
-    // or mapped depending if the translation is empty. Other names
-    // are recorded as-is
+    // Record the xattrs: names found in the config are either skipped or mapped depending if the
+    // translation is empty. Other names are recorded as-is
     for (const auto& xkey : xnames) {
         string key = xkey;
         auto mit = xtof.find(xkey);
@@ -78,15 +87,28 @@ void reapXAttrs(const RclConfig* cfg, const string& path,  map<string, string>& 
             LOGSYSERR("FileInterner::reapXattrs", "pxattr::get", path + " : " + xkey);
             continue;
         }
+
+#ifdef __APPLE__
+        if (xkey == "com.apple.metadata:kMDItemFinderComment") {
+            key = "keywords";
+            auto [v1, error] = decode_comment_plist(
+                (const unsigned char *)value.c_str(), (int)value.size());
+            if (!error.empty()) {
+                LOGINF("reapXattrs: failed decoding finder comment for " << path << "\n");
+            } else {
+                if (v1[0] == 0) {
+                    transcode(v1, value, "UCS-2BE", cstr_utf8);
+                } else {
+                    value.swap(v1);
+                }
+            }
+        }
+#endif // __APPLE__
+
         // Encode should we ?
         xfields[key] = value;
         LOGDEB2("reapXAttrs: [" << key << "] -> [" << value << "]\n");
     }
-#else
-    PRETEND_USE(cfg);
-    PRETEND_USE(path);
-    PRETEND_USE(xfields);
-#endif
 }
 
 void docFieldsFromXattrs(RclConfig *cfg, const map<string, string>& xfields, Rcl::Doc& doc)
