@@ -419,6 +419,9 @@ index/rclmon.sh \
 index/recollindex@.service \
 index/recollindex.service \
 \
+internfile/findercomment.cpp \
+internfile/findercomment.h \
+\
 kde/kioslave/kio_recoll/00README.txt \
 kde/kioslave/kio_recoll/CMakeLists.txt \
 kde/kioslave/kio_recoll/data/help.html \
