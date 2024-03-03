@@ -168,6 +168,9 @@ tags = keywords
 xdg.tags = keywords
 xdg.comment = abstract
 
+# MacOS Finder comments
+com.apple.metadata:kMDItemFinderComment = keywords
+
 # Some standard fields are not to be used (by default).
 mime_type =
 charset =

@@ -73,13 +73,15 @@ template void map_ss_cp_noshr<unordered_map<string, string> >(
 
 // Add data to metadata field, store multiple values as CSV, avoid
 // appending multiple identical instances.
-template <class T> void addmeta(
-    T& store, const string& nm, const string& value)
+template <class T> void addmeta(T& store, const string& nm, const string& value)
 {
     auto it = store.find(nm);
     if (it == store.end() || it->second.empty()) {
         store[nm] = value;
-    } else if (it->second.find(value) == string::npos) {
+    } else {
+        // We would like to avoid duplicate values, but this would actually be rather costly
+        // (either multiple string::find for nocomma/commabefore/commaafter/both... or parse
+        // into set), and it's not worth the trouble. Also might go for proper csv?
         store[nm] += ',';
         store[nm] += value;
     }

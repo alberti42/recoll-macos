@@ -619,10 +619,13 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
     // the docs is a compound).
     bool hasipath = false;
 
+    // Set the attributes collected from the top file. They can be overriden (not augmented) by
+    // internal values while we walk the stack. If this is a top level doc, we will call these again
+    // in the end so that they will be this time added to the internal values (because
+    // docFieldsFrom... uses addmeta).
     if (!m_noxattrs) {
         docFieldsFromXattrs(m_cfg, m_XAttrsFields, doc);
     }
-
     docFieldsFromMetaCmds(m_cfg, m_cmdFields, doc);
 
     // If there is no ipath stack, the mimetype is the one from the
@@ -943,6 +946,16 @@ breakloop:
     }
     // Keep this AFTER collectIpathAndMT
     dijontorcl(doc);
+
+    if (doc.ipath.empty()) {
+        // For a top level doc, add (concatenate) the external attributes.
+        // See more detail in the comments at the top of collectIpathAndMT.
+        if (!m_noxattrs) {
+            docFieldsFromXattrs(m_cfg, m_XAttrsFields, doc);
+        }
+        docFieldsFromMetaCmds(m_cfg, m_cmdFields, doc);
+    }        
+
     // Fix the bogus mtype used to force mh_text processing of text subdocs
     if (doc.mimetype == "text/plain1") {
         doc.mimetype = "text/plain";

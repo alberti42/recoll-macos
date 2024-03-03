@@ -90,7 +90,6 @@ void reapXAttrs(const RclConfig* cfg, const string& path,  map<string, string>& 
 
 #ifdef __APPLE__
         if (xkey == "com.apple.metadata:kMDItemFinderComment") {
-            key = "keywords";
             auto [v1, error] = decode_comment_plist(
                 (const unsigned char *)value.c_str(), (int)value.size());
             if (!error.empty()) {

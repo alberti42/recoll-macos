@@ -17,7 +17,6 @@
  */
 #include "smallut.h"
 
-#include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <cstdio>
@@ -149,6 +148,13 @@ int stringuppercmp(const std::string& s1, const std::string& s2)
 bool beginswith(const std::string& big, const std::string& small)
 {
     return big.compare(0, small.size(), small) == 0;
+}
+bool endswith(const std::string& big, const std::string& small)
+{
+    if (big.size() >= small.size()) {
+        return (!big.compare (big.length() - small.length(), small.length(), small));
+    }
+    return false;
 }
 
 template <class T> bool stringToStrings(const std::string& s, T& tokens, const std::string& addseps)
@@ -823,7 +829,7 @@ static void unsetenv(const char* name)
 time_t portable_timegm(struct tm *tm)
 {
     time_t ret;
-    char *tz;
+    const char *tz;
 
     tz = getenv("TZ");
     setenv("TZ", "", 1);
