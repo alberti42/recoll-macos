@@ -192,7 +192,7 @@ std::pair<std::vector<std::string>, std::string> read_string_array(
     // TBD: Change the following to a single loop: no need to store the object_refs
     out.reserve(numitems);
     int offsidx;
-    for (int i = 0; i < numitems; i++) {
+    for (unsigned int i = 0; i < numitems; i++) {
         switch(trailer.object_ref_size) {
         case 1: offsidx = *cp++;                  break;
         case 2: offsidx = char2toint(cp);cp += 2; break;
