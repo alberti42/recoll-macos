@@ -31,7 +31,7 @@
 
 #ifdef __APPLE__
 #include "transcode.h"
-#include "findercomment.h"
+#include "finderxattr.h"
 #endif // __APPLE__
 
 using std::string;

@@ -192,6 +192,6 @@ mac {
     INCLUDEPATH += \
       $$RECOLLDEPS/xapian-core-1.4.24/include
     SOURCES += \
-      ../../internfile/findercomment.cpp
+      ../../internfile/finderxattr.cpp
 
 }

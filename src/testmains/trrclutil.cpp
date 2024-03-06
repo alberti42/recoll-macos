@@ -16,6 +16,7 @@ static std::map<std::string, int> options {
     {"path_to_thumb", 0},
     {"url_encode", 0},
     {"growmime", 0},
+    {"dateinterval", 0},
 };
 
 static const char *thisprog;
@@ -29,6 +30,14 @@ static void Usage(void)
     exit(1);
 }
 
+
+static void cerrdip(const string& s, DateInterval *dip)
+{
+    cerr << s << dip->y1 << "-" << dip->m1 << "-" << dip->d1 << "/"
+         << dip->y2 << "-" << dip->m2 << "-" << dip->d2
+         << endl;
+}
+        
 int growmime()
 {
     vector<pair<string, string>> cases{
@@ -105,6 +114,20 @@ int main(int argc, char **argv)
             return 1;
         }
         path_to_thumb(input);
+    } else if (options["dateinterval"]) {
+        if (optind >= argc) {
+            cerr << "Usage: trsmallut --dateinterval <dateinterval>" << endl;
+            return 1;
+        }
+        string s = argv[optind];
+        DateInterval di;
+        if (!parsedateinterval(s, &di)) {
+            cerr << "Parse failed" << endl;
+            return 1;
+        }
+        cerrdip("", &di);
+        return 0;
+
     } else if (options["url_encode"]) {
         if (optind >= argc) {
             cerr << "Usage: trsmallut --url_encode <arg> [offs=0]\n";

@@ -170,6 +170,8 @@ xdg.comment = abstract
 
 # MacOS Finder comments
 com.apple.metadata:kMDItemFinderComment = keywords
+# MacOS Finder tags. Not sure how useful it would be to index these
+#com.apple.metadata:_kMDItemUserTags = keywords
 
 # Some standard fields are not to be used (by default).
 mime_type =

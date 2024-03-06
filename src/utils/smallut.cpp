@@ -17,6 +17,7 @@
  */
 #include "smallut.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <cstdio>
@@ -73,7 +74,7 @@ std::string stringtolower(const std::string& i)
 
 void stringtoupper(std::string& io)
 {
-    std::transform(io.begin(), io.end(), io.begin(), [](unsigned char c) { return std::toupper(c); });
+    std::transform(io.begin(), io.end(), io.begin(), [](unsigned char c) {return std::toupper(c);});
 }
 
 std::string stringtoupper(const std::string& i)
