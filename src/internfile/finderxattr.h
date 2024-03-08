@@ -36,6 +36,6 @@ extern std::pair<std::string, std::string> decode_comment_plist(const unsigned c
 // This contains an array of bytes or unicode strings.
 // Apparently the colors format is color\nNumvalue??
 extern std::pair<std::vector<std::string>, std::string> decode_tags_plist(
-    const unsigned char *cp0, int sz)
+    const unsigned char *cp0, int sz);
 #endif // __APPLE__
 #endif /* _FINDERXATTR_H_INCLUDED_ */

@@ -95,17 +95,33 @@ void reapXAttrs(const RclConfig* cfg, const string& path,  map<string, string>& 
             if (!error.empty()) {
                 LOGINF("reapXattrs: failed decoding finder comment for " << path << "\n");
             } else {
-                if (v1[0] == 0) {
+                if (!v1.empty() && v1[0] == 0) {
                     transcode(v1, value, "UCS-2BE", cstr_utf8);
                 } else {
                     value.swap(v1);
+                }
+            }
+        } else if (xkey == "com.apple.metadata:_kMDItemUserTags") {
+            auto [v1, error] = decode_tags_plist(
+                (const unsigned char *)value.c_str(), (int)value.size());
+            if (!error.empty()) {
+                LOGINF("reapXattrs: failed decoding finder tags for " << path << "\n");
+            } else {
+                if (!v1.empty()) {
+                    std::string s;
+                    stringsToString(v1, s);
+                    if (!s.empty() && s[0] == 0) {
+                        transcode(s, value, "UCS-2BE", cstr_utf8);
+                    } else {
+                        value.swap(s);
+                    }
                 }
             }
         }
 #endif // __APPLE__
 
         // Encode should we ?
-        xfields[key] = value;
+        addmeta(xfields, key, value);
         LOGDEB2("reapXAttrs: [" << key << "] -> [" << value << "]\n");
     }
 }
