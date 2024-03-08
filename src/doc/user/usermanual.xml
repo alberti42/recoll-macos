@@ -4,13 +4,14 @@
         "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 
 <!ENTITY RCL "<application>Recoll</application>">
-<!ENTITY RCLAPPS "<ulink url='https://www.lesbonscomptes.com/recoll/pages/features.html#doctypes'>http://www.recoll.org/pages/features.html</ulink>">
+<!ENTITY RCLWEB "<ulink url='https://www.recoll.org/'>https://www.recoll.org/</ulink>">
+<!ENTITY FAQS "https://www.recoll.org/faqsandhowtos/">
+<!ENTITY RCLAPPS "<ulink url='https://www.recoll.org/pages/features.html#doctypes'>https://www.recoll.org/pages/features.html</ulink>">
 <!ENTITY RCLVERSION "1.37">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
 <!ENTITY MAC "<application>Mac OS</application>-like systems">
-<!ENTITY FAQS "https://www.lesbonscomptes.com/recoll/faqsandhowtos/">
 <!ENTITY RCLCONF SYSTEM "recoll.conf.xml">
 ]>
 
@@ -41,7 +42,7 @@
       Software Foundation; with no Invariant Sections, no Front-Cover
       Texts, and no Back-Cover Texts.  A copy of the license can be
       found at the following
-      location: <ulink url="http://www.gnu.org/licenses/fdl.html">GNU
+      location: <ulink url="https://www.gnu.org/licenses/fdl.html">GNU
       web site</ulink>.</literal></para>
 
       <para>This document introduces full text search notions
@@ -147,10 +148,9 @@
       <title>Recoll overview</title>
 
       <para>&RCL; uses the 
-      <ulink url="http://www.xapian.org">&XAP;</ulink> information retrieval
+      <ulink url="https://www.xapian.org">&XAP;</ulink> information retrieval
       library as its storage and retrieval engine. &XAP; is a very
-      mature package using <ulink
-      url="http://www.xapian.org/docs/intro_ir.html">a sophisticated
+      mature package using <ulink url="https://www.xapian.org/docs/intro_ir.html"> a sophisticated
       probabilistic ranking model</ulink>.</para>
       
       <para>The &XAP; library manages an index database which
@@ -183,9 +183,9 @@
       <para>By default. &RCL; processes east asian texts by generating terms as arbitrary sequences
         of consecutive characters (n-grams). However, it has provisions to integrate with
         language-aware text segmenters for
-        <ulink url="https://www.lesbonscomptes.com/recoll/pages/recoll-chinese.html">Chinese</ulink> 
+        <ulink url="https://www.recoll.org/pages/recoll-chinese.html">Chinese</ulink> 
         and
-        <ulink url="https://www.lesbonscomptes.com/recoll/pages/recoll-korean.html">Korean</ulink>
+        <ulink url="https://www.recoll.org/pages/recoll-korean.html">Korean</ulink>
         which will produce a smaller index and improved search.</para>
       
       <para>Stemming is the process by which &RCL; reduces words to their radicals so that searching
@@ -259,7 +259,7 @@
               <ulink url="https://framagit.org/medoc92/recollwebui">Recoll WebUI</ulink>.
           </para></listitem>
           <listitem><para>A Gnome Shell
-              <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Search Provider
+              <ulink url="https://www.recoll.org/pages/download.html">Search Provider
               </ulink>.</para></listitem>
           <listitem><para>A
               <link linkend="RCL.PROGRAM.PYTHONAPI"><application>Python</application> programming
@@ -267,7 +267,7 @@
           <listitem><para>A <link linkend="RCL.SEARCH.KIO"><application>KDE</application> KIO slave
                 module</link>.</para></listitem> 
           <listitem><para>A Ubuntu Unity
-              <ulink url="https://www.lesbonscomptes.com/recoll/pages/download.html">Scope</ulink>
+              <ulink url="https://www.recoll.org/pages/download.html">Scope</ulink>
               module.</para></listitem>
         </itemizedlist>
       </para>
@@ -712,7 +712,7 @@ indexedmimetypes = application/pdf</programlisting>
       <para>The configuration is documented inside the 
         <link linkend="RCL.INSTALL.CONFIG">installation chapter</link> 
         of this document, or in the
-        <ulink url="https://www.lesbonscomptes.com/recoll/manpages/recoll.conf.5.html"><citerefentry><refentrytitle>recoll.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></ulink>
+        <ulink url="https://www.recoll.org/manpages/recoll.conf.5.html"><citerefentry><refentrytitle>recoll.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></ulink>
         manual page. Both documents are automatically generated from
         the comments inside the configuration file.</para>
 
@@ -960,7 +960,7 @@ indexedmimetypes = application/pdf</programlisting>
           </orderedlist>
         </para>
         <para>You can also read a 
-          <ulink url="http://www.recoll.org/pages/idxthreads/threadingRecoll.html">
+          <ulink url="https://www.recoll.org/pages/idxthreads/threadingRecoll.html">
             longer document</ulink> about the transformation of
           &RCL; indexing to multithreading.</para>
 
@@ -1102,7 +1102,7 @@ indexedmimetypes = application/pdf</programlisting>
 
           <para><command>recollindex</command> has many options
             which are listed in its
-            <ulink url="https://www.lesbonscomptes.com/recoll/manpages/recollindex.1.html">manual page</ulink>.
+            <ulink url="https://www.recoll.org/manpages/recollindex.1.html">manual page</ulink>.
             Only a few will be described here.</para>
           
           <para>Option <option>-z</option> will reset the index when
@@ -1436,7 +1436,7 @@ pass</programlisting>
             an alternate approach for editing or adding/deleting fields.</para>
           
           <para>See 
-            <ulink url="https://www.lesbonscomptes.com/recoll/pages/recoll_XMP/index.html">this
+            <ulink url="https://www.recoll.org/pages/recoll_XMP/index.html">this
               page</ulink> for a more detailed discussion about indexing PDF XMP properties.</para>
         </sect3>
 
@@ -1514,7 +1514,7 @@ pdfocrlang = eng</programlisting>
           available and the appropriate parameters set in the configuration files, the &RCL; audio
           file handler will run speech to text recognition on audio files and the resulting text
           will be indexed. See the
-          <ulink url="https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexAudioWhisper.html">
+          <ulink url="https://www.recoll.org/faqsandhowtos/IndexAudioWhisper.html">
             the FAQ entry</ulink> for more details.</para>
         <para>The results of the speech recognition will be cached in the same manner as the results
           of image OCR.</para>
@@ -1754,7 +1754,7 @@ recollindex -c "$confdir"</programlisting>
           the <link linkend="RCL.INSTALL.CONFIG.FIELDS"><filename>fields</filename>
             configuration file</link>.</para> 
 
-        <para>A <ulink url="http://www.freedesktop.org/wiki/CommonExtendedAttributes"> freedesktop
+        <para>A <ulink url="https://www.freedesktop.org/wiki/CommonExtendedAttributes">freedesktop
             standard</ulink> defines a few special attributes, which are handled as such by &RCL;:
           <variablelist>
             <varlistentry>
@@ -3674,7 +3674,7 @@ setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/f
             can be changed by editing the paragraph format.</para>
 
           <para>There are a few examples on the 
-            <ulink url="http://www.recoll.org/pages/custom.html">page about 
+            <ulink url="https://www.recoll.org/pages/custom.html">page about 
               customising the result list</ulink> on the &RCL; Web site.</para>
 
           <sect4 id="RCL.SEARCH.GUI.CUSTOM.RESLIST.PARA">
@@ -3804,7 +3804,7 @@ setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/f
             </para>
 
             <para>These samples, and some others are 
-            <ulink url="http://www.recoll.org/pages/custom.html">on the web
+            <ulink url="https://www.recoll.org/pages/custom.html">on the web
             site, with pictures to show how they look.</ulink></para>
 
             <para>It is also possible to 
@@ -3858,7 +3858,7 @@ setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/f
       redundant with <literal>recoll -t</literal>.</para>
 
       <para><command>recollq</command> has a
-      <ulink url="https://www.lesbonscomptes.com/recoll/manpages/recollq.1.html">man page</ulink>. 
+      <ulink url="https://www.recoll.org/manpages/recollq.1.html">man page</ulink>. 
 
       The Usage string follows:</para>
       <programlisting><![CDATA[
@@ -3924,7 +3924,7 @@ text/html       [file:///Users/dockes/projets/bateaux/ilur/factEtCie/recu-chasse
       <title>The query language</title>
 
       <para>The &RCL; query language was based on the now defunct
-        <ulink url="http://www.xesam.org/main/XesamUserSearchLanguage95">
+        <ulink url="https://www.xesam.org/main/XesamUserSearchLanguage95">
           Xesam</ulink> user search language specification. It allows defining general boolean
           searches within the main body text or specific fields, and has many additional features,
         broadly equivalent to those provided by <emphasis>complex search</emphasis> interface in the
@@ -4690,7 +4690,7 @@ C: = Z:</programlisting></para></note>
           <para>Users of recent Ubuntu-derived distributions, or
             any other Gnome desktop systems (e.g. Fedora) can install the
             <ulink 
-              url="https://www.lesbonscomptes.com/recoll/pages/download.html#gssp">
+              url="https://www.recoll.org/pages/download.html#gssp">
               Recoll GSSP</ulink> (Gnome Shell Search Provider).</para>
         </listitem>
         <listitem>
@@ -4707,7 +4707,7 @@ C: = Z:</programlisting></para></note>
         <listitem>
           <para>There is also an independently developed
           <ulink
-              url="http://kde-apps.org/content/show.php/recollrunner?content=128203">
+              url="https://kde-apps.org/content/show.php/recollrunner?content=128203">
           Krunner plugin</ulink>.</para>
         </listitem>
       </itemizedlist>
@@ -5304,7 +5304,7 @@ C: = Z:</programlisting></para></note>
 
         <para>The search interface is used in a number of active projects:
         the <ulink 
-              url="https://www.lesbonscomptes.com/recoll/pages/download.html#gssp">
+              url="https://www.recoll.org/pages/download.html#gssp">
             &RCL; <application>Gnome Shell Search Provider</application>
           </ulink>,
         the <ulink url="https://framagit.org/medoc92/recollwebui">
@@ -6280,7 +6280,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
       ones, or found on the &RCL; Web site in some
       cases. The most up-to-date information about Recoll packages can
       usually be found on the
-      <ulink url="http://www.recoll.org/pages/download.html">
+      <ulink url="https://www.recoll.org/pages/download.html">
         <application>Recoll</application> Web site downloads
       page</ulink></para> 
 
@@ -6423,7 +6423,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
               option.</para></listitem>
           
           <listitem><para>Development files
-              for <ulink url="http://www.xapian.org"> <application>Xapian
+              for <ulink url="https://www.xapian.org"> <application>Xapian
                   core</application></ulink> (<literal>libxapian-dev</literal>).</para> 
             <important>
               <para>If you are building Xapian for an older CPU (before Pentium 4 or Athlon 64), you
@@ -6445,7 +6445,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
               to <command>configure</command>.</para></listitem>
 
           <listitem><para>If you want to build the GUI: development files for 
-            <ulink url="http://qt-project.org/downloads"><application>Qt 5</application></ulink>.
+            <ulink url="https://qt-project.org/downloads"><application>Qt 5</application></ulink>.
             Else give the <literal>--disable-qtgui</literal> option to
             the <command>configure</command> command. You will probably
             need <literal>qtbase5-dev</literal> and <literal>qttools5-dev-tools</literal> I can
@@ -6465,13 +6465,13 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
               accordingly. </para></listitem>
 
           <listitem><para>You may also need 
-            <ulink url="http://www.gnu.org/software/libiconv/">libiconv</ulink>.
+            <ulink url="https://www.gnu.org/software/libiconv/">libiconv</ulink>.
             On <application>Linux</application> systems, the iconv interface is part of libc and you
             should not need to do anything special.</para></listitem>
 
         </itemizedlist>
 
-        <para>Check the <ulink url="http://www.recoll.org/pages/download.html">
+        <para>Check the <ulink url="https://www.recoll.org/pages/download.html">
             &RCL; download page</ulink> for up to date version
           information.</para>
 
