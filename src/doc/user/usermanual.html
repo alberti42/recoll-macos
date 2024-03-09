@@ -5239,67 +5239,87 @@ customize the <code class="filename">fields</code> file.
                 100%%;"&gt;</code>.</p>
               </div>
               <p>The following substitutions will be performed:</p>
-              <div class="itemizedlist">
-                <ul class="itemizedlist" style=
-                "list-style-type: disc;">
-                  <li class="listitem">
-                    <p><b>%A.&nbsp;</b>Abstract</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%D.&nbsp;</b>Date</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%I.&nbsp;</b>Icon image name. This is
-                    normally determined from the MIME type. The
-                    associations are defined inside the <a class=
-                    "link" href="#RCL.INSTALL.CONFIG.MIMECONF"
-                    title=
+              <div class="variablelist">
+                <dl class="variablelist">
+                  <dt><span class="term">%A</span></dt>
+                  <dd>
+                    <p>Abstract. If <code class="literal">%s</code>
+                    is not present, this will be either the
+                    document <code class="literal">abstract</code>
+                    attribute if one is present, or the synthetic
+                    snippets abstract. If <code class=
+                    "literal">%s</code> is present, this will be
+                    the document abstract or empty.</p>
+                  </dd>
+                  <dt><span class="term">%D</span></dt>
+                  <dd>
+                    <p>Date.</p>
+                  </dd>
+                  <dt><span class="term">%I</span></dt>
+                  <dd>
+                    <p>Icon image name. This is normally determined
+                    from the MIME type. The associations are
+                    defined inside the <a class="link" href=
+                    "#RCL.INSTALL.CONFIG.MIMECONF" title=
                     "5.4.5.&nbsp;The mimeconf file"><code class=
                     "filename">mimeconf</code> configuration
                     file</a>. If a thumbnail for the file is found
                     at the standard Freedesktop location, this will
                     be displayed instead.</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%K.&nbsp;</b>Keywords (if any)</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%L.&nbsp;</b>Precooked Preview, Edit, and
-                    possibly Snippets links</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%M.&nbsp;</b>MIME type</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%N.&nbsp;</b>result Number inside the
-                    result page</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%P.&nbsp;</b>Parent folder Url. In the
-                    case of an embedded document, this is the
-                    parent folder for the top level container
-                    file.</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%R.&nbsp;</b>Relevance percentage</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%S.&nbsp;</b>Size information</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%T.&nbsp;</b>Title or Filename if not
-                    set.</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%t.&nbsp;</b>Title or empty.</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%(filename).&nbsp;</b>File name.</p>
-                  </li>
-                  <li class="listitem">
-                    <p><b>%U.&nbsp;</b>Url</p>
-                  </li>
-                </ul>
+                  </dd>
+                  <dt><span class="term">%K</span></dt>
+                  <dd>
+                    <p>Keywords.</p>
+                  </dd>
+                  <dt><span class="term">%L</span></dt>
+                  <dd>
+                    <p>Precooked Preview, Edit, and possibly
+                    Snippets links.</p>
+                  </dd>
+                  <dt><span class="term">%M</span></dt>
+                  <dd>
+                    <p>MIME type.</p>
+                  </dd>
+                  <dt><span class="term">%N</span></dt>
+                  <dd>
+                    <p>result Number inside the result page.</p>
+                  </dd>
+                  <dt><span class="term">%P</span></dt>
+                  <dd>
+                    <p>Parent folder Url. In the case of an
+                    embedded document, this is the parent folder
+                    for the top level container file.</p>
+                  </dd>
+                  <dt><span class="term">%R</span></dt>
+                  <dd>
+                    <p>Relevance percentage.</p>
+                  </dd>
+                  <dt><span class="term">%S</span></dt>
+                  <dd>
+                    <p>Size information.</p>
+                  </dd>
+                  <dt><span class="term">%s</span></dt>
+                  <dd>
+                    <p>Synthetic "snippets" abstract (selected text
+                    around search terms found in the document.</p>
+                  </dd>
+                  <dt><span class="term">%T</span></dt>
+                  <dd>
+                    <p>Title if this is set, else Filename.</p>
+                  </dd>
+                  <dt><span class="term">%t</span></dt>
+                  <dd>
+                    <p>Title or empty.</p>
+                  </dd>
+                  <dt><span class="term">%(filename)</span></dt>
+                  <dd>
+                    <p>File name.</p>
+                  </dd>
+                  <dt><span class="term">%U</span></dt>
+                  <dd>
+                    <p>Url</p>
+                  </dd>
+                </dl>
               </div>
               <p>In addition to the predefined values above, all
               strings like <code class=
@@ -5355,7 +5375,7 @@ customize the <code class="filename">fields</code> file.
             "&lt;td&gt;&lt;a href='%U'&gt;&lt;img src='%I' width='64'&gt;&lt;/a&gt;&lt;/td&gt;\n"
             "&lt;td&gt;%L &amp;nbsp;&lt;i&gt;%S&lt;/i&gt; &amp;nbsp;&amp;nbsp;&lt;b&gt;%T&lt;/b&gt;&lt;br&gt;\n"
             "&lt;span style='white-space:nowrap'&gt;&lt;i&gt;%M&lt;/i&gt;&amp;nbsp;%D&lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;i&gt;%U&lt;/i&gt;&amp;nbsp;%i&lt;br&gt;\n"
-            "%A %K&lt;/td&gt;\n"
+            "%s %A %K&lt;/td&gt;\n"
             "&lt;/tr&gt;&lt;/table&gt;\n"
             </pre>
               <p>You may, for example, try the following for a more
@@ -8327,8 +8347,8 @@ for i in range(nres):
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3369" id=
-                  "idm3369"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3377" id=
+                  "idm3377"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>

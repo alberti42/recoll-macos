@@ -181,10 +181,7 @@ string QtGuiResListPager::trans(const string& in)
 
 string QtGuiResListPager::detailsLink()
 {
-    string chunk = string("<a href=\"") + linkPrefix() + "H-1\">";
-    chunk += trans("(show query)");
-    chunk += "</a>";
-    return chunk;
+    return href("H-1", trans("(show query)"));
 }
 
 const string& QtGuiResListPager::parFormat()
@@ -250,8 +247,7 @@ void QtGuiResListPager::suggest(const vector<string>uterms, map<string, vector<s
                 if (issimple) {
                     // If this is a simple search, we set up links as a <href="Sold|new">, else we
                     // just list the replacements.
-                    subst = string("<a href=\"") + linkPrefix() + "S-1|" + userterm +
-                        "|" + subst + "\">" + subst + "</a>";
+                    subst = href("S-1|" + userterm + "|" + subst, subst);
                 }
                 sugg[userterm].push_back(subst);
             }

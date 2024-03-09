@@ -37,7 +37,6 @@
 #include "pathut.h"
 #include "execmd.h"
 
-using std::ostringstream;
 using std::list;
 using std::map;
 using std::string;
@@ -77,8 +76,7 @@ void ResListPager::resultPageNext()
     }
 
     int resCnt = m_docSource->getResCnt();
-    LOGDEB("ResListPager::resultPageNext: rescnt " << resCnt <<
-           ", winfirst " << m_winfirst << "\n");
+    LOGDEB("ResListPager::resultPageNext: rescnt " << resCnt << ", winfirst " << m_winfirst << "\n");
 
     if (m_winfirst < 0) {
         m_winfirst = 0;
@@ -100,13 +98,11 @@ void ResListPager::resultPageNext()
     }
 
     if (pagelen <= 0) {
-        // No results ? This can only happen on the first page or if the
-        // actual result list size is a multiple of the page pref (else
-        // there would have been no Next on the last page)
+        // No results ? This can only happen on the first page or if the actual result list size is
+        // a multiple of the page pref (else there would have been no Next on the last page)
         if (m_winfirst > 0) {
-            // Have already results. Let them show, just disable the
-            // Next button. We'd need to remove the Next link from the page
-            // too.
+            // Have already results. Let them show, just disable the Next button. We'd need to
+            // remove the Next link from the page too.
             // Restore the m_winfirst value, let the current result vector alone
             m_winfirst -= int(m_respage.size());
         } else {
@@ -153,13 +149,33 @@ void ResListPager::resultPageFor(int docnum)
     m_respage = npage;
 }
 
+static std::string snipsToText(const std::vector<std::string> snippets, const std::string sep)
+{
+    std::string text;
+    for (const auto& snippet : snippets) {
+        if (!snippet.empty()) {
+            text += snippet;
+            text += sep;
+        }
+    }
+    return text;
+}
+
+std::string ResListPager::href(const std::string& url, const std::string& txt)
+{
+    static std::string ahref("<a href=\"");
+    return ahref + linkPrefix() + url + "\">" + txt + "</a>";
+}
+
+static const std::string nbsp2("&nbsp;&nbsp;");
 static const SimpleRegexp pagenumre("(^ *\\[[pP]\\.* [0-9]+])", 0);
 
 void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc, 
                               const HighlightData&, const string& sh)
 {
-    ostringstream chunk;
-
+    std::string chunk;
+    chunk.reserve(2048);
+    
     // Determine icon to display if any
     string iconurl = iconUrl(config, doc);
     
@@ -221,72 +237,81 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
         sizebuf = displayableBytes(fsize);
     }
 
-    string richabst;
-    bool needabstract = parFormat().find("%A") != string::npos;
-    if (needabstract && m_docSource) {
+    // "abstract" made out of text fragments taken around the search terms.
+    bool needsnipabs = parFormat().find("%s") != string::npos;
+    std::string snippetstext;
+    if (needsnipabs) {
         vector<string> snippets;
         m_hiliter->set_inputhtml(false);
-        m_docSource->getAbstract(doc, m_hiliter, snippets);
-        for (const auto& snippet : snippets) {
-            if (!snippet.empty()) {
-                richabst += snippet;
-                richabst += absSep();
-            }
+        m_docSource->getAbstract(doc, m_hiliter, snippets, true);
+        snippetstext = snipsToText(snippets, absSep());
+    }
+        
+    string abstract;
+    bool needabstract = parFormat().find("%A") != string::npos;
+    if (needabstract && m_docSource) {
+        if (needsnipabs) {
+            // Then we already did the snippets thing, and we'll display it. Make this the doc
+            // abstract if it's set. All this nonsense is to preserve compat with old paragraph
+            // formats. Note that in this case we never display the beginning of doc bogus abstract.
+            abstract = doc.syntabs ? std::string() : doc.meta[Rcl::Doc::keyabs];
+        } else {
+            vector<string> snippets;
+            m_hiliter->set_inputhtml(false);
+            m_docSource->getAbstract(doc, m_hiliter, snippets);
+            abstract = snipsToText(snippets, absSep());
         }
     }
 
     // Links; Uses utilities from mimehandler.h
-    ostringstream linksbuf;
+    std::string linksbuf;
     if (canIntern(&doc, config)) { 
-        linksbuf << "<a href=\""<< linkPrefix()<< "P" << docnumforlinks << "\">" 
-                 << trans("Preview") << "</a>&nbsp;&nbsp;";
+        linksbuf = href(std::string("P") + std::to_string(docnumforlinks), trans("Preview")) + nbsp2;
     }
     if (canOpen(&doc, config, useAll())) {
-        linksbuf << "<a href=\"" <<linkPrefix() + "E" <<docnumforlinks << "\">"  
-                 << trans("Open") << "</a>";
+        linksbuf += href(std::string("E") + std::to_string(docnumforlinks), trans("Open"));
     }
-    ostringstream snipsbuf;
+    std::string snipsbuf;
     if (m_alwaysSnippets || doc.haspages) {
-        snipsbuf << "<a href=\"" <<linkPrefix()<<"A" << docnumforlinks << "\">" 
-                 << trans("Snippets") << "</a>&nbsp;&nbsp;";
-        linksbuf << "&nbsp;&nbsp;" << snipsbuf.str();
+        snipsbuf = href(std::string("A") + std::to_string(docnumforlinks), trans("Snippets")) +
+            nbsp2;
+        linksbuf += nbsp2 + snipsbuf;
     }
 
-    string collapscnt;
+    std::string collapscnt;
     if (doc.getmeta(Rcl::Doc::keycc, &collapscnt) && !collapscnt.empty()) {
-        ostringstream collpsbuf;
         int clc = atoi(collapscnt.c_str()) + 1;
-        collpsbuf << "<a href=\""<<linkPrefix()<<"D" << docnumforlinks << "\">" 
-                  << trans("Dups") << "(" << clc << ")" << "</a>&nbsp;&nbsp;";
-        linksbuf << "&nbsp;&nbsp;" << collpsbuf.str();
+        linksbuf += nbsp2 + href(std::string("D") + std::to_string(docnumforlinks),
+                                 trans("Dups") + "(" + std::to_string(clc) + ")") + nbsp2;
     }
 
     // Build the result list paragraph:
 
     // Subheader: this is used by history
     if (!sh.empty())
-        chunk << "<p style='clear: both;'><b>" << sh << "</p>\n<p>";
+        chunk += std::string("<p style='clear: both;'><b>") + sh + "</p>\n<p>";
     else
-        chunk << "<p style='margin: 0px;padding: 0px;clear: both;'>";
+        chunk += "<p style='margin: 0px;padding: 0px;clear: both;'>";
 
     char xdocidbuf[100];
     sprintf(xdocidbuf, "%lu", doc.xdocid);
     
     // Configurable stuff
     map<string, string> subs;
-    subs["A"] = !richabst.empty() ? richabst : "";
+    subs["A"] = abstract;
     subs["D"] = datebuf;
-    subs["E"] = snipsbuf.str();
+    subs["E"] = snipsbuf;
     subs["I"] = iconurl;
     subs["i"] = doc.ipath;
-    subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
+    subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ?
         string("[") + maybeEscapeHtml(doc.meta[Rcl::Doc::keykw]) + "]" : "";
-    subs["L"] = linksbuf.str();
-    subs["N"] = numbuf;
+    subs["L"] = linksbuf;
     subs["M"] = doc.mimetype;
+    subs["N"] = numbuf;
     subs["P"] = parenturl;
     subs["R"] = doc.meta[Rcl::Doc::keyrr];
     subs["S"] = sizebuf;
+    subs["s"] = snippetstext;
     subs["T"] = maybeEscapeHtml(titleOrFilename);
     subs["t"] = maybeEscapeHtml(doc.meta[Rcl::Doc::keytt]);
     subs["U"] = url;
@@ -301,10 +326,10 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
 
     string formatted;
     pcSubst(parFormat(), formatted, subs);
-    chunk << formatted << "</p>\n";
+    chunk += formatted + "</p>\n";
     
-    LOGDEB2("Chunk: [" << chunk.rdbuf()->str() << "]\n");
-    append(chunk.rdbuf()->str(), i, doc);
+    LOGDEB2("Chunk: [" << chunk << "]\n");
+    append(chunk, i, doc);
 }
 
 bool ResListPager::getDoc(int num, Rcl::Doc& doc)
@@ -329,8 +354,8 @@ void ResListPager::displayPage(RclConfig *config)
         return;
     }
 
-    ostringstream chunk;
-
+    std::string chunk;
+    
     // Display list header
     // We could use a <title> but the textedit doesnt display
     // it prominently
@@ -339,21 +364,20 @@ void ResListPager::displayPage(RclConfig *config)
     // gets confused. Hence the use of the 'chunk' text
     // accumulator
     // Also note that there can be results beyond the estimated resCnt.
-    chunk << "<html><head>\n"
-          << "<meta http-equiv=\"content-type\""
-          << " content=\"text/html; charset=utf-8\">\n"
-          << headerContent()
-          << "</head><body " << bodyAttrs() << ">\n"
-          << pageTop()
-          << "<p><span style=\"font-size:110%;\"><b>"
-          << m_docSource->title()
-          << "</b></span>&nbsp;&nbsp;&nbsp;";
+    chunk = std::string("<html><head>\n")
+        + "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
+        + headerContent()
+        + "</head><body " + bodyAttrs() + ">\n"
+        + pageTop()
+        + "<p><span style=\"font-size:110%;\"><b>"
+        + m_docSource->title()
+        + "</b></span>&nbsp;&nbsp;&nbsp;";
 
     if (pageEmpty()) {
-        chunk << trans("<p><b>No results found</b><br>");
+        chunk += trans("<p><b>No results found</b><br>");
         string reason = m_docSource->getReason();
         if (!reason.empty()) {
-            chunk << "<blockquote>" << escapeHtml(reason) << "</blockquote></p>";
+            chunk += std::string("<blockquote>") + escapeHtml(reason) + "</blockquote></p>";
         } else {
             HighlightData hldata;
             m_docSource->getTerms(hldata);
@@ -363,21 +387,20 @@ void ResListPager::displayPage(RclConfig *config)
                 suggest(uterms, spellings);
                 if (!spellings.empty()) {
                     if (o_index_stripchars) {
-                        chunk << trans("<p><i>Alternate spellings (accents suppressed): </i>")
-                              << "<br /><blockquote>";
+                        chunk += trans("<p><i>Alternate spellings (accents suppressed): </i>")
+                              + "<br /><blockquote>";
                     } else {
-                        chunk << trans("<p><i>Alternate spellings: </i>") << "<br /><blockquote>";
-                    
+                        chunk += trans("<p><i>Alternate spellings: </i>") + "<br /><blockquote>";
                     }
 
                     for (const auto& entry: spellings) {
-                        chunk << "<b>" << entry.first << "</b> : ";
+                        chunk += std::string("<b>") + entry.first + "</b> : ";
                         for (const auto& spelling : entry.second) {
-                            chunk << spelling << " ";
+                            chunk += spelling + " ";
                         }
-                        chunk << "<br />";
+                        chunk += "<br />";
                     }
-                    chunk << "</blockquote></p>";
+                    chunk += "</blockquote></p>";
                 }
             }
         }
@@ -391,39 +414,33 @@ void ResListPager::displayPage(RclConfig *config)
             } else {
                 msg = trans("These spelling guesses were added to the search:");
             }
-            chunk << "<br><i>" << msg << "</i> " <<
-                stringsToString(hldata.spellexpands) << "<br/>\n";
+            chunk += std::string("<br><i>") + msg + "</i> " +
+                stringsToString(hldata.spellexpands) + "<br/>\n";
         }
         unsigned int resCnt = m_docSource->getResCnt();
         if (m_winfirst + m_respage.size() < resCnt) {
-            chunk << trans("Documents") << " <b>" << m_winfirst + 1
-                  << "-" << m_winfirst + m_respage.size() << "</b> " 
-                  << trans("out of at least") << " " 
-                  << resCnt << " " << trans("for") << " " ;
+            chunk += trans("Documents") + " <b>" + std::to_string(m_winfirst + 1) + "-" +
+                std::to_string(m_winfirst + m_respage.size()) + "</b> " + trans("out of at least") +
+                " " + std::to_string(resCnt) + " " + trans("for") + " " ;
         } else {
-            chunk << trans("Documents") << " <b>" 
-                  << m_winfirst + 1 << "-" << m_winfirst + m_respage.size()
-                  << "</b> " << trans("for") << " ";
+            chunk += trans("Documents") + " <b>" + std::to_string(m_winfirst + 1) + "-" +
+                std::to_string(m_winfirst + m_respage.size())   + "</b> " + trans("for") + " ";
         }
     }
-    chunk << detailsLink();
+    chunk += detailsLink();
     if (hasPrev() || hasNext()) {
-        chunk << "&nbsp;&nbsp;";
+        chunk += nbsp2;
         if (hasPrev()) {
-            chunk << "<a href=\"" << linkPrefix() + prevUrl() + "\"><b>"
-                  << trans("Previous")
-                  << "</b></a>&nbsp;&nbsp;&nbsp;";
+            chunk += href(prevUrl(), std::string("<b>") + trans("Previous") + "</b>") + nbsp2;
         }
         if (hasNext()) {
-            chunk << "<a href=\"" << linkPrefix() + nextUrl() + "\"><b>"
-                  << trans("Next")
-                  << "</b></a>";
+            chunk += href(nextUrl(), std::string("<b>") + trans("Next") + "</b>");
         }
     }
-    chunk << "</p>\n";
+    chunk += "</p>\n";
 
-    append(chunk.rdbuf()->str());
-    chunk.rdbuf()->str("");
+    append(chunk);
+    chunk.clear();
     if (pageEmpty())
         return;
 
@@ -439,44 +456,36 @@ void ResListPager::displayPage(RclConfig *config)
     }
 
     // Footer
-    chunk << "<p align=\"center\">";
+    chunk += "<p align=\"center\">";
     if (hasPrev() || hasNext()) {
         if (hasPrev()) {
-            chunk << "<a href=\"" + linkPrefix() + prevUrl() + "\"><b>" 
-                  << trans("Previous")
-                  << "</b></a>&nbsp;&nbsp;&nbsp;";
+            chunk += href(prevUrl(), std::string("<b>") + trans("Previous") + "</b>") + nbsp2;
         }
         if (hasNext()) {
-            chunk << "<a href=\"" << linkPrefix() + nextUrl() + "\"><b>"
-                  << trans("Next")
-                  << "</b></a>";
+            chunk += href(nextUrl(), std::string("<b>") + trans("Next") + "</b>");
         }
     }
-    chunk << "</p>\n";
-    chunk << "</body></html>\n";
-    append(chunk.rdbuf()->str());
+    chunk += "</p>\n</body></html>\n";
+    append(chunk);
     flush();
 }
 
 void ResListPager::displaySingleDoc(
     RclConfig *config, int idx, Rcl::Doc& doc, const HighlightData& hdata)
 {
-    ostringstream chunk;
+    std::string chunk;
 
     // Header
-    // Note: have to append text in chunks that make sense
-    // html-wise. If we break things up too much, the editor
-    // gets confused.
+    // Note: have to append text in chunks that make sense html-wise. If we break things up too
+    // much, the editor gets confused.
     string bdtag("<body ");
     bdtag += bodyAttrs();
     rtrimstring(bdtag, " ");
     bdtag += ">";
-    chunk << "<html><head>\n"
-          << "<meta http-equiv=\"content-type\""
-          << " content=\"text/html; charset=utf-8\">\n"
-          << headerContent()
-          << "</head>\n" << bdtag << "\n";
-    append(chunk.rdbuf()->str());
+    chunk += std::string("<html><head>\n");
+          + "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
+          + headerContent() + "</head>\n" + bdtag + "\n";
+    append(chunk);
     // Document
     displayDoc(config, idx, doc, hdata, string());
     // Footer 
@@ -553,8 +562,7 @@ string ResListPager::trans(const string& in)
 
 string ResListPager::detailsLink()
 {
-    string chunk = string("<a href=\"") + linkPrefix() + "H-1\">";
-    chunk += trans("(show query)") + "</a>";
+    string chunk = href(std::string("H-1"), trans("(show query)"));
     return chunk;
 }
 

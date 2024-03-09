@@ -130,6 +130,9 @@ public:
     // This is used for specifying if we should use the application/x-all entry when looking for a
     // viewer
     virtual bool useAll() {return false;}
+
+    // Compute an href string: <a href="[linkPrefix()+url]">txt</a>
+    virtual std::string href(const std::string& url, const std::string& txt);
     
 private:
     int                  m_pagesize;

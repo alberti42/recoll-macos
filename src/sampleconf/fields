@@ -169,7 +169,7 @@ xdg.tags = keywords
 xdg.comment = abstract
 
 # MacOS Finder comments
-com.apple.metadata:kMDItemFinderComment = keywords
+com.apple.metadata:kMDItemFinderComment = abstract
 # MacOS Finder tags. Not sure how useful it would be to index these
 #com.apple.metadata:_kMDItemUserTags = keywords
 com.apple.FinderInfo =

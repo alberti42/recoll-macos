@@ -43,7 +43,8 @@ public:
     virtual bool getAbstract(Rcl::Doc &doc, PlainToRich *ptr, std::vector<Rcl::Snippet>&,
                              int maxlen, bool sortbypage) override;
 
-    virtual bool getAbstract(Rcl::Doc &doc, PlainToRich *ptr, std::vector<std::string>&) override;
+    virtual bool getAbstract(Rcl::Doc &doc, PlainToRich *ptr, std::vector<std::string>&,
+                             bool forcesnips) override;
     virtual int getFirstMatchPage(Rcl::Doc&, std::string& term) override;
     virtual int getFirstMatchLine(const Rcl::Doc&, const std::string& term) override;
     virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)

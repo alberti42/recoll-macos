@@ -3682,85 +3682,81 @@ setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/f
 
             <para>This is an arbitrary HTML string which will be transformed by printf-like
               <literal>%</literal> substitutions to show the results.
-            <note><para>Any literal <literal>%</literal> character in the input
-                must be quoted as <literal>%%</literal>. E.g.  <literal>&lt;table style="width:
-                100%;"&gt;</literal> should be entered as
-	        <literal>&lt;table style="width: 100%%;"&gt;</literal>.</para></note>
-            The following substitutions will be performed:
-            <itemizedlist>
-              <listitem>
-                <formalpara><title>%A</title><para>Abstract</para></formalpara>
-              </listitem>
-              <listitem><formalpara><title>%D</title><para>Date</para></formalpara>
-              </listitem>
-              <listitem><formalpara><title>%I</title><para>Icon image
-              name. This is normally determined from the MIME type. The
-              associations are defined inside the 
-              <link linkend="RCL.INSTALL.CONFIG.MIMECONF"><filename>mimeconf</filename> configuration file</link>. 
-                If a thumbnail for the file is found at
-                the standard Freedesktop location, this will be displayed
-                instead.</para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%K</title><para>Keywords (if
-              any)</para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%L</title><para>Precooked Preview,
-              Edit, and possibly Snippets links</para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%M</title><para>MIME
-              type</para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%N</title><para>result Number inside
-              the result page</para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%P</title><para>Parent folder
-              Url. In the case of an embedded document, this is the parent folder
-              for the top level container file.</para></formalpara>
-              </listitem>
-              <listitem><formalpara><title>%R</title><para>Relevance
-              percentage</para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%S</title><para>Size
-              information</para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%T</title><para>Title or Filename if
-              not set.</para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%t</title><para>Title or empty.
-              </para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%(filename)</title><para>File name.
-              </para></formalpara> 
-              </listitem>
-              <listitem><formalpara><title>%U</title><para>Url</para></formalpara>
-              </listitem>
-            </itemizedlist>
+              <note><para>Any literal <literal>%</literal> character in the input
+                  must be quoted as <literal>%%</literal>. E.g.  <literal>&lt;table style="width:
+                    100%;"&gt;</literal> should be entered as
+	          <literal>&lt;table style="width: 100%%;"&gt;</literal>.</para></note>
+              The following substitutions will be performed:
+
+            <variablelist>
+              <varlistentry>
+                <term>%A</term><listitem><para>Abstract. If <literal>%s</literal> is not
+                    present, this will be either the document <literal>abstract</literal> attribute if
+                    one is present, or the synthetic snippets abstract. If <literal>%s</literal> is
+                    present, this will be the document abstract or empty.</para></listitem></varlistentry>
+
+              <varlistentry><term>%D</term><listitem><para>Date.</para></listitem></varlistentry>
+
+              <varlistentry><term>%I</term><listitem><para>Icon image name. This is normally
+                    determined from the MIME type. The associations are defined inside the 
+                    <link linkend="RCL.INSTALL.CONFIG.MIMECONF"><filename>mimeconf</filename>
+                    configuration file</link>. If a thumbnail for the file is found at the standard
+                    Freedesktop location, this will be displayed instead.</para></listitem></varlistentry>
+
+              <varlistentry><term>%K</term><listitem><para>Keywords.</para></listitem></varlistentry>
+
+              <varlistentry><term>%L</term><listitem><para>Precooked Preview, Edit, and possibly
+                    Snippets links.</para></listitem></varlistentry>
+
+              <varlistentry><term>%M</term><listitem><para>MIME type.</para></listitem></varlistentry>
+
+              <varlistentry><term>%N</term><listitem><para>result Number inside the result
+                    page.</para></listitem></varlistentry>
+
+              <varlistentry><term>%P</term><listitem><para>Parent folder Url. In the case of an
+                    embedded document, this is the parent folder for the top level container
+                    file.</para></listitem></varlistentry> 
+
+              <varlistentry><term>%R</term><listitem><para>Relevance percentage.</para></listitem></varlistentry>
+
+              <varlistentry><term>%S</term><listitem><para>Size information.</para></listitem></varlistentry>
+
+              <varlistentry><term>%s</term><listitem><para>Synthetic "snippets" abstract (selected
+                    text around search terms found in the document.</para></listitem></varlistentry>
+
+              <varlistentry><term>%T</term><listitem><para>Title if this is set, else
+                    Filename.</para></listitem></varlistentry> 
+              
+              <varlistentry><term>%t</term><listitem><para>Title or empty.</para></listitem></varlistentry>
+
+              <varlistentry><term>%(filename)</term><listitem><para>File name.</para></listitem></varlistentry>
+
+              <varlistentry><term>%U</term><listitem><para>Url</para></listitem></varlistentry>
+
+            </variablelist>
+            </para>
 
             <para>In addition to the predefined values above, all strings
-            like <literal>%(fieldname)</literal> will be replaced by the value of the field
-            named <literal>fieldname</literal> for this document. Only stored fields can be accessed
-            in this way, the value of indexed but not stored fields is not known at this point in
-            the search process (see <link linkend="RCL.PROGRAM.FIELDS">field
-            configuration</link>). There are currently very few fields stored by default, apart from
-            the values above (only <literal>author</literal> and <literal>filename</literal>), so
-            this feature will need some custom local configuration to be useful. An example
-            candidate would be the <literal>recipient</literal> field which is generated by the
-            message input handlers.</para>
+              like <literal>%(fieldname)</literal> will be replaced by the value of the field 
+              named <literal>fieldname</literal> for this document. Only stored fields can be accessed
+              in this way, the value of indexed but not stored fields is not known at this point in
+              the search process (see <link linkend="RCL.PROGRAM.FIELDS">field
+                configuration</link>). There are currently very few fields stored by default, apart from
+              the values above (only <literal>author</literal> and <literal>filename</literal>), so
+              this feature will need some custom local configuration to be useful. An example
+              candidate would be the <literal>recipient</literal> field which is generated by the
+              message input handlers.</para>
 
-            The format of the Preview, Edit, and Snippets links is 
-            <literal>&lt;a href="P%N"&gt;</literal>,
-            <literal>&lt;a href="E%N"&gt;</literal>
-            and 
-            <literal>&lt;a href="A%N"&gt;</literal>
-            where <replaceable>docnum</replaceable> (%N) expands to the document
-            number inside the result page).</para>
+            <para>The format of the Preview, Edit, and Snippets links is 
+              <literal>&lt;a href="P%N"&gt;</literal>, <literal>&lt;a href="E%N"&gt;</literal>
+              and <literal>&lt;a href="A%N"&gt;</literal> where <replaceable>docnum</replaceable>
+              (%N) expands to the document number inside the result page).</para>
 
             <para>A link target defined as <literal>"F%N"</literal> will open
-            the document corresponding to the <literal>%P</literal> parent
-            folder expansion, usually creating a file manager window on the
-            folder where the container file resides. E.g.:
-            <programlisting>&lt;a href="F%N"&gt;%P&lt;/a&gt;</programlisting>
-            </para>
+              the document corresponding to the <literal>%P</literal> parent
+              folder expansion, usually creating a file manager window on the
+              folder where the container file resides. E.g.:
+              <programlisting>&lt;a href="F%N"&gt;%P&lt;/a&gt;</programlisting></para>
 
             <para>A link target defined as
               <literal>R%N|<replaceable>scriptname</replaceable></literal> will run the
@@ -3778,7 +3774,7 @@ setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/f
             "<td><a href='%U'><img src='%I' width='64'></a></td>\n"
             "<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>\n"
             "<span style='white-space:nowrap'><i>%M</i>&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>\n"
-            "%A %K</td>\n"
+            "%s %A %K</td>\n"
             "</tr></table>\n"
             ]]></screen>
 

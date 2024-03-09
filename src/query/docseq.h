@@ -93,14 +93,16 @@ public:
 
     /** Get next page of documents. This accumulates entries into the result
      *  list parameter (doesn't reset it). */
-    virtual int getSeqSlice(int offs, int cnt, 
-                            std::vector<ResListEntry>& result);
+    virtual int getSeqSlice(int offs, int cnt, std::vector<ResListEntry>& result);
 
-    /** Get abstract for document. This is special because it may take time.
-     *  The default is to return the input doc's abstract fields, but some 
-     *  sequences can compute a better value (ie: docseqdb) */
-    virtual bool getAbstract(Rcl::Doc& doc, PlainToRich *, std::vector<std::string>& abs) {
-        abs.push_back(doc.meta[Rcl::Doc::keyabs]);
+    /** Get abstract for document. 
+     *  The default is to return the input doc's abstract fields, but some
+     *  sequences can compute a better value (ie: docseqdb). This is special because it may take
+     *  time. */
+    virtual bool getAbstract(Rcl::Doc& doc, PlainToRich *, std::vector<std::string>& abs,
+                             bool forcesnips = false) {
+        if (!forcesnips)
+            abs.push_back(doc.meta[Rcl::Doc::keyabs]);
         return true;
     }
     virtual bool getAbstract(Rcl::Doc& doc, PlainToRich *, std::vector<Rcl::Snippet>& abs, 
@@ -189,11 +191,11 @@ public:
     DocSeqModifier(const DocSeqModifier&) = delete;
     DocSeqModifier& operator=(const DocSeqModifier&) = delete;
 
-    virtual bool getAbstract(Rcl::Doc& doc, PlainToRich *ptr, std::vector<std::string>& abs)
-        override {
+    virtual bool getAbstract(
+        Rcl::Doc& doc, PlainToRich *ptr, std::vector<std::string>& abs, bool forcesnips) override {
         if (!m_seq)
             return false;
-        return m_seq->getAbstract(doc, ptr, abs);
+        return m_seq->getAbstract(doc, ptr, abs, forcesnips);
     }
     virtual bool getAbstract(Rcl::Doc& doc, PlainToRich *ptr, std::vector<Rcl::Snippet>& abs,
                              int maxlen, bool bypage) override {

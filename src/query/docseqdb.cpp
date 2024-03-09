@@ -85,8 +85,7 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, PlainToRich *ptr, vector<Rcl::Sni
         ret = m_q->makeDocAbstract(
             doc, ptr, vpabs, maxlen, m_q->whatDb()->getAbsCtxLen() + 2, sortbypage);
     } 
-    LOGDEB("DocSequenceDb::getAbstract: got ret " << ret << " vpabs len " <<
-           vpabs.size() << "\n");
+    LOGDEB("DocSequenceDb::getAbstract: got ret " << ret << " vpabs len " << vpabs.size() << "\n");
     if (vpabs.empty()) {
         return true;
     }
@@ -102,16 +101,21 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, PlainToRich *ptr, vector<Rcl::Sni
     return true;
 }
 
-bool DocSequenceDb::getAbstract(Rcl::Doc &doc,  PlainToRich *ptr, vector<string>& vabs)
+bool DocSequenceDb::getAbstract(Rcl::Doc &doc,  PlainToRich *ptr, vector<string>& vabs, 
+                                bool forcesnips)
 {
     std::unique_lock<std::mutex> locker(o_dblock);
     if (!setQuery())
         return false;
-    if (m_q->whatDb() &&
-        m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
+    LOGDEB1("DocSequenceDb::getAbstract: doc.syntabs " << doc.syntabs << " abstract empty " <<
+            doc.meta[Rcl::Doc::keyabs].empty() << " buildabs " << m_queryBuildAbstract << 
+            " replaceabs " << m_queryReplaceAbstract << " forcesnips " << forcesnips << "\n");
+    
+    if (m_q->whatDb() && m_queryBuildAbstract &&
+        (forcesnips||doc.meta[Rcl::Doc::keyabs].empty() || doc.syntabs || m_queryReplaceAbstract)) {
         m_q->makeDocAbstract(doc, ptr, vabs);
     }
-    if (vabs.empty())
+    if (!forcesnips && vabs.empty())
         vabs.push_back(doc.meta[Rcl::Doc::keyabs]);
     return true;
 }

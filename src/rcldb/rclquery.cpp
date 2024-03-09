@@ -303,8 +303,7 @@ bool Query::getQueryTerms(vector<string>& terms)
 int Query::makeDocAbstract(const Doc &doc, PlainToRich *plaintorich, vector<Snippet>& abstract, 
                            int maxoccs, int ctxwords, bool sortbypage)
 {
-    LOGDEB("makeDocAbstract: maxoccs " << maxoccs << " ctxwords "  <<
-           ctxwords << "\n");
+    LOGDEB("makeDocAbstract: maxoccs " << maxoccs << " ctxwords "  << ctxwords << "\n");
     if (!m_db || !m_db->m_ndb || !m_db->m_ndb->m_isopen || !m_nq) {
         LOGERR("Query::makeDocAbstract: no db or no nq\n");
         return ABSRES_ERROR;
@@ -338,13 +337,9 @@ bool Query::makeDocAbstract(const Doc &doc, PlainToRich *plaintorich, vector<str
     for (const auto& snippet : vpabs) {
         string chunk;
         if (snippet.page > 0) {
-            ostringstream ss;
-            ss << snippet.page;
-            chunk += string(" [P. ") + ss.str() + "] ";
+            chunk += string(" [P. ") + std::to_string(snippet.page) + "] ";
         } else if (snippet.line > 0) {
-            ostringstream ss;
-            ss << snippet.line;
-            chunk += string(" [L. ") + ss.str() + "] ";
+            chunk += string(" [L. ") + std::to_string(snippet.line) + "] ";
         }
         chunk += snippet.snippet;
         abstract.push_back(chunk);
