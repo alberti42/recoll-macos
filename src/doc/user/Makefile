@@ -15,6 +15,7 @@
 XSLDIR="/usr/share/xml/docbook/stylesheet/docbook-xsl/"
 UTILBUILDS=/home/dockes/tmp/builds/medocutils/
 
+HTMLDUMPER = lynx -dump
 
 # Options common to the single-file and chunked versions
 commonoptions=--stringparam section.autolabel 1 \
@@ -39,7 +40,8 @@ usermanual.html: usermanual.xml recoll.conf.xml
             -o tmpfile.html custom.xsl $<
 	-tidy -indent tmpfile.html > usermanual.html
 	rm -f tmpfile.html
-
+	-$(HTMLDUMPER) usermanual.html > ../../README
+        
 index.html: usermanual.xml recoll.conf.xml
 	xsltproc ${commonoptions} \
             --stringparam use.id.as.filename 1 \
