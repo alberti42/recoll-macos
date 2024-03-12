@@ -77,6 +77,8 @@ signal.signal(signal.SIGTERM, handler)
 class joplin_indexer:
     def __init__(self, rclconfdir, sqfile):
         self.rclconfdir = rclconfdir
+        self.forpreview = "RECOLL_FILTER_FORPREVIEW" in os.environ and \
+            os.environ["RECOLL_FILTER_FORPREVIEW"] == "yes"
         self.sqconn = None
         try:
             if os.path.exists(sqfile):
@@ -149,6 +151,7 @@ class joplin_indexer:
 
         # Main document text and MIME type
         doc.text = note["body"]
+        doc.text += self._extract_resources_text(note["id"])
         doc.dbytes = str(len(doc.text.encode('UTF-8')))
         doc.mimetype = "application/x-joplin-note"
         
@@ -169,6 +172,30 @@ class joplin_indexer:
 
         rcldb.addOrUpdate(udi, doc)
 
+    def _extract_resources_text(self, id):
+        # See if there are any resources (attachments) with text, these can come from OCR on an
+        # attached image.
+        text = ""
+        c = self.sqconn.cursor()
+        stmt = "SELECT resource_id FROM note_resources WHERE note_id = ?"
+        c.execute(stmt, (id,))
+        c1 = self.sqconn.cursor()
+        for r in c:
+            stmt = "SELECT title, ocr_text FROM resources WHERE id = ?"
+            c1.execute(stmt, (r[0],))
+            for r1 in c1:
+                res_title = r1[0]
+                ocr_text = r1[1]
+                if len(ocr_text):
+                    text += "\n"
+                    if self.forpreview:
+                        text += "Attachment title: "
+                    text += res_title + "\n"
+                    if self.forpreview:
+                        text += "Attachment OCR'd text: \n"
+                    text += ocr_text + "\n"
+        return text
+    
 
     def getdata(self, sqfile, id):
         """Implements the 'fetch' data access interface (called at
@@ -180,7 +207,9 @@ class joplin_indexer:
         c.execute(stmt, (id,))
         r = c.fetchone()
         if r:
-            return r[0]
+            text = r[0]
+            text += self._extract_resources_text(id)
+            return text
         return ""
 
 
