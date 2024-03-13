@@ -241,8 +241,8 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
         Xapian::DB_CREATE_OR_OVERWRITE;
 
 #ifdef _WIN32
-    // On Windows, Xapian is quite bad at erasing partial db which can
-    // occur because of open file deletion errors.
+    // On Windows, Xapian is quite bad at erasing a partial db, which can occur because of open file
+    // deletion errors.
     if (mode == DbTrunc) {
         if (path_exists(path_cat(dir, "iamchert"))) {
             wipedir(dir);
@@ -254,55 +254,21 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
     if (path_exists(dir)) {
         // Existing index. 
         xwdb = Xapian::WritableDatabase(dir, action);
-        if (action == Xapian::DB_CREATE_OR_OVERWRITE ||
-            xwdb.get_doccount() == 0) {
+        if (action == Xapian::DB_CREATE_OR_OVERWRITE || xwdb.get_doccount() == 0) {
             // New or empty index. Set the "store text" option
             // according to configuration. The metadata record will be
             // written further down.
             m_storetext = o_index_storedoctext;
-            LOGDEB("Db:: index " << (m_storetext?"stores":"does not store") <<
-                   " document text\n");
+            LOGDEB("Db:: index " << (m_storetext?"stores":"does not store") << " document text\n");
         } else {
             // Existing non empty. Get the option from the index.
             storesDocText(xwdb);
         }
     } else {
-        // New index. If possible, and depending on config, use a stub
-        // to force using Chert. No sense in doing this if we are
-        // storing the text anyway.
-#if XAPIAN_AT_LEAST(1,3,0) && XAPIAN_HAS_CHERT_BACKEND
-        // Xapian with Glass and Chert support. If storedoctext is
-        // specified in the configuration, use the default backend
-        // (Glass), else force Chert. There might be reasons why
-        // someone would want to use Chert and store text anyway, but
-        // it's an exotic case, and things are complicated enough
-        // already.
-        if (o_index_storedoctext) {
-            xwdb = Xapian::WritableDatabase(dir, action);
-            m_storetext = true;
-        } else {
-            // Force Chert format, don't store the text.
-            string stub = path_cat(m_rcldb->m_config->getConfDir(),
-                                   "xapian.stub");
-            std::fstream fp;
-            if (!path_streamopen(stub, std::ios::out|std::ios::trunc, fp)) {
-                throw(string("Can't create ") + stub);
-            }
-            fp << "chert " << dir << "\n";
-            fp.close();
-            xwdb = Xapian::WritableDatabase(stub, action);
-            m_storetext = false;
-        }
-        LOGINF("Rcl::Db::openWrite: new index will " << (m_storetext?"":"not ")
-               << "store document text\n");
-#else
-        // Old Xapian (chert only) or much newer (no chert). Use the
-        // default index backend and let the user decide of the
-        // abstract generation method. The configured default is to
-        // store the text.
+        // Use the default index backend and let the user decide of the abstract generation
+        // method. The configured default is to store the text.
         xwdb = Xapian::WritableDatabase(dir, action);
         m_storetext = o_index_storedoctext;
-#endif
     }
 
     // If the index is empty, write the data format version, 
@@ -331,8 +297,7 @@ void Db::Native::storesDocText(Xapian::Database& db)
     if (cf.get("storetext", val) && stringToBool(val)) {
         m_storetext = true;
     }
-    LOGDEB("Db:: index " << (m_storetext?"stores":"does not store") <<
-           " document text\n");
+    LOGDEB("Db:: index " << (m_storetext?"stores":"does not store") << " document text\n");
 }
 
 void Db::Native::openRead(const string& dir)
@@ -344,14 +309,13 @@ void Db::Native::openRead(const string& dir)
 
 /* See comment in class declaration: return all subdocuments of a
  * document given by its unique id. */
-bool Db::Native::subDocs(const string &udi, int idxi, 
-                         vector<Xapian::docid>& docids) 
+bool Db::Native::subDocs(const string &udi, int idxi, vector<Xapian::docid>& docids) 
 {
     LOGDEB2("subDocs: [" << udi << "]\n");
     string pterm = make_parentterm(udi);
     vector<Xapian::docid> candidates;
     XAPTRY(docids.clear();
-           candidates.insert(candidates.begin(), xrdb.postlist_begin(pterm), 
+           candidates.insert(candidates.begin(), xrdb.postlist_begin(pterm),
                              xrdb.postlist_end(pterm)),
            xrdb, m_rcldb->m_reason);
     if (!m_rcldb->m_reason.empty()) {
@@ -400,13 +364,11 @@ bool Db::Native::clearDocTermIfWdf0(Xapian::Document& xdoc, const string& term)
     XAPTRY(xit = xdoc.termlist_begin(); xit.skip_to(term);,
            xrdb, m_rcldb->m_reason);
     if (!m_rcldb->m_reason.empty()) {
-        LOGERR("Db::clearDocTerm...: [" << term << "] skip failed: " <<
-               m_rcldb->m_reason << "\n");
+        LOGERR("Db::clearDocTerm...: [" << term << "] skip failed: " << m_rcldb->m_reason << "\n");
         return false;
     }
     if (xit == xdoc.termlist_end() || term.compare(*xit)) {
-        LOGDEB0("Db::clearDocTermIFWdf0: term [" << term <<
-                "] not found. xit: [" <<
+        LOGDEB0("Db::clearDocTermIFWdf0: term [" << term << "] not found. xit: [" <<
                 (xit == xdoc.termlist_end() ? "EOL": *xit) << "]\n");
         return false;
     }
@@ -416,8 +378,7 @@ bool Db::Native::clearDocTermIfWdf0(Xapian::Document& xdoc, const string& term)
         LOGDEB1("Db::clearDocTermIfWdf0: clearing [" << term << "]\n");
         XAPTRY(xdoc.remove_term(term), xwdb, m_rcldb->m_reason);
         if (!m_rcldb->m_reason.empty()) {
-            LOGDEB0("Db::clearDocTermIfWdf0: failed [" << term << "]: " <<
-                    m_rcldb->m_reason << "\n");
+            LOGDEB0("Db::clearDocTermIfWdf0: failed [" << term << "]: "<<m_rcldb->m_reason << "\n");
         }
     }
     return true;
@@ -435,11 +396,9 @@ struct DocPosting {
 // The terms to be cleared are all those with the appropriate
 // prefix. We also remove the postings for the unprefixed terms (that
 // is, we undo what we did when indexing).
-bool Db::Native::clearField(Xapian::Document& xdoc, const string& pfx,
-                            Xapian::termcount wdfdec)
+bool Db::Native::clearField(Xapian::Document& xdoc, const string& pfx, Xapian::termcount wdfdec)
 {
-    LOGDEB1("Db::clearField: clearing prefix [" << pfx << "] for docid " <<
-            xdoc.get_docid() << "\n");
+    LOGDEB1("Db::clearField: clearing prefix [" << pfx << "] for docid " << xdoc.get_docid()<<"\n");
 
     vector<DocPosting> eraselist;
 
@@ -451,12 +410,10 @@ bool Db::Native::clearField(Xapian::Document& xdoc, const string& pfx,
             Xapian::TermIterator xit;
             xit = xdoc.termlist_begin();
             xit.skip_to(wrapd);
-            while (xit != xdoc.termlist_end() && 
-                   !(*xit).compare(0, wrapd.size(), wrapd)) {
+            while (xit != xdoc.termlist_end() && !(*xit).compare(0, wrapd.size(), wrapd)) {
                 LOGDEB1("Db::clearfield: erasing for [" << *xit << "]\n");
                 Xapian::PositionIterator posit;
-                for (posit = xit.positionlist_begin();
-                     posit != xit.positionlist_end(); posit++) {
+                for (posit = xit.positionlist_begin(); posit != xit.positionlist_end(); posit++) {
                     eraselist.push_back(DocPosting(*xit, *posit));
                     eraselist.push_back(DocPosting(strip_prefix(*xit), *posit));
                 }
@@ -470,25 +427,21 @@ bool Db::Native::clearField(Xapian::Document& xdoc, const string& pfx,
         break;
     }
     if (!m_rcldb->m_reason.empty()) {
-        LOGERR("Db::clearField: failed building erase list: " <<
-               m_rcldb->m_reason << "\n");
+        LOGERR("Db::clearField: failed building erase list: " << m_rcldb->m_reason << "\n");
         return false;
     }
 
     // Now remove the found positions, and the terms if the wdf is 0
-    for (vector<DocPosting>::const_iterator it = eraselist.begin();
-         it != eraselist.end(); it++) {
-        LOGDEB1("Db::clearField: remove posting: [" << it->term << "] pos [" <<
-                it->pos << "]\n");
-        XAPTRY(xdoc.remove_posting(it->term, it->pos, wdfdec);, 
-               xwdb,m_rcldb->m_reason);
+    for (const auto& er : eraselist) {
+        LOGDEB1("Db::clearField: remove posting: [" << er.term << "] pos [" << er.pos << "]\n");
+        XAPTRY(xdoc.remove_posting(er.term, er.pos, wdfdec);, xwdb, m_rcldb->m_reason);
         if (!m_rcldb->m_reason.empty()) {
             // Not that this normally fails for non-prefixed XXST and
             // ND, don't make a fuss
-            LOGDEB1("Db::clearFiedl: remove_posting failed for [" << it->term <<
-                    "]," << it->pos << ": " << m_rcldb->m_reason << "\n");
+            LOGDEB1("Db::clearFiedl: remove_posting failed for [" << er.term <<
+                    "]," << er.pos << ": " << m_rcldb->m_reason << "\n");
         }
-        clearDocTermIfWdf0(xdoc, it->term);
+        clearDocTermIfWdf0(xdoc, er.term);
     }
     return true;
 }
@@ -500,9 +453,7 @@ bool Db::Native::hasTerm(const string& udi, int idxi, const string& term)
     Xapian::Document xdoc;
     if (getDoc(udi, idxi, xdoc)) {
         Xapian::TermIterator xit;
-        XAPTRY(xit = xdoc.termlist_begin();
-               xit.skip_to(term);,
-               xrdb, m_rcldb->m_reason);
+        XAPTRY(xit = xdoc.termlist_begin(); xit.skip_to(term);, xrdb, m_rcldb->m_reason);
         if (!m_rcldb->m_reason.empty()) {
             LOGERR("Rcl::Native::hasTerm: " << m_rcldb->m_reason << "\n");
             return false;
@@ -522,7 +473,7 @@ Xapian::docid Db::Native::getDoc(const string& udi, int idxi, Xapian::Document& 
     for (int tries = 0; tries < 2; tries++) {
         try {
             Xapian::PostingIterator docid;
-            for (docid = xrdb.postlist_begin(uniterm); 
+            for (docid = xrdb.postlist_begin(uniterm);
                  docid != xrdb.postlist_end(uniterm); docid++) {
                 xdoc = xrdb.get_document(*docid);
                 if (whatDbIdx(*docid) == (size_t)idxi)
@@ -542,8 +493,7 @@ Xapian::docid Db::Native::getDoc(const string& udi, int idxi, Xapian::Document& 
 }
 
 // Turn data record from db into document fields
-bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
-                                Doc &doc, bool fetchtext)
+bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc, bool fetchtext)
 {
     LOGDEB2("Db::dbDataToRclDoc: data:\n" << data << "\n");
     ConfSimple parms(data, 1, false, false);
@@ -584,8 +534,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     // used to index the beginning of the text as abstract).
     doc.syntabs = false;
     if (doc.meta[Doc::keyabs].find(cstr_syntAbs) == 0) {
-        doc.meta[Doc::keyabs] = 
-            doc.meta[Doc::keyabs].substr(cstr_syntAbs.length());
+        doc.meta[Doc::keyabs] = doc.meta[Doc::keyabs].substr(cstr_syntAbs.length());
         doc.syntabs = true;
     }
     parms.get(Doc::keyipt, doc.ipath);
@@ -595,11 +544,9 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     parms.get(Doc::keysig, doc.sig);
 
     // Normal key/value pairs:
-    vector<string> keys = parms.getNames(string());
-    for (vector<string>::const_iterator it = keys.begin(); 
-         it != keys.end(); it++) {
-        if (doc.meta.find(*it) == doc.meta.end())
-            parms.get(*it, doc.meta[*it]);
+    for (const auto& key : parms.getNames(string())) {
+        if (doc.meta.find(key) == doc.meta.end())
+            parms.get(key, doc.meta[key]);
     }
     doc.meta[Doc::keyurl] = doc.url;
     doc.meta[Doc::keymt] = doc.dmtime.empty() ? doc.fmtime : doc.dmtime;
@@ -652,12 +599,11 @@ bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
     string qterm = page_break_term;
     Xapian::PositionIterator pos;
     try {
-        for (pos = xrdb.positionlist_begin(docid, qterm); 
+        for (pos = xrdb.positionlist_begin(docid, qterm);
              pos != xrdb.positionlist_end(docid, qterm); pos++) {
             int ipos = *pos;
             if (ipos < int(baseTextPosition)) {
-                LOGDEB("getPagePositions: got page position " << ipos
-                       << " not in body\n");
+                LOGDEB("getPagePositions: got page position " << ipos << " not in body\n");
                 // Not in text body. Strange...
                 continue;
             }
@@ -680,8 +626,7 @@ int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, int pos)
 {
     if (pos < int(baseTextPosition)) // Not in text body
         return -1;
-    vector<int>::const_iterator it = 
-        upper_bound(pbreaks.begin(), pbreaks.end(), pos);
+    vector<int>::const_iterator it = upper_bound(pbreaks.begin(), pbreaks.end(), pos);
     return int(it - pbreaks.begin() + 1);
 }
 
@@ -705,7 +650,7 @@ bool Db::Native::getRawText(Xapian::docid docid_combined, string& rawtext)
         XAPTRY(rawtext = xrdb.get_metadata(rawtextMetaKey(docid)), xrdb, reason);
     }
     if (!reason.empty()) {
-        LOGERR("Rcl::Db::getRawText: could not get value: " << reason << endl);
+        LOGERR("Rcl::Db::getRawText: could not get value: " << reason << "\n");
         return false;
     }
     if (rawtext.empty()) {
@@ -770,8 +715,7 @@ bool Db::Native::addOrUpdateWrite(
         // FIXME: is this ever actually needed?
         try {
             xwdb.add_document(*newdocument_ptr);
-            LOGDEB("Db::add: " << fnc <<
-                   " added (failed re-seek for duplicate)\n");
+            LOGDEB("Db::add: " << fnc << " added (failed re-seek for duplicate)\n");
         } XCATCHERROR(ermsg);
         if (!ermsg.empty()) {
             LOGERR("Db::add: add_document failed: " << ermsg << "\n");
@@ -779,11 +723,9 @@ bool Db::Native::addOrUpdateWrite(
         }
     }
 
-    XAPTRY(xwdb.set_metadata(rawtextMetaKey(did), rawztext),
-           xwdb, m_rcldb->m_reason);
+    XAPTRY(xwdb.set_metadata(rawtextMetaKey(did), rawztext), xwdb, m_rcldb->m_reason);
     if (!m_rcldb->m_reason.empty()) {
-        LOGERR("Db::addOrUpdate: set_metadata error: " <<
-               m_rcldb->m_reason << "\n");
+        LOGERR("Db::addOrUpdate: set_metadata error: " << m_rcldb->m_reason << "\n");
         // This only affects snippets, so let's say not fatal
     }
     
@@ -795,8 +737,7 @@ bool Db::Native::addOrUpdateWrite(
     return ret;
 }
 
-bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi, 
-                                const string& uniterm)
+bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi, const string& uniterm)
 {
 #if defined(IDX_THREADS) 
     // We need a mutex even if we have a write queue (so we can only
@@ -831,15 +772,14 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
         vector<Xapian::docid> docids;
         subDocs(udi, 0, docids);
         LOGDEB("purgeFile: subdocs cnt " << docids.size() << "\n");
-        for (vector<Xapian::docid>::iterator it = docids.begin();
-             it != docids.end(); it++) {
+        for (const auto docid : docids) {
             if (m_rcldb->m_flushMb > 0) {
-                Xapian::termcount trms = xwdb.get_doclength(*it);
+                Xapian::termcount trms = xwdb.get_doclength(docid);
                 m_rcldb->maybeflush(trms * 5);
             }
             string subdocsig;
             if (orphansOnly) {
-                Xapian::Document doc = xwdb.get_document(*it);
+                Xapian::Document doc = xwdb.get_document(docid);
                 subdocsig = doc.get_value(VALUE_SIG);
                 if (subdocsig.empty()) {
                     LOGINFO("purgeFileWrite: got empty sig for subdoc??\n");
@@ -848,8 +788,8 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
             }
         
             if (!orphansOnly || sig != subdocsig) {
-                LOGDEB("Db::purgeFile: delete subdoc " << *it << "\n");
-                deleteDocument(*it);
+                LOGDEB("Db::purgeFile: delete subdoc " << docid << "\n");
+                deleteDocument(docid);
             }
         }
         return true;
@@ -900,9 +840,7 @@ Db::~Db()
     LOGDEB("Db::~Db: isopen " << m_ndb->m_isopen << " m_iswritable " << m_ndb->m_iswritable << "\n");
     this->close();
     delete m_ndb;
-#ifdef RCL_USE_ASPELL
     delete m_aspell;
-#endif
     delete m_config;
 }
 
@@ -957,7 +895,7 @@ bool Db::open(OpenMode mode, OpenError *error)
             // separate objects seem to trigger other Xapian issues,
             // so the query db is now a clone of the update one.
             m_ndb->xrdb = m_ndb->xwdb;
-            LOGDEB("Db::open: lastdocid: " <<m_ndb->xwdb.get_lastdocid()<<"\n");
+            LOGDEB("Db::open: lastdocid: " << m_ndb->xwdb.get_lastdocid() << "\n");
         } else {
             m_ndb->openRead(dir);
             for (auto& db : m_extraDbs) {
@@ -980,8 +918,7 @@ bool Db::open(OpenMode mode, OpenError *error)
                 m_ndb->m_noversionwrite = true;
                 LOGERR("Rcl::Db::open: file index [" << version <<
                        "], software [" << cstr_RCL_IDX_VERSION << "]\n");
-                throw Xapian::DatabaseError("Recoll index version mismatch",
-                                            "", "");
+                throw Xapian::DatabaseError("Recoll index version mismatch", "", "");
             }
         }
         m_mode = mode;
@@ -1110,8 +1047,7 @@ bool Db::adjustdbs()
 bool Db::setExtraQueryDbs(const std::vector<std::string>& dbs)
 {
     LOGDEB0("Db::setExtraQueryDbs: ndb " << m_ndb << " iswritable " <<
-            ((m_ndb)?m_ndb->m_iswritable:0) << " dbs [" <<
-            stringsToString(dbs) << "]\n");
+            ((m_ndb)?m_ndb->m_iswritable:0) << " dbs [" << stringsToString(dbs) << "]\n");
     if (!m_ndb) {
         return false;
     }
@@ -1150,8 +1086,7 @@ bool Db::rmQueryDb(const string &dir)
     if (dir.empty()) {
         m_extraDbs.clear();
     } else {
-        vector<string>::iterator it = find(m_extraDbs.begin(), 
-                                           m_extraDbs.end(), dir);
+        auto it = find(m_extraDbs.begin(), m_extraDbs.end(), dir);
         if (it != m_extraDbs.end()) {
             m_extraDbs.erase(it);
         }
@@ -1171,8 +1106,7 @@ std::string Db::whatIndexForResultDoc(const Doc& doc)
 {
     size_t idx = m_ndb->whatDbIdx(doc.xdocid);
     if (idx == (size_t)-1) {
-        LOGERR("whatIndexForResultDoc: whatDbIdx returned -1 for " <<
-               doc.xdocid << endl);
+        LOGERR("whatIndexForResultDoc: whatDbIdx returned -1 for " << doc.xdocid << "\n");
         return string();
     }
     // idx is [0..m_extraDbs.size()] 0 is for the main index, else
@@ -1186,8 +1120,7 @@ std::string Db::whatIndexForResultDoc(const Doc& doc)
 
 size_t Db::Native::whatDbIdx(Xapian::docid id)
 {
-    LOGDEB1("Db::whatDbIdx: xdocid " << id << ", " <<
-            m_rcldb->m_extraDbs.size() << " extraDbs\n");
+    LOGDEB1("Db::whatDbIdx: xdocid " << id << ", " << m_rcldb->m_extraDbs.size() << " extraDbs\n");
     if (id == 0) 
         return (size_t)-1;
     if (m_rcldb->m_extraDbs.size() == 0)
@@ -1219,12 +1152,10 @@ bool Db::testDbDir(const string &dir, bool *stripped_p)
         } else {
             mstripped = false;
         }
-        LOGDEB("testDbDir: " << dir << " is a " <<
-               (mstripped ? "stripped" : "raw") << " index\n");
+        LOGDEB("testDbDir: " << dir << " is a " << (mstripped ? "stripped" : "raw") << " index\n");
     } XCATCHERROR(aerr);
     if (!aerr.empty()) {
-        LOGERR("Db::Open: error while trying to open database from [" <<
-               dir << "]: " << aerr << "\n");
+        LOGERR("Db::Open: error while trying to open database from [" << dir << "]: " << aerr<<"\n");
         return false;
     }
     if (stripped_p) 
@@ -1241,8 +1172,7 @@ bool Db::isopen()
 }
 
 // Try to translate field specification into field prefix. 
-bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp,
-                       bool isquery)
+bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp, bool isquery)
 {
     if (m_config && m_config->getFieldTraits(fld, ftpp, isquery))
         return true;
@@ -1269,14 +1199,11 @@ public:
     Xapian::termpos curpos;
     Xapian::WritableDatabase& wdb;
 
-    TextSplitDb(Xapian::WritableDatabase& _wdb, Xapian::Document &d,
-                TermProc *prc)
-        : TextSplitP(prc), doc(d), basepos(1), curpos(0), wdb(_wdb)
-    {}
+    TextSplitDb(Xapian::WritableDatabase& _wdb, Xapian::Document &d, TermProc *prc)
+        : TextSplitP(prc), doc(d), basepos(1), curpos(0), wdb(_wdb) {}
 
     // Reimplement text_to_words to insert the begin and end anchor terms.
-    virtual bool text_to_words(const string &in) 
-    {
+    virtual bool text_to_words(const string &in) {
         string ermsg;
 
         if (!o_no_term_positions) {
@@ -1313,8 +1240,7 @@ public:
         return true;
     }
 
-    void setTraits(const FieldTraits& ftp) 
-    {
+    void setTraits(const FieldTraits& ftp) {
         ft = ftp;
         if (!ft.pfx.empty())
             ft.pfx = wrap_prefix(ft.pfx);
@@ -1331,8 +1257,7 @@ public:
     TermProcIdx() : TermProc(nullptr), m_ts(nullptr), m_lastpagepos(0), m_pageincr(0) {}
     void setTSD(TextSplitDb *ts) {m_ts = ts;}
 
-    bool takeword(const std::string &term, int pos, int, int)
-    {
+    bool takeword(const std::string &term, int pos, int, int) {
         // Compute absolute position (pos is relative to current segment),
         // and remember relative.
         m_ts->curpos = pos;
@@ -1433,14 +1358,11 @@ bool Db::isSpellingCandidate(const std::string& term, bool with_aspell)
             return false;
     } else {
 #ifdef TESTING_XAPIAN_SPELL
-        // The Xapian speller (purely proximity-based) can be used
-        // for Katakana (when split as words which is not always
-        // completely feasible because of separator-less
-        // compounds). Currently we don't try to use the Xapian
-        // speller with other scripts with which it would be usable
-        // in the absence of aspell (it would indeed be better
-        // than nothing with e.g. european languages). This would
-        // require a few more config variables, maybe one day.
+        // The Xapian speller (purely proximity-based) can be used for Katakana (when split as words
+        // which is not always completely feasible because of separator-less compounds). Currently
+        // we don't try to use the Xapian speller with other scripts with which it would be usable
+        // in the absence of aspell (it would indeed be better than nothing with e.g. european
+        // languages). This would require a few more config variables, maybe one day.
         if (!TextSplit::isKATAKANA(*u8i)) {
             return false;
         }
@@ -1486,7 +1408,7 @@ bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
                 string reason;
                 m_aspell->init(reason);
                 if (!m_aspell->ok()) {
-                    LOGDEB("Aspell speller init failed: " << reason << endl);
+                    LOGDEB("Aspell speller init failed: " << reason << "\n");
                     delete m_aspell;
                     m_aspell = nullptr;
                 }
@@ -1652,16 +1574,15 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         //
         // The order has no importance, and we set a position gap of 100
         // between fields to avoid false proximity matches.
-        for (const auto& entry: doc.meta) {
-            if (entry.second.empty()) {
+        for (const auto& [fld, mdata]: doc.meta) {
+            if (mdata.empty()) {
                 continue;
             }
             const FieldTraits *ftp{nullptr};
-            fieldToTraits(entry.first, &ftp);
+            fieldToTraits(fld, &ftp);
             if (ftp && ftp->valueslot) {
-                LOGDEB("Adding value: for field " << entry.first << " slot "
-                       << ftp->valueslot << endl);
-                add_field_value(newdocument, *ftp, entry.second);
+                LOGDEB("Adding value: for field " << fld << " slot " << ftp->valueslot << "\n");
+                add_field_value(newdocument, *ftp, mdata);
             }
 
             // There was an old comment here about not testing for
@@ -1670,17 +1591,14 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
             // with the LOG message. Really now: no prefix: no
             // indexing.
             if (ftp && !ftp->pfx.empty()) {
-                LOGDEB0("Db::add: field [" << entry.first << "] pfx [" <<
-                        ftp->pfx << "] inc " << ftp->wdfinc << ": [" <<
-                        entry.second << "]\n");
+                LOGDEB0("Db::add: field [" << fld << "] pfx [" <<
+                        ftp->pfx << "] inc " << ftp->wdfinc << ": [" << mdata << "]\n");
                 splitter.setTraits(*ftp);
-                if (!splitter.text_to_words(entry.second)) {
-                    LOGDEB("Db::addOrUpdate: split failed for " <<
-                           entry.first << "\n");
+                if (!splitter.text_to_words(mdata)) {
+                    LOGDEB("Db::addOrUpdate: split failed for " << fld << "\n");
                 }
             } else {
-                LOGDEB0("Db::add: no prefix for field [" <<
-                        entry.first << "], no indexing\n");
+                LOGDEB0("Db::add: no prefix for field [" << fld << "], no indexing\n");
             }
         }
 
@@ -1740,8 +1658,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
                     utf8truncate(fn, 230);
                 string::size_type pos = fn.rfind('.');
                 if (pos != string::npos && pos != fn.length() - 1) {
-                    newdocument.add_boolean_term(wrap_prefix(fileext_prefix) + 
-                                                 fn.substr(pos + 1));
+                    newdocument.add_boolean_term(wrap_prefix(fileext_prefix) + fn.substr(pos + 1));
                 }
                 newdocument.add_term(wrap_prefix(unsplitfilename_prefix) + fn,0);
             }
@@ -1761,8 +1678,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         struct tm tmb;
         localtime_r(&mtime, &tmb);
         char buf[50]; // It's actually 9, but use 50 to suppress warnings.
-        snprintf(buf, 50, "%04d%02d%02d",
-                 tmb.tm_year+1900, tmb.tm_mon + 1, tmb.tm_mday);
+        snprintf(buf, 50, "%04d%02d%02d", tmb.tm_year+1900, tmb.tm_mon + 1, tmb.tm_mday);
             
         // Date (YYYYMMDD)
         newdocument.add_boolean_term(wrap_prefix(xapday_prefix) + string(buf)); 
@@ -1881,12 +1797,10 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
             trimstring(absref, " \t\r\n");
             if (absref.empty()) {
                 if (!doc.text.empty())
-                    absref = cstr_syntAbs + 
-                        neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), 
-                                  cstr_nc);
+                    absref = cstr_syntAbs +
+                        neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), cstr_nc);
             } else {
-                absref = neutchars(truncate_to_word(absref, m_idxAbsTruncLen), 
-                                   cstr_nc);
+                absref = neutchars(truncate_to_word(absref, m_idxAbsTruncLen), cstr_nc);
             }
             // Do the append here to avoid the different truncation done
             // in the regular "stored" loop
@@ -1897,14 +1811,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         }
         
         // Append all regular "stored" meta fields
-        const set<string>& stored = m_config->getStoredFields();
-        for (set<string>::const_iterator it = stored.begin();
-             it != stored.end(); it++) {
-            string nm = m_config->fieldCanon(*it);
+        for (const auto& rnm : m_config->getStoredFields()) {
+            string nm = m_config->fieldCanon(rnm);
             if (!doc.meta[nm].empty()) {
-                string value = 
-                    neutchars(truncate_to_word(doc.meta[nm], 
-                                               m_idxMetaStoredLen), cstr_nc);
+                string value =
+                    neutchars(truncate_to_word(doc.meta[nm], m_idxMetaStoredLen), cstr_nc);
                 RECORD_APPEND(record, nm, value);
             }
         }
@@ -1940,8 +1851,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         // prefix for rclmd5 in fields) We don't do this for empty
         // docs.
         const string *md5;
-        if (doc.peekmeta(Doc::keymd5, &md5) && !md5->empty() &&
-            md5->compare(cstr_md5empty)) {
+        if (doc.peekmeta(Doc::keymd5, &md5) && !md5->empty() && md5->compare(cstr_md5empty)) {
             string digest;
             MD5HexScan(*md5, digest);
             newdocument.add_value(VALUE_MD5, digest);
@@ -1954,20 +1864,17 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 #ifdef IDX_THREADS
     if (m_ndb->m_havewriteq) {
         DbUpdTask *tp = new DbUpdTask(
-            DbUpdTask::AddOrUpdate, udi, uniterm, newdocument_ptr,
-            doc.text.length(), rawztext);
+            DbUpdTask::AddOrUpdate, udi, uniterm, newdocument_ptr, doc.text.length(), rawztext);
         if (!m_ndb->m_wqueue.put(tp)) {
             LOGERR("Db::addOrUpdate:Cant queue task\n");
             delete newdocument_ptr;
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 #endif
 
-    return m_ndb->addOrUpdateWrite(udi, uniterm, newdocument_ptr,
-                                   doc.text.length(), rawztext);
+    return m_ndb->addOrUpdateWrite(udi, uniterm, newdocument_ptr, doc.text.length(), rawztext);
 }
 
 bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
@@ -1992,21 +1899,19 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
 
     // Clear the term lists for the incoming fields and index the new values
     map<string, string>::iterator meta_it;
-    for (const auto& ent : doc.meta) {
+    for (const auto& [key, data] : doc.meta) {
         const FieldTraits *ftp;
-        if (!m_rcldb->fieldToTraits(ent.first, &ftp) || ftp->pfx.empty()) {
-            LOGDEB0("Db::xattrOnly: no prefix for field [" <<
-                    ent.first << "], skipped\n");
+        if (!m_rcldb->fieldToTraits(key, &ftp) || ftp->pfx.empty()) {
+            LOGDEB0("Db::xattrOnly: no prefix for field [" << key << "], skipped\n");
             continue;
         }
         // Clear the previous terms for the field
         clearField(xdoc, ftp->pfx, ftp->wdfinc);
-        LOGDEB0("Db::xattrOnly: field [" << ent.first << "] pfx [" <<
-                ftp->pfx << "] inc " << ftp->wdfinc << ": [" <<
-                ent.second << "]\n");
+        LOGDEB0("Db::xattrOnly: field [" << key << "] pfx [" <<
+                ftp->pfx << "] inc " << ftp->wdfinc << ": [" << data << "]\n");
         splitter->setTraits(*ftp);
-        if (!splitter->text_to_words(ent.second)) {
-            LOGDEB("Db::xattrOnly: split failed for " << ent.first << "\n");
+        if (!splitter->text_to_words(data)) {
+            LOGDEB("Db::xattrOnly: split failed for " << key << "\n");
         }
     }
     xdoc.add_value(VALUE_SIG, doc.sig);
@@ -2020,27 +1925,22 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
 
     // For each "stored" field, check if set in doc metadata and
     // update the value if it is
-    const set<string>& stored = m_rcldb->m_config->getStoredFields();
-    for (set<string>::const_iterator it = stored.begin();
-         it != stored.end(); it++) {
-        string nm = m_rcldb->m_config->fieldCanon(*it);
+    for (const auto& rnm : m_rcldb->m_config->getStoredFields()) {
+        string nm = m_rcldb->m_config->fieldCanon(rnm);
         if (doc.getmeta(nm, nullptr)) {
             string value = neutchars(
-                truncate_to_word(doc.meta[nm], m_rcldb->m_idxMetaStoredLen), 
-                cstr_nc);
+                truncate_to_word(doc.meta[nm], m_rcldb->m_idxMetaStoredLen), cstr_nc);
             datadic.set(nm, value, "");
         }
     }
 
     // Recreate the record. We want to do this with the local RECORD_APPEND
     // method for consistency in format, instead of using ConfSimple print
-    vector<string> names = datadic.getNames("");
     data.clear();
-    for (vector<string>::const_iterator it = names.begin(); 
-         it != names.end(); it++) {
+    for (const auto& nm : datadic.getNames("")) {
         string value;
-        datadic.get(*it, value, "");
-        RECORD_APPEND(data, *it, value);
+        datadic.get(nm, value, "");
+        RECORD_APPEND(data, nm, value);
     }
     RECORD_APPEND(data, Doc::keysig, doc.sig);
     xdoc.set_data(data);
@@ -2080,8 +1980,7 @@ bool Db::maybeflush(int64_t moretext)
     if (m_flushMb > 0) {
         m_curtxtsz += moretext;
         if ((m_curtxtsz - m_flushtxtsz) / MB >= m_flushMb) {
-            LOGINF("Db::add/delete: txt size >= " << m_flushMb <<
-                   " Mb, flushing\n");
+            LOGINF("Db::add/delete: txt size >= " << m_flushMb << " Mb, flushing\n");
             return doFlush();
         }
     }
@@ -2147,7 +2046,7 @@ void Db::i_setExistingFlags(const string& udi, unsigned int docid)
         LOGERR("Rcl::Db::needUpdate: can't get subdocs\n");
         return;
     }
-    for (auto docid : docids) {
+    for (const auto docid : docids) {
         if (docid < updated.size()) {
             LOGDEB2("Db::needUpdate: docid " << docid << " set\n");
             updated[docid] = true;
@@ -2239,8 +2138,7 @@ bool Db::needUpdate(const string &udi, const string& sig, unsigned int *docidp, 
     Xapian::PostingIterator docid;
     XAPTRY(docid = m_ndb->xrdb.postlist_begin(uniterm), m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
-        LOGERR("Db::needUpdate: xapian::postlist_begin failed: " <<
-               m_reason << "\n");
+        LOGERR("Db::needUpdate: xapian::postlist_begin failed: " << m_reason << "\n");
         return false;
     }
     if (docid == m_ndb->xrdb.postlist_end(uniterm)) {
@@ -2274,8 +2172,7 @@ bool Db::needUpdate(const string &udi, const string& sig, unsigned int *docidp, 
 
     // Compare new/old sig
     if (sig != osig) {
-        LOGDEB("Db::needUpdate:yes: olsig [" << osig << "] new [" << sig <<
-               "] [" << uniterm << "]\n");
+        LOGDEB("Db::needUpdate:yes: olsig [" << osig << "] new [" << sig << "] [" << uniterm<<"]\n");
         // Db is not up to date. Let's index the file
         return true;
     }
@@ -2462,8 +2359,7 @@ bool Db::purgeFile(const string &udi, bool *existed)
 #ifdef IDX_THREADS
     if (m_ndb->m_havewriteq) {
         string rztxt;
-        DbUpdTask *tp = new DbUpdTask(DbUpdTask::Delete, udi, uniterm, 
-                                      nullptr, (size_t)-1, rztxt);
+        DbUpdTask *tp = new DbUpdTask(DbUpdTask::Delete, udi, uniterm, nullptr, (size_t)-1, rztxt);
         if (!m_ndb->m_wqueue.put(tp)) {
             LOGERR("Db::purgeFile:Cant queue task\n");
             return false;
@@ -2490,7 +2386,7 @@ bool Db::purgeOrphans(const string &udi)
 #ifdef IDX_THREADS
     if (m_ndb->m_havewriteq) {
         string rztxt;
-        DbUpdTask *tp = new DbUpdTask(DbUpdTask::PurgeOrphans, udi, uniterm, 
+        DbUpdTask *tp = new DbUpdTask(DbUpdTask::PurgeOrphans, udi, uniterm,
                                       nullptr, (size_t)-1, rztxt);
         if (!m_ndb->m_wqueue.put(tp)) {
             LOGERR("Db::purgeFile:Cant queue task\n");
@@ -2584,7 +2480,7 @@ bool Db::getDoc(const string &udi, const std::string& dbdir, Doc &doc, bool fetc
             }
         }
     }
-    LOGDEB1("Db::getDoc(udi, dbdir): idxi: " << idxi << endl);
+    LOGDEB1("Db::getDoc(udi, dbdir): idxi: " << idxi << "\n");
     if (idxi < 0) {
         LOGERR("Db::getDoc(udi, dbdir): dbdir not in current extra dbs\n");
         return false;
@@ -2626,7 +2522,7 @@ bool Db::hasSubDocs(const Doc &idoc)
         LOGERR("Db::hasSubDocs: no input udi or empty\n");
         return false;
     }
-    LOGDEB1("Db::hasSubDocs: idxi " << idoc.idxi << " inudi [" <<inudi << "]\n");
+    LOGDEB1("Db::hasSubDocs: idxi " << idoc.idxi << " inudi [" << inudi << "]\n");
 
     // Not sure why we perform both the subDocs() call and the test on
     // has_children. The former will return docs if the input is a
@@ -2702,9 +2598,8 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
     // Retrieve doc, filter, and build output list
     for (int tries = 0; tries < 2; tries++) {
         try {
-            for (vector<Xapian::docid>::const_iterator it = docids.begin();
-                 it != docids.end(); it++) {
-                Xapian::Document xdoc = m_ndb->xrdb.get_document(*it);
+            for (const auto docid : docids) {
+                Xapian::Document xdoc = m_ndb->xrdb.get_document(docid);
                 string data = xdoc.get_data();
                 string docudi;
                 m_ndb->xdocToUdi(xdoc, docudi);
@@ -2712,7 +2607,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
                 doc.meta[Doc::keyudi] = docudi;
                 doc.meta[Doc::keyrr] = "100%";
                 doc.pc = 100;
-                if (!m_ndb->dbDataToRclDoc(*it, data, doc)) {
+                if (!m_ndb->dbDataToRclDoc(docid, data, doc)) {
                     LOGERR("Db::getSubDocs: doc conversion error\n");
                     return false;
                 }
@@ -2787,7 +2682,7 @@ bool Db::getContainerDoc(const Doc &idoc, Doc& ctdoc)
 // used for absent FS mountable volumes.
 bool Db::udiTreeMarkExisting(const string& udi)
 {
-    LOGDEB("Db::udiTreeMarkExisting: " << udi << endl);
+    LOGDEB("Db::udiTreeMarkExisting: " << udi << "\n");
     string prefix = wrap_prefix(udi_prefix);
     string expr = udi + "*";
 

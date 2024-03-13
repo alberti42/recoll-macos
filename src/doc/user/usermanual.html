@@ -10092,17 +10092,23 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                   must not exist yet. Its exact effect depends on
                   the Xapian version.</p>
                   <p>For Xapian 1.4, if the variable is set to 0,
-                  the Chert format will be used, and the text will
-                  not be stored. If the variable is 1, Glass will
-                  be used, and the text stored.</p>
-                  <p>For Xapian 1.2, and for versions after 1.5 and
-                  newer, the index format is always the default,
-                  but the variable controls if the text is stored
-                  or not, and the abstract generation method. With
-                  Xapian 1.5 and later, and the variable set to 0,
-                  abstract generation may be very slow, but this
-                  setting may still be useful to save space if you
-                  do not use abstract generation at all.</p>
+                  we used to use the Chert format and not store the
+                  text. If the variable was 1, Glass was used, and
+                  the text stored. We don't do this any more:
+                  storing the text has proved to be the much better
+                  option, and dropping this possibility simplifies
+                  the code.</p>
+                  <p>So now, the index format for a new index is
+                  always the default, but the variable still
+                  controls if the text is stored or not, and the
+                  abstract generation method. With Xapian 1.4 and
+                  later, and the variable set to 0, abstract
+                  generation may be very slow, but this setting may
+                  still be useful to save space if you do not use
+                  abstract generation at all, by using the
+                  appropriate setting in the GUI, and/or avoiding
+                  the Python API or recollq options which would
+                  trigger it.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.NONUMBERS" id=
