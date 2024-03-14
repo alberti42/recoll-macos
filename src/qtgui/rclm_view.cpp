@@ -381,11 +381,12 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
 
     // If we are not called with a page number (which would happen for a call from the snippets
     // window), see if we can compute a page number anyway. 
-    if (m_source && pagenum == -1 && (pagenumNeeded(cmd) || termNeeded(cmd)|| linenumNeeded(cmd))) {
+    if (m_source &&
+        ((pagenum == -1 && pagenumNeeded(cmd)) || termNeeded(cmd)|| linenumNeeded(cmd))) {
         pagenum = m_source->getFirstMatchPage(doc, term);
-        if (pagenum == -1)
-            pagenum = 1;
     }
+    if (pagenum < 0)
+        pagenum = 1;
 
     if (linenum < 1 && m_source && !term.empty() && linenumNeeded(cmd)) {
         if (doc.text.empty()) {
@@ -393,6 +394,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
         }
         linenum = m_source->getFirstMatchLine(doc, term);
     }
+    if (linenum < 0)
+        linenum = 1;
 
     // Substitute %xx inside arguments
     string efftime;
