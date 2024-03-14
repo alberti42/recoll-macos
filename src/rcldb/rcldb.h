@@ -563,6 +563,11 @@ private:
 
     void spellExpand(const std::string& term, const std::string& field,
                      std::vector<std::string>& expansion);
+  
+    // At the end of an indexing using multiple output Xapian indexes: compact the whole and replace
+    // current index. Everything must be committed and idle. Throws Xapian exception in case of
+    // error. This can only be called by close() and it deletes m_ndb.
+    void mergeAndCompact();
 };
 
 // This has to go somewhere, and as it needs the Xapian version, this is

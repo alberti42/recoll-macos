@@ -28,6 +28,7 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+#include <memory>
 
 using namespace std;
 
@@ -66,15 +67,6 @@ using namespace std;
 #include "rcldoc.h"
 #include "stoplist.h"
 #include "daterange.h"
-
-#ifndef XAPIAN_AT_LEAST
-// Added in Xapian 1.4.2. Define it here for older versions
-#define XAPIAN_AT_LEAST(A,B,C)                                      \
-    (XAPIAN_MAJOR_VERSION > (A) ||                                  \
-     (XAPIAN_MAJOR_VERSION == (A) &&                                \
-      (XAPIAN_MINOR_VERSION > (B) ||                                \
-       (XAPIAN_MINOR_VERSION == (B) && XAPIAN_REVISION >= (C)))))
-#endif
 
 
 // Recoll index format version is stored in user metadata. When this change,
@@ -150,7 +142,8 @@ static inline string make_parentterm(const string& udi)
 Db::Native::Native(Db *db) 
     : m_rcldb(db)
 #ifdef IDX_THREADS
-    , m_wqueue("DbUpd", m_rcldb->m_config->getThrConf(RclConfig::ThrDbWrite).first)
+    , m_wqueue("DbUpd", m_rcldb->m_config->getThrConf(RclConfig::ThrDbWrite).first),
+      m_mwqueue("DbMUpd", 2)
 #endif // IDX_THREADS
 { 
     LOGDEB1("Native::Native: me " << this << "\n");
@@ -164,6 +157,12 @@ Db::Native::~Native()
         void *status = m_wqueue.setTerminateAndWait();
         if (status) {
             LOGDEB1("Native::~Native: worker status " << status << "\n");
+        }
+        if (m_tmpdbcnt > 0) {
+            status = m_mwqueue.setTerminateAndWait();
+            if (status) {
+                LOGDEB1("Native::~Native: worker status " << status << "\n");
+            }
         }
     }
 #endif // IDX_THREADS
@@ -188,7 +187,7 @@ void *DbUpdWorker(void* vdbp)
         case DbUpdTask::AddOrUpdate:
             LOGDEB("DbUpdWorker: got add/update task, ql " << qsz << "\n");
             status = ndbp->addOrUpdateWrite(
-                tsk->udi, tsk->uniterm, tsk->doc, tsk->txtlen, tsk->rawztext);
+                tsk->udi, tsk->uniterm, std::move(tsk->doc), tsk->txtlen, tsk->rawztext);
             break;
         case DbUpdTask::Delete:
             LOGDEB("DbUpdWorker: got delete task, ql " << qsz << "\n");
@@ -212,6 +211,77 @@ void *DbUpdWorker(void* vdbp)
     }
 }
 
+void *DbMUpdWorker(void* vdbp)
+{
+    Db::Native *ndbp = (Db::Native *)vdbp;
+    WorkQueue<DbUpdTask*> *tqp = &(ndbp->m_mwqueue);
+    int dbidx;
+    {
+        std::lock_guard<std::mutex> lock(ndbp->m_initidxmutex);
+        dbidx = ndbp->m_tmpdbinitidx++;
+        if (dbidx >= ndbp->m_tmpdbcnt) {
+            LOGERR("DbMUpdWorker: dbidx >= ndbp->m_tmpdbcnt\n");
+            abort();
+        }
+    }
+    LOGINF("DbMUpdWorker: thread for index " << dbidx << " started\n");
+    Xapian::WritableDatabase& xwdb = ndbp->m_tmpdbs[dbidx];
+    DbUpdTask *tsk = nullptr;
+    for (;;) {
+        size_t qsz = -1;
+        if (!tqp->take(&tsk, &qsz)) {
+            LOGINF("DbMUpdWorker: flushing index " << dbidx << "\n");
+            xwdb.commit();
+            tqp->workerExit();
+            return (void*)1;
+        }
+        bool status = false;
+        Xapian::docid did = 0;
+        std::string ermsg;
+        switch (tsk->op) {
+        case DbUpdTask::AddOrUpdate:
+            LOGDEB("DbMUpdWorker: got add/update task, ql " << qsz << "\n");
+            try {
+                did = xwdb.add_document(*(tsk->doc.get()));
+                status = true;
+            } XCATCHERROR(ermsg);
+            if (!ermsg.empty()) {
+                LOGERR("DbMupdWorker::add_document failed: " << ermsg << "\n");
+                status = false;
+                break;
+            }
+            XAPTRY(xwdb.set_metadata(ndbp->rawtextMetaKey(did), tsk->rawztext), xwdb, ermsg);
+            if (!ermsg.empty()) {
+                LOGERR("DbMUpdWorker: set_metadata failed: " << ermsg << "\n");
+                status = false;
+            }                
+            break;
+        default:
+            LOGERR("DbMUpdWorker: op not AddOrUpdate: " << tsk->op << " !!\n");
+            abort();
+        }
+        if (!status) {
+            LOGERR("DbMUpdWorker: xxWrite failed\n");
+            tqp->workerExit();
+            delete tsk;
+            return (void*)0;
+        }
+        delete tsk;
+        bool needflush = false;
+        {
+            std::lock_guard<std::mutex> lock(ndbp->m_initidxmutex);
+            if (ndbp->m_tmpdbflushflags[dbidx]) {
+                ndbp->m_tmpdbflushflags[dbidx] = 0;
+                needflush = true;
+            }
+        }
+        if (needflush) {
+            LOGINF("DbMUpdWorker: flushing index " << dbidx << "\n");
+            xwdb.commit();
+        }
+    }
+}
+
 void Db::Native::maybeStartThreads()
 {
     m_havewriteq = false;
@@ -228,6 +298,26 @@ void Db::Native::maybeStartThreads()
             return;
         }
         m_havewriteq = true;
+
+        m_tmpdbcnt = 0;
+        cnf->getConfParam("thrTmpDbCnt", &m_tmpdbcnt);
+        LOGINF("maybeStartThreads: tmpdbcnt is " << m_tmpdbcnt << "\n");
+        if (m_tmpdbcnt > 0) {
+            m_tmpdbflushflags.resize(m_tmpdbcnt);
+            for (int i = 0; i < m_tmpdbcnt; i++) {
+                m_tmpdbdirs.emplace_back(std::make_unique<TempDir>());
+                LOGINF("Creating temporary database in " << m_tmpdbdirs.back()->dirname() << "\n");
+                m_tmpdbs.push_back(
+                    Xapian::WritableDatabase(
+                        m_tmpdbdirs.back()->dirname(), Xapian::DB_CREATE_OR_OVERWRITE));
+                m_tmpdbflushflags[i] = 0;
+            }
+            if (!m_mwqueue.start(m_tmpdbcnt, DbMUpdWorker, this)) {
+                LOGERR("Db::Db: MWorker start failed\n");
+                return;
+            }
+            LOGINF("Started MWQueue with " << m_tmpdbcnt << " threads\n");
+        }
     }
     LOGDEB("RclDb:: threads: haveWriteQ " << m_havewriteq << ", wqlen " <<
            writeqlen << " wqts " << writethreads << "\n");
@@ -237,6 +327,7 @@ void Db::Native::maybeStartThreads()
 
 void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
 {
+    LOGINF("Db::Native::openWrite\n");
     int action = (mode == Db::DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
         Xapian::DB_CREATE_OR_OVERWRITE;
 
@@ -244,7 +335,7 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
     // On Windows, Xapian is quite bad at erasing a partial db, which can occur because of open file
     // deletion errors.
     if (mode == DbTrunc) {
-        if (path_exists(path_cat(dir, "iamchert"))) {
+        if (path_exists(path_cat(dir, "iamglass")) || path_exists(path_cat(dir, "iamchert"))) {
             wipedir(dir);
             path_unlink(dir);
         }
@@ -666,14 +757,16 @@ bool Db::Native::getRawText(Xapian::docid docid_combined, string& rawtext)
 // reference-counting is not mt-safe. We take ownership and need
 // to delete it before returning.
 bool Db::Native::addOrUpdateWrite(
-    const string& udi, const string& uniterm, Xapian::Document *newdocument_ptr, 
-    size_t textlen, const string& rawztext)
+    const string& udi, const string& uniterm, std::unique_ptr<Xapian::Document> newdocument_ptr, 
+    size_t textlen, std::string& rawztext)
 {
+    // Does its own locking, call before our own.
+    bool docexists = m_rcldb->docExists(uniterm);
+    
 #ifdef IDX_THREADS
     Chrono chron;
     std::unique_lock<std::mutex> lock(m_mutex);
 #endif
-    std::unique_ptr<Xapian::Document> doc_cleaner(newdocument_ptr);
 
     // Check file system full every mbyte of indexed text. It's a bit wasteful
     // to do this after having prepared the document, but it needs to be in
@@ -692,35 +785,35 @@ bool Db::Native::addOrUpdateWrite(
         m_rcldb->m_occtxtsz = m_rcldb->m_curtxtsz;
     }
 
-    const char *fnc = udi.c_str();
-    string ermsg;
+    if (!docexists && m_tmpdbcnt > 0) {
+        // New doc. Send it to the temp dbs
+        DbUpdTask *tp = new DbUpdTask(
+            DbUpdTask::AddOrUpdate, udi, uniterm, std::move(newdocument_ptr), textlen, rawztext);
+        if (!m_mwqueue.put(tp)) {
+            LOGERR("Db::addOrUpdate:Cant mqueue task\n");
+            return false;
+        }
+        auto ret = m_rcldb->maybeflush(textlen);
+        return ret;
+    }
 
+    string ermsg;
     // Add db entry or update existing entry:
     Xapian::docid did = 0;
     try {
-        did = xwdb.replace_document(uniterm, *newdocument_ptr);
+        did = xwdb.replace_document(uniterm, *(newdocument_ptr.get()));
         if (did < m_rcldb->updated.size()) {
-            // This is necessary because only the file-level docs are tested
-            // by needUpdate(), so the subdocs existence flags are only set
-            // here.
+            // This is necessary because only the file-level docs are tested by needUpdate(), so the
+            // subdocs existence flags are only set here.
             m_rcldb->updated[did] = true;
-            LOGINFO("Db::add: docid " << did << " updated [" << fnc << "]\n");
+            LOGINFO("Db::add: docid " << did << " updated [" << udi << "]\n");
         } else {
-            LOGINFO("Db::add: docid " << did << " added [" << fnc << "]\n");
+            LOGINFO("Db::add: docid " << did << " added [" << udi << "]\n");
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
         LOGERR("Db::add: replace_document failed: " << ermsg << "\n");
-        ermsg.erase();
-        // FIXME: is this ever actually needed?
-        try {
-            xwdb.add_document(*newdocument_ptr);
-            LOGDEB("Db::add: " << fnc << " added (failed re-seek for duplicate)\n");
-        } XCATCHERROR(ermsg);
-        if (!ermsg.empty()) {
-            LOGERR("Db::add: add_document failed: " << ermsg << "\n");
-            return false;
-        }
+        return false;
     }
 
     XAPTRY(xwdb.set_metadata(rawtextMetaKey(did), rawztext), xwdb, m_rcldb->m_reason);
@@ -737,6 +830,9 @@ bool Db::Native::addOrUpdateWrite(
     return ret;
 }
 
+// Delete the data for a given document.
+// This is either called from the dbUpdate queue worker, or directly from the top level purge() if
+// we are not using threads.
 bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi, const string& uniterm)
 {
 #if defined(IDX_THREADS) 
@@ -966,22 +1062,90 @@ bool Db::close()
     try {
         bool w = m_ndb->m_iswritable;
         if (w) {
+            LOGDEB("Rcl::Db:close: xapian will close. May take some time\n");
 #ifdef IDX_THREADS
             m_ndb->m_wqueue.closeShop();
+            if (m_ndb->m_tmpdbcnt > 0) {
+                m_ndb->m_mwqueue.closeShop();
+            }
             waitUpdIdle();
 #endif
-            if (!m_ndb->m_noversionwrite)
+            if (!m_ndb->m_noversionwrite) {
                 m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, cstr_RCL_IDX_VERSION);
-            LOGDEB("Rcl::Db:close: xapian will close. May take some time\n");
+                m_ndb->xwdb.commit();
+            }
+
+#ifdef IDX_THREADS
+            if (m_ndb->m_tmpdbcnt > 0) {
+                mergeAndCompact();
+            }
+#endif // IDX_THREADS
         }
+        LOGDEB("Rcl::Db:close() xapian close done.\n");
+
         deleteZ(m_ndb);
-        if (w)
-            LOGDEB("Rcl::Db:close() xapian close done.\n");
         m_ndb = new Native(this);
         return true;
     } XCATCHERROR(ermsg);
     LOGERR("Db:close: exception while deleting/recreating db object: " << ermsg << "\n");
     return false;
+}
+
+void Db::mergeAndCompact()
+{
+    if (m_ndb->m_tmpdbcnt <= 0)
+        return;
+    
+    // Note: the commits() have been called by waitUpdIdle() above.
+    LOGINF("Rcl::Db::close: starting merge of " << m_ndb->m_tmpdbcnt <<
+           " temporary indexes\n");
+    for (int i = 0; i < m_ndb->m_tmpdbcnt; i++) {
+        m_ndb->xwdb.add_database(m_ndb->m_tmpdbs[i]);
+    }
+    string dbdir = m_config->getDbDir();
+    std::set<std::string> oldfiles;
+    std::string errs;
+    if (!listdir(dbdir, errs, oldfiles)) {
+        LOGERR("Db::close: failed listing existing db files in " << dbdir << ": " << errs << "\n");
+        throw Xapian::DatabaseError("Failed listing db files", errs);
+    }
+
+    std::string tmpdir = path_cat(dbdir, "tmp");
+    m_ndb->xwdb.compact(tmpdir);
+
+    // Get rid of the temporary indexes and their directories
+    deleteZ(m_ndb);
+
+    // Back up the current index by moving it aside.
+    auto backupdir = path_cat(dbdir, "backup");
+    path_makepath(backupdir, 0700);
+    for (const auto& fn : oldfiles) {
+        auto ofn = path_cat(dbdir, fn);
+        auto nfn = path_cat(backupdir, fn);
+        if (path_isfile(ofn) && !path_rename(ofn, nfn)) {
+            LOGERR("Db::close: failed renaming " << ofn << " to " << nfn << "\n");
+            throw Xapian::DatabaseError("Failed renaming db file for backup", ofn + "->" + nfn);
+        }
+    }
+
+    // Move the new index in place
+    std::set<std::string> nfiles;
+    if (!listdir(tmpdir, errs, nfiles)) {
+        LOGERR("Db::close: failed listing newdb files in " << tmpdir << ": " << errs << "\n");
+        throw Xapian::DatabaseError("Failed listing new db files", errs);
+    }
+    for (const auto& fn : nfiles) {
+        auto ofn = path_cat(tmpdir, fn);
+        auto nfn = path_cat(dbdir, fn);
+        if (path_isfile(ofn) && !path_rename(ofn, nfn)) {
+            LOGERR("Db::close: failed renaming " << ofn << " to " << nfn << "\n");
+            throw Xapian::DatabaseError("Failed renaming new db file to dbdir", ofn + "->" + nfn);
+        }
+    }
+
+    // Get rid of the old index
+    wipedir(backupdir, true, true);
+    LOGINF("Rcl::Db::close: merge and compact done\n");
 }
 
 int Db::docCnt()
@@ -1481,8 +1645,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     // update thread. The reference counters are not mt-safe, so we
     // need to do this through a pointer. The reference is just there
     // to avoid changing too much code (the previous version passed a copy).
-    Xapian::Document *newdocument_ptr = new Xapian::Document;
-    Xapian::Document &newdocument(*newdocument_ptr);
+    std::unique_ptr<Xapian::Document> newdocument_ptr = std::make_unique<Xapian::Document>();
+    Xapian::Document& newdocument(*newdocument_ptr.get());
     
     // The term processing pipeline:
     TermProcIdx tpidx;
@@ -1514,7 +1678,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         // it uses a fully separate code path (with some duplication
         // unfortunately)
         if (!m_ndb->docToXdocXattrOnly(&splitter, udi, doc, newdocument)) {
-            delete newdocument_ptr;
             return false;
         }
     } else {
@@ -1635,7 +1798,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
                     v.count << " avglen " << v.avglen << " sigma " << v.sigma <<
                     " url [" << doc.url << "] ipath [" << doc.ipath <<
                     "] text " << doc.text << "\n");
-            delete newdocument_ptr;
             return true;
         }
 #endif
@@ -1863,18 +2025,18 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     }
 #ifdef IDX_THREADS
     if (m_ndb->m_havewriteq) {
-        DbUpdTask *tp = new DbUpdTask(
-            DbUpdTask::AddOrUpdate, udi, uniterm, newdocument_ptr, doc.text.length(), rawztext);
+        DbUpdTask *tp = new DbUpdTask(DbUpdTask::AddOrUpdate, udi, uniterm,
+                                      std::move(newdocument_ptr), doc.text.length(), rawztext);
         if (!m_ndb->m_wqueue.put(tp)) {
             LOGERR("Db::addOrUpdate:Cant queue task\n");
-            delete newdocument_ptr;
             return false;
         }
         return true;
     }
 #endif
 
-    return m_ndb->addOrUpdateWrite(udi, uniterm, newdocument_ptr, doc.text.length(), rawztext);
+    return m_ndb->addOrUpdateWrite(udi, uniterm,
+                                   std::move(newdocument_ptr), doc.text.length(), rawztext);
 }
 
 bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
@@ -1954,15 +2116,24 @@ void Db::closeQueue()
         m_ndb->m_wqueue.closeShop();
     }
 }
+
 void Db::waitUpdIdle()
 {
     if (m_ndb->m_iswritable && m_ndb->m_havewriteq) {
         Chrono chron;
         m_ndb->m_wqueue.waitIdle();
+        if (m_ndb->m_tmpdbcnt > 0) {
+            m_ndb->m_mwqueue.waitIdle();
+        }
         // We flush here just for correct measurement of the thread work time
         string ermsg;
         try {
+            LOGINF("DbMUpdWorker: flushing main index\n");
             m_ndb->xwdb.commit();
+            for (int i = 0; i < m_ndb->m_tmpdbcnt; i++) {
+                LOGINF("DbMUpdWorker: flushing index " << i << "\n");
+                m_ndb->m_tmpdbs[i].commit();
+            }
         } XCATCHERROR(ermsg);
         if (!ermsg.empty()) {
             LOGERR("Db::waitUpdIdle: flush() failed: " << ermsg << "\n");
@@ -1993,9 +2164,16 @@ bool Db::doFlush()
         LOGERR("Db::doFLush: no ndb??\n");
         return false;
     }
+    if (m_ndb->m_tmpdbcnt > 0) {
+        std::lock_guard<std::mutex> lock(m_ndb->m_initidxmutex);
+        for (int i = 0; i < m_ndb->m_tmpdbcnt; i++) {
+            m_ndb->m_tmpdbflushflags[i] = 1;
+        }
+    }
     string ermsg;
     try {
         statusUpdater()->update(DbIxStatus::DBIXS_FLUSH, "");
+        LOGINF("DbMUpdWorker: flushing main index\n");
         m_ndb->xwdb.commit();
     } XCATCHERROR(ermsg);
     statusUpdater()->update(DbIxStatus::DBIXS_NONE, "");
@@ -2243,14 +2421,7 @@ bool Db::purge()
         return false;
 
 #ifdef IDX_THREADS
-    // If we manage our own write queue, make sure it's drained and closed
-    if (m_ndb->m_havewriteq) {
-        m_ndb->m_wqueue.setTerminateAndWait();
-        // And restore state for a possible next backend.
-        m_ndb->maybeStartThreads();
-    }
-    // We need to lock out other top level threads. This is just a precaution as they should have
-    // been waited for by the top level actor at this point.
+    waitUpdIdle();
     std::unique_lock<std::mutex> lock(m_ndb->m_mutex);
 #endif // IDX_THREADS
 
@@ -2297,8 +2468,7 @@ bool Db::purge()
             } catch (const Xapian::DocNotFoundError &) {
                 LOGDEB0("Db::purge: document #" << docid << " not found\n");
             } catch (const Xapian::Error &e) {
-                LOGERR("Db::purge: document #" << docid << ": " <<
-                       e.get_msg() << "\n");
+                LOGERR("Db::purge: document #" << docid << ": " << e.get_msg() << "\n");
             } catch (...) {
                 LOGERR("Db::purge: document #" << docid << ": unknown error\n");
             }
@@ -2363,9 +2533,8 @@ bool Db::purgeFile(const string &udi, bool *existed)
         if (!m_ndb->m_wqueue.put(tp)) {
             LOGERR("Db::purgeFile:Cant queue task\n");
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 #endif
     /* We get there is IDX_THREADS is not defined or there is no queue */
@@ -2391,9 +2560,8 @@ bool Db::purgeOrphans(const string &udi)
         if (!m_ndb->m_wqueue.put(tp)) {
             LOGERR("Db::purgeFile:Cant queue task\n");
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 #endif
     /* We get there is IDX_THREADS is not defined or there is no queue */

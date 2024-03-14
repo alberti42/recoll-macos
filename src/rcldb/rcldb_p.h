@@ -24,16 +24,27 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <xapian.h>
+#ifndef XAPIAN_AT_LEAST
+// Added in Xapian 1.4.2. Define it here for older versions
+#define XAPIAN_AT_LEAST(A,B,C)                                      \
+    (XAPIAN_MAJOR_VERSION > (A) ||                                  \
+     (XAPIAN_MAJOR_VERSION == (A) &&                                \
+      (XAPIAN_MINOR_VERSION > (B) ||                                \
+       (XAPIAN_MINOR_VERSION == (B) && XAPIAN_REVISION >= (C)))))
+#endif
 
 #ifdef IDX_THREADS
 #include "workqueue.h"
 #endif // IDX_THREADS
+
 #include "xmacros.h"
 #include "log.h"
 #include "rclconfig.h"
 #include "cstr.h"
+#include "rclutil.h"
 
 namespace Rcl {
 
@@ -120,22 +131,22 @@ inline std::string wrap_prefix(const std::string& pfx)
 // is empty
 class DbUpdTask {
 public:
-    enum Op {AddOrUpdate, Delete, PurgeOrphans};
+    enum Op {AddOrUpdate, Delete, PurgeOrphans, Flush};
     // Note that udi and uniterm are strictly equivalent and are
     // passed both just to avoid recomputing uniterm which is
     // available on the caller site.
     // Take some care to avoid sharing string data (if string impl is cow)
     DbUpdTask(Op _op, const std::string& ud, const std::string& un, 
-          Xapian::Document *d, size_t tl, std::string& rztxt)
+              std::unique_ptr<Xapian::Document> d, size_t tl, std::string& rztxt)
         : op(_op), udi(ud.begin(), ud.end()), uniterm(un.begin(), un.end()), 
-          doc(d), txtlen(tl) {
+          doc(std::move(d)), txtlen(tl) {
         rawztext.swap(rztxt);
     }
     // Udi and uniterm equivalently designate the doc
     Op op;
     std::string udi;
     std::string uniterm;
-    Xapian::Document *doc;
+    std::unique_ptr<Xapian::Document> doc;
     // txtlen is used to update the flush interval. It's -1 for a
     // purge because we actually don't know it, and the code fakes a
     // text length based on the term count.
@@ -163,6 +174,16 @@ class Db::Native {
     long long  m_totalworkns{0};
     bool m_havewriteq{false};
     void maybeStartThreads();
+    friend void *DbUpdWorker(void*);
+
+    int m_tmpdbcnt{0};
+    int m_tmpdbinitidx{0};
+    std::mutex m_initidxmutex;
+    WorkQueue<DbUpdTask*> m_mwqueue;
+    std::vector<Xapian::WritableDatabase> m_tmpdbs;
+    std::vector<std::unique_ptr<TempDir>> m_tmpdbdirs;
+    std::vector<char> m_tmpdbflushflags;
+    friend void *DbMUpdWorker(void*);
 #endif // IDX_THREADS
 
     // Indexing 
@@ -175,9 +196,6 @@ class Db::Native {
     Native(const Native &) = delete;
     Native& operator=(const Native &) = delete;
 
-#ifdef IDX_THREADS
-    friend void *DbUpdWorker(void*);
-#endif // IDX_THREADS
 
     void openWrite(const std::string& dir, Db::OpenMode mode);
     void openRead(const std::string& dir);
@@ -188,8 +206,8 @@ class Db::Native {
     
     // Final steps of doc update, part which need to be single-threaded
     bool addOrUpdateWrite(const std::string& udi, const std::string& uniterm, 
-              Xapian::Document *doc, size_t txtlen
-                          , const std::string& rawztext);
+                          std::unique_ptr<Xapian::Document> doc, size_t txtlen,
+                          std::string& rawztext);
 
     /** Delete all documents which are contained in the input document, 
      * which must be a file-level one.
@@ -202,14 +220,12 @@ class Db::Native {
      * @param udi the parent document identifier.
      * @param uniterm equivalent to udi, passed just to avoid recomputing.
      */
-    bool purgeFileWrite(bool onlyOrphans, const std::string& udi, 
-            const std::string& uniterm);
+    bool purgeFileWrite(bool onlyOrphans, const std::string& udi, const std::string& uniterm);
 
     bool getPagePositions(Xapian::docid docid, std::vector<int>& vpos);
     int getPageNumberForPosition(const std::vector<int>& pbreaks, int pos);
 
-    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc,
-                        bool fetchtext = false);
+    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc, bool fetchtext = false);
 
     size_t whatDbIdx(Xapian::docid id);
     Xapian::docid whatDbDocid(Xapian::docid);
@@ -290,11 +306,9 @@ class Db::Native {
 
     void deleteDocument(Xapian::docid docid) {
         std::string metareason;
-        XAPTRY(xwdb.set_metadata(rawtextMetaKey(docid), std::string()),
-               xwdb, metareason);
+        XAPTRY(xwdb.set_metadata(rawtextMetaKey(docid), std::string()), xwdb, metareason);
         if (!metareason.empty()) {
-            LOGERR("deleteDocument: set_metadata error: " <<
-                   metareason << "\n");
+            LOGERR("deleteDocument: set_metadata error: " << metareason << "\n");
             // not fatal
         }
         xwdb.delete_document(docid);
