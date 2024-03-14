@@ -173,6 +173,7 @@
 #define DIRENT dirent
 #define DIRHDL DIR
 #define MKDIR(a,b) mkdir(a,b)
+#define RENAME(o,n) rename(o,n)
 #define OPEN ::open
 #define UNLINK ::unlink
 #define RMDIR ::rmdir
@@ -956,6 +957,16 @@ bool path_makepath(const std::string& ipath, int mode)
             }
         }
         path += "/";
+    }
+    return true;
+}
+
+bool path_rename(const std::string& oldpath, const std::string& newpath)
+{
+    SYSPATH(oldpath, oldsyspath);
+    SYSPATH(newpath, newsyspath);
+    if (RENAME(oldsyspath, newsyspath) != 0) {
+        return false;
     }
     return true;
 }
