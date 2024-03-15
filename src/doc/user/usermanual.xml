@@ -6642,13 +6642,16 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         <sect3 id="RCL.INSTALL.BUILDING.BUILDING.GIT">
           <title>Building from git code</title>
 
-          <para>When building from source cloned from the git repository,
-            you also need to install <application>autoconf</application>,
-            <application>automake</application>, and
-            <application>libtool</application> and you must execute
-            <literal>sh autogen.sh</literal> in the top source directory
-            before running <literal>configure</literal>.</para>
+          <para>When building from source cloned from the git repository, you also need to
+            install <application>autoconf</application>, <application>automake</application>,
+            and <application>libtool</application> and you must execute <literal>sh
+            autogen.sh</literal> in the top source directory before
+            running <literal>configure</literal>.</para>
 
+          <para>You will also need to run <command>configure</command>
+            with <literal>--disable-userdoc</literal> or install the Docbook XML/XSL files needed
+            for translating the Docbook XML manual into HTML.</para>
+          
         </sect3>
 
       </sect2>

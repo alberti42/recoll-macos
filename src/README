@@ -4831,6 +4831,10 @@ Building from git code
    to install autoconf, automake, and libtool and you must execute sh
    autogen.sh in the top source directory before running configure.
 
+   You will also need to run configure with --disable-userdoc or install
+   the Docbook XML/XSL files needed for translating the Docbook XML manual
+   into HTML.
+
 5.3.3. Installing
 
    Use make install in the root of the source tree. This will copy the
