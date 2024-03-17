@@ -500,7 +500,8 @@ int Query::Native::abstractFromText(
 class TermLineSplitter : public TextSplit {
 public:
     TermLineSplitter(const std::string& term)
-        : TextSplit(TextSplit::TXTS_NOSPANS), m_term(term) {
+        : TextSplit(), m_term(term) {
+        LOGDEB1("TermLineSplitter: m_term " << m_term << "\n");
     }
     bool takeword(const std::string& _term, int, int, int) override {
         std::string term;
@@ -510,6 +511,7 @@ public:
                 return true;
             }
         }
+        LOGDEB1("TermLineSplitter: checking term " << term << "\n");
         if (term == m_term) {
             return false;
         }

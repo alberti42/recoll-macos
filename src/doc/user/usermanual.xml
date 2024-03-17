@@ -829,11 +829,12 @@ indexedmimetypes = application/pdf</programlisting>
           environment to work on the right configuration.</para>
 
         <sect3>
-          <title>Creating and using an additional index: example</title>
+          <title>Creating and using an additional index: Linux example</title>
 
           <para>The following applies to &LIN;</para>
-          <para>Initially creating the configuration and index:<programlisting>
-              mkdir <replaceable>/path/to/my/new/config</replaceable></programlisting></para>
+          <para>Initially creating the configuration and index:
+            <programlisting>mkdir <replaceable>/path/to/my/new/config</replaceable></programlisting>
+          </para>
           
           <para>Configuring the new index can be done from the
             <command>recoll</command> GUI, launched from the
@@ -841,22 +842,16 @@ indexedmimetypes = application/pdf</programlisting>
             (you could create a desktop file to do it for you), and then using the
             <link linkend="RCL.INDEXING.CONFIG.GUI">GUI index configuration tool</link>
             to set up the index.
-            <programlisting>
-              recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
+      <programlisting>recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
           </para>
 
           <para>Alternatively, you can just start a text editor on the main
             configuration file:
-            <programlisting>
-              <replaceable>someEditor</replaceable> <replaceable>/path/to/my/new/config</replaceable>/<link linkend="RCL.INSTALL.CONFIG.RECOLLCONF"><filename>recoll.conf</filename></link>
-            </programlisting>
+            <programlisting><replaceable>someEditor</replaceable> <replaceable>/path/to/my/new/config</replaceable>/<link linkend="RCL.INSTALL.CONFIG.RECOLLCONF"><filename>recoll.conf</filename></link></programlisting>
           </para>
 
-
           <para>Creating and updating the index can be done from the command line:
-
-            <programlisting>recollindex -c <replaceable>/path/to/my/new/config</replaceable>
-            </programlisting>
+   <programlisting>recollindex -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
             or from the File menu of a GUI launched with the same option
             (<command>recoll</command>, see above).</para>
 
@@ -865,8 +860,8 @@ indexedmimetypes = application/pdf</programlisting>
             for the default index (the menu entry will be inactive if the GUI
             was started with a non-default <literal>-c</literal> option).</para>
 
-          <para>The new index can be queried alone with: <programlisting>
-              recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
+          <para>The new index can be queried alone with:
+   <programlisting>recoll -c <replaceable>/path/to/my/new/config</replaceable></programlisting>
             Or, in parallel with the default index, by starting
             <command>recoll</command> without a <literal>-c</literal> option, and using
             the <guilabel>External Indexes</guilabel> tab in the preferences dialog, which can be
@@ -879,9 +874,49 @@ indexedmimetypes = application/pdf</programlisting>
             <menuchoice>
               <guimenu>Query</guimenu>
               <guimenuitem>External index dialog</guimenuitem>
-            </menuchoice>.  See the <link linkend="RCL.SEARCH.GUI.MULTIDB">GUI external indexes
+            </menuchoice>.
+            See the <link linkend="RCL.SEARCH.GUI.MULTIDB">GUI external indexes
               section</link> for more details.</para>
         </sect3>
+
+        <sect3>
+          <title>Creating an alternate index: Windows example</title>
+
+          <para>When running &RCL; under &WIN;, the simplest approach for using separate indexes is
+            to start the GUI from different desktop icons. The following approach can be
+            used:</para> 
+
+          <procedure>
+
+          <step><para>Create an empty folder somewhere for holding the new configuration and
+              index.</para></step>
+
+          <step><para>Select the Recoll icon on the desktop and Copy/Paste it. If no desktop icon was
+              created during installation, you can right-drag the recoll.exe program from
+              <filename>C:\Program Files (X86)\Recoll</filename> to the desktop and select
+              <guilabel>Create shortcuts here</guilabel> to create one.</para></step>
+
+          <step><para>Right-click the new shortcut and go to
+              the <guilabel>Properties->shortcut</guilabel> tab</para></step>
+          <step><para>Modify the <guilabel>Target</guilabel> value from the original
+              <filename>C:\Program Files (x86)\Recoll\recoll.exe</filename> to something like:
+  
+          <screen>"C:\Program Files (x86)\Recoll\recoll.exe" -c C:\Path\To\My\New\Directory</screen>
+
+          Use double quotes around the directory path is it contains spaces.</para></step>
+
+          <step><para>Then save the new Icon by clicking ok, and double click it to start a Recoll
+              GUI for the new configuration. You should be presented with the initial configuration
+              dialog.</para></step> 
+          </procedure>
+
+          <para>Any other method for running the GUI or <command>recollindex</command> program with
+            a <literal>-c</literal> option or a RECOLL_CONFDIR value in the environment would work
+            too.</para>
+
+        </sect3>
+
+
       </sect2>
 
 
@@ -6607,13 +6642,16 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         <sect3 id="RCL.INSTALL.BUILDING.BUILDING.GIT">
           <title>Building from git code</title>
 
-          <para>When building from source cloned from the git repository,
-            you also need to install <application>autoconf</application>,
-            <application>automake</application>, and
-            <application>libtool</application> and you must execute
-            <literal>sh autogen.sh</literal> in the top source directory
-            before running <literal>configure</literal>.</para>
+          <para>When building from source cloned from the git repository, you also need to
+            install <application>autoconf</application>, <application>automake</application>,
+            and <application>libtool</application> and you must execute <literal>sh
+            autogen.sh</literal> in the top source directory before
+            running <literal>configure</literal>.</para>
 
+          <para>You will also need to run <command>configure</command>
+            with <literal>--disable-userdoc</literal> or install the Docbook XML/XSL files needed
+            for translating the Docbook XML manual into HTML.</para>
+          
         </sect3>
 
       </sect2>

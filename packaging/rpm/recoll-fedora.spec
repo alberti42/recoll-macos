@@ -1,8 +1,8 @@
-%global         gsspver 1.1.1
+%global         gsspver 1.1.3
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.36.2
+Version:        1.37.4
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.lesbonscomptes.com/recoll/

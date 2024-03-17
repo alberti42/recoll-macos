@@ -819,8 +819,13 @@ bool TextSplit::text_to_words(const string &in)
                 if (!isalphanum(nextwhat, m_flags)) {
                     // Do append the dot to the span: for abbrev recognition.
                     it.appendchartostring(m_span);
-                    // Set the iterator to point to the look-ahead char.
+                    // Set the iterator to point to the look-ahead char. Need to
+                    // test for nl/newpage here (there should be a better way?)
                     it++;
+                    if (*it == '\n')
+                        nlpending = true;
+                    else if (*it == '\f')
+                        pagepending = true;
                     goto SPACE;
                 }
 

@@ -253,7 +253,9 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 }
 
 
-// Choose most interesting term and return the page number for its first match
+// Choose most interesting term and return the page number for its first match. We are sometimes
+// called just for getting the term, with no actual page positions in the doc (to avoid an
+// additional method in the docseq classes).
 int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 {
     LOGDEB("Query::Native::getFirstMatchPage\n");
@@ -275,15 +277,26 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 
     vector<int> pagepos;
     ndb->getPagePositions(docid, pagepos);
-    if (pagepos.empty())
-        return -1;
         
     setDbWideQTermsFreqs();
 
     // We try to use a page which matches the "best" term. Get a sorted list
     multimap<double, vector<string> > byQ;
     qualityTerms(docid, terms, byQ);
+    if (byQ.empty()) {
+        LOGDEB("qualityTerms returned no terms for docid " << docid << " input terms " <<
+               stringsToString(terms) << "\n");
+        return -1;
+    }
+    if (pagepos.empty()) {
+        // Just return the chosen term
+        if (!byQ.begin()->second.empty()) {
+            term = byQ.begin()->second[0];
+        }
+        return -1;
+    }
 
+    // Actually look for the page, for each best term in turn, stop as soon as we find one.
     for (auto mit = byQ.rbegin(); mit != byQ.rend(); mit++) {
         for (const auto& qterm : mit->second) {
             Xapian::PositionIterator pos;

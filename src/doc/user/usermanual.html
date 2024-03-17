@@ -423,7 +423,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1631">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1656">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -1525,16 +1525,15 @@ indexedmimetypes = application/pdf</pre>
                 <div>
                   <h4 class="title"><a name="idm453" id=
                   "idm453"></a>Creating and using an additional
-                  index: example</h4>
+                  index: Linux example</h4>
                 </div>
               </div>
             </div>
             <p>The following applies to <span class=
             "application">Unix</span>-like systems</p>
             <p>Initially creating the configuration and index:</p>
-            <pre class="programlisting">
-              mkdir <em class=
-"replaceable"><code>/path/to/my/new/config</code></em></pre>
+            <pre class="programlisting">mkdir <em class=
+            "replaceable"><code>/path/to/my/new/config</code></em></pre>
             <p>Configuring the new index can be done from the
             <span class="command"><strong>recoll</strong></span>
             GUI, launched from the command line to pass the
@@ -1543,23 +1542,19 @@ indexedmimetypes = application/pdf</pre>
             the <a class="link" href="#RCL.INDEXING.CONFIG.GUI"
             title="2.3.1.&nbsp;The index configuration GUI">GUI
             index configuration tool</a> to set up the index.</p>
-            <pre class="programlisting">
-              recoll -c <em class=
-"replaceable"><code>/path/to/my/new/config</code></em></pre>
+            <pre class="programlisting">recoll -c <em class=
+            "replaceable"><code>/path/to/my/new/config</code></em></pre>
             <p>Alternatively, you can just start a text editor on
             the main configuration file:</p>
-            <pre class="programlisting">
-              <em class=
-"replaceable"><code>someEditor</code></em> <em class=
-"replaceable"><code>/path/to/my/new/config</code></em>/<a class=
-"link" href="#RCL.INSTALL.CONFIG.RECOLLCONF" title=
-"5.4.2.&nbsp;Recoll main configuration file, recoll.conf"><code class="filename">recoll.conf</code></a>
-            </pre>
+            <pre class="programlisting"><em class=
+            "replaceable"><code>someEditor</code></em> <em class=
+            "replaceable"><code>/path/to/my/new/config</code></em>/<a class=
+            "link" href="#RCL.INSTALL.CONFIG.RECOLLCONF" title=
+            "5.4.2.&nbsp;Recoll main configuration file, recoll.conf"><code class="filename">recoll.conf</code></a></pre>
             <p>Creating and updating the index can be done from the
             command line:</p>
             <pre class="programlisting">recollindex -c <em class=
-            "replaceable"><code>/path/to/my/new/config</code></em>
-            </pre>
+            "replaceable"><code>/path/to/my/new/config</code></em></pre>
             <p>or from the File menu of a GUI launched with the
             same option (<span class=
             "command"><strong>recoll</strong></span>, see
@@ -1571,9 +1566,8 @@ indexedmimetypes = application/pdf</pre>
             non-default <code class="literal">-c</code>
             option).</p>
             <p>The new index can be queried alone with:</p>
-            <pre class="programlisting">
-              recoll -c <em class=
-"replaceable"><code>/path/to/my/new/config</code></em></pre>
+            <pre class="programlisting">recoll -c <em class=
+            "replaceable"><code>/path/to/my/new/config</code></em></pre>
             <p>Or, in parallel with the default index, by starting
             <span class="command"><strong>recoll</strong></span>
             without a <code class="literal">-c</code> option, and
@@ -1588,6 +1582,67 @@ indexedmimetypes = application/pdf</pre>
             <a class="link" href="#RCL.SEARCH.GUI.MULTIDB" title=
             "3.2.11.&nbsp;Multiple indexes">GUI external indexes
             section</a> for more details.</p>
+          </div>
+          <div class="sect3">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name="idm492" id=
+                  "idm492"></a>Creating an alternate index: Windows
+                  example</h4>
+                </div>
+              </div>
+            </div>
+            <p>When running <span class="application">Recoll</span>
+            under <span class="application">Windows</span>, the
+            simplest approach for using separate indexes is to
+            start the GUI from different desktop icons. The
+            following approach can be used:</p>
+            <div class="procedure">
+              <ol class="procedure" type="1">
+                <li class="step">
+                  <p>Create an empty folder somewhere for holding
+                  the new configuration and index.</p>
+                </li>
+                <li class="step">
+                  <p>Select the Recoll icon on the desktop and
+                  Copy/Paste it. If no desktop icon was created
+                  during installation, you can right-drag the
+                  recoll.exe program from <code class=
+                  "filename">C:\Program Files (X86)\Recoll</code>
+                  to the desktop and select <span class=
+                  "guilabel">Create shortcuts here</span> to create
+                  one.</p>
+                </li>
+                <li class="step">
+                  <p>Right-click the new shortcut and go to the
+                  <span class=
+                  "guilabel">Properties-&gt;shortcut</span> tab</p>
+                </li>
+                <li class="step">
+                  <p>Modify the <span class=
+                  "guilabel">Target</span> value from the original
+                  <code class="filename">C:\Program Files
+                  (x86)\Recoll\recoll.exe</code> to something
+                  like:</p>
+                  <pre class=
+                  "screen">"C:\Program Files (x86)\Recoll\recoll.exe" -c C:\Path\To\My\New\Directory</pre>
+                  <p>Use double quotes around the directory path is
+                  it contains spaces.</p>
+                </li>
+                <li class="step">
+                  <p>Then save the new Icon by clicking ok, and
+                  double click it to start a Recoll GUI for the new
+                  configuration. You should be presented with the
+                  initial configuration dialog.</p>
+                </li>
+              </ol>
+            </div>
+            <p>Any other method for running the GUI or <span class=
+            "command"><strong>recollindex</strong></span> program
+            with a <code class="literal">-c</code> option or a
+            RECOLL_CONFDIR value in the environment would work
+            too.</p>
           </div>
         </div>
         <div class="sect2">
@@ -4423,7 +4478,7 @@ customize the <code class="filename">fields</code> file.
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1631" id="idm1631"></a>
+            <a name="idm1656" id="idm1656"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -8347,8 +8402,8 @@ for i in range(nres):
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3377" id=
-                  "idm3377"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3402" id=
+                  "idm3402"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>
@@ -9271,6 +9326,11 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
             <code class="literal">sh autogen.sh</code> in the top
             source directory before running <code class=
             "literal">configure</code>.</p>
+            <p>You will also need to run <span class=
+            "command"><strong>configure</strong></span> with
+            <code class="literal">--disable-userdoc</code> or
+            install the Docbook XML/XSL files needed for
+            translating the Docbook XML manual into HTML.</p>
           </div>
         </div>
         <div class="sect2">
@@ -10037,17 +10097,23 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                   must not exist yet. Its exact effect depends on
                   the Xapian version.</p>
                   <p>For Xapian 1.4, if the variable is set to 0,
-                  the Chert format will be used, and the text will
-                  not be stored. If the variable is 1, Glass will
-                  be used, and the text stored.</p>
-                  <p>For Xapian 1.2, and for versions after 1.5 and
-                  newer, the index format is always the default,
-                  but the variable controls if the text is stored
-                  or not, and the abstract generation method. With
-                  Xapian 1.5 and later, and the variable set to 0,
-                  abstract generation may be very slow, but this
-                  setting may still be useful to save space if you
-                  do not use abstract generation at all.</p>
+                  we used to use the Chert format and not store the
+                  text. If the variable was 1, Glass was used, and
+                  the text stored. We don't do this any more:
+                  storing the text has proved to be the much better
+                  option, and dropping this possibility simplifies
+                  the code.</p>
+                  <p>So now, the index format for a new index is
+                  always the default, but the variable still
+                  controls if the text is stored or not, and the
+                  abstract generation method. With Xapian 1.4 and
+                  later, and the variable set to 0, abstract
+                  generation may be very slow, but this setting may
+                  still be useful to save space if you do not use
+                  abstract generation at all, by using the
+                  appropriate setting in the GUI, and/or avoiding
+                  the Python API or recollq options which would
+                  trigger it.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.NONUMBERS" id=
