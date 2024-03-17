@@ -28,15 +28,65 @@
 #include "rcldoc.h"
 #include "execmd.h"
 #include "conftree.h"
+using std::string;
+using std::map;
+using std::vector;
 
 #ifdef __APPLE__
 #include "transcode.h"
 #include "finderxattr.h"
-#endif // __APPLE__
 
-using std::string;
-using std::map;
-using std::vector;
+string decode_finder_metadata(const string& path, const string& xkey, const string& value)
+{
+    if (xkey == "com.apple.metadata:kMDItemFinderComment") {
+        auto [v1, error] = decode_comment_plist(
+            (const unsigned char *)value.c_str(), (int)value.size());
+        if (!error.empty()) {
+            LOGINF("reapXattrs: failed decoding finder comment for " << path << "\n");
+            return string();
+        } else {
+            if (!v1.empty() && v1[0] == 0) {
+                string v2;
+                transcode(v1, v2, "UCS-2BE", cstr_utf8);
+                return v2;
+            } else {
+                return v1;
+            }
+        }
+    } else if (xkey == "com.apple.metadata:_kMDItemUserTags") {
+        auto [v1, error] = decode_tags_plist(
+            (const unsigned char *)value.c_str(), (int)value.size());
+        if (!error.empty()) {
+            LOGINF("reapXattrs: failed decoding finder tags for " << path << "\n");
+            return string();
+        } else if (v1.empty()) {
+            return string();
+        } else {
+            // The tags have a color number at the end, which we discard as not interesting.
+            string nvalue;
+            for (auto& _s : v1) {
+                string s;
+                if (!_s.empty() && _s[0] == 0) {
+                    transcode(_s, s, "UCS-2BE", cstr_utf8);
+                } else {
+                    _s.swap(s);
+                }
+                auto pos = s.find_last_of(" \t\n\r");
+                if (pos != string::npos && pos < s.size() - 1) {
+                    if (isdigit(s[pos+1])) {
+                        s.erase(pos);
+                    }
+                }
+                trimstring(s, " \t\r\n");
+                nvalue += s + " ";
+            }
+            trimstring(nvalue, " \t\r\n");
+            return nvalue;
+        }
+    }
+    return string();
+}
+#endif // __APPLE__
 
 static void docfieldfrommeta(RclConfig* cfg, const string& name, const string &value, Rcl::Doc& doc)
 {
@@ -89,37 +139,14 @@ void reapXAttrs(const RclConfig* cfg, const string& path,  map<string, string>& 
         }
 
 #ifdef __APPLE__
-        if (xkey == "com.apple.metadata:kMDItemFinderComment") {
-            auto [v1, error] = decode_comment_plist(
-                (const unsigned char *)value.c_str(), (int)value.size());
-            if (!error.empty()) {
-                LOGINF("reapXattrs: failed decoding finder comment for " << path << "\n");
-            } else {
-                if (!v1.empty() && v1[0] == 0) {
-                    transcode(v1, value, "UCS-2BE", cstr_utf8);
-                } else {
-                    value.swap(v1);
-                }
-            }
-        } else if (xkey == "com.apple.metadata:_kMDItemUserTags") {
-            auto [v1, error] = decode_tags_plist(
-                (const unsigned char *)value.c_str(), (int)value.size());
-            if (!error.empty()) {
-                LOGINF("reapXattrs: failed decoding finder tags for " << path << "\n");
-            } else {
-                if (!v1.empty()) {
-                    std::string s;
-                    stringsToString(v1, s);
-                    if (!s.empty() && s[0] == 0) {
-                        transcode(s, value, "UCS-2BE", cstr_utf8);
-                    } else {
-                        value.swap(s);
-                    }
-                }
-            }
+        static const string applemetastr("com.apple.metadata:");
+        if (beginswith(xkey, applemetastr)) {
+            value = decode_finder_metadata(path, xkey, value);
         }
 #endif // __APPLE__
 
+        if (value.empty())
+            continue;
         // Encode should we ?
         addmeta(xfields, key, value);
         LOGDEB2("reapXAttrs: [" << key << "] -> [" << value << "]\n");
