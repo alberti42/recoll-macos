@@ -75,11 +75,13 @@ template void map_ss_cp_noshr<unordered_map<string, string> >(
 // instances. This ends up with commas at both ends to make duplicate search simpler
 template <class T> void addmeta(T& store, const string& nm, const string& value)
 {
+    LOGDEB2("addmeta: [" << nm << "] value [" << value << "]\n");
     static const std::string cstr_comma{','};
     auto it = store.find(nm);
     bool _;
-    if (it == store.end())
+    if (it == store.end()) {
         std::tie(it, _) = store.insert({nm, std::string()});
+    }
     std::string& pval = it->second;
     if (pval.empty()) {
         pval.reserve(value.size()+2);
@@ -89,7 +91,12 @@ template <class T> void addmeta(T& store, const string& nm, const string& value)
     } else {
         auto nval = cstr_comma + value + cstr_comma;
         if (pval.find(nval) == string::npos) {
-            pval += nval.substr(1);
+            // No end comma should not happen, but make sure
+            if (pval[pval.size()-1] != ',') {
+                pval += nval;
+            } else {
+                pval += nval.substr(1);
+            }
         }
     }
 }

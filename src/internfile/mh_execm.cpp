@@ -281,7 +281,6 @@ bool MimeHandlerExecMultiple::next_document()
             return false;
         }
     }
-    trimmeta(m_metaData);
     
     if (eofnow_received || fileerror_received) {
         // No more docs
