@@ -134,8 +134,10 @@ extern bool thumbPathForUrl(const std::string& url, int size, std::string& path)
 // string data (to pass to other thread):
 template <class T> void map_ss_cp_noshr(T s, T *d);
 
-// Set or extend metadata field. We store the data as CSV
+// Set or extend metadata field. We store the data as almost CSV
 template <class T> void addmeta(T& store, const std::string& nm, const std::string& value);
+// Remove some commas at the end
+template <class T> void trimmeta(T& store);
 
 // Compare charset names, removing the more common spelling variations
 extern bool samecharset(const std::string& cs1, const std::string& cs2);

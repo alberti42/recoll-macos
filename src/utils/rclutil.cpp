@@ -71,25 +71,39 @@ template void map_ss_cp_noshr<map<string, string> >(
 template void map_ss_cp_noshr<unordered_map<string, string> >(
     unordered_map<string,string> s, unordered_map<string,string>*d);
 
-// Add data to metadata field, store multiple values as CSV, avoid
-// appending multiple identical instances.
+// Add data to metadata field, store multiple values as (pseudo) CSV, avoid multiple identical
+// instances. This ends up with commas at both ends to make duplicate search simpler
 template <class T> void addmeta(T& store, const string& nm, const string& value)
 {
+    static const std::string cstr_comma{','};
     auto it = store.find(nm);
-    if (it == store.end() || it->second.empty()) {
-        store[nm] = value;
+    bool _;
+    if (it == store.end())
+        std::tie(it, _) = store.insert({nm, std::string()});
+    std::string& pval = it->second;
+    if (pval.empty()) {
+        pval.reserve(value.size()+2);
+        pval += cstr_comma;
+        pval += value;
+        pval += cstr_comma;
     } else {
-        // We would like to avoid duplicate values, but this would actually be rather costly
-        // (either multiple string::find for nocomma/commabefore/commaafter/both... or parse
-        // into set), and it's not worth the trouble. Also might go for proper csv?
-        store[nm] += ',';
-        store[nm] += value;
+        auto nval = cstr_comma + value + cstr_comma;
+        if (pval.find(nval) == string::npos) {
+            pval += nval.substr(1);
+        }
     }
 }
-template void addmeta<map<string, string>>(
-    map<string, string>&, const string&, const string&);
+template <class T> void trimmeta(T& store)
+{
+    for (auto& [_,value] : store) {
+        trimstring(value, " ,");
+    }
+}
+template void addmeta<map<string, string>>(map<string, string>&, const string&, const string&);
 template void addmeta<unordered_map<string, string>>(
     unordered_map<string, string>&, const string&, const string&);
+template void trimmeta<map<string, string>>(map<string, string>&);
+template void trimmeta<unordered_map<string, string>>(unordered_map<string, string>&);
 
 #ifdef _WIN32
 #include <Shlwapi.h>

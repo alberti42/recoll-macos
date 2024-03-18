@@ -619,9 +619,9 @@ FsTreeWalker::Status FsIndexer::processone(
 }
 
 // Start db update, either by queueing or by direct call
-bool FsIndexer::launchAddOrUpdate(const string& udi, const string& parent_udi,
-                                  Rcl::Doc& doc)
+bool FsIndexer::launchAddOrUpdate(const string& udi, const string& parent_udi, Rcl::Doc& doc)
 {
+    trimmeta(doc.meta);
 #ifdef IDX_THREADS
     if (m_haveSplitQ) {
         DbUpdTask *tp = new DbUpdTask(udi, parent_udi, doc);

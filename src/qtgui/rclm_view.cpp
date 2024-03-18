@@ -488,8 +488,7 @@ void RclMain::startManual(const string& index)
     webhelp = path_cat(webhelp, "index.html");
     bool has_wh = path_exists(webhelp);
     
-    LOGDEB("RclMain::startManual: help index is " <<
-           (index.empty() ? "(null)" : index) << "\n");
+    LOGDEB("RclMain::startManual: help index is " << (index.empty() ? "(null)" : index) << "\n");
     bool indexempty = index.empty();
 
 #ifdef _WIN32
@@ -510,6 +509,6 @@ void RclMain::startManual(const string& index)
         doc.url = path_pathtofileurl(usermanual);
     }
     doc.mimetype = "text/html";
-    doc.addmeta(Rcl::Doc::keyapptg, "rclman");
+    doc.meta[Rcl::Doc::keyapptg] = "rclman";
     startNativeViewer(doc);
 }

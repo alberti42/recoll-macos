@@ -439,9 +439,8 @@ void FileInterner::checkExternalMissing(const string& msg, const string& mt)
 
 void FIMissingStore::getMissingExternal(string& out) 
 {
-    for (map<string, set<string> >::const_iterator it = 
-             m_typesForMissing.begin(); it != m_typesForMissing.end(); it++) {
-        out += string(" ") + it->first;
+    for (const auto& [prog,tp] : m_typesForMissing) {
+        out += string(" ") + prog;
     }
     trimstring(out);
 }
@@ -449,18 +448,13 @@ void FIMissingStore::getMissingExternal(string& out)
 void FIMissingStore::getMissingDescription(string& out)
 {
     out.erase();
-
-    for (map<string, set<string> >::const_iterator it = 
-             m_typesForMissing.begin(); it != m_typesForMissing.end(); it++) {
-        out += it->first + " (";
-        set<string>::const_iterator it3;
-        for (it3 = it->second.begin(); 
-             it3 != it->second.end(); it3++) {
-            out += *it3 + " ";
+    for (const auto& [prog, tps] : m_typesForMissing) {
+        out += prog + " (";
+        for (const auto &tp: tps) {
+            out += tp + " ";
         }
         trimstring(out);
-        out += ")";
-        out += "\n";
+        out += ")\n";
     }
 }
 
@@ -473,8 +467,7 @@ FIMissingStore::FIMissingStore(const string& in)
     vector<string> lines;
     stringToTokens(in, lines, "\n");
 
-    for (vector<string>::const_iterator it = lines.begin();
-         it != lines.end(); it++) {
+    for (const string& line: lines) {
         // Lines from the file are like: 
         //
         // filter name string (mime1 mime2) 
@@ -482,7 +475,6 @@ FIMissingStore::FIMissingStore(const string& in)
         // We can't be too sure that there will never be a parenthesis
         // inside the filter string as this comes from the filter
         // itself. The list part is safer, so we start from the end.
-        const string& line = *it;
         string::size_type lastopen = line.find_last_of("(");
         if (lastopen == string::npos)
             continue;
@@ -497,16 +489,14 @@ FIMissingStore::FIMissingStore(const string& in)
         if (filter.empty())
             continue;
 
-        for (vector<string>::const_iterator itt = mtypes.begin(); 
-             itt != mtypes.end(); itt++) {
-            m_typesForMissing[filter].insert(*itt);
+        for (const auto& mtype: mtypes) {
+            m_typesForMissing[filter].insert(mtype);
         }
     }
 }
 
 // Helper for extracting a value from a map.
-static inline bool getKeyValue(const map<string, string>& docdata, 
-                               const string& key, string& value)
+static inline bool getKeyValue(const map<string, string>& docdata, const string& key, string& value)
 {
     auto it = docdata.find(key);
     if (it != docdata.end()) {
@@ -552,8 +542,9 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
         } else if (ent.first == cstr_dj_keyfn) {
             // Only if not set during the stack walk
             const string *fnp = 0;
-            if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
+            if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty()) {
                 doc.meta[Rcl::Doc::keyfn] = ent.second;
+            }
         } else if (ent.first == cstr_dj_keymd5) {
             // Only if not set during the stack walk: we want the md5
             // from the actual document, not from further conversions,
@@ -570,8 +561,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
             }
         }
     }
-    if (doc.meta[Rcl::Doc::keyabs].empty() && 
-        !doc.meta[cstr_dj_keyds].empty()) {
+    if (doc.meta[Rcl::Doc::keyabs].empty() && !doc.meta[cstr_dj_keyds].empty()) {
         doc.meta[Rcl::Doc::keyabs] = doc.meta[cstr_dj_keyds];
         doc.meta.erase(cstr_dj_keyds);
     }
@@ -812,7 +802,7 @@ void FileInterner::processNextDocError(Rcl::Doc &doc)
            doc.mimetype << " " << m_reason << "\n");
 }
 
-FileInterner::Status FileInterner::internfile(Rcl::Doc& doc,const string& ipath)
+FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath)
 {
     LOGDEB("FileInterner::internfile. ipath [" << ipath << "]\n");
 
@@ -954,7 +944,9 @@ breakloop:
             docFieldsFromXattrs(m_cfg, m_XAttrsFields, doc);
         }
         docFieldsFromMetaCmds(m_cfg, m_cmdFields, doc);
-    }        
+    }
+    // Remove spurious commas from metadata values
+    trimmeta(doc.meta);
 
     // Fix the bogus mtype used to force mh_text processing of text subdocs
     if (doc.mimetype == "text/plain1") {
@@ -964,8 +956,7 @@ breakloop:
     // possibly set aside an ancestor html text (for the GUI preview)
     while (!m_handlers.empty() && !m_handlers.back()->has_documents()) {
         if (m_forPreview) {
-            MimeHandlerHtml *hth = 
-                dynamic_cast<MimeHandlerHtml*>(m_handlers.back());
+            MimeHandlerHtml *hth = dynamic_cast<MimeHandlerHtml*>(m_handlers.back());
             if (hth) {
                 m_html = hth->get_html();
             }

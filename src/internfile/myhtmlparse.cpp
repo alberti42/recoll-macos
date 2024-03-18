@@ -483,6 +483,7 @@ MyHtmlParser::opening_tag(const string &tag)
         if (tag == "xmp") pending_space = true;
         break;
     }
+    trimmeta(meta);
     return true;
 }
 
