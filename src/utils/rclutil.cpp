@@ -73,23 +73,32 @@ template void map_ss_cp_noshr<unordered_map<string, string> >(
 
 // Add data to metadata field, store multiple values as (pseudo) CSV, avoid multiple identical
 // instances. This ends up with commas at both ends to make duplicate search simpler
+static void maybecommas(std::string& out, const std::string &val)
+{
+    if (val[0] != ',' && (out.empty() || out[out.size()-1] != ','))
+        out += ',';
+    out += val;
+    if (out[out.size()-1] != ',')
+        out += ',';
+}
 template <class T> void addmeta(T& store, const string& nm, const string& value)
 {
-    LOGDEB2("addmeta: [" << nm << "] value [" << value << "]\n");
     static const std::string cstr_comma{','};
+    LOGDEB2("addmeta: [" << nm << "] value [" << value << "]\n");
+    if (value.empty())
+        return;
+    
     auto it = store.find(nm);
-    bool _;
     if (it == store.end()) {
+        bool _;
         std::tie(it, _) = store.insert({nm, std::string()});
     }
     std::string& pval = it->second;
     if (pval.empty()) {
-        pval.reserve(value.size()+2);
-        pval += cstr_comma;
-        pval += value;
-        pval += cstr_comma;
+        maybecommas(pval , value);
     } else {
-        auto nval = cstr_comma + value + cstr_comma;
+        std::string nval;
+        maybecommas(nval, value);
         if (pval.find(nval) == string::npos) {
             // No end comma should not happen, but make sure
             if (pval[pval.size()-1] != ',') {
