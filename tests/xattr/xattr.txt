@@ -55,3 +55,7 @@ recollq myattr:xattrunique2
 recollq myattr:xattrunique3
 1 results
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/xattrs/tstxattrs.txt]	[tstxattrs.txt]	19	bytes	
+Testing keyword values in both file and xattrs
+pxattr -n xdg.tags -v kwvaluefromxattr /home/dockes/projets/fulltext/testrecoll/xattrs/tstxattrs.html
+recollindex -Zi /home/dockes/projets/fulltext/testrecoll/xattrs/tstxattrs.html
+keywords = kwvaluefromfile,kwvaluefromxattr

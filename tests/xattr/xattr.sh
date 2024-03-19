@@ -23,7 +23,8 @@ xrun()
 }
 
 tstfile=${tstdata}/xattrs/tstxattrs.txt
-rm -f $tstfile
+tstfilehtml=${tstdata}/xattrs/tstxattrs.html
+rm -f "$tstfile" "$tstfilehtml"
 
 (
     # Create the file with an extended attribute, index, and query it
@@ -79,6 +80,15 @@ rm -f $tstfile
     echo "1 result expected:"
     xrun recollq myattr:xattrunique3
 
+    # Check what happens when the file and the xattr contain values for the same attribute
+    echo Testing keyword values in both file and xattrs
+    cat > $tstfilehtml <<EOF
+<html><head><meta name="keywords" content="kwvaluefromfile"></head><body></body></html>
+EOF
+    xrun pxattr -n xdg.tags -v kwvaluefromxattr $tstfilehtml
+    xrun recollindex -Zi $tstfilehtml
+    xrun recollq -m keywords:kwvaluefromxattr keywords:kwvaluefromfile | grep 'keywords ='
+    
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 checkresult
