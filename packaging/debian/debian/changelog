@@ -1,3 +1,14 @@
+recoll (1.38.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Allow using multiple temporary Xapian indexes and a final merge.
+    This is useful for cases where the single-threaded Xapian index
+    updates would be the indexing speed bottleneck, which would typically
+    happen with simple input like HTML files. In such a case it can bring a
+    huge speedup of indexing, e.g. 3X on a 4 Core CPU.
+  * ...    
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 21 Mar 2024 14:15:00 +0100
+
 recoll (1.37.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix annoying error message from the Joplin indexer when Joplin is not
