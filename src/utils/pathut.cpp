@@ -131,6 +131,7 @@
 #define DIRENT _wdirent
 #define DIRHDL _WDIR
 #define MKDIR(a,b) _wmkdir(a)
+#define RENAME(o,n) _wrename(o,n)
 #define OPEN ::_wopen
 #define UNLINK _wunlink
 #define RMDIR _wrmdir
