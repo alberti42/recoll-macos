@@ -267,7 +267,7 @@ bool recursive_index(RclConfig *config, const string& top, const vector<string>&
 // this case we're called repeatedly in the same process, and the
 // confindexer is only created once by makeIndexerOrExit (but the db closed and
 // flushed every time)
-bool indexfiles(RclConfig *config, list<string> &filenames)
+bool indexfiles(RclConfig *config, list<string> &filenames, int flags)
 {
     if (filenames.empty())
         return true;
@@ -284,6 +284,7 @@ bool indexfiles(RclConfig *config, list<string> &filenames)
     if (op_flags & OPT_Z) {
         indexerFlags |= ConfIndexer::IxFInPlaceReset;
     }
+    indexerFlags |= flags;
     return confindexer->indexFiles(filenames, indexerFlags);
 }
 

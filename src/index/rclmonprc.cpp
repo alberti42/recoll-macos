@@ -44,6 +44,7 @@
 #include "smallut.h"
 #include "execmd.h"
 #include "recollindex.h"
+#include "indexer.h"
 #include "pathut.h"
 #ifndef _WIN32
 #include "x11mon.h"
@@ -549,7 +550,7 @@ bool startMonitor(RclConfig *conf, int opts)
             if (!modified.empty()) {
                 modified.sort();
                 modified.unique();
-                if (!indexfiles(conf, modified))
+                if (!indexfiles(conf, modified, ConfIndexer::IxFNoTmpDb))
                     break;
                 modified.clear();
                 didsomething = true;

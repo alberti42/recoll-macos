@@ -61,6 +61,9 @@ public:
                  // In place reset: pretend all documents need updating: allows updating all while
                  // keeping a usable index.
                  IxFInPlaceReset = 64,
+                 // Do not use multiple temporary indexes (which are only useful when many new files
+                 // are expected, e.g. not during monitoring)
+                 IxFNoTmpDb = 128,
     };
 
     /** Run indexers */

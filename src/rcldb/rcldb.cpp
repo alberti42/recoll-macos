@@ -230,7 +230,7 @@ void *DbMUpdWorker(void* vdbp)
     for (;;) {
         size_t qsz = -1;
         if (!tqp->take(&tsk, &qsz)) {
-            LOGINF("DbMUpdWorker: flushing index " << dbidx << "\n");
+            LOGDEB0("DbMUpdWorker: flushing index " << dbidx << "\n");
             xwdb.commit();
             tqp->workerExit();
             return (void*)1;
@@ -255,6 +255,7 @@ void *DbMUpdWorker(void* vdbp)
                 LOGERR("DbMUpdWorker: set_metadata failed: " << ermsg << "\n");
                 status = false;
             }                
+            LOGINFO("Db::add: docid " << did << " added [" << tsk->udi << "]\n");
             break;
         default:
             LOGERR("DbMUpdWorker: op not AddOrUpdate: " << tsk->op << " !!\n");
@@ -276,7 +277,7 @@ void *DbMUpdWorker(void* vdbp)
             }
         }
         if (needflush) {
-            LOGINF("DbMUpdWorker: flushing index " << dbidx << "\n");
+            LOGDEB("DbMUpdWorker: flushing index " << dbidx << "\n");
             xwdb.commit();
         }
     }
@@ -299,8 +300,6 @@ void Db::Native::maybeStartThreads()
         }
         m_havewriteq = true;
 
-        m_tmpdbcnt = 0;
-        cnf->getConfParam("thrTmpDbCnt", &m_tmpdbcnt);
         LOGINF("maybeStartThreads: tmpdbcnt is " << m_tmpdbcnt << "\n");
         if (m_tmpdbcnt > 0) {
             m_tmpdbflushflags.resize(m_tmpdbcnt);
@@ -325,12 +324,15 @@ void Db::Native::maybeStartThreads()
 
 #endif // IDX_THREADS
 
-void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
+void Db::Native::openWrite(const string& dir, Db::OpenMode mode, int flags)
 {
     LOGINF("Db::Native::openWrite\n");
-    int action = (mode == Db::DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
-        Xapian::DB_CREATE_OR_OVERWRITE;
+    int action = (mode == Db::DbUpd) ? Xapian::DB_CREATE_OR_OPEN : Xapian::DB_CREATE_OR_OVERWRITE;
 
+    m_tmpdbcnt = 0;
+    if (!(flags & Db::DbOFNoTmpDb))
+        m_rcldb->m_config->getConfParam("thrTmpDbCnt", &m_tmpdbcnt);
+    
 #ifdef _WIN32
     // On Windows, Xapian is quite bad at erasing a partial db, which can occur because of open file
     // deletion errors.
@@ -947,7 +949,7 @@ vector<string> Db::getStemmerNames()
     return res;
 }
 
-bool Db::open(OpenMode mode, OpenError *error)
+bool Db::open(OpenMode mode, OpenError *error, int flags)
 {
     if (error)
         *error = DbOpenMainDb;
@@ -981,7 +983,7 @@ bool Db::open(OpenMode mode, OpenError *error)
     string ermsg;
     try {
         if (isWriteMode(mode)) {
-            m_ndb->openWrite(dir, mode);
+            m_ndb->openWrite(dir, mode, flags);
             updated = vector<bool>(m_ndb->xwdb.get_lastdocid() + 1, false);
             // We used to open a readonly object in addition to the
             // r/w one because some operations were faster when
@@ -2131,7 +2133,7 @@ void Db::waitUpdIdle()
             LOGINF("DbMUpdWorker: flushing main index\n");
             m_ndb->xwdb.commit();
             for (int i = 0; i < m_ndb->m_tmpdbcnt; i++) {
-                LOGINF("DbMUpdWorker: flushing index " << i << "\n");
+                LOGDEB("DbMUpdWorker: flushing index " << i << "\n");
                 m_ndb->m_tmpdbs[i].commit();
             }
         } XCATCHERROR(ermsg);

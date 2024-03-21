@@ -197,7 +197,7 @@ class Db::Native {
     Native& operator=(const Native &) = delete;
 
 
-    void openWrite(const std::string& dir, Db::OpenMode mode);
+    void openWrite(const std::string& dir, Db::OpenMode mode, int flags);
     void openRead(const std::string& dir);
 
     // Determine if an existing index is of the full-text-storing kind

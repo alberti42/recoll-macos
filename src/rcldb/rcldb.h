@@ -135,11 +135,12 @@ public:
     Db& operator=(const Db&) = delete;
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
+    enum OpenFlags {DbOFNone=0, DbOFNoTmpDb=0x1};
     bool isWriteMode(OpenMode mode) {
         return mode == DbUpd || mode == DbTrunc;
     }
     enum OpenError {DbOpenNoError, DbOpenMainDb, DbOpenExtraDb};
-    bool open(OpenMode mode, OpenError *error = nullptr);
+    bool open(OpenMode mode, OpenError *error = nullptr, int flags = 0);
     bool close();
     bool isopen();
 

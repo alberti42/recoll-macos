@@ -290,9 +290,12 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flags)
     }
     myfiles.sort();
 
-    if (!m_db.open(Rcl::Db::DbUpd)) {
-        LOGERR("ConfIndexer: indexFiles error opening database " <<
-               m_config->getDbDir() << "\n");
+    Rcl::Db::OpenError error;
+    int dbflags = 0;
+    if ((flags & IxFNoTmpDb) != 0)
+        dbflags |= Rcl::Db::DbOFNoTmpDb;
+    if (!m_db.open(Rcl::Db::DbUpd, &error, dbflags)) {
+        LOGERR("ConfIndexer::indexFiles: error opening db in: " << m_config->getDbDir() << "\n");
         return false;
     }
 
@@ -342,8 +345,9 @@ bool ConfIndexer::purgeFiles(list<string> &files, int flags)
     }
     myfiles.sort();
 
-    if (!m_db.open(Rcl::Db::DbUpd)) {
-        LOGERR("ConfIndexer: purgeFiles error opening database " << m_config->getDbDir() << "\n");
+    Rcl::Db::OpenError error;
+    if (!m_db.open(Rcl::Db::DbUpd, &error, Rcl::Db::DbOFNoTmpDb)) {
+        LOGERR("ConfIndexer::purgeFiles error opening db in: " << m_config->getDbDir() << "\n");
         return false;
     }
     bool ret = false;
@@ -381,8 +385,10 @@ bool ConfIndexer::createStemmingDatabases()
     string slangs;
     bool ret = true;
     if (m_config->getConfParam("indexstemminglanguages", slangs)) {
-        if (!m_db.open(Rcl::Db::DbUpd)) {
-            LOGERR("ConfIndexer::createStemmingDb: could not open db\n");
+        Rcl::Db::OpenError error;
+        if (!m_db.open(Rcl::Db::DbUpd, &error, Rcl::Db::DbOFNoTmpDb)) {
+            LOGERR("ConfIndexer::createStemmingDatabases: error opening db in: " <<
+                   m_config->getDbDir() << "\n");
             addIdxReason("stemming", "could not open db");
             return false;
         }
@@ -408,8 +414,11 @@ bool ConfIndexer::createStemmingDatabases()
 
 bool ConfIndexer::createStemDb(const string &lang)
 {
-    if (!m_db.open(Rcl::Db::DbUpd))
+    Rcl::Db::OpenError error;
+    if (!m_db.open(Rcl::Db::DbUpd, &error, Rcl::Db::DbOFNoTmpDb)) {
+        LOGERR("ConfIndexer::createStemDb: error opening db in: " << m_config->getDbDir() << "\n");
         return false;
+    }
     vector<string> langs;
     stringToStrings(lang, langs);
     return m_db.createStemDbs(langs);
