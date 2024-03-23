@@ -423,7 +423,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1656">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1673">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -1722,104 +1722,169 @@ indexedmimetypes = application/pdf</pre>
           <pre class="programlisting">
             thrQSizes = -1 -1 -1
           </pre>
-          <p>The <span class="application">Recoll</span> indexing
-          process <span class=
-          "command"><strong>recollindex</strong></span> can use
-          multiple threads to speed up indexing on multiprocessor
-          systems. The work done to index files is divided in
-          several stages and some of the stages can be executed by
-          multiple threads. The stages are:</p>
-          <div class="orderedlist">
-            <ol class="orderedlist" type="1">
-              <li class="listitem">
-                <p>File system walking: this is always performed by
-                the main thread.</p>
-              </li>
-              <li class="listitem">
-                <p>File conversion and data extraction.</p>
-              </li>
-              <li class="listitem">
-                <p>Text processing (splitting, stemming, etc.).</p>
-              </li>
-              <li class="listitem">
-                <p><span class="application">Xapian</span> index
-                update.</p>
-              </li>
-            </ol>
-          </div>
-          <p>You can also read a <a class="ulink" href=
-          "https://www.recoll.org/pages/idxthreads/threadingRecoll.html"
-          target="_top">longer document</a> about the
-          transformation of <span class="application">Recoll</span>
-          indexing to multithreading.</p>
-          <p>The threads configuration is controlled by two
-          configuration file parameters.</p>
-          <div class="variablelist">
-            <dl class="variablelist">
-              <dt><span class="term"><code class=
-              "varname">thrQSizes</code></span></dt>
-              <dd>
-                <p>This variable defines the job input queues
-                configuration. There are three possible queues for
-                stages 2, 3 and 4, and this parameter should give
-                the queue depth for each stage (three integer
-                values). If a value of -1 is used for a given
-                stage, no queue is used, and the thread will go on
-                performing the next stage. In practise, deep queues
-                have not been shown to increase performance. A
-                value of 0 for the first queue tells <span class=
-                "application">Recoll</span> to perform
-                autoconfiguration (no need for anything else in
-                this case, thrTCounts is not used) - this is the
-                default configuration.</p>
-              </dd>
-              <dt><span class="term"><code class=
-              "varname">thrTCounts</code></span></dt>
-              <dd>
-                <p>This defines the number of threads used for each
-                stage. If a value of -1 is used for one of the
-                queue depths, the corresponding thread count is
-                ignored. It makes no sense to use a value other
-                than 1 for the last stage because updating the
-                <span class="application">Xapian</span> index is
-                necessarily single-threaded (and protected by a
-                mutex).</p>
-              </dd>
-            </dl>
-          </div>
-          <div class="note" style=
-          "margin-left: 0.5in; margin-right: 0.5in;">
-            <h3 class="title">Note</h3>
-            <p>If the first value in <code class=
-            "varname">thrQSizes</code> is 0, <code class=
-            "varname">thrTCounts</code> is ignored.</p>
-          </div>
-          <p>The following example would use three queues (of depth
-          2), and 4 threads for converting source documents, 2 for
-          processing their text, and one to update the index. This
-          was tested to be the best configuration on the test
-          system (quadri-processor with multiple disks).</p>
-          <pre class="programlisting">
+          <div class="sect3">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.CONFIG.THREADS.DOCPREP" id=
+                  "RCL.INDEXING.CONFIG.THREADS.DOCPREP"></a>Multithreading
+                  for document preparation</h4>
+                </div>
+              </div>
+            </div>
+            <p>The <span class="application">Recoll</span> indexing
+            process <span class=
+            "command"><strong>recollindex</strong></span> can use
+            multithreading to speed up indexing on multiprocessor
+            systems. This is currently enabled on <span class=
+            "application">Mac OS</span>-like systems and
+            <span class="application">Unix</span>-like systems
+            systems, but not under <span class=
+            "application">Windows</span>.</p>
+            <p>The data processing used to index files is divided
+            in several stages and some of the stages can be
+            executed by multiple threads. The stages are:</p>
+            <div class="orderedlist">
+              <ol class="orderedlist" type="1">
+                <li class="listitem">
+                  <p>File system walking: this is always performed
+                  by the main thread.</p>
+                </li>
+                <li class="listitem">
+                  <p>File conversion and data extraction.</p>
+                </li>
+                <li class="listitem">
+                  <p>Text processing (splitting, stemming,
+                  etc.).</p>
+                </li>
+                <li class="listitem">
+                  <p><span class="application">Xapian</span> index
+                  update.</p>
+                </li>
+              </ol>
+            </div>
+            <p>You can also read a <a class="ulink" href=
+            "https://www.recoll.org/pages/idxthreads/threadingRecoll.html"
+            target="_top">longer document</a> about the
+            transformation of <span class=
+            "application">Recoll</span> indexing to
+            multithreading.</p>
+            <p>The threads configuration is controlled by two
+            configuration file parameters.</p>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><span class="term"><code class=
+                "varname">thrQSizes</code></span></dt>
+                <dd>
+                  <p>This variable defines the job input queues
+                  configuration. There are three possible queues
+                  for stages 2, 3 and 4, and this parameter should
+                  give the queue depth for each stage (three
+                  integer values). If a value of -1 is used for a
+                  given stage, no queue is used, and the thread
+                  will go on performing the next stage. In
+                  practise, deep queues have not been shown to
+                  increase performance. A value of 0 for the first
+                  queue tells <span class=
+                  "application">Recoll</span> to perform
+                  autoconfiguration (no need for anything else in
+                  this case, thrTCounts is not used) - this is the
+                  default configuration.</p>
+                </dd>
+                <dt><span class="term"><code class=
+                "varname">thrTCounts</code></span></dt>
+                <dd>
+                  <p>This defines the number of threads used for
+                  each stage. If a value of -1 is used for one of
+                  the queue depths, the corresponding thread count
+                  is ignored. It makes no sense to use a value
+                  other than 1 for the last stage because updating
+                  the <span class="application">Xapian</span> index
+                  is necessarily single-threaded (and protected by
+                  a mutex).</p>
+                </dd>
+              </dl>
+            </div>
+            <div class="note" style=
+            "margin-left: 0.5in; margin-right: 0.5in;">
+              <h3 class="title">Note</h3>
+              <p>If the first value in <code class=
+              "varname">thrQSizes</code> is 0, <code class=
+              "varname">thrTCounts</code> is ignored.</p>
+            </div>
+            <p>The following example would use three queues (of
+            depth 2), and 4 threads for converting source
+            documents, 2 for processing their text, and one to
+            update the index. This was tested to be the best
+            configuration on the test system (quadri-processor with
+            multiple disks).</p>
+            <pre class="programlisting">
             thrQSizes = 2 2 2
             thrTCounts =  4 2 1
           </pre>
-          <p>The following example would use a single queue, and
-          the complete processing for each document would be
-          performed by a single thread (several documents will
-          still be processed in parallel in most cases). The
-          threads will use mutual exclusion when entering the index
-          update stage. In practise the performance would be close
-          to the precedent case in general, but worse in certain
-          cases (e.g. a Zip archive would be performed purely
-          sequentially), so the previous approach is preferred.
-          YMMV... The 2 last values for thrTCounts are ignored.</p>
-          <pre class="programlisting">
+            <p>The following example would use a single queue, and
+            the complete processing for each document would be
+            performed by a single thread (several documents will
+            still be processed in parallel in most cases). The
+            threads will use mutual exclusion when entering the
+            index update stage. In practise the performance would
+            be close to the precedent case in general, but worse in
+            certain cases (e.g. a Zip archive would be performed
+            purely sequentially), so the previous approach is
+            preferred. YMMV... The 2 last values for thrTCounts are
+            ignored.</p>
+            <pre class="programlisting">
             thrQSizes = 2 -1 -1
             thrTCounts =  6 1 1
           </pre>
-          <p>The following example would disable multithreading.
-          Indexing will be performed by a single thread.</p>
-          <pre class="programlisting">thrQSizes = -1 -1 -1</pre>
+            <p>The following example would disable multithreading.
+            Indexing will be performed by a single thread.</p>
+            <pre class="programlisting">thrQSizes = -1 -1 -1</pre>
+          </div>
+          <div class="sect3">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.INDEXING.CONFIG.THREADS.MULTIDX" id=
+                  "RCL.INDEXING.CONFIG.THREADS.MULTIDX"></a>Using
+                  multiple temporary indexes</h4>
+                </div>
+              </div>
+            </div>
+            <p>In some cases, either when the input documents are
+            simple and require little processing (e.g. HTML files),
+            or possibly with a high number of available cores, the
+            single-threaded Xapian index updates can become the
+            performance bottleneck for indexing.</p>
+            <p>In this case, it is possible to configure the
+            indexer (<span class="application">Recoll</span> 1.38
+            and later) for using multiple temporary indexes which
+            are merged at the end of the operation. This can
+            provide a huge gain in performance, but, as opposed to
+            multithreading for document preparation, it can also
+            have a (slight) negative impact in some cases, so that
+            it is not enabled by default.</p>
+            <p>The parameter which controls the number of temporary
+            indexes in <code class="filename">recoll.conf</code> is
+            named <code class="literal">thrTmpDbCnt</code>. The
+            default value is 0, meaning that no temporary indexes
+            are used.</p>
+            <p>If your document set is big, and you are using a
+            processor with many cores for indexing, especially if
+            the input documents are simple, it may be worth it to
+            experiment with the value. For example, with a partial
+            Wikipedia dump (many HTML small files), indexing times
+            could be divided almost by three, by using 4 temporary
+            indexes on a quad-core machine. More detail in this
+            <a class="ulink" href=
+            "https://www.recoll.org/pages/idxthreads/threadingRecoll.html#_the_xapian_bottleneck_and_how_it_was_resolved_thanks_to_xapian"
+            target="_top">article on the Recoll WEB site</a>.</p>
+            <p>All the tests were performed on SSDs, it is quite
+            probable that this approach would not work well on
+            spinning disks, at least not in its current form.</p>
+          </div>
         </div>
       </div>
       <div class="sect1">
@@ -4478,7 +4543,7 @@ customize the <code class="filename">fields</code> file.
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1656" id="idm1656"></a>
+            <a name="idm1673" id="idm1673"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -8402,8 +8467,8 @@ for i in range(nres):
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3402" id=
-                  "idm3402"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3419" id=
+                  "idm3419"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>
@@ -10646,6 +10711,22 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                   the last stage because updating the Xapian index
                   is necessarily single-threaded (and protected by
                   a mutex).</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.THRTMPDBCNT" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.THRTMPDBCNT"></a><span class="term"><code class="varname">thrTmpDbCnt</code></span></dt>
+                <dd>
+                  <p>Number of temporary indexes used during
+                  incremental or full indexing. If not set to zero,
+                  this defines how many temporary indexes we use
+                  during indexing. These temporary indexes are
+                  merged into the main one at the end of the
+                  operation. Using multiple indexes and a final
+                  merge can significantly improve indexing
+                  performance when the single-threaded Xapian index
+                  updates become a bottleneck. How useful this is
+                  depends on the type of input and CPU. See the
+                  manual for more details.</p>
                 </dd>
               </dl>
             </div>

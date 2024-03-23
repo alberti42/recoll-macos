@@ -979,18 +979,20 @@ indexedmimetypes = application/pdf</programlisting>
           </programlisting>
         </para>
 
-        <para>The &RCL; indexing process 
-          <command>recollindex</command> can use multiple threads to
-          speed up indexing on multiprocessor systems. The work done
-          to index files is divided in several stages and some of the
-          stages can be executed by multiple threads. The stages are:
+      <sect3 id="RCL.INDEXING.CONFIG.THREADS.DOCPREP">
+        <title>Multithreading for document preparation</title>
+
+        <para>The &RCL; indexing process <command>recollindex</command> can use multithreading to
+          speed up indexing on multiprocessor systems. This is currently enabled on &MAC; and &LIN;
+          systems, but not under &WIN;.</para>
+
+        <para>The data processing used to index files is divided in several stages and some of the
+          stages can be executed by multiple threads. The stages are: 
           <orderedlist>
             <listitem><para>File system walking: this is always performed by
                 the main thread.</para></listitem>
-            <listitem><para>File conversion and data
-                extraction.</para></listitem>
-            <listitem><para>Text processing (splitting, stemming,
-                etc.).</para></listitem>
+            <listitem><para>File conversion and data extraction.</para></listitem>
+            <listitem><para>Text processing (splitting, stemming, etc.).</para></listitem>
             <listitem><para>&XAP; index update.</para></listitem>
           </orderedlist>
         </para>
@@ -999,34 +1001,27 @@ indexedmimetypes = application/pdf</programlisting>
             longer document</ulink> about the transformation of
           &RCL; indexing to multithreading.</para>
 
-        <para>The threads configuration is controlled by two
-          configuration file parameters.</para>
+        <para>The threads configuration is controlled by two configuration file parameters.</para>
 
         <variablelist>
 
           <varlistentry><term><varname>thrQSizes</varname></term>
-            <listitem><para>This variable defines the job input queues
-                configuration. There are three possible queues for stages
-                2, 3 and 4, and this parameter should give the queue depth
-                for each stage (three integer values). If a value of -1 is
-                used for a given stage, no queue is used, and the thread
-                will go on performing the next stage. In practise, deep
-                queues have not been shown to increase performance. A value
-                of 0 for the first queue tells &RCL; to perform
-                autoconfiguration (no need for anything else in this case,
-                thrTCounts is not used) - this is the default
+            <listitem><para>This variable defines the job input queues configuration.
+                There are three possible queues for stages 2, 3 and 4, and this parameter should
+                give the queue depth for each stage (three integer values). If a value of -1 is used
+                for a given stage, no queue is used, and the thread will go on performing the next
+                stage. In practise, deep queues have not been shown to increase performance. A value
+                of 0 for the first queue tells &RCL; to perform autoconfiguration (no need for
+                anything else in this case, thrTCounts is not used) - this is the default
                 configuration.</para>
             </listitem>
           </varlistentry>
 
           <varlistentry><term><varname>thrTCounts</varname></term>
-            <listitem><para>This defines the number of threads used
-                for each stage. If a value of -1 is used for one of
-                the queue depths, the corresponding thread count is
-                ignored. It makes no sense to use a value other than 1
-                for the last stage because updating the &XAP; index is
-                necessarily single-threaded (and protected by a
-                mutex).</para>
+            <listitem><para>This defines the number of threads used for each stage. If a value of -1
+                is used for one of the queue depths, the corresponding thread count is ignored. It
+                makes no sense to use a value other than 1 for the last stage because updating the
+                &XAP; index is necessarily single-threaded (and protected by a mutex).</para>
             </listitem>
           </varlistentry>
 
@@ -1036,9 +1031,8 @@ indexedmimetypes = application/pdf</programlisting>
             0, <varname>thrTCounts</varname> is ignored.</para></note>
         
         <para>The following example would use three queues (of depth 2),
-          and 4 threads for converting source documents, 2 for
-          processing their text, and one to update the index. This was
-          tested to be the best configuration on the test system
+          and 4 threads for converting source documents, 2 for processing their text, and one to
+          update the index. This was tested to be the best configuration on the test system
           (quadri-processor with multiple disks).
           <programlisting>
             thrQSizes = 2 2 2
@@ -1047,25 +1041,50 @@ indexedmimetypes = application/pdf</programlisting>
         </para>
 
         <para>The following example would use a single queue, and the
-          complete processing for each document would be performed by
-          a single thread (several documents will still be processed
-          in parallel in most cases). The threads will use mutual
-          exclusion when entering the index update stage. In practise
-          the performance would be close to the precedent case in
-          general, but worse in certain cases (e.g. a Zip archive
-          would be performed purely sequentially), so the previous
-          approach is preferred. YMMV...  The 2 last values for
-          thrTCounts are ignored.
+          complete processing for each document would be performed by a single thread (several
+          documents will still be processed in parallel in most cases). The threads will use mutual
+          exclusion when entering the index update stage. In practise the performance would be close
+          to the precedent case in general, but worse in certain cases (e.g. a Zip archive would be
+          performed purely sequentially), so the previous approach is preferred. YMMV...  The 2 last
+          values for thrTCounts are ignored.
           <programlisting>
             thrQSizes = 2 -1 -1
             thrTCounts =  6 1 1
           </programlisting>
         </para>
 
-        <para>The following example would disable
-          multithreading. Indexing will be performed by a single
-          thread.</para>
+        <para>The following example would disable multithreading. Indexing will be performed by a
+          single thread.</para>
         <programlisting>thrQSizes = -1 -1 -1</programlisting>
+      </sect3>
+
+      <sect3 id="RCL.INDEXING.CONFIG.THREADS.MULTIDX">
+        <title>Using multiple temporary indexes</title>
+
+        <para>In some cases, either when the input documents are simple and require little
+          processing (e.g. HTML files), or possibly with a high number of available cores, the
+          single-threaded Xapian index updates can become the performance bottleneck for
+          indexing.</para>
+        <para>In this case, it is possible to configure the indexer (&RCL; 1.38 and later) for using
+          multiple temporary indexes which are merged at the end of the operation. This can
+          provide a huge gain in performance, but, as opposed to multithreading for document
+          preparation, it can also have a (slight) negative impact in some cases, so that it is not
+          enabled by default.</para>
+        <para>The parameter which controls the number of temporary indexes
+          in <filename>recoll.conf</filename> is named <literal>thrTmpDbCnt</literal>. The default
+          value is 0, meaning that no temporary indexes are used.</para>
+        <para>If your document set is big, and you are using a processor with many cores for
+        indexing, especially if the input documents are simple, it may be worth it to experiment
+        with the value. For example, with a partial Wikipedia dump (many HTML small files), indexing
+        times could be divided almost by three, by using 4 temporary indexes on a quad-core
+        machine. More detail in
+        this <ulink url="https://www.recoll.org/pages/idxthreads/threadingRecoll.html#_the_xapian_bottleneck_and_how_it_was_resolved_thanks_to_xapian">article
+            on the Recoll WEB site</ulink>.</para>
+        <para>All the tests were performed on SSDs, it is quite probable that this approach would
+          not work well on spinning disks, at least not in its current form.</para>
+        
+      </sect3>
+        
       </sect2>
     </sect1>
 

@@ -595,6 +595,14 @@ threads used for each stage (file data extraction, term generation, index update
 sense to use a value other than 1 for the last stage because updating the Xapian index is
 necessarily single-threaded (and protected by a mutex).
 </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.THRTMPDBCNT">
+<term><varname>thrTmpDbCnt</varname></term>
+<listitem><para>Number of temporary indexes used during incremental or full indexing. If not set to zero, this defines how many temporary indexes we use during indexing.
+These temporary indexes are merged into the main one at the end of the operation.
+Using multiple indexes and a final merge can significantly improve indexing performance when
+the single-threaded Xapian index updates become a bottleneck. How useful this is depends
+on the type of input and CPU. See the manual for more details.
+</para></listitem></varlistentry>
 </variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">
 <title>Miscellaneous parameters </title><variablelist>
