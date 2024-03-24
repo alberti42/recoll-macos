@@ -737,11 +737,10 @@ void RclMain::fileExit()
     rwSettings(true);
 
     deleteAllTempFiles();
-
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0)) && !defined(PREVIEW_FORCETEXTBROWSER)
     // For some reason, qt5 qApp->exit(0) here stops desktop shutdown (at least on KDE and
     // Cinnamon). Recoll exits but the shutdown is aborted.
-    exit(0);
+    _exit(0);
 #else
     qApp->exit(0);
 #endif
