@@ -2101,8 +2101,8 @@ string RclConfig::findFilter(const string &icmd) const
     temp = path_cat(m->m_datadir, "filters");
     temp = path_cat(temp, "python");
     PATH = temp + path_PATHsep() + PATH;
-    PATH = path_thisexecpath() + path_PATHsep() + PATH;
 #endif
+    PATH = path_thisexecdir() + path_PATHsep() + PATH;
     // Prepend possible configuration parameter?
     if (getConfParam(string("filtersdir"), temp)) {
         temp = path_tildexpand(temp);

@@ -34,6 +34,7 @@
 #include <QNetworkProxy>
 
 #include "rcldb.h"
+#include "rclutil.h"
 #include "rclconfig.h"
 #include "pathut.h"
 #include "recoll.h"
@@ -244,6 +245,8 @@ Usage(void)
 
 int main(int argc, char **argv)
 {
+    rclutil_setargv0(argv[0]);
+    
     // if we are named recollq or option "-t" is present at all, we
     // don't do the GUI thing and pass the whole to recollq for
     // command line / pipe usage.

@@ -49,8 +49,7 @@ void WinSchedToolW::init()
     // accented characters
     string confdir = path_shortpath(theconfig->getConfDir());
     
-    // path_thisexecpath() returns the directory
-    string recollindex = path_cat(path_thisexecpath(), "recollindex.exe");
+    string recollindex = path_cat(path_thisexecdir(), "recollindex.exe");
     LOGDEB("WinSchedTool: recollindex: " << recollindex << endl);
 
     string batchfile = path_cat(confdir, "winsched.bat");

@@ -23,6 +23,8 @@
 #include "safefcntl.h"
 #include "safeunistd.h"
 #include "cstr.h"
+#include "execmd.h"
+
 #ifdef _WIN32
 #include "safewindows.h"
 #include <Shlobj.h>
@@ -57,6 +59,13 @@
 #include "utf8iter.h"
 
 using namespace std;
+
+static std::string argv0;
+void rclutil_setargv0(const char *a0)
+{
+    if (a0)
+        argv0 = a0;
+}
 
 template <class T> void map_ss_cp_noshr(T s, T *d)
 {
@@ -125,7 +134,7 @@ template void trimmeta<unordered_map<string, string>>(unordered_map<string, stri
 #include <Shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
 
-string path_thisexecpath()
+string path_thisexecdir()
 {
     wchar_t text[MAX_PATH];
     GetModuleFileNameW(NULL, text, MAX_PATH);
@@ -143,6 +152,56 @@ string path_thisexecpath()
     return path;
 }
 
+#elif defined(__APPLE__)
+std::string path_thisexecdir()
+{
+    uint32_t size = 0;
+    _NSGetExecutablePath(nullptr, &size);
+    char *path= (char*)malloc(size+1);
+    _NSGetExecutablePath(path, &size);
+    std::string ret = path_getfather(path);
+    free(path);
+    return ret;
+}
+
+#else
+
+// https://stackoverflow.com/questions/606041/how-do-i-get-the-path-of-a-process-in-unix-linux
+std::string path_thisexecdir()
+{
+    char pathbuf[PATH_MAX];
+    /* Works on Linux */
+    if (ssize_t buff_len = readlink("/proc/self/exe", pathbuf, PATH_MAX - 1); buff_len != -1) {
+        return path_getfather(std::string(pathbuf, buff_len));
+    }
+
+    /* If argv0 is null we're doomed: execve("foobar", nullptr, nullptr) */
+    if (argv0.empty()) {
+        return std::string();
+    }
+
+    // Try argv0 as relative path
+    if (nullptr != realpath(argv0.c_str(), pathbuf) && access(pathbuf, F_OK) == 0) {
+        return path_getfather(pathbuf);
+    }
+
+    /* Current path ?? This would seem to assume that . is in the PATH so would be covered
+       later. Not sure I understand the case */
+    std::string cmdname = path_getsimple(argv0);
+    std::string path = path_cat(path_cwd(), cmdname);
+    if (access(path.c_str(), F_OK) == 0) {
+        return path_getfather(path);
+    }
+
+    /* Try the PATH. */
+    if (ExecCmd::which(cmdname, path)) {
+        return path_getfather(path);
+    }
+    return std::string();
+}
+#endif // !_WIN32 && !__APPLE__
+
+#ifdef _WIN32
 // On Windows, we use a subdirectory named "rcltmp" inside the windows
 // temp location to create the temporary files in.
 static const string& path_wingetrcltmpdir()
@@ -271,6 +330,8 @@ const string& path_pkgdatadir()
     if (!datadir.empty()) {
         return datadir;
     }
+
+    // All platforms: use environment variable if set
     const char *cdatadir = getenv("RECOLL_DATADIR");
     if (nullptr != cdatadir) {
         datadir = cdatadir;
@@ -284,8 +345,8 @@ const string& path_pkgdatadir()
     // exe which could be anywhere. Try the default installation
     // directory, else tell the user to set the environment
     // variable.
-    vector<string> paths{path_thisexecpath(), "c:/program files (x86)/recoll",
-            "c:/program files/recoll"};
+    vector<string> paths{path_thisexecdir(), "c:/program files (x86)/recoll",
+        "c:/program files/recoll"};
     for (const auto& path : paths) {
         datadir = path_cat(path, "Share");
         if (path_exists(datadir)) {
@@ -301,15 +362,20 @@ const string& path_pkgdatadir()
     // The package manager builds (Macports, Homebrew, Nixpkgs ...) all arrange to set a proper
     // compiled value for RECOLL_DATADIR. We can't do this when building a native bundle with
     // QCreator, in which case we use the executable location.
-    uint32_t size = 0;
-    _NSGetExecutablePath(nullptr, &size);
-    char *path= (char*)malloc(size+1);
-    _NSGetExecutablePath(path, &size);
-    datadir = path_cat(path_getfather(path_getfather(path)), "Resources");
-    free(path);
+    datadir = path_cat(path_getfather(path_thisexecdir()), "Resources");
 #else
-    // If not in environment, use the compiled-in constant.
+    // If not in environment, try to use the compiled-in constant.
     datadir = RECOLL_DATADIR;
+    if (!path_isdir(datadir)) {
+        auto top = path_getfather(path_thisexecdir());
+        vector<string> paths{"share/recoll", "usr/share/recoll"};
+        for (const auto& path : paths) {
+            datadir = path_cat(top, path);
+            if (path_exists(datadir)) {
+                return datadir;
+            }
+        }
+    }
 #endif
     return datadir;
 }

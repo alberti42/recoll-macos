@@ -107,12 +107,8 @@ void RclMain::periodic100()
     
     LOGDEB2("Periodic100\n" );
     if (recollindex.empty()) {
-#ifdef _WIN32
-        // We are not in the PATH in general. make recollindex a full path
-        recollindex = path_cat(path_thisexecpath(), "recollindex");
-#else
-        recollindex = "recollindex";
-#endif
+        // In many cases (_WIN32, appimage, we are not in the PATH. make recollindex a full path
+        recollindex = path_cat(path_thisexecdir(), "recollindex");
     }
     if (!m_idxreasontmp || !m_idxreasontmp->ok()) {
         // We just store the pointer and let the tempfile cleaner deal
