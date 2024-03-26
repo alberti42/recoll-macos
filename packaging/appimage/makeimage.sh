@@ -1,0 +1,50 @@
+#!/bin/sh
+RECOLL=/home/dockes/recoll/
+UNRTF=/home/dockes/unrtf
+ANTIWORD=/home/dockes/antiword
+APPDIR=/home/dockes/AppDir/
+DEPLOYBINDIR=/home/dockes
+
+
+maybelater()
+{
+    # This would need that:
+    # - We change the apps to find their resources relative to the exec (probably almost done,
+    #   check on Windows ?
+    # - We make sure that the PATH is ok for the handlers to find them in the mounted bin
+    
+    cd $UNRTF
+    make -j 4 || exit 1
+    make install DESTDIR=$APPDIR || exit 1
+
+    cd $ANTIWORD
+    make -f Makefile.Linux
+    cp antiword $APPDIR/usr/bin/ || exit 1
+    mkdir -p $APPDIR/usr/share/antiword || exit 1
+    cp -rp Resources/*.txt Resources/fontnames $APPDIR/usr/share/antiword/ || exit 1
+}
+
+cd $RECOLL/src
+make -j 4 || exit 1
+make install DESTDIR=$APPDIR || exit 1
+sudo make install || exit 1
+for pyversion in 3.8 3.9 3.10 3.11 3.12;do
+    for nm in recoll chm aspell; do
+        case $nm in
+            recoll) srcdir=recoll;modir=recoll;;
+            chm) srcdir=pychm;modir=recollchm;;
+            aspell) srcdir=pyaspell;modir='';;
+        esac
+        cd $RECOLL/src/python/$srcdir
+        #rm -rf build/
+        python$pyversion setup.py build || exit 1
+        if test $nm = aspell;then
+            cp build/lib*/*.so $APPDIR/usr/lib/python3/dist-packages/ || exit 1
+        else
+            cp build/lib*/*/*.so $APPDIR/usr/lib/python3/dist-packages/$modir || exit 1
+        fi
+    done
+done
+    
+cd
+$DEPLOYBINDIR/linuxdeploy-x86_64.AppImage --appdir $APPDIR --output appimage --plugin qt
