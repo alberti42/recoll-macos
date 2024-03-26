@@ -342,6 +342,23 @@ RclConfig *recollinit(int flags,
     LOGDEB("Rclinit: PATH [" << getenv("PATH") << "]\n");
 #endif /* __APPLE__ */
 
+    if (getenv("APPIMAGE")) {
+        std::string pythonpath;
+        auto cp = getenv("PYTHONPATH");
+        if (cp)
+            pythonpath = cp;
+        cp = getenv("APPDIR");
+        if (cp) {
+            auto npath = path_cat(cp, "usr/lib/python3/dist-packages/");
+            if (!pythonpath.empty()) {
+                npath += path_PATHsep() + pythonpath;
+            }
+            setenv("PYTHONPATH", npath.c_str(), 1);
+            npath = path_cat(cp, "usr/lib");
+            setenv("LD_LIBRARY_PATH", npath.c_str(), 1);
+        }
+    }
+    
     TextSplit::staticConfInit(config);
     
     // Retrieve the log file name and level. Daemon and batch indexing
