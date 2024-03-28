@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# Note: this supposes that all used python version have been installed with make altinstall
+
 RECOLL=/home/dockes/recoll/
 UNRTF=/home/dockes/unrtf
 ANTIWORD=/home/dockes/antiword
@@ -6,17 +9,19 @@ APPDIR=/home/dockes/AppDir/
 DEPLOYBINDIR=/home/dockes
 
 
-maybelater()
+auxprogs()
 {
     # This would need that:
     # - We change the apps to find their resources relative to the exec (probably almost done,
     #   check on Windows ?
     # - We make sure that the PATH is ok for the handlers to find them in the mounted bin
-    
+
+    echo "Building UNRTF"
     cd $UNRTF
     make -j 4 || exit 1
     make install DESTDIR=$APPDIR || exit 1
 
+    echo "Building ANTIWORD"
     cd $ANTIWORD
     make -f Makefile.Linux
     cp antiword $APPDIR/usr/bin/ || exit 1
@@ -45,6 +50,8 @@ for pyversion in 3.8 3.9 3.10 3.11 3.12;do
         fi
     done
 done
-    
+
+auxprogs
+
 cd
 $DEPLOYBINDIR/linuxdeploy-x86_64.AppImage --appdir $APPDIR --output appimage --plugin qt
