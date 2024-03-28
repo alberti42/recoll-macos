@@ -296,6 +296,11 @@ RclConfig *recollinit(int flags,
         return nullptr;
     }
 
+    const char *cp = getenv("PATH");
+    if (!cp) //??
+        cp = "";
+    string PATH(cp);
+    
 #ifdef __APPLE__
     // Setting the PATH for a desktop app
     //
@@ -307,11 +312,6 @@ RclConfig *recollinit(int flags,
     // and recipee. The hard-coded values of paths added for MACPORTS
     // and HOMEBREW could be replaced with recollhelperpath use. Kept
     // to minimize disturbance.
-
-    const char *cp = getenv("PATH");
-    if (!cp) //??
-        cp = "";
-    string PATH(cp);
 
 #if defined(MACPORTS)
     PATH = string("/opt/local/bin/") + ":" + PATH;
@@ -339,26 +339,32 @@ RclConfig *recollinit(int flags,
     }
 
     setenv("PATH", PATH.c_str(), 1);
-    LOGDEB("Rclinit: PATH [" << getenv("PATH") << "]\n");
 #endif /* __APPLE__ */
+
 
     if (getenv("APPIMAGE")) {
         std::string pythonpath;
         auto cp = getenv("PYTHONPATH");
         if (cp)
             pythonpath = cp;
-        cp = getenv("APPDIR");
-        if (cp) {
-            auto npath = path_cat(cp, "usr/lib/python3/dist-packages/");
+        auto appdir = getenv("APPDIR");
+        if (appdir) {
+            auto npath = path_cat(appdir, "usr/lib/python3/dist-packages/");
             if (!pythonpath.empty()) {
                 npath += path_PATHsep() + pythonpath;
             }
             setenv("PYTHONPATH", npath.c_str(), 1);
-            npath = path_cat(cp, "usr/lib");
+
+            npath = path_cat(appdir, "usr/lib");
             setenv("LD_LIBRARY_PATH", npath.c_str(), 1);
+
+            npath = path_cat(appdir, "usr/bin");
+            PATH = PATH + path_PATHsep() + npath;
+            setenv("PATH", PATH.c_str(), 1);
         }
     }
     
+
     TextSplit::staticConfInit(config);
     
     // Retrieve the log file name and level. Daemon and batch indexing
@@ -406,6 +412,7 @@ RclConfig *recollinit(int flags,
         Logger::getTheLog("")->setLogLevel(Logger::LogLevel(lev));
     }
     LOGINF(Rcl::version_string() << " [" << config->getConfDir() << "]\n");
+    LOGDEB("Rclinit: PATH [" << getenv("PATH") << "]\n");
 
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
