@@ -397,7 +397,7 @@ EXTRA_DIST = \
 bincimapmime/00README.recoll bincimapmime/AUTHORS bincimapmime/COPYING \
 \
 desktop/hotrecoll.py \
-desktop/recoll.appdata.xml \
+desktop/org.recoll.recoll.appdata.xml \
 desktop/recollindex.desktop \
 desktop/recoll_index_on_ac.sh \
 desktop/recoll-searchgui.desktop \

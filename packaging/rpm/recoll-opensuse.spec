@@ -109,7 +109,7 @@ exit 0
 %{_bindir}/%{name}
 %{_bindir}/%{name}index
 %{_datadir}/%{name}
-%{_datadir}/metainfo/%{name}.appdata.xml
+%{_datadir}/metainfo/org.recoll.recoll.appdata.xml
 %{_datadir}/applications/%{name}-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png

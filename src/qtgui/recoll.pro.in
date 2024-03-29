@@ -446,7 +446,7 @@ VPATH = @srcdir@
   icona.path = $$PREFIX/share/icons/hicolor/48x48/apps/
   iconb.files += @srcdir@/../desktop/recoll.png
   iconb.path = $$PREFIX/share/pixmaps/
-  appdata.files = @srcdir@/../desktop/recoll.appdata.xml
+  appdata.files = @srcdir@/../desktop/org.recoll.recoll.appdata.xml
   appdata.path = $$PREFIX/share/metainfo/
   INSTALLS += target imdata trdata desktop icona iconb appdata
 

@@ -142,7 +142,7 @@ popd
 %{_bindir}/recollindex
 %{_bindir}/recollq
 %{_datadir}/recoll
-%{_datadir}/metainfo/recoll.appdata.xml
+%{_datadir}/metainfo/org.recoll.recoll.appdata.xml
 %{_datadir}/applications/recoll-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/recoll.png
 %{_includedir}/

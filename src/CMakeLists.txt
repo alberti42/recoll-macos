@@ -649,7 +649,7 @@ if (LINUX)
 
     install(FILES desktop/recoll-searchgui.desktop
         DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
-    install(FILES desktop/recoll.appdata.xml
+    install(FILES desktop/org.recoll.recoll.appdata.xml
         DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
 
     install(FILES desktop/recoll.png
