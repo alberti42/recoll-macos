@@ -482,9 +482,9 @@ void ResListPager::displaySingleDoc(
     bdtag += bodyAttrs();
     rtrimstring(bdtag, " ");
     bdtag += ">";
-    chunk += std::string("<html><head>\n");
-          + "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
-          + headerContent() + "</head>\n" + bdtag + "\n";
+    chunk += std::string("<html><head>\n") +
+        "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n" +
+        headerContent() + "</head>\n" + bdtag + "\n";
     append(chunk);
     // Document
     displayDoc(config, idx, doc, hdata, string());
