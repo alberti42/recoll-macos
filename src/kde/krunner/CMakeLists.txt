@@ -6,10 +6,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(runnerexample)
 
-set(KF5_MIN_VERSION "5.90")
+set(KF6_MIN_VERSION "6.0")
 
 # Include the Extra-CMake-Modules project
-find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
+find_package(ECM ${KF6_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PATH})
 
 include(KDEInstallDirs)
@@ -17,7 +17,7 @@ include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(FeatureSummary)
 
-find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config Runner KIO Notifications)
+find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS I18n Config Runner KIO Notifications Config)
 
 ## Recoll stuff
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../)
@@ -65,18 +65,18 @@ if (RECOLL_PUBLIC_LIB)
   endif()
 endif()
 
-kcoreaddons_add_plugin(runner_recoll SOURCES recollrunner.cpp INSTALL_NAMESPACE "kf5/krunner")
+kcoreaddons_add_plugin(krunner_recoll SOURCES recollrunner.cpp INSTALL_NAMESPACE "kf6/krunner")
 if (NOT RECOLL_PUBLIC_LIB)
-add_dependencies(runner_recoll rcllib)
+add_dependencies(krunner_recoll rcllib)
 endif()
-set_property(TARGET runner_recoll PROPERTY CXX_STANDARD 14)
+set_property(TARGET krunner_recoll PROPERTY CXX_STANDARD 14)
 
-target_link_libraries(runner_recoll
-    KF5::I18n
-    KF5::ConfigCore
-    KF5::Runner
-    KF5::KIOWidgets
-    KF5::Notifications
+target_link_libraries(krunner_recoll
+    KF6::I18n
+    KF6::ConfigCore
+    KF6::Runner
+    KF6::KIOWidgets
+    KF6::Notifications
     recoll
     xapian
     xslt

@@ -23,7 +23,7 @@
 #include <QString>
 #include <QUrl>
 
-#include <kio/slavebase.h>
+#include <kio/workerbase.h>
 
 #include "reslistpager.h"
 
@@ -38,7 +38,7 @@ class Db;
 class RecollKioPager : public ResListPager {
 public:
     RecollKioPager(RclConfig *cnf)
-        : ResListPager(cnf), m_parent(0) {}
+        : ResListPager(cnf), m_parent(nullptr) {}
     void setParent(RecollProtocol *proto) {
         m_parent = proto;
     }
@@ -59,7 +59,7 @@ private:
 
 class QueryDesc {
 public:
-    QueryDesc() : opt("l"), page(0), isDetReq(false) {}
+    QueryDesc() : opt(QString::fromUtf8("l")), page(0), isDetReq(false) {}
     QString query;
     QString opt;
     int page;
@@ -126,17 +126,17 @@ private:
 };
 
 /**
- * A KIO slave to execute and display Recoll searches.
+ * A KIO worker to execute and display Recoll searches.
  *
- * Things are made a little complicated because KIO slaves can't hope
+ * Things are made a little complicated because KIO workers can't hope
  * that their internal state will remain consistent with their user
- * application state: slaves die, are restarted, reused, at random
+ * application state: workers die, are restarted, reused, at random
  * between requests.
  * In our case, this means that any request has to be processed
  * without reference to the last operation performed. Ie, if the
  * search parameters are not those from the last request, the search
  * must be restarted anew. This happens for example with different
- * searches in 2 konqueror screens: typically only one kio_slave will
+ * searches in 2 konqueror screens: typically only one kio_worker will
  * be used.
  * The fact that we check if the search is the same as the last one,
  * to avoid restarting is an optimization, not the base mechanism
@@ -150,16 +150,16 @@ private:
  * allow easy copying of files etc. Which one is in use is decided by
  * the form of the URL.
  */
-class RecollProtocol : public KIO::SlaveBase {
+class RecollProtocol : public KIO::WorkerBase {
 public:
     RecollProtocol(const QByteArray& pool, const QByteArray& app);
     virtual ~RecollProtocol();
-    virtual void mimetype(const QUrl& url) override;
-    virtual void get(const QUrl& url) override;
+    virtual KIO::WorkerResult mimetype(const QUrl& url) override;
+    virtual KIO::WorkerResult get(const QUrl& url) override;
     // The directory mode is not available with KDE 4.0, I could find
     // no way to avoid crashing kdirmodel
-    virtual void stat(const QUrl& url) override;
-    virtual void listDir(const QUrl& url) override;
+    virtual KIO::WorkerResult stat(const QUrl& url) override;
+    virtual KIO::WorkerResult listDir(const QUrl& url) override;
 
     static RclConfig  *o_rclconfig;
 
@@ -168,7 +168,7 @@ public:
 
 private:
     bool maybeOpenDb(std::string& reason);
-    bool URLToQuery(const QUrl& url, QString& q, QString& opt, int *page = 0);
+    bool URLToQuery(const QUrl& url, QString& q, QString& opt, int *page = nullptr);
     bool doSearch(const QueryDesc& qd);
 
     void searchPage();
@@ -186,12 +186,12 @@ private:
     // english by default else env[RECOLL_KIO_STEMLANG]
     std::string      m_stemlang;
 
-    // Search state: because of how the KIO slaves are used / reused,
+    // Search state: because of how the KIO workers are used / reused,
     // we can't be sure that the next request will be for the same
     // search, and we need to check and restart one if the data
     // changes. This is very wasteful but hopefully won't happen too
     // much in actual use. One possible workaround for some scenarios
-    // (one slave several konqueror windows) would be to have a small
+    // (one worker several konqueror windows) would be to have a small
     // cache of recent searches kept open.
     std::unique_ptr<RecollKioPager> m_pager;
     std::shared_ptr<DocSequence> m_source;

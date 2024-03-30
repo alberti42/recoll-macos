@@ -1,26 +1,18 @@
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.16)
 project(kio_recoll)
 
-include(FeatureSummary)
+set(KF6_MIN_VERSION "6.0")
 
-set(QT_MIN_VERSION 5.2.0)
-set(KF5_MIN_VERSION 5.0.0)
-
-find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
-    Network
-    Widgets)
-
-find_package(ECM REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+# Include the Extra-CMake-Modules project
+find_package(ECM ${KF6_MIN_VERSION} REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PATH})
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
+include(FeatureSummary)
 
-# CoreAddons?
-find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS KIO)
-
-add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
+find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS I18n Config KIO Notifications)
 
 ## Recoll stuff
 
@@ -84,7 +76,7 @@ target_link_libraries(kio_recoll
     xapian
     xslt
     xml2
-    KF5::KIOCore
+    KF6::KIOCore
     X11
     dl
     z
@@ -96,6 +88,6 @@ install(FILES data/welcome.html	data/help.html
 
 set_target_properties(kio_recoll PROPERTIES OUTPUT_NAME "kio_recoll")
 # This is not set on ubuntu focal
-set(QT_MAJOR_VERSION 5)
+set(QT_MAJOR_VERSION 6)
 install(TARGETS kio_recoll
       DESTINATION ${KDE_INSTALL_PLUGINDIR}/kf${QT_MAJOR_VERSION}/kio)

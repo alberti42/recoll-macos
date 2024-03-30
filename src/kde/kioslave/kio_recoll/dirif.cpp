@@ -49,7 +49,7 @@ using namespace KIO;
 #define fastInsert insert
 #endif
 
-static const QString resultBaseName("recollResult");
+static const QString resultBaseName(QString::fromUtf8("recollResult"));
 
 // Check if the input URL is of the form that konqueror builds by
 // appending one of our result file names to the directory name (which
@@ -63,7 +63,8 @@ bool RecollProtocol::isRecollResult(const QUrl& url, int *num, QString *q)
 
     // Basic checks
     if (!url.host().isEmpty() || url.path().isEmpty() ||
-            (url.scheme().compare("recoll") && url.scheme().compare("recollf"))) {
+        (url.scheme().compare(QString::fromUtf8("recoll")) &&
+         url.scheme().compare(QString::fromUtf8("recollf")))) {
         qDebug() << "RecollProtocol::isRecollResult: no: url.host " <<
                  url.host() << " path " << url.path() << " scheme " << url.scheme();
         return false;
@@ -71,13 +72,13 @@ bool RecollProtocol::isRecollResult(const QUrl& url, int *num, QString *q)
 
     QString path = url.path();
     qDebug() << "RecollProtocol::isRecollResult: path: " << path;
-    if (!path.startsWith("/")) {
+    if (!path.startsWith(QString::fromUtf8("/"))) {
         return false;
     }
 
     // Look for the last '/' and check if it is followed by
     // resultBaseName (riiiight...)
-    int slashpos = path.lastIndexOf("/");
+    int slashpos = path.lastIndexOf(QString::fromUtf8("/"));
     if (slashpos == -1 || slashpos == 0 || slashpos == path.length() - 1) {
         return false;
     }
@@ -90,7 +91,7 @@ bool RecollProtocol::isRecollResult(const QUrl& url, int *num, QString *q)
 
     // Extract the result number
     QString snum = path.mid(slashpos + resultBaseName.length());
-    sscanf(snum.toUtf8(), "%d", num);
+    *num = snum.toInt();
     if (*num == -1) {
         return false;
     }
@@ -108,7 +109,7 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
 {
     UDSEntry entry;
 
-    QUrl url(doc.url.c_str());
+    QUrl url(QString::fromUtf8(doc.url.c_str()));
     //qDebug() << doc.url.c_str();
 
     /// Filename - as displayed in directory listings etc.
@@ -125,7 +126,7 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     // asked to access it
     char cnum[30];
     sprintf(cnum, "%04d", num);
-    entry.fastInsert(KIO::UDSEntry::UDS_NAME, resultBaseName + cnum);
+    entry.fastInsert(KIO::UDSEntry::UDS_NAME, resultBaseName + QString::fromUtf8(cnum));
 
     // Display the real file name
     entry.fastInsert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
@@ -140,20 +141,20 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     /// @since 4.1
     // We should probably set this only if the scheme is not 'file' (e.g.
     // from the web cache).
-    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
+    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, QString::fromUtf8(doc.url.c_str()));
 
     if (!doc.mimetype.compare("application/x-fsdirectory") ||
             !doc.mimetype.compare("inode/directory")) {
-        entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+        entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, QString::fromUtf8("inode/directory"));
         entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
     } else {
-        entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, doc.mimetype.c_str());
+        entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, QString::fromUtf8(doc.mimetype.c_str()));
         entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
     }
 
     // For local files, supply the usual file stat information
     struct stat info;
-    if (lstat(url.path().toUtf8(), &info) >= 0) {
+    if (lstat(url.path().toUtf8().data(), &info) >= 0) {
         entry.fastInsert(KIO::UDSEntry::UDS_SIZE, info.st_size);
         entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, info.st_mode);
         entry.fastInsert(KIO::UDSEntry::UDS_MODIFICATION_TIME, info.st_mtime);
@@ -169,42 +170,44 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
 static void createRootEntry(KIO::UDSEntry& entry)
 {
     entry.clear();
-    entry.fastInsert(KIO::UDSEntry::UDS_NAME, ".");
+    entry.fastInsert(KIO::UDSEntry::UDS_NAME, QString::fromUtf8("."));
     entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
     entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, 0700);
-    entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+    entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, QString::fromUtf8("inode/directory"));
 }
 
 // Points to html query screen
 static void createGoHomeEntry(KIO::UDSEntry& entry)
 {
     entry.clear();
-    entry.fastInsert(KIO::UDSEntry::UDS_NAME, "search.html");
-    entry.fastInsert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll search (click me)");
+    entry.fastInsert(KIO::UDSEntry::UDS_NAME, QString::fromUtf8("search.html"));
+    entry.fastInsert(KIO::UDSEntry::UDS_DISPLAY_NAME,QString::fromUtf8("Recoll search (click me)"));
     entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
-    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, "recoll:///search.html");
+    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, QString::fromUtf8("recoll:///search.html"));
     entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, 0500);
-    entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
-    entry.fastInsert(KIO::UDSEntry::UDS_ICON_NAME, "recoll");
+    entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, QString::fromUtf8("text/html"));
+    entry.fastInsert(KIO::UDSEntry::UDS_ICON_NAME, QString::fromUtf8("recoll"));
 }
 
 // Points to help file
 static void createGoHelpEntry(KIO::UDSEntry& entry)
 {
     QString location =
-        QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kio_recoll/help.html");
+        QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                               QString::fromUtf8("kio_recoll/help.html"));
     entry.clear();
-    entry.fastInsert(KIO::UDSEntry::UDS_NAME, "help");
-    entry.fastInsert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll help (click me first)");
+    entry.fastInsert(KIO::UDSEntry::UDS_NAME, QString::fromUtf8("help"));
+    entry.fastInsert(KIO::UDSEntry::UDS_DISPLAY_NAME,
+                     QString::fromUtf8("Recoll help (click me first)"));
     entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
-    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, QString("file://") + location);
+    entry.fastInsert(KIO::UDSEntry::UDS_TARGET_URL, QString::fromUtf8("file://") + location);
     entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, 0500);
-    entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
-    entry.fastInsert(KIO::UDSEntry::UDS_ICON_NAME, "help");
+    entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, QString::fromUtf8("text/html"));
+    entry.fastInsert(KIO::UDSEntry::UDS_ICON_NAME, QString::fromUtf8("help"));
 }
 
 // As far as I can see we only ever get this on '/' so why all the code?
-void RecollProtocol::stat(const QUrl& url)
+KIO::WorkerResult RecollProtocol::stat(const QUrl& url)
 {
     qDebug() << "RecollProtocol::stat:" << url;
 
@@ -233,7 +236,7 @@ void RecollProtocol::stat(const QUrl& url)
             break;
         default:
             qDebug() << "RecollProtocol::stat: ??";
-            error(ERR_DOES_NOT_EXIST, QString());
+//            error(ERR_DOES_NOT_EXIST, QString());
             break;
         }
     } else if (ingest.isResult(&qd, &num)) {
@@ -243,7 +246,7 @@ void RecollProtocol::stat(const QUrl& url)
             if (num >= 0 && m_source && m_source->getDoc(num, doc)) {
                 entry = resultToUDSEntry(doc, num);
             } else {
-                error(ERR_DOES_NOT_EXIST, QString());
+//                error(ERR_DOES_NOT_EXIST, QString());
             }
         } else {
             // hopefully syncSearch() set the error?
@@ -265,19 +268,19 @@ void RecollProtocol::stat(const QUrl& url)
             // Need to check no / in there
             entry.fastInsert(KIO::UDSEntry::UDS_NAME, qd.query);
             entry.fastInsert(KIO::UDSEntry::UDS_ACCESS, 0700);
-            entry.fastInsert(KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
-            entry.fastInsert(KIO::UDSEntry::UDS_CREATION_TIME, time(0));
+            entry.fastInsert(KIO::UDSEntry::UDS_MODIFICATION_TIME, time(nullptr));
+            entry.fastInsert(KIO::UDSEntry::UDS_CREATION_TIME, time(nullptr));
             entry.fastInsert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
-            entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+            entry.fastInsert(KIO::UDSEntry::UDS_MIME_TYPE, QString::fromUtf8("inode/directory"));
         }
     } else {
         qDebug() << "RecollProtocol::stat: none of the above ??";
     }
     statEntry(entry);
-    finished();
+    return KIO::WorkerResult::pass();
 }
 
-void RecollProtocol::listDir(const QUrl& url)
+KIO::WorkerResult RecollProtocol::listDir(const QUrl& url)
 {
     qDebug() << "RecollProtocol::listDir: url: " << url;
 
@@ -300,12 +303,11 @@ void RecollProtocol::listDir(const QUrl& url)
             createGoHelpEntry(entry);
             entries.append(entry);
             listEntries(entries);
-            finished();
         }
-        return;
+            return KIO::WorkerResult::pass();
         default:
-            error(ERR_CANNOT_ENTER_DIRECTORY, QString());
-            return;
+//            error(ERR_CANNOT_ENTER_DIRECTORY, QString());
+            return KIO::WorkerResult::fail();
         }
     } else if (ingest.isQuery(&qd)) {
         // At this point, it seems that when the request is from
@@ -313,18 +315,18 @@ void RecollProtocol::listDir(const QUrl& url)
         // which offers an opportunity to not perform it.
         if (ingest.endSlashQuery()) {
             qDebug() << "RecollProtocol::listDir: Ends With /";
-            error(ERR_SLAVE_DEFINED, QString::fromUtf8("Autocompletion search aborted"));
-            return;
+//            error(ERR_SLAVE_DEFINED, QString::fromUtf8("Autocompletion search aborted"));
+            return KIO::WorkerResult::fail();
         }
         if (!syncSearch(qd)) {
             // syncSearch did the error thing
-            return;
+            return KIO::WorkerResult::fail();
         }
         // Fallthrough to actually listing the directory
     } else {
         qDebug() << "RecollProtocol::listDir: Cant grok input url";
-        error(ERR_CANNOT_ENTER_DIRECTORY, QString());
-        return;
+//        error(ERR_CANNOT_ENTER_DIRECTORY, QString());
+        return KIO::WorkerResult::fail();
     }
 
     static int maxentries = -1;
@@ -343,7 +345,7 @@ void RecollProtocol::listDir(const QUrl& url)
         int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
         UDSEntry entry;
         if (pagelen < 0) {
-            error(ERR_SLAVE_DEFINED, QString::fromUtf8("Internal error"));
+//            error(ERR_SLAVE_DEFINED, QString::fromUtf8("Internal error"));
             break;
         }
         UDSEntryList entries;
@@ -356,5 +358,5 @@ void RecollProtocol::listDir(const QUrl& url)
         }
         pagebase += pagelen;
     }
-    finished();
+    return KIO::WorkerResult::pass();
 }

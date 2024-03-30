@@ -57,8 +57,8 @@ string RecollProtocol::makeQueryUrl(int page, bool isdet)
 {
     ostringstream str;
     str << "hrecoll://search/query?q=" <<
-        path_pcencode((const char*)m_query.query.toUtf8()) <<
-        "&qtp=" << (const char*)m_query.opt.toUtf8();
+        path_pcencode((const char*)m_query.query.toUtf8().data()) <<
+        "&qtp=" << (const char*)m_query.opt.toUtf8().data();
     if (page >= 0) {
         str << "&p=" << page;
     }
@@ -106,14 +106,14 @@ const string& RecollKioPager::parFormat()
 string RecollKioPager::pageTop()
 {
     string pt = "<p align=\"center\"> <a href=\"hrecoll:///search.html?q=";
-    pt += path_pcencode(string(m_parent->m_query.query.toUtf8()));
+    pt += path_pcencode(string(m_parent->m_query.query.toUtf8().data()));
     pt += "\">New Search</a>";
     return pt;
 // Would be nice to have but doesnt work because the query may be executed
 // by another kio instance which has no idea of the current page o
 #if 0
     " &nbsp;&nbsp;&nbsp;<a href=\"hrecoll:///" +
-    path_pcencode(string(m_parent->m_query.query.toUtf8())) +
+        path_pcencode(string(m_parent->m_query.query.toUtf8().data())) +
     "/\">Directory view</a> (you may need to reload the page)"
 #endif
 }
@@ -144,13 +144,14 @@ static string welcomedata;
 
 void RecollProtocol::searchPage()
 {
-    mimeType("text/html");
+    mimeType(QString::fromUtf8("text/html"));
     if (welcomedata.empty()) {
         QString location =
-            QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kio_recoll/welcome.html");
+            QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                                   QString::fromUtf8("kio_recoll/welcome.html"));
         string reason;
         if (location.isEmpty() ||
-            !file_to_string((const char *)location.toUtf8(), welcomedata, &reason)) {
+            !file_to_string((const char *)location.toUtf8().data(), welcomedata, &reason)) {
             welcomedata = "<html><head><title>Recoll Error</title></head>"
                           "<body><p>Could not locate Recoll welcome.html file: ";
             welcomedata += reason;
@@ -177,7 +178,7 @@ void RecollProtocol::searchPage()
 
     string tmp;
     map<char, string> subs;
-    subs['Q'] = (const char *)m_query.query.toUtf8();
+    subs['Q'] = (const char *)m_query.query.toUtf8().data();
     subs['C'] = catgq;
     subs['S'] = "";
     pcSubst(welcomedata, tmp, subs);
@@ -186,7 +187,7 @@ void RecollProtocol::searchPage()
 
 void RecollProtocol::queryDetails()
 {
-    mimeType("text/html");
+    mimeType(QString::fromUtf8("text/html"));
     QByteArray array;
     QTextStream os(&array, QIODevice::WriteOnly);
 
@@ -238,8 +239,8 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
     if (!interner.internfile(fdoc, ipath)) {
-        error(KIO::ERR_SLAVE_DEFINED,
-              QString::fromUtf8("Cannot convert file to internal format"));
+//        error(KIO::ERR_SLAVE_DEFINED,
+//              QString::fromUtf8("Cannot convert file to internal format"));
         return;
     }
     if (!interner.get_html().empty()) {
@@ -247,7 +248,7 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
         fdoc.mimetype = "text/html";
     }
 
-    mimeType("text/html");
+    mimeType(QString::fromUtf8("text/html"));
 
     string fname =  path_getsimple(fdoc.url).c_str();
     PlainToRichKio ptr(fname);
@@ -272,7 +273,7 @@ void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
     qDebug() << "q" << qd.query << "option" << qd.opt << "page" << qd.page <<
              "isdet" << qd.isDetReq << "\n";
 
-    mimeType("text/html");
+    mimeType(QString::fromUtf8("text/html"));
 
     if (!syncSearch(qd)) {
         return;

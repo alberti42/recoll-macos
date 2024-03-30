@@ -30,15 +30,15 @@ namespace Rcl {
 class Db;
 }
 
-class RecollRunner : public Plasma::AbstractRunner
+class RecollRunner : public KRunner::AbstractRunner
 {
     Q_OBJECT
 
 public:
-    RecollRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &args);
+    RecollRunner(QObject *parent, const KPluginMetaData &data);
 
-    void match(Plasma::RunnerContext &context) override;
-    void run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) override;
+    void match(KRunner::RunnerContext &context) override;
+    void run(const KRunner::RunnerContext &context, const KRunner::QueryMatch &match) override;
     void reloadConfiguration() override;
 
 protected:

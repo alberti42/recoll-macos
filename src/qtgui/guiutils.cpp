@@ -14,6 +14,9 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+#undef QT_NO_CAST_FROM_ASCII
+
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -28,7 +31,6 @@
 #include "readfile.h"
 #include "dynconf.h"
 
-#undef QT_NO_CAST_FROM_ASCII
 #include <QSettings>
 #include <QStringList>
 #ifdef BUILDING_RECOLLGUI
