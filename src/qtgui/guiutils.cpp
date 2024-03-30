@@ -28,6 +28,7 @@
 #include "readfile.h"
 #include "dynconf.h"
 
+#undef QT_NO_CAST_FROM_ASCII
 #include <QSettings>
 #include <QStringList>
 #ifdef BUILDING_RECOLLGUI
@@ -303,7 +304,7 @@ void rwSettings(bool writing)
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
     SETTING_RW(prefs.showTempFileWarning, "Recoll/prefs/showTempFileWarning", Int, -1);
 
-    if (g_dynconf == 0) {
+    if (nullptr == g_dynconf) {
         // Happens
         return;
     }
@@ -327,7 +328,7 @@ void rwSettings(bool writing)
     } else {
         prefs.allExtraDbs = g_dynconf->getStringEntries<vector>(allEdbsSk);
         const char *cp;
-        if ((cp = getenv("RECOLL_EXTRA_DBS")) != 0) {
+        if ((cp = getenv("RECOLL_EXTRA_DBS"))) {
             vector<string> dbl;
             stringToTokens(cp, dbl, dirlistsep);
             for (const auto& path : dbl) {
@@ -369,7 +370,7 @@ void rwSettings(bool writing)
         // Get active db directives from the environment. This can only add to
         // the remembered and cleaned up list
         const char *cp4Act;
-        if ((cp4Act = getenv("RECOLL_ACTIVE_EXTRA_DBS")) != 0) {
+        if ((cp4Act = getenv("RECOLL_ACTIVE_EXTRA_DBS"))) {
             vector<string> dbl;
             stringToTokens(cp4Act, dbl, dirlistsep);
             for (const auto& path : dbl) {
@@ -486,7 +487,7 @@ std::string PrefsPack::htmlHeaderContents(bool nouser)
     oss << comcss << "\n";
     oss << "<style type=\"text/css\">\nhtml,body,form, fieldset,table,tr,td,img,select,input {\n";
     bool noscale{false};
-    int fontsize;
+    int fontsize = 12;
     if (prefs.reslistfontfamily != "") {
         fontsize = prefs.reslistfontsize;
         oss << "font-family: \"" << qs2utf8s(prefs.reslistfontfamily) << "\";\n";

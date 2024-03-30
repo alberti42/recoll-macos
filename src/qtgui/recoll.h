@@ -29,7 +29,7 @@
 // Misc declarations in need of sharing between the UI files
 
 // Open the database if needed. We now force a close/open by default
-extern bool maybeOpenDb(std::string &reason, bool force, bool *maindberror = 0);
+extern bool maybeOpenDb(std::string &reason, bool force, bool *maindberror = nullptr);
 extern const std::vector<std::string> *getCurrentExtraDbs();
 
 /** Retrieve configured stemming languages */
@@ -80,7 +80,7 @@ inline std::string qs2path(const QString& qs)
 #ifdef _WIN32
     return qs2utf8s(qs);
 #else
-    return (const char*)qs.toLocal8Bit();
+    return (const char*)qs.toLocal8Bit().data();
 #endif
 }
 
