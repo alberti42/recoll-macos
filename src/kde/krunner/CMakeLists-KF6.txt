@@ -1,12 +1,15 @@
-# KF5 version of the kio_recoll module cmake file.
+# Create from https://develop.kde.org/docs/extend/plasma/krunner/ as example
+# Dependancies:
+#  ki18n-devel plasma-framework-devel kconfig-devel kpackage-devel
+#  krunner-devel knotifications-devel
 
 cmake_minimum_required(VERSION 3.16)
-project(kio_recoll)
+project(runnerexample)
 
-set(KF5_MIN_VERSION "5.0")
+set(KF6_MIN_VERSION "6.0")
 
 # Include the Extra-CMake-Modules project
-find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
+find_package(ECM ${KF6_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PATH})
 
 include(KDEInstallDirs)
@@ -14,29 +17,33 @@ include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(FeatureSummary)
 
-find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config KIO Notifications)
+find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS I18n Config Runner KIO Notifications Config)
 
 ## Recoll stuff
+set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
-set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
+add_definitions(
+    -DRECOLL_DATADIR="${CMAKE_INSTALL_PREFIX}/share/recoll"
+    -DLIBDIR="${CMAKE_INSTALL_PREFIX}/lib"
+    -DHAVE_CONFIG_H
+)
+
 
 if (NOT RECOLL_PUBLIC_LIB)
 # Execute recoll configuration to create autoconfig.h and version.h and
 # generate a PIC lib
 execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --disable-python-chm --disable-python-module --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
-		WORKING_DIRECTORY ${rcltop}
+    WORKING_DIRECTORY ${rcltop}
 )
 add_custom_target(rcllib
-                 COMMAND make -j 3 PicStatic
-                 WORKING_DIRECTORY ${rcltop}
+    COMMAND make -j 3 PicStatic
+    WORKING_DIRECTORY ${rcltop}
 )
-
 link_directories(${rcltop}/.libs ${CMAKE_INSTALL_PREFIX}/lib)
 endif()
 
 include_directories (
   ${CMAKE_SOURCE_DIR}
-  ${CMAKE_BINARY_DIR}
   ${rcltop}/common 
   ${rcltop}/internfile 
   ${rcltop}/query 
@@ -49,7 +56,6 @@ if (RECOLL_PUBLIC_LIB)
     ${CMAKE_INSTALL_PREFIX}/include/recoll
   )
 
-  # Check if running inside a build tree, then use the not yet installed lib
   if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../.libs)
   elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
@@ -59,37 +65,25 @@ if (RECOLL_PUBLIC_LIB)
   endif()
 endif()
 
-add_definitions(
-    -DRECOLL_DATADIR="${CMAKE_INSTALL_PREFIX}/share/recoll"
-    -DLIBDIR="${CMAKE_INSTALL_PREFIX}/lib"
-    -DHAVE_CONFIG_H
-)
-
-set(kio_recoll_SRCS kio_recoll.cpp htmlif.cpp dirif.cpp ${rcltop}/qtgui/guiutils.cpp)
-
-add_library(kio_recoll MODULE ${kio_recoll_SRCS})
-
+kcoreaddons_add_plugin(krunner_recoll SOURCES recollrunner.cpp INSTALL_NAMESPACE "kf6/krunner")
 if (NOT RECOLL_PUBLIC_LIB)
-  add_dependencies(kio_recoll rcllib)
+add_dependencies(krunner_recoll rcllib)
 endif()
+set_property(TARGET krunner_recoll PROPERTY CXX_STANDARD 14)
 
-target_link_libraries(kio_recoll
+target_link_libraries(krunner_recoll
+    KF6::I18n
+    KF6::ConfigCore
+    KF6::Runner
+    KF6::KIOWidgets
+    KF6::Notifications
     recoll
     xapian
     xslt
     xml2
-    KF5::KIOCore
     X11
     dl
     z
     pthread
 )
 
-install(FILES data/welcome.html	data/help.html
-      DESTINATION  ${DATA_INSTALL_DIR}/kio_recoll)
-
-set_target_properties(kio_recoll PROPERTIES OUTPUT_NAME "kio_recoll")
-# This is not set on ubuntu focal
-set(QT_MAJOR_VERSION 6)
-install(TARGETS kio_recoll
-      DESTINATION ${KDE_INSTALL_PLUGINDIR}/kf${QT_MAJOR_VERSION}/kio)

@@ -14,6 +14,7 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+#undef QT_NO_CAST_FROM_ASCII
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -144,11 +145,10 @@ static string welcomedata;
 
 void RecollProtocol::searchPage()
 {
-    mimeType(QString::fromUtf8("text/html"));
+    mimeType("text/html");
     if (welcomedata.empty()) {
         QString location =
-            QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                   QString::fromUtf8("kio_recoll/welcome.html"));
+            QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kio_recoll/welcome.html");
         string reason;
         if (location.isEmpty() ||
             !file_to_string((const char *)location.toUtf8().data(), welcomedata, &reason)) {
@@ -187,7 +187,7 @@ void RecollProtocol::searchPage()
 
 void RecollProtocol::queryDetails()
 {
-    mimeType(QString::fromUtf8("text/html"));
+    mimeType("text/html");
     QByteArray array;
     QTextStream os(&array, QIODevice::WriteOnly);
 
@@ -239,8 +239,10 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
     if (!interner.internfile(fdoc, ipath)) {
-//        error(KIO::ERR_SLAVE_DEFINED,
-//              QString::fromUtf8("Cannot convert file to internal format"));
+#if KIO_VERSION < 6
+        error(KIO::ERR_SLAVE_DEFINED,
+              "Cannot convert file to internal format");
+#endif
         return;
     }
     if (!interner.get_html().empty()) {
@@ -248,7 +250,7 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
         fdoc.mimetype = "text/html";
     }
 
-    mimeType(QString::fromUtf8("text/html"));
+    mimeType("text/html");
 
     string fname =  path_getsimple(fdoc.url).c_str();
     PlainToRichKio ptr(fname);
@@ -259,7 +261,7 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
         m_source->getTerms(hdata);
     }
     ptr.plaintorich(fdoc.text, otextlist, hdata);
-    //qDebug() << "PREVIEW: got: " << QString::fromUtf8(fdoc.text.c_str());
+    //qDebug() << "PREVIEW: got: " << fdoc.text.c_str();
     QByteArray out;
     for (const auto& chunk : otextlist) {
         out.append(chunk.c_str(), chunk.size());
@@ -273,7 +275,7 @@ void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
     qDebug() << "q" << qd.query << "option" << qd.opt << "page" << qd.page <<
              "isdet" << qd.isDetReq << "\n";
 
-    mimeType(QString::fromUtf8("text/html"));
+    mimeType("text/html");
 
     if (!syncSearch(qd)) {
         return;

@@ -14,7 +14,7 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
+#undef QT_NO_CAST_FROM_ASCII
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -51,13 +51,17 @@ static inline QString u8s2qs(const std::string& us)
 class KIOPluginForMetaData : public QObject
 {
     Q_OBJECT
+#if KIO_VERSION < 6
+    Q_PLUGIN_METADATA(IID "org.recoll.kio.slave.recoll" FILE "recoll.json")
+#else
     Q_PLUGIN_METADATA(IID "org.recoll.kio.worker.recoll" FILE "recoll.json")
+#endif
 };
 
 RclConfig *RecollProtocol::o_rclconfig;
 
 RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
-    : WorkerBase("recoll", pool, app), m_initok(false), m_alwaysdir(true)
+    : WBASE("recoll", pool, app), m_initok(false), m_alwaysdir(true)
 {
     qDebug() << "RecollProtocol::RecollProtocol()";
     if (o_rclconfig == nullptr) {
@@ -127,78 +131,80 @@ bool RecollProtocol::maybeOpenDb(string& reason)
 }
 
 // This is never called afaik
-KIO::WorkerResult RecollProtocol::mimetype(const QUrl& url)
+WRESULT RecollProtocol::mimetype(const QUrl& url)
 {
     qDebug() << "RecollProtocol::mimetype: url: " << url;
-    mimeType(QString::fromUtf8("text/html"));
+    mimeType("text/html");
+#if KIO_VERSION < 6
+    finished();
+#else
     return KIO::WorkerResult::pass();
+#endif
 }
 
 UrlIngester::UrlIngester(RecollProtocol *p, const QUrl& url)
-    : m_parent(p), m_slashend(false),
-      m_alwaysdir(!url.scheme().compare(QString::fromUtf8("recollf"))),
+    : m_parent(p), m_slashend(false), m_alwaysdir(!url.scheme().compare("recollf")),
       m_retType(UIRET_NONE), m_resnum(0), m_type(UIMT_NONE)
 {
     qDebug() << "UrlIngester::UrlIngester: Url: " << url;
     QString path = url.path();
     if (url.host().isEmpty()) {
-        if (path.isEmpty() || !path.compare(QString::fromUtf8("/"))) {
+        if (path.isEmpty() || !path.compare("/")) {
             m_type = UIMT_ROOTENTRY;
             m_retType = UIRET_ROOT;
             return;
-        } else if (!path.compare(QString::fromUtf8("/help.html"))) {
+        } else if (!path.compare("/help.html")) {
             m_type = UIMT_ROOTENTRY;
             m_retType = UIRET_HELP;
             return;
-        } else if (!path.compare(QString::fromUtf8("/search.html"))) {
+        } else if (!path.compare("/search.html")) {
             m_type = UIMT_ROOTENTRY;
             m_retType = UIRET_SEARCH;
             QUrlQuery q(url);
             // Retrieve the query value for preloading the form
-            m_query.query = q.queryItemValue(QString::fromUtf8("q"));
+            m_query.query = q.queryItemValue("q");
             return;
         } else if (m_parent->isRecollResult(url, &m_resnum, &m_query.query)) {
             m_type = UIMT_QUERYRESULT;
-            m_query.opt = QString::fromUtf8("l");
+            m_query.opt = "l";
             m_query.page = 0;
         } else {
             // Have to think this is some search string
             m_type = UIMT_QUERY;
             m_query.query = url.path();
-            m_query.opt = QString::fromUtf8("l");
+            m_query.opt = "l";
             m_query.page = 0;
         }
     } else {
         // Non empty host, url must be something like :
         //      //search/query?q=query&param=value...
         qDebug() << "UrlIngester::UrlIngester: host " << url.host() << " path " << url.path();
-        if (url.host().compare(QString::fromUtf8("search")) ||
-            url.path().compare(QString::fromUtf8("/query"))) {
+        if (url.host().compare("search") || url.path().compare("/query")) {
             return;
         }
         m_type = UIMT_QUERY;
         // Decode the forms' arguments
         // Retrieve the query value for preloading the form
         QUrlQuery q(url);
-        m_query.query = q.queryItemValue(QString::fromUtf8("q"));
+        m_query.query = q.queryItemValue("q");
 
-        m_query.opt = q.queryItemValue(QString::fromUtf8("qtp"));
+        m_query.opt = q.queryItemValue("qtp");
         if (m_query.opt.isEmpty()) {
-            m_query.opt = QString::fromUtf8("l");
+            m_query.opt = "l";
         }
-        QString p = q.queryItemValue(QString::fromUtf8("p"));
+        QString p = q.queryItemValue("p");
         if (p.isEmpty()) {
             m_query.page = 0;
         } else {
             m_query.page = p.toInt();
             //sscanf(p.toUtf8(), "%d", &m_query.page);
         }
-        p = q.queryItemValue(QString::fromUtf8("det"));
+        p = q.queryItemValue("det");
         m_query.isDetReq = !p.isEmpty();
 
-        p = q.queryItemValue(QString::fromUtf8("cmd"));
-        if (!p.isEmpty() && !p.compare(QString::fromUtf8("pv"))) {
-            p = q.queryItemValue(QString::fromUtf8("dn"));
+        p = q.queryItemValue("cmd");
+        if (!p.isEmpty() && !p.compare("pv")) {
+            p = q.queryItemValue("dn");
             if (!p.isEmpty()) {
                 // Preview and no docnum ??
                 m_resnum = p.toInt();
@@ -208,10 +214,10 @@ UrlIngester::UrlIngester(RecollProtocol *p, const QUrl& url)
             }
         }
     }
-    if (m_query.query.startsWith(QString::fromUtf8("/"))) {
+    if (m_query.query.startsWith("/")) {
         m_query.query.remove(0, 1);
     }
-    if (m_query.query.endsWith(QString::fromUtf8("/"))) {
+    if (m_query.query.endsWith("/")) {
         qDebug() << "UrlIngester::UrlIngester: query Ends with /";
         m_slashend = true;
         m_query.query.chop(1);
@@ -226,7 +232,9 @@ bool RecollProtocol::syncSearch(const QueryDesc& qd)
     qDebug() << "RecollProtocol::syncSearch";
     if (!m_initok || !maybeOpenDb(m_reason)) {
         string reason = "RecollProtocol::listDir: Init error:" + m_reason;
-//        error(KIO::ERR_WORKER_DEFINED, u8s2qs(reason));
+#if KIO_VERSION < 6
+        error(KIO::ERR_WORKER_DEFINED, u8s2qs(reason));
+#endif
         return false;
     }
     if (qd.sameQuery(m_query)) {
@@ -239,14 +247,18 @@ bool RecollProtocol::syncSearch(const QueryDesc& qd)
 // This is used by the html interface, but also by the directory one
 // when doing file copies for example. This is the central dispatcher
 // for requests, it has to know a little about both models.
-KIO::WorkerResult RecollProtocol::get(const QUrl& url)
+WRESULT RecollProtocol::get(const QUrl& url)
 {
     qDebug() << "RecollProtocol::get: " << url;
 
     if (!m_initok || !maybeOpenDb(m_reason)) {
         string reason = "Recoll: init error: " + m_reason;
-//        error(KIO::ERR_WORKER_DEFINED, u8s2qs(reason));
+#if KIO_VERSION < 6
+        error(KIO::ERR_WORKER_DEFINED, u8s2qs(reason));
+        return;
+#else
         return KIO::WorkerResult::fail();
+#endif
     }
 
     UrlIngester ingest(this, url);
@@ -257,8 +269,7 @@ KIO::WorkerResult RecollProtocol::get(const QUrl& url)
         switch (rettp) {
         case UrlIngester::UIRET_HELP: {
             QString location =
-                QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                       QString::fromUtf8("kio_recoll/help.html"));
+                QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kio_recoll/help.html");
             redirection(QUrl::fromLocalFile(location));
         }
         goto out;
@@ -278,17 +289,25 @@ KIO::WorkerResult RecollProtocol::get(const QUrl& url)
         //
         // Redirect to the result document URL
         if (!syncSearch(qd)) {
+#if KIO_VERSION < 6
+            return;
+#else
             return KIO::WorkerResult::fail();
+#endif
         }
         Rcl::Doc doc;
         if (resnum >= 0 && m_source && m_source->getDoc(resnum, doc)) {
-            mimeType(QString::fromUtf8(doc.mimetype.c_str()));
-            redirection(QUrl::fromLocalFile(QString::fromUtf8((const char *)(doc.url.c_str() + 7))));
+            mimeType(doc.mimetype.c_str());
+            redirection(QUrl::fromLocalFile((const char *)(doc.url.c_str() + 7)));
             goto out;
         }
     } else if (ingest.isPreview(&qd, &resnum)) {
         if (!syncSearch(qd)) {
+#if KIO_VERSION < 6
+            return;
+#else
             return KIO::WorkerResult::fail();
+#endif
         }
         Rcl::Doc doc;
         if (resnum >= 0 && m_source && m_source->getDoc(resnum, doc)) {
@@ -301,10 +320,17 @@ KIO::WorkerResult RecollProtocol::get(const QUrl& url)
         goto out;
     }
 
-//    error(KIO::ERR_WORKER_DEFINED, u8s2qs("Unrecognized URL or internal error"));
+#if KIO_VERSION < 6
+    error(KIO::ERR_WORKER_DEFINED, u8s2qs("Unrecognized URL or internal error"));
+#else
     return KIO::WorkerResult::fail();
+#endif
 out:
+#if KIO_VERSION < 6
+    finished();
+#else
     return KIO::WorkerResult::pass();
+#endif
 }
 
 // Execute Recoll search, and set the docsource
@@ -332,7 +358,9 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     }
     if (!sdata) {
         m_reason = "Internal Error: cant build search";
-//        error(KIO::ERR_WORKER_DEFINED, u8s2qs(m_reason));
+#if KIO_VERSION < 6
+        error(KIO::ERR_WORKER_DEFINED, u8s2qs(m_reason));
+#endif
         return false;
     }
     sdata->setSubSpec(m_showSubdocs ? Rcl::SearchData::SUBDOC_ANY: Rcl::SearchData::SUBDOC_NO);
@@ -342,14 +370,18 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     query->setCollapseDuplicates(collapsedups);
     if (!query->setQuery(sdata)) {
         m_reason = "Query execute failed. Invalid query or syntax error?";
-//        error(KIO::ERR_WORKER_DEFINED, u8s2qs(m_reason));
+#if KIO_VERSION < 6
+        error(KIO::ERR_WORKER_DEFINED, u8s2qs(m_reason));
+#endif
         return false;
     }
 
     DocSequenceDb *src =
         new DocSequenceDb(m_rcldb, std::shared_ptr<Rcl::Query>(query), "Query results", sdata);
     if (src == nullptr) {
-//        error(KIO::ERR_WORKER_DEFINED, u8s2qs("Can't build result sequence"));
+#if KIO_VERSION < 6
+        error(KIO::ERR_WORKER_DEFINED, u8s2qs("Can't build result sequence"));
+#endif
         return false;
     }
     m_source = std::shared_ptr<DocSequence>(src);
@@ -364,7 +396,7 @@ extern "C"
     Q_DECL_EXPORT int kdemain(int argc, char **argv)
     {
          QCoreApplication app(argc, argv);
-         app.setApplicationName(QString::fromUtf8("kio_recoll"));
+         app.setApplicationName("kio_recoll");
          qDebug() << "*** starting kio_recoll ";
 
         if (argc != 4)  {

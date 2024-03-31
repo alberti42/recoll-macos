@@ -23,22 +23,32 @@
 #include <memory>
 #include <mutex>
 
+#include <krunner_version.h>
 #include <KRunner/AbstractRunner>
+#if KRUNNER_VERSION_MAJOR >= 6
+#define KRUNNS KRunner
+#else
+#define KRUNNS Plasma
+#endif
 
 class RclConfig;
 namespace Rcl {
 class Db;
 }
 
-class RecollRunner : public KRunner::AbstractRunner
+class RecollRunner : public KRUNNS::AbstractRunner
 {
     Q_OBJECT
 
 public:
+#if KRUNNER_VERSION_MAJOR >= 6
     RecollRunner(QObject *parent, const KPluginMetaData &data);
+#else
+    RecollRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &args);
+#endif
 
-    void match(KRunner::RunnerContext &context) override;
-    void run(const KRunner::RunnerContext &context, const KRunner::QueryMatch &match) override;
+    void match(KRUNNS::RunnerContext &context) override;
+    void run(const KRUNNS::RunnerContext &context, const KRUNNS::QueryMatch &match) override;
     void reloadConfiguration() override;
 
 protected:

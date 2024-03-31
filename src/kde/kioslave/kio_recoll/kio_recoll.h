@@ -23,7 +23,16 @@
 #include <QString>
 #include <QUrl>
 
+#include <kio_version.h>
+#if KIO_VERSION < 6
+#include <kio/slavebase.h>
+#define WBASE SlaveBase
+#define WRESULT void
+#else
 #include <kio/workerbase.h>
+#define WBASE WorkerBase
+#define WRESULT KIO::WorkerResult
+#endif
 
 #include "reslistpager.h"
 
@@ -150,16 +159,17 @@ private:
  * allow easy copying of files etc. Which one is in use is decided by
  * the form of the URL.
  */
-class RecollProtocol : public KIO::WorkerBase {
+class RecollProtocol : public KIO::WBASE
+{
 public:
     RecollProtocol(const QByteArray& pool, const QByteArray& app);
     virtual ~RecollProtocol();
-    virtual KIO::WorkerResult mimetype(const QUrl& url) override;
-    virtual KIO::WorkerResult get(const QUrl& url) override;
+    virtual WRESULT mimetype(const QUrl& url) override;
+    virtual WRESULT get(const QUrl& url) override;
     // The directory mode is not available with KDE 4.0, I could find
     // no way to avoid crashing kdirmodel
-    virtual KIO::WorkerResult stat(const QUrl& url) override;
-    virtual KIO::WorkerResult listDir(const QUrl& url) override;
+    virtual WRESULT stat(const QUrl& url) override;
+    virtual WRESULT listDir(const QUrl& url) override;
 
     static RclConfig  *o_rclconfig;
 

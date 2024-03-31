@@ -27,7 +27,9 @@
 #include <klocalizedstring.h>
 #include <QIcon>
 #include <QMimeDatabase>
+#if KRUNNER_VERSION_MAJOR >= 6
 #include <KConfigGroup>
+#endif
 
 #include "rclconfig.h"
 #include "rclinit.h"
@@ -57,16 +59,23 @@ inline std::string qs2path(const QString& qs)
     return qs.toLocal8Bit().constData();
 }
 
+#if KRUNNER_VERSION_MAJOR >= 6
 RecollRunner::RecollRunner(QObject *parent, const KPluginMetaData &data)
     : AbstractRunner(parent, data)
+#else
+RecollRunner::RecollRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
+    : AbstractRunner(parent, data, args)
+#endif
 {
-//    setPriority(LowPriority);
+#if KRUNNER_VERSION_MAJOR < 6
+    setPriority(LowPriority);
+#endif
 }
 
 void RecollRunner::init()
 {
     reloadConfiguration();
-    connect(this, &KRunner::AbstractRunner::prepare, this, [this]() {
+    connect(this, &KRUNNS::AbstractRunner::prepare, this, [this]() {
         // Initialize data for the match session. This gets called from the main thread
         RclConfig *m_rclconfig = recollinit(0, nullptr, nullptr, m_reason);
         if (nullptr == m_rclconfig) {
@@ -92,14 +101,14 @@ void RecollRunner::init()
         //Logger::getTheLog("")->setLogLevel(Logger::LLDEB);
         m_initok = true;
     });
-    connect(this, &KRunner::AbstractRunner::teardown, this, [this]() {
+    connect(this, &KRUNNS::AbstractRunner::teardown, this, [this]() {
         // Cleanup data from the match session. This gets called from the main thread
         delete m_rcldb;
         delete m_rclconfig;
     });
 }
 
-void RecollRunner::match(KRunner::RunnerContext &context)
+void RecollRunner::match(KRUNNS::RunnerContext &context)
 {
     std::unique_lock<std::mutex> lockit(m_mutex);
     
@@ -145,14 +154,14 @@ void RecollRunner::match(KRunner::RunnerContext &context)
         return;
     }
     // int cnt = rclq->getResCnt();std::cerr << "RecollRunner::match: got " << cnt << " results\n";
-    QList<KRunner::QueryMatch> matches;
+    QList<KRUNNS::QueryMatch> matches;
     int i = 0;
     for (;i < 50;i++) {
         Rcl::Doc doc;
         if (!rclq->getDoc(i, doc, false)) {
             break;
         }
-        KRunner::QueryMatch match(this);
+        KRUNNS::QueryMatch match(this);
         std::string title;
         if (!doc.getmeta(Rcl::Doc::keytt, &title) || title.empty()) {
             doc.getmeta(Rcl::Doc::keyfn, &title);
@@ -171,7 +180,7 @@ void RecollRunner::match(KRunner::RunnerContext &context)
     context.addMatches(matches);
 }
 
-void RecollRunner::run(const KRunner::RunnerContext & /*context*/, const KRunner::QueryMatch &match)
+void RecollRunner::run(const KRUNNS::RunnerContext & /*context*/, const KRUNNS::QueryMatch &match)
 {
     // KIO::OpenUrlJob autodeletes itself, so we can just create it and forget it!
     auto *job = new KIO::OpenUrlJob(QUrl::fromLocalFile(match.data().toString()));
@@ -196,8 +205,8 @@ void RecollRunner::reloadConfiguration()
     }
 #endif
     
-    QList<KRunner::RunnerSyntax> syntaxes;
-    KRunner::RunnerSyntax syntax(QStringLiteral("%1:q:").arg(m_triggerWord),
+    QList<KRUNNS::RunnerSyntax> syntaxes;
+    KRUNNS::RunnerSyntax syntax(QStringLiteral("%1:q:").arg(m_triggerWord),
                                 i18n("Finds files matching :q: in the %1 folder", m_path));
     syntaxes.append(syntax);
     setSyntaxes(syntaxes);

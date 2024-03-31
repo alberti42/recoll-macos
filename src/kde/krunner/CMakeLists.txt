@@ -1,3 +1,4 @@
+# KF5 version of the recoll krunner module.
 # Create from https://develop.kde.org/docs/extend/plasma/krunner/ as example
 # Dependancies:
 #  ki18n-devel plasma-framework-devel kconfig-devel kpackage-devel
@@ -6,10 +7,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(runnerexample)
 
-set(KF6_MIN_VERSION "6.0")
+set(KF5_MIN_VERSION "5.0")
 
 # Include the Extra-CMake-Modules project
-find_package(ECM ${KF6_MIN_VERSION} REQUIRED NO_MODULE)
+find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PATH})
 
 include(KDEInstallDirs)
@@ -17,7 +18,7 @@ include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(FeatureSummary)
 
-find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS I18n Config Runner KIO Notifications Config)
+find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config Runner KIO Notifications Config)
 
 ## Recoll stuff
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../)
@@ -72,11 +73,11 @@ endif()
 set_property(TARGET krunner_recoll PROPERTY CXX_STANDARD 14)
 
 target_link_libraries(krunner_recoll
-    KF6::I18n
-    KF6::ConfigCore
-    KF6::Runner
-    KF6::KIOWidgets
-    KF6::Notifications
+    KF5::I18n
+    KF5::ConfigCore
+    KF5::Runner
+    KF5::KIOWidgets
+    KF5::Notifications
     recoll
     xapian
     xslt
