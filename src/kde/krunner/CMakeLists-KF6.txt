@@ -6,6 +6,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(runnerexample)
 
+option(RECOLL_PUBLIC_LIB "Use the Recoll public shared library" 1)
+
 set(KF6_MIN_VERSION "6.0")
 
 # Include the Extra-CMake-Modules project

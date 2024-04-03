@@ -3,6 +3,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(kio_recoll)
 
+option(RECOLL_PUBLIC_LIB "Use the Recoll public shared library" 1)
+
 set(KF5_MIN_VERSION "5.0")
 
 # Include the Extra-CMake-Modules project

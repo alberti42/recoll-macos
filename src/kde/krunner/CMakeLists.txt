@@ -5,7 +5,9 @@
 #  krunner-devel knotifications-devel
 
 cmake_minimum_required(VERSION 3.16)
-project(runnerexample)
+project(recollrunner)
+
+option(RECOLL_PUBLIC_LIB "Use the Recoll public shared library" 1)
 
 set(KF5_MIN_VERSION "5.0")
 
