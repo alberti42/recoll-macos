@@ -2,7 +2,7 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.37.4
+Version:        1.38.0
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.lesbonscomptes.com/recoll/
@@ -13,6 +13,7 @@ Source10:       qmake-qt5.sh
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  chmlib-devel
+BuildRequires:  file-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc-c++
@@ -148,9 +149,6 @@ popd
 %{_includedir}/
 %{_libdir}/librecoll*.so
 %{_datadir}/pixmaps/recoll.png
-%{_includedir}/
-%{_libdir}/librecoll*.so
-%{_datadir}/pixmaps/recoll.png
 %{python3_sitearch}/recoll
 %{python3_sitearch}/recollchm
 %{python3_sitearch}/Recoll-*.egg-info
@@ -177,7 +175,7 @@ popd
 %{_datadir}/kio_recoll/welcome.html
 
 %files krunner
-%{_libdir}/qt5/plugins/kf5/krunner/runner_recoll.so
+%{_libdir}/qt5/plugins/kf5/krunner/krunner_recoll.so
 
 %files gssp
 %license COPYING
