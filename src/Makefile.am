@@ -655,7 +655,8 @@ sampleconf/recoll-dark.qss sampleconf/recoll-dark.css \
 \
 testmains/Makefile.am \
 \
-unac/AUTHORS unac/COPYING unac/README unac/README.recoll unac/unac.c \
+unac/AUTHORS unac/COPYING unac/README unac/README.recoll unac/unac.c unac/LICENSE-MIT-simdutf \
+unac/simdutf.cpp unac/README-simdutf.md unac/AUTHORS-simdutf unac/simdutf.h unac/CONTRIBUTORS-simdutf \
 \
 RECOLL-VERSION.txt
 
