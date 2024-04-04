@@ -92,6 +92,6 @@ install(FILES data/welcome.html	data/help.html
 
 set_target_properties(kio_recoll PROPERTIES OUTPUT_NAME "kio_recoll")
 # This is not set on ubuntu focal
-set(QT_MAJOR_VERSION 6)
+set(QT_MAJOR_VERSION 5)
 install(TARGETS kio_recoll
       DESTINATION ${KDE_INSTALL_PLUGINDIR}/kf${QT_MAJOR_VERSION}/kio)

@@ -68,7 +68,7 @@ if (RECOLL_PUBLIC_LIB)
   endif()
 endif()
 
-kcoreaddons_add_plugin(krunner_recoll SOURCES recollrunner.cpp INSTALL_NAMESPACE "kf6/krunner")
+kcoreaddons_add_plugin(krunner_recoll SOURCES recollrunner.cpp INSTALL_NAMESPACE "kf5/krunner")
 if (NOT RECOLL_PUBLIC_LIB)
 add_dependencies(krunner_recoll rcllib)
 endif()
