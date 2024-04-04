@@ -30,6 +30,8 @@ auxprogs()
 }
 
 cd $RECOLL/src
+hash=`git log -n 1 | head -1 | awk '{print $2}' | cut -b 1-8`
+vers=`cat RECOLL-VERSION.txt`
 make -j 4 || exit 1
 make install DESTDIR=$APPDIR || exit 1
 sudo make install || exit 1
@@ -55,3 +57,5 @@ auxprogs
 
 cd
 $DEPLOYBINDIR/linuxdeploy-x86_64.AppImage --appdir $APPDIR --output appimage --plugin qt
+dte=`date +%Y%m%d`
+mv Recoll-x86_64.AppImage Recoll-${vers}-${dte}-${hash}-x86_64.AppImage
