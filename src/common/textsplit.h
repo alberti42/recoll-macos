@@ -54,7 +54,7 @@ public:
     TextSplit(int flags = TXTS_NONE);
     TextSplit(const TextSplit&) = delete;
     TextSplit& operator=(const TextSplit&) = delete;
-    ~TextSplit(); // Using default here would need a definition for cnsplitter.
+    virtual ~TextSplit(); // Using default here would need a definition for cnsplitter.
     /** Call at program initialization to read non default values from the configuration */
     static void staticConfInit(RclConfig *config);
     

@@ -44,6 +44,7 @@ public:
     virtual void parse_html(const std::string &text);
     virtual void do_eof() {}
     HtmlParser();
+    virtual ~HtmlParser() = default;
 };
 
 #endif

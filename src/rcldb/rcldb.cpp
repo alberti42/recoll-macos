@@ -329,9 +329,11 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode, int flags)
     LOGINF("Db::Native::openWrite\n");
     int action = (mode == Db::DbUpd) ? Xapian::DB_CREATE_OR_OPEN : Xapian::DB_CREATE_OR_OVERWRITE;
 
+#ifdef IDX_THREADS
     m_tmpdbcnt = 0;
     if (!(flags & Db::DbOFNoTmpDb))
         m_rcldb->m_config->getConfParam("thrTmpDbCnt", &m_tmpdbcnt);
+#endif
     
 #ifdef _WIN32
     // On Windows, Xapian is quite bad at erasing a partial db, which can occur because of open file
@@ -764,6 +766,7 @@ bool Db::Native::addOrUpdateWrite(
 {
     // Does its own locking, call before our own.
     bool docexists = m_rcldb->docExists(uniterm);
+    PRETEND_USE(docexists);
     
 #ifdef IDX_THREADS
     Chrono chron;
@@ -787,6 +790,7 @@ bool Db::Native::addOrUpdateWrite(
         m_rcldb->m_occtxtsz = m_rcldb->m_curtxtsz;
     }
 
+#ifdef IDX_THREADS
     if (!docexists && m_tmpdbcnt > 0) {
         // New doc. Send it to the temp dbs
         DbUpdTask *tp = new DbUpdTask(
@@ -798,7 +802,8 @@ bool Db::Native::addOrUpdateWrite(
         auto ret = m_rcldb->maybeflush(textlen);
         return ret;
     }
-
+#endif
+    
     string ermsg;
     // Add db entry or update existing entry:
     Xapian::docid did = 0;
@@ -938,7 +943,9 @@ Db::~Db()
     LOGDEB("Db::~Db: isopen " << m_ndb->m_isopen << " m_iswritable " << m_ndb->m_iswritable << "\n");
     this->close();
     delete m_ndb;
+#ifdef RCL_USE_ASPELL
     delete m_aspell;
+#endif
     delete m_config;
 }
 
@@ -1095,6 +1102,7 @@ bool Db::close()
 
 void Db::mergeAndCompact()
 {
+#ifdef IDX_THREADS
     if (m_ndb->m_tmpdbcnt <= 0)
         return;
     
@@ -1148,6 +1156,7 @@ void Db::mergeAndCompact()
     // Get rid of the old index
     wipedir(backupdir, true, true);
     LOGINF("Rcl::Db::close: merge and compact done\n");
+#endif // IDX_THREADS
 }
 
 int Db::docCnt()
@@ -2166,12 +2175,14 @@ bool Db::doFlush()
         LOGERR("Db::doFLush: no ndb??\n");
         return false;
     }
+#ifdef IDX_THREADS
     if (m_ndb->m_tmpdbcnt > 0) {
         std::lock_guard<std::mutex> lock(m_ndb->m_initidxmutex);
         for (int i = 0; i < m_ndb->m_tmpdbcnt; i++) {
             m_ndb->m_tmpdbflushflags[i] = 1;
         }
     }
+#endif
     string ermsg;
     try {
         statusUpdater()->update(DbIxStatus::DBIXS_FLUSH, "");

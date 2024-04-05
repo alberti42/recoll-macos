@@ -112,6 +112,7 @@ protected:
 /** A functor which transforms a string */
 class SynTermTrans {
 public:
+    virtual ~SynTermTrans() = default;
     virtual std::string operator()(const std::string&) = 0;
     virtual std::string name() {return "SynTermTrans: unknown";}
 };

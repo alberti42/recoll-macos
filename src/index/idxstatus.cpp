@@ -64,6 +64,7 @@ public:
             status.totfiles = atoi(stf.c_str());
         }
     }
+    virtual ~Internal() = default;
     
     virtual bool update() {
         if (status.dbtotdocs < status.docsdone)
