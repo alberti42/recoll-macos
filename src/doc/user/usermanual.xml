@@ -6569,9 +6569,9 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
             Webengine (only meaningful if the Qt GUI is enabled), in place or Qt
             Webkit.</para>
 
-          <para><option>--disable-webpreview</option>Do not implement the GUI preview windows with webkit or
-            webengine instead of qtextbrowser. Using webxx will usually produce a better display,
-            but will sometimes fail to display anything because of JS issues.</para>
+          <para><option>--disable-webpreview</option>: do not implement the GUI preview windows with
+            webkit or webengine instead of qtextbrowser. Using webxx will usually produce a better
+            display, but will sometimes fail to display anything because of JS issues.</para>
           
           <para><option>--enable-guidebug</option> will build the recoll GUI program
             with debug symbols. This makes it very big (~50MB), which is why it is stripped by
