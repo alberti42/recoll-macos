@@ -247,8 +247,6 @@ utils/copyfile.h \
 utils/cpuconf.cpp \
 utils/cpuconf.h \
 utils/damlev.h \
-utils/dlib.cpp \
-utils/dlib.h \
 utils/ecrontab.cpp \
 utils/ecrontab.h \
 utils/execmd.cpp \

@@ -51,7 +51,7 @@ AC_SYS_LARGEFILE
 
 # OpenBSD needs sys/param.h for mount.h to compile
 AC_CHECK_HEADERS([sys/param.h, spawn.h])
-AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h malloc.h malloc/malloc.h], [], [],
+AC_CHECK_HEADERS([malloc.h malloc/malloc.h], [], [],
 [#ifdef HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
@@ -73,10 +73,6 @@ if test X$posixSpawnEnabled = Xyes ; then
 fi
 
 AC_CHECK_LIB([pthread], [pthread_create], [], [])
-AC_SEARCH_LIBS([dlopen], [dl], [], [])
-if test X$ac_cv_search_function != Xno ; then
-   AC_DEFINE(HAVE_DLOPEN, 1, [dlopen function is available])
-fi   
 AC_CHECK_LIB([z], [zlibVersion], [], [AC_MSG_ERROR([libz not found])])
 
 ############# Putenv
@@ -112,31 +108,6 @@ if test ! -x "$fileProg"; then
 fi
 AC_DEFINE_UNQUOTED(FILE_PROG, "$fileProg", [Path to the file program])
 
-# Use aspell to provide spelling expansions ?
-# The default is yes. If we do find an aspell installation, we use it. Else
-# we do compile the aspell module using an internal copy of aspell.h
-# Only --with-aspell=no will completely disable aspell support
-AC_ARG_WITH(aspell, 
-    AS_HELP_STRING([--without-aspell],[Disable use of aspell spelling package to provide term expansion to other spellings]),
-        withAspell=$withval, withAspell=yes)
-case $withAspell in
-     no);;
-     yes)
-     AC_PATH_PROG(aspellProg, aspell)
-     ;;
-     *) # The argument should be the path to the aspell program
-     aspellProg=$withAspell
-     ;;
-esac
-
-if test X$withAspell != Xno ; then
-   AC_DEFINE(RCL_USE_ASPELL, 1, [Compile the aspell interface])
-   if test X$aspellProg != X ; then
-      aspellBase=`dirname $aspellProg`
-      aspellBase=`dirname $aspellBase`
-      AC_DEFINE_UNQUOTED(ASPELL_PROG, "$aspellProg", [Path to the aspell program])
-   fi   
-fi
 
 if test -f /usr/include/sys/inotify.h -o -f /usr/include/linux/inotify.h; then
    inot_default=yes
@@ -296,10 +267,41 @@ if test X$libmagicEnabled = Xyes; then
     AC_DEFINE(ENABLE_LIBMAGIC, 1, [Use libmagic])
 fi
 
-# Disable building the aspell python wrapper. This DISABLES aspell usage in recoll. The default
-# aspell "pipe" interface is inadequate for recoll use because it does not list suggestions for
-# words which are part of the dictionary, which is usually the case for common mispellings (which
-# are bound to be found somewhere in the document set).
+# Use aspell to provide spelling expansions ?
+# The default is yes. If we do find an aspell installation, we use it. Else
+# we do compile the aspell module using an internal copy of aspell.h
+# Only --with-aspell=no will completely disable aspell support
+AC_ARG_WITH(aspell, 
+    AS_HELP_STRING([--without-aspell],
+        [Disable use of aspell spelling package to provide term expansion to other spellings]),
+        withAspell=$withval, withAspell=yes)
+case $withAspell in
+     no);;
+     yes)
+     AC_PATH_PROG(aspellProg, aspell)
+     ;;
+     *) # The argument should be the path to the aspell program
+     aspellProg=$withAspell
+     ;;
+esac
+if test X$withAspell != Xno ; then
+   AC_DEFINE(RCL_USE_ASPELL, 1, [Compile the aspell interface])
+   if test X$aspellProg != X ; then
+      aspellBase=`dirname $aspellProg`
+      aspellBase=`dirname $aspellBase`
+      AC_DEFINE_UNQUOTED(ASPELL_PROG, "$aspellProg", [Path to the aspell program])
+   fi   
+fi
+
+# Disable building the aspell python wrapper. The default aspell "pipe" interface is inadequate for
+# recoll use because it does not list suggestions for words which are part of the dictionary, which
+# is usually the case for common mispellings (which are bound to be found somewhere in the document
+# set). The pipe interface is now only used on MacOS because I can't find a simple way to distribute
+# the python module.
+# The rclaspell-sugg.py module will try to load the pypi Python aspell module first, so it's ok to
+# not build the (equivalent) recoll module if one is sure that the standard module will be available
+# at run time. If neither python modules is available, there is no fallback on the aspell command at
+# the moment.
 AC_ARG_ENABLE(python-aspell,
     AS_HELP_STRING([--disable-python-aspell], [Do not build the aspell Python wrapper.]),
     pythonAspellEnabled=$enableval, pythonAspellEnabled=yes)

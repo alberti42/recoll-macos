@@ -122,6 +122,8 @@ bool Aspell::init(string &reason)
     // At the moment, no idea how to distribute the pyaspell Python extension on MacOS.
     // So Recoll still makes suggestions (using the aspell command) when a search fails,
     // but can't widen searches to common orthographic neighbours.
+    // On other systems, we could fall back on the aspell cmd if the python module fails to load,
+    // but we don't at the moment: it's rclaspell-sugg or nothing
 #ifndef __APPLE__
     m_data->m_execspell = {
         "rclaspell-sugg.py", 
