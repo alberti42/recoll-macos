@@ -28,6 +28,7 @@
 using std::string;
 using std::vector;
 using std::map;
+static const QString ellips{"..."};
 
 void RclMain::buildMenus()
 {
@@ -59,11 +60,15 @@ void RclMain::buildMenus()
     fileMenu->addAction(fileStartMonitorAction);
     fileMenu->addAction(fileBumpIndexingAction);
     fileMenu->addAction(fileRebuildIndexAction);
+    actionSpecial_Indexing->setText(actionSpecial_Indexing->text() + ellips);
     fileMenu->addAction(actionSpecial_Indexing);
     fileMenu->addSeparator();
+    actionSave_last_query->setText(actionSave_last_query->text() + ellips);
     fileMenu->addAction(actionSave_last_query);
+    actionLoad_saved_query->setText(actionLoad_saved_query->text() + ellips);
     fileMenu->addAction(actionLoad_saved_query);
     fileMenu->addSeparator();
+    fileExportSSearchHistoryAction->setText(fileExportSSearchHistoryAction->text() + ellips);
     fileMenu->addAction(fileExportSSearchHistoryAction);
     fileMenu->addAction(fileEraseSearchHistoryAction);
     fileMenu->addSeparator();
@@ -75,19 +80,27 @@ void RclMain::buildMenus()
     viewMenu->addAction(toggleFullScreenAction);
     viewMenu->addAction(zoomInAction);
     viewMenu->addAction(zoomOutAction);
-    
+
+    toolsDoc_HistoryAction->setText(toolsDoc_HistoryAction->text() + ellips);
     toolsMenu->addAction(toolsDoc_HistoryAction);
+    toolsAdvanced_SearchAction->setText(toolsAdvanced_SearchAction->text() + ellips);
     toolsMenu->addAction(toolsAdvanced_SearchAction);
+    toolsSpellAction->setText(toolsSpellAction->text() + ellips);
     toolsMenu->addAction(toolsSpellAction);
+    actionQuery_Fragments->setText(actionQuery_Fragments->text() + ellips);
     toolsMenu->addAction(actionQuery_Fragments);
+    actionWebcache_Editor->setText(actionWebcache_Editor->text() + ellips);
     toolsMenu->addAction(actionWebcache_Editor);
     toolsMenu->addAction(showMissingHelpers_Action);
     toolsMenu->addAction(showActiveTypes_Action);
     toolsMenu->addAction(actionShow_index_statistics);
 
+    queryPrefsAction->setText(queryPrefsAction->text() + ellips);
     preferencesMenu->addAction(queryPrefsAction);
     preferencesMenu->addSeparator();
+    indexConfigAction->setText(indexConfigAction->text() + ellips);
     preferencesMenu->addAction(indexConfigAction);
+    indexScheduleAction->setText(indexScheduleAction->text() + ellips);
     preferencesMenu->addAction(indexScheduleAction);
 
     queryMenu->addSection(QIcon(), tr("Simple search type"));
@@ -116,11 +129,10 @@ void RclMain::buildMenus()
     queryMenu->addSeparator();
     queryMenu->addAction(enbSynAction);
     queryMenu->addSeparator();
+    extIdxAction->setText(extIdxAction->text() + ellips);
     queryMenu->addAction(extIdxAction);
-    connect(queryMenu, SIGNAL(triggered(QAction *)), this, 
-                          SLOT(onSSTypMenu(QAction *)));
-    connect(sSearch->searchTypCMB, SIGNAL(currentIndexChanged(int)), this,
-            SLOT(onSSTypCMB(int)));
+    connect(queryMenu, SIGNAL(triggered(QAction *)), this, SLOT(onSSTypMenu(QAction *)));
+    connect(sSearch->searchTypCMB, SIGNAL(currentIndexChanged(int)), this, SLOT(onSSTypCMB(int)));
     queryMenu->addSection(QIcon(), tr("Stemming language"));
     // Stemming language menu
     g_stringNoStem = tr("(no stemming)");
@@ -170,6 +182,7 @@ void RclMain::buildMenus()
     resultsMenu->addSeparator();
     resultsMenu->addAction(actionShowResultsAsTable);
     resultsMenu->addSeparator();
+    actionSaveResultsAsCSV->setText(actionSaveResultsAsCSV->text() + ellips);
     resultsMenu->addAction(actionSaveResultsAsCSV);
 
     MenuBar->addAction(fileMenu->menuAction());
