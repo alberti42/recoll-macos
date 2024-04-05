@@ -1,0 +1,60 @@
+option('idxthreads', type: 'boolean', value : true,
+       description: 'Enable multithreaded indexing')
+option('publiclib', type: 'boolean', value : true,
+       description: 'Install the recoll library in $libdir instead of using a private location')
+option('simdutf', type: 'boolean', value : true,
+       description: 'Use the simdutf module for faster charset conversion')
+option('camelcase', type: 'boolean', value : false,
+       description: 'Split camelCase words. This has bad consequences for phrase searches')
+option('testmains', type: 'boolean', value: false,
+       description: 'Build small diag/test drivers. Not unit tests')
+option('rclgrep', type: 'boolean', value: false,
+       description: 'Build the index-less search tool')
+option('python-module', type: 'boolean', value: true,
+       description: 'Build the Recoll Python extension module.')
+option('python-chm', type: 'boolean', value: true,
+       description: 'Build the libchm Python wrapper')
+option('python-aspell', type: 'boolean', value: true,
+       description: 'build the aspell Python wrapper')
+option('libmagic', type: 'boolean', value: true,
+       description: 'Use libmagic instead of executing xdg-mime/file')
+option('indexer', type: 'boolean', value: true,
+       description: 'Build the recollindex indexer (else recoll is query-only)')
+option('xadump', type: 'boolean', value: false,
+       description: 'build the xadump low level Xapian access program')
+option('qtgui', type: 'boolean', value: true,
+       description: 'Build the Qt GUI')
+option('recollq', type: 'boolean', value: false,
+       description: 'Build the recollq command line query tool')
+option('webkit', type: 'boolean', value: true,
+       description: 'Use Qt Webkit')
+option('webengine', type: 'boolean', value: false,
+       description: 'Use Qt Webengine instead of Webkit')
+option('webpreview', type: 'boolean', value: true,
+       description: 'Implement the GUI preview windows with webkit or webengine instead of qtextbrowser')
+option('guidebug', type: 'boolean', value: false,
+       description: 'Generate and retain debug symbols in the GUI program')
+option('ext4-birthtime', type: 'boolean', value: false,
+       description: 'Support birthtime metadata for ext4 file systems')
+option('userdoc', type: 'boolean', value: true,
+       description: 'Build the user manual (needs docbook xml/xsl files and TeX tools)')
+option('x11mon', type: 'boolean', value: true,
+       description: 'recollindex support for X11 session monitoring (needs Xlib)')
+option('file-command', type: 'string', value: 'file',
+       description: 'file type identification command to use by default. This is normally defined in the config')
+option('aspell', type: 'boolean', value: 'true',
+       description: 'Use the aspell program and/or library for spelling approximations')
+option('inotify', type: 'boolean', value: 'true',
+       description: 'Use inotify for monitoring file changes')
+option('fam', type: 'boolean', value: 'false',
+       description: 'Use fam for monitoring file changes')
+option('qzeitgeist', type: 'boolean', value: 'false',
+       description: 'Use the qt zeitgeist library for generating zeitgeist events')
+option('systemd', type: 'boolean', value: 'true',
+       description: 'Install the systemd unit files')
+# Was supplied in configure.ac 'pkg-config --variable systemd_system_unit_dir systemd'
+option('systemd-system-unit-dir', type: 'string', value:'/lib/systemd/system',
+       description: 'Install location for systemd system unit files')
+# Was supplied in configure.ac 'pkg-config --variable systemd_user_unit_dir systemd'
+option('systemd-user-unit-dir', type: 'string', value:'/usr/lib/systemd/user',
+       description: 'Install location for systemd user unit files')
