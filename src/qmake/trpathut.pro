@@ -12,23 +12,17 @@ DEFINES += PSAPI_VERSION=1
 DEFINES += __WIN32__
 
 SOURCES += \
-../../testmains/trpathut.cpp
+../testmains/trpathut.cpp
 
-INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
-            ../../unac ../../utils ../../aspell ../../rcldb ../../qtgui \
-            ../../xaposix ../../confgui ../../bincimapmime 
+INCLUDEPATH += ../common ../index ../internfile ../query \
+            ../unac ../utils ../aspell ../rcldb ../qtgui \
+            ../xaposix ../confgui ../bincimapmime 
 
 windows {
-  contains(QMAKE_CC, gcc){
-     MingW
-    QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
-    LIBS += \
-      ../build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
-    -lshlwapi -lpsapi -lkernel32
-  }
+
   contains(QMAKE_CC, cl){
     # Visual Studio
-    RECOLLDEPS = ../../../../recolldeps/msvc
+    RECOLLDEPS = ../../recolldeps/msvc
     LIBS += \
       -L../build-librecoll-Desktop_Qt_5_14_1_MSVC2017_32bit-Release/release \
         -llibrecoll \
@@ -43,7 +37,7 @@ windows {
       -lshlwapi -lpsapi -lkernel32
   }
 
-  INCLUDEPATH += ../../windows
+  INCLUDEPATH += ../windows
 }
 
 mac {

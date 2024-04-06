@@ -6,12 +6,22 @@ TEMPLATE = lib
 DEFINES += HAVE_CONFIG_H
 
 windows {
-    XAPIANDIR = ../../../../recolldeps/msvc/xapian-core/
+    XAPIANDIR = ../../../recolldeps/msvc/xapian-core/
     DEFINES += __WIN32__
     DEFINES += UNICODE
+
+  contains(QMAKE_CC, cl){
+    # msvc
+    CONFIG += staticlib
+    DEFINES += USING_STATIC_LIBICONV
+    INCLUDEPATH += \
+      ../../../recolldeps/msvc/zlib-1.2.11/ \
+      ../../../recolldeps/msvc/wlibiconv/include
+   }
 }
+
 mac {
-    XAPIANDIR = ../../../../xapian-core-1.4.24/
+    XAPIANDIR = ../../../xapian-core-1.4.24/
     CONFIG += staticlib
     QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
 }
@@ -244,14 +254,3 @@ $$XAPIANDIR/weight/weightinternal.cc
 
 INCLUDEPATH += $$XAPIANDIR $$XAPIANDIR/include \
            $$XAPIANDIR/common
-
-windows {
-  contains(QMAKE_CC, cl){
-    # msvc
-    CONFIG += staticlib
-    DEFINES += USING_STATIC_LIBICONV
-    INCLUDEPATH += \
-      ../../../../recolldeps/msvc/zlib-1.2.11/ \
-      ../../../../recolldeps/msvc/wlibiconv/include
-   }
-}
