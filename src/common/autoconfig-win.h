@@ -49,9 +49,6 @@
 /* Use QTextBrowser to implement the preview windows */
 #undef PREVIEW_FORCETEXTBROWSER
 
-/* putenv parameter is const */
-/* #undef PUTENV_ARG_CONST */
-
 /* Real time monitoring option */
 #define RCL_MONITOR 1
 

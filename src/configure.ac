@@ -75,20 +75,6 @@ fi
 AC_CHECK_LIB([pthread], [pthread_create], [], [])
 AC_CHECK_LIB([z], [zlibVersion], [], [AC_MSG_ERROR([libz not found])])
 
-############# Putenv
-AC_MSG_CHECKING(for type of string parameter to putenv)
-AC_LANG_PUSH([C++])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-    #include <stdlib.h>
-  ]], [[
-    putenv((const char *)0);
-  ]])],[rcl_putenv_string_const="1"],[rcl_putenv_string_const="0"])
-if test X$rcl_putenv_string_const = X1 ; then
-  AC_DEFINE(PUTENV_ARG_CONST, 1, [putenv parameter is const])
-fi
-AC_LANG_POP([C++])
-
-
 PKG_CHECK_MODULES([XSLT], [libxslt], [], AC_MSG_ERROR([libxslt]))
 
 # Use specific 'file' command ? (Useful on solaris to specify

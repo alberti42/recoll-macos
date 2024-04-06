@@ -25,10 +25,6 @@
 #include <signal.h>
 #include <locale.h>
 #include <cstdlib>
-#if !defined(PUTENV_ARG_CONST)
-#include <string.h>
-#endif
-
 #include <thread>
 
 #include "log.h"
@@ -458,14 +454,8 @@ RclConfig *recollinit(int flags,
 
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {
-        LOGDEB1("rclinit: idxflushmb=" << flushmb <<
-                ", set XAPIAN_FLUSH_THRESHOLD to 10E6\n");
-        static const char *cp = "XAPIAN_FLUSH_THRESHOLD=1000000";
-#ifdef PUTENV_ARG_CONST
-        ::putenv(cp);
-#else
-        ::putenv(strdup(cp));
-#endif
+        LOGDEB1("rclinit: idxflushmb=" << flushmb << ", set XAPIAN_FLUSH_THRESHOLD to 10E6\n");
+        setenv("XAPIAN_FLUSH_THRESHOLD", "1000000", 1);
     }
 
     return config;
