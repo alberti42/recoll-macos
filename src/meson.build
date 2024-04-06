@@ -6,22 +6,8 @@ project(
   default_options: ['cpp_std=c++17','buildtype=debugoptimized'],
   meson_version: '>=0.49',
 )
-
-recoll_datadir = get_option('prefix') / get_option('datadir') / 'recoll'
-
-add_project_arguments(['-DBUILDING_RECOLL',
-  '-DREADFILE_ENABLE_ZLIB', '-DREADFILE_ENABLE_MINIZ', '-DREADFILE_ENABLE_MD5',
-  '-DRECOLL_DATADIR="' + recoll_datadir + '"',
-], language: 'cpp')
-
-auto = configuration_data()
-auto.set_quoted('PACKAGE_VERSION', meson.project_version())
-auto.set_quoted('FILE_PROG', get_option('file-command'))
-auto.set('IDX_THREADS', get_option('idxthreads'))
-auto.set('ENABLE_LIBMAGIC', get_option('libmagic'))
-
-
 cpp = meson.get_compiler('cpp')
+
 librecolldeps = []
 librecolldeps += dependency('threads')
 librecolldeps += dependency('xapian-core')
@@ -32,234 +18,226 @@ if get_option('libmagic')
   librecolldeps += dependency('libmagic')
 endif
 librecolldeps += dependency('x11')
+# Searching for iconv is a meson 0.60 feature. Hopefully, for now all the systems where the meson
+# build is used have iconv in libc. Otherwise look at glib search for iconv for how to do it.
+#librecolldeps += dependency('iconv', method = 'auto')
+
+recoll_datadir = get_option('prefix') / get_option('datadir') / 'recoll'
+
+add_project_arguments(['-DBUILDING_RECOLL',
+  '-DREADFILE_ENABLE_ZLIB', '-DREADFILE_ENABLE_MINIZ', '-DREADFILE_ENABLE_MD5',
+  '-DRECOLL_DATADIR="' + recoll_datadir + '"',
+], language: 'cpp')
 
 
-cfile = configure_file(output: 'autoconfig.h', configuration: auto)
+recoll_conf = configuration_data()
+recoll_conf.set_quoted('PACKAGE_VERSION', meson.project_version())
+recoll_conf.set_quoted('FILE_PROG', get_option('file-command'))
+recoll_conf.set('IDX_THREADS', get_option('idxthreads'))
+recoll_conf.set('ENABLE_LIBMAGIC', get_option('libmagic'))
+if cpp.compiles('''
+        #include <stdlib.h>
+        #include <iconv.h>
+        void tryit()
+        {
+            iconv_t ic;
+            size_t isiz, osiz;
+            const char *icp;
+            char *ocp;
+            ic = iconv_open("utf-8", "utf-8");
+            iconv(ic, &icp, &isiz, &ocp, &osiz);
+        }''',
+        args: '-Werror',
+        name : 'ICONV CONST')
+    recoll_conf.set('ICONV_CONST', 'const')
+elif cpp.compiles('''
+        #include <stdlib.h>
+        #include <iconv.h>
+        void tryit()
+        {
+            iconv_t ic;
+            size_t isiz, osiz;
+            char *icp;
+            char *ocp;
+            ic = iconv_open("utf-8", "utf-8");
+            iconv(ic, &icp, &isiz, &ocp, &osiz);
+        }''',
+        args: '-Werror',
+        name : 'ICONV NOT CONST')
+    recoll_conf.set('ICONV_CONST', '')
+endif
+
+if cpp.compiles('''#include<stdlib.h>
+    char* func() {char t[10];return mkdtemp(t);}
+    ''', name : 'mkdtemp')
+  recoll_conf.set('HAVE_MKDTEMP', true)
+endif
+if cpp.has_header('features.h')
+    recoll_conf.set('HAVE_FEATURES_H', true)
+endif
+if cpp.has_header('spawn.h')
+    recoll_conf.set('HAVE_SPAWN_H', true)
+    if cpp.has_function('posix_spawn', prefix : '#include <spawn.h>')
+        recoll_conf.set10('HAVE_POSIX_SPAWN', true)
+        recoll_conf.set('USE_POSIX_SPAWN', get_option('spawn'))
+    endif
+endif
+if cpp.has_header('malloc.h')
+    malloc_include = '<malloc.h>'
+    recoll_conf.set('HAVE_MALLOC_H', true)
+endif
+if cpp.has_header('malloc/malloc.h')
+    malloc_include = '<malloc/malloc.h>'
+    recoll_conf.set('HAVE_MALLOC_MALLOC_H', true)
+endif
+if cpp.has_function('malloc_trim', prefix : '#include ' + malloc_include)
+    recoll_conf.set('HAVE_MALLOC_TRIM', true)
+endif
+if cpp.has_function('setrlimit', prefix : '''#include <sys/time.h>
+       #include <sys/resource.h>''')
+    recoll_conf.set('HAVE_SETRLIMIT', true)
+endif
+if cpp.has_function('kqueue', prefix : '''#include <sys/event.h>
+       #include <sys/time.h>''')
+    recoll_conf.set('HAVE_KQUEUE', true)
+endif
+
+recoll_conf.set('HAVE_VSNPRINTF', cpp.has_function('vsnprintf'))
+recoll_conf.set('HAVE_POSIX_FADVISE', cpp.has_function('posix_fadvise', prefix : '#include <fcntl.h>'))
+
+if get_option('inotify') and cpp.has_function('inotify_add_watch', prefix: '#include <sys/inotify.h>')
+    recoll_conf.set('RCL_USE_INOTIFY', true)
+    recoll_conf.set('RCL_MONITOR', true)
+elif get_option('fam')
+    libfam = cpp.find_library('gamin')
+    if libfam
+        recoll_conf.set('RCL_USE_FAM', true)
+        recoll_conf.set('RCL_MONITOR', true)
+        librecolldeps += libfam
+    endif                          
+endif
+
+recoll_conf.set('IDX_THREADS', get_option('idxthreads'))
+recoll_conf.set('RCL_SPLIT_CAMELCASE', get_option('camelcase'))
+recoll_conf.set('USE_SIMDUTF', get_option('simdutf'))
+
+cfile = configure_file(output: 'autoconfig.h', configuration: recoll_conf)
+
+
+# Could not find a way to make this work. In case wasaparse.cpp/h need to be rebuilt just do it with
+#   ylwrap query/wasaparse.ypp
+#bison = find_program('bison')
+#wasaparse_cpp = custom_target('wasaparse.cpp',
+#  output: ['wasaparse.cpp', 'wasaparse.h'],
+#  input: 'query/wasaparse.ypp',
+#  command: ['./ylwrap', '@INPUT@'],
+#)
 
 librecoll_sources = [
 'aspell/rclaspell.cpp',
-'aspell/rclaspell.h',
 'bincimapmime/convert.cc',
-'bincimapmime/convert.h',
-'bincimapmime/mime-inputsource.h',
 'bincimapmime/mime-parsefull.cc',
 'bincimapmime/mime-parseonlyheader.cc',
 'bincimapmime/mime-printbody.cc',
-'bincimapmime/mime-utils.h',
 'bincimapmime/mime.cc',
-'bincimapmime/mime.h',
 'common/cjksplitter.cpp',
-'common/cjksplitter.h',
-'common/conf_post.h',
 'common/cnsplitter.cpp',
-'common/cnsplitter.h',
 'common/cstr.cpp',
-'common/cstr.h',
 'common/kosplitter.cpp',
-'common/kosplitter.h',
 'common/rclconfig.cpp',
-'common/rclconfig.h',
 'common/rclinit.cpp',
-'common/rclinit.h',
 'common/syngroups.cpp',
-'common/syngroups.h',
 'common/textsplit.cpp',
-'common/textsplit.h',
 'common/unacpp.cpp',
-'common/unacpp.h',
-'common/uproplist.h',
 'common/utf8fn.cpp',
-'common/utf8fn.h',
 'common/webstore.cpp',
-'common/webstore.h',
 'index/webqueuefetcher.cpp',
-'index/webqueuefetcher.h',
 'index/checkretryfailed.cpp',
-'index/checkretryfailed.h',
 'index/exefetcher.cpp',
-'index/exefetcher.h',
 'index/fetcher.cpp',
-'index/fetcher.h',
 'index/fsfetcher.cpp',
-'index/fsfetcher.h',
-'index/idxdiags.h',
 'index/idxdiags.cpp',
-'index/idxstatus.h',
 'index/idxstatus.cpp',
 'index/mimetype.cpp',
-'index/mimetype.h',
-'index/rclmon.h',
-'index/recollindex.h',
 'index/subtreelist.cpp',
-'index/subtreelist.h',
-'internfile/Filter.h',
 'internfile/extrameta.cpp',
-'internfile/extrameta.h',
 'internfile/htmlparse.cpp',
-'internfile/htmlparse.h',
-'internfile/indextext.h',
 'internfile/internfile.cpp',
-'internfile/internfile.h',
 'internfile/mh_exec.cpp',
-'internfile/mh_exec.h',
 'internfile/mh_execm.cpp',
-'internfile/mh_execm.h',
 'internfile/mh_html.cpp',
-'internfile/mh_html.h',
 'internfile/mh_mail.cpp',
-'internfile/mh_mail.h',
 'internfile/mh_mbox.cpp',
-'internfile/mh_mbox.h',
-'internfile/mh_null.h',
-'internfile/mh_symlink.h',
 'internfile/mh_text.cpp',
-'internfile/mh_text.h',
-'internfile/mh_unknown.h',
 'internfile/mh_xslt.cpp',
-'internfile/mh_xslt.h',
 'internfile/mimehandler.cpp',
-'internfile/mimehandler.h',
 'internfile/myhtmlparse.cpp',
-'internfile/myhtmlparse.h',
 'internfile/txtdcode.cpp',
 'internfile/uncomp.cpp',
-'internfile/uncomp.h',
 'query/docseq.cpp',
-'query/docseq.h',
 'query/docseqdb.cpp',
-'query/docseqdb.h',
-'query/docseqdocs.h',
 'query/docseqhist.cpp',
-'query/docseqhist.h',
 'query/dynconf.cpp',
-'query/dynconf.h',
 'query/filtseq.cpp',
-'query/filtseq.h',
 'common/plaintorich.cpp',
-'common/plaintorich.h',
 'query/qresultstore.cpp',
-'query/qresultstore.h',
 'query/recollq.cpp',
-'query/recollq.h',
 'query/reslistpager.cpp',
-'query/reslistpager.h',
 'query/sortseq.cpp',
-'query/sortseq.h',
-#'query/wasaparse.ypp',
+'query/wasaparse.cpp',
 'query/wasaparseaux.cpp',
-'query/wasaparserdriver.h',
-'query/wasatorcl.h',
 'rcldb/daterange.cpp',
-'rcldb/daterange.h',
 'rcldb/expansiondbs.cpp',
-'rcldb/expansiondbs.h',
 'rcldb/rclabstract.cpp',
 'rcldb/rclabsfromtext.cpp',
 'rcldb/rcldb.cpp',
-'rcldb/rcldb.h',
-'rcldb/rcldb_p.h',
 'rcldb/rcldoc.cpp',
-'rcldb/rcldoc.h',
 'rcldb/rcldups.cpp',
 'rcldb/rclquery.cpp',
-'rcldb/rclquery.h',
-'rcldb/rclquery_p.h',
 'rcldb/rclterms.cpp',
 'rcldb/rclvalues.cpp',
-'rcldb/rclvalues.h',
 'rcldb/searchdata.cpp',
-'rcldb/searchdata.h',
 'rcldb/searchdatatox.cpp',
 'rcldb/searchdataxml.cpp',
 'rcldb/stemdb.cpp',
-'rcldb/stemdb.h',
 'rcldb/stoplist.cpp',
-'rcldb/stoplist.h',
 'rcldb/synfamily.cpp',
-'rcldb/synfamily.h',
-'rcldb/termproc.h',
-'rcldb/xmacros.h',
 'unac/unac.cpp',
-'unac/unac.h',
-'unac/unac_version.h',
 'utils/appformime.cpp',
-'utils/appformime.h',
 'utils/base64.cpp',
-'utils/base64.h',
 'utils/cancelcheck.cpp',
-'utils/cancelcheck.h',
-'utils/chrono.h',
 'utils/chrono.cpp',
 'utils/circache.cpp',
-'utils/circache.h',
 'utils/closefrom.cpp',
-'utils/closefrom.h',
 'utils/cmdtalk.cpp',
-'utils/cmdtalk.h',
 'utils/conftree.cpp',
-'utils/conftree.h',
 'utils/copyfile.cpp',
-'utils/copyfile.h',
 'utils/cpuconf.cpp',
-'utils/cpuconf.h',
-'utils/damlev.h',
 'utils/ecrontab.cpp',
-'utils/ecrontab.h',
 'utils/execmd.cpp',
-'utils/execmd.h',
 'utils/fileudi.cpp',
-'utils/fileudi.h',
 'utils/fstreewalk.cpp',
-'utils/fstreewalk.h',
-'utils/hldata.h',
 'utils/hldata.cpp',
 'utils/idfile.cpp',
-'utils/idfile.h',
 'utils/listmem.cpp',
-'utils/listmem.h',
 'utils/log.cpp',
-'utils/log.h',
 'utils/md5.cpp',
-'utils/md5.h',
 'utils/md5ut.cpp',
-'utils/md5ut.h',
 'utils/mimeparse.cpp',
-'utils/mimeparse.h',
 'utils/miniz.cpp',
-'utils/miniz.h',
 'utils/netcon.cpp',
-'utils/netcon.h',
 'utils/pathut.cpp',
-'utils/pathut.h',
-'utils/picoxml.h',
 'utils/pxattr.cpp',
-'utils/pxattr.h',
 'utils/rclionice.cpp',
-'utils/rclionice.h',
-'utils/rclutil.h',
 'utils/rclutil.cpp',
 'utils/readfile.cpp',
-'utils/readfile.h',
 'utils/smallut.cpp',
-'utils/smallut.h',
 'utils/strmatcher.cpp',
-'utils/strmatcher.h',
 'utils/transcode.cpp',
-'utils/transcode.h',
 'utils/utf8iter.cpp',
-'utils/utf8iter.h',
 'utils/wipedir.cpp',
-'utils/wipedir.h',
-'utils/workqueue.h',
 'utils/x11mon.cpp',
-'utils/x11mon.h',
 'utils/zlibut.cpp',
-'utils/zlibut.h',
-'xaposix/safefcntl.h',
-'xaposix/safesysstat.h',
-'xaposix/safesyswait.h',
-'xaposix/safeunistd.h',
-'query/wasaparse.cpp',
 ]
 
 librecoll_incdir = include_directories('utils', 'common', 'bincimapmime', 'aspell', 'xaposix',
@@ -274,3 +252,29 @@ librecoll = library(
   dependencies: librecolldeps,
   install: true,
 )
+
+if get_option('indexer')
+
+recollindex_sources = [
+    'index/checkindexed.cpp',
+    'index/fsindexer.cpp',
+    'index/indexer.cpp',
+    'index/rclmonprc.cpp',
+    'index/rclmonrcv.cpp',
+    'index/recollindex.cpp',
+    'index/webqueue.cpp',
+]
+
+recollindexdeps = []
+recollindexdeps += declare_dependency(link_with : librecoll,
+  )
+recollindex = executable(
+  'recollindex',
+  recollindex_sources,
+  name_prefix: '',
+  include_directories: librecoll_incdir,
+  dependencies: recollindexdeps,
+  install: true,
+)
+
+endif

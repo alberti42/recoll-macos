@@ -1,9 +1,12 @@
+# Note: idxthreads should have a false default on Mac OS as it does not perform well.
 option('idxthreads', type: 'boolean', value : true,
        description: 'Enable multithreaded indexing')
 option('publiclib', type: 'boolean', value : true,
        description: 'Install the recoll library in $libdir instead of using a private location')
 option('simdutf', type: 'boolean', value : true,
        description: 'Use the simdutf module for faster charset conversion')
+option('spawn', type: 'boolean', value : false,
+       description: 'Use posix_spawn instead of execv')
 option('camelcase', type: 'boolean', value : false,
        description: 'Split camelCase words. This has bad consequences for phrase searches')
 option('testmains', type: 'boolean', value: false,
