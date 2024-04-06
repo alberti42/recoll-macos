@@ -32,7 +32,7 @@
 
 
 /**
- ** \file y.tab.h
+ ** \file wasaparse.tab.hpp
  ** Define the yy::parser class.
  */
 
@@ -42,8 +42,8 @@
 // especially those whose name start with YY_ or yy_.  They are
 // private implementation details that can be changed or removed.
 
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YY_WASAPARSE_TAB_HPP_INCLUDED
+# define YY_YY_WASAPARSE_TAB_HPP_INCLUDED
 
 
 # include <cstdlib> // std::abort
@@ -178,7 +178,7 @@
 #endif
 
 namespace yy {
-#line 182 "y.tab.h"
+#line 182 "wasaparse.tab.hpp"
 
 
 
@@ -203,7 +203,7 @@ namespace yy {
     Rcl::SearchDataClauseSimple *cl;
     Rcl::SearchData *sd;
 
-#line 207 "y.tab.h"
+#line 207 "wasaparse.tab.hpp"
 
     };
 #endif
@@ -822,9 +822,9 @@ namespace yy {
 
 
 } // yy
-#line 826 "y.tab.h"
+#line 826 "wasaparse.tab.hpp"
 
 
 
 
-#endif // !YY_YY_Y_TAB_H_INCLUDED
+#endif // !YY_YY_WASAPARSE_TAB_HPP_INCLUDED

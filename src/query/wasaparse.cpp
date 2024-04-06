@@ -74,7 +74,7 @@ static void addSubQuery(WasaParserDriver *,
 }
 
 
-#line 78 "y.tab.c"
+#line 78 "wasaparse.tab.cpp"
 
 
 
@@ -171,7 +171,7 @@ static void addSubQuery(WasaParserDriver *,
 #define YYRECOVERING()  (!!yyerrstatus_)
 
 namespace yy {
-#line 175 "y.tab.c"
+#line 175 "wasaparse.tab.cpp"
 
   /// Build a parser object.
   parser::parser (WasaParserDriver* d_yyarg)
@@ -383,25 +383,25 @@ namespace yy {
       case symbol_kind::S_WORD: // WORD
 #line 52 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp"
                     {delete (yysym.value.str);}
-#line 387 "y.tab.c"
+#line 387 "wasaparse.tab.cpp"
         break;
 
       case symbol_kind::S_QUOTED: // QUOTED
 #line 52 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp"
                     {delete (yysym.value.str);}
-#line 393 "y.tab.c"
+#line 393 "wasaparse.tab.cpp"
         break;
 
       case symbol_kind::S_QUALIFIERS: // QUALIFIERS
 #line 52 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp"
                     {delete (yysym.value.str);}
-#line 399 "y.tab.c"
+#line 399 "wasaparse.tab.cpp"
         break;
 
       case symbol_kind::S_complexfieldname: // complexfieldname
 #line 52 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp"
                     {delete (yysym.value.str);}
-#line 405 "y.tab.c"
+#line 405 "wasaparse.tab.cpp"
         break;
 
       default:
@@ -681,7 +681,7 @@ namespace yy {
     else
         d->m_result = (yystack_[0].value.sd);
 }
-#line 685 "y.tab.c"
+#line 685 "wasaparse.tab.cpp"
     break;
 
   case 3: // query: query query
@@ -696,7 +696,7 @@ namespace yy {
     }
     (yylhs.value.sd) = sd;
 }
-#line 700 "y.tab.c"
+#line 700 "wasaparse.tab.cpp"
     break;
 
   case 4: // query: query AND query
@@ -711,7 +711,7 @@ namespace yy {
     }
     (yylhs.value.sd) = sd;
 }
-#line 715 "y.tab.c"
+#line 715 "wasaparse.tab.cpp"
     break;
 
   case 5: // query: query OR query
@@ -726,7 +726,7 @@ namespace yy {
     }
     (yylhs.value.sd) = top;
 }
-#line 730 "y.tab.c"
+#line 730 "wasaparse.tab.cpp"
     break;
 
   case 6: // query: '(' query ')'
@@ -735,7 +735,7 @@ namespace yy {
     LOGP("q: ( query )\n");
     (yylhs.value.sd) = (yystack_[1].value.sd);
 }
-#line 739 "y.tab.c"
+#line 739 "wasaparse.tab.cpp"
     break;
 
   case 7: // query: fieldexpr
@@ -750,7 +750,7 @@ namespace yy {
         (yylhs.value.sd) = nullptr;
     }
 }
-#line 754 "y.tab.c"
+#line 754 "wasaparse.tab.cpp"
     break;
 
   case 8: // fieldexpr: term
@@ -759,7 +759,7 @@ namespace yy {
     LOGP("fe: simple fieldexpr: " << (yystack_[0].value.cl)->gettext() << endl);
     (yylhs.value.cl) = (yystack_[0].value.cl);
 }
-#line 763 "y.tab.c"
+#line 763 "wasaparse.tab.cpp"
     break;
 
   case 9: // fieldexpr: complexfieldname EQUALS term
@@ -771,7 +771,7 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 775 "y.tab.c"
+#line 775 "wasaparse.tab.cpp"
     break;
 
   case 10: // fieldexpr: complexfieldname CONTAINS term
@@ -783,7 +783,7 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 787 "y.tab.c"
+#line 787 "wasaparse.tab.cpp"
     break;
 
   case 11: // fieldexpr: complexfieldname CONTAINS range
@@ -795,7 +795,7 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.rg);
     delete (yystack_[2].value.str);
 }
-#line 799 "y.tab.c"
+#line 799 "wasaparse.tab.cpp"
     break;
 
   case 12: // fieldexpr: complexfieldname SMALLER term
@@ -807,7 +807,7 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 811 "y.tab.c"
+#line 811 "wasaparse.tab.cpp"
     break;
 
   case 13: // fieldexpr: complexfieldname SMALLEREQ term
@@ -819,7 +819,7 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 823 "y.tab.c"
+#line 823 "wasaparse.tab.cpp"
     break;
 
   case 14: // fieldexpr: complexfieldname GREATER term
@@ -831,7 +831,7 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 835 "y.tab.c"
+#line 835 "wasaparse.tab.cpp"
     break;
 
   case 15: // fieldexpr: complexfieldname GREATEREQ term
@@ -843,7 +843,7 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 847 "y.tab.c"
+#line 847 "wasaparse.tab.cpp"
     break;
 
   case 16: // fieldexpr: '-' fieldexpr
@@ -853,7 +853,7 @@ namespace yy {
     (yystack_[0].value.cl)->setexclude(true);
     (yylhs.value.cl) = (yystack_[0].value.cl);
 }
-#line 857 "y.tab.c"
+#line 857 "wasaparse.tab.cpp"
     break;
 
   case 17: // complexfieldname: WORD
@@ -862,7 +862,7 @@ namespace yy {
     LOGP("cfn: WORD" << endl);
     (yylhs.value.str) = (yystack_[0].value.str);
 }
-#line 866 "y.tab.c"
+#line 866 "wasaparse.tab.cpp"
     break;
 
   case 18: // complexfieldname: complexfieldname CONTAINS WORD
@@ -873,7 +873,7 @@ namespace yy {
     delete (yystack_[2].value.str);
     delete (yystack_[0].value.str);
 }
-#line 877 "y.tab.c"
+#line 877 "wasaparse.tab.cpp"
     break;
 
   case 19: // range: WORD RANGE WORD
@@ -884,7 +884,7 @@ namespace yy {
     delete (yystack_[2].value.str);
     delete (yystack_[0].value.str);
 }
-#line 888 "y.tab.c"
+#line 888 "wasaparse.tab.cpp"
     break;
 
   case 20: // range: RANGE WORD
@@ -894,7 +894,7 @@ namespace yy {
     (yylhs.value.rg) = new Rcl::SearchDataClauseRange("", *(yystack_[0].value.str));
     delete (yystack_[0].value.str);
 }
-#line 898 "y.tab.c"
+#line 898 "wasaparse.tab.cpp"
     break;
 
   case 21: // range: WORD RANGE
@@ -904,7 +904,7 @@ namespace yy {
     (yylhs.value.rg) = new Rcl::SearchDataClauseRange(*(yystack_[1].value.str), "");
     delete (yystack_[1].value.str);
 }
-#line 908 "y.tab.c"
+#line 908 "wasaparse.tab.cpp"
     break;
 
   case 22: // term: WORD
@@ -914,7 +914,7 @@ namespace yy {
     (yylhs.value.cl) = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, *(yystack_[0].value.str));
     delete (yystack_[0].value.str);
 }
-#line 918 "y.tab.c"
+#line 918 "wasaparse.tab.cpp"
     break;
 
   case 23: // term: qualquote
@@ -922,7 +922,7 @@ namespace yy {
 {
     (yylhs.value.cl) = (yystack_[0].value.cl);
 }
-#line 926 "y.tab.c"
+#line 926 "wasaparse.tab.cpp"
     break;
 
   case 24: // qualquote: QUOTED
@@ -932,7 +932,7 @@ namespace yy {
     (yylhs.value.cl) = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, *(yystack_[0].value.str), 0);
     delete (yystack_[0].value.str);
 }
-#line 936 "y.tab.c"
+#line 936 "wasaparse.tab.cpp"
     break;
 
   case 25: // qualquote: QUOTED QUALIFIERS
@@ -946,11 +946,11 @@ namespace yy {
     delete (yystack_[1].value.str);
     delete (yystack_[0].value.str);
 }
-#line 950 "y.tab.c"
+#line 950 "wasaparse.tab.cpp"
     break;
 
 
-#line 954 "y.tab.c"
+#line 954 "wasaparse.tab.cpp"
 
             default:
               break;
@@ -1487,7 +1487,7 @@ namespace yy {
   }
 
 } // yy
-#line 1491 "y.tab.c"
+#line 1491 "wasaparse.tab.cpp"
 
 #line 278 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp"
 
