@@ -51,7 +51,7 @@ option('inotify', type: 'boolean', value: 'true',
        description: 'Use inotify for monitoring file changes')
 option('fam', type: 'boolean', value: 'false',
        description: 'Use fam for monitoring file changes')
-option('qzeitgeist', type: 'boolean', value: 'false',
+option('qtzeitgeist', type: 'boolean', value: 'false',
        description: 'Use the qt zeitgeist library for generating zeitgeist events')
 option('systemd', type: 'boolean', value: 'true',
        description: 'Install the systemd unit files')

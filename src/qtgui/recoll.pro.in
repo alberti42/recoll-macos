@@ -420,7 +420,7 @@ VPATH = @srcdir@
   LIBS +=  @XAPIAN_LIBS@ \
        @LIBICONV@ $(BDYNAMIC) @LIBQZEITGEIST@ @XSLT_LIBS@ -lz
 
-  INCLUDEPATH += ../common @srcdir@/../common @srcdir@/../index \
+  INCLUDEPATH += ../ ../common @srcdir@/../common @srcdir@/../index \
               @srcdir@/../internfile @srcdir@/../query @srcdir@/../unac \
               @srcdir@/../utils @srcdir@/../aspell @srcdir@/../rcldb \
               @srcdir@/../qtgui @srcdir@/../xaposix @srcdir@/confgui \
