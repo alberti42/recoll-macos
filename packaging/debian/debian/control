@@ -9,7 +9,6 @@ Build-Depends: bison,
                libaspell-dev,
                libchm-dev,
 #               qtwebengine5-dev,
-               
                libqt5webkit5-dev,
                libmagic-dev,
                libx11-dev,
