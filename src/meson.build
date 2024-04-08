@@ -1,12 +1,13 @@
 project(
     'recoll',
-    'cpp',
+    ['cpp', 'c'],
     license: 'GPL 2+',
     version: '1.38.0',
     default_options: ['cpp_std=c++17', 'buildtype=debugoptimized'],
     meson_version: '>=0.49',
 )
 cpp = meson.get_compiler('cpp')
+cc = meson.get_compiler('c')
 
 librecolldeps = []
 librecolldeps += dependency('threads')
@@ -49,6 +50,8 @@ recoll_conf.set_quoted('FILE_PROG', get_option('file-command'))
 recoll_conf.set('IDX_THREADS', get_option('idxthreads'))
 recoll_conf.set('ENABLE_LIBMAGIC', get_option('libmagic'))
 recoll_conf.set('DISABLE_X11MON', not get_option('x11mon'))
+recoll_conf.set('RCL_USE_ASPELL', get_option('aspell'))
+recoll_conf.set('PREVIEW_FORCETEXTBROWSER', get_option('webpreview'))
 # TBD: DEF_EXT4_BIRTH_TIME in python recoll setup.py and qtgui
 # For qtgui this was done by running qmake with DEFINE_BTIME=1 on the command line cf Makefile.am
 recoll_conf.set('EXT4_BIRTH_TIME', get_option('ext4-birthtime'))
@@ -279,15 +282,15 @@ librecoll_sources = [
 ]
 
 librecoll_incdir = include_directories(
-    'utils',
-    'common',
-    'bincimapmime',
     'aspell',
-    'xaposix',
-    'rcldb',
-    'unac',
+    'bincimapmime',
+    'common',
     'index',
     'internfile',
+    'rcldb',
+    'unac',
+    'utils',
+    'xaposix',
 )
 
 librecoll = library(
@@ -299,9 +302,6 @@ librecoll = library(
     dependencies: librecolldeps,
     install: true,
 )
-
-subdir('qtgui')
-
 
 if get_option('indexer')
 
@@ -366,4 +366,17 @@ if get_option('xadump')
         install: true,
     )
 
+endif
+
+if get_option('qtgui')
+    subdir('qtgui')
+endif
+if get_option('python-module')
+    subdir('python/recoll')
+endif   
+if get_option('python-aspell')
+    subdir('python/pyaspell')
+endif
+if get_option('python-chm')
+    subdir('python/pychm')
 endif

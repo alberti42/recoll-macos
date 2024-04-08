@@ -6,30 +6,17 @@
 
 qtgui_conf = configuration_data()
 qtgui_conf.set('srcdir', meson.source_root() / 'qtgui')
-if get_option('webkit')
-    qtgui_conf.set('QMAKE_ENABLE_WEBKIT', '')
-else
+if not get_option('webkit') or get_option('webengine')
     qtgui_conf.set('QMAKE_ENABLE_WEBKIT', '#')
 endif
-if get_option('webengine')
-    qtgui_conf.set('QMAKE_ENABLE_WEBENGINE', '')
-else
+if not get_option('webengine')
     qtgui_conf.set('QMAKE_ENABLE_WEBENGINE', '#')
 endif
-if get_option('qtzeitgeist')
-    qtgui_conf.set('QMAKE_ENABLE_ZEITGEIST', '')
-else
+if not get_option('qtzeitgeist')
     qtgui_conf.set('QMAKE_ENABLE_ZEITGEIST', '#')
 endif
-if get_option('guidebug')
-    qtgui_conf.set('QMAKE_ENABLE_GUIDEBUG', '')
-else
+if not get_option('guidebug')
     qtgui_conf.set('QMAKE_ENABLE_GUIDEBUG', '#')
-endif
-if get_option('publiclib')
-    qtgui_conf.set('PUBLIC_LIB_FALSE', '')
-else
-    qtgui_conf.set('PUBLIC_LIB_FALSE', '#')
 endif
 qtgui_conf.set('LIBRECOLL_FOR_QMAKE', librecoll.full_path())
 
