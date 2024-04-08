@@ -407,7 +407,7 @@ VPATH = @srcdir@
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  LIBS += -L../.libs -lrecoll
+  LIBS += @LIBRECOLL_FOR_QMAKE@
   # You will need LD_PRELOAD=/path/to/libasan.xx because -lasan need to be
   # first in libs, so can't use LIBS +=
   #  QMAKE_CXXFLAGS += -fsanitize=address -fno-omit-frame-pointer

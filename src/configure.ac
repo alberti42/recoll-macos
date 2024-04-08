@@ -522,6 +522,7 @@ RECOLL_DATADIR=${m_datadir}/recoll
 
 RCLVERSION=$PACKAGE_VERSION
 RCLLIBVERSION=$RCLVERSION
+LIBRECOLL_FOR_QMAKE="-L../.libs -lrecoll"
 
 AC_SUBST(NO_UNDEF_LINK_FLAG)
 AC_SUBST(RECOLL_DATADIR)
@@ -554,6 +555,7 @@ AC_SUBST(XSLT_CFLAGS)
 AC_SUBST(XSLT_LIBS)
 AC_SUBST([SYSTEMD_SYSTEM_UNIT_DIR])
 AC_SUBST([SYSTEMD_USER_UNIT_DIR])
+AC_SUBST([LIBRECOLL_FOR_QMAKE])
 
 AC_CONFIG_FILES([Makefile python/recoll/setup.py python/recoll/setup.cfg
  python/pychm/setup.py python/pychm/setup.cfg python/pyaspell/setup.py])

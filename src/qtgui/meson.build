@@ -1,3 +1,9 @@
+# Meson file to build the QT Recoll GUI
+# We are using a custom target to run qmake and make as I don't want to have to duplicate the .pro
+# into a meson build as it is used on Windows and MacOS, with special constraints.
+# Meson is used to build the .pro from a .pro.in as per recoll configuration, then the custom target
+# is defined. Makes use of a small script located in the qtgui directory.
+
 qtgui_conf = configuration_data()
 qtgui_conf.set('srcdir', meson.source_root() / 'qtgui')
 if get_option('webkit')
@@ -25,6 +31,7 @@ if get_option('publiclib')
 else
     qtgui_conf.set('PUBLIC_LIB_FALSE', '#')
 endif
+qtgui_conf.set('LIBRECOLL_FOR_QMAKE', librecoll.full_path())
 
 # Tried xapian.get_pkgconfig_variable('libs')/'--libs'/'Libs' with no success
 pkgc = find_program('pkg-config')
@@ -47,11 +54,12 @@ qmkmk = find_program(meson.source_root() / 'qtgui' / 'qmkmk.sh')
 infile = pro_file
 outfile = 'recoll'
 
-recoll = custom_target('recoll',
-  output : outfile,
-  input : infile,
-  command : [qmkmk, '@INPUT@'],
-  install : true,
-  install_dir: 'bin',
+recoll = custom_target(
+    'recoll',
+    output: outfile,
+    input: infile,
+    command: [qmkmk, '@INPUT@'],
+    install: true,
+    install_dir: 'bin',
 )
 
