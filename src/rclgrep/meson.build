@@ -1,0 +1,85 @@
+#rclgrep_incdirs = [librecoll_incdir, '..', '../query',]
+rclgrep_incdirs = [librecoll_incdir, '..',]
+
+rclgrep_sources = [
+    'rclgrep.cpp',
+    '../bincimapmime/convert.cc',
+    '../bincimapmime/mime-parsefull.cc',
+    '../bincimapmime/mime-parseonlyheader.cc',
+    '../bincimapmime/mime-printbody.cc',
+    '../bincimapmime/mime.cc',
+    '../common/cstr.cpp',
+    '../common/rclconfig.cpp',
+    '../common/rclinit.cpp',
+    '../common/textsplit.cpp',
+    '../common/kosplitter.cpp',
+    '../common/cjksplitter.cpp',
+    '../common/cnsplitter.cpp',
+    '../common/webstore.cpp',
+    '../index/exefetcher.cpp',
+    '../index/fetcher.cpp',
+    '../index/fsfetcher.cpp',
+    '../index/idxdiags.cpp',
+    '../index/mimetype.cpp',
+    '../index/webqueuefetcher.cpp',
+    '../internfile/extrameta.cpp',
+    '../internfile/htmlparse.cpp',
+    '../internfile/internfile.cpp',
+    '../internfile/mh_exec.cpp',
+    '../internfile/mh_execm.cpp',
+    '../internfile/mh_html.cpp',
+    '../internfile/mh_mail.cpp',
+    '../internfile/mh_mbox.cpp',
+    '../internfile/mh_text.cpp',
+    '../internfile/mh_xslt.cpp',
+    '../internfile/mimehandler.cpp',
+    '../internfile/myhtmlparse.cpp',
+    '../internfile/txtdcode.cpp',
+    '../internfile/uncomp.cpp',
+    '../rcldb/rcldoc.cpp',
+    '../unac/unac.cpp',
+    '../utils/base64.cpp',
+    '../utils/cancelcheck.cpp',
+    '../utils/chrono.cpp',
+    '../utils/circache.cpp',
+    '../utils/closefrom.cpp',
+    '../utils/cmdtalk.cpp',
+    '../utils/conftree.cpp',
+    '../utils/copyfile.cpp',
+    '../utils/cpuconf.cpp',
+    '../utils/execmd.cpp',
+    '../utils/fileudi.cpp',
+    '../utils/fstreewalk.cpp',
+    '../utils/idfile.cpp',
+    '../utils/log.cpp',
+    '../utils/md5.cpp',
+    '../utils/md5ut.cpp',
+    '../utils/mimeparse.cpp',
+    '../utils/miniz.cpp',
+    '../utils/netcon.cpp',
+    '../utils/pathut.cpp',
+    '../utils/pxattr.cpp',
+    '../utils/rclutil.cpp',
+    '../utils/readfile.cpp',
+    '../utils/smallut.cpp',
+    '../utils/transcode.cpp',
+    '../utils/utf8iter.cpp',
+    '../utils/wipedir.cpp',
+    '../utils/zlibut.cpp',
+]
+
+rclgrep_deps = [libxml, libxslt, libz]
+if get_option('libmagic')
+    rclgrep_deps += libmagic
+endif
+if get_option('idxthreads')
+    rclgrep_deps += dependency('threads')
+endif
+
+rclgrep = executable(
+    'rclgrep',
+    rclgrep_sources,
+    include_directories: rclgrep_incdirs,
+    dependencies: rclgrep_deps,
+    install: true,
+)

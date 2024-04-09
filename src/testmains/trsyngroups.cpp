@@ -54,20 +54,18 @@ int main(int argc, char **argv)
     string fn = *argv++;argc--;
     string word = *argv++;argc--;
 
-    DebugLog::getdbl()->setloglevel(DEBDEB1);
-    DebugLog::setfilename("stderr");
+    Logger::getTheLog("")->setloglevel(Logger::LLDEB0);
     SynGroups syns;
     syns.setfile(fn);
     if (!syns.ok()) {
-    cerr << "Initialization failed\n";
-    return 1;
+        cerr << "Initialization failed\n";
+        return 1;
     }
 
     vector<string> group = syns.getgroup(word);
     cout << group.size() << " terms in group\n";
-    for (vector<string>::const_iterator it = group.begin();
-     it != group.end(); it++) {
-    cout << "[" << *it << "] ";
+    for (const auto& trm : group) {
+        cout << "[" << trm << "] ";
     }
     cout << endl;
     return 0;

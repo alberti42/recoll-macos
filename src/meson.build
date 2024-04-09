@@ -9,28 +9,41 @@ project(
 cpp = meson.get_compiler('cpp')
 cc = meson.get_compiler('c')
 
-librecolldeps = []
-if get_option('idxthreads')
-   librecolldeps += dependency('threads')
-endif
-xapian = dependency('xapian-core')
-librecolldeps += xapian
-librecolldeps += dependency('libxml-2.0')
-librecolldeps += dependency('libxslt')
-librecolldeps += dependency('zlib')
-if get_option('libmagic')
-    librecolldeps += dependency('libmagic')
-endif
-# Note: we would like to remove the x11 dep from the lib to the indexer, but this is not possible
-# without separating the indexing code out of rcldb (it calls idxstatus->x11mon).
-if get_option('x11mon') and get_option('indexer')
-    librecolldeps += dependency('x11')
-endif
 
+# Check if anything needs Xapian. We also need to build the shared lib if this is the case.
+# Useful if building rclgrep alone for example.
+if get_option('testmains') or get_option('python-module') or get_option('indexer') \
+   or get_option('xadump') or get_option('qtgui') or get_option('recollq')
+    librecoll_needed = true
+    librecolldeps = []
+    xapian = dependency('xapian-core')
+    librecolldeps += xapian
+    if get_option('idxthreads')
+        librecolldeps += dependency('threads')
+    endif
+    libxml = dependency('libxml-2.0')
+    librecolldeps += libxml
+    libxslt =  dependency('libxslt')
+    librecolldeps += libxslt
+    libz = dependency('zlib')
+    librecolldeps += libz
+    if get_option('libmagic')
+        libmagic = dependency('libmagic')
+        librecolldeps += libmagic
+    endif
+    # Note: we would like to remove the x11 dep from the lib to the indexer, but this is not
+    # possible without separating the indexing code out of rcldb (it calls idxstatus->x11mon).
+    if get_option('x11mon') and get_option('indexer')
+        librecolldeps += dependency('x11')
+    endif
 
-# Searching for iconv is a meson 0.60 feature. Hopefully, for now all the systems where the meson
-# build is used have iconv in libc. Otherwise look at glib search for iconv for how to do it.
-#librecolldeps += dependency('iconv', method = 'auto')
+    # Searching for iconv is a meson 0.60 feature. Hopefully, for now all the systems where the
+    # meson build is used have iconv in libc. Otherwise look at glib search for iconv for how to do
+    # it.
+    #librecolldeps += dependency('iconv', method = 'auto')
+else
+    librecoll_needed = false
+endif
 
 recoll_datadir = get_option('prefix') / get_option('datadir') / 'recoll'
 
@@ -166,7 +179,8 @@ recoll_conf.set('USE_SIMDUTF', get_option('simdutf'))
 
 cfile = configure_file(output: 'autoconfig.h', configuration: recoll_conf)
 
-# Could not find a way to make this work. In case wasaparse.cpp/h need to be rebuilt just do it with
+# Could not find a way to make this work for now.
+# In case wasaparse.cpp/h need to be rebuilt just do it with:
 #   ylwrap query/wasaparse.ypp
 #bison = find_program('bison')
 #wasaparse_cpp = custom_target('wasaparse.cpp',
@@ -294,15 +308,17 @@ librecoll_incdir = include_directories(
     'xaposix',
 )
 
-librecoll = library(
-    'librecoll',
-    librecoll_sources,
-    name_prefix: '',
-    version: meson.project_version(),
-    include_directories: librecoll_incdir,
-    dependencies: librecolldeps,
-    install: true,
-)
+if librecoll_needed
+    librecoll = library(
+        'librecoll',
+        librecoll_sources,
+        name_prefix: '',
+        version: meson.project_version(),
+        include_directories: librecoll_incdir,
+        dependencies: librecolldeps,
+        install: true,
+    )
+endif
 
 if get_option('indexer')
 
@@ -380,4 +396,15 @@ if get_option('python-aspell')
 endif
 if get_option('python-chm')
     subdir('python/pychm')
+endif
+if get_option('testmains')
+    subdir('testmains')
+endif
+if get_option('rclgrep')
+    subdir('rclgrep')
+endif
+
+if get_option('indexer') and get_option('systemd')
+   install_data('index/recollindex@.service', install_dir: get_option('systemd-system-unit-dir'))
+   install_data('index/recollindex.service', install_dir: get_option('systemd-user-unit-dir'))
 endif

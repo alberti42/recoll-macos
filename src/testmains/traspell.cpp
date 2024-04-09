@@ -19,6 +19,10 @@
 
 #ifdef RCL_USE_ASPELL
 
+#include <list>
+#include <vector>
+#include <string>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -117,15 +121,14 @@ int main(int argc, char **argv)
             exit(1);
         }
     } else {
-        list<string> suggs;
+        vector<string> suggs;
         if (!aspell.suggest(rcldb, word, suggs, reason)) {
             cerr << "suggest failed: " << reason << endl;
             exit(1);
         }
         cout << "Suggestions for " << word << ":" << endl;
-        for (list<string>::iterator it = suggs.begin(); 
-             it != suggs.end(); it++) {
-            cout << *it << endl;
+        for (const auto& sugg : suggs) {
+            cout << sugg << endl;
         }
     }
     exit(0);
