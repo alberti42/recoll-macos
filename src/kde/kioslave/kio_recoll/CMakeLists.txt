@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(kio_recoll)
 
-option(RECOLL_PUBLIC_LIB "Use the Recoll public shared library" 1)
+option(RECOLL_PUBLIC_LIB "Does nothing, kept for compat" 1)
 
 set(KF5_MIN_VERSION "5.0")
 
@@ -22,20 +22,6 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config KIO Notifica
 
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
-if (NOT RECOLL_PUBLIC_LIB)
-# Execute recoll configuration to create autoconfig.h and version.h and
-# generate a PIC lib
-execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --disable-python-chm --disable-python-module --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
-		WORKING_DIRECTORY ${rcltop}
-)
-add_custom_target(rcllib
-                 COMMAND make -j 3 PicStatic
-                 WORKING_DIRECTORY ${rcltop}
-)
-
-link_directories(${rcltop}/.libs ${CMAKE_INSTALL_PREFIX}/lib)
-endif()
-
 include_directories (
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_BINARY_DIR}
@@ -46,19 +32,17 @@ include_directories (
   ${rcltop}/utils 
 )
 
-if (RECOLL_PUBLIC_LIB)
-  include_directories (
+include_directories (
     ${CMAKE_INSTALL_PREFIX}/include/recoll
-  )
+)
 
-  # Check if running inside a build tree, then use the not yet installed lib
-  if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
+# Check if running inside a build tree, then use the not yet installed lib
+if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../.libs)
-  elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
+elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../.libs)
-  elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../../librecoll.la)
+elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../../.libs)
-  endif()
 endif()
 
 add_definitions(
@@ -70,10 +54,6 @@ add_definitions(
 set(kio_recoll_SRCS kio_recoll.cpp htmlif.cpp dirif.cpp ${rcltop}/qtgui/guiutils.cpp)
 
 add_library(kio_recoll MODULE ${kio_recoll_SRCS})
-
-if (NOT RECOLL_PUBLIC_LIB)
-  add_dependencies(kio_recoll rcllib)
-endif()
 
 target_link_libraries(kio_recoll
     recoll

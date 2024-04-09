@@ -412,11 +412,6 @@ VPATH = @srcdir@
   # first in libs, so can't use LIBS +=
   #  QMAKE_CXXFLAGS += -fsanitize=address -fno-omit-frame-pointer
   
-  # Note: libdir may be substituted with sthing like $(exec_prefix)/lib
-  # at this point and will go as such in the Makefile. Expansion will be
-  # completed at make time.
-@PUBLIC_LIB_FALSE@LIBS += -Wl,-rpath=@libdir@/recoll
-
   LIBS +=  @XAPIAN_LIBS@ \
        @LIBICONV@ $(BDYNAMIC) @LIBQZEITGEIST@ @XSLT_LIBS@ -lz
 

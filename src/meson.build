@@ -10,7 +10,9 @@ cpp = meson.get_compiler('cpp')
 cc = meson.get_compiler('c')
 
 librecolldeps = []
-librecolldeps += dependency('threads')
+if get_option('idxthreads')
+   librecolldeps += dependency('threads')
+endif
 xapian = dependency('xapian-core')
 librecolldeps += xapian
 librecolldeps += dependency('libxml-2.0')
@@ -159,7 +161,6 @@ elif get_option('fam')
     endif
 endif
 
-recoll_conf.set('IDX_THREADS', get_option('idxthreads'))
 recoll_conf.set('RCL_SPLIT_CAMELCASE', get_option('camelcase'))
 recoll_conf.set('USE_SIMDUTF', get_option('simdutf'))
 

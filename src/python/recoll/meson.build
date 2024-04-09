@@ -5,7 +5,6 @@
 # setup.py. Con: hacky anyway.
 #pyrecoll_conf = configuration_data()
 #pyrecoll_conf.set('srcdir', meson.source_root() / 'python' / 'recoll')
-#pyrecoll_conf.set10('RECOLL_PUBLIC_LIB', get_option('publiclib'))
 #pyrecoll_conf.set_quoted('RECOLL_DATADIR', recoll_datadir)
 #pyrecoll_conf.set10('DEF_EXT4_BIRTH_TIME', get_option('ext4-birthtime'))
 #setup_file = configure_file(

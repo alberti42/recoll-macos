@@ -29,9 +29,6 @@ private library installed in a subdirectory). This can be overriden by the confi
 
 By default the kio build will use the public shared library (and its installed include files).
 
-If recoll was configured to use a private library, you will need to set -DRECOLL_PUBLIC_LIB=OFF when
-running cmake.
-
 Recipe:
 
 - Make sure the KF5 (or KF6) core and KIO devel packages and cmake are installed. You probably need

@@ -182,14 +182,8 @@ if test X$idxthreadsEnabled = Xyes ; then
 fi
 
 AC_ARG_ENABLE(publiclib, AS_HELP_STRING([--disable-publiclib],
-[Do not install the recoll library in $libdir: use a private directory instead.]),
+[We no longer support a private recoll library. This option does nothint.]),
         publiclibEnabled=$enableval, publiclibEnabled=yes)
-AM_CONDITIONAL(PUBLIC_LIB, [test X$publiclibEnabled = Xyes])
-if test X$publiclibEnabled = Xyes; then
-   RECOLL_PUBLIC_LIB=1
-else
-   RECOLL_PUBLIC_LIB=0
-fi
 
 AC_ARG_ENABLE(simdutf, AS_HELP_STRING([--disable-simdutf],
 [Use the simdutf library (as a single header embedding) for fast Unac Unicode conversions.]),
@@ -526,7 +520,6 @@ LIBRECOLL_FOR_QMAKE="-L../.libs -lrecoll"
 
 AC_SUBST(NO_UNDEF_LINK_FLAG)
 AC_SUBST(RECOLL_DATADIR)
-AC_SUBST(RECOLL_PUBLIC_LIB)
 AC_SUBST(DEF_EXT4_BIRTH_TIME)
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)

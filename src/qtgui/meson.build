@@ -28,8 +28,6 @@ qtgui_conf.set('LIBICONV', '')
 libstr = run_command(pkgc, ['--libs', 'libxslt'], check: true).stdout().strip()
 qtgui_conf.set('XSLT_LIBS', libstr)
 qtgui_conf.set('LIBQZEITGEIST', '')
-# libdir is only used with publiclib=false which we don't support at the moment
-qtgui_conf.set('libdir', '')
 pro_file = configure_file(
     output: 'recoll.pro',
     input: 'recoll.pro.in',

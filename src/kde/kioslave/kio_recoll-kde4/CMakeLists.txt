@@ -14,20 +14,6 @@ set(CMAKE_CXX_FLAGS "-fPIC ${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
-if (NOT RECOLL_PUBLIC_LIB)
-# Execute recoll configuration to create autoconfig.h and version.h and
-# generate a PIC lib
-execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --disable-python-chm --disable-python-module --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
-		WORKING_DIRECTORY ${rcltop}
-)
-add_custom_target(rcllib
-                 COMMAND make PicStatic
-                 WORKING_DIRECTORY ${rcltop}
-)
-
-link_directories(${rcltop}/.libs ${CMAKE_INSTALL_PREFIX}/lib)
-endif()
-
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
   ${rcltop}/common 
   ${rcltop}/internfile 
@@ -36,19 +22,16 @@ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
   ${rcltop}/utils 
 )
 
-if (RECOLL_PUBLIC_LIB)
-  include_directories (
+include_directories (
     ${CMAKE_INSTALL_PREFIX}/include/recoll
-  )
-  # Check if running inside a build tree, then use the not yet installed lib
-  # Check if running inside a build tree, then use the not yet installed lib
-  if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
+)
+# Check if running inside a build tree, then use the not yet installed lib
+if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../.libs)
-  elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
+elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../.libs)
-  elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../../librecoll.la)
+elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../../.libs)
-  endif()
 endif()
 
 set(kio_recoll_SRCS  kio_recoll.cpp htmlif.cpp dirif.cpp ${rcltop}/qtgui/guiutils.cpp)
@@ -63,10 +46,6 @@ IF(PTHREAD_IN_LIBPTHREAD)
 ENDIF(PTHREAD_IN_LIBPTHREAD)
 
 kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
-
-if (NOT RECOLL_PUBLIC_LIB)
-  add_dependencies(kio_recoll rcllib)
-endif()
 
 target_link_libraries(kio_recoll recoll xapian xslt xml2 z ${EXTRA_LIBS} ${KDE4_KIO_LIBS} X11)
 

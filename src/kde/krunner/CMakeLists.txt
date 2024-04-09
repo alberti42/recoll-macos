@@ -7,7 +7,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(recollrunner)
 
-option(RECOLL_PUBLIC_LIB "Use the Recoll public shared library" 1)
+option(RECOLL_PUBLIC_LIB "Does nothing, kept for compat" 1)
 
 set(KF5_MIN_VERSION "5.0")
 
@@ -32,19 +32,6 @@ add_definitions(
 )
 
 
-if (NOT RECOLL_PUBLIC_LIB)
-# Execute recoll configuration to create autoconfig.h and version.h and
-# generate a PIC lib
-execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --disable-python-chm --disable-python-module --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
-    WORKING_DIRECTORY ${rcltop}
-)
-add_custom_target(rcllib
-    COMMAND make -j 3 PicStatic
-    WORKING_DIRECTORY ${rcltop}
-)
-link_directories(${rcltop}/.libs ${CMAKE_INSTALL_PREFIX}/lib)
-endif()
-
 include_directories (
   ${CMAKE_SOURCE_DIR}
   ${rcltop}/common 
@@ -54,24 +41,20 @@ include_directories (
   ${rcltop}/utils 
 )
 
-if (RECOLL_PUBLIC_LIB)
-  include_directories (
+include_directories (
     ${CMAKE_INSTALL_PREFIX}/include/recoll
-  )
+)
 
-  if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
+if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../.libs)
-  elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
+elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../.libs)
-  elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../../librecoll.la)
+elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../../librecoll.la)
     link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../../.libs)
-  endif()
 endif()
 
 kcoreaddons_add_plugin(krunner_recoll SOURCES recollrunner.cpp INSTALL_NAMESPACE "kf5/krunner")
-if (NOT RECOLL_PUBLIC_LIB)
-add_dependencies(krunner_recoll rcllib)
-endif()
+
 set_property(TARGET krunner_recoll PROPERTY CXX_STANDARD 14)
 
 target_link_libraries(krunner_recoll
