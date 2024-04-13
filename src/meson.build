@@ -468,6 +468,7 @@ install_subdir(
     'filters',
     install_dir: get_option('datadir') / 'recoll',
     exclude_directories: '__pycache__',
+    exclude_files: ['recfiltcommon', 'injectcommon.sh',],
 )
 
 doc_files = files(

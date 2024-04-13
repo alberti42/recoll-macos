@@ -1,27 +1,4 @@
-
 # Building the Recoll Python extension.
-
-# As a custom target. Problem: don't know how to invoke install. Pro: this could have shared the
-# setup.py. Con: hacky anyway.
-#pyrecoll_conf = configuration_data()
-#pyrecoll_conf.set('srcdir', meson.source_root() / 'python' / 'recoll')
-#pyrecoll_conf.set_quoted('RECOLL_DATADIR', recoll_datadir)
-#pyrecoll_conf.set10('DEF_EXT4_BIRTH_TIME', get_option('ext4-birthtime'))
-#setup_file = configure_file(
-#    output: 'setup.py',
-#    input: 'setup.py.in',
-#    configuration: pyrecoll_conf,
-#)
-#python = find_program('python3')
-#infile = setup_file
-#outfile = 'pyrecoll'
-#pyrecoll = custom_target('pyrecoll',
-#  output : outfile,
-#  input : infile,
-#  command : [python, '@INPUT@', 'build'],
-#  install : true,
-#  install_dir: 'bin',
-#)
 
 pyrecoll_incdir = include_directories(
     '../../common',
@@ -32,24 +9,41 @@ pyrecoll_incdir = include_directories(
     '../../utils',
 )
 
+py3versions_cmd = find_program('py3versions',
+    native: true,
+    required: false,
+)
+if py3versions_cmd.found()
+    py3vs = run_command(py3versions_cmd, ['-iv',],
+        check: true,
+        capture: true,
+        )
+    py3versions = py3vs.stdout().split()
+else
+    py3versions = ['3',]
+endif
+
 py_mod = import('python')
-python = py_mod.find_installation(
-    'python3',
-)
-py3_dep = dependency('python3', required: true)
-extension = python.extension_module(
-    '_recoll',
-    [
-        'pyrclextract.cpp',
-        'pyrecoll.cpp',
-        'pyresultstore.cpp',
-    ],
-    include_directories: pyrecoll_incdir,
-    dependencies: py3_dep,
-    link_with: librecoll,
-    install: true,
-    subdir: 'recoll',
-)
+extensions = []
+foreach v : py3versions
+    py3_name = 'python' + v
+    python_installation = py_mod.find_installation(py3_name)
+    extensions += python_installation.extension_module(
+        '_recoll',
+        [
+            'pyrclextract.cpp',
+            'pyrecoll.cpp',
+            'pyresultstore.cpp',
+        ],
+        include_directories: pyrecoll_incdir,
+        dependencies: python_installation.dependency(),
+        link_with: librecoll,
+        install: true,
+        subdir: 'recoll',
+    )
+endforeach
+
+
 python.install_sources(
     [
         'recoll/__init__.py',

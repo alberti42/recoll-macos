@@ -52,6 +52,7 @@ install_subdir(
     'mtpics',
     install_dir: get_option('datadir') / 'recoll' / 'images',
     strip_directory: true,
+    exclude_files: ['License_sidux.txt', 'README', 'aptosid-manual-copyright.txt',],
 )
 install_subdir(
     meson.build_root() / 'qtgui' / '.qm',

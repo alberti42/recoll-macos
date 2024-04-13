@@ -1,32 +1,51 @@
 # Building the recollaspell Python extension. Same as pyaspell, but this is not packaged.
 
 py_mod = import('python')
-python = py_mod.find_installation(
-    'python3',
-)
-py3_dep = dependency('python3', required: true)
 
-chmlib = python.extension_module(
-    '_chmlib',
-    [
-        'recollchm/swig_chm.c',
-    ],
-    c_args: ['-DSWIG_COBJECT_TYPES'],
-    dependencies: [py3_dep, cc.find_library('libchm'),],
-    install: true,
-    subdir: 'recollchm',
+py3versions_cmd = find_program('py3versions',
+    native: true,
+    required: false,
 )
+if py3versions_cmd.found()
+    py3vs = run_command(py3versions_cmd, ['-iv',],
+        check: true,
+        capture: true,
+        )
+    py3versions = py3vs.stdout().split()
+else
+    py3versions = ['3',]
+endif
 
-chmextra = python.extension_module(
-    'extra',
-    [
-        'recollchm/extra.c',
-    ],
-    c_args: ['-D__PYTHON__'],
-    dependencies: [py3_dep, cc.find_library('libchm'),],
-    install: true,
-    subdir: 'recollchm',
-)
+
+chmexts = []
+foreach v : py3versions
+    py3_name = 'python' + v
+    python_installation = py_mod.find_installation(py3_name)
+    py3_dep = python_installation.dependency()
+
+    chmexts += python_installation.extension_module(
+        '_chmlib',
+        [
+            'recollchm/swig_chm.c',
+        ],
+        c_args: ['-DSWIG_COBJECT_TYPES'],
+        dependencies: [py3_dep, cc.find_library('chm'),],
+        install: true,
+        subdir: 'recollchm',
+    )
+
+    chmexts += python_installation.extension_module(
+        'extra',
+        [
+            'recollchm/extra.c',
+        ],
+        c_args: ['-D__PYTHON__'],
+        dependencies: [py3_dep, cc.find_library('chm'),],
+        install: true,
+        subdir: 'recollchm',
+    )
+
+endforeach
 
 python.install_sources(
     [

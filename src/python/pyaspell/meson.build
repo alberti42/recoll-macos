@@ -1,15 +1,35 @@
 # Building the recollaspell Python extension. Same as pyaspell, but this is not packaged.
 
 py_mod = import('python')
-python = py_mod.find_installation(
-    'python3',
+
+py3versions_cmd = find_program('py3versions',
+    native: true,
+    required: false,
 )
-py3_dep = dependency('python3', required: true)
-aspellext = python.extension_module(
-    'recollaspell',
-    [
-        'aspell.c',
-    ],
-    dependencies: [py3_dep, cc.find_library('libaspell'),],
-    install: true,
-)
+if py3versions_cmd.found()
+    py3vs = run_command(py3versions_cmd, ['-iv',],
+        check: true,
+        capture: true,
+        )
+    py3versions = py3vs.stdout().split()
+else
+    py3versions = ['3',]
+endif
+
+
+aspellexts = []
+foreach v : py3versions
+    py3_name = 'python' + v
+    python_installation = py_mod.find_installation(py3_name)
+    aspellexts += python_installation.extension_module(
+        'recollaspell',
+        [
+           'aspell.c',
+        ],
+        dependencies: [
+            python_installation.dependency(),
+            cc.find_library('aspell'),
+        ],
+        install: true,
+    )
+endforeach
