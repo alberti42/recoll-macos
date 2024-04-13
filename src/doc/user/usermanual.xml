@@ -7,7 +7,7 @@
 <!ENTITY RCLWEB "<ulink url='https://www.recoll.org/'>https://www.recoll.org/</ulink>">
 <!ENTITY FAQS "https://www.recoll.org/faqsandhowtos/">
 <!ENTITY RCLAPPS "<ulink url='https://www.recoll.org/pages/features.html#doctypes'>https://www.recoll.org/pages/features.html</ulink>">
-<!ENTITY RCLVERSION "1.37">
+<!ENTITY RCLVERSION "1.38">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">

@@ -48,3 +48,21 @@ recoll = custom_target(
     install_dir: 'bin',
 )
 
+install_subdir(
+    'mtpics',
+    install_dir: get_option('datadir') / 'recoll' / 'images',
+    strip_directory: true,
+)
+install_subdir(
+    meson.build_root() / 'qtgui' / '.qm',
+    install_dir: get_option('datadir') / 'recoll' / 'translations',
+    strip_directory: true,
+)
+install_data(
+    '../desktop/recoll-searchgui.desktop',
+    install_dir: get_option('datadir') / 'applications',
+)
+install_data(
+    '../desktop/recoll.png',
+    install_dir: get_option('datadir') / 'icons/hicolor/48x48/apps',
+)

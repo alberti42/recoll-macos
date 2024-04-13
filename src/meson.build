@@ -318,6 +318,31 @@ if librecoll_needed
         dependencies: librecolldeps,
         install: true,
     )
+    librecoll_headers = files(
+    'common/plaintorich.h',
+    'common/rclconfig.h',
+    'common/rclinit.h',
+    'index/idxstatus.h',
+    'internfile/Filter.h',
+    'internfile/internfile.h',
+    'internfile/mimehandler.h',
+    'query/docseq.h',
+    'query/docseqdb.h',
+    'query/qresultstore.h',
+    'query/reslistpager.h',
+    'query/wasatorcl.h',
+    'rcldb/rcldb.h',
+    'rcldb/rcldoc.h',
+    'rcldb/rclquery.h',
+    'rcldb/searchdata.h',
+    'utils/hldata.h',
+    'utils/log.h',
+    'utils/pathut.h',
+    'utils/rclutil.h',
+    'utils/readfile.h',
+    'utils/smallut.h',
+    )
+    install_headers(librecoll_headers, subdir: 'recoll')
 endif
 
 if get_option('indexer')
@@ -385,6 +410,12 @@ if get_option('xadump')
 
 endif
 
+py_mod = import('python')
+python = py_mod.find_installation(
+    'python3',
+)
+py3_dep = dependency('python3', required: true)
+
 if get_option('qtgui')
     subdir('qtgui')
 endif
@@ -403,6 +434,47 @@ endif
 if get_option('rclgrep')
     subdir('rclgrep')
 endif
+
+manfiles = files(
+'doc/man/recoll.1',
+'doc/man/recoll.conf.5',
+'doc/man/recollindex.1',
+'doc/man/recollq.1',
+'doc/man/xadump.1',
+)
+install_man(manfiles)
+
+example_files = files(
+'desktop/recollindex.desktop',
+'index/rclmon.sh',
+'index/recollindex.service',
+'index/recollindex@.service',
+'sampleconf/backends',
+'sampleconf/fields',
+'sampleconf/fragment-buttons.xml',
+'sampleconf/mimeconf',
+'sampleconf/mimemap',
+'sampleconf/mimeview',
+'sampleconf/recoll-common.css',
+'sampleconf/recoll-common.qss',
+'sampleconf/recoll-dark.css',
+'sampleconf/recoll-dark.qss',
+'sampleconf/recoll.conf',
+'sampleconf/recoll.qss',
+)
+install_data(example_files, install_dir: get_option('datadir') / 'recoll' / 'examples')
+
+install_subdir(
+    'filters',
+    install_dir: get_option('datadir') / 'recoll',
+    exclude_directories: '__pycache__',
+)
+
+doc_files = files(
+'doc/user/docbook-xsl.css',
+'doc/user/usermanual.html',
+)
+install_data(doc_files, install_dir: get_option('datadir') / 'recoll' / 'doc')
 
 if get_option('indexer') and get_option('systemd')
    install_data('index/recollindex@.service', install_dir: get_option('systemd-system-unit-dir'))

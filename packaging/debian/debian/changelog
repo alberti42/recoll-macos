@@ -1,13 +1,26 @@
 recoll (1.38.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * Allow using multiple temporary Xapian indexes and a final merge.
-    This is useful for cases where the single-threaded Xapian index
-    updates would be the indexing speed bottleneck, which would typically
-    happen with simple input like HTML files. In such a case it can bring a
-    huge speedup of indexing, e.g. 3X on a 4 Core CPU.
-  * ...    
-  
- -- Jean-Francois Dockes <jf@dockes.org>  Thu, 21 Mar 2024 14:15:00 +0100
+  * Allow using multiple temporary Xapian indexes and a final merge.  This
+    is useful for cases where the single-threaded Xapian index updates
+    would be the indexing speed bottleneck, which would typically happen
+    with simple input like HTML files. In such a case it can bring a huge
+    speedup of indexing, e.g. 3X on a 4 Core CPU.
+  * New meson-based build method. The autotools files are still there,
+    and work, but they will be removed in a future release.
+  * New AppImage executable single file image available on the web
+    site. This should work on all reasonably recent Linux distributions
+    (ref: Debian Buster).
+  * KDE KF6 support for the KIO slave and KRunner.
+  * GUI User interface preferences tab is now scrollable. It was too high
+    for some displays.
+  * Joplin indexer: also index OCR'd text from attached images.
+  * MacOS: index the Finder tags and comments.
+  * Use simdutf (https://github.com/simdutf/simdutf), for faster Unicode
+    conversions (mainly during diacritics removal).
+  * Linux: now default to using libmagic instead of executing file/xdg-mime
+    to find out MIME types.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 11 Apr 2024 14:15:00 +0200
 
 recoll (1.37.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 

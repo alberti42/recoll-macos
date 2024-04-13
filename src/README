@@ -15,7 +15,7 @@ Jean-Francois Dockes
 
    This document introduces full text search notions and describes the
    installation and use of the Recoll application. This version describes
-   Recoll 1.37.
+   Recoll 1.38.
      __________________________________________________________________
 
    Table of Contents
@@ -164,7 +164,7 @@ Chapter 1. Introduction
 
    This document introduces full text search notions and describes the
    installation and use of the Recoll application. It is updated for
-   Recoll 1.37.
+   Recoll 1.38.
 
    Recoll was for a long time dedicated to Unix-like systems. It was only
    lately (2015) ported to MS-Windows. Many references in this manual,
