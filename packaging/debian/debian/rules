@@ -12,43 +12,14 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 build3vers := $(shell py3versions -sv)
 
-#build qt5 UI
-export QT_SELECT := qt5
-
-ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-	NJOBS := -j $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-endif
-
-# main packaging script based on dh7 syntax
 %:
-	dh $@ --with python3
+	dh $@
 
 override_dh_auto_configure:
-	dh_auto_configure -- --enable-recollq --enable-xadump --enable-webkit --enable-publiclib
-
-build3vers := $(shell py3versions -sv)
+	dh_auto_configure --buildsystem=meson -- -Drecollq=true -Dxadump=true -Dwebkit=true
 
 override_dh_auto_install:
 	dh_auto_install
-	set -e && for i in $(build3vers); do \
-	(cd python/recoll; libdir=/usr/lib/$${DEB_BUILD_MULTIARCH} python$$i \
-					./setup.py install \
-	                                --install-layout=deb \
-					--prefix=/usr \
-	                                --root=$(CURDIR)/debian/tmp/ ) ; \
-	done
-	set -e && for i in $(build3vers); do \
-	(cd python/pychm; python$$i ./setup.py install \
-	                                --install-layout=deb \
-					--prefix=/usr \
-	                                --root=$(CURDIR)/debian/tmp/ ) ; \
-	done
-	set -e && for i in $(build3vers); do \
-	(cd python/pyaspell; python$$i ./setup.py install \
-	                                --install-layout=deb \
-					--prefix=/usr \
-	                                --root=$(CURDIR)/debian/tmp/ ) ; \
-	done
 	find $(CURDIR) -type f -name '*.la' -exec rm -f '{}' \;
 	find $(CURDIR) -type f -name '*.pyc' -exec rm -f '{}' \;
 	rm -rf $(CURDIR)/debian/tmp/usr/lib/python*/*/*/__pycache__

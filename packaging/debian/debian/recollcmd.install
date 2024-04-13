@@ -2,7 +2,6 @@ usr/bin/recollindex
 usr/bin/recollq
 usr/bin/xadump
 usr/lib/python*/*-packages/recollchm/*
-usr/lib/python*/*-packages/recollchm-*/*
 usr/lib/python*/*-packages/recollaspell*
 usr/share/man
 usr/share/recoll/doc

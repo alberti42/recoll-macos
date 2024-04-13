@@ -79,11 +79,7 @@ if test "$dotag" = "yes" -a ! -z "$editedfiles"; then
 fi
 
 
-if test $dotag = yes ; then
-    releasename=${myname}-$version
-else
-    releasename=beta${myname}-$version
-fi
+releasename=${myname}-$version
 
 topdir=$targetdir/$releasename
 if test ! -d $topdir ; then
@@ -92,7 +88,7 @@ else
     echo "Removing everything under $topdir Ok ? (y/n)"
     read rep 
     if test "$rep" = 'y';then
-    	rm -rf $topdir/*
+    	rm -rf $topdir/* $topdir/.??*
     fi
 fi
 
@@ -121,7 +117,9 @@ echo "$targetdir/$out created"
 
 # Check manifest against current reference
 export LC_ALL=C
-tar tzf $targetdir/$out | sort | cut -d / -f 2- | \
-    diff manifest.txt - || fatal "Please fix file list manifest.txt"
+if test "$dotag" = "yes" ; then
+    tar tzf $targetdir/$out | sort | cut -d / -f 2- | \
+        diff manifest.txt - || fatal "Please fix file list manifest.txt"
+fi
 
 [ $dotag = "yes" ] && create_tag $TAG
