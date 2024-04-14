@@ -83,7 +83,7 @@ if cpp.compiles(
             ic = iconv_open("utf-8", "utf-8");
             iconv(ic, &icp, &isiz, &ocp, &osiz);
         }''',
-    args: '-Werror',
+    args: ['-Werror', '-O'], # -O needed, else warnings with _FORTIFY_SOURCE
     name: 'ICONV CONST',
 )
     recoll_conf.set('ICONV_CONST', 'const')
@@ -100,7 +100,7 @@ elif cpp.compiles(
             ic = iconv_open("utf-8", "utf-8");
             iconv(ic, &icp, &isiz, &ocp, &osiz);
         }''',
-    args: '-Werror',
+    args: ['-Werror', '-O'], # -O needed, else warnings with _FORTIFY_SOURCE
     name: 'ICONV NOT CONST',
 )
     recoll_conf.set('ICONV_CONST', '')
@@ -111,6 +111,7 @@ if cpp.compiles(
     char* func() {char t[10];return mkdtemp(t);}
     ''',
     name: 'mkdtemp',
+    args: ['-Werror', '-O'], # -O needed, else warnings with _FORTIFY_SOURCE
 )
     recoll_conf.set('HAVE_MKDTEMP', true)
 endif
