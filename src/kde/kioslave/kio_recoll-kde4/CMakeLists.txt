@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 project(kio_recoll)
 
 find_package(KDE4 REQUIRED)
+set(CMAKE_SKIP_RPATH TRUE)
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=7130
@@ -25,14 +26,20 @@ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
 include_directories (
     ${CMAKE_INSTALL_PREFIX}/include/recoll
 )
-# Check if running inside a build tree, then use the not yet installed lib
-if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
-    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../.libs)
-elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
-    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../.libs)
-elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../../librecoll.la)
-    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../../.libs)
-endif()
+
+# Check if running inside a build tree, then use the not yet installed lib. 
+foreach(libdir IN ITEMS  ${CMAKE_BINARY_DIR}/../../.libs
+                         ${CMAKE_BINARY_DIR}/../../../.libs
+                         ${CMAKE_BINARY_DIR}/../../../../.libs
+                         ${CMAKE_BINARY_DIR}/../../../../redhat-linux-build
+                         $ENV{RECOLL_LIB_DIR}/
+                         )
+    message(STATUS "TESTING link directory ${libdir}")
+    if (EXISTS ${libdir}/librecoll.so)
+        message(STATUS "USING link directory ${libdir}")
+        link_directories(${CMAKE_INSTALL_PREFIX}/lib ${libdir})
+    endif()
+endforeach()
 
 set(kio_recoll_SRCS  kio_recoll.cpp htmlif.cpp dirif.cpp ${rcltop}/qtgui/guiutils.cpp)
 

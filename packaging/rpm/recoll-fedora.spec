@@ -10,6 +10,7 @@ Source0:        https://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
 Source1:        https://www.lesbonscomptes.com/recoll/downloads/gssp-recoll-%{gsspver}.tar.gz
 Source10:       qmake-qt5.sh
 #Patch01:        recoll-1.25.11-appdata.patch
+BuildRequires:  meson
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  chmlib-devel
@@ -83,8 +84,8 @@ LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 install -m755 -D %{SOURCE10} qmake-qt5.sh
 export QMAKE=qmake-qt5
 
-%configure --enable-recollq --enable-publiclib
-make %{?_smp_mflags}
+%meson -Drecollq=true -Dsystemd=true
+%meson_build
 
 # gssp
 pushd gssp
@@ -92,7 +93,7 @@ pushd gssp
 popd
 
 %install
-make install DESTDIR=%{buildroot} STRIP=/bin/true INSTALL='install -p'
+%meson_install
 
 desktop-file-install --delete-original \
   --dir=%{buildroot}/%{_datadir}/applications \
@@ -101,9 +102,9 @@ desktop-file-install --delete-original \
 # use /usr/bin/xdg-open
 rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
 rm -f %{buildroot}%{_libdir}/recoll/librecoll.la
+rm -f %{buildroot}/usr/lib/debug/usr/lib64/librecoll*
 
-# remove useless script with Python 2 dep
-rm %{buildroot}%{_datadir}/recoll/filters/hotrecoll.py
+RECOLL_LIB_DIR=%{_builddir}/%{name}-%{version}/redhat-linux-build/; export RECOLL_LIB_DIR
 
 # kio_recoll -kde5
 pushd kde/kioslave/kio_recoll
@@ -147,19 +148,16 @@ popd
 %{_datadir}/applications/recoll-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/recoll.png
 %{_includedir}/
-%{_libdir}/librecoll*.so
+%{_libdir}/librecoll.so*
 %{_datadir}/pixmaps/recoll.png
 %{python3_sitearch}/recoll
 %{python3_sitearch}/recollchm
-%{python3_sitearch}/Recoll-*.egg-info
-%{python3_sitearch}/recollchm-*.egg-info
 %{python3_sitearch}/recollaspell.cpython-*-linux-gnu*.so
-%{python3_sitearch}/recoll_aspell_python_py3-*.egg-info
 %{_mandir}/man1/recoll.1*
 %{_mandir}/man1/recollq.1*
 %{_mandir}/man1/recollindex.1*
 #{_mandir}/man1/rclgrep.1*
-#{_mandir}/man1/xadump.1*
+%{_mandir}/man1/xadump.1*
 %{_mandir}/man5/recoll.conf.5*
 %{_unitdir}/recollindex@.service
 %{_userunitdir}/recollindex.service

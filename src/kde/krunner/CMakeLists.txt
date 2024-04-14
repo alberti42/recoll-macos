@@ -10,6 +10,7 @@ project(recollrunner)
 option(RECOLL_PUBLIC_LIB "Does nothing, kept for compat" 1)
 
 set(KF5_MIN_VERSION "5.0")
+set(CMAKE_SKIP_RPATH TRUE)
 
 # Include the Extra-CMake-Modules project
 find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
@@ -45,13 +46,19 @@ include_directories (
     ${CMAKE_INSTALL_PREFIX}/include/recoll
 )
 
-if (EXISTS ${CMAKE_BINARY_DIR}/../../librecoll.la)
-    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../.libs)
-elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../librecoll.la)
-    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../.libs)
-elseif(EXISTS ${CMAKE_BINARY_DIR}/../../../../librecoll.la)
-    link_directories(${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_BINARY_DIR}/../../../../.libs)
-endif()
+# Check if running inside a build tree, then use the not yet installed lib.
+foreach(libdir IN ITEMS  ${CMAKE_BINARY_DIR}/../../.libs
+                         ${CMAKE_BINARY_DIR}/../../../.libs
+                         ${CMAKE_BINARY_DIR}/../../../../.libs
+                         ${CMAKE_BINARY_DIR}/../../../redhat-linux-build
+                         $ENV{RECOLL_LIB_DIR}/
+                         )
+    message(STATUS "TESTING link directory ${libdir}")
+    if (EXISTS ${libdir}/librecoll.so)
+        message(STATUS "USING link directory ${libdir}")
+        link_directories(${CMAKE_INSTALL_PREFIX}/lib ${libdir})
+    endif()
+endforeach()
 
 kcoreaddons_add_plugin(krunner_recoll SOURCES recollrunner.cpp INSTALL_NAMESPACE "kf5/krunner")
 
