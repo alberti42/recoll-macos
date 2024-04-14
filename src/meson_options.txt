@@ -52,7 +52,7 @@ option('qtzeitgeist', type: 'boolean', value: 'false',
 option('systemd', type: 'boolean', value: 'true',
        description: 'Install the systemd unit files')
 # Was supplied in configure.ac 'pkg-config --variable systemd_system_unit_dir systemd'
-option('systemd-system-unit-dir', type: 'string', value:'/lib/systemd/system',
+option('systemd-system-unit-dir', type: 'string', value:'/usr/lib/systemd/system',
        description: 'Install location for systemd system unit files')
 # Was supplied in configure.ac by 'pkg-config --variable systemd_user_unit_dir systemd'
 option('systemd-user-unit-dir', type: 'string', value:'/usr/lib/systemd/user',
