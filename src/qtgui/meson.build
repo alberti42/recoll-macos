@@ -67,3 +67,11 @@ install_data(
     '../desktop/recoll.png',
     install_dir: get_option('datadir') / 'icons/hicolor/48x48/apps',
 )
+install_data(
+    '../desktop/recoll.png',
+    install_dir: get_option('datadir') / 'pixmaps',
+)
+install_data(
+    '../desktop/org.recoll.recoll.appdata.xml',
+    install_dir: get_option('datadir') / 'metainfo',
+)

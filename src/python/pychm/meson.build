@@ -54,4 +54,5 @@ python.install_sources(
         'recollchm/chmlib.py',
     ],
     subdir: 'recollchm',
+    pure: false,
 )

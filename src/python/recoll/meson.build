@@ -53,6 +53,7 @@ python.install_sources(
         'recoll/rclextract.py',
         'recoll/recoll.py',
     ],
+    pure: false,
     subdir: 'recoll',
 )
 
