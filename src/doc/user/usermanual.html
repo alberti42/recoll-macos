@@ -36,7 +36,7 @@ alink="#0000FF">
           </div>
         </div>
         <div>
-          <p class="copyright">Copyright © 2005-2023 Jean-Francois
+          <p class="copyright">Copyright © 2005-2024 Jean-Francois
           Dockes</p>
         </div>
         <div>
@@ -294,16 +294,6 @@ alink="#0000FF">
             <dt><span class="sect1">3.10. <a href=
             "#RCL.SEARCH.DESKTOP">Desktop
             integration</a></span></dt>
-            <dd>
-              <dl>
-                <dt><span class="sect2">3.10.1. <a href=
-                "#RCL.SEARCH.SHORTCUT">Hotkeying
-                recoll</a></span></dt>
-                <dt><span class="sect2">3.10.2. <a href=
-                "#RCL.KICKER-APPLET">The KDE Kicker Recoll
-                applet</a></span></dt>
-              </dl>
-            </dd>
           </dl>
         </dd>
         <dt><span class="chapter">4. <a href=
@@ -423,7 +413,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1673">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1676">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -1300,8 +1290,8 @@ indexedmimetypes = application/pdf</pre>
           somewhere between linear and quadratic). For big indexes
           this becomes a performance issue, and may even be an SSD
           disk wear issue.</p>
-          <p>The problem can be mitigated by observing the
-          following rules:</p>
+          <p>The problem can be mitigated by using the following
+          mitigations:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
             "list-style-type: disc;">
@@ -1329,6 +1319,14 @@ indexedmimetypes = application/pdf</pre>
               </li>
             </ul>
           </div>
+          <p><span class="application">Recoll</span> versions 1.38
+          and newer have an option to use <a class="link" href=
+          "#RCL.INDEXING.CONFIG.THREADS.MULTIDX" title=
+          "Using multiple temporary indexes">multiple temporary
+          indexes and a final merge</a> internally. This may be a
+          simple solution for the index size issue, but it may not
+          provide enough control over the temporary indexes
+          physical placement for really huge datasets</p>
         </div>
       </div>
       <div class="sect1">
@@ -1523,8 +1521,8 @@ indexedmimetypes = application/pdf</pre>
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm453" id=
-                  "idm453"></a>Creating and using an additional
+                  <h4 class="title"><a name="idm456" id=
+                  "idm456"></a>Creating and using an additional
                   index: Linux example</h4>
                 </div>
               </div>
@@ -1587,8 +1585,8 @@ indexedmimetypes = application/pdf</pre>
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm492" id=
-                  "idm492"></a>Creating an alternate index: Windows
+                  <h4 class="title"><a name="idm495" id=
+                  "idm495"></a>Creating an alternate index: Windows
                   example</h4>
                 </div>
               </div>
@@ -1876,9 +1874,9 @@ indexedmimetypes = application/pdf</pre>
             the input documents are simple, it may be worth it to
             experiment with the value. For example, with a partial
             Wikipedia dump (many HTML small files), indexing times
-            could be divided almost by three, by using 4 temporary
-            indexes on a quad-core machine. More detail in this
-            <a class="ulink" href=
+            could be divided almost by three, by using four
+            temporary indexes on a quad-core machine. More detail
+            in this <a class="ulink" href=
             "https://www.recoll.org/pages/idxthreads/threadingRecoll.html#_the_xapian_bottleneck_and_how_it_was_resolved_thanks_to_xapian"
             target="_top">article on the Recoll WEB site</a>.</p>
             <p>All the tests were performed on SSDs, it is quite
@@ -4543,7 +4541,7 @@ customize the <code class="filename">fields</code> file.
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1673" id="idm1673"></a>
+            <a name="idm1676" id="idm1676"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -6728,69 +6726,56 @@ C: = Z:</pre>
               <p>There is also an independently developed <a class=
               "ulink" href=
               "https://kde-apps.org/content/show.php/recollrunner?content=128203"
-              target="_top">Krunner plugin</a>.</p>
+              target="_top">Krunner plugin</a>. It is now
+              integrated in the <span class=
+              "application">Recoll</span> source.</p>
+            </li>
+            <li class="listitem">
+              <p><a name="RCL.SEARCH.SHORTCUT" id=
+              "RCL.SEARCH.SHORTCUT"></a>Hotkeying recoll: it is
+              surprisingly convenient to be able to show or hide
+              the <span class="application">Recoll</span> GUI with
+              a single keystroke. Recoll comes with a small Python
+              script, based on the <span class=
+              "application">libwnck</span> window manager interface
+              library, which will allow you to do just this. The
+              detailed instructions are on <a class="ulink" href=
+              "https://www.recoll.org/faqsandhowtos/HotRecoll"
+              target="_top">this wiki page</a>.</p>
+            </li>
+            <li class="listitem">
+              <p><a name="RCL.KICKER-APPLET" id=
+              "RCL.KICKER-APPLET"></a>The KDE Kicker Recoll applet:
+              this is probably obsolete now. Anyway: The
+              <span class="application">Recoll</span> source tree
+              contains the source code to the <span class=
+              "application">recoll_applet</span>, a small
+              application derived from the <span class=
+              "application">find_applet</span>. This can be used to
+              add a small <span class="application">Recoll</span>
+              launcher to the KDE panel.</p>
+              <p>The applet is not automatically built with the
+              main <span class="application">Recoll</span>
+              programs, nor is it included with the main source
+              distribution (because the KDE build boilerplate makes
+              it relatively big). You can download its source from
+              the recoll.org download page. Use the omnipotent
+              <strong class="userinput"><code>configure;make;make
+              install</code></strong> incantation to build and
+              install.</p>
+              <p>You can then add the applet to the panel by
+              right-clicking the panel and choosing the
+              <span class="guilabel">Add applet</span> entry.</p>
+              <p>The <span class="application">recoll_applet</span>
+              has a small text window where you can type a
+              <span class="application">Recoll</span> query (in
+              query language form), and an icon which can be used
+              to restrict the search to certain types of files. It
+              is quite primitive, and launches a new recoll GUI
+              instance every time (even if it is already running).
+              You may find it useful anyway.</p>
             </li>
           </ul>
-        </div>
-        <p>Here follow a few other things that may help.</p>
-        <div class="sect2">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name="RCL.SEARCH.SHORTCUT" id=
-                "RCL.SEARCH.SHORTCUT"></a>3.10.1.&nbsp;Hotkeying
-                recoll</h3>
-              </div>
-            </div>
-          </div>
-          <p>It is surprisingly convenient to be able to show or
-          hide the <span class="application">Recoll</span> GUI with
-          a single keystroke. Recoll comes with a small Python
-          script, based on the <span class=
-          "application">libwnck</span> window manager interface
-          library, which will allow you to do just this. The
-          detailed instructions are on <a class="ulink" href=
-          "https://www.recoll.org/faqsandhowtos/HotRecoll" target=
-          "_top">this wiki page</a>.</p>
-        </div>
-        <div class="sect2">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title"><a name="RCL.KICKER-APPLET" id=
-                "RCL.KICKER-APPLET"></a>3.10.2.&nbsp;The KDE Kicker
-                Recoll applet</h3>
-              </div>
-            </div>
-          </div>
-          <p>This is probably obsolete now. Anyway:</p>
-          <p>The <span class="application">Recoll</span> source
-          tree contains the source code to the <span class=
-          "application">recoll_applet</span>, a small application
-          derived from the <span class=
-          "application">find_applet</span>. This can be used to add
-          a small <span class="application">Recoll</span> launcher
-          to the KDE panel.</p>
-          <p>The applet is not automatically built with the main
-          <span class="application">Recoll</span> programs, nor is
-          it included with the main source distribution (because
-          the KDE build boilerplate makes it relatively big). You
-          can download its source from the recoll.org download
-          page. Use the omnipotent <strong class=
-          "userinput"><code>configure;make;make
-          install</code></strong> incantation to build and
-          install.</p>
-          <p>You can then add the applet to the panel by
-          right-clicking the panel and choosing the <span class=
-          "guilabel">Add applet</span> entry.</p>
-          <p>The <span class="application">recoll_applet</span> has
-          a small text window where you can type a <span class=
-          "application">Recoll</span> query (in query language
-          form), and an icon which can be used to restrict the
-          search to certain types of files. It is quite primitive,
-          and launches a new recoll GUI instance every time (even
-          if it is already running). You may find it useful
-          anyway.</p>
         </div>
       </div>
     </div>
