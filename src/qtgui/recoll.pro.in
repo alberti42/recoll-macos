@@ -158,7 +158,7 @@ windows {
     # MingW
     QMAKE_CXXFLAGS += -Wno-unused-parameter
     LIBS += \
-    C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
+    C:/recoll/src/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
   }
 
   contains(QMAKE_CC, cl){
@@ -167,12 +167,12 @@ windows {
     DEFINES += USING_STATIC_LIBICONV
     SOURCES += ../windows/getopt.cc
     PRE_TARGETDEPS = \
-      ../windows/build-librecoll-$$QCBUILDLOC-Release/release/librecoll.lib
+      ../build-librecoll-$$QCBUILDLOC-Release/release/librecoll.lib
     LIBS += \
-      -L../windows/build-librecoll-$$QCBUILDLOC-Release/release -llibrecoll \
+      -L../build-librecoll-$$QCBUILDLOC-Release/release -llibrecoll \
       $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
       $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
-      -L../windows/build-libxapian-$$QCBUILDLOC-Release/release -llibxapian \
+      -L../build-libxapian-$$QCBUILDLOC-Release/release -llibxapian \
       -L$$RECOLLDEPS/build-libiconv-$$QCBUILDLOC-Release/release -llibiconv \
       $$RECOLLDEPS/libmagic/src/lib/libmagic.lib \
       $$RECOLLDEPS/regex/libregex.lib \
@@ -215,8 +215,8 @@ macx: {
               ../utils ../aspell ../rcldb ../qtgui ../xaposix \
               confgui widgets
   LIBS += \
-    ../windows/build-librecoll-$$QCBUILDLOC-Release/liblibrecoll.a \
-    ../windows/build-libxapian-$$QCBUILDLOC-Release/liblibxapian.a \
+    ../build-librecoll-$$QCBUILDLOC-Release/liblibrecoll.a \
+    ../build-libxapian-$$QCBUILDLOC-Release/liblibxapian.a \
     -lxslt -lxml2 -liconv -lz
 
   ICON = images/recoll.icns

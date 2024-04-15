@@ -97,7 +97,6 @@ SOURCES += \
 ../utils/conftree.cpp \
 ../utils/copyfile.cpp \
 ../utils/cpuconf.cpp \
-../utils/dlib.cpp \
 ../utils/ecrontab.cpp \
 ../utils/fileudi.cpp \
 ../utils/fstreewalk.cpp \
@@ -142,7 +141,7 @@ windows {
   
   contains(QMAKE_CC, cl){
     # MSVC
-    RECOLLDEPS = ../../recolldeps
+    RECOLLDEPS = ../../../recolldeps
     CONFIG += staticlib
     DEFINES += USING_STATIC_LIBICONV
 

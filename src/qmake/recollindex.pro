@@ -31,7 +31,7 @@ windows {
 
   contains(QMAKE_CC, cl){
     # MSVC
-    RECOLLDEPS = ../../recolldeps/msvc
+    RECOLLDEPS = ../../../recolldeps/msvc
     DEFINES += USING_STATIC_LIBICONV
     PRE_TARGETDEPS = \
       ../build-librecoll-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release/librecoll.lib

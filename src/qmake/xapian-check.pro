@@ -6,7 +6,7 @@ TEMPLATE = app
 
 DEFINES += HAVE_CONFIG_H
 
-RECOLLDEPS = ../../recolldeps/msvc
+RECOLLDEPS = ../../../recolldeps/msvc
 XAPIANDIR = $$RECOLLDEPS/xapian-core/
 
 SOURCES += \
@@ -23,8 +23,8 @@ windows {
     # msvc
     DEFINES += USING_STATIC_LIBICONV
     INCLUDEPATH += \
-      ../../recolldeps/msvc/zlib-1.2.11/ \
-      ../../recolldeps/msvc/wlibiconv/include
+      ../../../recolldeps/msvc/zlib-1.2.11/ \
+      ../../../recolldeps/msvc/wlibiconv/include
     LIBS += \
       -L../build-libxapian-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release \
         -llibxapian \

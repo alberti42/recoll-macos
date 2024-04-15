@@ -69,7 +69,7 @@ ASPELL=${RCLDEPS}/mingw/aspell-0.60.7/aspell-installed
 # for either a msvc or mingw build of recoll itself.
 #MINGWBIN=C:/MinGW/bin
 
-RCLW=$RCL/windows/
+RCLW=$RCL/
 # Only used for mingw, the msvc one is static
 LIBR=$RCLW/build-librecoll-${QTA}/${qtsdir}/librecoll.dll
 GUIBIN=$RCL/build-recoll-win-${QTA}/${qtsdir}/recoll.exe

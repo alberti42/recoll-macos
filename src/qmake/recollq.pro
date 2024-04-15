@@ -9,7 +9,7 @@ TEMPLATE = app
 DEFINES += BUILDING_RECOLL
 
 SOURCES += \
-../../query/recollqmain.cpp
+../query/recollqmain.cpp
 
 INCLUDEPATH += ../common ../index ../internfile ../query ../unac ../utils ../aspell \
     ../rcldb ../qtgui ../xaposix ../confgui ../bincimapmime 
@@ -21,8 +21,8 @@ windows {
 
   contains(QMAKE_CC, cl){
     # Visual Studio
-    RECOLLDEPS = ../../recolldeps/msvc
-    SOURCES += ../getopt.cc
+    RECOLLDEPS = ../../../recolldeps/msvc
+    SOURCES += ../windows/getopt.cc
     PRE_TARGETDEPS = \
       ../build-librecoll-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release/librecoll.lib
     LIBS += \

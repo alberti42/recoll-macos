@@ -337,7 +337,7 @@ RclConfig *recollinit(int flags,
     setenv("PATH", PATH.c_str(), 1);
 #endif /* __APPLE__ */
 
-
+#if defined(__linux__)
     if (getenv("APPIMAGE")) {
         std::string pythonpath;
         auto cp = getenv("PYTHONPATH");
@@ -359,7 +359,7 @@ RclConfig *recollinit(int flags,
             setenv("PATH", PATH.c_str(), 1);
         }
     }
-    
+#endif // __linux__    
 
     TextSplit::staticConfInit(config);
     
@@ -455,8 +455,12 @@ RclConfig *recollinit(int flags,
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {
         LOGDEB1("rclinit: idxflushmb=" << flushmb << ", set XAPIAN_FLUSH_THRESHOLD to 10E6\n");
+#ifndef _WIN32
         setenv("XAPIAN_FLUSH_THRESHOLD", "1000000", 1);
-    }
+#else
+        _putenv_s("XAPIAN_FLUSH_THRESHOLD", "1000000");
+#endif
+     }
 
     return config;
 }
