@@ -2289,8 +2289,7 @@ static struct PyModuleDef moduledef = {
 
 #define INITERROR return NULL
 
-extern "C" PyObject *
-PyInit__recoll(void)
+PyMODINIT_FUNC PyInit__recoll(void)
 
 #else
 #define INITERROR return
