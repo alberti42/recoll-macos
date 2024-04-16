@@ -529,13 +529,13 @@ static vector<const char*> argstovector(int argc, char **argv, vector<string>& s
 {
     vector<const char *> args(argc+1);
     storage.resize(argc);
-    rclutil_setargv0(WARGTOSTRING(argv[0]).c_str());
-    thisprog = path_absolute(WARGTOSTRING(argv[0]));
     for (int i = 0; i < argc; i++) {
         storage[i] = WARGTOSTRING(argv[i]);
         args[i] = storage[i].c_str();
     }
     args[argc] = nullptr;
+    rclutil_setargv0(storage[0].c_str());
+    thisprog = path_absolute(storage[0]);
     return args;
 }
 
