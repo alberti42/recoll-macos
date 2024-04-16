@@ -21,15 +21,15 @@ aspellexts = []
 foreach v : py3versions
     py3_name = 'python' + v
     python_installation = py_mod.find_installation(py3_name)
+    py3_dep = python_installation.dependency()
+
     aspellexts += python_installation.extension_module(
         'recollaspell',
         [
            'aspell.c',
         ],
-        dependencies: [
-            python_installation.dependency(),
-            cc.find_library('aspell'),
-        ],
+        dependencies: [py3_dep, cc.find_library('aspell'),],
         install: true,
+        subdir: '.',
     )
 endforeach

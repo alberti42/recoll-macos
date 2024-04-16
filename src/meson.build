@@ -2,16 +2,26 @@ project(
     'recoll',
     ['cpp', 'c'],
     license: 'GPL 2+',
-    version: '1.38.0',
+    # We'd like to use version: files('RECOLL-VERSION.txt') but this is a 0.56 feature. Buster has
+    # 0.49 and focal 0.53. let's support at least focal backports for now.
+    version: '1.38.0pre1',
     default_options: ['cpp_std=c++17', 'buildtype=debugoptimized'],
     meson_version: '>=0.49',
 )
+soversion = '1.38.0'
+
 cpp = meson.get_compiler('cpp')
 cc = meson.get_compiler('c')
 
+libxml = dependency('libxml-2.0')
+libxslt =  dependency('libxslt')
+libz = dependency('zlib')
+if get_option('libmagic')
+    libmagic = dependency('libmagic')
+endif
 
 # Check if anything needs Xapian. We also need to build the shared lib if this is the case.
-# Useful if building rclgrep alone for example.
+# The only case where it is not needed is for building rclgrep alone.
 if get_option('testmains') or get_option('python-module') or get_option('indexer') \
    or get_option('xadump') or get_option('qtgui') or get_option('recollq')
     librecoll_needed = true
@@ -21,14 +31,10 @@ if get_option('testmains') or get_option('python-module') or get_option('indexer
     if get_option('idxthreads')
         librecolldeps += dependency('threads')
     endif
-    libxml = dependency('libxml-2.0')
     librecolldeps += libxml
-    libxslt =  dependency('libxslt')
     librecolldeps += libxslt
-    libz = dependency('zlib')
     librecolldeps += libz
     if get_option('libmagic')
-        libmagic = dependency('libmagic')
         librecolldeps += libmagic
     endif
     # Note: we would like to remove the x11 dep from the lib to the indexer, but this is not
@@ -314,7 +320,7 @@ if librecoll_needed
         'librecoll',
         librecoll_sources,
         name_prefix: '',
-        version: meson.project_version(),
+        version: soversion,
         include_directories: librecoll_incdir,
         dependencies: librecolldeps,
         install: true,
@@ -358,14 +364,13 @@ if get_option('indexer')
         'index/webqueue.cpp',
     ]
 
-    #recollindexdeps = []
-    #recollindexdeps += declare_dependency(link_with : librecoll,
-    #  )
+    recollindexdeps = []
+    recollindexdeps += dependency('threads')
     recollindex = executable(
         'recollindex',
         recollindex_sources,
         include_directories: librecoll_incdir,
-        #  dependencies: recollindexdeps,
+        dependencies: recollindexdeps,
         link_with: librecoll,
         install: true,
     )

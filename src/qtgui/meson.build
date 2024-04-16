@@ -5,7 +5,7 @@
 # is defined. Makes use of a small script located in the qtgui directory.
 
 qtgui_conf = configuration_data()
-qtgui_conf.set('srcdir', meson.source_root() / 'qtgui')
+qtgui_conf.set('srcdir', meson.current_source_dir())
 if not get_option('webkit') or get_option('webengine')
     qtgui_conf.set('QMAKE_ENABLE_WEBKIT', '#')
 endif
@@ -34,7 +34,7 @@ pro_file = configure_file(
     configuration: qtgui_conf,
 )
 
-qmkmk = find_program(meson.source_root() / 'qtgui' / 'qmkmk.sh')
+qmkmk = find_program(meson.current_source_dir() / 'qmkmk.sh')
 
 infile = pro_file
 outfile = 'recoll'
@@ -55,7 +55,7 @@ install_subdir(
     exclude_files: ['License_sidux.txt', 'README', 'aptosid-manual-copyright.txt',],
 )
 install_subdir(
-    meson.build_root() / 'qtgui' / '.qm',
+    meson.current_build_dir() / '.qm',
     install_dir: get_option('datadir') / 'recoll' / 'translations',
     strip_directory: true,
 )

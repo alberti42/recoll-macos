@@ -14,7 +14,6 @@
 .github
 .gitignore
 .qmake.stash
-Makefile
 Makefile.am
 Makefile.in
 aclocal.m4

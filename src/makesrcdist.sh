@@ -1,10 +1,12 @@
 #!/bin/sh
 
 myname=recoll
-MYNAME=`echo $myname | tr a-z A-Z`
 wherefile=common/rclinit.cpp
+version=`cat RECOLL-VERSION.txt`
 islib=no
-#builtlib=build/libupnpp.so
+builtlib=
+
+MYNAME=`echo $myname | tr a-z A-Z`
 
 # A shell-script to make a source distribution.
 
@@ -58,8 +60,6 @@ if test $snap = yes ; then
   version=`date +%F_%H-%M-%S`
   TAG=""
 else
-    version=`grep "version:" meson.build | head -1 | awk '{print $2}' | tr -d "',"`
-    # trim whitespace
     version=`echo $version | xargs`
     TAG="${myname}-v$version"
 fi
@@ -100,14 +100,13 @@ if test "$islib" = "yes" ; then
         meson setup build || exit 1
         meson configure build --buildtype release || exit 1
         (cd build;meson compile) || exit 1
-        nm -g --defined-only --demangle $builtlib | grep ' T ' | \
+        nm -g --defined-only --demangle "$builtlib" | grep ' T ' | \
             awk '{$1=$2="";print $0}' | diff symbols-reference - || exit 1
         rm -rf build
     fi
 fi
 
 $TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
-cp -p doc/user/Makefile $topdir/doc/user
 
 out=$releasename.tar.gz
 (cd $targetdir ; \
@@ -117,9 +116,9 @@ echo "$targetdir/$out created"
 
 # Check manifest against current reference
 export LC_ALL=C
-if test "$dotag" = "yes" ; then
-    tar tzf $targetdir/$out | sort | cut -d / -f 2- | \
-        diff manifest.txt - || fatal "Please fix file list manifest.txt"
-fi
+tar tzf $targetdir/$out | sort | cut -d / -f 2- | \
+    diff manifest.txt - || fatal "Please fix file list manifest.txt"
 
-[ $dotag = "yes" ] && create_tag $TAG
+if test "$dotag" = "yes" ; then
+     create_tag $TAG
+fi

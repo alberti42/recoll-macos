@@ -4,13 +4,11 @@ CMakeLists.txt
 COPYING
 ChangeLog
 INSTALL
-Makefile.am
 README
 RECOLL-VERSION.txt
 aspell/
 aspell/rclaspell.cpp
 aspell/rclaspell.h
-autogen.sh
 bincimapmime/
 bincimapmime/00README.recoll
 bincimapmime/AUTHORS
@@ -53,10 +51,6 @@ common/utf8fn.cpp
 common/utf8fn.h
 common/webstore.cpp
 common/webstore.h
-config.guess
-config.rpath
-config.sub
-configure.ac
 desktop/
 desktop/hotrecoll.py
 desktop/org.recoll.recoll.appdata.xml
@@ -286,14 +280,6 @@ kde/krunner/CMakeLists.txt
 kde/krunner/recollrunner.cpp
 kde/krunner/recollrunner.h
 kde/krunner/recollrunner.json
-ltmain.sh
-m4/
-m4/iconv.m4
-m4/libtool.m4
-m4/ltoptions.m4
-m4/ltsugar.m4
-m4/ltversion.m4
-m4/lt~obsolete.m4
 meson.build
 meson_options.txt
 python/
@@ -349,6 +335,7 @@ python/samples/rclmbox.py
 python/samples/rclnotindexed.py
 python/samples/recoll-space-hogs.py
 python/samples/recollgui/
+python/samples/recollgui/Makefile
 python/samples/recollgui/qrecoll.py
 python/samples/recollgui/rclmain.ui
 python/samples/recollq.py
@@ -599,7 +586,6 @@ rcldb/synfamily.h
 rcldb/termproc.h
 rcldb/xmacros.h
 rclgrep/
-rclgrep/Makefile.am
 rclgrep/meson.build
 rclgrep/rclgrep.cpp
 sampleconf/
@@ -611,7 +597,6 @@ sampleconf/macos/mimeview
 sampleconf/mimeconf
 sampleconf/mimemap
 sampleconf/mimeview
-sampleconf/ptrans
 sampleconf/recoll-common.css
 sampleconf/recoll-common.qss
 sampleconf/recoll-dark.css
@@ -619,7 +604,6 @@ sampleconf/recoll-dark.qss
 sampleconf/recoll.conf
 sampleconf/recoll.qss
 testmains/
-testmains/Makefile.am
 testmains/meson.build
 unac/
 unac/AUTHORS
