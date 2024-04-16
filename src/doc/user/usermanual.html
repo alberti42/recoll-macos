@@ -9044,6 +9044,17 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
           and it should be quite uncommon that you would have to
           build one of them. Finding the right package name for
           other systems is left to the sagacity of the reader.</p>
+          <p>Up to version 1.37, the <span class=
+          "application">Recoll</span> build process used the
+          <span class="application">GNU autotools</span>. Versions
+          1.38 and later use <span class=
+          "application">meson/ninja</span> instead. In the
+          following, most configuration options are still defined
+          in terms of autotools <code class=
+          "literal">--enable-xxx</code>, <code class=
+          "literal">--disable-xxx</code>. These can be translated
+          to -Dxxx=true -Dxxx=false options for <span class=
+          "command"><strong>meson setup</strong></span></p>
           <p>If you do not need the GUI, you can avoid all GUI
           dependencies by disabling its build. (See the configure
           section further down: <code class=
@@ -9085,7 +9096,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 "command"><strong>make</strong></span>.</p>
               </li>
               <li class="listitem">
-                <p>A C++ compiler with at least C++14 compatibility
+                <p>A C++ compiler with at least C++17 compatibility
                 (<code class="literal">g++</code> or <code class=
                 "literal">clang</code>). Versions 1.33.4 and older
                 only require c++11.</p>
@@ -9219,7 +9230,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
           after 2005 should be ok, maybe some older ones too
           (Solaris 8 used to be ok). Current <span class=
           "application">Recoll</span> versions (1.34 and later)
-          need a c++14 compiler and Qt5, so they will not build on
+          need a c++17 compiler and Qt5, so they will not build on
           old systems, but if really needed, you can probably find
           an older version which will work for you. If you build on
           another system, and need to modify things, <a class=
@@ -9236,6 +9247,10 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 </div>
               </div>
             </div>
+            <p>Translate the following to <code class=
+            "literal">-Dxxx=true/-Dxxx=false</code> for
+            <span class="command"><strong>meson
+            setup</strong></span>.</p>
             <p><code class="option">--without-aspell</code> will
             disable the code for phonetic matching of search
             terms.</p>
@@ -9354,6 +9369,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 </div>
               </div>
             </div>
+            <p>For versions up to 1.37.x:</p>
             <pre class="screen"><strong class=
             "userinput"><code>cd recoll-xxx</code></strong>
 <strong class="userinput"><code>./configure <em class=
@@ -9361,6 +9377,13 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
 <strong class="userinput"><code>make</code></strong>
 <strong class=
 "userinput"><code>(practices usual hardship-repelling invocations)</code></strong></pre>
+            <p>For versions 1.38 and later:</p>
+            <pre class="screen"><strong class=
+            "userinput"><code>cd recoll-xxx</code></strong>
+<strong class="userinput"><code>meson setup <em class=
+"replaceable"><code>[options]</code></em> build</code></strong>
+<strong class="userinput"><code>ninja -C build</code></strong>
+            </pre>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -9373,6 +9396,10 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                 </div>
               </div>
             </div>
+            <p>Nothing special is needed for 1.38 and later
+            (<span class="application">meson/ninja</span>).</p>
+            <p>For older versions using the <span class=
+            "application">autotools</span>:</p>
             <p>When building from source cloned from the git
             repository, you also need to install <span class=
             "application">autoconf</span>, <span class=
@@ -9398,10 +9425,11 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
               </div>
             </div>
           </div>
-          <p>Use <strong class="userinput"><code>make
-          install</code></strong> in the root of the source tree.
-          This will copy the commands to <code class=
-          "filename"><em class=
+          <p>Use <strong class="userinput"><code>sudo make
+          install</code></strong> or <strong class=
+          "userinput"><code>sudo ninja install</code></strong> in
+          your build tree. This will copy the commands to
+          <code class="filename"><em class=
           "replaceable"><code>prefix</code></em>/bin</code> and the
           sample configuration files, scripts and other shared data
           to <code class="filename"><em class=
@@ -9423,22 +9451,12 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
           directory.</p>
           <p>The normal <span class="application">Recoll</span>
           build procedure (see above) installs the API package for
-          both Python2 and Python3. The Python2 version will
-          probably go away in the near future.</p>
-          <p>The <code class="filename">python/recoll/</code>
-          directory contains the usual <code class=
-          "filename">setup.py</code>. After configuring and
-          building the main <span class="application">Recoll</span>
-          code, you can use the script to build and install the
-          Python module for a non-standard Python version.</p>
-          <pre class="screen">
-          <strong class=
-"userinput"><code>cd recoll-xxx/python/recoll</code></strong>
-          <strong class=
-"userinput"><code>pythonX setup.py build</code></strong>
-          <strong class=
-"userinput"><code>sudo pythonX setup.py install</code></strong>
-        </pre>
+          Python3.</p>
+          <p>For meson-based versions: the <code class=
+          "filename">python/recoll/</code> directory still contains
+          a <code class="filename">setup.py</code>. This is
+          obsoleted by <code class="filename">meson.build</code>
+          but might be useful in some cases.</p>
         </div>
       </div>
       <div class="sect1">

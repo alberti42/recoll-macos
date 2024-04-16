@@ -6400,6 +6400,13 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
           should be quite uncommon that you would have to build one of them. Finding the right
           package name for other systems is left to the sagacity of the reader.</para>
 
+        <para>Up to version 1.37, the &RCL; build process used the <application>GNU
+            autotools</application>.
+          Versions 1.38 and later use <application>meson/ninja</application> instead. In the
+          following, most configuration options are still defined in terms of
+          autotools <literal>--enable-xxx</literal>, <literal>--disable-xxx</literal>. These can be
+          translated to -Dxxx=true -Dxxx=false options for <command>meson setup</command></para>
+        
         <para>If you do not need the GUI, you can avoid all GUI dependencies by disabling its
           build. (See the configure section further
           down: <literal>--disable-qtgui</literal>).</para> 
@@ -6423,7 +6430,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
               error messages about dependency tracking from <command>configure</command>, you
               probably forgot to install <command>make</command>.</para></listitem>
 
-          <listitem><para>A C++ compiler with at least C++14 compatibility (<literal>g++</literal>
+          <listitem><para>A C++ compiler with at least C++17 compatibility (<literal>g++</literal>
               or <literal>clang</literal>). Versions 1.33.4 and older only require
               c++11.</para></listitem> 
 
@@ -6502,7 +6509,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
 
         <para>&RCL; has been built on Linux, FreeBSD, MacOS, and Solaris,
           most versions after 2005 should be ok, maybe some older ones too (Solaris 8 used to be
-          ok). Current &RCL; versions (1.34 and later) need a c++14 compiler and Qt5, so they will
+          ok). Current &RCL; versions (1.34 and later) need a c++17 compiler and Qt5, so they will
           not build on old systems, but if really needed, you can probably find an older version
           which will work for you. If you build on another system, and need to modify
           things, <ulink url="mailto:jfd@recoll.org">I would very much welcome
@@ -6511,7 +6518,9 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
 
         <sect3 id="RCL.INSTALL.BUILDING.BUILDING.CONFIGURE">
           <title>Configure options:</title>
-
+          <para>Translate the following to <literal>-Dxxx=true/-Dxxx=false</literal>
+            for <command>meson setup</command>.</para>
+          
           <para><option>--without-aspell</option> 
             will disable the code for phonetic matching of search
             terms. </para>
@@ -6623,18 +6632,29 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         <sect3 id="RCL.INSTALL.BUILDING.BUILDING.TAR">
           <title>Normal procedure, for source extracted from a tar distribution)</title>
 
+          <para>For versions up to 1.37.x:</para>
           <para>
             <screen><userinput>cd recoll-xxx</userinput>
 <userinput>./configure <replaceable>[options]</replaceable></userinput>
 <userinput>make</userinput>
 <userinput>(practices usual hardship-repelling invocations)</userinput></screen>
           </para>
-
+          <para>For versions 1.38 and later:</para>
+          <para>
+            <screen><userinput>cd recoll-xxx</userinput>
+<userinput>meson setup <replaceable>[options]</replaceable> build</userinput>
+<userinput>ninja -C build</userinput>
+            </screen>
+          </para>
+          
         </sect3>
 
         <sect3 id="RCL.INSTALL.BUILDING.BUILDING.GIT">
           <title>Building from git code</title>
 
+          <para>Nothing special is needed for 1.38 and later
+            (<application>meson/ninja</application>).</para> 
+          <para>For older versions using the <application>autotools</application>:</para>
           <para>When building from source cloned from the git repository, you also need to
             install <application>autoconf</application>, <application>automake</application>,
             and <application>libtool</application> and you must execute <literal>sh
@@ -6652,8 +6672,8 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
       <sect2 id="RCL.INSTALL.BUILDING.INSTALL">
         <title>Installing</title>
         
-        <para>Use <userinput>make install</userinput>
-          in the root of the source tree. This will copy the commands to
+        <para>Use <userinput>sudo make install</userinput> or <userinput>sudo ninja
+            install</userinput> in your build tree. This will copy the commands to
           <filename><replaceable>prefix</replaceable>/bin</filename> and the sample configuration
           files, scripts and other shared data
           to <filename><replaceable>prefix</replaceable>/share/recoll</filename>.</para>
@@ -6667,19 +6687,11 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         under the <filename>python/recoll</filename> directory.</para>
 
         <para>The normal &RCL; build procedure (see above) installs the API
-          package for both Python2 and Python3. The Python2 version will probably go away in the
-          near future.</para>
+          package for Python3.</para>
 
-        <para>The <filename>python/recoll/</filename> directory contains
-          the usual <filename>setup.py</filename>. After configuring and
-          building the main &RCL; code, you can use the script to build and
-          install the Python module for a non-standard Python version.
-        <screen>
-          <userinput>cd recoll-xxx/python/recoll</userinput>
-          <userinput>pythonX setup.py build</userinput>
-          <userinput>sudo pythonX setup.py install</userinput>
-        </screen>
-        </para> 
+        <para>For meson-based versions: the <filename>python/recoll/</filename> directory still
+          contains a <filename>setup.py</filename>. This is obsoleted by
+          <filename>meson.build</filename> but might be useful in some cases.</para> 
 
       </sect2>
 
