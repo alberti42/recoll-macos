@@ -20,8 +20,8 @@ deploy=~/Qt/6.4.2/macos/bin/macdeployqt
 
 toprecoll=$top/recoll/src
 appdir=$toprecoll/build-recoll-${qcbuildloc}-Release/recoll.app
-rclindexdir=$toprecoll/windows/build-recollindex-${qcbuildloc}-Release
-rclqdir=$toprecoll/windows/build-recollq-${qcbuildloc}-Release
+rclindexdir=$toprecoll/build-recollindex-${qcbuildloc}-Release
+rclqdir=$toprecoll/build-recollq-${qcbuildloc}-Release
 bindir=$appdir/Contents/MacOS
 datadir=$appdir/Contents/Resources
 

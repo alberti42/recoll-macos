@@ -6,7 +6,7 @@
 
 QT       -= core gui
 
-TARGET = librecoll
+TARGET = recoll
 TEMPLATE = lib
 
 CONFIG += c++17
@@ -168,7 +168,7 @@ mac {
     # This is necessary to avoid an undefined impl__xmlFree.
     # See comment in libxml/xmlexports.h
     DEFINES += LIBXML_STATIC
-    RECOLLDEPS = ../../
+    RECOLLDEPS = ../../../
     QMAKE_CXXFLAGS += -pthread -Wno-unused-parameter
     INCLUDEPATH += \
       $$RECOLLDEPS/xapian-core-1.4.24/include

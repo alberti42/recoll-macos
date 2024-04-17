@@ -60,9 +60,9 @@ mac {
     ../utils/execmd.cpp \
     ../utils/netcon.cpp \
     ../utils/rclionice.cpp
-
+  PRE_TARGETDEPS = ../build-librecoll-$$QCBUILDLOC-Release/librecoll.a
   LIBS += \
-     ../build-librecoll-$$QCBUILDLOC-Release/liblibrecoll.a \
+     ../build-librecoll-$$QCBUILDLOC-Release/librecoll.a \
      ../build-libxapian-$$QCBUILDLOC-Release/liblibxapian.a \
      -lxslt -lxml2 -liconv -lz
 }
