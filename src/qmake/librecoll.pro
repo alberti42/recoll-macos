@@ -40,7 +40,6 @@ SOURCES += \
 ../index/fsfetcher.cpp \
 ../index/idxdiags.cpp \
 ../index/idxstatus.cpp \
-../index/indexer.cpp \
 ../index/mimetype.cpp \
 ../index/subtreelist.cpp \
 ../index/webqueuefetcher.cpp \
@@ -159,6 +158,11 @@ windows {
 unix:!mac {
     target.path = /usr/lib
     INSTALLS += target
+    INCLUDEPATH += \
+        /usr/include/libxml2
+    SOURCES += \
+       ../utils/execmd.cpp \
+       ../utils/x11mon.cpp
 }
 
 mac {

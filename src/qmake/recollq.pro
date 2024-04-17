@@ -40,6 +40,19 @@ windows {
   INCLUDEPATH += ../windows
 }
 
+unix:!mac {
+    QCBUILDLOC=Desktop
+    SOURCES += \
+      ../utils/execmd.cpp \
+      ../utils/netcon.cpp
+
+    PRE_TARGETDEPS = \
+      ../build-librecoll-$$QCBUILDLOC-Release/librecoll.so
+    LIBS += \
+      -L../build-librecoll-$$QCBUILDLOC-Release/ -lrecoll \
+      -lxapian -lxslt -lxml2 -lmagic -lz -lX11
+}
+
 mac {
   QCBUILDLOC=Qt_6_4_2_for_macOS
   QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
