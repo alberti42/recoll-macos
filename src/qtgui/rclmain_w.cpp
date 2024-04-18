@@ -197,6 +197,7 @@ void RclMain::init()
     connect(preferencesMenu, SIGNAL(aboutToShow()), this, SLOT(adjustPrefsMenu()));
 
     connect(fileExitAction, SIGNAL(triggered()),  this, SLOT(fileExit()));
+    connect(actionSwitch_Config, SIGNAL(triggered()),  this, SLOT(showConfigSwitch()));
     connect(fileToggleIndexingAction, SIGNAL(triggered()), this, SLOT(toggleIndexing()));
     connect(fileStartMonitorAction, SIGNAL(triggered()), this, SLOT(startMonitor()));
     connect(fileBumpIndexingAction, SIGNAL(triggered()), this, SLOT(bumpIndexing()));

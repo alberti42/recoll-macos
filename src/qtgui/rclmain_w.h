@@ -52,6 +52,7 @@ class QActionGroup;
 class ActSearchW;
 class IdxTreeModel;
 class UIPrefsDialog;
+class ConfigSwitchW;
 
 #include "ui_rclmain.h"
 
@@ -127,6 +128,7 @@ public slots:
     virtual void showUIPrefs();
     virtual void showIndexConfig();
     virtual void execIndexConfig();
+    virtual void showConfigSwitch();
     virtual void showCronTool();
     virtual void execCronTool();
     virtual void showRTITool();
@@ -224,6 +226,7 @@ private:
     ResTable       *m_dupsw{0};
     bool            displayingTable{false};
     ActSearchW     *actsearchw{0};
+    ConfigSwitchW  *configswitchw{0};
     QAction        *m_idNoStem{0};
     QAction        *m_idAllStem{0};
     QToolBar       *m_toolsTB{0};

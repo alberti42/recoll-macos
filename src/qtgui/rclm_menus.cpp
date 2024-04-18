@@ -43,8 +43,7 @@ void RclMain::buildMenus()
     toolsMenu->setTitle(QApplication::translate("RclMainBase", "&Tools"));
     preferencesMenu = new QMenu();
     preferencesMenu->setObjectName(QString::fromUtf8("preferencesMenu"));
-    preferencesMenu->setTitle(QApplication::translate("RclMainBase",
-                                                      "&Preferences"));
+    preferencesMenu->setTitle(QApplication::translate("RclMainBase", "&Preferences"));
     helpMenu = new QMenu();
     helpMenu->setObjectName(QString::fromUtf8("helpMenu"));
     helpMenu->setTitle(QApplication::translate("RclMainBase", "&Help"));
@@ -73,7 +72,9 @@ void RclMain::buildMenus()
     fileMenu->addAction(fileEraseSearchHistoryAction);
     fileMenu->addSeparator();
     fileMenu->addAction(fileEraseDocHistoryAction);
+    
     fileMenu->addSeparator();
+    fileMenu->addAction(actionSwitch_Config);
     fileMenu->addAction(fileExitAction);
 
     viewMenu->addSeparator();

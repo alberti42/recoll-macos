@@ -20,6 +20,7 @@ HEADERS += \
         advshist.h \
         confgui/confgui.h \
         confgui/confguiindex.h \
+        configswitch.h \
         firstidx.h \
         fragbuts.h \
         idxmodel.h \
@@ -53,6 +54,7 @@ SOURCES += \
         advshist.cpp \
         confgui/confgui.cpp \
         confgui/confguiindex.cpp \
+        configswitch.cpp \
         fragbuts.cpp \
         guiutils.cpp \
         idxmodel.cpp \
@@ -90,6 +92,7 @@ SOURCES += \
 FORMS   = \
         actsearch.ui \
         advsearch.ui \
+        configswitch.ui \
         firstidx.ui \
         idxsched.ui \
         preview.ui \

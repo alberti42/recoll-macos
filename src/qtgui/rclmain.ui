@@ -583,6 +583,14 @@
     <string>Indexing with special options</string>
    </property>
   </action>
+  <action name="actionSwitch_Config">
+   <property name="text">
+    <string>Switch Configuration...</string>
+   </property>
+   <property name="toolTip">
+    <string>Choose another configuration to run on, replacing this process</string>
+   </property>
+  </action>
   <action name="actionShow_index_statistics">
    <property name="text">
     <string>Index &amp;statistics</string>

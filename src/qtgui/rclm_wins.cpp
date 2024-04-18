@@ -39,6 +39,7 @@
 #include "actsearch_w.h"
 #include "docseqdocs.h"
 #include "uiprefs_w.h"
+#include "configswitch.h"
 
 using namespace std;
 
@@ -498,4 +499,17 @@ void RclMain::showActionsSearch()
     actsearchw->actCMB->setCurrentIndex(-1);
     actsearchw->actCMB->clearEditText();
     actsearchw->show();
+}
+
+void RclMain::showConfigSwitch()
+{
+    if (nullptr == configswitchw) {
+        configswitchw = new ConfigSwitchW(this);
+        connect(configswitchw->dirsCMB, SIGNAL(editTextChanged(const QString&)),
+                configswitchw, SLOT(onTextChanged(const QString&)));
+    }
+    configswitchw->dirsCMB->setCurrentIndex(-1);
+    configswitchw->dirsCMB->clearEditText();
+    configswitchw->m_cancelled = false;
+    configswitchw->show();
 }
