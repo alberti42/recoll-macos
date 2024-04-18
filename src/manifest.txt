@@ -357,6 +357,9 @@ qtgui/confgui/confgui.cpp
 qtgui/confgui/confgui.h
 qtgui/confgui/confguiindex.cpp
 qtgui/confgui/confguiindex.h
+qtgui/configswitch.cpp
+qtgui/configswitch.h
+qtgui/configswitch.ui
 qtgui/crontool.cpp
 qtgui/crontool.h
 qtgui/crontool.ui
