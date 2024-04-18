@@ -23,7 +23,7 @@
 #include <map>
 #include <string>
 #include <memory>
-
+#include <vector>
 
 extern void rclutil_init_mt();
 extern void rclutil_setargv0(const char *argv0);
@@ -174,5 +174,9 @@ struct DateInterval {
 };
 extern bool parsedateinterval(const std::string& s, DateInterval *di);
 extern int monthdays(int mon, int year);
+
+// Try to find a list of recoll configuration directories under $HOME. Heuristic. where defaults to
+// home.
+extern std::vector<std::string> guess_recoll_confdirs(const std::string& where = "");
 
 #endif /* _RCLUTIL_H_INCLUDED_ */

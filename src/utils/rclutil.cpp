@@ -24,6 +24,7 @@
 #include "safeunistd.h"
 #include "cstr.h"
 #include "execmd.h"
+#include "fstreewalk.h"
 
 #ifdef _WIN32
 #include "safewindows.h"
@@ -1335,6 +1336,27 @@ secondelt:
     dip->m2 = d2.m1;
     dip->d2 = d2.d1;
     return true;
+}
+
+struct MyConfFinderCB : public FsTreeWalkerCB {
+    std::vector<std::string> dirs;
+    FsTreeWalker::Status processone(
+        const std::string &path, FsTreeWalker::CbFlag flg, const struct PathStat&) override {
+        if (flg == FsTreeWalker::FtwDirEnter && path_exists(path_cat(path, "recoll.conf")))
+            dirs.push_back(path);
+        return FsTreeWalker::FtwOk;
+    }
+};
+
+std::vector<std::string> guess_recoll_confdirs(const std::string& where)
+{
+    FsTreeWalker walker;
+    walker.setOpts(FsTreeWalker::FtwTravBreadthThenDepth); 
+    walker.setMaxDepth(1);
+    MyConfFinderCB cb;
+    std::string top = where.empty() ? path_homedata() : where;
+    walker.walk(top, cb);
+    return cb.dirs;
 }
 
 void rclutil_init_mt()

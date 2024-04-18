@@ -17,6 +17,7 @@ static std::map<std::string, int> options {
     {"url_encode", 0},
     {"growmime", 0},
     {"dateinterval", 0},
+    {"findconfigs", 0},
 };
 
 static const char *thisprog;
@@ -116,7 +117,7 @@ int main(int argc, char **argv)
         path_to_thumb(input);
     } else if (options["dateinterval"]) {
         if (optind >= argc) {
-            cerr << "Usage: trsmallut --dateinterval <dateinterval>" << endl;
+            cerr << "Usage: trrclutil --dateinterval <dateinterval>" << endl;
             return 1;
         }
         string s = argv[optind];
@@ -128,9 +129,20 @@ int main(int argc, char **argv)
         cerrdip("", &di);
         return 0;
 
+    } else if (options["findconfigs"]) {
+        if (optind < argc) {
+            cerr << "Usage: trrclutil --findconfigs" << "\n";
+            return 1;
+        }
+        std::vector<std::string> dirs = guess_recoll_confdirs();
+        for (const auto& dir:dirs) {
+            cout << dir << "\n";
+        }
+        return 0;
+
     } else if (options["url_encode"]) {
         if (optind >= argc) {
-            cerr << "Usage: trsmallut --url_encode <arg> [offs=0]\n";
+            cerr << "Usage: trrclutil --url_encode <arg> [offs=0]\n";
             return 1;
         }
         string s = argv[optind];
