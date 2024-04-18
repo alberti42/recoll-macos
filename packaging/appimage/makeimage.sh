@@ -32,9 +32,10 @@ auxprogs()
 cd $RECOLL/src
 hash=`git log -n 1 | head -1 | awk '{print $2}' | cut -b 1-8`
 vers=`cat RECOLL-VERSION.txt`
-make -j 4 || exit 1
-make install DESTDIR=$APPDIR || exit 1
-sudo make install || exit 1
+meson setup --prefix=/usr build
+ninja -C build
+DESTDIR=$APPDIR ninja -C build install || exit 1
+sudo ninja -C build install || exit 1
 for pyversion in 3.8 3.9 3.10 3.11 3.12;do
     for nm in recoll chm aspell; do
         case $nm in
