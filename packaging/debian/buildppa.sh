@@ -10,23 +10,23 @@
 # 23.10    mantic 2024-07
 # 24.04    noble  2029-05
 SERIES="focal jammy mantic noble"
-#SERIES="noble"
+SERIES="focal"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.37.4
+RCLVERS=1.38.0
 GSSPVERS=1.1.3
-PPAVERS=1
+PPAVERS=4
 
 #
 #Y=/y
 Y=
 RCLSRC=${Y}/home/dockes/projets/fulltext/recoll/src
 GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
-RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
+RCLDOWNLOAD=${Y}/home/dockes/projets/fulltext/web-recoll
 
 PPANAME=recoll15-ppa
-#PPANAME=recollexp-ppa
+PPANAME=recollexp-ppa
 #PPANAME=recoll-webengine-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
@@ -50,7 +50,7 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 series=$SERIES
-series=
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -160,7 +160,7 @@ done
 
 ### GSSP
 series=$SERIES
-#series=
+series=
 
 debdir=debiangssp
 if test ! -d ${debdir}/ ; then

@@ -17,7 +17,11 @@ libxml = dependency('libxml-2.0')
 libxslt =  dependency('libxslt')
 libz = dependency('zlib')
 if get_option('libmagic')
-    libmagic = dependency('libmagic')
+    libmagic = dependency('libmagic', required:false)
+    # Libmagic has no pkgconfig data on older debian systems
+    if not libmagic.found()
+        libmagic = cc.find_library('libmagic', required:true)
+    endif
 endif
 
 # Check if anything needs Xapian. We also need to build the shared lib if this is the case.

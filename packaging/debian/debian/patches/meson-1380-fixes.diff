@@ -1,5 +1,5 @@
 diff --git a/meson.build b/meson.build
-index e327498f..f5b0c076 100644
+index e327498f..6ceab4c0 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -4,7 +4,7 @@ project(
@@ -11,7 +11,17 @@ index e327498f..f5b0c076 100644
      default_options: ['cpp_std=c++17', 'buildtype=debugoptimized'],
      meson_version: '>=0.49',
  )
-@@ -22,8 +22,7 @@ endif
+@@ -17,13 +17,16 @@ libxml = dependency('libxml-2.0')
+ libxslt =  dependency('libxslt')
+ libz = dependency('zlib')
+ if get_option('libmagic')
+-    libmagic = dependency('libmagic')
++    libmagic = dependency('libmagic', required:false)
++    # Libmagic has no pkgconfig data on older debian systems
++    if not libmagic.found()
++        libmagic = cc.find_library('libmagic', required:true)
++    endif
+ endif
  
  # Check if anything needs Xapian. We also need to build the shared lib if this is the case.
  # The only case where it is not needed is for building rclgrep alone.
@@ -21,12 +31,3 @@ index e327498f..f5b0c076 100644
      librecoll_needed = true
      librecolldeps = []
      xapian = dependency('xapian-core')
-@@ -448,7 +447,7 @@ manfiles = files(
- 'doc/man/recollq.1',
- 'doc/man/xadump.1',
- )
--install_man(manfiles)
-+# install_man(manfiles)
- 
- example_files = files(
- 'desktop/recollindex.desktop',
