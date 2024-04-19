@@ -10,13 +10,35 @@
 # 23.10    mantic 2024-07
 # 24.04    noble  2029-05
 SERIES="focal jammy mantic noble"
-SERIES="focal"
 
 PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.38.0
 GSSPVERS=1.1.3
-PPAVERS=4
+PPAVERS=1
+
+PPANAME=recoll15-ppa
+PPANAME=recollexp-ppa
+#PPANAME=recoll-webengine-ppa
+
+# recoll 
+series_rcl=
+# kio: does not build any more on focal because of the slave->worker change.
+series_kio=jammy
+# krunner: does not build on focal and bionic because of the 5.90 min version requested in the
+# CMakeLists.txt. Did not try to work around. "jammy kinetic lunar mantic noble"
+series_krunner=
+# gssp
+series_gssp=
+
+txt=""
+test -n "$series_rcl" && txt="$txt Recoll $RCLVERS on $series_rcl "
+test -n "$series_kio" && txt="$txt KIO $RCLVERS on $series_kio "
+test -n "$series_krunner" && txt="$txt Krunner $RCLVERS on $series_krunner "
+test -n "$series_gssp" && txt="$txt GSSP $GSSPVERS on $series_gssp "
+echo Building $txt
+echo PPA: $PPANAME. PPAVERS $PPAVERS. Type CR if Ok, else ^C
+read rep
 
 #
 #Y=/y
@@ -24,13 +46,6 @@ Y=
 RCLSRC=${Y}/home/dockes/projets/fulltext/recoll/src
 GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
 RCLDOWNLOAD=${Y}/home/dockes/projets/fulltext/web-recoll
-
-PPANAME=recoll15-ppa
-PPANAME=recollexp-ppa
-#PPANAME=recoll-webengine-ppa
-
-echo "PPA: $PPANAME. Type CR if Ok, else ^C"
-read rep
 
 fatal()
 {
@@ -40,127 +55,110 @@ fatal()
 check_recoll_orig()
 {
     if test ! -f recoll_${RCLVERS}.orig.tar.gz ; then 
-        cp -p $RCLDOWNLOAD/recoll-${RCLVERS}.tar.gz \
-            recoll_${RCLVERS}.orig.tar.gz || \
-            fatal "Can find neither recoll_${RCLVERS}.orig.tar.gz nor " \
-            "recoll-${RCLVERS}.tar.gz"
+        cp -p $RCLDOWNLOAD/recoll-${RCLVERS}.tar.gz recoll_${RCLVERS}.orig.tar.gz || \
+            fatal "Can find neither recoll_${RCLVERS}.orig.tar.gz nor recoll-${RCLVERS}.tar.gz"
     fi
 }
 
-####### QT
-debdir=debian
-series=$SERIES
-#series=
+####### recoll 
 
-if test "X$series" != X ; then
+debdir=debian
+if test "X$series_rcl" != X ; then
     check_recoll_orig
     test -d recoll-${RCLVERS} || tar xzf recoll_${RCLVERS}.orig.tar.gz
 fi
 
-for series in $series ; do
+for svers in ${series_rcl} ; do
 
   rm -rf recoll-${RCLVERS}/debian
   cp -rp ${debdir}/ recoll-${RCLVERS}/debian || exit 1
 
-  if test -f $debdir/control-$series ; then
-      cp -f -p $debdir/control-$series recoll-${RCLVERS}/debian/control
+  if test -f $debdir/control-$svers ; then
+      cp -f -p $debdir/control-$svers recoll-${RCLVERS}/debian/control
   fi
-  if test -f $debdir/rules-$series ; then
-      cp -f -p $debdir/rules-$series recoll-${RCLVERS}/debian/rules
+  if test -f $debdir/rules-$svers ; then
+      cp -f -p $debdir/rules-$svers recoll-${RCLVERS}/debian/rules
   fi
-  if test -f $debdir/python3-recoll.install-$series ; then
-     cp -f -p $debdir/python3-recoll.install-$series recoll-${RCLVERS}/debian/python3-recoll.install
+  if test -f $debdir/python3-recoll.install-$svers ; then
+     cp -f -p $debdir/python3-recoll.install-$svers recoll-${RCLVERS}/debian/python3-recoll.install
   fi
-  if test -f $debdir/patches/series-$series ; then
-      cp -f -p $debdir/patches/series-$series recoll-${RCLVERS}/debian/patches/series
+  if test -f $debdir/patches/series-$svers ; then
+      cp -f -p $debdir/patches/series-$svers recoll-${RCLVERS}/debian/patches/series
   fi
 
-  sed -e s/SERIES/${series}/g \
-      -e s/PPAVERS/${PPAVERS}/g \
+  sed -e s/SERIES/${svers}/g -e s/PPAVERS/${PPAVERS}/g \
       < ${debdir}/changelog > recoll-${RCLVERS}/debian/changelog
 
   (cd recoll-${RCLVERS};debuild -d -k$PPA_KEYID -S -sa)  || break
 
-  dput $PPANAME recoll_${RCLVERS}-1~ppa${PPAVERS}~${series}1_source.changes
+  dput $PPANAME recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
 done
 
 
 
 ### KIO.
-series=$SERIES
-series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
-if test "X$series" != X ; then
+if test "X$series_kio" != X ; then
     check_recoll_orig
     if test ! -f kio-recoll_${RCLVERS}.orig.tar.gz ; then
-        cp -p recoll_${RCLVERS}.orig.tar.gz \
-            kio-recoll_${RCLVERS}.orig.tar.gz || exit 1
+        cp -p recoll_${RCLVERS}.orig.tar.gz kio-recoll_${RCLVERS}.orig.tar.gz || exit 1
     fi
     if test ! -d $topdir ; then 
-        mkdir temp
+        mkdir -p temp
         cd temp
         tar xzf ../recoll_${RCLVERS}.orig.tar.gz || exit 1
         mv recoll-${RCLVERS} ../$topdir || exit 1
         cd ..
     fi
 fi
-for svers in $series ; do
-  rm -rf $topdir/debian
-  cp -rp ${debdir}/ $topdir/debian || exit 1
-  if test -f $debdir/control-$svers ; then
-      cp -f -p $debdir/control-$svers $topdir/debian/control
-  else 
-      cp -f -p $debdir/control $topdir/debian/control
-  fi
-  sed -e s/SERIES/$svers/g \
-      -e s/PPAVERS/${PPAVERS}/g \
-          < ${debdir}/changelog > $topdir/debian/changelog ;
-  (cd $topdir;debuild -k$PPA_KEYID -S -sa) || exit 1
-  dput $PPANAME kio-recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
+for svers in ${series_kio} ; do
+    rm -rf $topdir/debian
+    cp -rp ${debdir}/ $topdir/debian || exit 1
+    if test -f $debdir/control-$svers ; then
+        cp -f -p $debdir/control-$svers $topdir/debian/control
+    else 
+        cp -f -p $debdir/control $topdir/debian/control
+    fi
+    sed -e s/SERIES/$svers/g -e s/PPAVERS/${PPAVERS}/g \
+        < ${debdir}/changelog > $topdir/debian/changelog ;
+    (cd $topdir;debuild -k$PPA_KEYID -S -sa) || exit 1
+    dput $PPANAME kio-recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
 done
 
-### Krunner plugin. Does not build on focal and bionic because of the
-### 5.90 min version requested in the CMakeLists.txt. Did not try to
-### work around.
-series="jammy kinetic lunar"
-series=
+### Krunner plugin.
 
 debdir=debiankrunner
 topdir=krunner-recoll-${RCLVERS}
-if test "X$series" != X ; then
+if test "X$series_krunner" != X ; then
     check_recoll_orig
     if test ! -f krunner-recoll_${RCLVERS}.orig.tar.gz ; then
-        cp -p recoll_${RCLVERS}.orig.tar.gz \
-            krunner-recoll_${RCLVERS}.orig.tar.gz || exit 1
+        cp -p recoll_${RCLVERS}.orig.tar.gz krunner-recoll_${RCLVERS}.orig.tar.gz || exit 1
     fi
     if test ! -d $topdir ; then 
-        mkdir temp
+        mkdir -p temp
         cd temp
         tar xzf ../recoll_${RCLVERS}.orig.tar.gz || exit 1
         mv recoll-${RCLVERS} ../$topdir || exit 1
         cd ..
     fi
 fi
-for svers in $series ; do
-  rm -rf $topdir/debian
-  cp -rp ${debdir}/ $topdir/debian || exit 1
-  if test -f $debdir/control-$svers ; then
-      cp -f -p $debdir/control-$svers $topdir/debian/control
-  else 
-      cp -f -p $debdir/control $topdir/debian/control
-  fi
-  sed -e s/SERIES/$svers/g \
-      -e s/PPAVERS/${PPAVERS}/g \
-          < ${debdir}/changelog > $topdir/debian/changelog ;
-  (cd $topdir;debuild -k$PPA_KEYID -S -sa) || exit 1
-  dput $PPANAME krunner-recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
+for svers in ${series_krunner} ; do
+    rm -rf $topdir/debian
+    cp -rp ${debdir}/ $topdir/debian || exit 1
+    if test -f $debdir/control-$svers ; then
+        cp -f -p $debdir/control-$svers $topdir/debian/control
+    else 
+        cp -f -p $debdir/control $topdir/debian/control
+    fi
+    sed -e s/SERIES/$svers/g -e s/PPAVERS/${PPAVERS}/g \
+        < ${debdir}/changelog > $topdir/debian/changelog ;
+    (cd $topdir;debuild -k$PPA_KEYID -S -sa) || exit 1
+    dput $PPANAME krunner-recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
 done
 
 ### GSSP
-series=$SERIES
-series=
 
 debdir=debiangssp
 if test ! -d ${debdir}/ ; then
@@ -169,7 +167,7 @@ if test ! -d ${debdir}/ ; then
 fi
 topdir=gssp-recoll-${GSSPVERS}
 dload=$RCLDOWNLOAD/downloads
-if test "X$series" != X ; then
+if test "X$series_gssp" != X ; then
     if test ! -f gssp-recoll_${GSSPVERS}.orig.tar.gz ; then 
         if test -f gssp-recoll-${GSSPVERS}.tar.gz ; then
           mv gssp-recoll-${GSSPVERS}.tar.gz gssp-recoll_${GSSPVERS}.orig.tar.gz
@@ -178,26 +176,22 @@ if test "X$series" != X ; then
                 cp -p $dload/gssp-recoll-${GSSPVERS}.tar.gz \
                    gssp-recoll_${GSSPVERS}.orig.tar.gz || fatal copy
             else
-                fatal "Can find neither " \
-                      "gssp-recoll_${GSSPVERS}.orig.tar.gz nor " \
+                fatal "Can find neither gssp-recoll_${GSSPVERS}.orig.tar.gz nor " \
                       "$dload/gssp-recoll-${GSSPVERS}.tar.gz"
             fi
         fi
     fi
     test -d $topdir || tar xzf gssp-recoll_${GSSPVERS}.orig.tar.gz || exit 1
 fi
-for series in $series ; do
+for svers in ${series_gssp} ; do
 
-   rm -rf $topdir/debian
-   cp -rp ${debdir}/ $topdir/debian || exit 1
+    rm -rf $topdir/debian
+    cp -rp ${debdir}/ $topdir/debian || exit 1
 
-  sed -e s/SERIES/$series/g \
-      -e s/PPAVERS/${PPAVERS}/g \
-          < ${debdir}/changelog > $topdir/debian/changelog ;
+    sed -e s/SERIES/$svers/g  -e s/PPAVERS/${PPAVERS}/g \
+        < ${debdir}/changelog > $topdir/debian/changelog ;
 
-  (cd $topdir;debuild -k$PPA_KEYID -S -sa) || break
+    (cd $topdir;debuild -k$PPA_KEYID -S -sa) || break
 
-  dput $PPANAME \
-      gssp-recoll_${GSSPVERS}-1~ppa${PPAVERS}~${series}1_source.changes
-
+    dput $PPANAME gssp-recoll_${GSSPVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
 done
