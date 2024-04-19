@@ -239,9 +239,8 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
     if (!interner.internfile(fdoc, ipath)) {
-#if KIO_VERSION < 6
-        error(KIO::ERR_SLAVE_DEFINED,
-              "Cannot convert file to internal format");
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
+        error(ERR_SLAVE_DEFINED, QString::fromUtf8("Cannot convert file to internal format"));
 #endif
         return;
     }

@@ -15,7 +15,7 @@ PPA_KEYID=7808CE96D38B9201
 
 RCLVERS=1.38.0
 GSSPVERS=1.1.3
-PPAVERS=1
+PPAVERS=2
 
 PPANAME=recoll15-ppa
 PPANAME=recollexp-ppa
@@ -23,8 +23,8 @@ PPANAME=recollexp-ppa
 
 # recoll 
 series_rcl=
-# kio: does not build any more on focal because of the slave->worker change.
-series_kio=jammy
+# KIO
+series_kio=focal
 # krunner: does not build on focal and bionic because of the 5.90 min version requested in the
 # CMakeLists.txt. Did not try to work around. "jammy kinetic lunar mantic noble"
 series_krunner=
@@ -63,33 +63,34 @@ check_recoll_orig()
 ####### recoll 
 
 debdir=debian
+topdir=recoll-${RCLVERS}
 if test "X$series_rcl" != X ; then
     check_recoll_orig
-    test -d recoll-${RCLVERS} || tar xzf recoll_${RCLVERS}.orig.tar.gz
+    test -d $topdir || tar xzf recoll_${RCLVERS}.orig.tar.gz
 fi
 
 for svers in ${series_rcl} ; do
 
-  rm -rf recoll-${RCLVERS}/debian
-  cp -rp ${debdir}/ recoll-${RCLVERS}/debian || exit 1
+  rm -rf $topdir/debian
+  cp -rp ${debdir}/ $topdir/debian || exit 1
 
   if test -f $debdir/control-$svers ; then
-      cp -f -p $debdir/control-$svers recoll-${RCLVERS}/debian/control
+      cp -f -p $debdir/control-$svers $topdir/debian/control
   fi
   if test -f $debdir/rules-$svers ; then
-      cp -f -p $debdir/rules-$svers recoll-${RCLVERS}/debian/rules
+      cp -f -p $debdir/rules-$svers $topdir/debian/rules
   fi
   if test -f $debdir/python3-recoll.install-$svers ; then
-     cp -f -p $debdir/python3-recoll.install-$svers recoll-${RCLVERS}/debian/python3-recoll.install
+     cp -f -p $debdir/python3-recoll.install-$svers $topdir/debian/python3-recoll.install
   fi
   if test -f $debdir/patches/series-$svers ; then
-      cp -f -p $debdir/patches/series-$svers recoll-${RCLVERS}/debian/patches/series
+      cp -f -p $debdir/patches/series-$svers $topdir/debian/patches/series
   fi
 
   sed -e s/SERIES/${svers}/g -e s/PPAVERS/${PPAVERS}/g \
-      < ${debdir}/changelog > recoll-${RCLVERS}/debian/changelog
+      < ${debdir}/changelog > $topdir/debian/changelog
 
-  (cd recoll-${RCLVERS};debuild -d -k$PPA_KEYID -S -sa)  || break
+  (cd $topdir;debuild -d -k$PPA_KEYID -S -sa)  || break
 
   dput $PPANAME recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
 done
@@ -120,6 +121,9 @@ for svers in ${series_kio} ; do
         cp -f -p $debdir/control-$svers $topdir/debian/control
     else 
         cp -f -p $debdir/control $topdir/debian/control
+    fi
+    if test -f $debdir/patches/series-$svers ; then
+        cp -f -p $debdir/patches/series-$svers $topdir/debian/patches/series
     fi
     sed -e s/SERIES/$svers/g -e s/PPAVERS/${PPAVERS}/g \
         < ${debdir}/changelog > $topdir/debian/changelog ;

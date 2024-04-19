@@ -24,7 +24,9 @@
 #include <QUrl>
 
 #include <kio_version.h>
-#if KIO_VERSION < 6
+// Apparently this nonsense happened in 5.102 (0x66). 
+#define KIO_WORKER_SWITCH_VERSION 0x056600
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
 #include <kio/slavebase.h>
 #define WBASE SlaveBase
 #define WRESULT void

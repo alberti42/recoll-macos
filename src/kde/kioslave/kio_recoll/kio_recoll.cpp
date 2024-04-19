@@ -51,7 +51,7 @@ static inline QString u8s2qs(const std::string& us)
 class KIOPluginForMetaData : public QObject
 {
     Q_OBJECT
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
     Q_PLUGIN_METADATA(IID "org.recoll.kio.slave.recoll" FILE "recoll.json")
 #else
     Q_PLUGIN_METADATA(IID "org.recoll.kio.worker.recoll" FILE "recoll.json")
@@ -135,7 +135,7 @@ WRESULT RecollProtocol::mimetype(const QUrl& url)
 {
     qDebug() << "RecollProtocol::mimetype: url: " << url;
     mimeType("text/html");
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
     finished();
 #else
     return KIO::WorkerResult::pass();
@@ -232,8 +232,8 @@ bool RecollProtocol::syncSearch(const QueryDesc& qd)
     qDebug() << "RecollProtocol::syncSearch";
     if (!m_initok || !maybeOpenDb(m_reason)) {
         string reason = "RecollProtocol::listDir: Init error:" + m_reason;
-#if KIO_VERSION < 6
-        error(KIO::ERR_WORKER_DEFINED, u8s2qs(reason));
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
+        error(ERR_SLAVE_DEFINED, u8s2qs(reason));
 #endif
         return false;
     }
@@ -253,11 +253,11 @@ WRESULT RecollProtocol::get(const QUrl& url)
 
     if (!m_initok || !maybeOpenDb(m_reason)) {
         string reason = "Recoll: init error: " + m_reason;
-#if KIO_VERSION < 6
-        error(KIO::ERR_WORKER_DEFINED, u8s2qs(reason));
-        return;
-#else
+#if KIO_VERSION >= KIO_WORKER_SWITCH_VERSION
         return KIO::WorkerResult::fail();
+#else
+        error(ERR_SLAVE_DEFINED, u8s2qs(reason));
+        return;
 #endif
     }
 
@@ -289,7 +289,7 @@ WRESULT RecollProtocol::get(const QUrl& url)
         //
         // Redirect to the result document URL
         if (!syncSearch(qd)) {
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
             return;
 #else
             return KIO::WorkerResult::fail();
@@ -303,7 +303,7 @@ WRESULT RecollProtocol::get(const QUrl& url)
         }
     } else if (ingest.isPreview(&qd, &resnum)) {
         if (!syncSearch(qd)) {
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
             return;
 #else
             return KIO::WorkerResult::fail();
@@ -320,13 +320,13 @@ WRESULT RecollProtocol::get(const QUrl& url)
         goto out;
     }
 
-#if KIO_VERSION < 6
-    error(KIO::ERR_WORKER_DEFINED, u8s2qs("Unrecognized URL or internal error"));
-#else
+#if KIO_VERSION >= KIO_WORKER_SWITCH_VERSION
     return KIO::WorkerResult::fail();
+#else
+    error(ERR_SLAVE_DEFINED, u8s2qs("Unrecognized URL or internal error"));
 #endif
 out:
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
     finished();
 #else
     return KIO::WorkerResult::pass();
@@ -358,8 +358,8 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     }
     if (!sdata) {
         m_reason = "Internal Error: cant build search";
-#if KIO_VERSION < 6
-        error(KIO::ERR_WORKER_DEFINED, u8s2qs(m_reason));
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
+        error(ERR_SLAVE_DEFINED, u8s2qs(m_reason));
 #endif
         return false;
     }
@@ -370,8 +370,8 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     query->setCollapseDuplicates(collapsedups);
     if (!query->setQuery(sdata)) {
         m_reason = "Query execute failed. Invalid query or syntax error?";
-#if KIO_VERSION < 6
-        error(KIO::ERR_WORKER_DEFINED, u8s2qs(m_reason));
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
+        error(ERR_SLAVE_DEFINED, u8s2qs(m_reason));
 #endif
         return false;
     }
@@ -379,8 +379,8 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     DocSequenceDb *src =
         new DocSequenceDb(m_rcldb, std::shared_ptr<Rcl::Query>(query), "Query results", sdata);
     if (src == nullptr) {
-#if KIO_VERSION < 6
-        error(KIO::ERR_WORKER_DEFINED, u8s2qs("Can't build result sequence"));
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
+        error(ERR_SLAVE_DEFINED, u8s2qs("Can't build result sequence"));
 #endif
         return false;
     }

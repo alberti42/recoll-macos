@@ -205,7 +205,7 @@ static void createGoHelpEntry(KIO::UDSEntry& entry)
 }
 
 // As far as I can see we only ever get this on '/' so why all the code?
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
 void
 #else
 KIO::WorkerResult
@@ -239,7 +239,7 @@ RecollProtocol::stat(const QUrl& url)
             break;
         default:
             qDebug() << "RecollProtocol::stat: ??";
-#if KIO_VERSION < 6            
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
             error(ERR_DOES_NOT_EXIST, QString());
 #endif
             break;
@@ -251,7 +251,7 @@ RecollProtocol::stat(const QUrl& url)
             if (num >= 0 && m_source && m_source->getDoc(num, doc)) {
                 entry = resultToUDSEntry(doc, num);
             } else {
-#if KIO_VERSION < 6            
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
                 error(ERR_DOES_NOT_EXIST, QString());
 #endif
             }
@@ -284,14 +284,14 @@ RecollProtocol::stat(const QUrl& url)
         qDebug() << "RecollProtocol::stat: none of the above ??";
     }
     statEntry(entry);
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
     finished();
 #else
     return KIO::WorkerResult::pass();
 #endif
 }
 
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
 void
 #else
 KIO::WorkerResult
@@ -318,7 +318,7 @@ RecollProtocol::listDir(const QUrl& url)
             }
             createGoHelpEntry(entry);
             entries.append(entry);
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
             listEntries(entries);
             finished();
             return;
@@ -327,7 +327,7 @@ RecollProtocol::listDir(const QUrl& url)
 #endif
         }
         default:
-#if KIO_VERSION < 6            
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
             error(ERR_CANNOT_ENTER_DIRECTORY, QString());
             return;
 #else
@@ -340,16 +340,16 @@ RecollProtocol::listDir(const QUrl& url)
         // which offers an opportunity to not perform it.
         if (ingest.endSlashQuery()) {
             qDebug() << "RecollProtocol::listDir: Ends With /";
-#if KIO_VERSION < 6            
-            error(ERR_SLAVE_DEFINED, "Autocompletion search aborted");
-            return;
-#else
+#if KIO_VERSION >= KIO_WORKER_SWITCH_VERSION
             return KIO::WorkerResult::fail();
+#else
+            error(ERR_SLAVE_DEFINED, QString::fromUtf8("Autocompletion search aborted"));
+            return;
 #endif
         }
         if (!syncSearch(qd)) {
             // syncSearch did the error thing
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
             return;
 #else
             return KIO::WorkerResult::fail();
@@ -358,7 +358,7 @@ RecollProtocol::listDir(const QUrl& url)
         // Fallthrough to actually listing the directory
     } else {
         qDebug() << "RecollProtocol::listDir: Cant grok input url";
-#if KIO_VERSION < 6            
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
         error(ERR_CANNOT_ENTER_DIRECTORY, QString());
         return;
 #else
@@ -382,8 +382,8 @@ RecollProtocol::listDir(const QUrl& url)
         int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
         UDSEntry entry;
         if (pagelen < 0) {
-#if KIO_VERSION < 6            
-            error(ERR_SLAVE_DEFINED, "Internal error");
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
+            error(ERR_SLAVE_DEFINED, QString::fromUtf8("Internal error"));
 #endif
             break;
         }
@@ -397,7 +397,7 @@ RecollProtocol::listDir(const QUrl& url)
         }
         pagebase += pagelen;
     }
-#if KIO_VERSION < 6
+#if KIO_VERSION < KIO_WORKER_SWITCH_VERSION
     finished();
 #else
     return KIO::WorkerResult::pass();
