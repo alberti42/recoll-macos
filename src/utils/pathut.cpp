@@ -210,6 +210,9 @@ bool wchartoutf8(const wchar_t *in, std::string& out, size_t wlen)
     if (wlen == 0) {
         wlen = wcslen(in);
     }
+    if (wlen == 0) {
+        return std::string();
+    }
     int flags = WC_ERR_INVALID_CHARS;
     int bytes = ::WideCharToMultiByte(CP_UTF8, flags, in, wlen, nullptr, 0, nullptr, nullptr);
     if (bytes <= 0) {
