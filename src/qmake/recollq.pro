@@ -24,9 +24,9 @@ windows {
     RECOLLDEPS = ../../../recolldeps/msvc
     SOURCES += ../windows/getopt.cc
     PRE_TARGETDEPS = \
-      ../build-librecoll-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release/librecoll.lib
+      ../build-librecoll-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release/recoll.lib
     LIBS += \
-      -L../build-librecoll-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release -llibrecoll \
+      -L../build-librecoll-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release -lrecoll \
       $$RECOLLDEPS/libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc/libxml2.lib \
       $$RECOLLDEPS/libxslt/libxslt-1.1.29/win32/bin.msvc/libxslt.lib \
       -L../build-libxapian-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release -llibxapian \

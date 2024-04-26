@@ -277,6 +277,17 @@ static bool path_gettempfilename(string& filename, string& reason)
 }
 #endif // posix
 
+bool path_samepath(const std::string& p1, const std::string& p2)
+{
+#ifdef _WIN32
+    auto wp1 = utf8towchar(p1);
+    auto wp2 = utf8towchar(p2);
+    return _wcsicmp(wp1.get(), wp2.get()) == 0;
+#else
+    return p1 == p2;
+#endif
+}
+
 // The default place to store the default config and other stuff (e.g webqueue)
 string path_homedata()
 {
