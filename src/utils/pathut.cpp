@@ -120,7 +120,7 @@
 #endif
 
 #define STAT _wstati64
-#define LSTAT _wstati64
+#define LSTAT win_wlstat
 #define STATBUF _stati64
 #define ACCESS _waccess
 #define OPENDIR ::_wopendir
@@ -472,10 +472,34 @@ std::string path_shortpath(const std::string& path)
     return shortpath;
 }
 
+static int win_wlstat(const wchar_t *wpath, struct _stati64 *buffer)
+{
+    DWORD attrs = GetFileAttributesW(wpath);
+    if (attrs == INVALID_FILE_ATTRIBUTES) {
+        std::string upath;
+        wchartoutf8(wpath, upath);
+        LOGERR("GetFileAttributesW failed for " << upath << '\n');
+        return -1;
+    }
+    if (attrs & FILE_ATTRIBUTE_REPARSE_POINT) {
+        // Symbolic link or other strange beast (junction, or a myriad of other strange things)
+        // Just return a bogus stat struct.
+        memset(buffer, 0, sizeof(struct _stati64));
+        // Note that tje st_mode field is a short and there is only 4
+        // bits for the mode and they're full (IFDIR, IFCHR, IFIFO,
+        // IFREG. So no place for S_IFLNK, which is currently defined
+        // as 0. So we set an impossible value, which path_fileprops
+        // will interpret specifically for win32.
+        buffer->st_mode = _S_IFIFO|_S_IFCHR;
+        return 0;
+    }
+    return _wstati64(wpath, buffer);
+}
+
 #endif /* _WIN32 */
 
 // This is only actually used on Windows currently, but compiled everywhere so that it can be
-// tested, as there are no reall windows dependencies in there.
+// tested, as there are no real Windows dependencies in there.
 // The input is a slashized UNC path (like //host/share/path), or not, which we determine, returning
 // true or false depending.
 // On return, uncvolume contains the //host/share part. We take care to reject values with empty
@@ -1204,8 +1228,17 @@ int path_fileprops(const std::string path, struct PathStat *stp, bool follow)
     stp->pst_mode = mst.ST_MODE;
     stp->pst_mtime = mst.ST_MTIME;
     stp->pst_btime = mst.ST_BTIME;
+    switch (mst.ST_MODE & S_IFMT) {
+    case S_IFDIR: stp->pst_type = PathStat::PST_DIR;break;
+    case S_IFLNK:  stp->pst_type = PathStat::PST_SYMLINK;break;
+    case S_IFREG: stp->pst_type = PathStat::PST_REGULAR;break;
+    default: stp->pst_type = PathStat::PST_OTHER;break;
+    }
 #ifdef _WIN32
     stp->pst_ctime = mst.ST_MTIME;
+    if ((mst.ST_MODE & S_IFMT) == (_S_IFIFO|_S_IFCHR)) {
+        stp->pst_type = PathStat::PST_SYMLINK;
+    }
 #else
     stp->pst_ino = mst.ST_INO;
     stp->pst_dev = ST_DEVICE(mst);
@@ -1213,12 +1246,6 @@ int path_fileprops(const std::string path, struct PathStat *stp, bool follow)
     stp->pst_blocks = mst.ST_BLOCKS;
     stp->pst_blksize = mst.ST_BLKSIZE;
 #endif
-    switch (mst.ST_MODE & S_IFMT) {
-    case S_IFDIR: stp->pst_type = PathStat::PST_DIR;break;
-    case S_IFLNK:  stp->pst_type = PathStat::PST_SYMLINK;break;
-    case S_IFREG: stp->pst_type = PathStat::PST_REGULAR;break;
-    default: stp->pst_type = PathStat::PST_OTHER;break;
-    }
     return 0;
 }
 
