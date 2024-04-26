@@ -44,6 +44,9 @@
  * actually creates the object and initializes the output. */
 class Logger {
 public:
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+
     /** Initialize logging to file name. Use "stderr" for stderr
      * output. Creates the singleton logger object. Only the first
      * call changes the state, further ones just return the Logger
@@ -126,9 +129,6 @@ private:
 #endif
     char m_datebuf[LOGGER_DATESIZE];
     Logger(const std::string& fn);
-    Logger(const Logger &);
-    Logger& operator=(const Logger &);
-
     ~Logger();
 };
 
