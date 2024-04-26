@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include <QAbstractItemView>
 #include <QLineEdit>
+#include <QTimer>
 
 #include "log.h"
 #include "recoll.h"
@@ -37,7 +38,7 @@ void ConfigSwitchW::init()
 
     std::vector<std::string> sdirs = guess_recoll_confdirs();
     for (const auto& e : sdirs) {
-        if (e != theconfig->getConfDir())
+        if (!path_samepath(e, theconfig->getConfDir()))
             m_qdirs.push_back(path2qs(e));
     }
     m_qdirs.push_back(tr("Choose other"));
@@ -116,8 +117,10 @@ void ConfigSwitchW::onActivated(int index)
     } else {
         qconf = m_qdirs[index];
     }
+    auto recoll = path_cat(path_thisexecdir(), "recoll");
     std::vector<std::string> args{"-c", qs2path(qconf)};
-    ExecCmd cmd;
-    if (cmd.startExec("recoll", args, false, false) == 0)
+    ExecCmd cmd(ExecCmd::EXF_SHOWWINDOW);
+    if (cmd.startExec(recoll, args, false, false) == 0) {
         _exit(0);
+    }
 }
