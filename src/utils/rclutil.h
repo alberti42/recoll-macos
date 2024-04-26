@@ -70,6 +70,8 @@ extern std::string path_slashdrive(const std::string& path);
 #endif
 extern std::string url_gpathS(const std::string& url);
 
+bool path_samepath(const std::string& p1, const std::string& p2);
+
 /// Like strftime but guaranteed utf-8 output (esp. useful on Windows)
 struct tm;
 extern std::string utf8datestring(const std::string& format, struct tm *tm);
