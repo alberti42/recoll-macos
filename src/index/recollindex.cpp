@@ -439,6 +439,8 @@ static const char usage [] =
 #endif
 "Common options:\n"
 "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+"    -R <somefilepath> : specify a disposable file where to an error description.\n"
+"       This is mostly for the GUI to be able to display the message if indexing fails.\n"
 #if defined(HAVE_POSIX_FADVISE)
 "    -d : call fadvise() with the POSIX_FADV_DONTNEED flag on indexed files\n"
 "          (avoids trashing the page cache)\n";
@@ -600,7 +602,7 @@ int main(int argc, char *argv[])
         case 'P': op_flags |= OPT_P; break;
         case 'p': op_flags |= OPT_p; selpatterns.push_back(optarg); break;
         case 'r': op_flags |= OPT_r; break;
-        case 'R':   op_flags |= OPT_R; reasonsfile = optarg; break;
+        case 'R': op_flags |= OPT_R; reasonsfile = optarg; break;
         case 's': op_flags |= OPT_s; break;
 #ifdef RCL_USE_ASPELL
         case 'S': op_flags |= OPT_S; break;
