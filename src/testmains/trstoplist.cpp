@@ -50,8 +50,6 @@ const int tstsz = sizeof(tstwords) / sizeof(string);
 
 int main(int argc, char **argv)
 {
-    int count = 10;
-    
     thisprog = argv[0];
     argc--; argv++;
 
@@ -63,8 +61,7 @@ int main(int argc, char **argv)
 
     for (int i = 0; i < tstsz; i++) {
         const string &tst = tstwords[i];
-        cout << "[" << tst << "] " << 
-            (sl.isStop(tst) ? "in stop list" : "not in stop list") << endl;
+        cout << "[" << tst << "] " << (sl.isStop(tst) ? "in stop list" : "not in stop list") << endl;
     }
     exit(0);
 }

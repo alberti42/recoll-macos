@@ -60,8 +60,6 @@ static int     op_flags;
 int
 main(int argc, const char **argv)
 {
-    int count = 10;
-    
     thisprog = argv[0];
     argc--; argv++;
 
@@ -80,7 +78,7 @@ main(int argc, const char **argv)
             case 't':   op_flags |= OPT_t; break;
             default: Usage();   break;
             }
-    b1: argc--; argv++;
+        argc--; argv++;
     }
 
     if (argc != 0)

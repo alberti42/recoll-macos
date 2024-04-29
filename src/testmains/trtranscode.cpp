@@ -79,7 +79,7 @@ int main(int argc, char **argv)
         perror("Open/create output");
         exit(1);
     }
-    if (fwrite(out.c_str(), 1, out.length(), fp) != (int)out.length()) {
+    if (fwrite(out.c_str(), 1, out.length(), fp) != out.length()) {
         perror("fwrite");
         exit(1);
     }

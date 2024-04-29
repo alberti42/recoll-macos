@@ -230,7 +230,6 @@ b1:
 
 bool storeFile(CirCache& cc, const std::string fn)
 {
-    char dic[1000];
     string data, reason;
     if (!file_to_string(fn, data, &reason)) {
         std::cerr << "File_to_string: " << reason << endl;

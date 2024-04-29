@@ -39,7 +39,7 @@ int main(int argc, const char **argv)
         case 's':    op_flags |= OPT_s; break;
         default: Usage();    break;
         }
-    b1: argc--; argv++;
+    argc--; argv++;
     }
 
     if (argc != 1)

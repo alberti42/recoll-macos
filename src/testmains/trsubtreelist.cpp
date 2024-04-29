@@ -20,9 +20,6 @@ static void Usage(void)
     exit(1);
 }
 
-static int     op_flags;
-#define OPT_o     0x2 
-
 int main(int argc, char **argv)
 {
     string top;

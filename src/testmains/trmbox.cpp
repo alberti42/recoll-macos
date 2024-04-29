@@ -96,11 +96,8 @@ int main(int argc, char **argv)
             cerr << "next_document failed after skipping to " << msgnum << endl;
             exit(1);
         }
-        map<string, string>::const_iterator it = 
-            mh.get_meta_data().find(cstr_dj_keycontent);
-        int size;
+        const auto it = mh.get_meta_data().find(cstr_dj_keycontent);
         if (it == mh.get_meta_data().end()) {
-            size = -1;
             cerr << "No content!!" << endl;
             exit(1);
         }
@@ -116,8 +113,7 @@ int main(int argc, char **argv)
             exit(1);
         }
         docnt++;
-        map<string, string>::const_iterator it = 
-            mh.get_meta_data().find(cstr_dj_keycontent);
+        const auto it = mh.get_meta_data().find(cstr_dj_keycontent);
         int size;
         if (it == mh.get_meta_data().end()) {
             size = -1;

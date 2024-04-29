@@ -38,10 +38,6 @@ static void Usage(void)
     exit(1);
 }
 
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_s     0x2
-#define OPT_b     0x4
 
 int main(int argc, char **argv)
 {
