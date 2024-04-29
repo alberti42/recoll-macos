@@ -38,9 +38,10 @@ if test $BUILD = MSVC ; then
     ZLIB=${RCLDEPS}/msvc/zlib-1.2.11
     LIBMAGIC=${RCLDEPS}/msvc/libmagic
     # Qt
-    QTA=Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release
-    QTBIN=C:/Qt/5.15.2/msvc2019/bin
-    MINGWBIN=C:/Qt/5.15.2/mingw81_32/bin
+    QTA=Desktop_Qt_6_6_3_MSVC2019_64bit-Release/release
+    QTBIN=C:/Qt/6.6.3/msvc2019_64/bin
+    MINGWBIN=${RCLDEPS}/gcclibs
+    LIBS32=${RCLDEPS}/libs32
 else
     # Recoll src tree
     RCL=/c/recoll/src/
@@ -72,7 +73,7 @@ ASPELL=${RCLDEPS}/mingw/aspell-0.60.7/aspell-installed
 RCLW=$RCL/
 # Only used for mingw, the msvc one is static
 LIBR=$RCLW/build-librecoll-${QTA}/${qtsdir}/librecoll.dll
-GUIBIN=$RCL/build-recoll-win-${QTA}/${qtsdir}/recoll.exe
+GUIBIN=$RCL/build-recoll-${QTA}/${qtsdir}/recoll.exe
 RCLIDX=$RCLW/build-recollindex-${QTA}/${qtsdir}/recollindex.exe
 RCLQ=$RCLW/build-recollq-${QTA}/${qtsdir}/recollq.exe
 RCLS=$RCLW/build-rclstartw-${QTA}/${qtsdir}/rclstartw.exe
@@ -113,14 +114,12 @@ chkcp()
     cp $@ || fatal cp $@ failed
 }
 
-# Note: can't build static recoll as there is no static qtwebkit (ref:
-# 5.5.0)
 copyqt()
 {
     cd $DESTDIR
     PATH=$QTBIN:$PATH
     export PATH
-    $QTBIN/windeployqt recoll.exe
+    $QTBIN/windeployqt recoll.exe || exit 1
 
     if test $BUILD = MINGW;then
         # Apparently because the webkit part was grafted "by hand" on
@@ -205,7 +204,7 @@ copyrecoll()
     chkcp $RCLDEPS/rclimg/rclimg.exe $FILTERS
 
     chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
-    chkcp $RCL/build-recoll-win-${QTA}/${qtsdir}/*.qm $DESTDIR/Share/translations
+    chkcp $RCL/build-recoll-${QTA}/${qtsdir}/*.qm $DESTDIR/Share/translations
 
     chkcp $RCL/desktop/recoll.ico $DESTDIR/Share
 }
@@ -306,7 +305,7 @@ copywpd()
     chkcp $LIBWPD/src/conv/html/.libs/wpd2html.exe $DEST
     chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DEST
     chkcp $MINGWBIN/libstdc++-6.dll $DEST
-    chkcp $ZLIB/zlib1.dll $DEST
+    chkcp $LIBS32/zlib1.dll $DEST
     chkcp $MINGWBIN/libwinpthread-1.dll $DEST
 }
 

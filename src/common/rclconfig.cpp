@@ -1856,8 +1856,8 @@ static string path_diffstems(const string& p1, const string& p2,
     vector<string> v1, v2;
     stringToTokens(p1, v1, "/");
     stringToTokens(p2, v2, "/");
-    unsigned int l1 = v1.size();
-    unsigned int l2 = v2.size();
+    auto l1 = v1.size();
+    auto l2 = v2.size();
         
     // Search for common leaf part
     unsigned int cl = 0;

@@ -67,7 +67,7 @@ public:
             }
             return false;
         }
-        int ll = strlen(cline);
+        auto ll = strlen(cline);
         while (ll > 0 && (cline[ll-1] == '\n' || cline[ll-1] == '\r')) {
             cline[ll-1] = 0;
             ll--;

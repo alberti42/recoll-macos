@@ -193,14 +193,14 @@ namespace MedocUtils {
 
 #ifdef _WIN32
 
-std::string wchartoutf8(const wchar_t *in, size_t len)
+std::string wchartoutf8(const wchar_t *in, int len)
 {
     std::string out;
     wchartoutf8(in, out, len);
     return out;
 }
 
-bool wchartoutf8(const wchar_t *in, std::string& out, size_t wlen)
+bool wchartoutf8(const wchar_t *in, std::string& out, int wlen)
 {
     LOGDEB1("WCHARTOUTF8: in [" << in << "]\n");
     out.clear();
@@ -211,7 +211,7 @@ bool wchartoutf8(const wchar_t *in, std::string& out, size_t wlen)
         wlen = wcslen(in);
     }
     if (wlen == 0) {
-        return std::string();
+        return true;
     }
     int flags = WC_ERR_INVALID_CHARS;
     int bytes = ::WideCharToMultiByte(CP_UTF8, flags, in, wlen, nullptr, 0, nullptr, nullptr);

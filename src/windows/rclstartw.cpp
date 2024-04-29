@@ -17,8 +17,10 @@
 #include "autoconfig.h"
 
 #include <shellapi.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+
 #include "safewindows.h"
 #include "pathut.h"
 
@@ -81,10 +83,10 @@ int main(int argc, char *argv[])
     default: wmode = SW_SHOWNORMAL;  break;
     }
     
-    int ret = (int)ShellExecuteW(NULL, L"open", wfn, NULL, NULL, wmode);
-    if (ret) {
-        fprintf(stderr, "ShellExecute returned %d\n", ret);
+    auto ret = ShellExecuteW(nullptr, L"open", wfn, nullptr, nullptr, wmode);
+    if ((INT_PTR)ret <= 32) {
+        std::cerr << "ShellExecuteW returned " << (INT_PTR)ret << "\n";
     }
     LocalFree(wargv);
-    return ret;
+    return ((INT_PTR)ret <= 32) ? 1 : 0;
 }
