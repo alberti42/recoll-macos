@@ -29,7 +29,6 @@
 '''
 
 from . import chmlib
-from . import extra
 import array
 import os.path
 import sys
@@ -241,7 +240,7 @@ class CHMFile:
         from LoadCHM.
         '''
 
-        self.searchable = extra.is_searchable(self.file)
+        self.searchable = 0
         self.lcid = None
 
         result, ui = chmlib.chm_resolve_object(self.file, b'/#SYSTEM')
@@ -311,9 +310,6 @@ class CHMFile:
             index += cursor
 
         self.GetWindowsInfo()
-
-        if not self.lcid:
-            self.lcid = extra.get_lcid(self.file)
 
         return 1
 
@@ -390,18 +386,8 @@ class CHMFile:
             return (0, '')
 
     def Search(self, text, wholewords=0, titleonly=0):
-        '''Performs full-text search on the archive.
-        The first parameter is the word to look for, the second
-        indicates if the search should be for whole words only, and
-        the third parameter indicates if the search should be
-        restricted to page titles.
-        This method will return a tuple, the first item
-        indicating if the search results were partial, and the second
-        item being a dictionary containing the results.'''
-        if text and text != '' and self.file:
-            return extra.search(self.file, text, wholewords, titleonly)
-        else:
-            return None
+        '''Would performs if the "extra" module was here.'''
+        return None
 
     def IsSearchable(self):
         '''Indicates if the full-text search is available for this
@@ -421,13 +407,6 @@ class CHMFile:
                 except KeyError:
                     pass
         return None
-
-    def GetLCID(self):
-        '''Returns the archive Locale ID'''
-        if self.lcid in locale_table:
-            return locale_table[self.lcid]
-        else:
-            return None
 
     def GetDWORD(self, buff, idx=0):
         '''Internal method.

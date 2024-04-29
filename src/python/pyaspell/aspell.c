@@ -177,6 +177,7 @@ static PyObject* new_speller(PyTypeObject* self, PyObject* args, PyObject* kwarg
 				break;
 			}
 			PyErr_Clear();
+			break;
 		default: /* list of tuples key&value */
 			for (i=0; i<n; i++) {
 				if (!PyArg_ParseTuple(PyTuple_GetItem(args, i), "ss", &key, &value)) {
@@ -349,7 +350,7 @@ python_error:
 }
 
 /* ConfigKeys *****************************************************************/
-static PyObject* configkeys(PyObject* _) {
+static PyObject* configkeys(PyObject* _, PyObject* __) {
 	return configkeys_helper(NULL);
 }
 

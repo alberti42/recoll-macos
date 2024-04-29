@@ -108,7 +108,7 @@ static void cleanup()
     delete db;
 }
 
-static void sigcleanup(int sig)
+static void sigcleanup(int)
 {
     fprintf(stderr, "sigcleanup\n");
     cleanup();

@@ -333,7 +333,7 @@ static bool del(int fd, const string& path, const string& _name, flags flags, ns
     return ret >= 0;
 }
 
-static bool list(int fd, const string& path, vector<string>* names, flags flags, nspace dom)
+static bool list(int fd, const string& path, vector<string>* names, flags flags, nspace)
 {
     ssize_t ret = -1;
     AutoBuf buf;

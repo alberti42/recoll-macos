@@ -2,7 +2,7 @@ from setuptools import setup, Extension
 
 long_description = '''
 Version of the chm package modified to support Python 3 and bundled with Recoll.
-The chm package provides three modules, chm, chmlib and extra, which provide
+The chm package provides two modules, chm, and chmlib, which provide
 access to the API implemented by the C library chmlib and some additional
 classes and functions. They are used to access MS-ITSS encoded files -
 Compressed Html Help files (.chm).
@@ -31,9 +31,5 @@ setup(name="recollchm",
       ext_modules=[Extension("recollchm._chmlib",
                              [os.path.join(srcdir, "recollchm/swig_chm.c")],
                              libraries=["chm"],
-                             extra_compile_args=["-DSWIG_COBJECT_TYPES"]),
-                   Extension("recollchm.extra",
-                             [os.path.join(srcdir, "recollchm/extra.c")],
-                             extra_compile_args=["-D__PYTHON__"],
-                             libraries=["chm"])]
+                             extra_compile_args=["-DSWIG_COBJECT_TYPES"]),]
       )

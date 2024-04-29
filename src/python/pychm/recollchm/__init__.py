@@ -17,16 +17,15 @@
 #
 
 '''
-   chm - A package to manipulate CHM files
+   chm - A package to manipulate CHM files - Modified/maimed for recoll
 
-   The chm package provides four modules: chm, chmlib, extra and
+   The chm package provides three modules: chm, chmlib, and
    _chmlib. _chmlib and chmlib are very low level libraries generated
    from  SWIG interface files, and are simple wrappers around the API
    defined by the C library chmlib.
-   The extra module adds full-text search support.
    the chm module provides some higher level classes to simplify
    access to the CHM files information.
 '''
-__all__ = ["chm", "chmlib", "_chmlib", "extra"]
+__all__ = ["chm", "chmlib", "_chmlib"]
 __version__ = "0.8.4.1+git"
 __revision__ = "$Id$"

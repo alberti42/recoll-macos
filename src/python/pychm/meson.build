@@ -34,17 +34,6 @@ foreach v : py3versions
         subdir: 'recollchm',
     )
 
-    chmexts += python_installation.extension_module(
-        'extra',
-        [
-            'recollchm/extra.c',
-        ],
-        c_args: ['-D__PYTHON__'],
-        dependencies: [py3_dep, cc.find_library('chm'),],
-        install: true,
-        subdir: 'recollchm',
-    )
-
 endforeach
 
 python.install_sources(
