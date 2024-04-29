@@ -3,21 +3,18 @@ Section: kde
 Priority: optional
 Maintainer: Jean-Francois Dockes <jfd@recoll.org>
 Build-Depends: cdbs, 
-               cmake,
-               libtool,
-               pkg-config,
                debhelper (>= 7), 
-               bison,
-               qtbase5-dev,
+               cmake,
+               pkg-kde-tools,
                extra-cmake-modules,
+               g++,
                libkf5kio-dev,
                libkf5notifications-dev,
-               pkg-kde-tools (>= 0.4.0), 
+               libkf5runner-dev,
                librecoll-dev,
-               libaspell-dev,
-               libxapian-dev, 
+               libxapian-dev,
                libxslt1-dev,
-               libz-dev
+               zlib1g-dev
 Standards-Version: 3.9.7
 Homepage: http://www.recoll.org/
 

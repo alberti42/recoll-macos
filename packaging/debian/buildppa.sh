@@ -8,7 +8,7 @@
 # 20.04LTS focal  2025-04
 # 22.04LTS jammy  2027-04
 # 23.10    mantic 2024-07
-# 24.04    noble  2029-05
+# 24.04LTS noble  2029-05
 SERIES="focal jammy mantic noble"
 
 PPA_KEYID=7808CE96D38B9201
@@ -18,16 +18,16 @@ GSSPVERS=1.1.3
 PPAVERS=2
 
 PPANAME=recoll15-ppa
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 #PPANAME=recoll-webengine-ppa
 
 # recoll 
 series_rcl=
 # KIO
-series_kio=focal
+series_kio="focal jammy mantic"
 # krunner: does not build on focal and bionic because of the 5.90 min version requested in the
-# CMakeLists.txt. Did not try to work around. "jammy kinetic lunar mantic noble"
-series_krunner=
+# CMakeLists.txt. Did not try to work around. "jammy mantic noble"
+series_krunner="jammy mantic noble"
 # gssp
 series_gssp=
 
