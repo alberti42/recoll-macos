@@ -122,7 +122,7 @@ public:
             fprintf(fp, "%3s %-20s %4s %4s\n", "pos", "Term", "bs", "be");
             first = 0;
         }
-        fprintf(fp, "%3d %-20s %4d %4d\n", pos, term.c_str(), bs, be);
+        fprintf(fp, "%3d %-20s %4d %4d\n", (int)pos, term.c_str(), (int)bs, (int)be);
         return true;
     }
 
