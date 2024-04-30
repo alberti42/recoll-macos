@@ -985,7 +985,7 @@ public:
         m_len = utf8len(utf8);
         m_vec = (int*)malloc(m_len * sizeof(int));
         Utf8Iter it(utf8);
-        int i = 0;
+        size_t i = 0;
         for (; !it.eof(); it++) {
             if (it.error()) {
                 LOGERR("IntString: Illegal seq at byte position " << it.getBpos()  <<"\n");

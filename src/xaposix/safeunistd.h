@@ -23,6 +23,9 @@
 
 #ifndef _MSC_VER
 # include <unistd.h>
+#define sys_read ::read
+#define sys_write ::write
+
 #else
 
 // sys/types.h has a typedef for off_t so make sure we've seen that before
@@ -92,11 +95,6 @@ inline ssize_t sys_write(int fd, const void* buf, size_t cnt)
 {
     return static_cast<ssize_t>(::write(fd, buf, static_cast<int>(cnt)));
 }
-
-#else // !_WIN32->
-
-#define sys_read ::read
-#define sys_write ::write
 
 #endif /* __WIN32__ */
 

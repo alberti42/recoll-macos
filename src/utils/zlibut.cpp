@@ -159,7 +159,7 @@ bool deflateToBuf(const void* inp, size_t inlen, ZLibUtBuf& buf)
     if (len < 500 *1024)
         len = 500 * 1024;
 
-    while (buf.m->getAlloc() < int(len)) {
+    while (buf.m->getAlloc() < len) {
         if (!buf.m->grow(len)) {
             LOGERR("deflateToBuf: can't get buffer for " << len << " bytes\n");
             return false;

@@ -434,10 +434,9 @@ static bool list(int fd, const string& path, vector<string>* names, flags flags,
     *cp = 0; // don't forget, we allocated one more
 #endif
 
-
     if (ret > 0) {
         size_t pos = 0;
-        while (pos < ret) {
+        while (pos < static_cast<size_t>(ret)) {
             string n = string(bufstart + pos);
             string n1;
             if (pxname(PXATTR_USER, n, &n1)) {

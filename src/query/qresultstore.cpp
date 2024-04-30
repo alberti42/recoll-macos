@@ -193,7 +193,7 @@ const char *QResultStore::fieldValue(int docindex, const std::string& fldname)
 
     auto it = m->keyidx.find(fldname);
     if (it == m->keyidx.end() ||
-        it->second < 0 || it->second >= int(vdoc.offsets.size())) {
+        it->second < 0 || it->second >= vdoc.offsets.size()) {
         return nullptr;
     }
     return vdoc.base + vdoc.offsets[it->second];

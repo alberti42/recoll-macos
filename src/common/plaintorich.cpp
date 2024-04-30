@@ -270,15 +270,15 @@ bool PlainToRich::plaintorich(
         // If we still have terms positions, check (byte) position. If
         // we are at or after a term match, mark.
         if (tPosIt != tPosEnd) {
-            int ibyteidx = int(chariter.getBpos());
+            auto ibyteidx = chariter.getBpos();
             if (ibyteidx == tPosIt->offs.first) {
-                if (!intag && ibyteidx >= (int)headend) {
-                    *olit += startMatch((unsigned int)(tPosIt->grpidx));
+                if (!intag && ibyteidx >= headend) {
+                    *olit += startMatch(static_cast<unsigned int>(tPosIt->grpidx));
                 }
                 inrcltag = 1;
             } else if (ibyteidx == tPosIt->offs.second) {
                 // Output end of match region tags
-                if (!intag && ibyteidx > (int)headend) {
+                if (!intag && ibyteidx > headend) {
                     *olit += endMatch();
                 }
                 // Skip all highlight areas that would overlap this one

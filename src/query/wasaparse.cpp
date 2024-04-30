@@ -1502,7 +1502,7 @@ static unsigned int qualGetInt(const string& q, unsigned int cur, int *pval)
         char *endptr;
         int val = strtol(&q[cur + 1], &endptr, 10);
         if (endptr != &q[cur + 1]) {
-            ncur += endptr - &q[cur + 1];
+            ncur += static_cast<unsigned int>(endptr - &q[cur + 1]);
             *pval = val;
         }
     }

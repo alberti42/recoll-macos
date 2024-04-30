@@ -80,9 +80,9 @@ public:
 // Data: source text (for display), 
 string text1{"0 1 2 3 4"};
 // Positions produced by textsplit -d from the above
-unordered_map<string, vector<int> > plists1
+unordered_map<string, vector<size_t> > plists1
 {{"0", {0,}}, {"1", {1,}}, {"2", {2,}}, {"3", {3,}}, {"4", {4,}}, };
-unordered_map<int, pair<int,int>> gpostobytes1
+unordered_map<size_t, pair<size_t,size_t>> gpostobytes1
 {{0, {0, 1}}, {1, {2, 3}}, {2, {4, 5}}, {3, {6, 7}}, {4, {8, 9}}, };
 
 
