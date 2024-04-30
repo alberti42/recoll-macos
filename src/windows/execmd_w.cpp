@@ -120,10 +120,10 @@ static wchar_t *mergeEnvironment(
     string name, value;
     for (const wchar_t *cp1 = cp0;;cp1++) {
         if (*cp1 == L'=') {
-            wchartoutf8(cp0, name, cp1 - cp0);
+            wchartoutf8(cp0, name, static_cast<int>(cp1 - cp0));
             cp0 = cp1 + 1;
         } else if (*cp1 == 0) {
-            wchartoutf8(cp0, value, cp1 - cp0);
+            wchartoutf8(cp0, value, static_cast<int>(cp1 - cp0));
             envirmap[name] = value;
             LOGDEB1("mergeEnvir: [" << name << "] = ["  << value << "]\n" );
             cp0 = cp1 + 1;
@@ -1192,7 +1192,7 @@ void ReExec::insertArgs(const vector<string>& args, int idx)
 {
     LOGDEB2("ReExec::insertArgs: args before [" << stringsToString(m_argv) << "]\n");
     vector<string>::iterator it;
-    unsigned int cmpoffset = (unsigned int) - 1;
+    size_t cmpoffset = (unsigned int) - 1;
 
     if (idx == -1 || string::size_type(idx) >= m_argv.size()) {
         it = m_argv.end();

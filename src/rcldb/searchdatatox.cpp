@@ -716,7 +716,8 @@ void SearchDataClauseSimple::processPhraseOrNear(
     // For phrases, give a relevance boost like we do for original terms
     LOGDEB2("PHRASE/NEAR:  alltermcount " << splitData->alltermcount() <<
             " lastpos " << splitData->lastpos() << "\n");
-    Xapian::Query xq(op, orqueries.begin(), orqueries.end(), orqueries.size() + slack);
+    Xapian::Query xq(op, orqueries.begin(), orqueries.end(),
+                     static_cast<int>(orqueries.size()) + slack);
     if (op == Xapian::Query::OP_PHRASE)
         xq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, xq, original_term_wqf_booster);
     pqueries.push_back(xq);

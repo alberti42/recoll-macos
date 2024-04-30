@@ -18,7 +18,7 @@ public:
     Internal *m;
 };
 
-bool inflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf);
-bool deflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf);
+bool inflateToBuf(const void* inp, size_t inlen, ZLibUtBuf& buf);
+bool deflateToBuf(const void* inp, size_t inlen, ZLibUtBuf& buf);
 
 #endif /* _ZLIBUT_H_INCLUDED_ */

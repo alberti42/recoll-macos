@@ -25,10 +25,10 @@ using namespace std;
 
 static void *allocmem(
     void *cp,    /* The array to grow. may be NULL */
-    int  sz,     /* Unit size in bytes */
-    int  *np,    /* Pointer to current allocation number */
-    int  min,    /* Number to allocate the first time */
-    int  maxinc) /* Maximum increment */
+    size_t  sz,     /* Unit size in bytes */
+    size_t  *np,    /* Pointer to current allocation number */
+    size_t  min,    /* Number to allocate the first time */
+    size_t  maxinc) /* Maximum increment */
 {
     if (nullptr == cp) {
         cp = malloc(min * sz);
@@ -36,7 +36,7 @@ static void *allocmem(
         return cp;
     }
 
-    int inc = (*np > maxinc) ?  maxinc : *np;
+    auto inc = (*np > maxinc) ?  maxinc : *np;
     if ((cp = realloc(cp, (*np + inc) * sz)) != nullptr) {
         *np += inc;
     }
@@ -57,15 +57,15 @@ public:
         buf = (char *)allocmem(buf, initsz, &alloc, 1, 20);
         return nullptr != buf;
     }
-    int getAlloc() {
+    size_t getAlloc() {
         return alloc * initsz;
     }
     char *buf{nullptr};
-    int initsz{0}; // Set to first alloc size
-    int alloc{0}; // Allocation count (allocmem()). Capa is alloc*inisz
-    int datacnt{0}; // Data count
+    size_t initsz{0}; // Set to first alloc size
+    size_t alloc{0}; // Allocation count (allocmem()). Capa is alloc*inisz
+    size_t datacnt{0}; // Data count
     bool dofree{true}; // Does buffer belong to me ?
-    friend bool inflateToBuf(void* inp, unsigned int inlen, ZLibUtBuf& buf);
+    friend bool inflateToBuf(void* inp, size_t inlen, ZLibUtBuf& buf);
 };
 
 ZLibUtBuf::ZLibUtBuf()
@@ -91,7 +91,7 @@ size_t ZLibUtBuf::getCnt()
     return m->datacnt;
 }
 
-bool inflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf)
+bool inflateToBuf(const void* inp, size_t inlen, ZLibUtBuf& buf)
 {
     LOGDEB1("inflateToBuf: inlen " << inlen << "\n");
 
@@ -101,7 +101,7 @@ bool inflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf)
     d_stream.zfree = (free_func)0;
     d_stream.opaque = (voidpf)0;
     d_stream.next_in  = (Bytef*)inp;
-    d_stream.avail_in = inlen;
+    d_stream.avail_in = static_cast<unsigned int>(inlen);
     d_stream.next_out = nullptr;
     d_stream.avail_out = 0;
 
@@ -124,7 +124,7 @@ bool inflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf)
                 inflateEnd(&d_stream);
                 return false;
             }
-            d_stream.avail_out = buf.m->getAlloc() - d_stream.total_out;
+            d_stream.avail_out = static_cast<unsigned int>(buf.m->getAlloc() - d_stream.total_out);
             d_stream.next_out = (Bytef*)(buf.getBuf() + d_stream.total_out);
         }
         err = inflate(&d_stream, Z_NO_FLUSH);
@@ -149,7 +149,7 @@ bool inflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf)
 }
 
 
-bool deflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf)
+bool deflateToBuf(const void* inp, size_t inlen, ZLibUtBuf& buf)
 {
     uLongf len = compressBound(static_cast<uLong>(inlen));
     // This needs cleanup: because the buffer is reused inside

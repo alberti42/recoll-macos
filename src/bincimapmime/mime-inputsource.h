@@ -87,7 +87,7 @@ inline MimeInputSource::~MimeInputSource(void)
 
 inline ssize_t MimeInputSource::fillRaw(char *raw, size_t nbytes)
 {
-    return read(fd, raw, nbytes);
+    return sys_read(fd, raw, nbytes);
 }
 
 inline bool MimeInputSource::fillInputBuffer(void)

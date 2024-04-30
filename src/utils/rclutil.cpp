@@ -1014,7 +1014,7 @@ public:
         if (m_vec)
             free(m_vec);
     }
-    int size() const {
+    size_t size() const {
         return m_len;
     }
     const int& operator[](int i) const {
@@ -1022,7 +1022,7 @@ public:
     }
 private:
     int *m_vec{nullptr};
-    int m_len{0};
+    size_t m_len{0};
 };
 
 int u8DLDistance(const std::string& str1, const std::string str2)

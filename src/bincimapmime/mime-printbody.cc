@@ -26,16 +26,13 @@
 #include "autoconfig.h"
 
 #include "mime.h"
-#include "mime-utils.h"
 #include "mime-inputsource.h"
 
 #include <string>
 
 using namespace ::std;
 
-void Binc::MimePart::getBody(string &s,
-                 unsigned int startoffset,
-                 unsigned int length) const
+void Binc::MimePart::getBody(string &s, unsigned int startoffset, unsigned int length) const
 {
   mimeSource->reset();
   mimeSource->seek(bodystartoffsetcrlf + startoffset);

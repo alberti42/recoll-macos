@@ -26,7 +26,6 @@
 #include "autoconfig.h"
 
 #include "mime.h"
-#include "mime-utils.h"
 #include "mime-inputsource.h"
 #include "convert.h"
 #include <string>

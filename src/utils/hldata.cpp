@@ -41,7 +41,7 @@ using std::pair;
 
 // Combined position list for or'd terms
 struct OrPList {
-    void addplist(const string& term, const vector<int>* pl) {
+    void addplist(const string& term, const vector<size_t>* pl) {
         terms.push_back(term);
         plists.push_back(pl);
         indexes.push_back(0);
@@ -51,10 +51,10 @@ struct OrPList {
     // Returns -1 for eof, else the next smallest value in the
     // combined lists, according to the current indexes.
     int value() {
-        int minval = INT_MAX;
+        size_t minval = INT_MAX;
         int minidx = -1;
         for (unsigned ii = 0; ii < indexes.size(); ii++) {
-            const vector<int>& pl(*plists[ii]);
+            const vector<size_t>& pl(*plists[ii]);
             if (indexes[ii] >= pl.size())
                 continue; // this list done
             if (pl[indexes[ii]] < minval) {
@@ -63,10 +63,9 @@ struct OrPList {
             }
         }
         if (minidx != -1) {
-            LOGRP("OrPList::value() -> " << minval << " for " <<
-                  terms[minidx] << "\n");
+            LOGRP("OrPList::value() -> " << minval << " for " << terms[minidx] << "\n");
             currentidx = minidx;
-            return minval;
+            return static_cast<int>(minval);
         } else {
             LOGRP("OrPList::value(): EOL for " << stringsToString(terms)<<"\n");
             return -1;
@@ -80,7 +79,7 @@ struct OrPList {
         return value();
     }
     
-    int size() const {
+    size_t size() const {
         return totalsize;
     }
     void rewind() {
@@ -90,11 +89,11 @@ struct OrPList {
         currentidx = -1;
     }
 
-    vector<const vector<int>*> plists;
+    vector<const vector<size_t>*> plists;
     vector<unsigned int> indexes;
     vector<string> terms;
     int currentidx{-1};
-    int totalsize{0};
+    size_t totalsize{0};
 };
 
 static inline void setWinMinMax(int pos, int& sta, int& sto)
@@ -172,8 +171,8 @@ static bool do_proximity_test(
 // Find matches for one group of terms
 bool matchGroup(const HighlightData& hldata,
                 unsigned int grpidx,
-                const unordered_map<string, vector<int>>& inplists,
-                const unordered_map<int, pair<int,int>>& gpostobytes,
+                const unordered_map<string, vector<size_t>>& inplists,
+                const unordered_map<size_t, pair<size_t,size_t>>& gpostobytes,
                 vector<GroupMatchEntry>& tboffs)
 {
 
@@ -337,7 +336,7 @@ void HighlightData::append(const HighlightData& hl)
                              hl.index_term_groups.begin(),
                              hl.index_term_groups.end());
     // Adjust the grpsugidx values for the newly inserted entries
-    for (unsigned int idx = itgsize; idx < index_term_groups.size(); idx++) {
+    for (auto idx = itgsize; idx < index_term_groups.size(); idx++) {
         index_term_groups[idx].grpsugidx += ugsz0;
     }
     spellexpands.insert(spellexpands.end(), hl.spellexpands.begin(), hl.spellexpands.end());

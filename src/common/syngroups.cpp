@@ -74,7 +74,7 @@ public:
     
     bool ok{false};
     // Term to group num 
-    std::unordered_map<string, unsigned int> terms;
+    std::unordered_map<string, size_t> terms;
     // Group num to group
     vector<vector<string> > groups;
 
@@ -238,13 +238,12 @@ vector<string> SynGroups::getgroup(const string& term) const
         return ret;
     }
 
-    unsigned int idx = it1->second;
+    size_t idx = it1->second;
     if (idx >= m->groups.size()) {
         LOGERR("SynGroups::getgroup: line index higher than line count !\n");
         return ret;
     }
-    LOGDEB0("SynGroups::getgroup: result: " << stringsToString(m->groups[idx])
-            << endl);
+    LOGDEB0("SynGroups::getgroup: result: " << stringsToString(m->groups[idx]) << '\n');
     return m->groups[idx];
 }
 

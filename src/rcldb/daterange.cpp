@@ -57,7 +57,7 @@ static inline void bufprefix(char *buf, string pre)
     }
 }
 
-static inline int bpoffs(string pre) 
+static inline size_t bpoffs(string pre) 
 {
     return o_index_stripchars ? pre.length() : pre.length()+2;
 }

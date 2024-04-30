@@ -79,7 +79,7 @@ public:
     // Accept word and its position. If word is search term, add
     // highlight zone definition. If word is part of search group
     // (phrase or near), update positions list.
-    virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
+    virtual bool takeword(const std::string& term, size_t pos, size_t bts, size_t bte) override {
         string dumb = term;
         if (o_index_stripchars) {
             if (!unacmaybefold(term, dumb, UNACOP_UNACFOLD)) {
@@ -101,7 +101,7 @@ public:
         if (m_gterms.find(dumb) != m_gterms.end()) {
             // Term group (phrase/near) handling
             m_plists[dumb].push_back(pos);
-            m_gpostobytes[pos] = pair<int,int>(bts, bte);
+            m_gpostobytes[pos] = {bts, bte};
             LOGDEB1("Group term [" << dumb << "] at pos " << pos <<
                     " bytepos(" << bts << ", " << bte << ")\n");
         }
@@ -129,8 +129,8 @@ private:
     const HighlightData& m_hdata;
 
     // group/near terms word positions.
-    unordered_map<string, vector<int> > m_plists;
-    unordered_map<int, pair<int, int> > m_gpostobytes;
+    unordered_map<string, vector<size_t> > m_plists;
+    unordered_map<size_t, pair<size_t, size_t> > m_gpostobytes;
 };
 
 
@@ -282,7 +282,7 @@ bool PlainToRich::plaintorich(
                     *olit += endMatch();
                 }
                 // Skip all highlight areas that would overlap this one
-                int crend = tPosIt->offs.second;
+                auto crend = tPosIt->offs.second;
                 while (tPosIt != splitter.m_tboffs.end() && tPosIt->offs.first < crend)
                     tPosIt++;
                 inrcltag = 0;

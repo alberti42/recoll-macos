@@ -46,11 +46,11 @@ static ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 {
     ssize_t tot = 0;
     for (int i = 0; i < iovcnt; i++) {
-        ssize_t ret = ::write(fd, iov[i].iov_base, iov[i].iov_len);
+        auto ret = sys_write(fd, iov[i].iov_base, iov[i].iov_len);
         if (ret > 0) {
             tot += ret;
         }
-        if (ret != (ssize_t)iov[i].iov_len) {
+        if (ret != static_cast<ssize_t>(iov[i].iov_len)) {
             return ret == -1 ? -1 : tot;
         }
     }
@@ -353,10 +353,10 @@ public:
             "                                                              " <<
             "\0";
 
-        int sz = int(s.str().size());
+        auto sz = s.str().size();
         assert(sz < CIRCACHE_FIRSTBLOCK_SIZE);
         lseek(m_fd, 0, 0);
-        if (write(m_fd, s.str().c_str(), sz) != sz) {
+        if (sys_write(m_fd, s.str().c_str(), sz) != static_cast<ssize_t>(sz)) {
             m_reason << "writefirstblock: write() failed: errno " << errno;
             return false;
         }
@@ -424,7 +424,8 @@ public:
                 return false;
             }
             string buf((size_t)d.padsize, ' ');
-            if (write(m_fd, buf.c_str(), (size_t)d.padsize) != (ssize_t)d.padsize) {
+            if (sys_write(m_fd, buf.c_str(), static_cast<size_t>(d.padsize)) !=
+                static_cast<ssize_t>(d.padsize)) {
                 m_reason << "CirCache::weh: write failed. errno " << errno;
                 return false;
             }
@@ -439,8 +440,7 @@ public:
         }
 
         if (lseek(m_fd, offset, 0) != offset) {
-            m_reason << "readEntryHeader: lseek(" << offset <<
-                ") failed: errno " << errno;
+            m_reason << "readEntryHeader: lseek(" << offset << ") failed: errno " << errno;
             return CCScanHook::Error;
         }
         char bf[CIRCACHE_HEADER_SIZE];
@@ -455,10 +455,8 @@ public:
             m_reason << " readheader: read failed errno " << errno;
             return CCScanHook::Error;
         }
-        if (sscanf(bf, headerformat, &d.dicsize, &d.datasize,
-                   &d.padsize, &d.flags) != 4) {
-            m_reason << " readEntryHeader: bad header at " <<
-                offset << " [" << bf << "]";
+        if (sscanf(bf, headerformat, &d.dicsize, &d.datasize, &d.padsize, &d.flags) != 4) {
+            m_reason << " readEntryHeader: bad header at " << offset << " [" << bf << "]";
             return CCScanHook::Error;
         }
         LOGDEB2("Circache:readEntryHeader: dcsz " << d.dicsize << " dtsz " <<

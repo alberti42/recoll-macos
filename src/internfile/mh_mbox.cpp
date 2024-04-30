@@ -490,7 +490,7 @@ bool MimeHandlerMbox::next_document()
         }
         m->lineno++;
         rtrimstring(line, "\r\n");
-        int ll = line.size();
+        auto ll = line.size();
         LOGDEB2("mhmbox:next: hadempty " << hademptyline << " lineno " <<
                m->lineno << " ll " << ll << " Line: [" << line << "]\n");
         if (hademptyline) {

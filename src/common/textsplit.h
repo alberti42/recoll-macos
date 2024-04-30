@@ -63,18 +63,18 @@ public:
 
     /** Process one output word: to be implemented by the actual user class */
     virtual bool takeword(const std::string& term, 
-                          int pos,  // term pos
-                          int bts,  // byte offset of first char in term
-                          int bte   // byte offset of first char after term
+                          size_t pos,  // term pos
+                          size_t bts,  // byte offset of first char in term
+                          size_t bte   // byte offset of first char after term
         ) = 0; 
 
     /** Called when we encounter formfeed \f 0x0c. Override to use the event.
      * Mostly or exclusively used with pdftoxx output. Other filters mostly 
      * just don't know about pages. */
-    virtual void newpage(int /*pos*/) {}
+    virtual void newpage(size_t /*pos*/) {}
 
     /** Called when we encounter newline \n 0x0a. Override to use the event. */
-    virtual void newline(int /*pos*/) {}
+    virtual void newline(size_t /*pos*/) {}
 
     int flags() {return m_flags;}
     int maxwordlength() {return o_maxWordLength;}

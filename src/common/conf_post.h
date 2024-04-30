@@ -3,8 +3,8 @@
 
 #ifdef _WIN32
 
-
 #ifdef _MSC_VER
+
 #include "safewindows.h"
 // gmtime is supposedly thread-safe on windows
 #define gmtime_r(A, B) gmtime(A)
@@ -43,7 +43,14 @@ inline int readlink(const char *a, void *b, int c)
 typedef DWORD32 u_int32_t;
 typedef DWORD64 u_int64_t;
 typedef unsigned __int8 u_int8_t;
-typedef int ssize_t;
+#ifndef _SSIZE_T_DEFINED
+#ifdef  _WIN64
+typedef __int64    ssize_t;
+#else
+typedef int   ssize_t;
+#endif
+#define _SSIZE_T_DEFINED
+#endif
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
 #define chdir _chdir

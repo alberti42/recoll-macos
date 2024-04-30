@@ -58,13 +58,13 @@ public:
     /* Copyconst and assignment forbidden */
     TermProc(const TermProc &) = delete;
     TermProc& operator=(const TermProc &) = delete;
-    virtual bool takeword(const std::string &term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string &term, size_t pos, size_t bs, size_t be) {
         if (m_next)
             return m_next->takeword(term, pos, bs, be);
         return true;
     }
     // newpage() is like takeword(), but for page breaks.
-    virtual void newpage(int pos) {
+    virtual void newpage(size_t pos) {
         if (m_next)
             m_next->newpage(pos);
     }
@@ -89,20 +89,20 @@ public:
     TextSplitP(TermProc *prc, Flags flags = Flags(TXTS_NONE))
         : TextSplit(flags), m_prc(prc)  {}
 
-    virtual bool text_to_words(const std::string &in) {
+    virtual bool text_to_words(const std::string &in) override {
         bool ret = TextSplit::text_to_words(in);
         if (m_prc && !m_prc->flush())
             return false;
         return ret;
     }
 
-    virtual bool takeword(const std::string& term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& term, size_t pos, size_t bs, size_t be) override {
         if (m_prc)
             return m_prc->takeword(term, pos, bs, be);
         return true;
     }
 
-    virtual void newpage(int pos) {
+    virtual void newpage(size_t pos) override {
         if (m_prc)
             return m_prc->newpage(pos);
     }
@@ -119,7 +119,7 @@ public:
     TermProcPrep(TermProc *nxt)
         : TermProc(nxt) {}
 
-    virtual bool takeword(const std::string& itrm, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& itrm, size_t pos, size_t bs, size_t be) override {
         m_totalterms++;
         std::string otrm;
 
@@ -204,7 +204,7 @@ public:
     TermProcStop(TermProc *nxt, const Rcl::StopList& stops)
         : TermProc(nxt), m_stops(stops) {}
 
-    virtual bool takeword(const std::string& term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& term, size_t pos, size_t bs, size_t be) override {
         if (m_stops.isStop(term)) {
             return true;
         }
@@ -223,7 +223,7 @@ public:
         : TermProc(nxt), m_groups(sg.getmultiwords()), 
           m_maxl(sg.getmultiwordsmaxlength()) {}
     
-    virtual bool takeword(const std::string& term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& term, size_t pos, size_t bs, size_t be) override {
         LOGDEB1("TermProcMulti::takeword[" << term << "] at pos " << pos <<"\n");
         if (m_maxl < 2) {
             // Should not have been pushed??
@@ -275,7 +275,7 @@ public:
     TermProcCommongrams(TermProc *nxt, const Rcl::StopList& stops)
         : TermProc(nxt), m_stops(stops), m_onlygrams(false) {}
 
-    virtual bool takeword(const std::string& term, int pos, int bs, int be) {
+    virtual bool takeword(const std::string& term, size_t pos, size_t bs, size_t be) override {
         LOGDEB1("TermProcCom::takeword: pos " << pos << " " << bs << " " <<
                 be << " [" << term << "]\n");
         bool isstop = m_stops.isStop(term);
@@ -317,7 +317,7 @@ public:
         return true;
     }
 
-    virtual bool flush() {
+    virtual bool flush() override {
         if (!m_prevsent && !m_prevterm.empty())
             if (!TermProc::takeword(m_prevterm, m_prevpos, m_prevbs, m_prevbe))
                 return false;
@@ -335,9 +335,9 @@ private:
     // Remembered data for the last processed term
     std::string m_prevterm;
     bool   m_prevstop;
-    int    m_prevpos;
-    int    m_prevbs;
-    int    m_prevbe;
+    size_t    m_prevpos;
+    size_t    m_prevbs;
+    size_t    m_prevbe;
     bool   m_prevsent;
     // If this is set, we only emit longest grams
     bool   m_onlygrams;

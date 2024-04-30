@@ -99,11 +99,11 @@ struct HighlightData {
 
 struct GroupMatchEntry {
     // Start/End byte offsets in the document text
-    std::pair<int, int> offs;
+    std::pair<size_t, size_t> offs;
     // Index of the search group this comes from: this is to relate a 
     // match to the original user input.
     size_t grpidx;
-    GroupMatchEntry(int sta, int sto, size_t idx) 
+    GroupMatchEntry(size_t sta, size_t sto, size_t idx) 
         : offs(sta, sto), grpidx(idx) {
     }
 };
@@ -133,8 +133,8 @@ struct GroupMatchEntry {
 extern bool matchGroup(
     const HighlightData& hldata,
     unsigned int grpidx,
-    const std::unordered_map<std::string, std::vector<int>>& inplists,
-    const std::unordered_map<int, std::pair<int,int>>& gpostobytes,
+    const std::unordered_map<std::string, std::vector<size_t>>& inplists,
+    const std::unordered_map<size_t, std::pair<size_t,size_t>>& gpostobytes,
     std::vector<GroupMatchEntry>& tboffs
     );
 

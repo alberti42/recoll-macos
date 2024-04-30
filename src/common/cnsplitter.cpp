@@ -49,8 +49,8 @@ struct WordAndPos {
     WordAndPos(const std::string& w, int s, int e)
         : word(w), startpos(s), endpos(e) {}
     std::string word;
-    int startpos;
-    int endpos;
+    size_t startpos;
+    size_t endpos;
 };
 
 // Characters which will trigger a return to the caller: don't do it for ascii punctuation or
@@ -166,9 +166,9 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
     
 
     // We keep a Unicode character offset to byte offset translation
-    std::vector<int> chartobyte;
+    std::vector<size_t> chartobyte;
     // And we record the page breaks (TBD use it !)
-    std::vector<int> pagebreaks;
+    std::vector<size_t> pagebreaks;
 
     // Walk the Chinese characters section, and accumulate tagger input.
     for (; !it.eof() && !it.error(); it++) {
@@ -251,8 +251,8 @@ bool CNSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
     });
 
     // Process the words and positions
-    int wstart{0}, spanend{0};
-    unsigned int pagebreakidx{0};
+    size_t wstart{0}, spanend{0};
+    size_t pagebreakidx{0};
     for (const auto& wc : words) {
         LOGCN(wc.word << " " << wc.startpos << " " << wc.endpos << "\n");
         // startpos is monotonic because it's the 1st sort key.

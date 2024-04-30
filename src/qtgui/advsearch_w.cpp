@@ -116,7 +116,7 @@ void AdvSearch::init()
     // Tune initial state according to last saved
     {
         vector<SearchClauseW *>::iterator cit = m_clauseWins.begin();
-        unsigned int existing = m_clauseWins.size();
+        auto existing = m_clauseWins.size();
         for (unsigned int i = 0; i < prefs.advSearchClauses.size(); i++) {
             if (i < existing) {
                 (*cit)->tpChange(prefs.advSearchClauses[i]);
@@ -598,7 +598,7 @@ void AdvSearch::fromSearch(std::shared_ptr<SearchData> sdata)
             dynamic_cast<SearchDataClauseSimple*>(sdata->m_query[i]);
         m_clauseWins[i]->setFromClause(cs);
     }
-    for (unsigned int i = sdata->m_query.size(); i < m_clauseWins.size(); i++) {
+    for (auto i = sdata->m_query.size(); i < m_clauseWins.size(); i++) {
         m_clauseWins[i]->clear();
     }
 

@@ -121,7 +121,7 @@ void EditTrans::on_delPB_clicked()
     }
     sort(rows.begin(), rows.end());
     rows.resize(unique(rows.begin(), rows.end()) - rows.begin());
-    for (int i = rows.size()-1; i >= 0; i--) {
+    for (int i = static_cast<int>(rows.size()-1); i >= 0; i--) {
         transTW->removeRow(rows[i]);
     }
 }

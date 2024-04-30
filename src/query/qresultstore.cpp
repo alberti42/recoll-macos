@@ -40,7 +40,7 @@ public:
              fieldspec.find(entry.first) == fieldspec.end());
     }
     
-    std::map<std::string, int> keyidx;
+    std::map<std::string, size_t> keyidx;
     // Notes: offsets[0] is always 0, not really useful, simpler this
     // way. Also could use simple C array instead of c++ vector...
     struct docoffs {
@@ -96,7 +96,7 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
             if (m->testentry(entry)) {
                 auto it = m->keyidx.find(entry.first);
                 if (it == m->keyidx.end()) {
-                    int idx = m->keyidx.size();
+                    auto idx = m->keyidx.size();
                     m->keyidx.insert({entry.first, idx});
                 };
             }
@@ -115,7 +115,7 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
         }
         auto& vdoc = m->docs[i];
         vdoc.offsets.resize(m->keyidx.size());
-        int nbytes = 
+        auto nbytes =
             doc.url.size() + 1 +
             doc.mimetype.size() + 1 +
             doc.fmtime.size() + 1 +
@@ -142,17 +142,17 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
         } while (false);
 
         vdoc.base = cp;
-        vdoc.offsets[0] = cp - vdoc.base;
+        vdoc.offsets[0] = static_cast<int>(cp - vdoc.base);
         STRINGCPCOPY(cp, doc.url);
-        vdoc.offsets[1] = cp - vdoc.base;
+        vdoc.offsets[1] = static_cast<int>(cp - vdoc.base);
         STRINGCPCOPY(cp, doc.mimetype);
-        vdoc.offsets[2] = cp - vdoc.base;
+        vdoc.offsets[2] = static_cast<int>(cp - vdoc.base);
         STRINGCPCOPY(cp, doc.fmtime);
-        vdoc.offsets[3] = cp - vdoc.base;
+        vdoc.offsets[3] = static_cast<int>(cp - vdoc.base);
         STRINGCPCOPY(cp, doc.dmtime);
-        vdoc.offsets[4] = cp - vdoc.base;
+        vdoc.offsets[4] = static_cast<int>(cp - vdoc.base);
         STRINGCPCOPY(cp, doc.fbytes);
-        vdoc.offsets[5] = cp - vdoc.base;
+        vdoc.offsets[5] = static_cast<int>(cp - vdoc.base);
         STRINGCPCOPY(cp, doc.dbytes);
         for (const auto& entry : doc.meta) {
             if (m->testentry(entry)) {
@@ -165,14 +165,14 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
                     // wasteful and crash when freeing...
                     continue;
                 }
-                vdoc.offsets[it->second] = cp - vdoc.base;
+                vdoc.offsets[it->second] = static_cast<int>(cp - vdoc.base);
                 STRINGCPCOPY(cp, entry.second);
             }
         }
         // Point all empty entries to the final null byte
         for (unsigned int i = 1; i < vdoc.offsets.size(); i++) {
             if (vdoc.offsets[i] == 0) {
-                vdoc.offsets[i] = cp - 1 - vdoc.base;
+                vdoc.offsets[i] = static_cast<int>(cp - 1 - vdoc.base);
             }
         }
     }

@@ -396,7 +396,7 @@ inline bool TextSplit::emitterm(bool isspan, const string& w, int pos, size_t bt
     }
     // Detect doublons. Happens...?
     if (pos != m_prevpos || l != m_prevlen) {
-        bool ret = takeword(w, pos, int(btstart), int(btend));
+        bool ret = takeword(w, pos, btstart, btend);
         m_prevpos = pos;
         m_prevlen = int(w.length());
         return ret;
@@ -988,7 +988,7 @@ class TextSplitCW : public TextSplit {
 public:
     int wcnt;
     TextSplitCW(int flags) : TextSplit(flags), wcnt(0) {}
-    bool takeword(const string &, int, int, int) {
+    bool takeword(const string &, size_t, size_t, size_t) override {
         wcnt++;
         return true;
     }

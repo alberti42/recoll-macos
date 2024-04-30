@@ -101,7 +101,7 @@ string  PlainToRichQtPreview::PlainToRichQtPreview::header()
 string PlainToRichQtPreview::startMatch(unsigned int grpidx)
 {
     LOGDEB2("startMatch, grpidx " << grpidx << "\n");
-    grpidx = m_hdata->index_term_groups[grpidx].grpsugidx;
+    grpidx = static_cast<unsigned int>(m_hdata->index_term_groups[grpidx].grpsugidx);
     LOGDEB2("startMatch, ugrpidx " << grpidx << "\n");
     m_groupanchors[grpidx].push_back(++m_lastanchor);
     m_groupcuranchors[grpidx] = 0;
@@ -177,7 +177,7 @@ int  PlainToRichQtPreview::prevAnchorNum(int grpidx)
             m_curanchor--;
     } else {
         if (curit->second <= 0)
-            m_groupcuranchors[grpidx] = vecit->second.size() -1;
+            m_groupcuranchors[grpidx] = static_cast<unsigned int>(vecit->second.size() -1);
         else 
             m_groupcuranchors[grpidx]--;
         m_curanchor = vecit->second[m_groupcuranchors[grpidx]];

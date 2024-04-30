@@ -80,8 +80,8 @@ static string fixfrag(const string& infrag)
 // matched term weights and the near/phrase matches get a boost.
 struct MatchFragment {
     // Start/End byte offsets of fragment in the document text
-    int start;
-    int stop;
+    size_t start;
+    size_t stop;
     // Weight for this fragment (bigger better)
     double coef;
 #ifdef COMPUTE_HLZONES
@@ -89,19 +89,19 @@ struct MatchFragment {
     // terms). Because a fragment extends around a match, there
     // can be several contiguous or separate matches in a given
     // fragment.
-    vector<pair<int,int>> hlzones;
+    vector<pair<size_t,size_t>> hlzones;
 #endif
     // Position of the first matched term (for page number computations)
-    unsigned int hitpos;
+    size_t hitpos;
     // "best term" for this match (e.g. for use as ext app search term)
     string term;
     int line;
     
-    MatchFragment(int sta, int sto, double c,
+    MatchFragment(size_t sta, size_t sto, double c,
 #ifdef COMPUTE_HLZONES
-                  vector<pair<int,int>>& hl,
+                  vector<pair<size_t,size_t>>& hl,
 #endif
-                  unsigned int pos, string& trm, int ln) 
+                  size_t pos, string& trm, int ln) 
         : start(sta), stop(sto), coef(c), hitpos(pos), line(ln) {
 #ifdef COMPUTE_HLZONES
         hlzones.swap(hl);
@@ -139,13 +139,13 @@ public:
         }
     }
 
-    virtual void newline(int) override {
+    virtual void newline(size_t) override {
         m_line++;
     }
 
     // Accept a word and its position. If the word is a matched term,
     // add/update fragment definition.
-    virtual bool takeword(const std::string& term, int pos, int bts, int bte) override {
+    virtual bool takeword(const std::string& term, size_t pos, size_t bts, size_t bte) override {
         //LOGABS("abs:takeword: [" << term << "] pos " << pos << " bpos: "<< bts << ":" << bte << "\n");
         // Limit time taken with monster documents. The resulting abstract will be incorrect or
         // inexistent, but this is better than taking forever (the default cutoff value comes from
@@ -162,7 +162,7 @@ public:
             return false;
         }
         // Remember recent past
-        m_prevterms.push_back(pair<int,int>(bts,bte));
+        m_prevterms.push_back({bts, bte});
         if (m_prevterms.size() > m_ctxwords+1) {
             m_prevterms.pop_front();
         }
@@ -190,7 +190,7 @@ public:
                 m_curfrag.first = m_prevterms.front().first;
                 m_curfrag.second = m_prevterms.back().second;
 #ifdef COMPUTE_HLZONES
-                m_curhlzones.push_back(pair<int,int>(bts, bte));
+                m_curhlzones.push_back(pair<size_t,size_t>(bts, bte));
 #endif
                 m_curterm = term;
                 m_curtermcoef = coef;
@@ -202,7 +202,7 @@ public:
                 if (m_prevwordhit) {
                     m_curhlzones.back().second = bte;
                 } else {
-                    m_curhlzones.push_back(pair<int,int>(bts, bte));
+                    m_curhlzones.push_back(pair<size_t,size_t>(bts, bte));
                 }
 #endif
                 if (coef > m_curtermcoef) {
@@ -227,7 +227,7 @@ public:
             if (m_gterms.find(dumb) != m_gterms.end()) {
                 // Term group (phrase/near) handling
                 m_plists[dumb].push_back(pos);
-                m_gpostobytes[pos] = pair<int,int>(bts, bte);
+                m_gpostobytes[pos] = {bts, bte};
                 LOGABS("Recorded bpos for pos " << pos << ": " << bts << " " << bte << "\n");
             }
         }
@@ -351,9 +351,9 @@ public:
 private:
     const string& m_rawtext;
     // Past terms because we need to go back for context before a hit
-    deque<pair<int,int>>  m_prevterms;
+    deque<pair<size_t, size_t>>  m_prevterms;
     // Data about the fragment we are building
-    pair<int,int> m_curfrag{0,0};
+    pair<size_t, size_t> m_curfrag{0,0};
     int m_curfragline{0};
     double m_curfragcoef{0.0};
     unsigned int m_remainingWords{0};
@@ -365,7 +365,7 @@ private:
     // Current sum of fragment weights
     double m_totalcoef{0.0};
     // Position of 1st term match (for page number computations)
-    unsigned int m_curhitpos{0};
+    size_t m_curhitpos{0};
     // "best" term
     string m_curterm;
     double m_curtermcoef{0.0};
@@ -374,8 +374,8 @@ private:
     // Group terms, extracted from m_hdata 
     unordered_set<string> m_gterms;
     // group/near terms word positions.
-    unordered_map<string, vector<int> > m_plists;
-    unordered_map<int, pair<int, int> > m_gpostobytes;
+    unordered_map<string, vector<size_t>> m_plists;
+    unordered_map<size_t, pair<size_t, size_t> > m_gpostobytes;
     
     // Input
     unordered_set<string> m_terms;
@@ -485,7 +485,7 @@ int Query::Native::abstractFromText(
 #endif
         int page = 0;
         if (vpbreaks.size() > 1) {
-            page = ndb->getPageNumberForPosition(vpbreaks, entry.hitpos);
+            page = ndb->getPageNumberForPosition(vpbreaks, static_cast<int>(entry.hitpos));
             if (page < 0)
                 page = 0;
         }
@@ -503,7 +503,7 @@ public:
         : TextSplit(), m_term(term) {
         LOGDEB1("TermLineSplitter: m_term " << m_term << "\n");
     }
-    bool takeword(const std::string& _term, int, int, int) override {
+    bool takeword(const std::string& _term, size_t, size_t, size_t) override {
         std::string term;
         if (o_index_stripchars) {
             if (!unacmaybefold(_term, term, UNACOP_UNACFOLD)) {
@@ -517,7 +517,7 @@ public:
         }
         return true;
     }
-    void newline(int) override {
+    void newline(size_t) override {
         m_line++;
     }
     int getline() {

@@ -20,7 +20,7 @@
 /* The code for the Win32 version of the monitor was largely copied from efsw:
  * https://github.com/SpartanJ/efsw
  * LICENSE for the original WIN32 code:
- * Copyright (c) 2020 Martín Lucas Golini
+ * Copyright (c) 2020 Martin Lucas Golini
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

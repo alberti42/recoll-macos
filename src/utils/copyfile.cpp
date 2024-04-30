@@ -68,15 +68,14 @@ bool copyfile(const char *src, const char *dst, string &reason, int flags)
     }
 
     for (;;) {
-        int didread;
-        didread = ::read(sfd, buf, CPBSIZ);
+        auto didread = sys_read(sfd, buf, CPBSIZ);
         if (didread < 0) {
             reason += string("read src ") + src + ": " + strerror(errno);
             goto out;
         }
         if (didread == 0)
             break;
-        if (::write(dfd, buf, didread) != didread) {
+        if (sys_write(dfd, buf, didread) != didread) {
             reason += string("write dst ") + src + ": " + strerror(errno);
             goto out;
         }
@@ -114,8 +113,7 @@ bool stringtofile(const string& dt, const char *dst, string& reason,
         flags |= COPYFILE_NOERRUNLINK;
         goto out;
     }
-
-    if (::write(dfd, dt.c_str(), size_t(dt.size())) != ssize_t(dt.size())) {
+    if (sys_write(dfd, dt.c_str(), dt.size()) != static_cast<ssize_t>(dt.size())) {
         reason += string("write dst ") + ": " + strerror(errno);
         goto out;
     }

@@ -37,12 +37,22 @@
 #include <iostream>
 
 #include "mime.h"
-#include "mime-utils.h"
 #include "mime-inputsource.h"
 #include "convert.h"
 
 using namespace std;
 
+bool compareStringToQueue(const char *s_in, char *bqueue, size_t pos, size_t size)
+{
+  for (size_t i = 0; i < size; ++i)  {
+    if (s_in[i] != bqueue[pos])
+      return false;
+    if (++pos == size)
+      pos = 0;
+  }
+
+  return true;
+}
 
 // #define MPF
 #ifdef MPF
@@ -336,8 +346,7 @@ bool Binc::MimePart::skipUntilBoundary(const string &delimiter,
     if (delimiterpos ==  endpos)
       delimiterpos = 0;
       
-    if (compareStringToQueue(delimiterStr, delimiterqueue,
-                 delimiterpos, int(endpos))) {
+    if (compareStringToQueue(delimiterStr, delimiterqueue, delimiterpos, endpos)) {
       foundBoundary = true;
       break;
     }
@@ -448,7 +457,7 @@ void Binc::MimePart::parseMultipart(const string &boundary,
   skipUntilBoundary(delimiter, nlines, eof);
 
   if (!eof)
-    *boundarysize = int(delimiter.size());
+    *boundarysize = static_cast<int>(delimiter.size());
 
   postBoundaryProcessing(eof, nlines, boundarysize, foundendofpart);
 
@@ -481,7 +490,7 @@ void Binc::MimePart::parseMultipart(const string &boundary,
     skipUntilBoundary(delimiter, nlines, eof);
 
     if (!*eof)
-      *boundarysize = int(delimiter.size());
+      *boundarysize = static_cast<int>(delimiter.size());
 
     postBoundaryProcessing(eof, nlines, boundarysize, foundendofpart);
   }
@@ -525,7 +534,7 @@ void Binc::MimePart::parseSinglePart(const string &toboundary,
   //    *boundarysize = _toboundary.length();
 
   char *boundaryqueue = nullptr;
-  size_t endpos = _toboundary.length();
+  auto endpos = _toboundary.length();
   if (toboundary != "") {
     boundaryqueue = new char[endpos];
     memset(boundaryqueue, 0, endpos);
@@ -549,8 +558,7 @@ void Binc::MimePart::parseSinglePart(const string &toboundary,
     if (boundarypos == endpos)
       boundarypos = 0;
       
-    if (compareStringToQueue(_toboundaryStr, boundaryqueue,
-                 boundarypos, int(endpos))) {
+    if (compareStringToQueue(_toboundaryStr, boundaryqueue, boundarypos, endpos)) {
       *boundarysize = static_cast<int>(_toboundary.length());
       break;
     }

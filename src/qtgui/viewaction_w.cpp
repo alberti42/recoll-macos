@@ -72,7 +72,7 @@ void ViewAction::fillLists()
     actionsLV->verticalHeader()->setDefaultSectionSize(20); 
     vector<pair<string, string> > defs;
     theconfig->getMimeViewerDefs(defs);
-    actionsLV->setRowCount(defs.size());
+    actionsLV->setRowCount(static_cast<int>(defs.size()));
 
     set<string> viewerXs;
     if (prefs.useDesktopOpen) {

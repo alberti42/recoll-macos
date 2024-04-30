@@ -75,7 +75,7 @@ void RclCompleterModel::init()
 int RclCompleterModel::rowCount(const QModelIndex &) const
 {
     LOGDEB1("RclCompleterModel::rowCount: " << currentlist.size() << "\n");
-    return currentlist.size();
+    return static_cast<int>(currentlist.size());
 }
 
 int RclCompleterModel::columnCount(const QModelIndex &) const
@@ -140,7 +140,7 @@ void RclCompleterModel::onPartialWord(int tp, const QString& _qtext, const QStri
             currentlist.push_back({prefs.ssearchHistory[i], -1});
         }
     }
-    firstfromindex = currentlist.size();
+    firstfromindex = static_cast<int>(currentlist.size());
 
     // Look for Recoll terms beginning with the partial word. If the index is not stripped, only do
     // this after the partial has at least 2 characters, else the syn/diac/case expansion is too

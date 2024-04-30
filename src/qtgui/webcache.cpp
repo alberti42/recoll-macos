@@ -113,7 +113,7 @@ void WebcacheModel::reload()
     }
 
 out:
-    emit dataChanged(createIndex(0,0), createIndex(1, m->all.size()));
+    emit dataChanged(createIndex(0,0), createIndex(1, static_cast<int>(m->all.size())));
 }
 
 bool WebcacheModel::deleteIdx(unsigned int idx)
@@ -220,7 +220,7 @@ void WebcacheModel::setSearchFilter(const QString& _txt)
                     qs2utf8s(_txt) << "data" << m->all[i].url);
         }
     }
-    emit dataChanged(createIndex(0,0), createIndex(1, m->all.size()));
+    emit dataChanged(createIndex(0,0), createIndex(1, static_cast<int>(m->all.size())));
 }
 
 static const int ROWHEIGHTPAD = 2;

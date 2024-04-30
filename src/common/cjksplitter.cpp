@@ -102,7 +102,7 @@ bool CJKSplitter::text_to_words(Utf8Iter& it, unsigned int *cp, int& wordpos)
         // and end after the new character. onlyspans->only output
         // maximum words, nospans=> single chars
         if (!(flags & TextSplit::TXTS_ONLYSPANS) || nchars == m_ngramlen) {
-            int btend = it.getBpos() + it.getBlen();
+            auto btend = it.getBpos() + it.getBlen();
             int loopbeg = (flags & TextSplit::TXTS_NOSPANS) ? nchars-1 : 0;
             int loopend = (flags & TextSplit::TXTS_ONLYSPANS) ? 1 : nchars;
             for (int i = loopbeg; i < loopend; i++) {

@@ -74,6 +74,30 @@ sleep(unsigned int seconds)
     return 0;
 }
 #endif /* _MSC_VER*/
+
+#ifndef _SSIZE_T_DEFINED
+#ifdef  _WIN64
+typedef __int64    ssize_t;
+#else
+typedef int   ssize_t;
+#endif
+#define _SSIZE_T_DEFINED
+#endif
+
+inline ssize_t sys_read(int fd, void* buf, size_t cnt)
+{
+    return static_cast<ssize_t>(::read(fd, buf, static_cast<int>(cnt)));
+}
+inline ssize_t sys_write(int fd, const void* buf, size_t cnt)
+{
+    return static_cast<ssize_t>(::write(fd, buf, static_cast<int>(cnt)));
+}
+
+#else // !_WIN32->
+
+#define sys_read ::read
+#define sys_write ::write
+
 #endif /* __WIN32__ */
 
 #endif /* XAPIAN_INCLUDED_SAFEUNISTD_H */

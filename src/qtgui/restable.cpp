@@ -303,7 +303,7 @@ int RecollModel::rowCount(const QModelIndex&) const
 int RecollModel::columnCount(const QModelIndex&) const
 {
     LOGDEB2("RecollModel::columnCount\n");
-    return m_fields.size();
+    return static_cast<int>(m_fields.size());
 }
 
 void RecollModel::readDocSource()

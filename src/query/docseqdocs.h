@@ -23,40 +23,40 @@
 #include "rcldoc.h"
 
 namespace Rcl {
-    class Db;
+class Db;
 }
 
 /** A DocSequence that's just built from a bunch of docs */
 class DocSequenceDocs : public DocSequence {
- public:
+public:
     DocSequenceDocs(std::shared_ptr<Rcl::Db> d,
                     const std::vector<Rcl::Doc> docs, const std::string &t) 
-    : DocSequence(t), m_db(d), m_docs(docs) {}
+        : DocSequence(t), m_db(d), m_docs(docs) {}
     virtual ~DocSequenceDocs() {}
     DocSequenceDocs(const DocSequenceDocs&) = delete;
     DocSequenceDocs& operator=(const DocSequenceDocs&) = delete;
-    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) {
-    if (sh)
-        *sh = std::string();
-    if (num < 0 || num >= int(m_docs.size()))
-        return false;
-    doc = m_docs[num];
-    return true;
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) override {
+        if (sh)
+            *sh = std::string();
+        if (num < 0 || num >= int(m_docs.size()))
+            return false;
+        doc = m_docs[num];
+        return true;
     }
-    virtual int getResCnt() {
-    return m_docs.size();
+    virtual int getResCnt() override {
+        return static_cast<int>(m_docs.size());
     }
-    virtual std::string getDescription() {
-    return m_description;
+    virtual std::string getDescription() override {
+        return m_description;
     }
     void setDescription(const std::string& desc) {
-    m_description = desc;
+        m_description = desc;
     }
 protected:
     virtual std::shared_ptr<Rcl::Db> getDb() {
-    return m_db;
+        return m_db;
     }
- private:
+private:
     std::shared_ptr<Rcl::Db> m_db;
     std::string      m_description;
     std::vector<Rcl::Doc> m_docs;

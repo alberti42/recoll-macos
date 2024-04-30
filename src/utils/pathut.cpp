@@ -147,9 +147,25 @@
 // For getpid
 #include <process.h>
 #define getpid _getpid
-
-#define PATHUT_SSIZE_T int
 #endif // _MSC_VER
+
+#ifndef _SSIZE_T_DEFINED
+#ifdef  _WIN64
+typedef __int64    ssize_t;
+#else
+typedef int   ssize_t;
+#endif
+#define _SSIZE_T_DEFINED
+#endif
+
+inline ssize_t sys_read(int fd, void* buf, size_t cnt)
+{
+    return static_cast<ssize_t>(::read(fd, buf, static_cast<int>(cnt)));
+}
+inline ssize_t sys_write(int fd, const void* buf, size_t cnt)
+{
+    return static_cast<ssize_t>(::write(fd, buf, static_cast<int>(cnt)));
+}
 
 #else /* !_WIN32 -> */
 
@@ -182,12 +198,10 @@
 
 #define SYSPATH(PATH, SPATH) const char *SPATH = PATH.c_str()
 
+#define sys_read ::read
+#define sys_write ::write
 
 #endif /* !_WIN32 */
-
-#ifndef PATHUT_SSIZE_T
-#define PATHUT_SSIZE_T ssize_t
-#endif
 
 namespace MedocUtils {
 
@@ -208,7 +222,7 @@ bool wchartoutf8(const wchar_t *in, std::string& out, int wlen)
         return true;
     }
     if (wlen == 0) {
-        wlen = wcslen(in);
+        wlen = static_cast<int>(wcslen(in));
     }
     if (wlen == 0) {
         return true;
@@ -242,7 +256,7 @@ bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
     out[0] = 0;
 
     int wcharcnt = MultiByteToWideChar(
-        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(), nullptr, 0);
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), (int)in.size(), nullptr, 0);
     if (wcharcnt <= 0) {
         LOGERR("utf8towchar: conversion error for [" << in << "]\n");
         return false;
@@ -252,7 +266,7 @@ bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
         return false;
     }
     wcharcnt = MultiByteToWideChar(
-        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(), out, wcharsavail);
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), (int)in.size(), out, (int)wcharsavail);
     if (wcharcnt <= 0) {
         LOGERR("utf8towchar: conversion error for [" << in << "]\n");
         return false;
@@ -268,7 +282,7 @@ std::unique_ptr<wchar_t[]> utf8towchar(const std::string& in)
     // course). We take this into account by allocating one more and
     // terminating the output.
     int wcharcnt = MultiByteToWideChar(
-        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(), nullptr, 0);
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), (int)in.size(), nullptr, 0);
     if (wcharcnt <= 0) {
         LOGERR("utf8towchar: conversion error for [" << in << "]\n");
         return std::unique_ptr<wchar_t[]>();
@@ -276,8 +290,7 @@ std::unique_ptr<wchar_t[]> utf8towchar(const std::string& in)
     auto buf = std::unique_ptr<wchar_t[]>(new wchar_t[wcharcnt+1]);
 
     wcharcnt = MultiByteToWideChar(
-        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(),
-        buf.get(), wcharcnt);
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), (int)in.size(), buf.get(), wcharcnt);
     if (wcharcnt <= 0) {
         LOGERR("utf8towchar: conversion error for [" << in << "]\n");
         return std::unique_ptr<wchar_t[]>();
@@ -1421,7 +1434,7 @@ int Pidfile::read_pid()
     }
 
     char buf[16];
-    int i = read(fd, buf, sizeof(buf) - 1);
+    auto i = sys_read(fd, buf, sizeof(buf) - 1);
     ::close(fd);
     if (i <= 0) {
         m_reason = "Read failed: [" + m_path + "]: " + strerror(errno);
@@ -1515,8 +1528,9 @@ int Pidfile::write_pid()
     }
     char pidstr[20];
     sprintf(pidstr, "%u", int(getpid()));
+    auto lenpid = strlen(pidstr);
     ::lseek(fd, 0, 0);
-    if (::write(fd, pidstr, strlen(pidstr)) != (PATHUT_SSIZE_T)strlen(pidstr)) {
+    if (sys_write(fd, pidstr, lenpid) != static_cast<ssize_t>(lenpid)) {
         m_reason = "write failed";
         return -1;
     }

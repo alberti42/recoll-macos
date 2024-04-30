@@ -57,8 +57,8 @@ template<class T> int DLDistance(const T& str1, const T& str2)
 {
     // This replaces an array of the size of the alphabet, initialized to 0.
     std::map<int, int> da;
-    int size1 = str1.size();
-    int size2 = str2.size();
+    int size1 = static_cast<int>(str1.size());
+    int size2 = static_cast<int>(str2.size());
     
     Mat2 d(size1 + 2, size2 + 2, -1, -1);
     int maxdist = size1 + size2;

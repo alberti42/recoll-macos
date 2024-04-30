@@ -1308,7 +1308,7 @@ Xapian::docid Db::Native::whatDbDocid(Xapian::docid docid_combined)
 {
     if (m_rcldb->m_extraDbs.size() == 0)
         return docid_combined;
-    return (docid_combined - 1) / (m_rcldb->m_extraDbs.size() + 1) + 1;
+    return (docid_combined - 1) / (static_cast<int>(m_rcldb->m_extraDbs.size()) + 1) + 1;
 }
 
 bool Db::testDbDir(const string &dir, bool *stripped_p)

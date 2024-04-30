@@ -216,7 +216,7 @@ bool FsTreeWalker::inSkippedPaths(const string& path, bool ckparents)
 
 static inline int slashcount(const string& p)
 {
-    return std::count(p.begin(), p.end(), '/');
+    return static_cast<int>(std::count(p.begin(), p.end(), '/'));
 }
 
 FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)

@@ -411,7 +411,6 @@ static bool list(int fd, const string& path, vector<string>* names, flags flags,
 #else
     PRETEND_USE(fd);
     PRETEND_USE(flags);
-    PRETEND_USE(dom);
     PRETEND_USE(path);
     errno = ENOTSUP;
 #endif
@@ -437,7 +436,7 @@ static bool list(int fd, const string& path, vector<string>* names, flags flags,
 
 
     if (ret > 0) {
-        int pos = 0;
+        size_t pos = 0;
         while (pos < ret) {
             string n = string(bufstart + pos);
             string n1;
