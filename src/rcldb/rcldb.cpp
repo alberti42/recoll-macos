@@ -1378,7 +1378,7 @@ public:
         : TextSplitP(prc), doc(d), basepos(1), curpos(0), wdb(_wdb) {}
 
     // Reimplement text_to_words to insert the begin and end anchor terms.
-    virtual bool text_to_words(const string &in) {
+    virtual bool text_to_words(const string &in) override {
         string ermsg;
 
         if (!o_no_term_positions) {
@@ -1432,10 +1432,10 @@ public:
     TermProcIdx() : TermProc(nullptr), m_ts(nullptr), m_lastpagepos(0), m_pageincr(0) {}
     void setTSD(TextSplitDb *ts) {m_ts = ts;}
 
-    bool takeword(const std::string &term, int pos, int, int) {
+    bool takeword(const std::string &term, size_t pos, size_t, size_t) override {
         // Compute absolute position (pos is relative to current segment),
         // and remember relative.
-        m_ts->curpos = pos;
+        m_ts->curpos = static_cast<Xapian::termpos>(pos);
         pos += m_ts->basepos;
         // Don't try to add empty term Xapian doesnt like it... Safety check
         // this should not happen.
@@ -1447,7 +1447,7 @@ public:
             LOGDEB1("Emitting term at " << pos << " : [" << term << "]\n");
             if (!m_ts->ft.pfxonly) {
                 if (!o_no_term_positions) {
-                    m_ts->doc.add_posting(term, pos, m_ts->ft.wdfinc);
+                    m_ts->doc.add_posting(term, static_cast<Xapian::termpos>(pos), m_ts->ft.wdfinc);
                 } else {
                     m_ts->doc.add_term(term, m_ts->ft.wdfinc);
                 }
@@ -1461,7 +1461,8 @@ public:
             // Index the prefixed term.
             if (!m_ts->ft.pfx.empty()) {
                 if (!o_no_term_positions) {
-                    m_ts->doc.add_posting(m_ts->ft.pfx + term, pos, m_ts->ft.wdfinc);
+                    m_ts->doc.add_posting(m_ts->ft.pfx + term, static_cast<Xapian::termpos>(pos),
+                                          m_ts->ft.wdfinc);
                 } else {
                     m_ts->doc.add_term(m_ts->ft.pfx + term, m_ts->ft.wdfinc);
                 }
@@ -1471,7 +1472,7 @@ public:
         LOGERR("Db: xapian add_posting error " << ermsg << "\n");
         return false;
     }
-    void newpage(int pos)
+    void newpage(size_t pos) override
     {
         pos += m_ts->basepos;
         if (pos < int(baseTextPosition)) {
@@ -1480,7 +1481,7 @@ public:
         }
 
         if (!o_no_term_positions) 
-            m_ts->doc.add_posting(m_ts->ft.pfx + page_break_term, pos);
+            m_ts->doc.add_posting(m_ts->ft.pfx + page_break_term, static_cast<Xapian::termpos>(pos));
         if (pos == m_lastpagepos) {
             m_pageincr++;
             LOGDEB2("newpage: same pos, pageincr " << m_pageincr <<
@@ -1493,14 +1494,14 @@ public:
                 unsigned int relpos = m_lastpagepos - baseTextPosition;
                 LOGDEB2("Remembering multiple page break. Relpos " << relpos <<
                         " cnt " << m_pageincr << "\n");
-                m_pageincrvec.push_back(pair<int, int>(relpos, m_pageincr));
+                m_pageincrvec.push_back({relpos, m_pageincr});
             }
             m_pageincr = 0;
         }
-        m_lastpagepos = pos;
+        m_lastpagepos = static_cast<int>(pos);
     }
 
-    virtual bool flush()
+    virtual bool flush() override
     {
         if (m_pageincr > 0) {
             unsigned int relpos = m_lastpagepos - baseTextPosition;

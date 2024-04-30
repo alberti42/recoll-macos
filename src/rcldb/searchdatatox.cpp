@@ -328,7 +328,7 @@ public:
         : TextSplitP(prc, flags), m_nostemexp(false) {
     }
 
-    bool takeword(const std::string &term, int pos, int bs, int be) {
+    bool takeword(const std::string &term, size_t pos, size_t bs, size_t be) override {
         // Check if the first letter is a majuscule in which
         // case we do not want to do stem expansion. Need to do this
         // before unac of course...
@@ -356,21 +356,22 @@ public:
         m_ts = ts;
     }
     
-    bool takeword(const std::string &term, int pos, int, int be) {
+    bool takeword(const std::string &term, size_t _pos, size_t, size_t be) override {
         m_alltermcount++;
-        if (m_lastpos < pos)
-            m_lastpos = pos;
+        int ipos = static_cast<int>(_pos);
+        if (m_lastpos < ipos)
+            m_lastpos = ipos;
         bool noexpand = be ? m_ts->nostemexp() : true;
         LOGDEB1("TermProcQ::takeword: pushing [" << term << "] pos " <<
                 pos << " noexp " << noexpand << "\n");
-        if (m_terms[pos].size() < term.size()) {
-            m_terms[pos] = term;
-            m_nste[pos] = noexpand;
+        if (m_terms[ipos].size() < term.size()) {
+            m_terms[ipos] = term;
+            m_nste[ipos] = noexpand;
         }
         return true;
     }
 
-    bool flush() {
+    bool flush() override {
         for (const auto& entry : m_terms) {
             m_vterms.push_back(entry.second);
             m_vnostemexps.push_back(m_nste[entry.first]);

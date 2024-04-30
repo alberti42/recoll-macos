@@ -112,7 +112,7 @@ class myTermProc : public Rcl::TermProc {
 public:
     myTermProc() : TermProc(0), first(1), nooutput(false) {}
     void setNoOut(bool val) {nooutput = val;}
-    virtual bool takeword(const string &term, int pos, int bs, int be) {
+    virtual bool takeword(const string &term, size_t pos, size_t bs, size_t be) override {
         m_plists[term].push_back(pos);
         m_gpostobytes[pos] = pair<int,int>(bs, be);
         if (nooutput)
