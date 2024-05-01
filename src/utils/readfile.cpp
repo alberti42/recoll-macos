@@ -27,11 +27,11 @@
 
 #include <errno.h>
 #include <sys/types.h>
-#include "safeunistd.h"
 
 #ifdef _WIN32
 #include "safefcntl.h"
 #include "safesysstat.h"
+#include "safeunistd.h"
 #define OPEN _wopen
 
 #else
@@ -40,7 +40,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #define OPEN open
-
+#define sys_read ::read
 #endif
 
 #include <string>
