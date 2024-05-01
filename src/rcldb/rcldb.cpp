@@ -1475,14 +1475,14 @@ public:
     void newpage(size_t pos) override
     {
         pos += m_ts->basepos;
-        if (pos < int(baseTextPosition)) {
+        if (pos < baseTextPosition) {
             LOGDEB("newpage: not in body: " << pos << "\n");
             return;
         }
 
         if (!o_no_term_positions) 
             m_ts->doc.add_posting(m_ts->ft.pfx + page_break_term, static_cast<Xapian::termpos>(pos));
-        if (pos == m_lastpagepos) {
+        if (pos == static_cast<unsigned int>(m_lastpagepos)) {
             m_pageincr++;
             LOGDEB2("newpage: same pos, pageincr " << m_pageincr <<
                     " lastpagepos " << m_lastpagepos << "\n");
