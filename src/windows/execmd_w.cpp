@@ -143,10 +143,10 @@ static wchar_t *mergeEnvironment(
     // Size computation. We could do an exact computation by
     // converting the strings, but do worst case instead. one utf-8
     // byte can't convert to more than one wchar
-    size_t sz = 0;
+    int sz = 0;
     for (auto it = envirmap.begin(); it != envirmap.end(); it++) {
         // the +2 is for '=' and '\0'
-        sz += sizeof(wchar_t) * (it->first.size() + it->second.size() + 2); 
+        sz += sizeof(wchar_t) * static_cast<int>((it->first.size() + it->second.size() + 2)); 
     }
     sz += sizeof(wchar_t); // final 0
 

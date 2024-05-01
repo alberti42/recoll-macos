@@ -247,16 +247,16 @@ bool wchartoutf8(const wchar_t *in, std::string& out, int wlen)
     return true;
 }
 
-bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
+bool utf8towchar(const std::string& in, wchar_t *out, int obytescap)
 {
-    size_t wcharsavail = obytescap / sizeof(wchar_t);
+    auto wcharsavail = obytescap / sizeof(wchar_t);
     if (nullptr == out || wcharsavail < 1) {
         return false;
     }
     out[0] = 0;
-
-    int wcharcnt = MultiByteToWideChar(
-        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), (int)in.size(), nullptr, 0);
+    int isize = static_cast<int>(in.size());
+    auto wcharcnt = MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), isize, nullptr, 0);
     if (wcharcnt <= 0) {
         LOGERR("utf8towchar: conversion error for [" << in << "]\n");
         return false;
@@ -266,7 +266,7 @@ bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
         return false;
     }
     wcharcnt = MultiByteToWideChar(
-        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), (int)in.size(), out, (int)wcharsavail);
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), isize, out, wcharsavail);
     if (wcharcnt <= 0) {
         LOGERR("utf8towchar: conversion error for [" << in << "]\n");
         return false;
@@ -277,12 +277,13 @@ bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
 
 std::unique_ptr<wchar_t[]> utf8towchar(const std::string& in)
 {
+    int isize = static_cast<int>(in.size());
     // Note that as we supply in.size(), mbtowch computes the size
     // without a terminating 0 (and won't write in the second call of
     // course). We take this into account by allocating one more and
     // terminating the output.
-    int wcharcnt = MultiByteToWideChar(
-        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), (int)in.size(), nullptr, 0);
+    auto wcharcnt = MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), isize, nullptr, 0);
     if (wcharcnt <= 0) {
         LOGERR("utf8towchar: conversion error for [" << in << "]\n");
         return std::unique_ptr<wchar_t[]>();
@@ -290,7 +291,7 @@ std::unique_ptr<wchar_t[]> utf8towchar(const std::string& in)
     auto buf = std::unique_ptr<wchar_t[]>(new wchar_t[wcharcnt+1]);
 
     wcharcnt = MultiByteToWideChar(
-        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), (int)in.size(), buf.get(), wcharcnt);
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), isize, buf.get(), wcharcnt);
     if (wcharcnt <= 0) {
         LOGERR("utf8towchar: conversion error for [" << in << "]\n");
         return std::unique_ptr<wchar_t[]>();
