@@ -30,6 +30,12 @@ import rclexecm
 _mswindows = (sys.platform == "win32")
 if _mswindows:
     ocrlangfile = "rclocrlang.txt"
+    import platform
+    if platform.machine().endswith('64'):
+        # See comments in ../windows/mkinstdir.sh about the setup of the poppler installation
+        popplerdir = "poppler/Library/bin"
+    else:
+        popplerdir = "poppler32"
 else:
     ocrlangfile = ".rclocrlang"
 
@@ -97,13 +103,15 @@ def ocrpossible(config, path):
         # pdftocairo. So stay with pdftoppm.
         global pdftoppmcmd, pdftocairocmd
         if not pdftoppmcmd and not pdftocairocmd:
-            pdftocairocmd = rclexecm.which("pdftocairo")
+            if _mswindows:
+                pdftocairocmd = rclexecm.which(popplerdir + "/pdftocairo")
+            else:
+                pdftocairocmd = rclexecm.which("pdftocairo")
             if not pdftocairocmd:
-                pdftocairocmd = rclexecm.which("poppler/pdftocairo")
-            if not pdftocairocmd:
-                pdftoppmcmd = rclexecm.which("pdftoppm")
-                if not pdftoppmcmd:
-                    pdftoppmcmd = rclexecm.which("poppler/pdftoppm")
+                if _mswindows:
+                    pdftoppmcmd = rclexecm.which(popplerdir + "/pdftoppm")
+                else:
+                    pdftoppmcmd = rclexecm.which("pdftoppm")
         if pdftoppmcmd or pdftocairocmd:
             return True
 
