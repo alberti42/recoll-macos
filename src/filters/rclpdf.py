@@ -43,10 +43,12 @@ if _mswindows:
     import platform
     if platform.machine().endswith('64'):
         # See comments in ../windows/mkinstdir.sh about the setup of the poppler installation
-        popplerdir = "poppler/Library/bin"
+        popplerdir = "poppler/Library/bin/"
     else:
-        popplerdir = "poppler32"
-
+        popplerdir = "poppler32/"
+else:
+    popplerdir = ""
+    
 # Test access to the poppler-glib python3 bindings ? This allows
 # extracting text from annotations.
 # - On Ubuntu, this comes with package gir1.2-poppler-0.18
@@ -111,7 +113,7 @@ class PDFExtractor:
         self.tesseract = None
         self.extrameta = None
         self.re_head = None
-        # Base Metadata elements names replacements: eRecoll treats "Subject" as a "title" element
+        # Base Metadata elements names replacements: Recoll treats "Subject" as a "title" element
         # (based on emails). The PDF "Subject" metadata field is more like an HTML "description".
         # "Producer" is the name of the software package used to convert to PDF (e.g. "Writer")
         # "Creator" is the name of the Software used to create the original format (e.g. "MSWord")
@@ -124,13 +126,9 @@ class PDFExtractor:
         self.confdir = self.config.getConfDir()
 
         # Avoid picking up a default version on Windows, we want ours
-        if not _mswindows:
-            self.pdftotext = rclexecm.which("pdftotext")
-        if _mswindows and not self.pdftotext:
-            self.pdftotext = rclexecm.which(popplerdir + "/pdftotext")
+        self.pdftotext = rclexecm.which(popplerdir + "pdftotext")
         if not self.pdftotext:
-            # No need for anything else. openfile() will return an
-            # error at once
+            # No need for anything else. openfile() will return an error at once
             return
         self.pdftotextversion = self._popplerutilversion(self.pdftotext)
         # Check if we need to escape portions of text: old versions of pdftotext output raw
@@ -141,10 +139,7 @@ class PDFExtractor:
             self.needescape = True
 
         # pdfinfo may be used to extract XML metadata and custom PDF properties
-        if not _mswindows:
-            self.pdfinfo = rclexecm.which("pdfinfo")
-        if _mswindows and not self.pdfinfo:
-            self.pdfinfo = rclexecm.which(popplerdir + "/pdfinfo")
+        self.pdfinfo = rclexecm.which(popplerdir + "pdfinfo")
         if self.pdfinfo:
             self.pdfinfoversion = self._popplerutilversion(self.pdfinfo)
             # The user can set a list of meta tags to be extracted from the XMP metadata
@@ -158,16 +153,12 @@ class PDFExtractor:
         # Extracting the outline / bookmarks needs still another poppler command...
         self.dooutline = self.config.getConfParam("pdfoutline")
         if self.dooutline:
-            if not _mswindows:
-                self.pdftohtml = rclexecm.which("pdftohtml")
-            if _mswindows and not self.pdftohtml:
-                self.pdftohtml = rclexecm.which(popplerdir + "/pdftohtml")
+            self.pdftohtml = rclexecm.which(popplerdir + "pdftohtml")
             if not self.pdftohtml:
                 self.dooutline = False
             
-        # Pdftk is optionally used to extract attachments. This takes
-        # a hit on performance even in the absence of any attachments,
-        # so it can be disabled in the configuration.
+        # Pdftk is optionally used to extract attachments. This takes a hit on performance even in
+        # the absence of any attachments, so it can be disabled in the configuration.
         self.attextractdone = False
         self.attachlist = []
         cf_attach = self.config.getConfParam("pdfattach")

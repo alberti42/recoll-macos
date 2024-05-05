@@ -33,10 +33,11 @@ if _mswindows:
     import platform
     if platform.machine().endswith('64'):
         # See comments in ../windows/mkinstdir.sh about the setup of the poppler installation
-        popplerdir = "poppler/Library/bin"
+        popplerdir = "poppler/Library/bin/"
     else:
-        popplerdir = "poppler32"
+        popplerdir = "poppler32/"
 else:
+    popplerdir = ""
     ocrlangfile = ".rclocrlang"
 
 _okexts = ('.tif', '.tiff', '.jpg', '.png', '.jpeg')
@@ -96,22 +97,14 @@ def ocrpossible(config, path):
         return True
 
     if ext == '.pdf':
-        # Check for pdftoppm. We could use pdftocairo, which can
-        # produce a multi-page pdf and make the rest simpler, but the
-        # legacy code used pdftoppm for some reason, and it appears
-        # that the newest builds from conda-forge do not include
-        # pdftocairo. So stay with pdftoppm.
+        # Check for pdftoppm or pdftocairo. pdftocairo, can produce a multi-page pdf and make the
+        # rest simpler, but the legacy code used pdftoppm, and some poppler installs do not include
+        # pdftocairo.
         global pdftoppmcmd, pdftocairocmd
         if not pdftoppmcmd and not pdftocairocmd:
-            if _mswindows:
-                pdftocairocmd = rclexecm.which(popplerdir + "/pdftocairo")
-            else:
-                pdftocairocmd = rclexecm.which("pdftocairo")
+            pdftocairocmd = rclexecm.which(popplerdir + "pdftocairo")
             if not pdftocairocmd:
-                if _mswindows:
-                    pdftoppmcmd = rclexecm.which(popplerdir + "/pdftoppm")
-                else:
-                    pdftoppmcmd = rclexecm.which("pdftoppm")
+                pdftoppmcmd = rclexecm.which(popplerdir + "pdftoppm")
         if pdftoppmcmd or pdftocairocmd:
             return True
 
