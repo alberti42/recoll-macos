@@ -19,12 +19,10 @@ bincimapmime/mime-inputsource.h
 bincimapmime/mime-parsefull.cc
 bincimapmime/mime-parseonlyheader.cc
 bincimapmime/mime-printbody.cc
-bincimapmime/mime-utils.h
 bincimapmime/mime.cc
 bincimapmime/mime.h
 common/
 common/autoconfig-mac.h
-common/autoconfig.h.in
 common/cjksplitter.cpp
 common/cjksplitter.h
 common/cnsplitter.cpp
@@ -301,7 +299,6 @@ python/pychm/recollchm/
 python/pychm/recollchm/__init__.py
 python/pychm/recollchm/chm.py
 python/pychm/recollchm/chmlib.py
-python/pychm/recollchm/extra.c
 python/pychm/recollchm/swig_chm.c
 python/pychm/recollchm/swig_chm.i
 python/pychm/setup.cfg

@@ -6,6 +6,12 @@ version=`cat RECOLL-VERSION.txt`
 islib=no
 builtlib=
 
+mesonversion=`grep "version: '" meson.build | head -1 | awk '{print $2}' | tr -d "',"`
+if test "$version" != "$mesonversion";then
+    echo versions in meson.build "'$mesonversion'" and RECOLL-VERSION.txt "'$version'" differ
+    exit 1
+fi
+
 MYNAME=`echo $myname | tr a-z A-Z`
 
 # A shell-script to make a source distribution.

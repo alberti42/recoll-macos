@@ -48,6 +48,7 @@ python/pyaspell/setup-mac.py
 python/pyaspell/setup-win.py
 python/pyaspell/setup.py
 python/pychm/setup.py
+python/pychm/recollchm.egg-info
 python/recoll/setup-win.py
 python/recoll/setup.py
 qmake

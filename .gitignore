@@ -64,8 +64,6 @@ ltmain.sh
 missing
 ptrans
 stamp-h1
-src/common/autoconfig.h
-src/common/rclversion.h
 src/doc/user/usermanual.pdf
 src/doc/user/webhelp/docs/*
 src/doc/user/webhelp/xincluded-profiled.xml

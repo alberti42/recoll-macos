@@ -242,7 +242,7 @@ private:
 #if defined(sun) || defined(_WIN32)
 #define LOGSYSERR(who, what, arg) {                                     \
         LOGERR(who << ": " << what << "("  << arg << "): errno " << errno << \
-               ": " << strerror(errno) << std::endl);                   \
+               ": " << strerror(errno) << '\n');                        \
     }
 #else // not WINDOWS or sun
 
@@ -251,9 +251,8 @@ inline char *_log_check_strerror_r(char *cp, char *){return cp;}
 
 #define LOGSYSERR(who, what, arg) {                                     \
         char buf[200]; buf[0] = 0;                                      \
-        LOGERR(who << ": " << what << "("  << arg << "): errno " << errno << \
-               ": " << _log_check_strerror_r(                           \
-                   strerror_r(errno, buf, 200), buf) << std::endl);     \
+        LOGERR(who << ": " << what << "("  << arg << "): errno " << errno << ": " << \
+               _log_check_strerror_r(strerror_r(errno, buf, 200), buf) << '\n'); \
     }
 
 #endif // not windows
