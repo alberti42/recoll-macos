@@ -188,7 +188,7 @@ public:
         return TermProc::takeword(otrm, pos, bs, be);
     }
 
-    virtual bool flush() {
+    virtual bool flush() override {
         m_totalterms = m_unacerrors = 0;
         return TermProc::flush();
     }
