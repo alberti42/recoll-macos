@@ -19,7 +19,7 @@ except:
     print("RECFILTERROR HELPERNOTFOUND python3:pyexiv2")
     sys.exit(1);
 
-khexre = re.compile('.*\.0[xX][0-9a-fA-F]+$')
+khexre = re.compile(r'.*\.0[xX][0-9a-fA-F]+$')
 
 pyexiv2_titles = {
     'Xmp.dc.subject',

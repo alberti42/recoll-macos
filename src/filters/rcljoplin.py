@@ -52,23 +52,22 @@ import signal
 
 
 def msg(s):
-    print(f"{s}", file=sys.stderr)
+    print(f"rcljoplin.py: {s}", file=sys.stderr)
 
 try:
     from recoll import recoll
     from recoll import rclconfig
     from recoll import conftree
 except:
-    msg("rcljoplin: the recoll python extension was not found.")
+    msg("The recoll Python extension was not found.")
     sys.exit(0)
 
 # Signal termination handling: try to cleanly close the index
 rcldb = None
 def handler(signum, frame):
-    logmsg(f"Got signal")
     if rcldb:
         rcldb.close()
-    logmsg(f"Exiting")
+    msg(f"Got signal, exiting")
     sys.exit(1)
 
 signal.signal(signal.SIGINT, handler)
@@ -85,7 +84,16 @@ class joplin_indexer:
                 self.sqconn = sqlite3.connect(sqfile)
         except:
             pass
-
+        if self.ok():
+            self.has_ocr_text = True
+            try:
+                c = self.sqconn.cursor()
+                stmt = "SELECT ocr_text FROM resources LIMIT 1"
+                c.execute(stmt)
+            except Exception as ex:
+                #msg(f"Testing for ocr_text column: {ex}")
+                self.has_ocr_text = False
+            
     def ok(self):
         if self.sqconn:
             return True
@@ -176,6 +184,8 @@ class joplin_indexer:
         # See if there are any resources (attachments) with text, these can come from OCR on an
         # attached image.
         text = ""
+        if not self.has_ocr_text:
+            return text
         c = self.sqconn.cursor()
         stmt = "SELECT resource_id FROM note_resources WHERE note_id = ?"
         c.execute(stmt, (id,))

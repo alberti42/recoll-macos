@@ -63,7 +63,7 @@ class OrgModeExtractor:
             self.selftext = data
             return True
 
-        res = rb'''^\* '''
+        res = rb"^\* "
         self.docs = re.compile(res, flags=re.MULTILINE).split(data)
         # Note that there can be text before the first heading. This goes into the self doc,
         # because it's not a proper entry.

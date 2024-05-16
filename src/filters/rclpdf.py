@@ -308,13 +308,13 @@ class PDFExtractor:
                 m = None
                 if self.needescape:
                     # Look for a title line and escape the data
-                    m = re.search(b'''(.*<title>)(.*)(<\/title>.*)''', line)
+                    m = re.search(rb'(.*<title>)(.*)(<\/title>.*)', line)
                     if m:
                         line = m.group(1) + rclexecm.htmlescape(m.group(2)) + m.group(3)
                 if not m:
                     # Not a title line. Look for a meta one, possibly replace the name and escape
                     # the data if needed
-                    m = re.search(b'''(.*name=")([^"]*)(.*content=")(.*)(".*/>.*)''', line)
+                    m = re.search(rb'(.*name=")([^"]*)(.*content=")(.*)(".*/>.*)', line)
                     if m:
                         nm = m.group(2)
                         data = m.group(4)
@@ -475,7 +475,7 @@ class PDFExtractor:
         else:
             tmpdir = rclexecm.SafeTmpDir("rclpdf", self.em)
             #self.em.rclog("Using temporary directory %s" % tmpdir.getpath())
-            if self.pdftk and re.match("/snap/", self.pdftk):
+            if self.pdftk and re.match(r"/snap/", self.pdftk):
                 # We know this is Unix (Ubuntu actually). Check that tmpdir
                 # belongs to the user as snap commands can't use /tmp to share
                 # files. Don't generate an error as this only affects

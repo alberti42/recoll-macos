@@ -73,7 +73,7 @@ def delete_previous_instances(l, downloadsdir):
         i += j
     return ret
 
-fn_re = re.compile('''recoll-we-([mc])-([0-9a-f]+)(\([0-9]+\))?\.rclwe''')
+fn_re = re.compile(r'recoll-we-([mc])-([0-9a-f]+)(\([0-9]+\))?\.rclwe')
 
 def list_all_files(dir):
     files=os.listdir(dir)

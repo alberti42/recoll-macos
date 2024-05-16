@@ -17,9 +17,9 @@ class WordProcessData:
         # Line with continued word (ending in -)
         # we strip the - which is not nice for actually hyphenated word.
         # What to do ?
-        self.patcont = re.compile(b'''[\w][-]$''')
+        self.patcont = re.compile(rb"[\w][-]$")
         # Pattern for breaking continuation at last word start
-        self.patws = re.compile(b'''([\s])([\w]+)(-)$''')
+        self.patws = re.compile(rb"([\s])([\w]+)(-)$")
 
     def takeLine(self, line):
         if not self.gotdata:

@@ -201,13 +201,13 @@ class rclCHM:
         self.catenate = cf.getConfParam("chmcatenate")
         self.catenate = int(self.catenate) if self.catenate else False
         self.em.setmimetype("text/html")
-        expr = b'''(<meta *http-equiv *= *"content-type".*charset *= *)((us-)?ascii)( *" *>)'''
+        expr = rb'(<meta *http-equiv *= *"content-type".*charset *= *)((us-)?ascii)( *" *>)'
         self.asciito1252re = re.compile(expr, re.IGNORECASE)
-        expr = b'''<meta *http-equiv *= *"content-type".*charset *= *([a-z0-9-]+) *" *>'''
+        expr = rb'<meta *http-equiv *= *"content-type".*charset *= *([a-z0-9-]+) *" *>'
         self.findcharsetre = re.compile(expr, re.IGNORECASE)
-        self._headtagre = re.compile(b'</head>',  re.IGNORECASE)
-        self._headerre = re.compile(b'(<head.*</head>)', re.IGNORECASE|re.DOTALL)
-        self._bodyre = re.compile(b'<body[^>]*>(.*)</body>', re.IGNORECASE|re.DOTALL)
+        self._headtagre = re.compile(rb'</head>',  re.IGNORECASE)
+        self._headerre = re.compile(rb'(<head.*</head>)', re.IGNORECASE|re.DOTALL)
+        self._bodyre = re.compile(rb'<body[^>]*>(.*)</body>', re.IGNORECASE|re.DOTALL)
 
 
     def extractone(self, path, norclaptag=False):
@@ -229,7 +229,7 @@ class rclCHM:
         #self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
         if res > 0:
             if not norclaptag:
-                doc = self._headtagre.sub(b'''<meta name="rclaptg" content="chm"></head>''', doc)
+                doc = self._headtagre.sub(b'<meta name="rclaptg" content="chm"></head>', doc)
             return (True, doc, path, iseof)
         return (False, "", path, iseof)
 
@@ -251,7 +251,7 @@ class rclCHM:
                         title = self.chm.title.encode(self.charset)
                     else:
                         title = self.chm.title
-                    header = re.sub(b"<title.*</title>", b"<title>" + title + b"</title>",
+                    header = re.sub(rb"<title.*</title>", b"<title>" + title + b"</title>",
                                     doc, re.IGNORECASE|re.DOTALL)
                     first = False
                     alltxt += header + b"<body>"
@@ -277,7 +277,7 @@ class rclCHM:
 
         if type(text) == type(b''):
             # Fix an ascii charset decl to windows-1252
-            text = self.asciito1252re.sub(b'''\1windows-1252\4''', text, 1)
+            text = self.asciito1252re.sub(rb"\1windows-1252\4", text, 1)
             # Convert to unicode according to charset decl
             m = self.findcharsetre.search(text)
             if m:

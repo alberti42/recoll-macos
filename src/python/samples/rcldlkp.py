@@ -101,7 +101,7 @@ if targetnum == None:
 rec = ""
 numrec = 1
 for line in f:
-    if re.compile("^%[ \t]*").match(line):
+    if re.compile(r"^%[ \t]*").match(line):
         if targetnum == None:
             index_rec(db, numrec, rec)
         elif targetnum == numrec:

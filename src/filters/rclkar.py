@@ -132,7 +132,7 @@ class KarTextExtractor(RclBaseHandler):
         just one our users could use if there is trouble with guessing
         encodings'''
 
-        rexp = b'''\(([^\)]+)\)\.[a-zA-Z]+$'''
+        rexp = rb'\(([^\)]+)\)\.[a-zA-Z]+$'
         m = re.search(rexp, fn)
         if m:
             return m.group(1)

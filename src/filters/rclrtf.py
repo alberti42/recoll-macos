@@ -30,8 +30,8 @@ class RTFProcessData:
         self.em = em
         self.out = []
         self.gothead = 0
-        self.patendhead = re.compile(b'''</head>''')
-        self.patcharset = re.compile(b'''^<meta http-equiv=''')
+        self.patendhead = re.compile(rb"</head>")
+        self.patcharset = re.compile(rb"^<meta http-equiv=")
 
     # Some versions of unrtf put out a garbled charset line.
     # Apart from this, we pass the data untouched.

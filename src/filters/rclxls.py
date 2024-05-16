@@ -5,9 +5,7 @@
 import rclexecm
 import rclexec1
 import xlsxmltocsv
-import re
 import sys
-import os
 import xml.sax
 
 class XLSProcessData:

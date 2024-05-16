@@ -19,7 +19,6 @@
 
 import os
 import sys
-import re
 import rclexecm
 import subprocess
 import codecs

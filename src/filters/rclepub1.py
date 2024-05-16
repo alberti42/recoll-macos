@@ -60,11 +60,10 @@ class EPUBConcatExtractor(RclBaseHandler):
             if item is None or item.media_type != 'application/xhtml+xml':
                 continue
             doc = self.book.read_item(item)
-            doc = re.sub(b'''<\?.*\?>''', b'', doc)
-            doc = re.sub(b'''<html.*<body[^>]*>''',
-                         b'', doc, 1, flags=re.DOTALL|re.I)
-            doc = re.sub(b'''</body>''', b'', doc, flags=re.I)
-            doc = re.sub(b'''</html>''', b'', doc, flags=re.I)
+            doc = re.sub(rb'<\?.*\?>', b'', doc)
+            doc = re.sub(rb'<html.*<body[^>]*>', b'', doc, 1, flags=re.DOTALL|re.I)
+            doc = re.sub(rb'</body>', b'', doc, flags=re.I)
+            doc = re.sub(rb'</html>', b'', doc, flags=re.I)
             data += doc
 
         data += b'</body></html>'

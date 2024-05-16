@@ -26,8 +26,7 @@ except:
 import re
 import sys
 
-xmp_index_re = re.compile('''\[[0-9+]\]$''')
-#xmp_index_re = re.compile('''3''')
+xmp_index_re = re.compile(r"\[[0-9+]\]$")
 
 def rclxmp_enabled():
     return can_xmp
@@ -48,7 +47,7 @@ def rclxmp(filename):
     for ns in xmp.keys():
         for entry in xmp[ns]:
             if entry[1]:
-                k = xmp_index_re.sub('', entry[0])
+                k = xmp_index_re.sub("", entry[0])
                 if k.find("/") != -1:
                     continue
                 if k in out:

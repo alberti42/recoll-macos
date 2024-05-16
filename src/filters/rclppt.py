@@ -4,9 +4,7 @@
 
 import rclexecm
 import rclexec1
-import re
 import sys
-import os
 
 class PPTProcessData:
     def __init__(self, em):
