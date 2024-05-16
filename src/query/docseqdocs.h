@@ -53,7 +53,7 @@ public:
         m_description = desc;
     }
 protected:
-    virtual std::shared_ptr<Rcl::Db> getDb() {
+    virtual std::shared_ptr<Rcl::Db> getDb() override {
         return m_db;
     }
 private:
