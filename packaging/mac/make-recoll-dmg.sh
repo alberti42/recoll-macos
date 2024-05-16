@@ -29,6 +29,11 @@ dmg=$appdir/../recoll.dmg
 
 ### Do it
 version=`cat $toprecoll/RECOLL-VERSION.txt`
+VERSION=`cat $toprecoll/RECOLL-VERSION.txt`
+CFVERS=`grep PACKAGE_VERSION $toprecoll/common/autoconfig.h | \
+cut -d ' ' -f 3 | sed -e 's/"//g'`
+test "$VERSION" = "$CFVERS" ||
+    fatal Versions in RECOLL-VERSION.txt and autoconfig.h differ
 
 test -d $appdir || fatal Must first have built recoll in $appdir
 
@@ -48,13 +53,13 @@ mkdir -p $datadir/poppler || exit 1
 cp -rp $top/poppler-data/* $datadir/poppler || exit 1
 
 ### Create the dmg
-rm -f $dmg ~/Documents/recoll-$version-*.dmg
+rm -f $dmg ~/Documents/recoll-$VERSION-*.dmg
 
 $deploy $appdir -dmg || exit 1
 
-### Rename the dmg according to date and version.
+### Rename the dmg according to date and version
 hash=`(cd $top/recoll;git log -n 1  | head -1  | awk '{print $2}' |cut -b 1-8)`
 dte=`date +%Y%m%d`
-mv $dmg ~/Documents/recoll-$version-$dte-$hash.dmg || exit 1
-ls -l ~/Documents/recoll-$version-*.dmg
+mv $dmg ~/Documents/recoll-$VERSION-$dte-$hash.dmg || exit 1
+ls -l ~/Documents/recoll-$VERSION-*.dmg
 
