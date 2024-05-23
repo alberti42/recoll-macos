@@ -82,6 +82,9 @@ bool TextSplit::o_deHyphenate{false};
 int  TextSplit::o_maxWordLength{40};
 int  TextSplit::o_maxWordsInSpan{6};
 
+static std::unordered_set<unsigned int> o_idxpunct;
+static bool o_haveidxpunct;
+
 static bool o_exthangultagger{false};
 static bool o_extchinesetagger{false};
 
@@ -93,6 +96,16 @@ void TextSplit::staticConfInit(RclConfig *config)
     config->getConfParam("maxtermlength", &o_maxWordLength);
     config->getConfParam("maxwordsinspan", &o_maxWordsInSpan);
 
+    std::string sidxpunct;
+    config->getConfParam("indexedpunctuation", sidxpunct);
+    if (!sidxpunct.empty()) {
+        Utf8Iter it(sidxpunct);
+        for (; !it.eof() && !it.error(); it++) {
+            o_idxpunct.insert(*it);
+        }
+        o_haveidxpunct = true;
+    }
+    
     bool bvalue{false};
     if (config->getConfParam("nocjk", &bvalue) && bvalue == true) {
         o_processCJK = false;
@@ -742,6 +755,16 @@ bool TextSplit::text_to_words(const string &in)
             if (nlpending) {
                 nlpending = false;
                 newline(m_wordpos);
+            }
+
+            if (o_haveidxpunct && (o_idxpunct.find(c) != o_idxpunct.end())) {
+                std::string tmp;
+                auto l = it.appendchartostring(tmp);
+                // std::cerr << "IDXSPACE: [" << c << "] [" << tmp << "]\n";
+                takeword(tmp, m_wordpos, it.getBpos(), it.getBpos()+l);
+                if (m_spanpos == m_wordpos)
+                    m_spanpos++;
+                m_wordpos++;
             }
             break;
 

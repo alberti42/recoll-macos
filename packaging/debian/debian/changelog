@@ -1,3 +1,9 @@
+recoll (1.39.0pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Add capability to index some non-alphanumeric characters.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 17 May 2024 09:06:00 +0200
+
 recoll (1.38.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Allow using multiple temporary Xapian indexes and a final merge.  This

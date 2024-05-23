@@ -4,7 +4,7 @@ project(
     license: 'GPL 2+',
     # We'd like to use version: files('RECOLL-VERSION.txt') but this is a 0.56 feature. Buster has
     # 0.49 and focal 0.53. let's support at least focal backports for now.
-    version: '1.38.1',
+    version: '1.39.0pre1',
     default_options: ['cpp_std=c++17', 'buildtype=debugoptimized'],
     meson_version: '>=0.49',
 )
@@ -12,7 +12,7 @@ project(
 # this is not very important because we don't really package the lib users (python, kde stuff)
 # independently, but the future rule should be to only change the API with the minor (38) and use
 # this for the soversion. Just in case we ever actually define an API...
-recoll_soversion = '38'
+recoll_soversion = '39'
 recoll_soversion_minor = '.1.0'
 
 cpp = meson.get_compiler('cpp')

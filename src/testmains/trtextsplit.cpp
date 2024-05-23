@@ -57,7 +57,7 @@ using namespace std;
 #define OPT_t 0x1000
 #define OPT_u 0x2000     
 #define OPT_w 0x4000    
-
+#define OPT_e 0x8000
 
 static string thisprog;
 
@@ -70,7 +70,8 @@ static string usage =
     "   -w :  only words\n"
     "   -n :  no numbers\n"
     "   -k :  preserve wildcards (?*)\n"
-    "   -c : just count words\n"
+    "   -c <config> : use configuration file\n"
+    "   -e : just count words\n"
     "   -u : use unac\n"
     "   -t [tagger] : korean tagger name (Mecab/Okt/Komoran)\n"
     "   -C [charset] : input charset\n"
@@ -220,7 +221,8 @@ int main(int argc, char **argv)
     string charset, stopfile, kotagger;
     int loglevel = 4;
     int maxtermlen{-1};
-
+    std::string configdir;
+    
     thisprog = argv[0];
     argc--; argv++;
 
@@ -231,10 +233,12 @@ int main(int argc, char **argv)
             Usage();
         while (**argv)
             switch (*(*argv)++) {
-            case 'c':   op_flags |= OPT_c; break;
+            case 'c':   op_flags |= OPT_c; if (argc < 2)  Usage();
+                configdir = *(++argv); argc--; goto b1;
             case 'C':   op_flags |= OPT_C; if (argc < 2)  Usage();
                 charset = *(++argv); argc--;  goto b1;
             case 'd':   op_flags |= OPT_d|OPT_q; break;
+            case 'e':   op_flags |= OPT_e; break;
             case 'I':   op_flags |= OPT_I; break;
             case 'k':   op_flags |= OPT_k; break;
             case 'l':   op_flags |= OPT_l; if (argc < 2)  Usage();
@@ -266,29 +270,32 @@ int main(int argc, char **argv)
         flags = (TextSplit::Flags)(flags | TextSplit::TXTS_KEEPWILD); 
 
 
-    // We need a configuration file, which we build in a temp file
     TempDir tmpconf;
-    string cffn(path_cat(tmpconf.dirname(), "recoll.conf"));
-    FILE *fp = fopen(cffn.c_str(), "w");
-    fprintf(fp, "loglevel = %d\n", loglevel);
-    if (op_flags & OPT_n) {
-        fprintf(fp, "nonumbers = 1\n");
+    if (configdir.empty()) {
+        // We need a configuration file, which we build in a temp file, except if we have a -c
+        // option
+        string cffn(path_cat(tmpconf.dirname(), "recoll.conf"));
+        FILE *fp = fopen(cffn.c_str(), "w");
+        fprintf(fp, "loglevel = %d\n", loglevel);
+        if (op_flags & OPT_n) {
+            fprintf(fp, "nonumbers = 1\n");
+        }
+        if (op_flags & OPT_l) {
+            fprintf(fp, "maxtermlength = %d\n", maxtermlen);
+        }
+        if (!kotagger.empty()) {
+            fprintf(fp, "hangultagger = %s\n", kotagger.c_str());
+        }
+        fprintf(fp, "underscoreasletter = 0\n");
+        fclose(fp);
+        configdir = tmpconf.dirname();
     }
-    if (op_flags & OPT_l) {
-        fprintf(fp, "maxtermlength = %d\n", maxtermlen);
-    }
-    if (!kotagger.empty()) {
-        fprintf(fp, "hangultagger = %s\n", kotagger.c_str());
-    }
-    fprintf(fp, "underscoreasletter = 0\n");
-    fclose(fp);
-
+    
     Logger::getTheLog("")->setLogLevel(Logger::LogLevel(loglevel));
 
-    string dn(tmpconf.dirname());
-    RclConfig *config = new RclConfig(&dn);
+    RclConfig *config = new RclConfig(&configdir);
     if (!config->ok()) {
-        cerr << "Could not build configuration: " << config->getReason() <<endl;
+        cerr << "Could not build configuration: " << config->getReason() << '\n';
     }
 
     TextSplit::staticConfInit(config);
@@ -353,7 +360,7 @@ int main(int argc, char **argv)
         }
     }
 
-    if (op_flags & OPT_c) {
+    if (op_flags & OPT_e) {
         int n = TextSplit::countWords(data, flags);
         cout << n << " words" << endl;
     } else {

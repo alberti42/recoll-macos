@@ -35,6 +35,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtwebkit-devel
+BuildRequires:  qt5-linguist
 BuildRequires:  xapian-core-devel
 BuildRequires:  zlib-devel
 Requires:       xdg-utils
