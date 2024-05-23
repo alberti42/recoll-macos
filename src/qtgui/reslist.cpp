@@ -1014,7 +1014,13 @@ void ResList::onLinkClicked(const QUrl &qurl)
     // to fix icons display which had stopped working). So linkprefix() is now empty, but the code
     // has been kept around. We now receive absolute links baseUrl+relative (e.g. file:///E1), and
     // substract the baseUrl.
+    
+#if defined(USING_WEBENGINE) || defined(USING_WEBKIT)
     auto prefix = m_pager->linkPrefix().size() ? m_pager->linkPrefix() : sBaseUrl;
+#else
+    std::string prefix;
+#endif
+    
     if (prefix.size() && (strurl.size() <= prefix.size() || !beginswith(strurl, prefix))) {
         LOGINF("ResList::onLinkClicked: bad URL [" << strurl << "] (prefix [" << prefix << "]\n");
         return;
