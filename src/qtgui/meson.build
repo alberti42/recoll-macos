@@ -38,12 +38,12 @@ qmkmk = find_program(meson.current_source_dir() / 'qmkmk.sh')
 
 infile = pro_file
 outfile = 'recoll'
-
+prefixoption = 'PREFIX=' + get_option('prefix')
 recoll = custom_target(
     'recoll',
     output: outfile,
     input: infile,
-    command: [qmkmk, '@INPUT@'],
+    command: [qmkmk, '@INPUT@', prefixoption],
     install: true,
     install_dir: 'bin',
 )

@@ -80,9 +80,10 @@ recoll_conf.set('IDX_THREADS', get_option('idxthreads'))
 recoll_conf.set('ENABLE_LIBMAGIC', get_option('libmagic'))
 recoll_conf.set('DISABLE_X11MON', not get_option('x11mon'))
 recoll_conf.set('RCL_USE_ASPELL', get_option('aspell'))
-recoll_conf.set('PREVIEW_FORCETEXTBROWSER', get_option('webpreview'))
-# TBD: DEF_EXT4_BIRTH_TIME in python recoll setup.py and qtgui
-# For qtgui this was done by running qmake with DEFINE_BTIME=1 on the command line cf Makefile.am
+recoll_conf.set('PREVIEW_FORCETEXTBROWSER', not get_option('webpreview'))
+# TBD: DEF_EXT4_BIRTH_TIME in python recoll setup.py
+# For qtgui this was done by running qmake with DEFINE_BTIME=1 on the command line but the affected
+# files actually include autoconfig.h so we're ok
 recoll_conf.set('EXT4_BIRTH_TIME', get_option('ext4-birthtime'))
 if cpp.compiles(
     '''

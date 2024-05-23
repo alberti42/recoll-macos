@@ -4,6 +4,7 @@
 # I could find no way to do this in 2 steps inside meson
 set -e
 pro_file=$1
+shift
 
 dir=`dirname $pro_file`
 fn=`basename $pro_file`
@@ -19,5 +20,5 @@ elif which sysctl > /dev/null;then
 fi
 
 cd $dir
-${QMAKE} $fn
+${QMAKE} $fn $*
 ${MAKE} -j $ncpus
