@@ -32,25 +32,25 @@ static const QString ellips{"..."};
 
 void RclMain::buildMenus()
 {
-    fileMenu = new QMenu();
+    fileMenu = new QMenu(menuBar());
     fileMenu->setObjectName(QString::fromUtf8("fileMenu"));
     fileMenu->setTitle(QApplication::translate("RclMainBase", "&File"));
-    viewMenu = new QMenu();
+    viewMenu = new QMenu(menuBar());
     viewMenu->setObjectName(QString::fromUtf8("viewMenu"));
     viewMenu->setTitle(QApplication::translate("RclMainBase", "&View"));
-    toolsMenu = new QMenu();
+    toolsMenu = new QMenu(menuBar());
     toolsMenu->setObjectName(QString::fromUtf8("toolsMenu"));
     toolsMenu->setTitle(QApplication::translate("RclMainBase", "&Tools"));
-    preferencesMenu = new QMenu();
+    preferencesMenu = new QMenu(menuBar());
     preferencesMenu->setObjectName(QString::fromUtf8("preferencesMenu"));
     preferencesMenu->setTitle(QApplication::translate("RclMainBase", "&Preferences"));
-    helpMenu = new QMenu();
+    helpMenu = new QMenu(menuBar());
     helpMenu->setObjectName(QString::fromUtf8("helpMenu"));
     helpMenu->setTitle(QApplication::translate("RclMainBase", "&Help"));
-    resultsMenu = new QMenu();
+    resultsMenu = new QMenu(menuBar());
     resultsMenu->setObjectName(QString::fromUtf8("resultsMenu"));
     resultsMenu->setTitle(QApplication::translate("RclMainBase", "&Results"));
-    queryMenu = new QMenu();
+    queryMenu = new QMenu(menuBar());
     queryMenu->setObjectName(QString::fromUtf8("queryMenu"));
     queryMenu->setTitle(QApplication::translate("RclMainBase", "&Query"));
 
@@ -186,16 +186,16 @@ void RclMain::buildMenus()
     actionSaveResultsAsCSV->setText(actionSaveResultsAsCSV->text() + ellips);
     resultsMenu->addAction(actionSaveResultsAsCSV);
 
-    MenuBar->addAction(fileMenu->menuAction());
-    MenuBar->addAction(queryMenu->menuAction());
-    MenuBar->addAction(resultsMenu->menuAction());
-    MenuBar->addAction(viewMenu->menuAction());
-    MenuBar->addAction(toolsMenu->menuAction());
-    MenuBar->addAction(preferencesMenu->menuAction());
-    MenuBar->addSeparator();
-    MenuBar->addAction(helpMenu->menuAction());
+    menuBar()->addAction(fileMenu->menuAction());
+    menuBar()->addAction(queryMenu->menuAction());
+    menuBar()->addAction(resultsMenu->menuAction());
+    menuBar()->addAction(viewMenu->menuAction());
+    menuBar()->addAction(toolsMenu->menuAction());
+    menuBar()->addAction(preferencesMenu->menuAction());
+    menuBar()->addSeparator();
+    menuBar()->addAction(helpMenu->menuAction());
 
-    buttonTopMenu = new QMenu();
+    buttonTopMenu = new QMenu(menuBar());
     buttonTopMenu->addAction(fileMenu->menuAction());
     buttonTopMenu->addAction(queryMenu->menuAction());
     buttonTopMenu->addAction(viewMenu->menuAction());

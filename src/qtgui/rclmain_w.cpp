@@ -409,12 +409,12 @@ void RclMain::setupStatusBar()
 void RclMain::setupMenus()
 {
     if (prefs.noMenuBar) {
-        MenuBar->hide();
+        menuBar()->hide();
         sSearch->menuPB->show();
         butmenuSC = new QShortcut(QKeySequence("Alt+m"), this);
         connect(butmenuSC, SIGNAL(activated()), sSearch->menuPB, SLOT(showMenu()));
     } else {
-        MenuBar->show();
+        menuBar()->show();
         sSearch->menuPB->hide();
         deleteZ(butmenuSC);
     }
@@ -471,9 +471,9 @@ void RclMain::setupCategoryFiltering()
     m_filtFRM->setLayout(bgrphbox);
 
     //// Menu version of the document filter control
-    m_filtMN = new QMenu(MenuBar);
+    m_filtMN = new QMenu(menuBar());
     m_filtMN->setObjectName("m_filtMN");
-    MenuBar->insertMenu(viewMenu->menuAction(), m_filtMN);
+    menuBar()->insertMenu(viewMenu->menuAction(), m_filtMN);
     buttonTopMenu->insertMenu(viewMenu->menuAction(), m_filtMN);
     m_filtMN->setTitle(tr("F&ilter"));
     QActionGroup *fltag = new QActionGroup(this);
