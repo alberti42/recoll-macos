@@ -378,7 +378,7 @@ int main(int argc, char **argv)
     if (op_flags & OPT_L) {
         slang = u8s2qs(a_lang);
     } else {
-        slang = QLocale::system().name().left(2);
+        slang = QLocale::system().name();
     }
     QTranslator qt_trans(0);
     if (qt_trans.load(QString("qt_%1").arg(slang), 
