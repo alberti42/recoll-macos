@@ -578,7 +578,7 @@ p, li { white-space: pre-wrap; }
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation>Chemin source</translation>
+        <translation type="vanished">Chemin source</translation>
     </message>
     <message>
         <source>Local path</source>
@@ -591,6 +591,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Original path</source>
         <translation>Chemin Originel</translation>
+    </message>
+    <message>
+        <source>Path in index</source>
+        <translation>Chemin stocké dans l&apos;index</translation>
+    </message>
+    <message>
+        <source>Translated path</source>
+        <translation>Chemin modifié</translation>
     </message>
 </context>
 <context>
@@ -1425,7 +1433,7 @@ Veuillez vérifier le fichier mimeconf</translation>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>Le visualiseur spécifié dans mimeview pour %1 : %2 est introuvable.
+        <translation type="vanished">Le visualiseur spécifié dans mimeview pour %1 : %2 est introuvable.
 Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
@@ -1939,6 +1947,12 @@ Merci de vérifier le fichier desktop </translation>
         <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation>La ligne de commande pour %1 specifie l&apos;utilisation du fichier parent, mais l&apos;URL n&apos;est pas file:// : ne peut pas marcher</translation>
     </message>
+    <message>
+        <source>The viewer specified in mimeview for %1: %2 is not found.
+Do you want to start the preferences dialog ?</source>
+        <translation>L&apos;application spécifiée dans le fichier mimeview pour %1: %2 n&apos;est pas trouvée.
+Voulez vous afficher le dialogue de préférences ?</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2301,6 +2315,14 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Filter birth dates</source>
         <translation>Filtrer par date de création</translation>
+    </message>
+    <message>
+        <source>Switch Configuration...</source>
+        <translation>Changer de configuration...</translation>
+    </message>
+    <message>
+        <source>Choose another configuration to run on, replacing this process</source>
+        <translation>Choisir une autre configuration (démarre une nouvelle instance remplacant celle-ci)</translation>
     </message>
 </context>
 <context>
@@ -3226,6 +3248,14 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Close window</source>
         <translation>Fermer la fenêtre</translation>
+    </message>
+    <message>
+        <source>Increase font size</source>
+        <translation>Augmenter la taille des caractères</translation>
+    </message>
+    <message>
+        <source>Decrease font size</source>
+        <translation>Diminuer la taille des caractères</translation>
     </message>
 </context>
 <context>
@@ -4966,6 +4996,14 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Prefer HTML to plain text for preview.</source>
         <translation>Utiliser le format HTML pour la previsualisation.</translation>
+    </message>
+    <message>
+        <source>See Qt QDateTimeEdit documentation. E.g. yyyy-MM-dd. Leave empty to use the default Qt/System format.</source>
+        <translation>Voir la documentation de Qt QDateTimeEdit. Ex: yyyy-MM-dd. Laisser vide pour utiliser le format par défaut.</translation>
+    </message>
+    <message>
+        <source>Side filter dates format (change needs restart)</source>
+        <translation>Format pour les dates du filtre (un changement nécessite un redémarrage de l&apos;application)</translation>
     </message>
 </context>
 </TS>

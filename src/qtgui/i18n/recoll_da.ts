@@ -577,7 +577,7 @@ p, li { white-space: pre-wrap; }
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation>Kildesti</translation>
+        <translation type="vanished">Kildesti</translation>
     </message>
     <message>
         <source>Local path</source>
@@ -590,6 +590,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Original path</source>
         <translation>Original sti</translation>
+    </message>
+    <message>
+        <source>Path in index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Translated path</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1423,7 +1431,7 @@ Tjek venligst filen mimeconf</translation>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>Fremviseren angivet i mimeview for %1: %2 er ikke fundet.
+        <translation type="vanished">Fremviseren angivet i mimeview for %1: %2 er ikke fundet.
 Ønsker du at åbne  indstillingsvinduet?</translation>
     </message>
     <message>
@@ -1937,6 +1945,11 @@ Tjek venligst desktopfilen</translation>
         <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The viewer specified in mimeview for %1: %2 is not found.
+Do you want to start the preferences dialog ?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2298,6 +2311,14 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch Configuration...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose another configuration to run on, replacing this process</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3222,6 +3243,14 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>Close window</source>
         <translation>Luk vindue</translation>
+    </message>
+    <message>
+        <source>Increase font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease font size</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4957,6 +4986,14 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Prefer HTML to plain text for preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>See Qt QDateTimeEdit documentation. E.g. yyyy-MM-dd. Leave empty to use the default Qt/System format.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Side filter dates format (change needs restart)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

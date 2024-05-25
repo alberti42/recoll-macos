@@ -583,7 +583,7 @@ Falsche Syntax in Feldern?</translation>
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation>Quellpfad</translation>
+        <translation type="vanished">Quellpfad</translation>
     </message>
     <message>
         <source>Local path</source>
@@ -596,6 +596,14 @@ Falsche Syntax in Feldern?</translation>
     <message>
         <source>Original path</source>
         <translation>Originalpfad</translation>
+    </message>
+    <message>
+        <source>Path in index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Translated path</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1435,7 +1443,7 @@ Please check the mimeconf file</source>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>Das in mimeview angegebene Anzeigeprogramm für %1: %2 wurde nicht gefunden.
+        <translation type="vanished">Das in mimeview angegebene Anzeigeprogramm für %1: %2 wurde nicht gefunden.
 Wollen Sie den Einstellungs-Dialog starten?</translation>
     </message>
     <message>
@@ -1951,6 +1959,11 @@ Bitte überprüfen Sie die Desktop-Datei</translation>
         <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The viewer specified in mimeview for %1: %2 is not found.
+Do you want to start the preferences dialog ?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2312,6 +2325,14 @@ Bitte überprüfen Sie die Desktop-Datei</translation>
     </message>
     <message>
         <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch Configuration...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose another configuration to run on, replacing this process</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3240,6 +3261,14 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     <message>
         <source>Close window</source>
         <translation>Fenster schließen</translation>
+    </message>
+    <message>
+        <source>Increase font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease font size</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4982,6 +5011,14 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Prefer HTML to plain text for preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>See Qt QDateTimeEdit documentation. E.g. yyyy-MM-dd. Leave empty to use the default Qt/System format.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Side filter dates format (change needs restart)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

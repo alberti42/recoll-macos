@@ -578,7 +578,7 @@ p, li { white-space: pre-wrap; }
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation>Διαδρομή πηγής</translation>
+        <translation type="vanished">Διαδρομή πηγής</translation>
     </message>
     <message>
         <source>Local path</source>
@@ -591,6 +591,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Original path</source>
         <translation>Αρχική διαδρομή</translation>
+    </message>
+    <message>
+        <source>Path in index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Translated path</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1423,7 +1431,7 @@ Please check the mimeconf file</source>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>Ο καθορισμένος προβολέας στο mimeview για %1: %2 δεν βρέθηκε.
+        <translation type="vanished">Ο καθορισμένος προβολέας στο mimeview για %1: %2 δεν βρέθηκε.
 Θέλετε να ξεκινήσετε το διάλογο με τις προτιμήσεις;</translation>
     </message>
     <message>
@@ -1938,6 +1946,11 @@ Please check the desktop file</source>
         <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The viewer specified in mimeview for %1: %2 is not found.
+Do you want to start the preferences dialog ?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2299,6 +2312,14 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch Configuration...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose another configuration to run on, replacing this process</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3229,6 +3250,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Close window</source>
         <translation>Κλείσιμο παραθύρου</translation>
+    </message>
+    <message>
+        <source>Increase font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease font size</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4963,6 +4992,14 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Prefer HTML to plain text for preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>See Qt QDateTimeEdit documentation. E.g. yyyy-MM-dd. Leave empty to use the default Qt/System format.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Side filter dates format (change needs restart)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

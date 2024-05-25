@@ -577,7 +577,7 @@ p, li { white-space: pre-wrap; }
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation>Ścieżka źródłowa</translation>
+        <translation type="vanished">Ścieżka źródłowa</translation>
     </message>
     <message>
         <source>Local path</source>
@@ -590,6 +590,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Original path</source>
         <translation>Ścieżka oryginalna</translation>
+    </message>
+    <message>
+        <source>Path in index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Translated path</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1426,7 +1434,7 @@ Sprawdź plik mimeconf</translation>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>Brak przeglądarki dla typu MIME %1: %2 . Chcesz to ustawić teraz?</translation>
+        <translation type="vanished">Brak przeglądarki dla typu MIME %1: %2 . Chcesz to ustawić teraz?</translation>
     </message>
     <message>
         <source>Can&apos;t access file: </source>
@@ -1940,6 +1948,11 @@ Sprawdź plik pulpitu</translation>
         <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The viewer specified in mimeview for %1: %2 is not found.
+Do you want to start the preferences dialog ?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -2301,6 +2314,14 @@ Sprawdź plik pulpitu</translation>
     </message>
     <message>
         <source>Filter birth dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch Configuration...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose another configuration to run on, replacing this process</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3227,6 +3248,14 @@ Użyj &lt;b&gt;Pokaż link Zapytania&lt;/b&gt; w razie wątpliwości co do wynik
     <message>
         <source>Close window</source>
         <translation>Zamknij okno</translation>
+    </message>
+    <message>
+        <source>Increase font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease font size</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4962,6 +4991,14 @@ Domyślna wartość to 2 (%).</translation>
     </message>
     <message>
         <source>Prefer HTML to plain text for preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>See Qt QDateTimeEdit documentation. E.g. yyyy-MM-dd. Leave empty to use the default Qt/System format.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Side filter dates format (change needs restart)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
