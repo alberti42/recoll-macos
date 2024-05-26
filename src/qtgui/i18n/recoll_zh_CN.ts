@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh-CN" sourcelanguage="en">
+<TS version="2.1" language="zh_CN" sourcelanguage="en">
 <context>
     <name>ActSearchDLG</name>
     <message>
         <source>Menu search</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>搜索菜单</translation>
     </message>
 </context>
 <context>
@@ -87,7 +88,7 @@
     <name>AdvSearchBase</name>
     <message>
         <source>Advanced search</source>
-        <translation>高端搜索</translation>
+        <translation>高级搜索</translation>
     </message>
     <message>
         <source>Restrict file types</source>
@@ -167,7 +168,7 @@
     </message>
     <message>
         <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation>右边的所有非空字段都会按照逻辑与（“全部条件”选项）或逻辑或（“任意条件”选项）来组合。&lt;br&gt;“任意”“全部”和“无”三种字段类型都接受输入简单词语和双引号引用的词组的组合。&lt;br&gt;空的输入框会被忽略。</translation>
+        <translation>右边的所有非空字段都会按照逻辑与(“全部条件”选项)或逻辑或(“任意条件”选项)来组合。&lt;br&gt;“任意”“全部”和“无”三种字段类型都接受输入简单词语和双引号引用的词组的组合。&lt;br&gt;空的输入框会被忽略。</translation>
     </message>
     <message>
         <source>Invert</source>
@@ -262,11 +263,11 @@
     </message>
     <message>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>索引输入的目录的路径名。&lt;br&gt;路径元素可能包含通配符。 条目必须与索引器看到的路径匹配（例如：如果顶级路径包含 &apos;/home/me&apos; ，并且 &apos;/home&apos; 实际上是 &apos;/usr/home&apos; 的链接，则正确的相对路径条目应为 &apos;/home/me/tmp*&apos; ，而不是 &apos;/usr/home/me/tmp*&apos;）</translation>
+        <translation>索引输入的目录的路径名。&lt;br&gt;路径元素可能包含通配符。 条目必须与索引器看到的路径匹配(例如：如果顶级路径包含 &apos;/home/me&apos; ，并且 &apos;/home&apos; 实际上是 &apos;/usr/home&apos; 的链接，则正确的相对路径条目应为 &apos;/home/me/tmp*&apos; ，而不是 &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation>词根语言</translation>
+        <translation>启用词根扩展的语言</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
@@ -298,7 +299,7 @@
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation>这是磁盘使用量（是总磁盘使用量而不是索引大小）的百分比，在该百分比下索引将失败并停止。&lt;br&gt;默认值0将消除所有限制。</translation>
+        <translation>这是磁盘使用量(是总磁盘使用量而不是索引大小)的百分比，在该百分比下索引将失败并停止。&lt;br&gt;默认值0将消除所有限制。</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -330,7 +331,7 @@
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation>&lt;p&gt;这是针对unac机制的例外，默认情况下，该机制会删除所有的判断信息，并进行正规的分解。妳可以按照自己的语言的特点针对某个字符覆盖掉口音解除设置，以及指定额外的分解（例如，针对复数）。在每个由空格分隔的条目中，第一个字符是源字符，剩下的就是翻译。</translation>
+        <translation>&lt;p&gt;这是针对unac机制的例外，默认情况下，该机制会删除所有的判断信息，并进行正规的分解。你可以按照自己的语言的特点针对某个字符覆盖掉口音解除设置，以及指定额外的分解(例如，针对复数)。在每个由空格分隔的条目中，第一个字符是源字符，剩下的就是翻译。</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
@@ -338,7 +339,7 @@
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation>启用对火狐的已访问页面进行索引。&lt;br&gt;（妳还需要安装火狐的Recoll插件）</translation>
+        <translation>启用对火狐的已访问页面进行索引。&lt;br&gt;(你还需要安装火狐的Recoll插件)</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
@@ -350,11 +351,11 @@
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation>网页存储的最大尺寸（MB）</translation>
+        <translation>网页存储的最大尺寸(MB)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation>一旦大小达到，条目将被回收。&lt;br&gt;仅增加大小确实有意义，因为减小该值不会截断现有文件（最后只是浪费空间而已）</translation>
+        <translation>一旦大小达到，条目将被回收。&lt;br&gt;仅增加大小确实有意义，因为减小该值不会截断现有文件(最后只是浪费空间而已)</translation>
     </message>
     <message>
         <source>Automatic diacritics sensitivity</source>
@@ -362,7 +363,7 @@
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation>&lt;p&gt;如果搜索语句中包含带有口音特征(不在unac_except_trans中)的话，则自动触发大小写的判断。否则，妳需要使用查询语言和&lt;i&gt;D&lt;/i&gt;修饰符来指定对大小写的判断。</translation>
+        <translation>&lt;p&gt;如果搜索语句中包含带有口音特征(不在unac_except_trans中)的话，则自动触发大小写的判断。否则，你需要使用查询语言和&lt;i&gt;D&lt;/i&gt;修饰符来指定对大小写的判断。</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
@@ -370,7 +371,7 @@
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation>&lt;p&gt;如果搜索语句中除首字母之外包含有大写字母的话，则自动触发大小写的判断。否则，妳需要使用查询语言和&lt;i&gt;C&lt;/i&gt;修饰符来指定对大小写的判断。</translation>
+        <translation>&lt;p&gt;如果搜索语句中除首字母之外包含有大写字母的话，则自动触发大小写的判断。否则，你需要使用查询语言和&lt;i&gt;C&lt;/i&gt;修饰符来指定对大小写的判断。</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
@@ -414,27 +415,27 @@
     </message>
     <message>
         <source>Process the Web history queue</source>
-        <translation type="unfinished"></translation>
+        <translation>索引浏览器历史记录</translation>
     </message>
     <message>
         <source> (by default, aspell suggests mispellings when a query has no results).</source>
-        <translation type="unfinished"></translation>
+        <translation>默认情况下aspell会在搜索不到结果时给出可能的错误拼写提示</translation>
     </message>
     <message>
         <source>Page recycle interval</source>
-        <translation type="unfinished"></translation>
+        <translation>网页整理间隔</translation>
     </message>
     <message>
         <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
-        <translation type="unfinished"></translation>
+        <translation>缓存中可能存在同一个URL的多个实例。缓存定期维护后会只保留一个(这是默认值)。这个值可以延长缓存清理间隔(天、周、月、年)。注意：增加间隔不会清楚现有实例。</translation>
     </message>
     <message>
         <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>注意：当索引增长到体积上限时，recoll会清除旧网页以便为新网页腾空间。当前索引体积：%1</translation>
     </message>
     <message>
         <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;(E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
-        <translation type="unfinished"></translation>
+        <translation>当磁盘已使用空间达到某个百分比之后，recoll会停止索引&lt;br&gt;例如, 90% 意味着磁盘占用90%时停止, 0 或 100 表示没有限制)</translation>
     </message>
 </context>
 <context>
@@ -457,7 +458,7 @@
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>压缩文件最大尺寸（KB）</translation>
+        <translation>压缩文件最大尺寸(KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
@@ -465,7 +466,7 @@
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>文本文件最大尺寸（MB）</translation>
+        <translation>文本文件最大尺寸(MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
@@ -475,22 +476,22 @@ This is for excluding monster log files from the index.</source>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>文本文件单页尺寸（KB）</translation>
+        <translation>文本文件单页尺寸(KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>如果设置咯这个值（不等于-1），则文本文件会被分割成这么大的块，并且进行索引。
-这是用来搜索大型文本文件的（例如记录文件）。</translation>
+        <translation>如果设置咯这个值(不等于-1)，则文本文件会被分割成这么大的块，并且进行索引。
+这是用来搜索大型文本文件的(例如记录文件)。</translation>
     </message>
     <message>
         <source>Max. filter exec. time (s)</source>
-        <translation>最大筛选执行时间（秒）</translation>
+        <translation>最大筛选执行时间(秒)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation>工作时间长于这个值的外部过滤器会被中断。这是针对某种特殊情况的，该情况下，一个文档可能引起过滤器无限循环下去（例如：postscript）。设置为-1则表示不设限制。
+        <translation>工作时间长于这个值的外部过滤器会被中断。这是针对某种特殊情况的，该情况下，一个文档可能引起过滤器无限循环下去(例如：postscript)。设置为-1则表示不设限制。
 </translation>
     </message>
     <message>
@@ -621,11 +622,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Path in index</source>
-        <translation type="unfinished"></translation>
+        <translation>索引中的路径</translation>
     </message>
     <message>
         <source>Translated path</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>存疑</translatorcomment>
+        <translation>已变换的路径</translation>
     </message>
 </context>
 <context>
@@ -711,7 +713,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This will let you chose between batch and real-time indexing, and set up an automatic  schedule for batch indexing (using cron).</source>
-        <translation>在这里可以选择是要进行批量索引还是实时索引，还可以设置一个自动化的定时（使用cron）批量索引任务。</translation>
+        <translation>在这里可以选择是要进行批量索引还是实时索引，还可以设置一个自动化的定时(使用cron)批量索引任务。</translation>
     </message>
     <message>
         <source>Start indexing now</source>
@@ -736,7 +738,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation>查询片段</translation>
+        <translation>预定义的查询条件</translation>
     </message>
 </context>
 <context>
@@ -772,7 +774,7 @@ p, li { white-space: pre-wrap; }
 	.T1 { font-weight:bold; }
 	&lt;!-- ODF styles with no properties representable as CSS --&gt;
 	{ }
-	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T1&quot;&gt;Recoll&lt;/span&gt; 索引程序可持续运行并且在文件发生变化时对其进行索引，也可以间隔一定时间运行一次。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;你可以读一下手册，以便更好地做出抉择（按F1）。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;这个工具可帮助你设置一个自动进行批量索引的定时任务，或者设置成当你登录时便启动实时索引（或者两者同时进行，当然那几乎没有意义）。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T1&quot;&gt;Recoll&lt;/span&gt; 索引程序可持续运行并且在文件发生变化时对其进行索引，也可以间隔一定时间运行一次。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;你可以读一下手册，以便更好地做出抉择(按F1)。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;这个工具可帮助你设置一个自动进行批量索引的定时任务，或者设置成当你登录时便启动实时索引(或者两者同时进行，当然那几乎没有意义)。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 </translation>
     </message>
     <message>
@@ -789,7 +791,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Decide if real time indexing will be started when you log in (only for the default index).</source>
-        <translation>作出决定，是否要在登录时便启动实时索引（只对默认索引有效）。</translation>
+        <translation>作出决定，是否要在登录时便启动实时索引(只对默认索引有效)。</translation>
     </message>
 </context>
 <context>
@@ -825,7 +827,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation type="vanished">&quot;history&quot;文件被损坏，或者不可（读）写，请检查一下或者删除它：</translation>
+        <translation type="vanished">&quot;history&quot;文件被损坏，或者不可(读)写，请检查一下或者删除它：</translation>
     </message>
     <message>
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
@@ -834,26 +836,26 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Needs &quot;Show system tray icon&quot; to be set in preferences!
 </source>
-        <translation type="unfinished"></translation>
+        <translation>需要在首选项中选中“显示任务栏图标”</translation>
     </message>
 </context>
 <context>
     <name>Preview</name>
     <message>
         <source>&amp;Search for:</source>
-        <translation>搜索（&amp;S）：</translation>
+        <translation>搜索(&amp;S)：</translation>
     </message>
     <message>
         <source>&amp;Next</source>
-        <translation>下一个（&amp;N）</translation>
+        <translation>下一个(&amp;N)</translation>
     </message>
     <message>
         <source>&amp;Previous</source>
-        <translation>上一个（&amp;P）</translation>
+        <translation>上一个(&amp;P)</translation>
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation>匹配大小写（&amp;C）</translation>
+        <translation>匹配大小写(&amp;C)</translation>
     </message>
     <message>
         <source>Clear</source>
@@ -881,7 +883,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Missing helper program: </source>
-        <translation>缺少辅助程序：</translation>
+        <translation>缺少的辅助程序：</translation>
     </message>
     <message>
         <source>Can&apos;t turn doc into internal representation for </source>
@@ -1036,11 +1038,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Reload as Plain Text</source>
-        <translation type="unfinished"></translation>
+        <translation>重新加载为纯文本</translation>
     </message>
     <message>
         <source>Reload as HTML</source>
-        <translation type="unfinished"></translation>
+        <translation>重新加载为HTML</translation>
     </message>
 </context>
 <context>
@@ -1095,7 +1097,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation>对那些无法判断或处理其内容（未知类型或其类型不被支持）的文件的名字进行索引。默认为是</translation>
+        <translation>对那些无法判断或处理其内容(未知类型或其类型不被支持)的文件的名字进行索引。默认为是</translation>
     </message>
     <message>
         <source>Beagle web history</source>
@@ -1131,7 +1133,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation>这些是仅按名称索引的文件的文件名结尾
-（没有尝试识别MIME类型，没有解压缩，没有内容索引）</translation>
+(没有尝试识别MIME类型，没有解压缩，没有内容索引)</translation>
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing or an empty line is selected in the listbox above, or for the selected subdirectory. You can add or remove directories by clicking the +/- buttons.</source>
@@ -1162,11 +1164,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>预览（&amp;P）</translation>
+        <translation>预览(&amp;P)</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>打开（&amp;O）</translation>
+        <translation>打开(&amp;O)</translation>
     </message>
     <message>
         <source>Open With</source>
@@ -1178,15 +1180,15 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="vanished">复制文件名（&amp;F）</translation>
+        <translation type="vanished">复制文件名(&amp;F)</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>复制路径（&amp;U）</translation>
+        <translation>复制路径(&amp;U)</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>写入文件（&amp;W）</translation>
+        <translation>写入文件(&amp;W)</translation>
     </message>
     <message>
         <source>Save selection to files</source>
@@ -1194,19 +1196,19 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>预览上一级文档/目录（&amp;a）</translation>
+        <translation>预览上一级文档/目录(&amp;a)</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="vanished">打开上一级文档/目录（&amp;O）</translation>
+        <translation type="vanished">打开上一级文档/目录(&amp;O)</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>查找类似的文档（&amp;s）</translation>
+        <translation>查找类似的文档(&amp;s)</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>打开片断窗口（&amp;S）</translation>
+        <translation>打开片断窗口(&amp;S)</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
@@ -1214,23 +1216,23 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&amp;Open Parent document</source>
-        <translation>打开父文档</translation>
+        <translation>打开父文档(&amp;O)</translation>
     </message>
     <message>
         <source>&amp;Open Parent Folder</source>
-        <translation>打开父文件夹</translation>
+        <translation>打开父文件夹(&amp;O)</translation>
     </message>
     <message>
         <source>Copy Text</source>
-        <translation type="unfinished"></translation>
+        <translation>复制文本</translation>
     </message>
     <message>
         <source>Copy &amp;File Path</source>
-        <translation type="unfinished"></translation>
+        <translation>复制文件路径(&amp;F)</translation>
     </message>
     <message>
         <source>Copy File Name</source>
-        <translation type="unfinished"></translation>
+        <translation>复制文件名</translation>
     </message>
 </context>
 <context>
@@ -1323,7 +1325,8 @@ p, li { white-space: pre-wrap; }
     <name>RclCompleterModel</name>
     <message>
         <source> Hits</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>存疑</translatorcomment>
+        <translation>点击量</translation>
     </message>
 </context>
 <context>
@@ -1404,11 +1407,11 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>(no stemming)</source>
-        <translation>（不进行词根计算）</translation>
+        <translation>(不进行词根扩展)</translation>
     </message>
     <message>
         <source>(all languages)</source>
-        <translation>（对全部语言进行词根计算）</translation>
+        <translation>(对全部语言进行词根扩展)</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
@@ -1416,7 +1419,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Update &amp;Index</source>
-        <translation>更新索引（&amp;I）</translation>
+        <translation>更新索引(&amp;I)</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
@@ -1424,7 +1427,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
-        <translation>停止索引（&amp;I）</translation>
+        <translation>停止索引(&amp;I)</translation>
     </message>
     <message>
         <source>All</source>
@@ -1476,7 +1479,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Missing helper programs</source>
-        <translation>未找到的辅助程序</translation>
+        <translation>缺少的辅助程序</translation>
     </message>
     <message>
         <source>Save file dialog</source>
@@ -1514,7 +1517,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Result count (est.)</source>
-        <translation>结果数（估计值）</translation>
+        <translation>结果数(估计值)</translation>
     </message>
     <message>
         <source>Query details</source>
@@ -1616,7 +1619,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
-        <translation>在上次的索引过程中发现，针对妳的文件类型，还缺少一些外部的程序/命令，它们储存在右侧文件中</translation>
+        <translation>在上次的索引过程中发现，针对你的文件类型，还缺少一些外部的程序/命令，它们储存在右侧文件中</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
@@ -1664,7 +1667,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="vanished">以下路径（|内部路径）之间共享着相同的内容：</translation>
+        <translation type="vanished">以下路径(|内部路径)之间共享着相同的内容：</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1736,7 +1739,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Do not show this warning next time (use GUI preferences to restore).</source>
-        <translation>下次不要显示此警告（可通过GUI首选项还原该设置）</translation>
+        <translation>下次不要显示此警告(可通过GUI首选项还原该设置)</translation>
     </message>
     <message>
         <source>Disabled because the real time indexer was not compiled in.</source>
@@ -1768,7 +1771,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Can&apos;t set synonyms file (parse error?)</source>
-        <translation>无法设置同义词文件（解析错误？）</translation>
+        <translation>无法设置同义词文件(解析错误？)</translation>
     </message>
     <message>
         <source>Index locked</source>
@@ -1817,7 +1820,7 @@ Please check the desktop file</source>
     <message>
         <source>Empty or non-existant paths in configuration file. Click Ok to start indexing anyway (absent data will not be purged from the index):
 </source>
-        <translation>配置文件中的路径为空或不存在。 单击“确定”仍然开始建立索引（缺少的数据将不会从索引中清除）：</translation>
+        <translation>配置文件中的路径为空或不存在。 单击“确定”仍然开始建立索引(缺少的数据将不会从索引中清除)：</translation>
     </message>
     <message>
         <source>Indexing done</source>
@@ -1841,7 +1844,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Click Cancel to return to the list.&lt;br&gt;Click Ignore to show the preview anyway (and remember for this session). There is a risk of showing the wrong entry.&lt;br/&gt;</source>
-        <translation>单击“取消”返回到列表。&lt;br&gt;单击“忽略”以始终显示预览（并记住此会话），有显示错误条目的风险。&lt;br/&gt;</translation>
+        <translation>单击“取消”返回到列表。&lt;br&gt;单击“忽略”以始终显示预览(并记住此会话)，有显示错误条目的风险。&lt;br/&gt;</translation>
     </message>
     <message>
         <source>documents</source>
@@ -1869,7 +1872,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>total files)</source>
-        <translation>文件总数）</translation>
+        <translation>文件总数)</translation>
     </message>
     <message>
         <source>No information: initial indexing not yet performed.</source>
@@ -1937,7 +1940,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>词根语言</translation>
+        <translation>启用词根扩展的语言</translation>
     </message>
     <message>
         <source>Main Window</source>
@@ -1981,40 +1984,43 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Flushing</source>
-        <translation type="unfinished"></translation>
+        <translation>正在写入</translation>
     </message>
     <message>
         <source>Show menu search dialog</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>存疑</translatorcomment>
+        <translation>显示菜单搜索对话框</translation>
     </message>
     <message>
         <source>Duplicates</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>存疑</translatorcomment>
+        <translation>重复的结果</translation>
     </message>
     <message>
         <source>Filter directories</source>
-        <translation type="unfinished"></translation>
+        <translation>过滤文件夹</translation>
     </message>
     <message>
         <source>Main index open error: </source>
-        <translation type="unfinished"></translation>
+        <translation>主索引文件打开失败：</translation>
     </message>
     <message>
         <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
-        <translation type="unfinished"></translation>
+        <translation>索引文件可能损坏，请执行xapian-check命令，或者直接重建索引</translation>
     </message>
     <message>
         <source>This search is not active anymore</source>
-        <translation type="unfinished"></translation>
+        <translation>本次搜索已失效</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is not file:// : unsupported</source>
-        <translation type="unfinished"></translation>
+        <translation>%1的查看器指定了父文件，但URL不是file://格式，因此不受支持</translation>
     </message>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the preferences dialog ?</source>
-        <translation type="unfinished"></translation>
+        <translation>没有找到在mimeview中为%1: %2配置的查看器。
+你想要打开首选项对话框吗？</translation>
     </message>
 </context>
 <context>
@@ -2029,23 +2035,23 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;File</source>
-        <translation>文件（&amp;F）</translation>
+        <translation>文件(&amp;F)</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation>退出（&amp;x）</translation>
+        <translation>退出(&amp;x)</translation>
     </message>
     <message>
         <source>&amp;Tools</source>
-        <translation>工具（&amp;T）</translation>
+        <translation>工具(&amp;T)</translation>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation>帮助（&amp;H）</translation>
+        <translation>帮助(&amp;H)</translation>
     </message>
     <message>
         <source>&amp;Preferences</source>
-        <translation>选项（&amp;P）</translation>
+        <translation>首选项(&amp;P)</translation>
     </message>
     <message>
         <source>Search tools</source>
@@ -2057,11 +2063,11 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;About Recoll</source>
-        <translation>Recoll说明（&amp;A）</translation>
+        <translation>Recoll说明(&amp;A)</translation>
     </message>
     <message>
         <source>Document &amp;History</source>
-        <translation>文档历史（&amp;H）</translation>
+        <translation>文档历史(&amp;H)</translation>
     </message>
     <message>
         <source>Document  History</source>
@@ -2069,7 +2075,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Advanced Search</source>
-        <translation>高端搜索（&amp;A）</translation>
+        <translation>高级搜索(&amp;A)</translation>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
@@ -2077,7 +2083,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
-        <translation>排序参数（&amp;S）</translation>
+        <translation>排序参数(&amp;S)</translation>
     </message>
     <message>
         <source>Sort parameters</source>
@@ -2093,11 +2099,11 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation type="vanished">查询配置（&amp;Q）</translation>
+        <translation type="vanished">查询配置(&amp;Q)</translation>
     </message>
     <message>
         <source>&amp;User manual</source>
-        <translation>用户手册（&amp;U）</translation>
+        <translation>用户手册(&amp;U)</translation>
     </message>
     <message>
         <source>Recoll</source>
@@ -2109,15 +2115,15 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>Update &amp;index</source>
-        <translation>更新索引（&amp;i）</translation>
+        <translation>更新索引(&amp;i)</translation>
     </message>
     <message>
         <source>Term &amp;explorer</source>
-        <translation>词语探索器（&amp;e）</translation>
+        <translation>搜索词浏览器(&amp;e)</translation>
     </message>
     <message>
         <source>Term explorer tool</source>
-        <translation>词语探索器</translation>
+        <translation>搜索词浏览器</translation>
     </message>
     <message>
         <source>External index dialog</source>
@@ -2125,7 +2131,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Erase document history</source>
-        <translation>删除文档历史（&amp;E）</translation>
+        <translation>删除文档历史(&amp;E)</translation>
     </message>
     <message>
         <source>First page</source>
@@ -2137,7 +2143,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="vanished">索引配置（&amp;I）</translation>
+        <translation type="vanished">索引配置(&amp;I)</translation>
     </message>
     <message>
         <source>All</source>
@@ -2145,7 +2151,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation type="vanished">显示缺少的辅助程序列表（&amp;S）</translation>
+        <translation type="vanished">显示缺少的辅助程序列表(&amp;S)</translation>
     </message>
     <message>
         <source>PgDown</source>
@@ -2161,7 +2167,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Full Screen</source>
-        <translation>全屏（&amp;F）</translation>
+        <translation>全屏(&amp;F)</translation>
     </message>
     <message>
         <source>F11</source>
@@ -2173,7 +2179,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Erase search history</source>
-        <translation>删除搜索历史（&amp;E）</translation>
+        <translation>删除搜索历史(&amp;E)</translation>
     </message>
     <message>
         <source>sortByDateAsc</source>
@@ -2201,11 +2207,11 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
-        <translation>重新构造索引（&amp;R）</translation>
+        <translation>重新构造索引(&amp;R)</translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation type="vanished">显示已索引的文件类型（&amp;S）</translation>
+        <translation type="vanished">显示已索引的文件类型(&amp;S)</translation>
     </message>
     <message>
         <source>Shift+PgUp</source>
@@ -2213,23 +2219,23 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation type="vanished">定时索引（&amp;I）</translation>
+        <translation type="vanished">定时索引(&amp;I)</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
-        <translation>外部索引对话框（&amp;x）</translation>
+        <translation>外部索引对话框(&amp;x)</translation>
     </message>
     <message>
         <source>&amp;Index configuration</source>
-        <translation>索引设置（&amp;I）</translation>
+        <translation>索引设置(&amp;I)</translation>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
-        <translation>界面设置（&amp;G）</translation>
+        <translation>界面设置(&amp;G)</translation>
     </message>
     <message>
         <source>&amp;Results</source>
-        <translation>结果（&amp;R）</translation>
+        <translation>结果(&amp;R)</translation>
     </message>
     <message>
         <source>Sort by date, oldest first</source>
@@ -2249,7 +2255,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>Save as CSV (spreadsheet) file</source>
-        <translation>保存为CSV（电子表格）文件</translation>
+        <translation>保存为CSV(电子表格)文件</translation>
     </message>
     <message>
         <source>Saves the result into a file which you can load in a spreadsheet</source>
@@ -2269,11 +2275,11 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation>查询片段</translation>
+        <translation>预定义的查询条件</translation>
     </message>
     <message>
         <source>    With failed files retrying</source>
-        <translation>失败的文件重试中</translation>
+        <translation>    正在重试失败的文件</translation>
     </message>
     <message>
         <source>Next update will retry previously failed files</source>
@@ -2297,7 +2303,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>Indexing &amp;schedule</source>
-        <translation>定时索引（&amp;s）</translation>
+        <translation>定时索引(&amp;s)</translation>
     </message>
     <message>
         <source>Enable synonyms</source>
@@ -2305,11 +2311,11 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;View</source>
-        <translation>查看（&amp;V）</translation>
+        <translation>查看(&amp;V)</translation>
     </message>
     <message>
         <source>Missing &amp;helpers</source>
-        <translation>缺少辅助程序 (&amp;h)</translation>
+        <translation>缺少的辅助程序 (&amp;h)</translation>
     </message>
     <message>
         <source>Indexed &amp;MIME types</source>
@@ -2325,11 +2331,11 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>Trigger incremental pass</source>
-        <translation>触发增量通过</translation>
+        <translation>触发增量更新</translation>
     </message>
     <message>
         <source>E&amp;xport simple search history</source>
-        <translation>E&amp;xport 简单搜索历史记录</translation>
+        <translation>导出简单搜索记录(&amp;x)</translation>
     </message>
     <message>
         <source>Use default dark mode</source>
@@ -2341,51 +2347,52 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Query</source>
-        <translation>&amp;查询</translation>
+        <translation>查询(&amp;Q)</translation>
     </message>
     <message>
         <source>Increase results text font size</source>
-        <translation type="unfinished"></translation>
+        <translation>增大结果列表字体</translation>
     </message>
     <message>
         <source>Increase Font Size</source>
-        <translation type="unfinished"></translation>
+        <translation>字体增大</translation>
     </message>
     <message>
         <source>Decrease results text font size</source>
-        <translation type="unfinished"></translation>
+        <translation>减小结果列表字体</translation>
     </message>
     <message>
         <source>Decrease Font Size</source>
-        <translation type="unfinished"></translation>
+        <translation>减小字体</translation>
     </message>
     <message>
         <source>Start real time indexer</source>
-        <translation type="unfinished"></translation>
+        <translation>启动实时索引器</translation>
     </message>
     <message>
         <source>Query Language Filters</source>
-        <translation type="unfinished"></translation>
+        <translation>查询语句过滤器</translation>
     </message>
     <message>
         <source>Filter dates</source>
-        <translation type="unfinished">过滤日期</translation>
+        <translation>过滤日期</translation>
     </message>
     <message>
         <source>Filter birth dates</source>
-        <translation type="unfinished">过滤创建日期</translation>
+        <translation>过滤创建日期</translation>
     </message>
     <message>
         <source>Assisted complex search</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>辅助复杂搜索</translation>
     </message>
     <message>
         <source>Switch Configuration...</source>
-        <translation type="unfinished"></translation>
+        <translation>切换配置...</translation>
     </message>
     <message>
         <source>Choose another configuration to run on, replacing this process</source>
-        <translation type="unfinished"></translation>
+        <translation>切换到另一份配置，并替换此进程</translation>
     </message>
 </context>
 <context>
@@ -2506,15 +2513,15 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="vanished">预览（&amp;P）</translation>
+        <translation type="vanished">预览(&amp;P)</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="vanished">复制路径（&amp;U）</translation>
+        <translation type="vanished">复制路径(&amp;U)</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="vanished">查找类似的文档（&amp;s）</translation>
+        <translation type="vanished">查找类似的文档(&amp;s)</translation>
     </message>
     <message>
         <source>Query details</source>
@@ -2522,11 +2529,11 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>(show query)</source>
-        <translation>（显示查询语句细节）</translation>
+        <translation>(显示查询语句细节)</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="vanished">复制文件名（&amp;F）</translation>
+        <translation type="vanished">复制文件名(&amp;F)</translation>
     </message>
     <message>
         <source>filtered</source>
@@ -2550,23 +2557,23 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings (accents suppressed): &lt;/i&gt;</source>
-        <translation>&lt;p&gt;&lt;i&gt;其它拼写形式（忽视口音）：&lt;/i&gt;</translation>
+        <translation>&lt;p&gt;&lt;i&gt;其它拼写形式(忽视口音)：&lt;/i&gt;</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="vanished">写入文件（&amp;W）</translation>
+        <translation type="vanished">写入文件(&amp;W)</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="vanished">预览上一级文档/目录（&amp;a）</translation>
+        <translation type="vanished">预览上一级文档/目录(&amp;a)</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="vanished">打开上一级文档/目录（&amp;O）</translation>
+        <translation type="vanished">打开上一级文档/目录(&amp;O)</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="vanished">打开（&amp;O）</translation>
+        <translation type="vanished">打开(&amp;O)</translation>
     </message>
     <message>
         <source>Documents</source>
@@ -2586,7 +2593,7 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="vanished">打开片断窗口（&amp;S）</translation>
+        <translation type="vanished">打开片断窗口(&amp;S)</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
@@ -2594,11 +2601,11 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="vanished">以下路径（|内部路径）之间共享着相同的内容：</translation>
+        <translation type="vanished">以下路径(|内部路径)之间共享着相同的内容：</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
-        <translation>结果数（估计值）</translation>
+        <translation>结果数(估计值)</translation>
     </message>
     <message>
         <source>Snippets</source>
@@ -2606,22 +2613,24 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>This spelling guess was added to the search:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>这个拼写猜测已添加到搜索中：</translation>
     </message>
     <message>
         <source>These spelling guesses were added to the search:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>这些拼写猜测已添加到搜索中：</translation>
     </message>
 </context>
 <context>
     <name>ResTable</name>
     <message>
         <source>&amp;Reset sort</source>
-        <translation>重置排序条件（&amp;R）</translation>
+        <translation>重置排序条件(&amp;R)</translation>
     </message>
     <message>
         <source>&amp;Delete column</source>
-        <translation>删除此列（&amp;D）</translation>
+        <translation>删除此列(&amp;D)</translation>
     </message>
     <message>
         <source>Add &quot;</source>
@@ -2641,39 +2650,39 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="vanished">预览（&amp;P）</translation>
+        <translation type="vanished">预览(&amp;P)</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="vanished">打开（&amp;O）</translation>
+        <translation type="vanished">打开(&amp;O)</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="vanished">复制文件名（&amp;F）</translation>
+        <translation type="vanished">复制文件名(&amp;F)</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="vanished">复制路径（&amp;U）</translation>
+        <translation type="vanished">复制路径(&amp;U)</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="vanished">写入文件（&amp;W）</translation>
+        <translation type="vanished">写入文件(&amp;W)</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="vanished">查找类似的文档（&amp;s）</translation>
+        <translation type="vanished">查找类似的文档(&amp;s)</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="vanished">预览上一级文档/目录（&amp;a）</translation>
+        <translation type="vanished">预览上一级文档/目录(&amp;a)</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="vanished">打开上一级文档/目录（&amp;O）</translation>
+        <translation type="vanished">打开上一级文档/目录(&amp;O)</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
-        <translation>保存为CSV（&amp;S）</translation>
+        <translation>保存为CSV(&amp;S)</translation>
     </message>
     <message>
         <source>Add &quot;%1&quot; column</source>
@@ -2725,73 +2734,73 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>Use Shift+click to display the text instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>用Shift + 鼠标单击显示文本</translation>
     </message>
     <message>
         <source>%1 bytes copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>已经复制到剪贴板%1字节</translation>
     </message>
     <message>
         <source>Copy result text and quit</source>
-        <translation type="unfinished"></translation>
+        <translation>复制结果文本并退出</translation>
     </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="vanished">预览（&amp;P）</translation>
+        <translation type="vanished">预览(&amp;P)</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="vanished">打开（&amp;O）</translation>
+        <translation type="vanished">打开(&amp;O)</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="vanished">复制文件名（&amp;F）</translation>
+        <translation type="vanished">复制文件名(&amp;F)</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="vanished">复制路径（&amp;U）</translation>
+        <translation type="vanished">复制路径(&amp;U)</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="vanished">写入文件（&amp;W）</translation>
+        <translation type="vanished">写入文件(&amp;W)</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="vanished">查找类似的文档（&amp;s）</translation>
+        <translation type="vanished">查找类似的文档(&amp;s)</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="vanished">预览上一级文档/目录（&amp;a）</translation>
+        <translation type="vanished">预览上一级文档/目录(&amp;a)</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="vanished">打开上一级文档/目录（&amp;O）</translation>
+        <translation type="vanished">打开上一级文档/目录(&amp;O)</translation>
     </message>
 </context>
 <context>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="vanished">预览（&amp;P）</translation>
+        <translation type="vanished">预览(&amp;P)</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="vanished">打开（&amp;O）</translation>
+        <translation type="vanished">打开(&amp;O)</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="vanished">复制文件名（&amp;F）</translation>
+        <translation type="vanished">复制文件名(&amp;F)</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="vanished">复制路径（&amp;U）</translation>
+        <translation type="vanished">复制路径(&amp;U)</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="vanished">写入文件（&amp;W）</translation>
+        <translation type="vanished">写入文件(&amp;W)</translation>
     </message>
     <message>
         <source>Save selection to files</source>
@@ -2799,19 +2808,19 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="vanished">预览上一级文档/目录（&amp;a）</translation>
+        <translation type="vanished">预览上一级文档/目录(&amp;a)</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="vanished">打开上一级文档/目录（&amp;O）</translation>
+        <translation type="vanished">打开上一级文档/目录(&amp;O)</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="vanished">查找类似的文档（&amp;s）</translation>
+        <translation type="vanished">查找类似的文档(&amp;s)</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="vanished">打开片断窗口（&amp;S）</translation>
+        <translation type="vanished">打开片断窗口(&amp;S)</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
@@ -2854,11 +2863,11 @@ Do you want to start the preferences dialog ?</source>
     </message>
     <message>
         <source>Query language</source>
-        <translation>查询语言</translation>
+        <translation>查询语句</translation>
     </message>
     <message>
         <source>Bad query string</source>
-        <translation>查询语言格式不正确</translation>
+        <translation>查询语句格式错误</translation>
     </message>
     <message>
         <source>Out of memory</source>
@@ -2898,7 +2907,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 	.T4 { font-weight:bold; }
 	&lt;!-- ODF styles with no properties representable as CSS --&gt;
 	{ }
-	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;Standard&quot;&gt;输入查询语言表达式。简要说明：&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&lt;/span&gt; : &apos;词语1&apos;和&apos;词语2&apos;同时出现在任意字段中。&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;字段&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1&lt;/span&gt; : &apos;词语1&apos;出现在字段&apos;字段&apos;中。&lt;br/&gt;标准字段名/同义名：&lt;br/&gt;title/subject/caption、author/from、recipient/to、filename、ext。&lt;br/&gt;伪字段名：dir、mime/format、type/rclcat、date。&lt;br/&gt;日期段的两个示例：2009-03-01/2009-05-20 2009-03-01/P2M。&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2 OR &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;3&lt;/span&gt; : 词语1 &lt;span class=&quot;T4&quot;&gt;与&lt;/span&gt; (词语2 &lt;span class=&quot;T4&quot;&gt;或&lt;/span&gt; 词语3)。&lt;br/&gt;不允许用真正的括号来表示逻辑关系。&lt;br/&gt;&lt;span class=&quot;T1&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&quot;&lt;/span&gt; : 词组（必须按原样出现）。可用的修饰词：&lt;br/&gt;&lt;span class=&quot;T1&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&quot;p&lt;/span&gt; : 以默认距离进行的无序近似搜索。&lt;br/&gt;有疑问时可使用&lt;span class=&quot;T4&quot;&gt;显示查询语句细节&lt;/span&gt;链接来查看查询语句的细节，另外请查看手册（&amp;lt;F1&amp;gt;）以了解更多内容。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;Standard&quot;&gt;输入查询语言表达式。简要说明：&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&lt;/span&gt; : &apos;词语1&apos;和&apos;词语2&apos;同时出现在任意字段中。&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;字段&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1&lt;/span&gt; : &apos;词语1&apos;出现在字段&apos;字段&apos;中。&lt;br/&gt;标准字段名/同义名：&lt;br/&gt;title/subject/caption、author/from、recipient/to、filename、ext。&lt;br/&gt;伪字段名：dir、mime/format、type/rclcat、date。&lt;br/&gt;日期段的两个示例：2009-03-01/2009-05-20 2009-03-01/P2M。&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2 OR &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;3&lt;/span&gt; : 词语1 &lt;span class=&quot;T4&quot;&gt;与&lt;/span&gt; (词语2 &lt;span class=&quot;T4&quot;&gt;或&lt;/span&gt; 词语3)。&lt;br/&gt;不允许用真正的括号来表示逻辑关系。&lt;br/&gt;&lt;span class=&quot;T1&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&quot;&lt;/span&gt; : 词组(必须按原样出现)。可用的修饰词：&lt;br/&gt;&lt;span class=&quot;T1&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&quot;p&lt;/span&gt; : 以默认距离进行的无序近似搜索。&lt;br/&gt;有疑问时可使用&lt;span class=&quot;T4&quot;&gt;显示查询语句细节&lt;/span&gt;链接来查看查询语句的细节，另外请查看手册(&amp;lt;F1&amp;gt;)以了解更多内容。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 </translation>
     </message>
     <message>
@@ -2939,11 +2948,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Stemming languages for stored query: </source>
-        <translation>保存的查询的词根语言</translation>
+        <translation>已保存的查询语句的词根语言</translation>
     </message>
     <message>
         <source> differ from current preferences (kept)</source>
-        <translation>与当前的偏好设置不同（已保留）</translation>
+        <translation>与当前的偏好设置不同(已保留)</translation>
     </message>
     <message>
         <source>Auto suffixes for stored query: </source>
@@ -2955,11 +2964,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Autophrase is set but it was unset for stored query</source>
-        <translation>自动短语设置了，但保存的查询未设置</translation>
+        <translation>启用了自动生成短语功能，但保存的查询没有启用该功能</translation>
     </message>
     <message>
         <source>Autophrase is unset but it was set for stored query</source>
-        <translation>自动短语未设置，但保存的查询设置了</translation>
+        <translation>当前程序为启用自动生成短语功能，但保存的查询启用了</translation>
     </message>
     <message>
         <source>Enter search terms here.</source>
@@ -2979,7 +2988,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>border-collapse: collapse;</source>
-        <translation>边界崩溃：崩溃；</translation>
+        <translation>border-collapse: collapse;</translation>
     </message>
     <message>
         <source>}</source>
@@ -3003,7 +3012,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
-        <translation>您真的应该看下手册(F1)&lt;/p&gt;</translation>
+        <translation>查询语句的语法非常重要，务必读一遍完整手册(F1)&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
@@ -3011,31 +3020,31 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
-        <translation>&lt;tr&gt;&lt;th&gt;什么&lt;/th&gt;&lt;th&gt;示例&lt;/th&gt;</translation>
+        <translation>&lt;tr&gt;&lt;th&gt;搜索符（操作符）&lt;/th&gt;&lt;th&gt;示例&lt;/th&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;and&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one and two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;AND 且运算符&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;或&lt;/td&gt;&lt;td&gt;或两个&amp;nbsp;&amp;nbsp;&amp;nbsp;一个|| two&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;OR 或运算符&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;复杂布尔值。或者，使用括号&amp;nbsp;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;复杂查询。OR 运算符优先级高于 AND，需要加括号改变运算优先级&amp;nbsp;</translation>
     </message>
     <message>
         <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>在需要&lt;/td&gt;&lt;td&gt;(一个或两个) 或三个&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;不&lt;/td&gt;&lt;td&gt;短期&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;NOT 非运算符&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;短语&lt;/td&gt;&lt;td&gt;&quot;自豪感和偏见&quot;&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;查询短语&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
@@ -3047,7 +3056,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;无序代理。(默认 slack=10)&lt;/td&gt;&lt;td&gt;&quot;偏见&amp;nbsp;primy&quot;p&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
@@ -3055,31 +3064,31 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;特定字段&lt;/td&gt;&lt;td&gt;作者：austen&amp;nbsp;&amp;nbsp;title:imputes&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;查询特定字段&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;和字段内(无订单)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;在字段查询内使用AND操作符（没有顺序）&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;或在字段内&lt;/td&gt;&lt;td&gt;作者：austen/bronte&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;在字段查询中使用OR运算符&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;字段名称&lt;/td&gt;&lt;td&gt;标题/主题/标题&amp;nbsp;&amp;nbsp;作者/来自&lt;br&gt;收件者/to&amp;nbsp;&amp;nbsp;文件名&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;字段名&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;目录路径过滤&lt;/td&gt;&lt;td&gt;dir:home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;过滤文件目录&lt;/td&gt;&lt;td&gt;dir:home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;MIME 类型过滤器&lt;/td&gt;&lt;td&gt;mime:text/plem mime:video/*&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;过滤MIME类型&lt;/td&gt;&lt;td&gt;mime:text/plem mime:video/*&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;日期间隔&lt;/td&gt;&lt;td&gt;日期: 2018-01-01/2018-31-12&lt;br&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;过滤日期&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</translation>
     </message>
     <message>
         <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
@@ -3087,7 +3096,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
+        <translation>&lt;tr&gt;&lt;td&gt;过滤文件体积&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -3095,7 +3104,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Can&apos;t open index</source>
-        <translation>可以&apos;t 打开索引</translation>
+        <translation>打开索引失败</translation>
     </message>
     <message>
         <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
@@ -3111,19 +3120,20 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Simple search</source>
-        <translation type="unfinished"></translation>
+        <translation>简单搜索</translation>
     </message>
     <message>
         <source>History</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>简单搜索历史记录</translation>
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query Details&lt;/b&gt;.&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;查询语句的简单语法。如果对查询语句有疑问，请搜索之后点击搜索结果上面的： &lt;b&gt;显示查询语句细节&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Capitalize to suppress stem expansion&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;将单词大写以避免搜索词扩展&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
 </context>
 <context>
@@ -3323,11 +3333,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Increase font size</source>
-        <translation type="unfinished"></translation>
+        <translation>增大字体</translation>
     </message>
     <message>
         <source>Decrease font size</source>
-        <translation type="unfinished"></translation>
+        <translation>减小字体</translation>
     </message>
 </context>
 <context>
@@ -3412,7 +3422,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
-        <translation>要递归索引的目录。它必须位于配置文件（topdirs）中定义的常规索引区域中。</translation>
+        <translation>要递归索引的目录。它必须位于配置文件(topdirs)中定义的常规索引区域中。</translation>
     </message>
     <message>
         <source>Retry previously failed files.</source>
@@ -3428,22 +3438,22 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
-        <translation type="unfinished"></translation>
+        <translation>输出的诊断文件。(某些文件未被索引的原因)</translation>
     </message>
     <message>
         <source>Diagnostics file</source>
-        <translation type="unfinished"></translation>
+        <translation>诊断文件</translation>
     </message>
 </context>
 <context>
     <name>SpellBase</name>
     <message>
         <source>Term Explorer</source>
-        <translation>词语探索器</translation>
+        <translation>搜索词浏览器</translation>
     </message>
     <message>
         <source>&amp;Expand </source>
-        <translation>展开（&amp;E）</translation>
+        <translation>展开(&amp;E)</translation>
     </message>
     <message>
         <source>Alt+E</source>
@@ -3451,7 +3461,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&amp;Close</source>
-        <translation>关闭（&amp;C）</translation>
+        <translation>关闭(&amp;C)</translation>
     </message>
     <message>
         <source>Alt+C</source>
@@ -3582,11 +3592,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Smallest document length (terms)</source>
-        <translation>最小文档长度（词语）</translation>
+        <translation>最小文档长度(词语)</translation>
     </message>
     <message>
         <source>Longest document length (terms)</source>
-        <translation>最大文档长度（词语）</translation>
+        <translation>最大文档长度(词语)</translation>
     </message>
     <message>
         <source>Results from last indexing:</source>
@@ -3606,7 +3616,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>List files which could not be indexed (slow)</source>
-        <translation>列出无法建立索引的文件（缓慢）</translation>
+        <translation>列出无法建立索引的文件(缓慢)</translation>
     </message>
     <message>
         <source>Spell expansion error. </source>
@@ -3614,7 +3624,8 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Spell expansion error.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>拼写扩展错误。</translation>
     </message>
 </context>
 <context>
@@ -3633,7 +3644,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation type="vanished">选择xapian索引目录（例如：/home/buddy/.recoll/xapiandb）</translation>
+        <translation type="vanished">选择xapian索引目录(例如：/home/buddy/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
@@ -3645,15 +3656,15 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Result list paragraph format (erase all to reset to default)</source>
-        <translation>结果列表的段落格式（删除全部内容即可重置为默认状态）</translation>
+        <translation>结果列表的段落格式(删除全部内容即可重置为默认状态)</translation>
     </message>
     <message>
         <source>Result list header (default is empty)</source>
-        <translation>结果列表表头（默认为空）</translation>
+        <translation>结果列表表头(默认为空)</translation>
     </message>
     <message>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
-        <translation>选择recoll配置目录或xapian索引目录（例如：/home/me/.recoll 或 /home/me/.recoll/xapiandb）</translation>
+        <translation>选择recoll配置目录或xapian索引目录(例如：/home/me/.recoll 或 /home/me/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
@@ -3685,15 +3696,15 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Query language</source>
-        <translation>查询语言</translation>
+        <translation>查询语句</translation>
     </message>
     <message>
         <source>Value from previous program exit</source>
-        <translation>上一个程序退出的值</translation>
+        <translation>上次启动时使用的选项</translation>
     </message>
     <message>
         <source>Context</source>
-        <translation>二. 背景</translation>
+        <translation>上下文(功能位置)</translation>
     </message>
     <message>
         <source>Description</source>
@@ -3709,11 +3720,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose QSS File</source>
-        <translation type="unfinished"></translation>
+        <translation>选择QSS文件</translation>
     </message>
     <message>
         <source>Can&apos;t add index with different case/diacritics stripping option.</source>
-        <translation type="unfinished"></translation>
+        <translation>大小写/分隔符清理选项不同，索引添加失败。</translation>
     </message>
 </context>
 <context>
@@ -3786,7 +3797,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation type="vanished">合成摘要长度（字符个数）</translation>
+        <translation type="vanished">合成摘要长度(字符个数)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
@@ -3810,7 +3821,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation type="vanished">确定（&amp;O）</translation>
+        <translation type="vanished">确定(&amp;O)</translation>
     </message>
     <message>
         <source>Apply changes</source>
@@ -3818,7 +3829,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation type="vanished">取消（&amp;C）</translation>
+        <translation type="vanished">取消(&amp;C)</translation>
     </message>
     <message>
         <source>Discard changes</source>
@@ -3880,11 +3891,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation type="vanished">在预览中对其进行高亮显示的最大文本尺寸（兆字节）</translation>
+        <translation type="vanished">在预览中对其进行高亮显示的最大文本尺寸(兆字节)</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation type="vanished">超过这个长度的文本不会在预览窗口里高亮显示（太慢）。</translation>
+        <translation type="vanished">超过这个长度的文本不会在预览窗口里高亮显示(太慢)。</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
@@ -3908,7 +3919,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="vanished">将文件类型过滤器显示成工具条，而不是按钮面板（需要重启程序）。</translation>
+        <translation type="vanished">将文件类型过滤器显示成工具条，而不是按钮面板(需要重启程序)。</translation>
     </message>
     <message>
         <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
@@ -3998,7 +4009,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Action (empty -&gt; recoll default)</source>
-        <translation>动作（空白则表示使用recoll的默认值）</translation>
+        <translation>动作(空白则表示使用recoll的默认值)</translation>
     </message>
     <message>
         <source>Apply to current selection</source>
@@ -4033,7 +4044,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation>文本标签</translation>
     </message>
 </context>
 <context>
@@ -4060,15 +4071,15 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Save to File</source>
-        <translation type="unfinished"></translation>
+        <translation>保存到文件</translation>
     </message>
     <message>
         <source>File creation failed: </source>
-        <translation type="unfinished"></translation>
+        <translation>文件创建失败：</translation>
     </message>
     <message>
         <source>Maximum size %1 (Index config.). Current size %2. Write position %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>最大体积 %1(索引配置)；当前体积 %2；写入位置 %3。</translation>
     </message>
 </context>
 <context>
@@ -4083,15 +4094,15 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished">日期</translation>
+        <translation>日期</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>文件尺寸</translation>
     </message>
     <message>
         <source>URL</source>
-        <translation type="unfinished">路径</translation>
+        <translation>路径(URL)</translation>
     </message>
 </context>
 <context>
@@ -4110,11 +4121,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Command already started</source>
-        <translation>命令已经开始</translation>
+        <translation>命令已经启动</translation>
     </message>
     <message>
         <source>Recoll Batch indexing</source>
-        <translation>重新批量索引</translation>
+        <translation>批量索引</translation>
     </message>
     <message>
         <source>Start Windows Task Scheduler tool</source>
@@ -4122,7 +4133,8 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Could not create batch file</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>不能创建批量索引所需的文件</translation>
     </message>
 </context>
 <context>
@@ -4133,7 +4145,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
-        <translation type="vanished">不可运行Beagle。启用对beagle队列的处理，以索引火狐网页历史。&lt;br&gt;（你还需要安装火狐Beagle插件）</translation>
+        <translation type="vanished">不可运行Beagle。启用对beagle队列的处理，以索引火狐网页历史。&lt;br&gt;(你还需要安装火狐Beagle插件)</translation>
     </message>
     <message>
         <source>Web cache directory name</source>
@@ -4161,7 +4173,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation type="vanished">网页存储的最大尺寸（MB）</translation>
+        <translation type="vanished">网页存储的最大尺寸(MB)</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
@@ -4169,11 +4181,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation type="vanished">启用对火狐的已访问页面进行索引。&lt;br&gt;（妳还需要安装火狐的Recoll插件）</translation>
+        <translation type="vanished">启用对火狐的已访问页面进行索引。&lt;br&gt;(妳还需要安装火狐的Recoll插件)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="vanished">一旦大小达到，条目将被回收。&lt;br&gt;仅增加大小确实有意义，因为减小该值不会截断现有文件（最后只是浪费空间而已）</translation>
+        <translation type="vanished">一旦大小达到，条目将被回收。&lt;br&gt;仅增加大小确实有意义，因为减小该值不会截断现有文件(最后只是浪费空间而已)</translation>
     </message>
 </context>
 <context>
@@ -4268,7 +4280,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation type="vanished">压缩文件最大尺寸（KB）</translation>
+        <translation type="vanished">压缩文件最大尺寸(KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
@@ -4276,7 +4288,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation type="vanished">文本文件最大尺寸（MB）</translation>
+        <translation type="vanished">文本文件最大尺寸(MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
@@ -4286,28 +4298,28 @@ This is for excluding monster log files from the index.</source>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation type="vanished">文本文件单页尺寸（KB）</translation>
+        <translation type="vanished">文本文件单页尺寸(KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation type="vanished">如果设置咯这个值（不等于-1），则文本文件会被分割成这么大的块，并且进行索引。
-这是用来搜索大型文本文件的（例如记录文件）。</translation>
+        <translation type="vanished">如果设置咯这个值(不等于-1)，则文本文件会被分割成这么大的块，并且进行索引。
+这是用来搜索大型文本文件的(例如记录文件)。</translation>
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation type="vanished">过滤器的最长执行时间（S）</translation>
+        <translation type="vanished">过滤器的最长执行时间(S)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation type="vanished">外部过滤器的执行时间如果超过这个值，则会被强行中断。在罕见的情况下，某些文档（例如postscript）会导致过滤器陷入死循环。设置成-1以表示不加限制。
+        <translation type="vanished">外部过滤器的执行时间如果超过这个值，则会被强行中断。在罕见的情况下，某些文档(例如postscript)会导致过滤器陷入死循环。设置成-1以表示不加限制。
 </translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation type="vanished">工作时间长于这个值的外部过滤器会被中断。这是针对某种特殊情况的，该情况下，一个文档可能引起过滤器无限循环下去（例如：postscript）。设置为-1则表示不设限制。
+        <translation type="vanished">工作时间长于这个值的外部过滤器会被中断。这是针对某种特殊情况的，该情况下，一个文档可能引起过滤器无限循环下去(例如：postscript)。设置为-1则表示不设限制。
 </translation>
     </message>
     <message>
@@ -4328,7 +4340,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max. filter exec. time (s)</source>
-        <translation type="vanished">最大筛选执行时间（秒）</translation>
+        <translation type="vanished">最大筛选执行时间(秒)</translation>
     </message>
 </context>
 <context>
@@ -4347,7 +4359,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="vanished">索引进程不会进入具有这些名字的目录。&lt;br&gt;可以包含通配符。必须匹配索引进程自身所见到的路径（例如：如果topdirs包含&apos;/home/me&apos;，而实际上&apos;/home&apos;是到&apos;/usr/home&apos;的链接，则正确的skippedPath条目应当是&apos;/home/me/tmp*&apos;，而不是&apos;/usr/home/me/tmp*&apos;）</translation>
+        <translation type="vanished">索引进程不会进入具有这些名字的目录。&lt;br&gt;可以包含通配符。必须匹配索引进程自身所见到的路径(例如：如果topdirs包含&apos;/home/me&apos;，而实际上&apos;/home&apos;是到&apos;/usr/home&apos;的链接，则正确的skippedPath条目应当是&apos;/home/me/tmp*&apos;，而不是&apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -4383,11 +4395,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation type="vanished">最大硬盘占用率（%）</translation>
+        <translation type="vanished">最大硬盘占用率(%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation type="vanished">当硬盘的占用率达到这个数时，索引会失败并且停止（以避免塞满你的硬盘）。&lt;br&gt;设为0则表示不加限制（这是默认值）。</translation>
+        <translation type="vanished">当硬盘的占用率达到这个数时，索引会失败并且停止(以避免塞满你的硬盘)。&lt;br&gt;设为0则表示不加限制(这是默认值)。</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -4435,19 +4447,19 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="vanished">&lt;p&gt;这是针对unac机制的例外，默认情况下，该机制会删除所有的判断信息，并进行正规的分解。妳可以按照自己的语言的特点针对某个字符覆盖掉口音解除设置，以及指定额外的分解（例如，针对复数）。在每个由空格分隔的条目中，第一个字符是源字符，剩下的就是翻译。</translation>
+        <translation type="vanished">&lt;p&gt;这是针对unac机制的例外，默认情况下，该机制会删除所有的判断信息，并进行正规的分解。妳可以按照自己的语言的特点针对某个字符覆盖掉口音解除设置，以及指定额外的分解(例如，针对复数)。在每个由空格分隔的条目中，第一个字符是源字符，剩下的就是翻译。</translation>
     </message>
     <message>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="vanished">索引输入的目录的路径名。&lt;br&gt;路径元素可能包含通配符。 条目必须与索引器看到的路径匹配（例如：如果顶级路径包含 &apos;/home/me&apos; ，并且 &apos;/home&apos; 实际上是 &apos;/usr/home&apos; 的链接，则正确的相对路径条目应为 &apos;/home/me/tmp*&apos; ，而不是 &apos;/usr/home/me/tmp*&apos;）</translation>
+        <translation type="vanished">索引输入的目录的路径名。&lt;br&gt;路径元素可能包含通配符。 条目必须与索引器看到的路径匹配(例如：如果顶级路径包含 &apos;/home/me&apos; ，并且 &apos;/home&apos; 实际上是 &apos;/usr/home&apos; 的链接，则正确的相对路径条目应为 &apos;/home/me/tmp*&apos; ，而不是 &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Max disk occupation (%, 0 means no limit)</source>
-        <translation type="vanished">最大硬盘占用率（%, 0代表没有限制）</translation>
+        <translation type="vanished">最大硬盘占用率(%, 0代表没有限制)</translation>
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="vanished">这是磁盘使用量（是总磁盘使用量而不是索引大小）的百分比，在该百分比下索引将失败并停止。&lt;br&gt;默认值0将消除所有限制。</translation>
+        <translation type="vanished">这是磁盘使用量(是总磁盘使用量而不是索引大小)的百分比，在该百分比下索引将失败并停止。&lt;br&gt;默认值0将消除所有限制。</translation>
     </message>
 </context>
 <context>
@@ -4506,11 +4518,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation>超过这个长度的文本不会在预览窗口里高亮显示（太慢）。</translation>
+        <translation>超过这个长度的文本不会在预览窗口里高亮显示(太慢)。</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation type="vanished">在预览中对其进行高亮显示的最大文本尺寸（兆字节）</translation>
+        <translation type="vanished">在预览中对其进行高亮显示的最大文本尺寸(兆字节)</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
@@ -4522,7 +4534,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="vanished">将文件类型过滤器显示成工具条，而不是按钮面板（需要重启程序）。</translation>
+        <translation type="vanished">将文件类型过滤器显示成工具条，而不是按钮面板(需要重启程序)。</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -4530,7 +4542,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation>启动时打开高端搜索对话框。</translation>
+        <translation>启动时打开高级搜索对话框。</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
@@ -4550,17 +4562,17 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>词根语言</translation>
+        <translation>启用词根扩展的语言</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation>对[滚 石] (2个词语)的搜索会变成[滚 or 石 or (滚 2个词语 石)]。
-对于那些搜索词语在其中按照原样出现的结果，其优先级会高一些。</translation>
+        <translation>对[rolling stones] (2个搜索词)的搜索会变成[rolling or stones or (rolling phrase 2 stones)]。
+符合初始搜索词的文档在结果列表中拥有更高的优先级。</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation>自动将词组添加到简单搜索中</translation>
+        <translation>为简单搜索自动添加搜索词</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
@@ -4582,7 +4594,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation>合成摘要长度（字符个数）</translation>
+        <translation>合成摘要长度(字符个数)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
@@ -4590,11 +4602,11 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
-        <translation>这个列表中的词语会在查询语言输入框里自动变成ext:xxx语句。</translation>
+        <translation>这个列表中的词语会变成ext:xxx自动添加到查询语句的输入框里。</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation>查询语言神奇文件名后缀。</translation>
+        <translation>在查询语句中自动筛选文件后缀</translation>
     </message>
     <message>
         <source>Enable</source>
@@ -4638,7 +4650,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation>确定（&amp;O）</translation>
+        <translation>确定(&amp;O)</translation>
     </message>
     <message>
         <source>Discard changes</source>
@@ -4646,7 +4658,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>取消（&amp;C）</translation>
+        <translation>取消(&amp;C)</translation>
     </message>
     <message>
         <source>Abstract snippet separator</source>
@@ -4698,21 +4710,21 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Date format (strftime(3))</source>
-        <translation>日期格式（strftime(3)）</translation>
+        <translation>日期格式(strftime(3))</translation>
     </message>
     <message>
         <source>Frequency percentage threshold over which we do not use terms inside autophrase. 
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
 The default value is 2 (percent). </source>
-        <translation>这是一个频率阈值，超过这个值的话，我们就不会把词语放到自动词组中。
-高频词语是词组中性能问题的主要来源。
-略过的词语会增加词组的空缺值，因此会降低自动词组功能的效率。
-默认值是2（百分比）。</translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>如果一个搜索词出现的频率超过了某个阈值，我们就不会在自动生成短语功能中使用它。
+频率过高的搜索词会极大影响搜索性能。
+跳过这些搜索词则会提高搜索短语的自由度，但同时也会降低自动升段短语功能的搜索能力。默认情况下，该阈值设定为2%。</translation>
     </message>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
-        <translation>自动词组频率阈值百分比</translation>
+        <translation>生成短语功能的频率阈值百分比</translation>
     </message>
     <message>
         <source>Plain text to HTML line style</source>
@@ -4720,7 +4732,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</source>
-        <translation>PRE文本中的那些行是不会被折叠的。使用BR会丢失一些缩进信息。PRE+换行风格可能才是妳想要的。</translation>
+        <translation>PRE文本中的那些行是不会被折叠的。使用BR会丢失一些缩进信息。PRE+换行风格可能才是你想要的。</translation>
     </message>
     <message>
         <source>&lt;BR&gt;</source>
@@ -4756,7 +4768,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
-        <translation>点击此处以向列表中加入另一个索引目录。妳可以选择一个Recoll配置目录或一个Xapian索引。</translation>
+        <translation>点击此处以向列表中加入另一个索引目录。你可以选择一个Recoll配置目录或一个Xapian索引。</translation>
     </message>
     <message>
         <source>Snippets window CSS file</source>
@@ -4884,11 +4896,11 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (kilobytes)</source>
-        <translation>预览的最大文本大小(千字节)</translation>
+        <translation>预览的最大文本大小(KB)</translation>
     </message>
     <message>
         <source>Start with simple search mode: </source>
-        <translation>从简单的搜索模式开始: </translation>
+        <translation>程序启动时的默认搜索方式：</translation>
     </message>
     <message>
         <source>Hide toolbars.</source>
@@ -4936,143 +4948,154 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Hide some user interface elements.</source>
-        <translation type="unfinished"></translation>
+        <translation>隐藏一些用户界面元素</translation>
     </message>
     <message>
         <source>Hide:</source>
-        <translation type="unfinished"></translation>
+        <translation>隐藏：</translation>
     </message>
     <message>
         <source>Toolbars</source>
-        <translation type="unfinished"></translation>
+        <translation>工具栏</translation>
     </message>
     <message>
         <source>Status bar</source>
-        <translation type="unfinished"></translation>
+        <translation>状态栏</translation>
     </message>
     <message>
         <source>Show button instead.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>显示按钮</translation>
     </message>
     <message>
         <source>Menu bar</source>
-        <translation type="unfinished"></translation>
+        <translation>菜单栏</translation>
     </message>
     <message>
         <source>Show choice in menu only.</source>
-        <translation type="unfinished"></translation>
+        <translation>只在菜单中显示选项</translation>
     </message>
     <message>
         <source>Simple search type</source>
-        <translation type="unfinished">简单搜索类型</translation>
+        <translation>简单搜索</translation>
     </message>
     <message>
         <source>Clear/Search buttons</source>
-        <translation type="unfinished"></translation>
+        <translation>清空/搜索 按钮</translation>
     </message>
     <message>
         <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>禁用Ctrl+[0-9]和Shift+[a-z]这些选择搜索结果行数的快捷键</translation>
     </message>
     <message>
         <source>None (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>无(默认值)</translation>
     </message>
     <message>
         <source>Uses the default dark mode style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>使用默认的暗色模式式样</translation>
     </message>
     <message>
         <source>Dark mode</source>
-        <translation type="unfinished">暗色模式</translation>
+        <translation>暗色模式</translation>
     </message>
     <message>
         <source>Choose QSS File</source>
-        <translation type="unfinished"></translation>
+        <translation>选择QSS文件</translation>
     </message>
     <message>
         <source>To display document text instead of metadata in result table detail area, use:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>为了在结果列表的详情中显示文档内容而不是文档元数据，请使用：</translation>
     </message>
     <message>
         <source>left mouse click</source>
-        <translation type="unfinished"></translation>
+        <translation>鼠标左键点击</translation>
     </message>
     <message>
         <source>Shift+click</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift + 鼠标点击</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
-        <translation type="unfinished"></translation>
+        <translation>打开窗口选择式样文件&lt;br&gt;比如选择/usr/share/recoll/examples/recoll[-dark].qss</translation>
     </message>
     <message>
         <source>Result Table</source>
-        <translation type="unfinished">结果表</translation>
+        <translation>结果表</translation>
     </message>
     <message>
         <source>Do not display metadata when hovering over rows.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>鼠标悬停在结果表时不显示元数据</translation>
     </message>
     <message>
         <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="unfinished"></translation>
+        <translation>通过在锚文本前插入空格来绕过Qt的泰米尔语bug(QTBUG-78923)</translation>
     </message>
     <message>
         <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
-        <translation type="unfinished"></translation>
+        <translation>该错误会导致突出显示的泰米尔语单词内显示一个奇怪的圆圈字符。解决方法是插入一个额外的空格字符，似乎可以解决这个问题。</translation>
     </message>
     <message>
         <source>Depth of side filter directory tree</source>
-        <translation type="unfinished"></translation>
+        <translation>目录树过滤器的深度</translation>
     </message>
     <message>
         <source>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</source>
-        <translation type="unfinished"></translation>
+        <translation>用户界面的缩放因数。如果默认值不适合你的屏幕，请修改这个值。</translation>
     </message>
     <message>
         <source>Display scale (default 1.0):</source>
-        <translation type="unfinished"></translation>
+        <translation>显示缩放比例(默认为1.0)</translation>
     </message>
     <message>
         <source>Automatic spelling approximation.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>自动拼写近似</translation>
     </message>
     <message>
         <source>Max spelling distance</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>最大拼写距离</translation>
     </message>
     <message>
         <source>Add common spelling approximations for rare terms.</source>
-        <translation type="unfinished"></translation>
+        <translation>为罕见搜索词添加常用拼写近似值。</translation>
     </message>
     <message>
         <source>Maximum number of history entries in completer list</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>当前电脑允许保存的最大历史搜索/文档数量</translation>
     </message>
     <message>
         <source>Number of history entries in completer:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>当前电脑内保存的历史搜索/历史文档的数量：</translation>
     </message>
     <message>
         <source>Displays the total number of occurences of the term in the index</source>
-        <translation type="unfinished"></translation>
+        <translation>显示搜索内容在索引中出现的总次数</translation>
     </message>
     <message>
         <source>Show hit counts in completer popup.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>在弹出窗口中显示点击数</translation>
     </message>
     <message>
         <source>Prefer HTML to plain text for preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>预览时优先选择HTML格式</translation>
     </message>
     <message>
         <source>See Qt QDateTimeEdit documentation. E.g. yyyy-MM-dd. Leave empty to use the default Qt/System format.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>请在Qt QDateTimeEdit的文档中查看时间格式，比如说yyyy-MM-dd。留空会使用系统默认时间格式</translation>
     </message>
     <message>
         <source>Side filter dates format (change needs restart)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>待定</translatorcomment>
+        <translation>过滤器的日期格式(修改后需要重启程序)</translation>
     </message>
 </context>
 </TS>
