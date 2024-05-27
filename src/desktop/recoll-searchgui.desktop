@@ -12,3 +12,4 @@ Name=Recoll
 Terminal=false
 Type=Application
 Keywords=Search;Full Text;
+StartupWMClass=recoll
