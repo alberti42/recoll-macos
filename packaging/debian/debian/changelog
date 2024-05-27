@@ -1,8 +1,11 @@
-recoll (1.39.0pre1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.39.0pre2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Add capability to index some non-alphanumeric characters.
-  
- -- Jean-Francois Dockes <jf@dockes.org>  Fri, 17 May 2024 09:06:00 +0200
+  * GUI: fix the meson build: inverted meaning for the webpreview option resulted in unwanted
+    qtextbrowser preview. + actually pass prefix to recoll.pro, not sure useful 
+  * GUI: avoid parentless QMenus as wayland does not like them. Fixes issue #256
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 27 May 2024 09:56:00 +0200
 
 recoll (1.38.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
