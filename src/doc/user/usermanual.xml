@@ -7,11 +7,11 @@
 <!ENTITY RCLWEB "<ulink url='https://www.recoll.org/'>https://www.recoll.org/</ulink>">
 <!ENTITY FAQS "https://www.recoll.org/faqsandhowtos/">
 <!ENTITY RCLAPPS "<ulink url='https://www.recoll.org/pages/features.html#doctypes'>https://www.recoll.org/pages/features.html</ulink>">
-<!ENTITY RCLVERSION "1.38">
+<!ENTITY RCLVERSION "1.39">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY LIN "<application>Unix</application>-like systems">
-<!ENTITY MAC "<application>Mac OS</application>-like systems">
+<!ENTITY MAC "<application>MacOS</application> systems">
 <!ENTITY RCLCONF SYSTEM "recoll.conf.xml">
 ]>
 
@@ -552,19 +552,17 @@ indexedmimetypes = application/pdf</programlisting>
         subdirectory of the &RCL; configuration directory,
         typically <filename>$HOME/.recoll/xapiandb/</filename> on &LIN;
         or <filename>C:/Users/[me]/Appdata/Local/Recoll/xapiandb</filename> on &WIN;. This can be
-        changed via two different methods (with different purposes):
+        changed via two different methods (with different purposes):</para>
+
         <orderedlist>
 
-          <listitem><para>For a given configuration directory, you can
-              specify a non-default storage location for the index by setting
-              the <varname>dbdir</varname> parameter in the configuration file
-              (see the
-              <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration section</link>).
-              This method would mainly be of use if you wanted
-              to keep the configuration directory in its default location, but
-              desired another location for the index, typically out of disk
-              occupation or performance concerns.</para>
-          </listitem>
+          <listitem><para>For a given configuration directory, you can specify a non-default storage
+              location for the index by setting the <varname>dbdir</varname> parameter in the
+              configuration file (see
+              the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration section</link>). Use
+              this method to keep the configuration directory in its default location, and use
+              another location for the index, typically because of disk occupation or performance
+              reasons.</para></listitem>
 
           <listitem><para>You can specify a different configuration directory by setting
               the <envar>RECOLL_CONFDIR</envar> environment variable, or using
@@ -587,7 +585,6 @@ indexedmimetypes = application/pdf</programlisting>
           </listitem>
 
         </orderedlist>
-      </para>
 
       <para>There are quite a few more parameters which can be set in the configuration file itself
         for tailoring &RCL; data storage. They are described in a
@@ -655,39 +652,35 @@ indexedmimetypes = application/pdf</programlisting>
       <sect2 id="RCL.INDEXING.STORAGE.BIG">
         <title>Special considerations for big indexes</title>
 
-        <para>This only needs concern you if your index is going to be
-          bigger than around 5 GBytes. Beyond 10 GBytes, it becomes a serious
-          issue. Most people have much smaller indexes. For reference, 5
-          GBytes would be around 2000 bibles, a lot of text.  If you have a
-          huge text dataset (remember: images don't count, the text content
-          of PDFs is typically less than 5% of the file size), read on.</para>
+        <para>This only needs concern you if your index is going to be bigger than around 5
+          GBytes. Beyond 10 GBytes, it becomes a serious issue. Most people have much smaller
+          indexes. For reference, 5 GBytes would be around 2000 bibles, a lot of text. If you have
+          a huge text dataset (remember: images don't count, the text content of PDFs is typically
+          less than 5% of the file size), read on.</para>
 
-        <para>The amount of writing performed by Xapian during index
-          creation is not linear with the index size (it is somewhere between
-          linear and quadratic). For big indexes this becomes a performance
-          issue, and may even be an SSD disk wear issue.</para>
+        <para>The amount of writing performed by Xapian during index creation is not linear with the
+          index size (it is somewhere between linear and quadratic). For big indexes this becomes a
+          performance issue, and may even be an SSD disk wear issue.</para>
 
         <para>The problem can be mitigated by using the following mitigations:</para>
         <itemizedlist>
-          <listitem><para>Partition the data set and create several indexes
-              of reasonable size rather than a huge one. These indexes can then
-              be queried in parallel (using the &RCL; external indexes
-              facility), or merged using
+          <listitem><para>Partition the data set and create several indexes of reasonable size
+              rather than a huge one. These indexes can then be queried in parallel (using the &RCL;
+              external indexes facility), or merged using
               <command>xapian-compact</command>.</para></listitem> 
-          <listitem><para>Have a lot of RAM available and set the
-              <literal>idxflushmb</literal> &RCL; configuration parameter as
-              high as you can without swapping (experimentation will be
-              needed). 200 would be a minimum in this context.</para></listitem>
-          <listitem><para>Use Xapian 1.4.10 or newer, as this version
-              brought a significant improvement in the amount of writes.</para>
+          <listitem><para>Have a lot of RAM available and set the <literal>idxflushmb</literal>
+              &RCL; configuration parameter as high as you can without swapping (experimentation
+              will be needed). 200 would be a minimum in this context.</para></listitem>
+          <listitem><para>Use Xapian 1.4.10 or newer, as this version brought a significant
+              improvement in the amount of writes.</para> 
           </listitem>
         </itemizedlist>
 
         <para>&RCL; versions 1.38 and newer have an option to use
           <link linkend="RCL.INDEXING.CONFIG.THREADS.MULTIDX">multiple temporary indexes and a
-            final merge</link> internally. This may be a simple solution for the index size issue,
-          but it may not provide enough control over the temporary indexes physical placement for
-          really huge datasets</para>
+            final merge</link> internally. This is mostly a performance optimization, but it may be
+          a simple solution for the index size issue, but it may not provide enough control over the
+          temporary indexes physical placement for really huge datasets.</para>
         
       </sect2>
       
@@ -1061,9 +1054,10 @@ indexedmimetypes = application/pdf</programlisting>
           single thread.</para>
         <programlisting>thrQSizes = -1 -1 -1</programlisting>
       </sect3>
+      </sect2>
 
-      <sect3 id="RCL.INDEXING.CONFIG.THREADS.MULTIDX">
-        <title>Using multiple temporary indexes</title>
+      <sect2 id="RCL.INDEXING.CONFIG.MULTIDX">
+        <title>Using multiple temporary indexes to improve indexing time</title>
 
         <para>In some cases, either when the input documents are simple and require little
           processing (e.g. HTML files), or possibly with a high number of available cores, the
@@ -1087,9 +1081,8 @@ indexedmimetypes = application/pdf</programlisting>
         <para>All the tests were performed on SSDs, it is quite probable that this approach would
           not work well on spinning disks, at least not in its current form.</para>
         
-      </sect3>
-        
       </sect2>
+        
     </sect1>
 
     <sect1 id="RCL.INDEXING.OPERATION">
@@ -1420,6 +1413,26 @@ fs.inotify.max_user_watches=32768</programlisting>
     <sect1 id="RCL.INDEXING.NOTES">
       <title>Miscellaneous indexing notes</title>
 
+      <sect2 id="RCL.INDEXING.PUNCTUATION">
+        <title>Indexing punctuation characters (1.39)</title>
+
+        <para>By default, the &RCL; indexer only uses most non-alphanumeric characters as
+          separators, treating them as white space, so that inputs like <replaceable>all
+            words</replaceable>, and <replaceable>all,words</replaceable>
+          produce the same terms.</para>
+        <para>It may sometimes be useful to index some of these characters so that they can be
+          used as discriminants for searches. This can be done by setting
+          the <literal>indexedpunctuation</literal> configuration parameter. The value is an UTF-8
+          string, for example, setting:
+          <programlisting>indexedpunctuation = %€</programlisting>
+          would allow searching separately  <replaceable>100%</replaceable>
+          or <replaceable>100€</replaceable>.</para>
+        <para>The affected characters are indexed as terms with their own term positions, and they
+          are their own separators, so that <replaceable>100%</replaceable>
+          and <replaceable>100 %</replaceable> would be equivalent inputs.
+        </para>
+      </sect2>
+      
       <sect2 id="RCL.INDEXING.PDF">
         <title>The PDF input handler</title>
 
@@ -1855,7 +1868,7 @@ setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/f
       </sect2>
 
       <sect2 id="RCL.INDEXING.EXTTAGS">
-        <title>&LIN;: importing external tags</title>
+        <title>&LIN; and &MAC;: importing external tags</title>
 
         <para>During indexing, it is possible to import metadata for each file by executing
           commands. This allows, for example, extracting tag data from an external application and
@@ -1872,31 +1885,33 @@ setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/f
           configuration file:</para>
 
         <programlisting>[/some/area/of/the/fs]
-          metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
+metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
         </programlisting>
 
-        <note><para>Depending on the <application>tmsu</application> version,
-            you may need/want to add options like
-            <literal>--database=/some/db</literal>.</para></note>
-        
-        <para>You may want to restrict this processing to a subset of
-          the directory tree, because it may slow down indexing a bit
-          (<literal>[some/area/of/the/fs]</literal>).</para>
         <para>Note the initial semi-colon after the equal sign.</para>
 
+        <note><para>Depending on the <application>tmsu</application> version, you may need/want to
+            add options like <literal>--database=/some/db</literal>.</para></note>
+        
+        <para>You may want to restrict this processing to a subset of the directory tree, because it
+        may slow down indexing a bit  (<literal>[some/area/of/the/fs]</literal>).</para>
+
+
         <para>In the example above, the output of <command>tmsu</command> is
-          used to set a field named <replaceable>tags</replaceable>. The field
-          name is arbitrary and could be <replaceable>tmsu</replaceable> or
-          <replaceable>myfield</replaceable> just the same, but
-          <replaceable>tags</replaceable> is an alias for the standard &RCL;
-          <literal>keywords</literal> field, and the <command>tmsu</command>
-          output will just augment its contents. This will avoid the need to
-          extend the <link linkend="RCL.PROGRAM.FIELDS">field
+          used to set a field named <replaceable>tags</replaceable>. The field name is arbitrary and
+          could be <replaceable>tmsu</replaceable> or <replaceable>myfield</replaceable> just the
+          same, but <replaceable>tags</replaceable> is an alias for the standard
+          &RCL; <literal>keywords</literal> field, and the <command>tmsu</command> output will just
+          augment its contents. This will avoid the need to extend
+          the <link linkend="RCL.PROGRAM.FIELDS">field
             configuration</link>.</para>
 
-        <para>Once re-indexing is performed (you will need to force the file reindexing, &RCL; will
-          not detect the need by itself), you will be able to search from the query language,
-          through any of its aliases: <replaceable>tags:some/alternate/values</replaceable>
+        <para>After setting or updating the parameter, you will need to tell &RCL; to reindex the
+          affected files. Just reset the index or see <command>recollindex</command>
+          options <literal>-e</literal> or <literal>-r</literal>.</para>
+
+        <para>You will then be able to search
+          the field from the query language: <replaceable>tags:some/alternate/values</replaceable>
           or <replaceable>tags:all,these,values</replaceable>.</para>
 
         <para>Tags changes will not be detected by the indexer if the file itself did not
@@ -2580,8 +2595,8 @@ setfattr -n user.modificationdate -v `date -d '2022-09-30 08:30:00' +%s` /some/f
           for in the current index configuration directory. The sample file distributed with &RCL;
           contains a number of example filters. This will be automatically copied to the
           configuration directory if the file does not exist in there
-          (e.g. <filename>~/.recoll/fragment-buttons.xml</filename> under Linux and Mac
-          OS, <filename>$HOME/AppData/Local/Recoll/fragment-buttons.xml</filename> for
+          (e.g. <filename>~/.recoll/fragment-buttons.xml</filename> under Linux and
+          MacOS, <filename>$HOME/AppData/Local/Recoll/fragment-buttons.xml</filename> for 
           Windows). Editing the copy will allow you to configure the tool for your needs .</para>
 
       <note><para>
@@ -5320,7 +5335,7 @@ C: = Z:</programlisting></para></note>
 
         <para>The &RCL; Python programming interface can be used both for
           searching and for creating/updating an index with a program run by the Python3
-          interpreter. It is available on all platforms (&LIN;, MS Windows, Mac OS).</para>
+          interpreter. It is available on all platforms (&LIN;, MS Windows, MacOS).</para>
 
         <para>The search interface is used in a number of active projects:
         the <ulink 

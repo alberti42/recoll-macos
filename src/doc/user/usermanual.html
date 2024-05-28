@@ -11,7 +11,7 @@
   <meta name="generator" content=
   "DocBook XSL Stylesheets Vsnapshot">
   <meta name="description" content=
-  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.38.">
+  "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license can be found at the following location: GNU web site. This document introduces full text search notions and describes the installation and use of the Recoll application. This version describes Recoll 1.39.">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084"
 alink="#0000FF">
@@ -54,7 +54,7 @@ alink="#0000FF">
             and describes the installation and use of the
             <span class="application">Recoll</span> application.
             This version describes <span class=
-            "application">Recoll</span> 1.38.</p>
+            "application">Recoll</span> 1.39.</p>
           </div>
         </div>
       </div>
@@ -135,6 +135,10 @@ alink="#0000FF">
                 configuration (<span class=
                 "application">Unix</span>-like
                 systems)</a></span></dt>
+                <dt><span class="sect2">2.3.5. <a href=
+                "#RCL.INDEXING.CONFIG.MULTIDX">Using multiple
+                temporary indexes to improve indexing
+                time</a></span></dt>
               </dl>
             </dd>
             <dt><span class="sect1">2.4. <a href=
@@ -156,30 +160,34 @@ alink="#0000FF">
             <dd>
               <dl>
                 <dt><span class="sect2">2.5.1. <a href=
+                "#RCL.INDEXING.PUNCTUATION">Indexing punctuation
+                characters (1.39)</a></span></dt>
+                <dt><span class="sect2">2.5.2. <a href=
                 "#RCL.INDEXING.PDF">The PDF input
                 handler</a></span></dt>
-                <dt><span class="sect2">2.5.2. <a href=
+                <dt><span class="sect2">2.5.3. <a href=
                 "#RCL.INDEXING.OCR">Running OCR on image
                 documents</a></span></dt>
-                <dt><span class="sect2">2.5.3. <a href=
+                <dt><span class="sect2">2.5.4. <a href=
                 "#RCL.INDEXING.STT">Running a speech to text
                 program on audio files</a></span></dt>
-                <dt><span class="sect2">2.5.4. <a href=
+                <dt><span class="sect2">2.5.5. <a href=
                 "#RCL.INDEXING.REMOVABLE">Removable
                 volumes</a></span></dt>
-                <dt><span class="sect2">2.5.5. <a href=
+                <dt><span class="sect2">2.5.6. <a href=
                 "#RCL.INDEXING.WEBQUEUE"><span class=
                 "application">Unix</span>-like systems: indexing
                 visited Web pages</a></span></dt>
-                <dt><span class="sect2">2.5.6. <a href=
+                <dt><span class="sect2">2.5.7. <a href=
                 "#RCL.INDEXING.EXTATTR"><span class=
                 "application">Unix</span>-like systems and
-                <span class="application">Mac OS</span>-like
-                systems: using extended attributes</a></span></dt>
-                <dt><span class="sect2">2.5.7. <a href=
+                <span class="application">MacOS</span> systems:
+                using extended attributes</a></span></dt>
+                <dt><span class="sect2">2.5.8. <a href=
                 "#RCL.INDEXING.EXTTAGS"><span class=
-                "application">Unix</span>-like systems: importing
-                external tags</a></span></dt>
+                "application">Unix</span>-like systems and
+                <span class="application">MacOS</span> systems:
+                importing external tags</a></span></dt>
               </dl>
             </dd>
           </dl>
@@ -413,7 +421,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1676">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1695">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -428,7 +436,7 @@ alink="#0000FF">
       <p>This document introduces full text search notions and
       describes the installation and use of the <span class=
       "application">Recoll</span> application. It is updated for
-      <span class="application">Recoll</span> 1.38.</p>
+      <span class="application">Recoll</span> 1.39.</p>
       <p><span class="application">Recoll</span> was for a long
       time dedicated to Unix-like systems. It was only lately
       (2015) ported to <span class="application">MS-Windows</span>.
@@ -770,7 +778,7 @@ alink="#0000FF">
         this happens depends on the indexing mode. There are
         provisions to <a class="link" href=
         "#RCL.INDEXING.REMOVABLE" title=
-        "2.5.4.&nbsp;Removable volumes">avoid deleting data</a> for
+        "2.5.5.&nbsp;Removable volumes">avoid deleting data</a> for
         an umounted removable volume.</p>
         <p>The following sections give an overview of different
         aspects of the indexing processes and configuration, with
@@ -1149,11 +1157,11 @@ indexedmimetypes = application/pdf</pre>
               <a class="link" href="#RCL.INSTALL.CONFIG.RECOLLCONF"
               title=
               "5.4.2.&nbsp;Recoll main configuration file, recoll.conf">
-              configuration section</a>). This method would mainly
-              be of use if you wanted to keep the configuration
-              directory in its default location, but desired
-              another location for the index, typically out of disk
-              occupation or performance concerns.</p>
+              configuration section</a>). Use this method to keep
+              the configuration directory in its default location,
+              and use another location for the index, typically
+              because of disk occupation or performance
+              reasons.</p>
             </li>
             <li class="listitem">
               <p>You can specify a different configuration
@@ -1321,12 +1329,11 @@ indexedmimetypes = application/pdf</pre>
           </div>
           <p><span class="application">Recoll</span> versions 1.38
           and newer have an option to use <a class="link" href=
-          "#RCL.INDEXING.CONFIG.THREADS.MULTIDX" title=
-          "Using multiple temporary indexes">multiple temporary
-          indexes and a final merge</a> internally. This may be a
-          simple solution for the index size issue, but it may not
-          provide enough control over the temporary indexes
-          physical placement for really huge datasets</p>
+          "#">multiple temporary indexes and a final merge</a>
+          internally. This is mostly a performance optimization,
+          but it may be a simple solution for the index size issue,
+          but it may not provide enough control over the temporary
+          indexes physical placement for really huge datasets.</p>
         </div>
       </div>
       <div class="sect1">
@@ -1411,7 +1418,7 @@ indexedmimetypes = application/pdf</pre>
           parameters</span>, <span class="guilabel">Web
           history</span> (<a class="link" href=
           "#RCL.INDEXING.WEBQUEUE" title=
-          "2.5.5.&nbsp;Unix-like systems: indexing visited Web pages">details</a>)
+          "2.5.6.&nbsp;Unix-like systems: indexing visited Web pages">details</a>)
           and <span class="guilabel">Search parameters</span>.</p>
           <p>The <span class="guilabel">Global parameters</span>
           tab allows setting global variables, like the lists of
@@ -1736,10 +1743,9 @@ indexedmimetypes = application/pdf</pre>
             "command"><strong>recollindex</strong></span> can use
             multithreading to speed up indexing on multiprocessor
             systems. This is currently enabled on <span class=
-            "application">Mac OS</span>-like systems and
-            <span class="application">Unix</span>-like systems
-            systems, but not under <span class=
-            "application">Windows</span>.</p>
+            "application">MacOS</span> systems and <span class=
+            "application">Unix</span>-like systems systems, but not
+            under <span class="application">Windows</span>.</p>
             <p>The data processing used to index files is divided
             in several stages and some of the stages can be
             executed by multiple threads. The stages are:</p>
@@ -1840,49 +1846,50 @@ indexedmimetypes = application/pdf</pre>
             Indexing will be performed by a single thread.</p>
             <pre class="programlisting">thrQSizes = -1 -1 -1</pre>
           </div>
-          <div class="sect3">
-            <div class="titlepage">
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
               <div>
-                <div>
-                  <h4 class="title"><a name=
-                  "RCL.INDEXING.CONFIG.THREADS.MULTIDX" id=
-                  "RCL.INDEXING.CONFIG.THREADS.MULTIDX"></a>Using
-                  multiple temporary indexes</h4>
-                </div>
+                <h3 class="title"><a name=
+                "RCL.INDEXING.CONFIG.MULTIDX" id=
+                "RCL.INDEXING.CONFIG.MULTIDX"></a>2.3.5.&nbsp;Using
+                multiple temporary indexes to improve indexing
+                time</h3>
               </div>
             </div>
-            <p>In some cases, either when the input documents are
-            simple and require little processing (e.g. HTML files),
-            or possibly with a high number of available cores, the
-            single-threaded Xapian index updates can become the
-            performance bottleneck for indexing.</p>
-            <p>In this case, it is possible to configure the
-            indexer (<span class="application">Recoll</span> 1.38
-            and later) for using multiple temporary indexes which
-            are merged at the end of the operation. This can
-            provide a huge gain in performance, but, as opposed to
-            multithreading for document preparation, it can also
-            have a (slight) negative impact in some cases, so that
-            it is not enabled by default.</p>
-            <p>The parameter which controls the number of temporary
-            indexes in <code class="filename">recoll.conf</code> is
-            named <code class="literal">thrTmpDbCnt</code>. The
-            default value is 0, meaning that no temporary indexes
-            are used.</p>
-            <p>If your document set is big, and you are using a
-            processor with many cores for indexing, especially if
-            the input documents are simple, it may be worth it to
-            experiment with the value. For example, with a partial
-            Wikipedia dump (many HTML small files), indexing times
-            could be divided almost by three, by using four
-            temporary indexes on a quad-core machine. More detail
-            in this <a class="ulink" href=
-            "https://www.recoll.org/pages/idxthreads/threadingRecoll.html#_the_xapian_bottleneck_and_how_it_was_resolved_thanks_to_xapian"
-            target="_top">article on the Recoll WEB site</a>.</p>
-            <p>All the tests were performed on SSDs, it is quite
-            probable that this approach would not work well on
-            spinning disks, at least not in its current form.</p>
           </div>
+          <p>In some cases, either when the input documents are
+          simple and require little processing (e.g. HTML files),
+          or possibly with a high number of available cores, the
+          single-threaded Xapian index updates can become the
+          performance bottleneck for indexing.</p>
+          <p>In this case, it is possible to configure the indexer
+          (<span class="application">Recoll</span> 1.38 and later)
+          for using multiple temporary indexes which are merged at
+          the end of the operation. This can provide a huge gain in
+          performance, but, as opposed to multithreading for
+          document preparation, it can also have a (slight)
+          negative impact in some cases, so that it is not enabled
+          by default.</p>
+          <p>The parameter which controls the number of temporary
+          indexes in <code class="filename">recoll.conf</code> is
+          named <code class="literal">thrTmpDbCnt</code>. The
+          default value is 0, meaning that no temporary indexes are
+          used.</p>
+          <p>If your document set is big, and you are using a
+          processor with many cores for indexing, especially if the
+          input documents are simple, it may be worth it to
+          experiment with the value. For example, with a partial
+          Wikipedia dump (many HTML small files), indexing times
+          could be divided almost by three, by using four temporary
+          indexes on a quad-core machine. More detail in this
+          <a class="ulink" href=
+          "https://www.recoll.org/pages/idxthreads/threadingRecoll.html#_the_xapian_bottleneck_and_how_it_was_resolved_thanks_to_xapian"
+          target="_top">article on the Recoll WEB site</a>.</p>
+          <p>All the tests were performed on SSDs, it is quite
+          probable that this approach would not work well on
+          spinning disks, at least not in its current form.</p>
         </div>
       </div>
       <div class="sect1">
@@ -2322,8 +2329,43 @@ fs.inotify.max_user_watches=32768</pre>
           <div class="titlepage">
             <div>
               <div>
+                <h3 class="title"><a name=
+                "RCL.INDEXING.PUNCTUATION" id=
+                "RCL.INDEXING.PUNCTUATION"></a>2.5.1.&nbsp;Indexing
+                punctuation characters (1.39)</h3>
+              </div>
+            </div>
+          </div>
+          <p>By default, the <span class=
+          "application">Recoll</span> indexer only uses most
+          non-alphanumeric characters as separators, treating them
+          as white space, so that inputs like <em class=
+          "replaceable"><code>all words</code></em>, and <em class=
+          "replaceable"><code>all,words</code></em> produce the
+          same terms.</p>
+          <p>It may sometimes be useful to index some of these
+          characters so that they can be used as discriminants for
+          searches. This can be done by setting the <code class=
+          "literal">indexedpunctuation</code> configuration
+          parameter. The value is an UTF-8 string, for example,
+          setting:</p>
+          <pre class="programlisting">indexedpunctuation = %€</pre>
+          <p>would allow searching separately <em class=
+          "replaceable"><code>100%</code></em> or <em class=
+          "replaceable"><code>100€</code></em>.</p>
+          <p>The affected characters are indexed as terms with
+          their own term positions, and they are their own
+          separators, so that <em class=
+          "replaceable"><code>100%</code></em> and <em class=
+          "replaceable"><code>100 %</code></em> would be equivalent
+          inputs.</p>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
                 <h3 class="title"><a name="RCL.INDEXING.PDF" id=
-                "RCL.INDEXING.PDF"></a>2.5.1.&nbsp;The PDF input
+                "RCL.INDEXING.PDF"></a>2.5.2.&nbsp;The PDF input
                 handler</h3>
               </div>
             </div>
@@ -2354,7 +2396,7 @@ fs.inotify.max_user_watches=32768</pre>
                 text is empty. This is done by executing an
                 external program and is now described in a
                 <a class="link" href="#RCL.INDEXING.OCR" title=
-                "2.5.2.&nbsp;Running OCR on image documents">separate
+                "2.5.3.&nbsp;Running OCR on image documents">separate
                 section</a>, because the OCR framework can also be
                 used with non-PDF image files.</p>
               </li>
@@ -2449,7 +2491,7 @@ pass</pre>
             <div>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.OCR" id=
-                "RCL.INDEXING.OCR"></a>2.5.2.&nbsp;Running OCR on
+                "RCL.INDEXING.OCR"></a>2.5.3.&nbsp;Running OCR on
                 image documents</h3>
               </div>
             </div>
@@ -2534,7 +2576,7 @@ pdfocrlang = eng</pre>
             <div>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.STT" id=
-                "RCL.INDEXING.STT"></a>2.5.3.&nbsp;Running a speech
+                "RCL.INDEXING.STT"></a>2.5.4.&nbsp;Running a speech
                 to text program on audio files</h3>
               </div>
             </div>
@@ -2558,7 +2600,7 @@ pdfocrlang = eng</pre>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.REMOVABLE"
                 id=
-                "RCL.INDEXING.REMOVABLE"></a>2.5.4.&nbsp;Removable
+                "RCL.INDEXING.REMOVABLE"></a>2.5.5.&nbsp;Removable
                 volumes</h3>
               </div>
             </div>
@@ -2782,7 +2824,7 @@ recollindex -c "$confdir"</pre>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.WEBQUEUE"
                 id=
-                "RCL.INDEXING.WEBQUEUE"></a>2.5.5.&nbsp;<span class="application">Unix</span>-like
+                "RCL.INDEXING.WEBQUEUE"></a>2.5.6.&nbsp;<span class="application">Unix</span>-like
                 systems: indexing visited Web pages</h3>
               </div>
             </div>
@@ -2866,10 +2908,9 @@ recollindex -c "$confdir"</pre>
             <div>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.EXTATTR"
-                id="RCL.INDEXING.EXTATTR"></a>2.5.6.&nbsp;<span class="application">Unix</span>-like
-                systems and <span class="application">Mac
-                OS</span>-like systems: using extended
-                attributes</h3>
+                id="RCL.INDEXING.EXTATTR"></a>2.5.7.&nbsp;<span class="application">Unix</span>-like
+                systems and <span class="application">MacOS</span>
+                systems: using extended attributes</h3>
               </div>
             </div>
           </div>
@@ -2941,7 +2982,8 @@ customize the <code class="filename">fields</code> file.
             <div>
               <div>
                 <h3 class="title"><a name="RCL.INDEXING.EXTTAGS"
-                id="RCL.INDEXING.EXTTAGS"></a>2.5.7.&nbsp;<span class="application">Unix</span>-like
+                id="RCL.INDEXING.EXTTAGS"></a>2.5.8.&nbsp;<span class="application">Unix</span>-like
+                systems and <span class="application">MacOS</span>
                 systems: importing external tags</h3>
               </div>
             </div>
@@ -2961,9 +3003,10 @@ customize the <code class="filename">fields</code> file.
           <em class="replaceable"><code>tags</code></em>, you would
           add the following to the configuration file:</p>
           <pre class="programlisting">[/some/area/of/the/fs]
-          metadatacmds = ; <em class=
+metadatacmds = ; <em class=
 "replaceable"><code>tags</code></em> = tmsu tags %f
         </pre>
+          <p>Note the initial semi-colon after the equal sign.</p>
           <div class="note" style=
           "margin-left: 0.5in; margin-right: 0.5in;">
             <h3 class="title">Note</h3>
@@ -2976,7 +3019,6 @@ customize the <code class="filename">fields</code> file.
           of the directory tree, because it may slow down indexing
           a bit (<code class=
           "literal">[some/area/of/the/fs]</code>).</p>
-          <p>Note the initial semi-colon after the equal sign.</p>
           <p>In the example above, the output of <span class=
           "command"><strong>tmsu</strong></span> is used to set a
           field named <em class=
@@ -2993,11 +3035,14 @@ customize the <code class="filename">fields</code> file.
           the <a class="link" href="#RCL.PROGRAM.FIELDS" title=
           "4.2.&nbsp;Field data processing">field
           configuration</a>.</p>
-          <p>Once re-indexing is performed (you will need to force
-          the file reindexing, <span class=
-          "application">Recoll</span> will not detect the need by
-          itself), you will be able to search from the query
-          language, through any of its aliases: <em class=
+          <p>After setting or updating the parameter, you will need
+          to tell <span class="application">Recoll</span> to
+          reindex the affected files. Just reset the index or see
+          <span class="command"><strong>recollindex</strong></span>
+          options <code class="literal">-e</code> or <code class=
+          "literal">-r</code>.</p>
+          <p>You will then be able to search the field from the
+          query language: <em class=
           "replaceable"><code>tags:some/alternate/values</code></em>
           or <em class=
           "replaceable"><code>tags:all,these,values</code></em>.</p>
@@ -3905,7 +3950,7 @@ customize the <code class="filename">fields</code> file.
           the configuration directory if the file does not exist in
           there (e.g. <code class=
           "filename">~/.recoll/fragment-buttons.xml</code> under
-          Linux and Mac OS, <code class=
+          Linux and MacOS, <code class=
           "filename">$HOME/AppData/Local/Recoll/fragment-buttons.xml</code>
           for Windows). Editing the copy will allow you to
           configure the tool for your needs .</p>
@@ -4541,7 +4586,7 @@ customize the <code class="filename">fields</code> file.
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1676" id="idm1676"></a>
+            <a name="idm1695" id="idm1695"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -7481,7 +7526,7 @@ C: = Z:</pre>
           for creating/updating an index with a program run by the
           Python3 interpreter. It is available on all platforms
           (<span class="application">Unix</span>-like systems, MS
-          Windows, Mac OS).</p>
+          Windows, MacOS).</p>
           <p>The search interface is used in a number of active
           projects: the <a class="ulink" href=
           "https://www.recoll.org/pages/download.html#gssp" target=
@@ -8452,8 +8497,8 @@ for i in range(nres):
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3419" id=
-                  "idm3419"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3438" id=
+                  "idm3438"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>
@@ -10222,6 +10267,20 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                   the input is 'co-worker'. This is new in version
                   1.22, and on by default. Setting the variable to
                   off allows restoring the previous behaviour.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDPUNCTUATION"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDPUNCTUATION"></a><span class="term"><code class="varname">indexedpunctuation</code></span></dt>
+                <dd>
+                  <p>String of UTF-8 punctuation characters to be
+                  indexed as words The resulting terms will then be
+                  searchable and, for example, by setting the
+                  parameter to "%€" (without the double quotes),
+                  you would be able to search separately for "100%"
+                  or "100€" Note that "100%" or "100 %" would be
+                  indexed in the same way, the characters are there
+                  own word separators.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.BACKSLASHASLETTER"

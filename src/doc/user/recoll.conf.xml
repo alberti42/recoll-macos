@@ -283,10 +283,15 @@ In some special circumstances, you may want to dispense with them.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.DEHYPHENATE">
 <term><varname>dehyphenate</varname></term>
-<listitem><para>Determines if we index 'coworker'
-also when the input is 'co-worker'. This is new
-in version 1.22, and on by default. Setting the variable to off allows
+<listitem><para>Determines if we index 'coworker' also when the input is 'co-worker'. This is new in version 1.22, and on by default. Setting the variable to off allows
 restoring the previous behaviour.
+</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDPUNCTUATION">
+<term><varname>indexedpunctuation</varname></term>
+<listitem><para>String of UTF-8 punctuation characters to be indexed as words The resulting terms will then be searchable and, for example, by setting the parameter to
+"%€" (without the double quotes), you would be able to search separately for "100%" or "100€" Note
+that "100%" or "100 %" would be indexed in the same way, the characters are there own word
+separators.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.BACKSLASHASLETTER">
 <term><varname>backslashasletter</varname></term>
