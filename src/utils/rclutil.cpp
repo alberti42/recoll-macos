@@ -61,13 +61,6 @@
 
 using namespace std;
 
-static std::string argv0;
-void rclutil_setargv0(const char *a0)
-{
-    if (a0)
-        argv0 = a0;
-}
-
 template <class T> void map_ss_cp_noshr(T s, T *d)
 {
     for (const auto& ent : s) {
@@ -130,77 +123,6 @@ template void addmeta<unordered_map<string, string>>(
     unordered_map<string, string>&, const string&, const string&);
 template void trimmeta<map<string, string>>(map<string, string>&);
 template void trimmeta<unordered_map<string, string>>(unordered_map<string, string>&);
-
-#ifdef _WIN32
-#include <Shlwapi.h>
-#pragma comment(lib, "shlwapi.lib")
-
-string path_thisexecdir()
-{
-    wchar_t text[MAX_PATH];
-    GetModuleFileNameW(NULL, text, MAX_PATH);
-#ifdef NTDDI_WIN8_future
-    PathCchRemoveFileSpec(text, MAX_PATH);
-#else
-    PathRemoveFileSpecW(text);
-#endif
-    string path;
-    wchartoutf8(text, path);
-    if (path.empty()) {
-        path = "c:/";
-    }
-
-    return path;
-}
-
-#elif defined(__APPLE__)
-std::string path_thisexecdir()
-{
-    uint32_t size = 0;
-    _NSGetExecutablePath(nullptr, &size);
-    char *path= (char*)malloc(size+1);
-    _NSGetExecutablePath(path, &size);
-    std::string ret = path_getfather(path);
-    free(path);
-    return ret;
-}
-
-#else
-
-// https://stackoverflow.com/questions/606041/how-do-i-get-the-path-of-a-process-in-unix-linux
-std::string path_thisexecdir()
-{
-    char pathbuf[PATH_MAX];
-    /* Works on Linux */
-    if (ssize_t buff_len = readlink("/proc/self/exe", pathbuf, PATH_MAX - 1); buff_len != -1) {
-        return path_getfather(std::string(pathbuf, buff_len));
-    }
-
-    /* If argv0 is null we're doomed: execve("foobar", nullptr, nullptr) */
-    if (argv0.empty()) {
-        return std::string();
-    }
-
-    // Try argv0 as relative path
-    if (nullptr != realpath(argv0.c_str(), pathbuf) && access(pathbuf, F_OK) == 0) {
-        return path_getfather(pathbuf);
-    }
-
-    /* Current path ?? This would seem to assume that . is in the PATH so would be covered
-       later. Not sure I understand the case */
-    std::string cmdname = path_getsimple(argv0);
-    std::string path = path_cat(path_cwd(), cmdname);
-    if (access(path.c_str(), F_OK) == 0) {
-        return path_getfather(path);
-    }
-
-    /* Try the PATH. */
-    if (ExecCmd::which(cmdname, path)) {
-        return path_getfather(path);
-    }
-    return std::string();
-}
-#endif // !_WIN32 && !__APPLE__
 
 #ifdef _WIN32
 // On Windows, we use a subdirectory named "rcltmp" inside the windows

@@ -26,7 +26,6 @@
 #include <vector>
 
 extern void rclutil_init_mt();
-extern void rclutil_setargv0(const char *argv0);
 
 /// Sub-directory for default recoll config (e.g: .recoll)
 extern std::string path_defaultrecollconfsubdir();
@@ -38,10 +37,6 @@ extern std::string path_homedata();
 
 /// e.g. /usr/share/recoll. Depends on OS and config
 extern const std::string& path_pkgdatadir();
-
-/// Try to return the directory where this executable resides. On Linux needs main() to have called
-/// rclutil_setargv0()
-extern std::string path_thisexecdir();
 
 /// Encode the path in a manner compatible to freedesktop thumbnail path computation. In addition to
 /// some printable punctuation (SPC"#%;<>?[\]^`{|}), this will also encode unprintable characters

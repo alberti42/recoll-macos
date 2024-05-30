@@ -536,7 +536,7 @@ static vector<const char*> argstovector(int argc, char **argv, vector<string>& s
         args[i] = storage[i].c_str();
     }
     args[argc] = nullptr;
-    rclutil_setargv0(storage[0].c_str());
+    pathut_setargv0(storage[0].c_str());
     thisprog = path_absolute(storage[0]);
     return args;
 }

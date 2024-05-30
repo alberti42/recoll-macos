@@ -22,11 +22,12 @@
 #include "rclconfig.h"
 #include "recollq.h"
 #include "rclutil.h"
+#include "pathut.h"
 
 static RclConfig *rclconfig;
 
 int main(int argc, char **argv)
 {
-    rclutil_setargv0(argv[0]);
+    pathut_setargv0(argv[0]);
     return(recollq(&rclconfig, argc, argv));
 }

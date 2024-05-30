@@ -167,6 +167,13 @@ extern int path_fileprops(const std::string path, struct PathStat *stp, bool fol
 /// Return separator for PATH environment variable
 extern const std::string& path_PATHsep();
 
+/// Try to return the directory where this executable resides. On Linux needs main() to have called
+/// pathut_setargv0()
+extern void pathut_setargv0(const char *argv0);
+extern std::string path_thisexecdir();
+// Note: this is only implemented on Linux and only exported for testing.
+extern std::string path_which(const std::string&);
+
 /// Directory reading interface. UTF-8 on Windows.
 class PathDirContents {
 public:
