@@ -171,8 +171,12 @@ extern const std::string& path_PATHsep();
 /// pathut_setargv0()
 extern void pathut_setargv0(const char *argv0);
 extern std::string path_thisexecdir();
-// Note: this is only implemented on Linux and only exported for testing.
+// Note: this is only implemented on Linux, for path_thisexecdir() and only exported for
+// testing. Not needed for this on either MacOS or Windows (use ExeCmd::which() where needed
+// instead).
+#if !defined(_WIN32) && !defined(__APPLE__)
 extern std::string path_which(const std::string&);
+#endif
 
 /// Directory reading interface. UTF-8 on Windows.
 class PathDirContents {

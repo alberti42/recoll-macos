@@ -538,6 +538,9 @@ string path_thisexecdir()
 }
 
 #elif defined(__APPLE__)
+
+#include <mach-o/dyld.h>
+
 std::string path_thisexecdir()
 {
     uint32_t size = 0;
@@ -566,7 +569,11 @@ std::string path_which(const std::string& cmdname)
         auto pathenv = strdup(cpathenv);
         for (char *trdir = strtok(pathenv, ":"); trdir != 0; trdir = strtok(0, ":")) {
             auto path = path_cat(trdir, cmdname);
-            if (access(path.c_str(), F_OK) == 0) {
+            auto candidate = path.c_str();
+            struct stat fin;
+            /* XXX work around access(2) false positives for superuser */
+            if (access(candidate, X_OK) == 0 && stat(candidate, &fin) == 0 && S_ISREG(fin.st_mode) &&
+                (getuid() != 0 ||  (fin.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) != 0)) {
                 free(pathenv);
                 return path;
             }
