@@ -4,7 +4,7 @@ project(
     license: 'GPL 2+',
     # We'd like to use version: files('RECOLL-VERSION.txt') but this is a 0.56 feature. Buster has
     # 0.49 and focal 0.53. let's support at least focal backports for now.
-    version: '1.39.0pre2',
+    version: '1.39.0',
     default_options: ['cpp_std=c++17', 'buildtype=debugoptimized'],
     meson_version: '>=0.49',
 )

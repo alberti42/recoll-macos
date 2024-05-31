@@ -13,12 +13,12 @@ SERIES="focal jammy mantic noble"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.39.0pre2
+RCLVERS=1.39.0
 GSSPVERS=1.1.3
 PPAVERS=1
 
-#PPANAME=recoll15-ppa
-PPANAME=recollexp-ppa
+PPANAME=recoll15-ppa
+#PPANAME=recollexp-ppa
 #PPANAME=recoll-webengine-ppa
 
 # recoll 
