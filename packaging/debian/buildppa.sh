@@ -22,7 +22,7 @@ PPANAME=recoll15-ppa
 #PPANAME=recoll-webengine-ppa
 
 # recoll 
-series_rcl=noble
+series_rcl=$SERIES
 # KIO
 series_kio=
 # krunner: does not build on focal and bionic because of the 5.90 min version requested in the

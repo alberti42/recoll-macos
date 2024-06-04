@@ -403,7 +403,7 @@ if get_option('recollq')
 
 endif
 
-############# Xadupm
+############# Xadump
 if get_option('xadump')
 
     xadump_sources = [
@@ -431,9 +431,6 @@ python = py_mod.find_installation(
 )
 py3_dep = dependency('python3', required: true)
 
-if get_option('qtgui')
-    subdir('qtgui')
-endif
 if get_option('python-module')
     subdir('python/recoll')
 endif   
@@ -448,6 +445,9 @@ if get_option('testmains')
 endif
 if get_option('rclgrep')
     subdir('rclgrep')
+endif
+if get_option('qtgui')
+    subdir('qtgui')
 endif
 
 manfiles = files(
