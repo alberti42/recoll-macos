@@ -60,6 +60,7 @@
 #include "rclinit.h"
 #include "fstreewalk.h"
 #include "pathut.h"
+#include "smallut.h"
 
 using std::string;
 using std::vector;
