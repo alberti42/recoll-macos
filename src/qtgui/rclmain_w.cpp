@@ -46,6 +46,7 @@
 #include <QStandardItemModel>
 #include <QActionGroup>
 #include <QScrollArea>
+#include <QStyleHints>
 
 #include "recoll.h"
 #include "log.h"
@@ -265,6 +266,10 @@ void RclMain::init()
     connect(this, SIGNAL(searchReset()), reslist, SLOT(resetList()));
     connect(this, SIGNAL(resultsReady()), reslist, SLOT(readDocSource()));
     connect(this, SIGNAL(uiPrefsChanged()), reslist, SLOT(onUiPrefsChanged()));
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+    connect(qApp->styleHints(), SIGNAL(colorSchemeChanged(Qt::ColorScheme)),
+            this, SLOT(setUIPrefs()));
+#endif
     
     connect(reslist, SIGNAL(hasResults(int)), this, SLOT(resultCount(int)));
     connect(reslist, SIGNAL(wordSelect(QString)), sSearch, SLOT(addTerm(QString)));
@@ -317,6 +322,8 @@ void RclMain::init()
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
+    setUIPrefs();
+    reslist->resetList();
 }
 
 void RclMain::onSSearchTypeChanged(int typ)
@@ -1170,13 +1177,28 @@ void RclMain::exportSimpleSearchHistory()
     fp.close();
 }
 
-// Called when the uiprefs dialog is ok'd
+// Called when the uiprefs dialog is ok'd or the desktop dark/light pref changes
 void RclMain::setUIPrefs()
 {
-    if (!uiprefs)
-        return;
     LOGDEB("Recollmain::setUIPrefs\n");
     populateSideFilters(SFUR_USERCONFIG);
+    
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+    auto normaldarkfn =
+        u8s2qs(path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-dark.qss"));
+    // Only do something if no custom qss file is set.
+    if (prefs.qssFile.isEmpty() || prefs.qssFile == normaldarkfn) {
+        if (qApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark) {
+            prefs.qssFile = normaldarkfn;
+            prefs.darkMode = true;
+            prefs.setupDarkCSS();
+        } else {
+            prefs.qssFile.clear();
+            prefs.darkMode = false;
+            prefs.setupDarkCSS();
+        }
+    }
+#endif
     ::applyStyleSheet(prefs.qssFile);
     emit uiPrefsChanged();
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
