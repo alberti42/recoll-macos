@@ -13,16 +13,15 @@ SERIES="focal jammy mantic noble"
 
 PPA_KEYID=7808CE96D38B9201
 
-RCLVERS=1.39.0
+RCLVERS=1.39.1
 GSSPVERS=1.1.3
-PPAVERS=1
+PPAVERS=2
 
 PPANAME=recoll15-ppa
-#PPANAME=recollexp-ppa
-#PPANAME=recoll-webengine-ppa
+PPANAME=recollexp-ppa
 
 # recoll 
-series_rcl=$SERIES
+series_rcl=jammy
 # KIO
 series_kio=
 # krunner: does not build on focal and bionic because of the 5.90 min version requested in the

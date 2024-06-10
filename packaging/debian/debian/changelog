@@ -1,3 +1,10 @@
+recoll (1.39.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * GUI: add capability to switch light/dark mode according to desktop
+    setting. Needs at least qt 6.5. Seems to work at least on Gnome.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 10 Jun 2024 14:54:00 +0200
+
 recoll (1.39.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Add capability to index some non-alphanumeric characters. See the

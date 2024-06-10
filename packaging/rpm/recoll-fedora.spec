@@ -2,7 +2,7 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.38.0
+Version:        1.39.1
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.lesbonscomptes.com/recoll/
@@ -114,13 +114,6 @@ pushd kde/kioslave/kio_recoll
 %cmake_install
 popd
 
-# kio_recoll -kde4
-pushd kde/kioslave/kio_recoll-kde4
-%cmake -DRECOLL_PUBLIC_LIB=1
-%cmake_build
-%cmake_install
-popd
-
 # krunner_recoll
 pushd kde/krunner
 %cmake -DRECOLL_PUBLIC_LIB=1
@@ -157,7 +150,6 @@ popd
 %{_mandir}/man1/recoll.1*
 %{_mandir}/man1/recollq.1*
 %{_mandir}/man1/recollindex.1*
-#{_mandir}/man1/rclgrep.1*
 %{_mandir}/man1/xadump.1*
 %{_mandir}/man5/recoll.conf.5*
 %{_unitdir}/recollindex@.service
@@ -165,11 +157,7 @@ popd
 
 %files kio
 %license COPYING
-%{_libdir}/kde4/kio_recoll.so
 %{_libdir}/qt5/plugins/kf5/kio/kio_recoll.so
-%{_datadir}/kde4/apps/kio_recoll/
-%{_datadir}/kde4/services/recoll.protocol
-%{_datadir}/kde4/services/recollf.protocol
 %{_datadir}/kio_recoll/help.html
 %{_datadir}/kio_recoll/welcome.html
 

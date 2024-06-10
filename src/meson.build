@@ -1,10 +1,14 @@
+# Note: the project version comes from RECOLL-VERSION.txt and is set by setversion.sh when we
+# bump it. We would like to simply set it into a variable at the top to facilitate the sed job, but
+# meson wants the first statement to be "project". Also there are several "  version: " in the file,
+# hence the comment hack below.
 project(
     'recoll',
     ['cpp', 'c'],
     license: 'GPL 2+',
     # We'd like to use version: files('RECOLL-VERSION.txt') but this is a 0.56 feature. Buster has
     # 0.49 and focal 0.53. let's support at least focal backports for now.
-    version: '1.39.0',
+    version: '1.39.1', # VERSIONCOMMENT keep this here, used by setversion.sh
     default_options: ['cpp_std=c++17', 'buildtype=debugoptimized'],
     meson_version: '>=0.49',
 )
