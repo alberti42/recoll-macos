@@ -78,14 +78,12 @@ RCLIDX=$RCLW/build-recollindex-${QTA}/${qtsdir}/recollindex.exe
 RCLQ=$RCLW/build-recollq-${QTA}/${qtsdir}/recollq.exe
 RCLS=$RCLW/build-rclstartw-${QTA}/${qtsdir}/rclstartw.exe
 XAPC=$RCLW/build-xapian-check-${QTA}/xapian-check.exe
-PYTHONMINOR=11
-PYTHON=${RCLDEPS}python-3.11.4-embed-win32
+PYTHONMINOR=12
+PYTHON=${RCLDEPS}python-3.12.4-embed-amd64
 UNRTF=${RCLDEPS}unrtf
 ANTIWORD=${RCLDEPS}antiword
 PYXSLT=${RCLDEPS}pyxslt
 PYEXIV2=${RCLDEPS}pyexiv2
-# We expect $MUTAGEN to be an unzipped .whl from pypi
-MUTAGEN=${RCLDEPS}mutagen-1.46/
 EPUB=${RCLDEPS}epub-0.5.2
 FUTURE=${RCLDEPS}python2-future
 POPPLER=${RCLDEPS}poppler-22.04.0/
@@ -230,13 +228,6 @@ copyunrtf()
     chkcp $MISC/libiconv-2.dll $FILTERS
 }
 
-copymutagen()
-{
-    # We expect $MUTAGEN to be an unzipped .whl from pypi
-    cp -rp $MUTAGEN/mutagen $FILTERS
-    # chkcp to check that mutagen is where we think it is
-    chkcp $MUTAGEN/mutagen/_file.py $FILTERS/mutagen
-}
 
 # Not used any more, the epub python code is bundled with recoll
 copyepub()
@@ -356,23 +347,20 @@ copypyrecoll()
         DEST=${DESTDIR}/Share/dist
         test -d $DEST || mkdir $DEST || fatal cant create $DEST
         rm -f ${DEST}/Recoll*.egg ${DEST}/Recoll*.whl
-        for v in 7 8 9 10 11;do
-            if test ${v} = "7" ; then
-                m=m
-            else
-                m=""
-            fi
-            PYRCLDIST=${PYRECOLL}/dist/Recoll-${VERSION}-cp3${v}-cp3${v}${m}-win32.whl
+        for v in 10 11 12;do
+            PYRCLDIST=${PYRECOLL}/dist/Recoll-${VERSION}-cp3${v}-cp3${v}-win_amd64.whl
             if test ! -f ${PYRCLDIST}; then
                 pushd ${PYRECOLL}
-                "/c/Program Files (x86)/Python3${v}-32/python" setup-win.py bdist_wheel
+                # NOTE: with recent Python versions you need to install the wheel module for this
+                # to work: xxx/python -m pip install wheel
+                "/c/Program Files/Python3${v}/python" setup-win.py bdist_wheel
                 popd
             fi
             chkcp ${PYRCLDIST} $DEST
             # If this is the right version for our embedded python, install the extension
             #(needed, e.g. for the Joplin indexer).
             if test "$v" = "$PYTHONMINOR";then
-                ${DESTDIR}/Share/filters/python/python -m pip install ${PYRCLDIST}
+                ${DESTDIR}/Share/filters/python/python -m pip install ${PYRCLDIST} || exit 1
             fi
         done
     fi
@@ -402,7 +390,6 @@ copyaspell
 copypoppler
 copyantiword
 copyunrtf
-copymutagen
 copywpd
 copypff
 copypython
