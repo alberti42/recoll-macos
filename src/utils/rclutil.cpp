@@ -283,7 +283,7 @@ const string& path_pkgdatadir()
         "c:/program files/recoll"};
     for (const auto& path : paths) {
         datadir = path_cat(path, "Share");
-        if (path_exists(datadir)) {
+        if (path_exists(path_cat(datadir, {"examples", "recoll.conf"}))) {
             return datadir;
         }
     }

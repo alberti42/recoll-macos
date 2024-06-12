@@ -360,7 +360,7 @@ copypyrecoll()
             # If this is the right version for our embedded python, install the extension
             #(needed, e.g. for the Joplin indexer).
             if test "$v" = "$PYTHONMINOR";then
-                ${DESTDIR}/Share/filters/python/python -m pip install ${PYRCLDIST} || exit 1
+                ${DESTDIR}/Share/filters/python/python -m pip install --no-user ${PYRCLDIST} || exit 1
             fi
         done
     fi
