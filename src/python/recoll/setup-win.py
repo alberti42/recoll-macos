@@ -33,18 +33,19 @@ define_macros = [
 ]
 
 library_dirs = [
-        os.path.join(top, "windows", "build-librecoll-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release"),
+        os.path.join(top, "build-librecoll-Desktop_Qt_6_6_3_MSVC2019_64bit-Release/release/"),
         os.path.join(recolldeps, "libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc"),
         os.path.join(recolldeps, "libxslt/libxslt-1.1.29/win32/bin.msvc"),
-        os.path.join(top, "windows", "build-libxapian-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release"),
+        os.path.join(top, "build-libxapian-Desktop_Qt_6_6_3_MSVC2019_64bit-Release/release"),
         os.path.join(recolldeps, "zlib-1.2.11"),
         os.path.join(recolldeps, "libmagic/src/lib"),
         os.path.join(recolldeps, "regex"),
-        os.path.join(recolldeps, "build-libiconv-Desktop_Qt_5_15_2_MSVC2019_32bit-Release/release")
+        os.path.join(recolldeps, "wlibiconv",
+                     "build-libiconv-Desktop_Qt_6_6_3_MSVC2019_64bit-Release/release")
         ]
 
-libraries =  ["librecoll", "libmagic", "libregex", "libxml2_a", "libxslt_a",
-              "libxapian", "libiconv", "zlib",
+libraries =  ["recoll", "libmagic", "libregex", "libxml2_a", "libxslt_a",
+              "libxapian", "iconv", "zlib",
               "rpcrt4", "ws2_32", "shlwapi", "shell32",
               "psapi", "user32", "kernel32"
 ]
