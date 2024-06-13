@@ -270,10 +270,11 @@ class PFFReader(object):
                         else:
                             p = pathlib.Path(fullpath)
                         # Strip the top dir (/nonexistent.export/)
-                        p = p.relative_to(*p.parts[:2])
+                        ptop = pathlib.PurePath(*p.parts[:2])
+                        p = p.relative_to(ptop)
                         # We use the parent directory as ipath: all
                         # the message parts are in there
-                        ipath = str(p.parents[0])
+                        ipath = str(p.parent)
                         self.msg.setheaders(data)
                     elif met_splitext(basename)[0] == 'Message':
                         ext = met_splitext(basename)[1]
