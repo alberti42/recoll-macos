@@ -6,19 +6,18 @@ import sys
 # /opt/local/lib
 
 ## CHANGE THIS
-srcdir = "/Users/dockes/projets/fulltext/recoll/src/python/recoll"
+pytop = "/Users/dockes/projets/fulltext/recoll/src/python/recoll"
 
 # The compiled-in values are not used under MacOS
-prefix = "/opt/local"
 RECOLL_DATADIR = "/opt/local/share/recoll"
 
 # For shadow builds: references to the source tree
-top = os.path.join(srcdir, '..', '..')
-pytop = srcdir
-localtop = top
-extra_compile_args = ''
+top = os.path.join(pytop, '..', '..')
 
 VERSION = open(os.path.join(top, "RECOLL-VERSION.txt")).read().strip()
+
+extra_compile_args = ['-std=c++17']
+define_macros = [('RECOLL_DATADIR', RECOLL_DATADIR),]
 
 include_dirs = [
         os.path.join(top, 'common'),
@@ -30,14 +29,9 @@ include_dirs = [
         os.path.join(top, 'xaposix'), 
 ]
 
-define_macros = [
-        ('RECOLL_DATADIR', RECOLL_DATADIR),
-]
-
+# This supposes that you have copied librecoll to /opt/local/lib. Else, adjust.
 library_dirs = ["/opt/local/lib/", ]
 libraries =  ["recoll", "xml2", "xslt", "xapian", "iconv", "z", ]
-
-extra_compile_args = ['-std=c++17']
 
 module1 = Extension('_recoll',
                     define_macros = define_macros,
