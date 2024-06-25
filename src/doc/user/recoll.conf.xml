@@ -455,7 +455,8 @@ subpath under cachedir.
 <listitem><para>Maximum file system occupation
 over which we stop indexing. The value is a percentage,
 corresponding to what the "Capacity" df output column shows. The default
-value is 0, meaning no checking.
+value is 0, meaning no checking. This parameter is only checked when the indexer starts,
+it will not change the behaviour or a running process.
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.DBDIR">
 <term><varname>dbdir</varname></term>
