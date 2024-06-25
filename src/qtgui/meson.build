@@ -52,6 +52,7 @@ recoll = custom_target(
     output: outfile,
     input: infile,
     command: [qmkmk, '@INPUT@', prefixoption],
+    depends: librecoll,
     install: true,
     install_dir: 'bin',
 )
