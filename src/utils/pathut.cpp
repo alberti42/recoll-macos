@@ -1210,6 +1210,18 @@ static int lstatx(const char *filename, struct statx *buffer)
     return ret;
 }
 
+static int fstatx(int fd, struct statx *buffer)
+{
+    int ret, atflag = AT_EMPTY_PATH;
+    unsigned int mask = STATX_BASIC_STATS | STATX_BTIME;
+
+    ret = _statx(fd, "", atflag, mask,  buffer);
+    if (ret < 0) {
+        perror("fstatx");
+    }
+    return ret;
+}
+
 #define ST_SIZE stx_size
 #define ST_MODE stx_mode
 #define ST_MTIME stx_mtime.tv_sec
@@ -1221,6 +1233,7 @@ static int lstatx(const char *filename, struct statx *buffer)
 #define ST_BLKSIZE stx_blksize
 #define ST_MODE stx_mode
 #define STATXSTRUCT statx
+#define STATXCALL statx
 #define FSTATXCALL fstatx
 #define LSTATXCALL lstatx
 

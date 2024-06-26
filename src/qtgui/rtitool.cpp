@@ -109,9 +109,9 @@ void RTIToolW::accept()
         // Try to create .config and autostart anyway. If they exists this will 
         // do nothing. An error will be detected when we try to create the file
         string dir = path_cat(path_home(), ".config");
-        mkdir(dir.c_str(), 0700);
+        path_makepath(dir, 0700);
         dir = path_cat(dir, "autostart");
-        mkdir(dir.c_str(), 0700);
+        path_makepath(dir, 0700);
 
         string reason;
         if (!stringtofile(text, autostartfile.c_str(), reason)) {
