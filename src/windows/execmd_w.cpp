@@ -1169,6 +1169,16 @@ std::string ExecCmd::waitStatusAsString(int wstatus)
     return oss.str();
 }
 
+bool ExecCmd::status_exited(int status)
+{
+    return status != -1;
+}
+
+int ExecCmd::status_exitstatus(int status)
+{
+    return status;
+}
+
 
 ///////////// ReExec class methods. 
 ReExec::ReExec(int argc, char *args[])
