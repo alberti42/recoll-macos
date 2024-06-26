@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
-#include "safesysstat.h"
 
 using namespace std;
 
@@ -89,8 +88,8 @@ int main(int argc, char **argv)
         fprintf(stderr, "%s\n", str.c_str());
         exit(1);
     }
-    struct stat st;
-    if (stat(fn.c_str(), &st)) {
+    struct PathStat st;
+    if (path_fileprops(fn, &st)) {
         perror("stat");
         exit(1);
     }

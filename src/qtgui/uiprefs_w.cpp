@@ -16,8 +16,6 @@
  */
 #include "autoconfig.h"
 
-#include "safesysstat.h"
-
 #include <string>
 #include <algorithm>
 #include <list>

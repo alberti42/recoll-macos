@@ -28,7 +28,6 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
-#include "safesysstat.h"
 
 using namespace std;
 
@@ -47,18 +46,18 @@ public:
     Internal() {}
     void setpath(const string& fn) {
         path = path_canon(fn);
-        stat(path.c_str(), &st);
+        path_fileprops(path, &st);
     }
     bool samefile(const string& fn) {
         string p1 = path_canon(fn);
         if (path != p1) {
             return false;
         }
-        struct stat st1;
-        if (stat(p1.c_str(), &st1) != 0) {
+        struct PathStat st1;
+        if (path_fileprops(p1, &st1) != 0) {
             return false;
         }
-        return st.st_mtime == st1.st_mtime && st.st_size == st1.st_size;
+        return st.pst_mtime == st1.pst_mtime && st.pst_size == st1.pst_size;
     }
 
     void clear() {
@@ -68,8 +67,8 @@ public:
         multiwords.clear();
         multiwords_maxlen = 0;
         path.clear();
-        st.st_mtime = 0;
-        st.st_size = 0;
+        st.pst_mtime = 0;
+        st.pst_size = 0;
     }
     
     bool ok{false};
@@ -84,7 +83,7 @@ public:
     size_t multiwords_maxlen{0};
     
     std::string path;
-    struct stat st;
+    struct PathStat st;
 };
 
 bool SynGroups::ok() const

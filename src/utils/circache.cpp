@@ -23,7 +23,6 @@
 #include <errno.h>
 #include "safefcntl.h"
 #include <sys/types.h>
-#include "safesysstat.h"
 #include "safeunistd.h"
 #include <assert.h>
 #include <memory.h>
@@ -662,8 +661,8 @@ bool CirCache::create(int64_t maxsize, int flags)
         return false;
     }
 
-    struct stat st;
-    if (stat(m_dir.c_str(), &st) < 0) {
+    struct PathStat st;
+    if (path_fileprops(m_dir, &st) < 0) {
         // Directory does not exist, create it
         if (!path_makepath(m_dir, 0777)) {
             m_d->m_reason << "CirCache::create: mkdir(" << m_dir << ") failed. errno: " << errno;
@@ -683,7 +682,7 @@ bool CirCache::create(int64_t maxsize, int flags)
             }
             // If the new maxsize is bigger than current size, we need
             // to stop recycling if this is what we are doing.
-            if (maxsize > m_d->m_maxsize && maxsize > st.st_size) {
+            if (maxsize > m_d->m_maxsize && maxsize > st.pst_size) {
                 // Scan the file to find the last physical record. The
                 // ohead is set at physical eof, and nhead is the last
                 // scanned record
@@ -752,7 +751,6 @@ int64_t CirCache::size() const
         LOGERR("CirCache::open: null data\n");
         return -1;
     }
-    int64_t sz = -1;
     struct PathStat st;
     if (m_d->m_fd < 0) {
         if (path_fileprops(m_d->datafn(m_dir), &st) < 0) {
@@ -760,17 +758,14 @@ int64_t CirCache::size() const
                 ") failed " << "errno " << errno;
             return -1;
         }
-        sz = st.pst_size;
     } else {
-        struct stat st;
-        if (fstat(m_d->m_fd, &st) < 0) {
+        if (path_fileprops(m_d->m_fd, &st) < 0) {
             m_d->m_reason << "CirCache::open: fstat(" << m_d->datafn(m_dir) <<
                 ") failed " << "errno " << errno;
             return -1;
         }
-        sz = st.st_size;
     }
-    return sz;
+    return st.pst_size;
 }
 
 int64_t CirCache::maxsize() const
@@ -1078,8 +1073,8 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
         }
     }
 
-    struct stat st;
-    if (fstat(m_d->m_fd, &st) < 0) {
+    struct PathStat st;
+    if (path_fileprops(m_d->m_fd, &st) < 0) {
         m_d->m_reason << "CirCache::put: fstat failed. errno " << errno;
         return false;
     }
@@ -1128,7 +1123,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
         // latest one, no need to recycle stuff
         LOGDEB("CirCache::put: new fits in old padsize " << recovpadsize <<"\n");
         npadsize = recovpadsize - nsize;
-    } else if (st.st_size < m_d->m_maxsize) {
+    } else if (st.pst_size < m_d->m_maxsize) {
         // Still growing the file.
         npadsize = 0;
         extending = true;

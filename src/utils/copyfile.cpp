@@ -23,12 +23,12 @@
 #include <errno.h>
 #include "safefcntl.h"
 #include <sys/types.h>
-#include "safesysstat.h"
 #include "safeunistd.h"
 
 #ifndef _WIN32
 #include <sys/time.h>
 #include <utime.h>
+#include <sys/stat>
 #endif
 
 #include <cstring>
@@ -147,21 +147,20 @@ bool renameormove(const char *src, const char *dst, string &reason)
         return false;
     } 
 
+    if (!copyfile(src, dst, reason))
+        return false;
+
+#ifndef _WIN32
     struct stat st;
     if (stat(src, &st) < 0) {
         reason += string("Can't stat ") + src + " : " + strerror(errno);
         return false;
     }
-    if (!copyfile(src, dst, reason))
-        return false;
-
     struct stat st1;
     if (stat(dst, &st1) < 0) {
         reason += string("Can't stat ") + dst + " : " + strerror(errno);
         return false;
     }
-
-#ifndef _WIN32
     // Try to preserve modes, owner, times. This may fail for a number
     // of reasons
     if ((st1.st_mode & 0777) != (st.st_mode & 0777)) {
@@ -176,10 +175,12 @@ bool renameormove(const char *src, const char *dst, string &reason)
     }
 #endif
 
+    struct PathStat pst;
+    path_fileprops(src, &pst);
     struct path_timeval times[2];
-    times[0].tv_sec = st.st_atime;
+    times[0].tv_sec = time(0);
     times[0].tv_usec = 0;
-    times[1].tv_sec = st.st_mtime;
+    times[1].tv_sec = pst.pst_mtime;
     times[1].tv_usec = 0;
     path_utimes(dst, times);
 

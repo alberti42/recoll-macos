@@ -25,11 +25,9 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "log.h"
-#include "safesysstat.h"
-#include "safeunistd.h"
-#include "safewindows.h"
 #include <psapi.h>
+
+#include "log.h"
 #include "smallut.h"
 #include "pathut.h"
 #include "closefrom.h"
@@ -168,14 +166,11 @@ static wchar_t *mergeEnvironment(
     return nenvir;
 }
 
+// There is no exec bit under Windows. We could check the file header but this is too complicated.
+// Just check that the file is a regular file and hope for the best.
 static bool is_exe(const string& path)
 {
-    struct stat st;
-    if (access(path.c_str(), X_OK) == 0 && stat(path.c_str(), &st) == 0 &&
-        S_ISREG(st.st_mode)) {
-        return true;
-    }
-    return false;
+    return path_isfile(path);
 }
 
 // In mt programs the static vector computations below needs a call
