@@ -27,7 +27,6 @@ common/cjksplitter.cpp
 common/cjksplitter.h
 common/cnsplitter.cpp
 common/cnsplitter.h
-common/conf_post.h
 common/cstr.cpp
 common/cstr.h
 common/kosplitter.cpp

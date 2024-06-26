@@ -137,7 +137,6 @@ set(librecoll_SOURCES
     bincimapmime/mime.h
     common/webstore.cpp
     common/webstore.h
-    common/conf_post.h
     common/cstr.cpp
     common/cstr.h
     common/rclconfig.cpp

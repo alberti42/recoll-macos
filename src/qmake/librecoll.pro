@@ -123,9 +123,8 @@ INCLUDEPATH += ../common ../index ../internfile ../query ../unac ../utils ../asp
   ../rcldb ../qtgui ../xaposix ../confgui ../bincimapmime 
 
 windows {
-  # VC only defines __WIN32, not __WIN32__ . For some reason xapian uses
-  #  __WIN32__ which it actually defines in conf_post.h if __WIN32 is
-  #  set. Reason: mystery.
+  # VC only defines _WIN32, not __WIN32__ . For some reason xapian uses __WIN32__ which it actually
+  # defines in conf_post.h if _WIN32 is set. Reason: mystery.
   DEFINES += __WIN32__
   DEFINES += PSAPI_VERSION=1
   defines += UNICODE
