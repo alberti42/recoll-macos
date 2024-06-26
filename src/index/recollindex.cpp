@@ -26,7 +26,7 @@
 #else
 #include <direct.h>
 #endif
-#include "safefcntl.h"
+#include <fcntl.h>
 #include "safeunistd.h"
 #include <getopt.h>
 

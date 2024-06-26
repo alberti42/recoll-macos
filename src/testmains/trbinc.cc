@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include "safefcntl.h"
+#include <fcntl.h>
 #include "safeunistd.h"
 #include <string.h>
 

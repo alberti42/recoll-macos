@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include "safefcntl.h"
+#include <fcntl.h>
 #include <sys/types.h>
 #include "safeunistd.h"
 #include <assert.h>
