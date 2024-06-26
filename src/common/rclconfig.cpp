@@ -480,10 +480,8 @@ RclConfig::RclConfig(const string *argcnf)
     m->zeroMe();
 
     if (m->o_origcwd.empty()) {
-        char buf[MAXPATHLEN];
-        if (getcwd(buf, MAXPATHLEN)) {
-            m->o_origcwd = string(buf);
-        } else {
+        m->o_origcwd = path_cwd();
+        if (m->o_origcwd.empty()) {
             std::cerr << "recollxx: can't retrieve current working "
                 "directory: relative path translations will fail\n";
         }

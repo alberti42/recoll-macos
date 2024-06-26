@@ -25,6 +25,7 @@
 
 #include "idfile.h"
 #include "log.h"
+#include "smallut.h"
 
 using namespace std;
 

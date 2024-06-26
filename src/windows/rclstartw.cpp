@@ -14,14 +14,16 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#include "autoconfig.h"
+
+#define WIN32_LEAN_AND_MEAN
+#define NOGDI
+#include <windows.h>
 
 #include <shellapi.h>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
 
-#include "safewindows.h"
 #include "pathut.h"
 
 using namespace std;

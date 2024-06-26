@@ -38,7 +38,9 @@
 #include "mh_mail.h"
 #include "mh_mbox.h"
 #include "mh_text.h"
+#ifndef _WIN32
 #include "mh_symlink.h"
+#endif // _WIN32
 #include "mh_unknown.h"
 #include "mh_null.h"
 #include "mh_xslt.h"
@@ -172,10 +174,12 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mimeOrParams,
         LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerMail\n");
         MD5String("MimeHandlerMail", id);
         return nobuild ? 0 : new MimeHandlerMail(config, id);
+#ifndef _WIN32
     } else if ("inode/symlink" == lmime) {
         LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerSymlink\n");
         MD5String("MimeHandlerSymlink", id);
         return nobuild ? 0 : new MimeHandlerSymlink(config, id);
+#endif // _WIN32
     } else if ("application/x-zerosize" == lmime) {
         LOGDEB("mhFactory(" << lmime << "): returning MimeHandlerNull\n");
         MD5String("MimeHandlerNull", id);

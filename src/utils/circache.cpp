@@ -55,7 +55,8 @@ static ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
     }
     return tot;
 }
-#endif
+#define ftruncate _chsize_s
+#endif // _WIN32
 
 #include "chrono.h"
 #include "conftree.h"

@@ -33,6 +33,13 @@
 #include "pathut.h"
 #include "fstreewalk.h"
 
+#ifdef _WIN32
+// We do need this for detecting stuff about network shares
+#define WIN32_LEAN_AND_MEAN
+#define NOGDI
+#include <windows.h>
+#endif // _WIN32
+
 using namespace std;
 
 bool FsTreeWalker::o_useFnmPathname = true;

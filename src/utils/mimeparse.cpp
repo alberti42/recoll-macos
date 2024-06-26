@@ -750,7 +750,7 @@ nozone:
 
     // Compute the UTC Unix time value
 #ifndef sun
-    time_t tim = timegm(&tm);
+    time_t tim = portable_timegm(&tm);
 #else
     // No timegm on Sun. Use mktime, then correct for local timezone
     time_t tim = mktime(&tm);

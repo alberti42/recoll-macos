@@ -26,6 +26,7 @@
 #include "log.h"
 #include "pathut.h"
 #include "recollindex.h"
+#include "smallut.h"
 
 using namespace std;
 
