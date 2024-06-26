@@ -39,7 +39,6 @@
 #endif
 #include <errno.h>
 #include <sys/types.h>
-#include "safesysstat.h"
 
 #include <mutex>
 #include <map>
@@ -589,7 +588,7 @@ bool maketmpdir(string& tdir, string& reason)
     // mkdtemp
 
 #if !defined(HAVE_MKDTEMP) || defined(_WIN32)
-    if (mkdir(tdir.c_str(), 0700) < 0) {
+    if (!path_makepath(tdir, 0700)) {
         reason = string("maketmpdir: mkdir ") + tdir + " failed";
         tdir.erase();
         return false;

@@ -22,7 +22,6 @@
 #include "safeunistd.h"
 #include <time.h>
 #include <cstdlib>
-#include "safesysstat.h"
 
 #include <map>
 #include <sstream>

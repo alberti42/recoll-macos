@@ -18,8 +18,6 @@
 
 /** Saving and restoring named queries */
 
-#include "safesysstat.h"
-
 #include <QSettings>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -38,8 +36,7 @@ using namespace Rcl;
 static QString prevDir()
 {
     QSettings settings;
-    QString prevdir = 
-        settings.value("/Recoll/prefs/lastQuerySaveDir").toString();
+    QString prevdir = settings.value("/Recoll/prefs/lastQuerySaveDir").toString();
     string defpath = path_cat(theconfig->getConfDir(), "saved_queries");
     if (prevdir.isEmpty()) {
         if (!path_exists(defpath)) {
@@ -66,8 +63,7 @@ void RclMain::saveLastQuery()
         }
     }
     if (xml.empty()) {
-        QMessageBox::information(this, tr("No search"), 
-                                 tr("No preserved previous search"));
+        QMessageBox::information(this, tr("No search"), tr("No preserved previous search"));
         return;
     }
     xml = string("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") +
@@ -99,8 +95,7 @@ void RclMain::saveLastQuery()
     LOGDEB("RclMain::saveLastQuery: XML: [" << xml << "]\n");
     string reason;
     if (!stringtofile(xml, tofile.c_str(), reason)) {
-        QMessageBox::warning(this, tr("Write failed"), 
-                                 tr("Could not write to file"));
+        QMessageBox::warning(this, tr("Write failed"), tr("Could not write to file"));
     }
     return;
 }
@@ -108,17 +103,15 @@ void RclMain::saveLastQuery()
 
 void RclMain::loadSavedQuery()
 {
-    QString s = 
-        QFileDialog::getOpenFileName(this, "Open saved query", prevDir(), 
-                                     tr("Saved Queries (*.rclq)"));
+    QString s = QFileDialog::getOpenFileName(this, "Open saved query", prevDir(), 
+                                             tr("Saved Queries (*.rclq)"));
     if (s.isEmpty())
         return;
 
     string fromfile(qs2path(s));
     string xml, reason;
     if (!file_to_string(fromfile, xml, &reason)) {
-        QMessageBox::warning(this, tr("Read failed"), 
-                             tr("Could not open file: ") + 
+        QMessageBox::warning(this, tr("Read failed"), tr("Could not open file: ") + 
                              QString::fromUtf8(reason.c_str()));
         return;
     }
@@ -137,7 +130,6 @@ void RclMain::loadSavedQuery()
         if (sSearch->fromXML(sdef))
             return;
     }
-    QMessageBox::warning(this, tr("Load error"), 
-                         tr("Could not load saved query"));
+    QMessageBox::warning(this, tr("Load error"), tr("Could not load saved query"));
 }
 

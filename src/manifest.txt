@@ -697,7 +697,6 @@ utils/zlibut.h
 xaposix/
 xaposix/safe.cc
 xaposix/safefcntl.h
-xaposix/safesysstat.h
 xaposix/safesyswait.h
 xaposix/safeunistd.h
 xaposix/safewindows.h

@@ -17,8 +17,6 @@
 
 #include "autoconfig.h"
 
-#include "safesysstat.h"
-
 #include <string>
 #include <vector>
 
@@ -168,11 +166,11 @@ FragButs::~FragButs()
 
 bool FragButs::isStale(time_t *reftime)
 {
-    struct stat st;
-    stat(m_fn.c_str(), &st);
-    bool ret = st.st_mtime != m_reftime;
+    struct PathStat st;
+    path_fileprops(m_fn, &st);
+    bool ret = st.pst_mtime != m_reftime;
     if (reftime)
-        *reftime = st.st_mtime;
+        *reftime = st.pst_mtime;
     return ret;
 }
 

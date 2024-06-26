@@ -18,7 +18,6 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include "safesysstat.h"
 #include "safeunistd.h"
 #include <signal.h>
 
