@@ -18,7 +18,6 @@
 
 #include <stdio.h>
 #include <sys/types.h>
-#include "safesyswait.h"
 #include <iostream>
 #include <sstream>
 

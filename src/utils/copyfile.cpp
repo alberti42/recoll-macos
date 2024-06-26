@@ -28,7 +28,7 @@
 #ifndef _WIN32
 #include <sys/time.h>
 #include <utime.h>
-#include <sys/stat>
+#include <sys/stat.h>
 #endif
 
 #include <cstring>

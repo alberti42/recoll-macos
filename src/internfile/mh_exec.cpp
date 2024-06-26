@@ -20,8 +20,6 @@
 #include <time.h>
 #include <fnmatch.h>
 
-#include "safesyswait.h"
-
 #include "cstr.h"
 #include "execmd.h"
 #include "mh_exec.h"
@@ -182,7 +180,7 @@ bool MimeHandlerExec::next_document()
     if (status) {
         LOGERR("MimeHandlerExec: command status 0x" <<
                std::hex << status << std::dec << " for " << cmd << "\n");
-        if (WIFEXITED(status) && WEXITSTATUS(status) == 127) {
+        if (ExecCmd::status_exited(status) && ExecCmd::status_exitstatus(status) == 127) {
             // That's how execmd signals a failed exec (most probably
             // a missing command). Let'hope no filter uses the same value as
             // an exit status... Disable myself permanently and signal the 
