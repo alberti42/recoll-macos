@@ -5,7 +5,7 @@ FreeBSD doc toolchain to produce the output formats. This had the advantage
 of an easy way to produce all formats including a PDF manual, but presented
 two problems:
 
- - Dependancy on the FreeBSD platform.
+ - Dependency on the FreeBSD platform.
  - No support for UTF-8 (last I looked), only latin1.
 
 The manual has been converted to docbook XML a long time ago.

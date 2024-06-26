@@ -421,7 +421,7 @@ alink="#0000FF">
     <div class="list-of-tables">
       <p><b>List of Tables</b></p>
       <dl>
-        <dt>3.1. <a href="#idm1695">Keyboard shortcuts</a></dt>
+        <dt>3.1. <a href="#idm1696">Keyboard shortcuts</a></dt>
       </dl>
     </div>
     <div class="chapter">
@@ -3705,13 +3705,18 @@ metadatacmds = ; <em class=
           <p>The directory filter displays a subset of the
           filesystem directories, reduced to the indexed area, as
           defined by the <code class="literal">topdirs</code> list
-          and the name exclusion parameters. You can independantly
-          select and deselect directories by clicking them. Note
-          that selecting a directory will activate the whole
-          subtree for searching, there is no need to select the
-          subdirectories, and no way to exclude some of them (use
-          <a class="link" href="#RCL.SEARCH.LANG" title=
-          "3.5.&nbsp;The query language"><span class=
+          and the name exclusion parameters. Some directories may
+          not be shown at all, depending on their (lack of)
+          indexable content and other indexing parameters. The
+          depth of the displayed tree is limited at 2 levels under
+          the start directories by default. You can change this in
+          the GUI Preferences, User interface panel.</p>
+          <p>You can independantly select and deselect directories
+          by clicking them. Note that selecting a directory will
+          activate the whole subtree for searching, there is no
+          need to select the subdirectories, and no way to exclude
+          some of them (use <a class="link" href="#RCL.SEARCH.LANG"
+          title="3.5.&nbsp;The query language"><span class=
           "guilabel">Query language</span></a> <code class=
           "literal">dir:</code> clauses if this is needed).</p>
         </div>
@@ -4374,7 +4379,7 @@ metadatacmds = ; <em class=
                 mode uses the <span class=
                 "application">Aspell</span> spelling application,
                 which must be installed on your system for things
-                to work (if your documents contain non-ascii
+                to work (if your documents contain non-ASCII
                 characters, <span class="application">Recoll</span>
                 needs an aspell version newer than 0.60 for UTF-8
                 support). The language which is used to build the
@@ -4586,7 +4591,7 @@ metadatacmds = ; <em class=
           <span class="guilabel">Shortcut</span> column, and type
           the desired sequence.</p>
           <div class="table">
-            <a name="idm1695" id="idm1695"></a>
+            <a name="idm1696" id="idm1696"></a>
             <p class="title"><b>Table&nbsp;3.1.&nbsp;Keyboard
             shortcuts</b></p>
             <div class="table-contents">
@@ -8497,8 +8502,8 @@ for i in range(nres):
             <div class="titlepage">
               <div>
                 <div>
-                  <h4 class="title"><a name="idm3438" id=
-                  "idm3438"></a>The Python indexing API</h4>
+                  <h4 class="title"><a name="idm3439" id=
+                  "idm3439"></a>The Python indexing API</h4>
                 </div>
               </div>
             </div>
@@ -9670,7 +9675,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         <div class="itemizedlist">
           <ul class="itemizedlist" style="list-style-type: disc;">
             <li class="listitem">
-              <p>File path parameters may contain non-ascii
+              <p>File path parameters may contain non-ASCII
               characters and should use the exact same byte values
               as found in the file system directory. Usually, this
               means that the configuration file should use the
@@ -9678,15 +9683,16 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
             </li>
             <li class="listitem">
               <p>The <code class="envar">unac_except_trans</code>
-              parameter should be encoded in UTF-8. If your system
-              locale is not UTF-8, and you need to also specify
-              non-ascii file paths, this poses a difficulty because
-              common text editors cannot handle multiple encodings
-              in a single file. In this relatively unlikely case,
-              you can edit the configuration file as two separate
-              text files with appropriate encodings, and
-              concatenate them to create the complete
-              configuration.</p>
+              parameter (meaning unaccenting exception
+              translations) should be encoded in UTF-8. If your
+              system locale is not UTF-8 (which is now very rare),
+              and you need to also specify non-ASCII file paths,
+              this poses a difficulty because common text editors
+              cannot handle multiple encodings in a single file. In
+              this relatively unlikely case, you can edit the
+              configuration file as two separate text files with
+              appropriate encodings, and concatenate them to create
+              the complete configuration.</p>
             </li>
           </ul>
         </div>
@@ -10536,7 +10542,9 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
                   stop indexing. The value is a percentage,
                   corresponding to what the "Capacity" df output
                   column shows. The default value is 0, meaning no
-                  checking.</p>
+                  checking. This parameter is only checked when the
+                  indexer starts, it will not change the behaviour
+                  or a running process.</p>
                 </dd>
                 <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.DBDIR"
                 id=
@@ -11601,7 +11609,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
           extract a specific email header and use it as a
           searchable field, with data displayable inside result
           lists. (Side note: as the email handler does no decoding
-          on the values, only plain ascii headers can be indexed,
+          on the values, only plain ASCII headers can be indexed,
           and only the first occurrence will be used for headers
           that occur several times).</p>
           <pre class="programlisting">[prefixes]

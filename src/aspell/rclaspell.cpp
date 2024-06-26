@@ -283,7 +283,8 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
                 cmdstring + "\n"
                 "One possible reason might be missing language "
                 "data files for lang = " + m_lang +
-                ". Maybe try to execute the command by hand for a better diag.";
+                ". Maybe try to execute the command on a terminal command line "
+                "for a better diagnostic.";
         }
         return false;
     }

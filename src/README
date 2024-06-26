@@ -1958,11 +1958,17 @@ The result list right-click menu
 
    The directory filter displays a subset of the filesystem directories,
    reduced to the indexed area, as defined by the topdirs list and the
-   name exclusion parameters. You can independantly select and deselect
-   directories by clicking them. Note that selecting a directory will
-   activate the whole subtree for searching, there is no need to select
-   the subdirectories, and no way to exclude some of them (use [188]Query
-   language dir: clauses if this is needed).
+   name exclusion parameters. Some directories may not be shown at all,
+   depending on their (lack of) indexable content and other indexing
+   parameters. The depth of the displayed tree is limited at 2 levels
+   under the start directories by default. You can change this in the GUI
+   Preferences, User interface panel.
+
+   You can independantly select and deselect directories by clicking them.
+   Note that selecting a directory will activate the whole subtree for
+   searching, there is no need to select the subdirectories, and no way to
+   exclude some of them (use [188]Query language dir: clauses if this is
+   needed).
 
 3.2.5. Running arbitrary commands on result files
 
@@ -2342,7 +2348,7 @@ Advanced search history
           Recoll will do its best to find index terms that sound like your
           entry. This mode uses the Aspell spelling application, which
           must be installed on your system for things to work (if your
-          documents contain non-ascii characters, Recoll needs an aspell
+          documents contain non-ASCII characters, Recoll needs an aspell
           version newer than 0.60 for UTF-8 support). The language which
           is used to build the dictionary out of the index terms (which is
           done at the end of an indexing pass) is the one defined by your
@@ -5040,14 +5046,15 @@ Important
 
    Encoding issues. Most of the configuration parameters are plain ASCII.
    Two particular sets of values may cause encoding issues:
-     * File path parameters may contain non-ascii characters and should
+     * File path parameters may contain non-ASCII characters and should
        use the exact same byte values as found in the file system
        directory. Usually, this means that the configuration file should
        use the system default locale encoding.
-     * The unac_except_trans parameter should be encoded in UTF-8. If your
-       system locale is not UTF-8, and you need to also specify non-ascii
-       file paths, this poses a difficulty because common text editors
-       cannot handle multiple encodings in a single file. In this
+     * The unac_except_trans parameter (meaning unaccenting exception
+       translations) should be encoded in UTF-8. If your system locale is
+       not UTF-8 (which is now very rare), and you need to also specify
+       non-ASCII file paths, this poses a difficulty because common text
+       editors cannot handle multiple encodings in a single file. In this
        relatively unlikely case, you can edit the configuration file as
        two separate text files with appropriate encodings, and concatenate
        them to create the complete configuration.
@@ -5537,7 +5544,8 @@ Parameters affecting where and how we store things
           Maximum file system occupation over which we stop indexing. The
           value is a percentage, corresponding to what the "Capacity" df
           output column shows. The default value is 0, meaning no
-          checking.
+          checking. This parameter is only checked when the indexer
+          starts, it will not change the behaviour or a running process.
 
    dbdir
           Xapian database directory location. This will be created on
@@ -6090,7 +6098,7 @@ Parameters set for specific locations
    Here follows a small example of a personal fields file. This would
    extract a specific email header and use it as a searchable field, with
    data displayable inside result lists. (Side note: as the email handler
-   does no decoding on the values, only plain ascii headers can be
+   does no decoding on the values, only plain ASCII headers can be
    indexed, and only the first occurrence will be used for headers that
    occur several times).
 [prefixes]
@@ -6473,7 +6481,7 @@ References
   98. file:///home/dockes/projets/fulltext/recoll/src/doc/user/usermanual.html#RCL.INSTALL.CONFIG.MIMEVIEW
   99. file:///home/dockes/projets/fulltext/recoll/src/doc/user/usermanual.html#RCL.INSTALL.CONFIG.PTRANS
  100. file:///home/dockes/projets/fulltext/recoll/src/doc/user/usermanual.html#RCL.INSTALL.CONFIG.EXAMPLES
- 101. file:///home/dockes/projets/fulltext/recoll/src/doc/user/usermanual.html#idm1695
+ 101. file:///home/dockes/projets/fulltext/recoll/src/doc/user/usermanual.html#idm1696
  102. file:///home/dockes/projets/fulltext/recoll/src/doc/user/usermanual.html#RCL.INSTALL.BINARY
  103. file:///home/dockes/projets/fulltext/recoll/src/doc/user/usermanual.html#RCL.INDEXING.CONFIG
  104. file:///home/dockes/projets/fulltext/recoll/src/doc/user/usermanual.html#RCL.INSTALL.EXTERNAL

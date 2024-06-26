@@ -58,7 +58,7 @@ if get_option('testmains') or get_option('python-module') or get_option('indexer
     # Searching for iconv is a meson 0.60 feature. Hopefully, for now all the systems where the
     # meson build is used have iconv in libc. Otherwise look at glib search for iconv for how to do
     # it.
-    #librecolldeps += dependency('iconv', method = 'auto')
+    librecolldeps += dependency('iconv', method : 'auto')
 else
     librecoll_needed = false
 endif
@@ -144,6 +144,7 @@ if cpp.has_header('spawn.h')
         recoll_conf.set('USE_POSIX_SPAWN', get_option('spawn'))
     endif
 endif
+malloc_include = ''
 if cpp.has_header('malloc.h')
     malloc_include = '<malloc.h>'
     recoll_conf.set('HAVE_MALLOC_H', true)
@@ -152,8 +153,10 @@ if cpp.has_header('malloc/malloc.h')
     malloc_include = '<malloc/malloc.h>'
     recoll_conf.set('HAVE_MALLOC_MALLOC_H', true)
 endif
-if cpp.has_function('malloc_trim', prefix: '#include ' + malloc_include)
-    recoll_conf.set('HAVE_MALLOC_TRIM', true)
+if malloc_include != ''
+    if cpp.has_function('malloc_trim', prefix: '#include ' + malloc_include)
+        recoll_conf.set('HAVE_MALLOC_TRIM', true)
+    endif
 endif
 if cpp.has_function(
     'setrlimit',
@@ -193,7 +196,6 @@ elif get_option('fam')
         librecolldeps += libfam
     endif
 endif
-
 recoll_conf.set('RCL_SPLIT_CAMELCASE', get_option('camelcase'))
 recoll_conf.set('USE_SIMDUTF', get_option('simdutf'))
 
@@ -316,6 +318,9 @@ librecoll_sources = [
     'utils/zlibut.cpp',
 ]
 
+if host_machine.system() == 'darwin'
+    librecoll_sources += 'internfile/finderxattr.cpp'
+endif
 librecoll_incdir = include_directories(
     'aspell',
     'bincimapmime',

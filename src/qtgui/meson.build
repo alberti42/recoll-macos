@@ -6,17 +6,25 @@
 
 qtgui_conf = configuration_data()
 qtgui_conf.set('srcdir', meson.current_source_dir())
-if not get_option('webkit') or get_option('webengine')
+if get_option('webkit') and not get_option('webengine')
+    qtgui_conf.set('QMAKE_ENABLE_WEBKIT', '')
+else
     qtgui_conf.set('QMAKE_ENABLE_WEBKIT', '#')
 endif
-if not get_option('webengine')
+if get_option('webengine')
+    qtgui_conf.set('QMAKE_ENABLE_WEBENGINE', '')
+else
     qtgui_conf.set('QMAKE_ENABLE_WEBENGINE', '#')
 endif
-if not get_option('qtzeitgeist')
+if get_option('qtzeitgeist')
+    qtgui_conf.set('QMAKE_ENABLE_ZEITGEIST', '')
+else
     qtgui_conf.set('QMAKE_ENABLE_ZEITGEIST', '#')
 endif
 if not get_option('guidebug')
     qtgui_conf.set('QMAKE_ENABLE_GUIDEBUG', '#')
+else
+    qtgui_conf.set('QMAKE_ENABLE_GUIDEBUG', '')
 endif
 qtgui_conf.set('LIBRECOLL_FOR_QMAKE', librecoll.full_path())
 
@@ -44,6 +52,7 @@ recoll = custom_target(
     output: outfile,
     input: infile,
     command: [qmkmk, '@INPUT@', prefixoption],
+    depends: librecoll,
     install: true,
     install_dir: 'bin',
 )

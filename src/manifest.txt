@@ -318,8 +318,7 @@ python/recoll/recoll/rclconfig.py
 python/recoll/recoll/rclextract.py
 python/recoll/recoll/recoll.py
 python/recoll/setup.cfg
-python/recoll/setup.cfg.in
-python/recoll/setup.py.in
+python/recoll/setup.py
 python/samples/
 python/samples/README.txt
 python/samples/docdups.py

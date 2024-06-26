@@ -2383,8 +2383,8 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
         <title>The filters panel</title>
 
         <para>By default, the GUI displays the filters panel on the left of the results area. This
-        is new in version 1.32. You can adjust the width of the panel, and hide it
-          by squeezing it completely. The width will be memorized for the next session.</para>
+          is new in version 1.32. You can adjust the width of the panel, and hide it by squeezing it
+          completely. The width will be memorized for the next session.</para>
 
         <para>The panel currently has two areas, for filtering the results by dates, or by
           filesystem location.</para> 
@@ -2398,12 +2398,16 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
 
         <para>The directory filter displays a subset of the filesystem directories, reduced to the
           indexed area, as defined by the <literal>topdirs</literal> list and the name exclusion
-          parameters. You can independantly select and deselect directories by clicking them. Note
-          that selecting a directory will activate the whole subtree for searching, there is no need
-          to select the subdirectories, and no way to exclude some of them (use 
-          <link linkend="RCL.SEARCH.LANG"><guilabel>Query
-          language</guilabel></link> <literal>dir:</literal> clauses if this
-          is needed).</para>
+          parameters. Some directories may not be shown at all, depending on their (lack of)
+          indexable content and other indexing parameters. The depth of the displayed tree is
+          limited at 2 levels under the start directories by default. You can change this in the
+          GUI Preferences, User interface panel.</para>
+
+        <para>You can independantly select and deselect directories by clicking them. Note that
+          selecting a directory will activate the whole subtree for searching, there is no need to
+          select the subdirectories, and no way to exclude some of them
+          (use <link linkend="RCL.SEARCH.LANG"><guilabel>Query
+          language</guilabel></link> <literal>dir:</literal> clauses if this is needed).</para>
 
 
       </sect2>
@@ -2910,7 +2914,7 @@ metadatacmds = ; <replaceable>tags</replaceable> = tmsu tags %f
             your entry. This mode uses the
             <application>Aspell</application> spelling application,
             which must be installed on your system for things to work
-            (if your documents contain non-ascii characters, &RCL;
+            (if your documents contain non-ASCII characters, &RCL;
             needs an aspell version newer than 0.60 for UTF-8
             support). The language which is used to build the
             dictionary out of the index terms (which is done at the
@@ -6838,26 +6842,23 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
       <formalpara>
         <title>Encoding issues</title>
         <para>Most of the configuration parameters are plain ASCII. Two
-        particular sets of values may cause encoding issues:</para>
+          particular sets of values may cause encoding issues:</para>
       </formalpara>
 
 
       <para>
         <itemizedlist>
-          <listitem><para>File path parameters may contain non-ascii
-          characters and should use the exact same byte values as found in
-          the file system directory. Usually, this means that the
-          configuration file should use the system default locale
-          encoding.</para>
+          <listitem><para>File path parameters may contain non-ASCII characters and should use the
+              exact same byte values as found in the file system directory. Usually, this means that
+              the configuration file should use the system default locale encoding.</para>
           </listitem>
-          <listitem><para>The <envar>unac_except_trans</envar> parameter
-          should be encoded in UTF-8. If your system locale is not UTF-8, and
-          you need to also specify non-ascii file paths, this poses a
-          difficulty because common text editors cannot handle multiple
-          encodings in a single file. In this relatively unlikely case, you
-          can edit the configuration file as two separate text files with
-          appropriate encodings, and concatenate them to create the complete
-          configuration.</para>
+          <listitem><para>The <envar>unac_except_trans</envar> parameter (meaning unaccenting
+              exception translations) should be encoded in UTF-8. If your system locale is not UTF-8
+              (which is now very rare), and you need to also specify non-ASCII file paths, this
+              poses a difficulty because common text editors cannot handle multiple encodings in a
+              single file. In this relatively unlikely case, you can edit the configuration file as
+              two separate text files with appropriate encodings, and concatenate them to create the
+              complete configuration.</para>
           </listitem>
         </itemizedlist>
       </para>
@@ -7007,7 +7008,7 @@ index = /path/to/recoll/src/python/samples/rclmbox.py index
         <para>Here follows a small example of a personal <filename>fields</filename> file. This
         would extract a specific email header and use it as a searchable field, with data
         displayable inside result lists. (Side note: as the email handler does no decoding on the
-        values, only plain ascii headers can be indexed, and only the first occurrence will be used
+        values, only plain ASCII headers can be indexed, and only the first occurrence will be used
         for headers that occur several times).
 
         <programlisting>[prefixes]
