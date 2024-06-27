@@ -1636,7 +1636,7 @@ int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *,
     if (c == 0)
         return 0;
 
-    if (specialstartchars.find_first_of(c) != string::npos) {
+    if (specialstartchars.find(c) != string::npos) {
         //cerr << "yylex: return " << c << endl;
         return c;
     }
@@ -1687,7 +1687,7 @@ int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *,
         if (isspace(c)) {
             //cerr << "Word broken by whitespace" << endl;
             break;
-        } else if (specialinchars.find_first_of(c) != string::npos) {
+        } else if (specialinchars.find(c) != string::npos) {
             //cerr << "Word broken by special char" << endl;
             d->UNGETCHAR(c);
             break;
