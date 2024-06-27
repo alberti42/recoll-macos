@@ -1276,10 +1276,10 @@ bool parseHTTPRanges(const std::string& ranges, std::vector<std::pair<int64_t, i
     return true;
 }
 
-void millisleep(int msecs)
+void millisleep(int millis)
 {
 #ifdef _WIN32
-    Sleep(msecs);
+    Sleep(millis);
 #else
     struct timespec spec;
     spec.tv_sec = millis / 1000;
