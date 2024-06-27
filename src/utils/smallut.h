@@ -290,6 +290,8 @@ extern std::string pc_decode(const std::string&);
 /// start meaning count from the end).
 bool parseHTTPRanges(const std::string& ranges, std::vector<std::pair<int64_t, int64_t>>& oranges);
 
+void millisleep(int millis);
+
 
 } // End namespace MedocUtils
 

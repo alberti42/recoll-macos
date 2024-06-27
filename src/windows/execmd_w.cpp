@@ -20,7 +20,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOGDI
 #include <windows.h>
-
+#include <process.h> // getpid(), debug
 
 #include "execmd.h"
 

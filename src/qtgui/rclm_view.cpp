@@ -96,7 +96,7 @@ void RclMain::viewUrl()
         // prevent the temp file deletion completely, leaving it
         // around forever. Better to let the user save a copy if he
         // wants I think.
-        sleep(60);
+        millisleep(60*1000);
         fileExit();
     }
 }

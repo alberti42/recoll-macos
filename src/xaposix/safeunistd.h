@@ -48,35 +48,9 @@
 # define lseek(FD, OFF, WHENCE) _lseeki64(FD, OFF, WHENCE)
 # define off_t __int64
 
-// process.h is needed for getpid().
-# include <process.h>
-
 #endif
 
 #ifdef __WIN32__
-#ifdef _MSC_VER
-/* Recent MinGW versions define this */
-inline unsigned int
-sleep(unsigned int seconds)
-{
-    // Use our own little helper function to avoid pulling in <windows.h>.
-    extern void xapian_sleep_milliseconds(unsigned int millisecs);
-
-    // Sleep takes a time interval in milliseconds, whereas POSIX sleep takes
-    // a time interval in seconds, so we need to multiply 'seconds' by 1000.
-    //
-    // But make sure the multiplication won't overflow!  4294967 seconds is
-    // nearly 50 days, so just sleep for that long and return the number of
-    // seconds left to sleep for.  The common case of sleep(CONSTANT) should
-    // optimise to just xapian_sleep_milliseconds(CONSTANT).
-    if (seconds > 4294967u) {
-    xapian_sleep_milliseconds(4294967000u);
-    return seconds - 4294967u;
-    }
-    xapian_sleep_milliseconds(seconds * 1000u);
-    return 0;
-}
-#endif /* _MSC_VER*/
 
 #ifndef _SSIZE_T_DEFINED
 #ifdef  _WIN64

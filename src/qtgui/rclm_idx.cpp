@@ -19,6 +19,11 @@
 #include <signal.h>
 #include "safeunistd.h"
 
+#ifdef _WIN32
+// getpid()
+#include <process.h>
+#endif // _WIN32
+
 #include <QMessageBox>
 #include <QTimer>
 

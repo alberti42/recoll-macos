@@ -693,8 +693,5 @@ utils/x11mon.h
 utils/zlibut.cpp
 utils/zlibut.h
 xaposix/
-xaposix/safe.cc
-xaposix/safefcntl.h
 xaposix/safeunistd.h
-xaposix/safewindows.h
 ylwrap

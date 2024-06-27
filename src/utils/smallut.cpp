@@ -1276,6 +1276,18 @@ bool parseHTTPRanges(const std::string& ranges, std::vector<std::pair<int64_t, i
     return true;
 }
 
+void millisleep(int msecs)
+{
+#ifdef _WIN32
+    Sleep(msecs);
+#else
+    struct timespec spec;
+    spec.tv_sec = millis / 1000;
+    spec.tv_nsec = (millis % 1000) * 1000000;
+    nanosleep(&spec, nullptr);
+#endif
+}
+
 // Initialization for static stuff to be called from main thread before going
 // multiple
 void smallut_init_mt()
