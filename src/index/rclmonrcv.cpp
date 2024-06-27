@@ -804,7 +804,9 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 #include <thread>
 #include <queue>
 
-#include "safewindows.h"
+#define WIN32_LEAN_AND_MEAN
+#define NOGDI
+#include <windows.h>
 
 typedef long WatchID;
 class WatcherWin32;

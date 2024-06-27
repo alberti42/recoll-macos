@@ -1,7 +1,10 @@
 #include <unordered_map>
 #include <string>
 
-#include "safewindows.h"
+#define WIN32_LEAN_AND_MEAN
+#define NOGDI
+#include <windows.h>
+
 #include "wincodepages.h"
 
 using namespace std;

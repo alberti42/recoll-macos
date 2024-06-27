@@ -26,7 +26,6 @@
 #include <algorithm>
 #include <stdlib.h>
 
-#include "safeunistd.h"
 #include "pathut.h"
 #include "execmd.h"
 #include "log.h"
@@ -98,7 +97,7 @@ bool Aspell::init(string &reason)
 #endif // WIN32
     
     const char *aspell_prog_from_env = getenv("ASPELL_PROG");
-    if (aspell_prog_from_env && access(aspell_prog_from_env, X_OK) == 0) {
+    if (aspell_prog_from_env && path_access(aspell_prog_from_env, X_OK) == 0) {
         m_data->m_execbuild = aspell_prog_from_env;
     }
 #ifdef ASPELL_PROG

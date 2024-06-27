@@ -27,16 +27,27 @@
 #include "fstreewalk.h"
 
 #ifdef _WIN32
-#include "safewindows.h"
+
+#ifndef NOMINMAX
+# define NOMINMAX
+#endif
+#define WIN32_LEAN_AND_MEAN
+#define NOGDI
+#include <windows.h>
 #include <Shlobj.h>
-#else
+
+#else // _WIN32
+
 #include <sys/param.h>
 #include <pwd.h>
 #include <sys/file.h>
-#endif
+
+#endif // !_WIN32
+
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
+
 #include <errno.h>
 #include <sys/types.h>
 

@@ -19,9 +19,6 @@
 #include <string>
 
 #include <stdio.h>
-#ifdef _WIN32
-#include "safewindows.h"
-#endif
 #include <signal.h>
 #include <locale.h>
 #include <cstdlib>
@@ -107,6 +104,10 @@ void recoll_exitready()
 }
 
 #else // _WIN32 ->
+
+#define WIN32_LEAN_AND_MEAN
+#define NOGDI
+#include <windows.h>
 
 // Windows signals etc.
 //
