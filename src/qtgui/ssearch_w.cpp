@@ -550,6 +550,10 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
             xml << "  <SM>FN</SM>\n";
             clp = new Rcl::SearchDataClauseFilename(u8);
         } else {
+            // AND/OR modes have no subsearches so it's ok to set the no wild cards flag on the top
+            // and only SearchData object
+            if (prefs.ignwilds)
+                sdata->setNoWildExp(true);
             // ANY or ALL, several words.
             if (tp == SST_ANY) {
                 xml << "  <SM>OR</SM>\n";

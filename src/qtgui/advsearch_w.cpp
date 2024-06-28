@@ -446,14 +446,16 @@ using namespace Rcl;
 void AdvSearch::runSearch()
 {
     string stemLang = prefs.stemlang();
-    std::shared_ptr<SearchData> sdata(new SearchData(conjunctCMB->currentIndex() == 0 ?
-                                                     SCLT_AND : SCLT_OR, stemLang));
+    auto sdata = std::make_shared<SearchData>(conjunctCMB->currentIndex() == 0 ?
+                                              SCLT_AND : SCLT_OR, stemLang);
+    if (prefs.ignwilds) {
+        sdata->setNoWildExp(true);
+    }
     bool hasclause = false;
 
-    for (vector<SearchClauseW*>::iterator it = m_clauseWins.begin();
-         it != m_clauseWins.end(); it++) {
+    for (const auto& clausew : m_clauseWins) {
         SearchDataClause *cl;
-        if ((cl = (*it)->getClause())) {
+        if ((cl = clausew->getClause())) {
             sdata->addClause(cl);
             hasclause = true;
         }
@@ -475,9 +477,8 @@ void AdvSearch::runSearch()
                 }
                 vector<string> types;
                 theconfig->getMimeCatTypes(cat, types);
-                for (vector<string>::const_iterator it = types.begin();
-                     it != types.end(); it++) {
-                    sdata->addFiletype(*it);
+                for (const auto& tp : types) {
+                    sdata->addFiletype(tp);
                 }
             } else {
                 sdata->addFiletype(qs2utf8s(yesFiltypsLB->item(i)->text()));
@@ -523,13 +524,12 @@ void AdvSearch::runSearch()
     if (!subtreeCMB->currentText().isEmpty()) {
         QString current = subtreeCMB->currentText();
 
-        Rcl::SearchDataClausePath *pathclause = new Rcl::SearchDataClausePath(
-            qs2path(current), direxclCB->isChecked());
+        Rcl::SearchDataClausePath *pathclause =
+            new Rcl::SearchDataClausePath(qs2path(current), direxclCB->isChecked());
         if (sdata->getTp() == SCLT_AND) {
             sdata->addClause(pathclause);
         } else {
-            std::shared_ptr<SearchData> 
-                nsdata(new SearchData(SCLT_AND, stemLang));
+            auto nsdata = std::make_shared<SearchData>(SCLT_AND, stemLang);
             nsdata->addClause(new Rcl::SearchDataClauseSub(sdata));
             nsdata->addClause(pathclause);
             sdata = nsdata;

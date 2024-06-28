@@ -86,7 +86,7 @@ private:
  */
 class TextSplitP : public TextSplit {
 public:
-    TextSplitP(TermProc *prc, Flags flags = Flags(TXTS_NONE))
+    TextSplitP(TermProc *prc, int flags = TXTS_NONE)
         : TextSplit(flags), m_prc(prc)  {}
 
     virtual bool text_to_words(const std::string &in) override {

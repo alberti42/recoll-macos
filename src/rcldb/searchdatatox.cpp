@@ -324,7 +324,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 // the time, the result of our splitting will be a single term.
 class TextSplitQ : public TextSplitP {
 public:
-    TextSplitQ(Flags flags, TermProc *prc)
+    TextSplitQ(int flags, TermProc *prc)
         : TextSplitP(prc, flags), m_nostemexp(false) {
     }
 
@@ -580,9 +580,7 @@ void SearchDataClauseSimple::processSimpleSpan(
 {
     vector<Xapian::Query>& pqueries(*(vector<Xapian::Query>*)pq);
     LOGDEB0("StringToXapianQ::processSimpleSpan: [" << span << "] mods 0x"
-            << (unsigned int)mods << "\n");
-    vector<string> exp;  
-    string sterm; // dumb version of user term
+           << (unsigned int)mods << "\n");
 
     string prefix;
     const FieldTraits *ftp;
@@ -592,9 +590,22 @@ void SearchDataClauseSimple::processSimpleSpan(
         prefix = wrap_prefix(ftp->pfx);
     }
 
+    vector<string> exp;  
+    string sterm; // dumb version of user term
     vector<string> multiwords;
-    if (!expandTerm(db, ermsg, mods, span, exp, sterm, prefix, &multiwords))
-        return;
+    static string wildcardchars{"*?[]"};
+    // Special case: in case nowildexp is set and we get a single char (because it's in
+    // indexedpunctuation probably), check if it's a wildcard and don't do expandTerm at
+    // all. Simpler than dealing with the case inside expandTerm.
+    if (getNoWildExp() && span.size() == 1 && wildcardchars.find(span[0]) != string::npos) {
+        exp.push_back(span);
+        sterm = span;
+    } else {
+        if (!expandTerm(db, ermsg, mods, span, exp, sterm, prefix, &multiwords)) {
+            LOGINF("processSimpleSpan: expandterm failed\n");
+            return;
+        }
+    }
     
     // Set up the highlight data. No prefix should go in there
     if (!m_exclude) {
@@ -622,9 +633,8 @@ void SearchDataClauseSimple::processSimpleSpan(
         (m_parentSearch && !m_parentSearch->haveWildCards()) || 
         (nullptr == m_parentSearch && !m_haveWildCards);
     if (exp.size() > 1 && doBoostUserTerm && !sterm.empty()) {
-        xq = Xapian::Query(Xapian::Query::OP_OR, xq, 
-                           Xapian::Query(prefix+sterm, 
-                                         original_term_wqf_booster));
+        xq = Xapian::Query(Xapian::Query::OP_OR, xq,
+                           Xapian::Query(prefix+sterm, original_term_wqf_booster));
     }
 
     // Push phrases for the multi-word expansions
@@ -836,8 +846,11 @@ bool SearchDataClauseSimple::processUserString(
             if (o_index_stripchars)
                 nxt = &tpprep;
 
-            TextSplitQ splitter(TextSplit::Flags(
-                                    TextSplit::TXTS_ONLYSPANS | TextSplit::TXTS_KEEPWILD), nxt);
+            int txtsplitflags = TextSplit::TXTS_ONLYSPANS;
+            if (!getNoWildExp()) {
+                txtsplitflags |= TextSplit::TXTS_KEEPWILD;
+            }
+            TextSplitQ splitter(txtsplitflags, nxt);
             tpq.setTSQ(&splitter);
             splitter.text_to_words(wordorphrase);
 
@@ -936,10 +949,9 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
     if (!processUserString(db, m_text, m_reason, &pqueries))
         return false;
     if (pqueries.empty()) {
-        LOGERR("SearchDataClauseSimple: resolved to null query\n");
-        m_reason = string("Resolved to null query. Term too long ? : [" + 
-                          m_text + string("]"));
-        return false;
+        LOGDEB("SearchDataClauseSimple: " << m_text << " resolved to null query\n");
+        m_reason = string("Resolved to null query. Term too long ? : [" + m_text + string("]"));
+        return true;
     }
 
     *qp = Xapian::Query(op, pqueries.begin(), pqueries.end());
@@ -1109,9 +1121,9 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
     if (!processUserString(db, s, m_reason, &pqueries, m_slack, useNear))
         return false;
     if (pqueries.empty()) {
-        LOGERR("SearchDataClauseDist: resolved to null query\n");
+        LOGDEB("SearchDataClauseDist: [" << s << "]resolved to null query\n");
         m_reason = string("Resolved to null query. Term too long ? : [" +  m_text + string("]"));
-        return false;
+        return true;
     }
 
     *qp = *pqueries.begin();

@@ -156,6 +156,7 @@ public:
     bool showcompleterhitcounts{false};
     int ssearchCompleterHistCnt{0};
     QString sidefilterdateformat;
+    bool ignwilds{false};
     /*INSERTHERE*/
 
     // See widgets/qxtconfirmationmessage.

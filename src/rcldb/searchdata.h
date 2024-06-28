@@ -165,7 +165,14 @@ public:
     SClType getTp() {
         return m_tp;
     }
-    
+
+    void setNoWildExp(bool x) {
+        m_nowildexp = x;
+    }
+    bool getNoWildExp() {
+        return m_nowildexp;
+    }
+
     void setMaxExpand(int max) {
         m_softmaxexpand = max;
     }
@@ -204,6 +211,8 @@ private:
     int64_t        m_minSize{-1};
     // Filtering for subdocs: -1:any, 0: only free-standing, 1: only subdocs
     int            m_subspec{SUBDOC_ANY};
+
+    bool           m_nowildexp{false};
     
     // Printable expanded version of the complete query, retrieved/set
     // from rcldb after the Xapian::setQuery() call
@@ -247,10 +256,10 @@ public:
                    SDCM_NOSYNS = 0x40, // Don't perform synonym expansion
                    // Aargh special case. pathelts are case/diac-sensitive
                    // even in a stripped index
-                   SDCM_PATHELT = 0x80, 
+                   SDCM_PATHELT = 0x80,
                    SDCM_FILTER = 0x100,
                    // Terms inside phrases are not expanded if this is not set (by 'x' modifier)
-                   SDCM_EXPANDPHRASE = 0x200, 
+                   SDCM_EXPANDPHRASE = 0x200,
     };
     enum Relation {REL_CONTAINS, REL_EQUALS, REL_LT, REL_LTE, REL_GT, REL_GTE};
 
@@ -286,6 +295,9 @@ public:
     }
     bool getAutoCase() {
         return m_parentSearch ? m_parentSearch->getAutoCase() : true;
+    }
+    bool getNoWildExp() {
+        return m_parentSearch ? m_parentSearch->getNoWildExp() : false;
     }
     int getMaxExp() {
         return m_parentSearch ? m_parentSearch->getMaxExp() : 10000;

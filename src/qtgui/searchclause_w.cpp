@@ -29,11 +29,6 @@
 #include <qwhatsthis.h>
 
 using std::string;
-using std::vector;
-using std::map;
-using std::list;
-using std::set;
-
 using namespace Rcl;
 
 /*
@@ -83,11 +78,11 @@ void SearchClauseW::languageChange()
 
     fldCMB->addItem(tr("No field"));
     if (theconfig) {
-        set<string> fields = theconfig->getIndexedFields();
-        for (set<string>::const_iterator it = fields.begin(); it != fields.end(); it++) {
+        auto fields = theconfig->getIndexedFields();
+        for (const auto& fld : fields) {
             // Some fields don't make sense here
-            if (it->compare("filename")) {
-                fldCMB->addItem(QString::fromUtf8(it->c_str()));
+            if (fld != "filename") {
+                fldCMB->addItem(QString::fromUtf8(fld.c_str()));
             }
         }
     }
@@ -101,7 +96,7 @@ void SearchClauseW::languageChange()
 }
 
 // Translate my window state into an Rcl search clause
-SearchDataClause *SearchClauseW::getClause()
+SearchDataClause *SearchClauseW::getClause() const
 {
     if (wordsLE->text().isEmpty())
         return 0;

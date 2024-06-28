@@ -35,7 +35,7 @@ class SearchClauseW : public QWidget
 
 public:
     SearchClauseW(QWidget* parent = 0);
-    Rcl::SearchDataClause *getClause();
+    Rcl::SearchDataClause *getClause() const;
     void setFromClause(Rcl::SearchDataClauseSimple *cl);
     void clear();
 
