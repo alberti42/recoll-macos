@@ -5,11 +5,11 @@
 # sudo apt-get install pkg-kde-tools  cdbs
 
 # Active series:
-# 20.04LTS focal  2025-04
-# 22.04LTS jammy  2027-04
-# 23.10    mantic 2024-07
-# 24.04LTS noble  2029-05
-SERIES="focal jammy mantic noble"
+# 20.04LTS focal    2025-06
+# 22.04LTS jammy    2027-06
+# 24.04LTS noble    2029-06
+# 24.10    oracular 2025-07
+SERIES="focal jammy noble oracular"
 
 PPA_KEYID=7808CE96D38B9201
 
