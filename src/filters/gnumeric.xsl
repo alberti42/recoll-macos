@@ -27,6 +27,9 @@
 </html>
 </xsl:template>
 
+<!-- By default we discard unknown meta element. Comes first so that it has lower precedence -->
+<xsl:template match="office:meta/*"/>
+
 <xsl:template match="//dc:date">
    <meta>
      <xsl:attribute name="name">date</xsl:attribute>
@@ -65,8 +68,6 @@
     <xsl:attribute name="content"><xsl:value-of select="."/></xsl:attribute>
   </meta>
 </xsl:template>
-
-<xsl:template match="office:meta/*"/>
 
 <xsl:template match="gnm:Cell">
   <p><xsl:value-of select="."/></p>
