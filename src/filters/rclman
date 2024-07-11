@@ -118,7 +118,7 @@ else
    # When indexing we try to avoid adding terms for the section headers, which
    # are unfortunately somewhat ill defined. We eliminate rather loosely 
    # lines containing likely section header words preceded by a tag.
-   (cd $tmpdir/rclmantmp; groff -man -Thtml) < "$infile" | \
+   (cd $tmpdir/rclmantmp; groff -mandoc -Thtml) < "$infile" | \
         egrep -v \
        '>NAME|>SYNOPSIS|>DESCRIPTION|>EXIT|>OPTIONS|>DIAGNOSTICS|>SUPPORTED HARDWARE|>CONFIGURATION|>AUTHOR|>BUGS|>REPORTING BUGS|>KNOWN BUGS|>COPYRIGHT|>SEE ALSO|>HISTORY|>ENVIRONMENT|>FILES'
 fi
