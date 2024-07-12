@@ -951,7 +951,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
     if (pqueries.empty()) {
         LOGDEB("SearchDataClauseSimple: " << m_text << " resolved to null query\n");
         m_reason = string("Resolved to null query. Term too long ? : [" + m_text + string("]"));
-        return true;
+        return false;
     }
 
     *qp = Xapian::Query(op, pqueries.begin(), pqueries.end());
