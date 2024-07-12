@@ -104,10 +104,9 @@ option(RECOLL_ENABLE_WEBENGINE
     "Build with QtWebEngine (instead of QtWebKit)" ON)
 option(RECOLL_ENABLE_LIBMAGIC
     "Enable libmagic (avoids 'file' command requirement)" OFF)
-option(RECOLL_QT6_BUILD "Build using Qt6" OFF)
+option(RECOLL_QT6_BUILD "Build using Qt6" ON)
 option(RECOLL_ENABLE_SYSTEMD "Install systemd unit files (linux only)" ON)
-option(RECOLL_QTGUI
-    "Build GUI" OFF)
+option(RECOLL_QTGUI "Build GUI" ON)
 
 if (RECOLL_QT6_BUILD)
     set(QT_MAJOR_VERSION 6)

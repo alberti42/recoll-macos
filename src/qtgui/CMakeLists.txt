@@ -3,6 +3,7 @@
 set(qtgui_ui_SOURCES
     actsearch.ui
     advsearch.ui
+    configswitch.ui
     crontool.ui
     firstidx.ui
     idxsched.ui
@@ -34,6 +35,8 @@ set(qtgui_SOURCES
     confgui/confgui.h
     confgui/confguiindex.cpp
     confgui/confguiindex.h
+    configswitch.cpp
+    configswitch.h
     crontool.cpp
     crontool.h
     firstidx.h
@@ -66,6 +69,7 @@ set(qtgui_SOURCES
     rclm_wins.cpp
     rclmain_w.cpp
     rclmain_w.h
+    rclwebpage.h
     rclzg.cpp
     rclzg.h
     recoll.h
