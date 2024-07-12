@@ -106,6 +106,8 @@ option(RECOLL_ENABLE_LIBMAGIC
     "Enable libmagic (avoids 'file' command requirement)" OFF)
 option(RECOLL_QT6_BUILD "Build using Qt6" OFF)
 option(RECOLL_ENABLE_SYSTEMD "Install systemd unit files (linux only)" ON)
+option(RECOLL_QTGUI
+    "Build GUI" OFF)
 
 if (RECOLL_QT6_BUILD)
     set(QT_MAJOR_VERSION 6)
@@ -132,13 +134,17 @@ set(librecoll_SOURCES
     bincimapmime/mime-parsefull.cc
     bincimapmime/mime-parseonlyheader.cc
     bincimapmime/mime-printbody.cc
-    bincimapmime/mime-utils.h
     bincimapmime/mime.cc
     bincimapmime/mime.h
     common/webstore.cpp
     common/webstore.h
+    common/cjksplitter.cpp
+    common/cjksplitter.h
+    common/cnsplitter.cpp
+    common/cnsplitter.h
     common/cstr.cpp
     common/cstr.h
+    common/kosplitter.cpp
     common/rclconfig.cpp
     common/rclconfig.h
     common/rclinit.cpp
@@ -146,7 +152,6 @@ set(librecoll_SOURCES
     common/syngroups.cpp
     common/syngroups.h
     common/textsplit.cpp
-    common/textsplitko.cpp
     common/textsplit.h
     common/unacpp.cpp
     common/unacpp.h
@@ -284,8 +289,6 @@ set(librecoll_SOURCES
     utils/cpuconf.cpp
     utils/cpuconf.h
     utils/damlev.h
-    utils/dlib.cpp
-    utils/dlib.h
     utils/ecrontab.cpp
     utils/ecrontab.h
     utils/execmd.cpp
@@ -338,9 +341,6 @@ set(librecoll_SOURCES
     utils/x11mon.h
     utils/zlibut.cpp
     utils/zlibut.h
-    xaposix/safefcntl.h
-    xaposix/safesysstat.h
-    xaposix/safesyswait.h
     xaposix/safeunistd.h
     )
 
@@ -605,8 +605,11 @@ target_link_libraries(recollindex PRIVATE librecoll)
 add_executable(recollq ${recollq_SOURCE})
 target_link_libraries(recollq PRIVATE librecoll)
 
-
-add_subdirectory(qtgui)
+set(RECOLL_EXECUTABLES recollq recollindex)
+if(RECOLL_QTGUI)
+    add_subdirectory(qtgui)
+    set(RECOLL_EXECUTABLES ${RECOLL_EXECUTABLES} recoll)
+endif()
 
 ### Install targets and other runtime files
 
@@ -627,7 +630,7 @@ endif()
 
 
 if (LINUX)
-    set_target_properties(recollindex recollq recoll PROPERTIES
+    set_target_properties(${RECOLL_EXECUTABLES} PROPERTIES
         INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/recoll"
         INSTALL_RPATH_USE_LINK_PATH TRUE
     )
@@ -641,7 +644,7 @@ if (LINUX)
             DESTINATION ${SYSTEMD_USER_UNIT_DIR})
     endif()
 
-    install(TARGETS librecoll recollindex recollq recoll
+    install(TARGETS librecoll ${RECALL_EXECUTABLES}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/recoll
     )
