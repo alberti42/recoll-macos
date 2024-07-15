@@ -150,7 +150,28 @@ private:
     map<int, pair<int, int> > m_gpostobytes;
 };
 
-
+class MySplitter: public Rcl::TextSplitP {
+public:
+    MySplitter(Rcl::TermProc *prc, int flags = TXTS_NONE)
+        : Rcl::TextSplitP(prc,flags)  {}
+    virtual bool discarded(const std::string &term,
+                          size_t pos,  // term pos
+                          size_t bts,  // byte offset of first char in term
+                          size_t bte,  // byte offset of first char after term
+                          DiscardReason reason
+        ) override {
+        std::string sreason;
+        
+        switch (reason) {
+        case TextSplit::WORD_TOO_LONG: sreason = "Too Long"; break;
+        case TextSplit::LONG_SPAN_TRUNCATED: sreason = "too many words in span, truncated"; break;
+        }
+            
+        std::cout << "Discarded: [" << term << "] pos " << pos << " bts " << bts << " bte " << bte <<
+            " reason: " << sreason  << "\n";
+        return true;
+    }
+};
 bool dosplit(const string& data, TextSplit::Flags flags, int op_flags)
 {
     myTermProc printproc;
@@ -165,7 +186,7 @@ bool dosplit(const string& data, TextSplit::Flags flags, int op_flags)
     if (op_flags & OPT_u) 
         nxt = &preproc;
 
-    Rcl::TextSplitP splitter(nxt, flags);
+    MySplitter splitter(nxt, flags);
 
     if (op_flags & OPT_q)
         printproc.setNoOut(true);
