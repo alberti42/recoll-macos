@@ -393,7 +393,7 @@ VPATH = @srcdir@
 @QMAKE_ENABLE_ZEITGEIST@QT += dbus
 @QMAKE_ENABLE_ZEITGEIST@QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
 
-@QMAKE_ENABLE_GUIDEBUG@CONFIG += force_debug_info
+@QMAKE_ENABLE_GUIDEBUG@CONFIG += debug force_debug_info
 
   HEADERS += crontool.h \
              rtitool.h
