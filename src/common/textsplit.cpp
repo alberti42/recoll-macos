@@ -394,6 +394,7 @@ inline bool TextSplit::emitterm(bool isspan, const string& w, int pos, size_t bt
 
     int l = int(w.length());
     if (l == 0 || l > o_maxWordLength) {
+        discarded(w, pos, btstart, btend, WORD_TOO_LONG);
         return true;
     }
     if (l == 1) {
@@ -523,15 +524,15 @@ inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 
     if (m_wordLen) {
         // We have a current word. Remember it
-
-        if (int(m_words_in_span.size()) >= o_maxWordsInSpan) {
-            // Limit max span word count
-            spanerase = true;
-        }
-        
         if (!(o_noNumbers && m_inNumber)) {
             m_words_in_span.push_back({m_wordStart, m_wordStart + m_wordLen});
             m_wordpos++;
+        }
+        if (int(m_words_in_span.size()) >= o_maxWordsInSpan) {
+            // Limit max span word count
+            spanerase = true;
+            discarded(m_span, m_spanpos, m_words_in_span[0].first, m_words_in_span.back().second,
+                      LONG_SPAN_TRUNCATED);
         }
         m_wordLen = m_wordChars = 0;
     }
@@ -541,7 +542,7 @@ inline bool TextSplit::doemit(bool spanerase, size_t _bp)
         m_wordStart = int(m_span.length());
         return true;
     }
-
+    
     // Span is done (too long or span-terminating character). Produce terms and reset it.
     string initials;
     if (span_is_initials(initials)) {

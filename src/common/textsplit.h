@@ -68,6 +68,17 @@ public:
                           size_t bte   // byte offset of first char after term
         ) = 0; 
 
+    /** Get informed of a discarded term */
+    enum DiscardReason{WORD_TOO_LONG, LONG_SPAN_TRUNCATED};
+    virtual bool discarded(const std::string &,
+                          size_t,  // term pos
+                          size_t,  // byte offset of first char in term
+                          size_t,  // byte offset of first char after term
+                          DiscardReason
+        ) {
+        return true;
+    }
+    
     /** Called when we encounter formfeed \f 0x0c. Override to use the event.
      * Mostly or exclusively used with pdftoxx output. Other filters mostly 
      * just don't know about pages. */
