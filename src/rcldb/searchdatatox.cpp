@@ -336,12 +336,21 @@ public:
 
         return TextSplitP::takeword(term, pos, bs, be);
     }
+    virtual bool discarded(const std::string &term, size_t, size_t, size_t, DiscardReason reason)
+        override {
+        m_problemterm = term;
+        return true;
+    }
 
     bool nostemexp() const {
         return m_nostemexp;
     }
+    std::string getproblemterm() {
+        return m_problemterm;
+    }
 private:
     bool m_nostemexp;
+    std::string m_problemterm;
 };
 
 class TermProcQ : public TermProc {
@@ -790,7 +799,7 @@ static int stringToMods(string& s)
  *   count)
  */
 bool SearchDataClauseSimple::processUserString(
-    Rcl::Db &db, const string &iq, string &ermsg, void *pq, int slack0, bool useNear)
+    Rcl::Db &db, const string &iq, string &ermsg, string &pbterm, void *pq, int slack0, bool useNear)
 {
     vector<Xapian::Query> &pqueries(*(vector<Xapian::Query>*)pq);
     int mods = m_modifiers;
@@ -853,7 +862,9 @@ bool SearchDataClauseSimple::processUserString(
             TextSplitQ splitter(txtsplitflags, nxt);
             tpq.setTSQ(&splitter);
             splitter.text_to_words(wordorphrase);
-
+            if (!splitter.getproblemterm().empty()) {
+                pbterm = splitter.getproblemterm();
+            }
             slack += tpq.lastpos() - int(tpq.terms().size()) + 1;
 
             LOGDEB0("strToXapianQ: termcount: " << tpq.terms().size() << "\n");
@@ -946,11 +957,15 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
     }
 
     vector<Xapian::Query> pqueries;
-    if (!processUserString(db, m_text, m_reason, &pqueries))
+    std::string pbterm;
+    if (!processUserString(db, m_text, m_reason, pbterm, &pqueries))
         return false;
     if (pqueries.empty()) {
         LOGDEB("SearchDataClauseSimple: " << m_text << " resolved to null query\n");
-        m_reason = string("Resolved to null query. Term too long ? : [" + m_text + string("]"));
+        if (!pbterm.empty()) 
+            m_reason = string("Resolved to null query. Problem term : [" + pbterm + string("]"));
+        else
+            m_reason = string("Resolved to null query. Term too long ? : [" + m_text + string("]"));
         return false;
     }
 
@@ -1118,11 +1133,15 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
         // quoted word because processUserString won't see it as a phrase by itself.
         m_modifiers |= SDCM_NOSTEMMING;
     }
-    if (!processUserString(db, s, m_reason, &pqueries, m_slack, useNear))
+    string pbterm;
+    if (!processUserString(db, s, m_reason, pbterm, &pqueries, m_slack, useNear))
         return false;
     if (pqueries.empty()) {
         LOGDEB("SearchDataClauseDist: [" << s << "]resolved to null query\n");
-        m_reason = string("Resolved to null query. Term too long ? : [" +  m_text + string("]"));
+        if (!pbterm.empty()) 
+            m_reason = string("Resolved to null query. Problem term : [" + pbterm + string("]"));
+        else
+            m_reason = string("Resolved to null query. Term too long ? : [" + m_text + string("]"));
         return true;
     }
 

@@ -125,8 +125,8 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
                 swords.append(1, ' ');
             swords += word;
         } else {
-            LOGDEB0("SearchData::Autophrase: ["  << word << "] too frequent ("
-                    << (100 * freq) << " %" << ")\n");
+            LOGDEB0("SearchData::Autophrase: [" << word << "] too frequent (" <<
+                    100 * freq << " %" << ")\n");
             slack++;
         }
     }
@@ -143,6 +143,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     slack += 1 + nwords / 3;
     
     m_autophrase = make_shared<SearchDataClauseDist>(SCLT_PHRASE, swords, slack, field);
+    m_autophrase->setParent(this);
     return true;
 }
 
@@ -275,11 +276,57 @@ static const char * tpToString(SClType t)
     }
 }
 
-static string dumptabs;
-
-void SearchData::dump(ostream& o) const
+bool sdataWalk(SearchData* top, SdataWalker& walker)
 {
-    o << dumptabs <<
+    if (!walker.sdata(top, true)) {
+        return false;
+    }
+    for (auto& clausep : top->m_query) {
+        if (!walker.clause(clausep))
+            return false;
+        auto clp = dynamic_cast<SearchDataClauseSub*>(clausep);
+        if (clp) {
+            if (!sdataWalk(clp->getSub().get(), walker))
+                return false;
+            if (!walker.sdata(top, false))
+                return false;
+        }
+    }
+    return true;
+}
+
+class SDataWalkerDump : public SdataWalker {
+public:
+    SDataWalkerDump(ostream& _o) : o(_o) {}
+    virtual ~SDataWalkerDump() {}
+    std::string tabs;
+    ostream& o;
+    virtual bool clause(SearchDataClause *clp) override {
+        clp->dump(o, tabs);
+        return true;
+    }
+
+    virtual bool sdata(SearchData* sdp, bool enter) override{
+        if (enter) {
+            sdp->dump(o, tabs);
+            tabs += '\t';
+        } else {
+            if (!tabs.empty())
+                tabs.pop_back();
+        }
+        return true;
+    }
+};
+
+void SearchData::rdump(ostream& o)
+{
+    SDataWalkerDump printer(o);
+    sdataWalk(this, printer);
+}
+
+void SearchData::dump(ostream& o, const std::string& tabs) const
+{
+    o << tabs <<
         "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
         " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
          " hd " << m_haveDates <<
@@ -288,76 +335,66 @@ void SearchData::dump(ostream& o) const
 #endif
         " maxs " << m_maxSize << " mins " << 
         m_minSize << " wc " << m_haveWildCards << " subsp " << m_subspec << "\n";
-    for (const auto& clausep : m_query) {
-        o << dumptabs;
-        clausep->dump(o);
-        o << "\n";
-    }
-//    o << dumptabs << "\n";
 }
 
-void SearchDataClause::dump(ostream& o) const
+void SearchDataClause::dump(ostream& o, const std::string& tabs) const
 {
     o << "SearchDataClause??";
 }
 
-void SearchDataClauseSimple::dump(ostream& o) const
+void SearchDataClauseSimple::dump(ostream& o, const std::string& tabs) const
 {
-    o << "ClauseSimple: " << tpToString(m_tp) << " ";
+    o << tabs << "ClauseSimple: " << tpToString(m_tp) << " ";
     if (m_exclude)
         o << "- ";
     o << "[" ;
     if (!m_field.empty())
         o << m_field << " : ";
-    o << m_text << "]";
+    o << m_text << "]" << "\n";
 }
 
-void SearchDataClauseFilename::dump(ostream& o) const
+void SearchDataClauseFilename::dump(ostream& o, const std::string& tabs) const
 {
-    o << "ClauseFN: ";
+    o << tabs << "ClauseFN: ";
     if (m_exclude)
         o << " - ";
-    o << "[" << m_text << "]";
+    o << "[" << m_text << "]" << "\n";
 }
 
-void SearchDataClausePath::dump(ostream& o) const
+void SearchDataClausePath::dump(ostream& o, const std::string& tabs) const
 {
-    o << "ClausePath: ";
+    o << tabs << "ClausePath: ";
     if (m_exclude)
         o << " - ";
-    o << "[" << m_text << "]";
+    o << "[" << m_text << "]" << "\n";
 }
 
-void SearchDataClauseRange::dump(ostream& o) const
+void SearchDataClauseRange::dump(ostream& o, const std::string& tabs) const
 {
-    o << "ClauseRange: ";
+    o << tabs << "ClauseRange: ";
     if (m_exclude)
         o << " - ";
-    o << "[" << gettext() << "]";
+    o << "[" << gettext() << "]" << "\n";
 }
 
-void SearchDataClauseDist::dump(ostream& o) const
+void SearchDataClauseDist::dump(ostream& o, const std::string& tabs) const
 {
     if (m_tp == SCLT_NEAR)
-        o << "ClauseDist: NEAR ";
+        o << tabs << "ClauseDist: NEAR ";
     else
-        o << "ClauseDist: PHRA ";
+        o << tabs << "ClauseDist: PHRA ";
             
     if (m_exclude)
         o << " - ";
     o << "[";
     if (!m_field.empty())
         o << m_field << " : ";
-    o << m_text << "]";
+    o << m_text << "]" << "\n";
 }
 
-void SearchDataClauseSub::dump(ostream& o) const
+void SearchDataClauseSub::dump(ostream& o, const std::string& tabs) const
 {
-    o << "ClauseSub {\n";
-    dumptabs += '\t';
-    m_sub->dump(o);
-    dumptabs.erase(dumptabs.size()- 1);
-    o << dumptabs << "}";
+    o << tabs << "ClauseSub ";
 }
 
 } // Namespace Rcl

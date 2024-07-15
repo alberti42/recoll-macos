@@ -28,6 +28,7 @@
 #include <vector>
 #include <ostream>
 #include <memory>
+#include <set>
 
 #include "rcldb.h"
 #include "smallut.h"
@@ -48,6 +49,7 @@ enum SClType {
 
 class SearchDataClause;
 class SearchDataClauseDist;
+class SdataWalker;
 
 /** 
     A SearchData object represents a Recoll user query, for translation
@@ -181,10 +183,16 @@ public:
     int getMaxExp() {return m_maxexp;}
     int getMaxCl() {return m_maxcl;}
     int getSoftMaxExp() {return m_softmaxexpand;}
-    void dump(std::ostream& o) const;
+
+    // Recursively dump the tree to o
+    void rdump(std::ostream& o);
+
+    // Print out my data only
+    void dump(std::ostream& o, const std::string& tabs) const;
 
     friend class ::AdvSearch;
-
+    friend bool sdataWalk(SearchData*, SdataWalker&);
+    
 private:
     // Combine type. Only SCLT_AND or SCLT_OR here
     SClType                   m_tp; 
@@ -329,7 +337,7 @@ public:
     virtual Relation getrel() {
         return m_rel;
     }
-    virtual void dump(std::ostream& o) const;
+    virtual void dump(std::ostream& o, const std::string& tabs) const;
 
     friend class SearchData;
 protected:
@@ -379,8 +387,9 @@ public:
     virtual void setfield(const std::string& field) {
         m_field = field;
     }
-    virtual void dump(std::ostream& o) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs) const override;
 
+    friend class SearchDataVisitor;
 protected:
     std::string  m_text;  // Raw user entry text.
     std::string  m_field; // Field specification if any
@@ -389,7 +398,7 @@ protected:
     size_t  m_curcl;
 
     bool processUserString(Rcl::Db &db, const std::string &iq,
-                           std::string &ermsg,
+                           std::string &ermsg, std::string& pbterm,
                            void* pq, int slack = 0, bool useNear = false);
     bool expandTerm(Rcl::Db &db, std::string& ermsg, int mods, 
                     const std::string& term, 
@@ -424,7 +433,7 @@ public:
         return new SearchDataClauseRange(*this);
     }
 
-    virtual void dump(std::ostream& o) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs) const override;
     virtual const std::string& gettext2() const {
         return m_t2;
     }
@@ -457,7 +466,7 @@ public:
     }
 
     virtual bool toNativeQuery(Rcl::Db &, void *) override;
-    virtual void dump(std::ostream& o) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs) const override;
 };
 
 
@@ -495,7 +504,7 @@ public:
     }
 
     virtual bool toNativeQuery(Rcl::Db &, void *) override;
-    virtual void dump(std::ostream& o) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs) const override;
 };
 
 /** 
@@ -519,7 +528,7 @@ public:
     virtual void setslack(int slack) {
         m_slack = slack;
     }
-    virtual void dump(std::ostream& o) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs) const override;
 private:
     int m_slack;
 };
@@ -548,11 +557,24 @@ public:
     virtual std::shared_ptr<SearchData> getSub() {
         return m_sub;
     }
-    virtual void dump(std::ostream& o) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs) const override;
 
 protected:
     std::shared_ptr<SearchData> m_sub;
 };
+
+class SdataWalker {
+public:
+    virtual ~SdataWalker() {};
+    virtual bool clause(SearchDataClause*) {
+        return true;
+    }
+    virtual bool sdata(SearchData*, bool) {
+        return true;
+    }
+};
+
+bool sdataWalk(SearchData* top, SdataWalker& walker);
 
 } // Namespace Rcl
 
