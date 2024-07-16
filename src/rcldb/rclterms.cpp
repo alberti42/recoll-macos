@@ -108,7 +108,11 @@ bool Db::getAllDbMimeTypes(std::vector<std::string>& exp)
         return false;
     }
     for (const auto& entry : res.entries) {
-        exp.push_back(Rcl::strip_prefix(entry.term));
+        // Eliminate some garbage types. Happens;
+        auto tp = Rcl::strip_prefix(entry.term);
+        if (tp.find('/') == std::string::npos)
+            continue;
+        exp.push_back(tp);
     }
     return true;
 }
