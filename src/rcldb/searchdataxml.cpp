@@ -35,6 +35,31 @@ using namespace std;
 
 namespace Rcl {
 
+class SDataWalkerDump : public SdataWalker {
+public:
+    SDataWalkerDump(ostream& _o, bool _asxml) : o(_o), asxml(_asxml) {}
+    virtual ~SDataWalkerDump() {}
+    std::string tabs;
+    ostream& o;
+    bool asxml;
+    virtual bool clause(SearchDataClause *clp) override {
+        clp->dump(o, tabs, asxml);
+        return true;
+    }
+
+    virtual bool sdata(SearchData* sdp, bool enter) override{
+        if (enter) {
+            sdp->dump(o, tabs, asxml);
+            tabs += '\t';
+        } else {
+            sdp->closeDump(o, tabs, asxml);
+            if (!tabs.empty())
+                tabs.pop_back();
+        }
+        return true;
+    }
+};
+
 static string tpToString(SClType tp)
 {
     switch (tp) {
@@ -51,114 +76,205 @@ static string tpToString(SClType tp)
 
 string SearchData::asXML()
 {
-    LOGDEB("SearchData::asXML\n" );
     ostringstream os;
-
-    // Searchdata
-    os << "<SD>" << "\n";
-
-    // Clause list
-    os << "<CL>" << "\n";
-
-    // List conjunction: default is AND, else print it.
-    if (m_tp != SCLT_AND)
-        os << "<CLT>" << tpToString(m_tp) << "</CLT>" << "\n";
-
-    for (unsigned int i = 0; i <  m_query.size(); i++) {
-        SearchDataClause *c = m_query[i];
-        if (c->getTp() == SCLT_SUB) {
-            LOGERR("SearchData::asXML: can't do subclauses !\n" );
-            continue;
-        }
-        if (c->getTp() == SCLT_PATH) {
-            // Keep these apart, for compat with the older history format. NEG
-            // is ignored here, we have 2 different tags instead.
-            SearchDataClausePath *cl = dynamic_cast<SearchDataClausePath*>(c);
-            if (cl->getexclude()) {
-                os << "<ND>" << base64_encode(cl->gettext()) << "</ND>" << "\n";
-            } else {
-                os << "<YD>" << base64_encode(cl->gettext()) << "</YD>" << "\n";
-            }
-            continue;
-        } else {
-
-            os << "<C>" << "\n";
-
-            if (c->getexclude())
-                os << "<NEG/>" << "\n";
-
-            if (c->getTp() != SCLT_AND) {
-                os << "<CT>" << tpToString(c->getTp()) << "</CT>" << "\n";
-            }
-            if (c->getTp() == SCLT_FILENAME) {
-                SearchDataClauseFilename *cl = dynamic_cast<SearchDataClauseFilename*>(c);
-                os << "<T>" << base64_encode(cl->gettext()) << "</T>" << "\n";
-            } else {
-                SearchDataClauseSimple *cl = dynamic_cast<SearchDataClauseSimple*>(c);
-                if (!cl->getfield().empty()) {
-                    os << "<F>" << base64_encode(cl->getfield()) << "</F>" << "\n";
-                }
-                os << "<T>" << base64_encode(cl->gettext()) << "</T>" << "\n";
-                if (cl->getTp() == SCLT_RANGE) {
-                    SearchDataClauseRange *clr = dynamic_cast<SearchDataClauseRange*>(cl);
-                    const string& t = clr->gettext2();
-                    if (!t.empty()) {
-                        os << "<T2>" << base64_encode(clr->gettext2()) << "</T2>" << "\n";
-                    }
-                }
-                if (cl->getTp() == SCLT_NEAR || cl->getTp() == SCLT_PHRASE) {
-                    SearchDataClauseDist *cld = dynamic_cast<SearchDataClauseDist*>(cl);
-                    os << "<S>" << cld->getslack() << "</S>" << "\n";
-                }
-            }
-            os << "</C>" << "\n";
-        }
-    }
-    os << "</CL>" << "\n";
-
-    if (m_haveDates) {
-        if (m_dates.y1 > 0) {
-            os << "<DMI>" << 
-                "<D>" << m_dates.d1 << "</D>" <<
-                "<M>" << m_dates.m1 << "</M>" << 
-                "<Y>" << m_dates.y1 << "</Y>" 
-               << "</DMI>" << "\n";
-        }
-        if (m_dates.y2 > 0) {
-            os << "<DMA>" << 
-                "<D>" << m_dates.d2 << "</D>" <<
-                "<M>" << m_dates.m2 << "</M>" << 
-                "<Y>" << m_dates.y2 << "</Y>" 
-               << "</DMA>" << "\n";
-        }
-    }
-
-    if (m_minSize != -1) {
-        os << "<MIS>" << m_minSize << "</MIS>" << "\n";
-    }
-    if (m_maxSize != -1) {
-        os << "<MAS>" << m_maxSize << "</MAS>" << "\n";
-    }
-
-    if (!m_filetypes.empty()) {
-        os << "<ST>";
-        for (const auto& ft : m_filetypes) {
-            os << ft << " ";
-        }
-        os << "</ST>" << "\n";
-    }
-
-    if (!m_nfiletypes.empty()) {
-        os << "<IT>";
-        for (const auto& nft : m_nfiletypes) {
-            os << nft << " ";
-        }
-        os << "</IT>" << "\n";
-    }
-
-    os << "</SD>";
+    rdump(os, true);
     return os.str();
 }
+
+void SearchData::rdump(ostream& o, bool asxml)
+{
+    SDataWalkerDump printer(o, asxml);
+    sdataWalk(this, printer);
+}
+
+void SearchData::dump(ostream& o, const std::string& tabs, bool asxml) const
+{
+    if (asxml) {
+        o << "<SD>" << "\n" << "<CL>" << "\n";
+        // List conjunction: default is AND, else print it.
+        if (m_tp != SCLT_AND)
+            o << "<CLT>" << tpToString(m_tp) << "</CLT>" << "\n";
+    } else {
+        o << tabs <<
+            "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
+            " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
+            " hd " << m_haveDates <<
+#ifdef EXT4_BIRTH_TIME
+            " hbrd " << m_haveBrDates <<
+#endif
+            " maxs " << m_maxSize << " mins " << 
+            m_minSize << " wc " << m_haveWildCards << " subsp " << m_subspec << "\n";
+    }
+}
+
+void SearchData::closeDump(ostream& o, const std::string&, bool asxml) const
+{
+    if (asxml) {
+        o << "</CL>" << "\n";
+
+        if (m_haveDates) {
+            if (m_dates.y1 > 0) {
+                o << "<DMI>" << 
+                    "<D>" << m_dates.d1 << "</D>" <<
+                    "<M>" << m_dates.m1 << "</M>" << 
+                    "<Y>" << m_dates.y1 << "</Y>" 
+                   << "</DMI>" << "\n";
+            }
+            if (m_dates.y2 > 0) {
+                o << "<DMA>" << 
+                    "<D>" << m_dates.d2 << "</D>" <<
+                    "<M>" << m_dates.m2 << "</M>" << 
+                    "<Y>" << m_dates.y2 << "</Y>" 
+                   << "</DMA>" << "\n";
+            }
+        }
+
+        if (m_minSize != -1) {
+            o << "<MIS>" << m_minSize << "</MIS>" << "\n";
+        }
+        if (m_maxSize != -1) {
+            o << "<MAS>" << m_maxSize << "</MAS>" << "\n";
+        }
+        if (!m_filetypes.empty()) {
+            o << "<ST>";
+            for (const auto& ft : m_filetypes) {
+                o << ft << " ";
+            }
+            o << "</ST>" << "\n";
+        }
+
+        if (!m_nfiletypes.empty()) {
+            o << "<IT>";
+            for (const auto& nft : m_nfiletypes) {
+                o << nft << " ";
+            }
+            o << "</IT>" << "\n";
+        }
+
+        o << "</SD>";
+    }    
+}
+
+void SearchDataClause::dump(ostream& o, const std::string& tabs, bool asxml) const
+{
+    o << "SearchDataClause??";
+}
+
+static void prolog(ostream& o, bool excl, SClType tp, const std::string& fld, const std::string& txt)
+{
+    o << "<C>" << "\n";
+    if (excl)
+        o << "<NEG/>" << "\n";
+    if (tp != SCLT_AND) {
+        o << "<CT>" << tpToString(tp) << "</CT>" << "\n";
+    }
+    if (!fld.empty()) {
+        o << "<F>" << base64_encode(fld) << "</F>" << "\n";
+    }
+    o << "<T>" << base64_encode(txt) << "</T>" << "\n";
+}
+
+void SearchDataClauseSimple::dump(ostream& o, const std::string& tabs, bool asxml) const
+{
+    if (asxml) {
+        prolog(o, getexclude(), getTp(), getfield(), gettext());
+        o << "</C>" << "\n";
+    } else {
+        o << tabs << "ClauseSimple: " << tpToString(m_tp) << " ";
+        if (m_exclude)
+            o << "- ";
+        o << "[" ;
+        if (!m_field.empty())
+            o << m_field << " : ";
+        o << m_text << "]" << "\n";
+    }
+}
+
+void SearchDataClauseRange::dump(ostream& o, const std::string& tabs, bool asxml) const
+{
+    if (asxml) {
+        prolog(o, getexclude(), getTp(), getfield(), gettext());
+        const string& t = gettext2();
+        if (!t.empty()) {
+            o << "<T2>" << base64_encode(gettext2()) << "</T2>" << "\n";
+        }
+        o << "</C>" << "\n";
+    } else {
+        o << tabs << "ClauseRange: ";
+        if (m_exclude)
+            o << " - ";
+        o << "[" << gettext() << "]" << "\n";
+    }
+}
+
+void SearchDataClauseDist::dump(ostream& o, const std::string& tabs, bool asxml) const
+{
+    if (asxml) {
+        prolog(o, getexclude(), getTp(), getfield(), gettext());
+        o << "<S>" << getslack() << "</S>" << "\n";
+        o << "</C>" << "\n";
+    } else {
+        if (m_tp == SCLT_NEAR)
+            o << tabs << "ClauseDist: NEAR ";
+        else
+            o << tabs << "ClauseDist: PHRA ";
+            
+        if (m_exclude)
+            o << " - ";
+        o << "[";
+        if (!m_field.empty())
+            o << m_field << " : ";
+        o << m_text << "]" << "\n";
+    }
+}
+
+void SearchDataClauseFilename::dump(ostream& o, const std::string& tabs, bool asxml) const
+{
+    if (asxml) {
+        prolog(o, getexclude(), getTp(), getfield(), gettext());
+        o << "</C>" << "\n";
+    } else {
+        o << tabs << "ClauseFN: ";
+        if (m_exclude)
+            o << " - ";
+        o << "[" << m_text << "]" << "\n";
+    }
+}
+
+void SearchDataClausePath::dump(ostream& o, const std::string& tabs, bool asxml) const
+{
+    if (asxml) {
+        if (getexclude()) {
+            o << "<ND>" << base64_encode(gettext()) << "</ND>" << "\n";
+        } else {
+            o << "<YD>" << base64_encode(gettext()) << "</YD>" << "\n";
+        }
+    } else {        
+        o << tabs << "ClausePath: ";
+        if (m_exclude)
+            o << " - ";
+        o << "[" << m_text << "]" << "\n";
+    }
+}
+
+void SearchDataClauseSub::dump(ostream& o, const std::string& tabs, bool asxml) const
+{
+    if (asxml) {
+        o << "<C>" << "\n";
+        if (getexclude())
+            o << "<NEG/>" << "\n";
+        if (getTp() != SCLT_AND) {
+            o << "<CT>" << tpToString(getTp()) << "</CT>" << "\n";
+        }
+        o << "</C>" << "\n";
+    } else {
+        o << tabs << "ClauseSub ";
+    }
+}
+
+
+
+///////////////////// Reverse operation: build search data from XML
 
 class SDHXMLHandler : public PicoXMLParser {
 public:

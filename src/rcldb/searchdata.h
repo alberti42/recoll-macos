@@ -211,10 +211,11 @@ public:
     int getSoftMaxExp() {return m_softmaxexpand;}
 
     // Recursively dump the tree to o
-    void rdump(std::ostream& o);
+    void rdump(std::ostream& o, bool asxml=false);
 
     // Print out my data only
-    void dump(std::ostream& o, const std::string& tabs) const;
+    void dump(std::ostream& o, const std::string& tabs, bool asxml=false) const;
+    void closeDump(std::ostream& o, const std::string& tabs, bool asxml=false) const;
 
     friend class ::AdvSearch;
     friend bool sdataWalk(SearchData*, SdataWalker&);
@@ -363,7 +364,7 @@ public:
     virtual Relation getrel() {
         return m_rel;
     }
-    virtual void dump(std::ostream& o, const std::string& tabs) const;
+    virtual void dump(std::ostream& o, const std::string& tabs, bool asxml=false) const;
 
     friend class SearchData;
 protected:
@@ -413,7 +414,7 @@ public:
     virtual void setfield(const std::string& field) {
         m_field = field;
     }
-    virtual void dump(std::ostream& o, const std::string& tabs) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs, bool asxml=false) const override;
 
     friend class SearchDataVisitor;
 protected:
@@ -459,7 +460,7 @@ public:
         return new SearchDataClauseRange(*this);
     }
 
-    virtual void dump(std::ostream& o, const std::string& tabs) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs, bool asxml=false) const override;
     virtual const std::string& gettext2() const {
         return m_t2;
     }
@@ -492,7 +493,7 @@ public:
     }
 
     virtual bool toNativeQuery(Rcl::Db &, void *) override;
-    virtual void dump(std::ostream& o, const std::string& tabs) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs, bool asxml=false) const override;
 };
 
 
@@ -530,7 +531,7 @@ public:
     }
 
     virtual bool toNativeQuery(Rcl::Db &, void *) override;
-    virtual void dump(std::ostream& o, const std::string& tabs) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs, bool asxml=false) const override;
 };
 
 /** 
@@ -554,7 +555,7 @@ public:
     virtual void setslack(int slack) {
         m_slack = slack;
     }
-    virtual void dump(std::ostream& o, const std::string& tabs) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs, bool asxml=false) const override;
 private:
     int m_slack;
 };
@@ -583,7 +584,7 @@ public:
     virtual std::shared_ptr<SearchData> getSub() {
         return m_sub;
     }
-    virtual void dump(std::ostream& o, const std::string& tabs) const override;
+    virtual void dump(std::ostream& o, const std::string& tabs, bool asxml=false) const override;
 
 protected:
     std::shared_ptr<SearchData> m_sub;
