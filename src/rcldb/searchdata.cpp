@@ -262,19 +262,6 @@ void SearchData::getTerms(HighlightData &hld) const
     return;
 }
 
-static const char * tpToString(SClType t)
-{
-    switch (t) {
-    case SCLT_AND: return "AND";
-    case SCLT_OR: return "OR";
-    case SCLT_FILENAME: return "FILENAME";
-    case SCLT_PHRASE: return "PHRASE";
-    case SCLT_NEAR: return "NEAR";
-    case SCLT_PATH: return "PATH";
-    case SCLT_SUB: return "SUB";
-    default: return "UNKNOWN";
-    }
-}
 
 bool sdataWalk(SearchData* top, SdataWalker& walker)
 {
@@ -288,113 +275,12 @@ bool sdataWalk(SearchData* top, SdataWalker& walker)
         if (clp) {
             if (!sdataWalk(clp->getSub().get(), walker))
                 return false;
-            if (!walker.sdata(top, false))
-                return false;
         }
+    }
+    if (!walker.sdata(top, false)) {
+        return false;
     }
     return true;
-}
-
-class SDataWalkerDump : public SdataWalker {
-public:
-    SDataWalkerDump(ostream& _o) : o(_o) {}
-    virtual ~SDataWalkerDump() {}
-    std::string tabs;
-    ostream& o;
-    virtual bool clause(SearchDataClause *clp) override {
-        clp->dump(o, tabs);
-        return true;
-    }
-
-    virtual bool sdata(SearchData* sdp, bool enter) override{
-        if (enter) {
-            sdp->dump(o, tabs);
-            tabs += '\t';
-        } else {
-            if (!tabs.empty())
-                tabs.pop_back();
-        }
-        return true;
-    }
-};
-
-void SearchData::rdump(ostream& o)
-{
-    SDataWalkerDump printer(o);
-    sdataWalk(this, printer);
-}
-
-void SearchData::dump(ostream& o, const std::string& tabs) const
-{
-    o << tabs <<
-        "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
-        " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
-         " hd " << m_haveDates <<
-#ifdef EXT4_BIRTH_TIME
-        " hbrd " << m_haveBrDates <<
-#endif
-        " maxs " << m_maxSize << " mins " << 
-        m_minSize << " wc " << m_haveWildCards << " subsp " << m_subspec << "\n";
-}
-
-void SearchDataClause::dump(ostream& o, const std::string& tabs) const
-{
-    o << "SearchDataClause??";
-}
-
-void SearchDataClauseSimple::dump(ostream& o, const std::string& tabs) const
-{
-    o << tabs << "ClauseSimple: " << tpToString(m_tp) << " ";
-    if (m_exclude)
-        o << "- ";
-    o << "[" ;
-    if (!m_field.empty())
-        o << m_field << " : ";
-    o << m_text << "]" << "\n";
-}
-
-void SearchDataClauseFilename::dump(ostream& o, const std::string& tabs) const
-{
-    o << tabs << "ClauseFN: ";
-    if (m_exclude)
-        o << " - ";
-    o << "[" << m_text << "]" << "\n";
-}
-
-void SearchDataClausePath::dump(ostream& o, const std::string& tabs) const
-{
-    o << tabs << "ClausePath: ";
-    if (m_exclude)
-        o << " - ";
-    o << "[" << m_text << "]" << "\n";
-}
-
-void SearchDataClauseRange::dump(ostream& o, const std::string& tabs) const
-{
-    o << tabs << "ClauseRange: ";
-    if (m_exclude)
-        o << " - ";
-    o << "[" << gettext() << "]" << "\n";
-}
-
-void SearchDataClauseDist::dump(ostream& o, const std::string& tabs) const
-{
-    if (m_tp == SCLT_NEAR)
-        o << tabs << "ClauseDist: NEAR ";
-    else
-        o << tabs << "ClauseDist: PHRA ";
-            
-    if (m_exclude)
-        o << " - ";
-    o << "[";
-    if (!m_field.empty())
-        o << m_field << " : ";
-    o << m_text << "]" << "\n";
-}
-
-void SearchDataClauseSub::dump(ostream& o, const std::string& tabs) const
-{
-    o << tabs << "ClauseSub ";
 }
 
 } // Namespace Rcl
