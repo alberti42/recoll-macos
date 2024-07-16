@@ -16,39 +16,12 @@
  */
 #ifndef XMLTOSD_H_INCLUDED
 #define XMLTOSD_H_INCLUDED
-#include "autoconfig.h"
 
-/** Parsing XML from saved queries or advanced search history.
- *
- * Here is how the schemas looks like:
- *
- * For advanced search
- *
- * <SD>                         <!-- Search Data -->
- *  <CL>                        <!-- Clause List -->
- *    <CLT>AND|OR</CLT>         <!-- conjunction AND is default, ommitted -->
- *    <C>                       <!-- Clause -->
- *     [<NEG/>]                 <!-- Possible negation -->
- *     <CT>AND|OR|FN|PH|NE</CT> <!-- Clause type -->
- *     <F>[base64data]</F>      <!-- Optional base64-encoded field name -->
- *     <T>[base64data]</T>      <!-- base64-encoded text -->
- *     <S>slack</S>             <!-- optional slack for near/phrase -->
- *    </C>
- *
- *    <ND>[base64 path]</ND>    <!-- Path exclusion -->
- *    <YD>[base64 path]</YD>    <!-- Path filter -->
- *  </CL>
- * 
- *  <DMI><D>1</D><M>6</M><Y>2014</Y></DMI> <--! datemin -->
- *  <DMA><D>30</D><M>6</M><Y>2014</Y></DMA> <--! datemax -->
- *  <MIS>minsize</MIS>          <!-- Min size -->
- *  <MAS>maxsize</MAS>          <!-- Max size -->
- *  <ST>space-sep mtypes</ST>   <!-- Included mime types -->
- *  <IT>space-sep mtypes</IT>   <!-- Excluded mime types -->
- *
- * </SD>
- *
- * For Simple search:
+#include <string>
+#include <memory>
+#include <vector>
+
+/** XML from saved simple searches (see searchdata.h for the advanced search history format).
  *
  * <SD type='ssearch'>
  *   <T>base64-encoded query text</T>
@@ -60,15 +33,7 @@
  * </SD>
  */ 
 
-#include <memory>
-#include "searchdata.h"
-
-// Parsing XML from advanced search history or saved advanced search into
-// a SearchData structure:
-std::shared_ptr<Rcl::SearchData> xmlToSearchData(const std::string& xml,
-                                                 bool complain = true);
-
-// Parsing XML from saved simple search to ssearch parameters
+/* Resulting structure */
 struct SSearchDef {
     SSearchDef() : autophrase(false), mode(0) {}
     std::vector<std::string> stemlangs;
@@ -78,5 +43,8 @@ struct SSearchDef {
     bool autophrase;
     int mode;
 };
+
+/* Parse XML into SSearchDef */
 bool xmlToSSearch(const std::string& xml, SSearchDef&);
+
 #endif /* XMLTOSD_H_INCLUDED */

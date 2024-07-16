@@ -156,9 +156,35 @@ public:
     std::string getDescription() {return m_description;}
     void setDescription(const std::string& d) {m_description = d;}
 
-    /** Return an XML version of the contents, for storage in search history
-        by the GUI */
+    /** Return an XML version of the contents (e.g. for storage in search history by the GUI)
+     * 
+     * <SD>                         <!-- Search Data -->
+     *  <CL>                        <!-- Clause List -->
+     *    <CLT>AND|OR</CLT>         <!-- conjunction AND is default, ommitted -->
+     *    <C>                       <!-- Clause -->
+     *     [<NEG/>]                 <!-- Possible negation -->
+     *     <CT>AND|OR|FN|PH|NE</CT> <!-- Clause type -->
+     *     <F>[base64data]</F>      <!-- Optional base64-encoded field name -->
+     *     <T>[base64data]</T>      <!-- base64-encoded text -->
+     *     <S>slack</S>             <!-- optional slack for near/phrase -->
+     *    </C>
+     *
+     *    <ND>[base64 path]</ND>    <!-- Path exclusion -->
+     *    <YD>[base64 path]</YD>    <!-- Path filter -->
+     *  </CL>
+     * 
+     *  <DMI><D>1</D><M>6</M><Y>2014</Y></DMI> <--! datemin -->
+     *  <DMA><D>30</D><M>6</M><Y>2014</Y></DMA> <--! datemax -->
+     *  <MIS>minsize</MIS>          <!-- Min size -->
+     *  <MAS>maxsize</MAS>          <!-- Max size -->
+     *  <ST>space-sep mtypes</ST>   <!-- Included mime types -->
+     *  <IT>space-sep mtypes</IT>   <!-- Excluded mime types -->
+     *
+     * </SD>
+     */
     std::string asXML();
+    /** Convert back the XML to SearchData */
+    static std::shared_ptr<Rcl::SearchData> fromXML(const std::string& xml, bool verbose = true);
 
     void setTp(SClType tp) {
         m_tp = tp;
