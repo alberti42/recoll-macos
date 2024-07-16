@@ -73,6 +73,19 @@ static string colon_restore(const string& in)
     return out;
 }
 
+//#define DEBUGMETASTACK
+#ifdef DEBUGMETASTACK
+static void dumpmap(std::ostream& o, std::map<std::string, std::string> meta)
+{
+    for (const auto& [key, val] : meta) {
+        if (key == cstr_dj_keycontent)
+            continue;
+        o << key << " -> " << val << " | ";
+    }
+    o << "\n";
+}
+#endif // DEBUGMETASTACK
+
 // This is used when the user wants to retrieve a search result doc's parent
 // (ie message having a given attachment)
 bool FileInterner::getEnclosingUDI(const Rcl::Doc &doc, string& udi)
@@ -579,6 +592,7 @@ static void copymeta(const RclConfig *cfg, Rcl::Doc& doc, const RecollFilter* hp
             doc.addmeta(cfg->fieldCanon(entry.first), entry.second);
         }
     }
+    getKeyValue(hp->get_meta_data(), cstr_dj_keymd, doc.dmtime);
 }
 
 
@@ -922,6 +936,12 @@ breakloop:
         return FIError;
     }
 
+#ifdef DEBUGMETASTACK
+    for (const auto& h : m_handlers) {
+        dumpmap(std::cerr, h->get_meta_data());
+    }
+#endif // DEBUGMETASTACK
+    
     // Compute ipath and significant mimetype.  ipath is returned
     // through doc.ipath. We also retrieve some metadata fields from
     // the ancesters (like date or author). This is useful for email
@@ -947,6 +967,7 @@ breakloop:
     }
     // Remove spurious commas from metadata values
     trimmeta(doc.meta);
+    trimstring(doc.dmtime, " ,");
 
     // Fix the bogus mtype used to force mh_text processing of text subdocs
     if (doc.mimetype == "text/plain1") {
