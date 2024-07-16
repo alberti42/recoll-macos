@@ -365,24 +365,21 @@ void AdvSearch::fillFileTypes()
         rcldb->getAllDbMimeTypes(types);
         sort(types.begin(), types.end());
         types.erase(unique(types.begin(), types.end()), types.end());
-        for (vector<string>::iterator it = types.begin(); 
-             it != types.end(); it++) {
-            QString qs = QString::fromUtf8(it->c_str());
+        for (const auto& tp: types) {
+            QString qs = u8s2qs(tp);
             if (m_ignTypes.indexOf(qs) < 0)
                 ql.append(qs);
         }
     } else {
         vector<string> cats;
         theconfig->getMimeCategories(cats);
-        for (vector<string>::const_iterator it = cats.begin();
-             it != cats.end(); it++) {
-            map<QString, QString>::const_iterator it1;
+        for (const auto& configcat : cats) {
             QString cat;
-            if ((it1 = cat_translations.find(QString::fromUtf8(it->c_str())))
-                != cat_translations.end()) {
+            auto it1 = cat_translations.find(u8s2qs(configcat));
+            if (it1 != cat_translations.end()) {
                 cat = it1->second;
             } else {
-                cat = QString::fromUtf8(it->c_str());
+                cat = u8s2qs(configcat);
             } 
             if (m_ignTypes.indexOf(cat) < 0)
                 ql.append(cat);
@@ -604,12 +601,10 @@ void AdvSearch::fromSearch(std::shared_ptr<SearchData> sdata)
 
     restrictCtCB->setChecked(0);
     if (!sdata->m_filetypes.empty()) {
-        restrictFtCB_toggled(1);
         delAFiltypPB_clicked();
-        for (unsigned int i = 0; i < sdata->m_filetypes.size(); i++) {
-            QString ft = QString::fromUtf8(sdata->m_filetypes[i].c_str());
-            QList<QListWidgetItem *> lst = 
-                noFiltypsLB->findItems(ft, Qt::MatchExactly);
+        for (const auto& ft : sdata->m_filetypes) {
+            QString qft = u8s2qs(ft);
+            QList<QListWidgetItem *> lst = noFiltypsLB->findItems(qft, Qt::MatchExactly);
             if (!lst.isEmpty()) {
                 int row = noFiltypsLB->row(lst[0]);
                 QListWidgetItem *item = noFiltypsLB->takeItem(row);
@@ -617,8 +612,11 @@ void AdvSearch::fromSearch(std::shared_ptr<SearchData> sdata)
             }
         }
         yesFiltypsLB->sortItems();
+        restrictFtCB->setChecked(1);
+        restrictFtCB_toggled(1);
     } else {
         addAFiltypPB_clicked();
+        restrictFtCB->setChecked(0);
         restrictFtCB_toggled(0);
     }
 
