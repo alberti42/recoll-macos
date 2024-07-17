@@ -48,6 +48,7 @@ python.install_sources(
     [
         'recoll/__init__.py',
         'recoll/conftree.py',
+        'recoll/fsudi.py',
         'recoll/qresultstore.py',
         'recoll/rclconfig.py',
         'recoll/rclextract.py',

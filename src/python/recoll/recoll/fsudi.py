@@ -18,15 +18,16 @@
 # Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# Replicate the file UDI computation in fileudi.cpp:
+# process a file path so that it is usable (short enough) for use as a Xapian
+# term. We truncate and replace the truncated part by its md5 hash.
 
 import hashlib
 import base64
 import sys
+import os
 
-# The following 2 methods replicate the file UDI computation in fileudi.cpp:
-# process a file path so that it is usable (short enough) for use as a Xapian
-# term. We truncate and replace the truncated part by its md5 hash.
-def pathHash(path, maxlen):
+def _pathHash(path, maxlen):
     HASHLEN = 22
     if len(path) <= maxlen:
         return path
@@ -35,25 +36,21 @@ def pathHash(path, maxlen):
     adigest = adigest[:-2]
     return path[:maxlen-HASHLEN] + adigest
 
-def make_udi(path, ipath=b""):
+def fs_udi(path, ipath=b""):
+    if type(path) == type(""):
+        path = os.fsencode(path)
+    if type(ipath) == type(""):
+        ipath = ipath.encode('utf-8')
     PATHHASHLEN = 150
     path +=  b"|"
     path += ipath
-    return pathHash(path, PATHHASHLEN)
+    return _pathHash(path, PATHHASHLEN)
 
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage: rclfilestatus.py <outfile>", file=sys.stderr)
+        print("Usage: rclfileudi.py <filepath>", file=sys.stderr)
         sys.exit(1)
-
-    fnout = sys.argv[1]
-    fout = open(fnout, "wb")
-
-    for line in sys.stdin.buffer:
-        path = line.rstrip(b"\n")
-        udi = make_udi(path)
-        fout.write(udi + b"\n")
-
-    fout.close()
+    udi = fs_udi(sys.argv[1])
+    print(f"UDI: {udi}")
