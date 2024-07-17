@@ -137,7 +137,7 @@ public:
 
     // During indexing: only fields from extended attributes were set, no
     // doc content. Allows for faster reindexing of existing doc
-    bool onlyxattr{false};
+    bool metaonly{false};
 
     ///////////////////////////////////////////////////////////////////
 
@@ -163,7 +163,7 @@ public:
         xdocid = 0;
         haspages = false;
         haschildren = false;
-        onlyxattr = false;
+        metaonly = false;
     }
 
     // Copy ensuring no shared string data, for threading issues.

@@ -888,7 +888,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
             map<string, string> xfields;
             reapXAttrs(config, fn, xfields);
             docFieldsFromXattrs(config, xfields, fileDoc);
-            fileDoc.onlyxattr = true;
+            fileDoc.metaonly = true;
         } else {
             fileDoc.fmtime = ascdate;
 #ifdef EXT4_BIRTH_TIME

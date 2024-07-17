@@ -99,7 +99,7 @@ void Doc::copyto(Doc *d) const
     d->xdocid = xdocid;
     d->haspages = haspages;
     d->haschildren = haschildren;
-    d->onlyxattr = onlyxattr;
+    d->metaonly = metaonly;
 }
 
 bool docsToPaths(const vector<Rcl::Doc> &docs, vector<string> &paths)

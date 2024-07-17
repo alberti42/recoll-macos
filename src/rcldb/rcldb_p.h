@@ -250,11 +250,11 @@ class Db::Native {
     bool hasTerm(const std::string& udi, int idxi, const std::string& term);
 
     /** Update existing Xapian document for pure extended attrs change */
-    bool docToXdocXattrOnly(TextSplitDb *splitter, const std::string &udi, 
-                Doc &doc, Xapian::Document& xdoc);
+    bool docToXdocMetaOnly(TextSplitDb *splitter, const std::string &udi, 
+                           Doc &doc, Xapian::Document& xdoc);
     /** Remove all terms currently indexed for field defined by idx prefix */
     bool clearField(Xapian::Document& xdoc, const std::string& pfx, 
-            Xapian::termcount wdfdec);
+                    Xapian::termcount wdfdec);
 
     /** Check if term wdf is 0 and remove term if so */
     bool clearDocTermIfWdf0(Xapian::Document& xdoc, const std::string& term);

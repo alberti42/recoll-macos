@@ -1683,13 +1683,13 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     string uniterm = make_uniterm(udi);
     string rawztext; // Doc compressed text
 
-    if (doc.onlyxattr) {
+    if (doc.metaonly) {
         // Only updating an existing doc with new extended attributes
         // data.  Need to read the old doc and its data record
         // first. This is so different from the normal processing that
         // it uses a fully separate code path (with some duplication
         // unfortunately)
-        if (!m_ndb->docToXdocXattrOnly(&splitter, udi, doc, newdocument)) {
+        if (!m_ndb->docToXdocMetaOnly(&splitter, udi, doc, newdocument)) {
             return false;
         }
     } else {
@@ -2051,17 +2051,17 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
                                    std::move(newdocument_ptr), doc.text.length(), rawztext);
 }
 
-bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
+bool Db::Native::docToXdocMetaOnly(TextSplitDb *splitter, const string &udi, 
                                     Doc &doc, Xapian::Document& xdoc)
 {
-    LOGDEB0("Db::docToXdocXattrOnly\n");
+    LOGDEB0("Db::docToXdocMetaOnly\n");
 #ifdef IDX_THREADS
     std::unique_lock<std::mutex> lock(m_mutex);
 #endif
 
     // Read existing document and its data record
     if (getDoc(udi, 0, xdoc) == 0) {
-        LOGERR("docToXdocXattrOnly: existing doc not found\n");
+        LOGERR("docToXdocMetaOnly: existing doc not found\n");
         return false;
     }
     string data;
@@ -2093,7 +2093,7 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
     // Parse current data record into a dict for ease of processing
     ConfSimple datadic(data);
     if (!datadic.ok()) {
-        LOGERR("db::docToXdocXattrOnly: failed turning data rec to dict\n");
+        LOGERR("db::docToXdocMetaOnly: failed turning data rec to dict\n");
         return false;
     }
 
