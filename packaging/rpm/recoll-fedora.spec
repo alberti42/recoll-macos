@@ -1,22 +1,21 @@
 %global         gsspver 1.1.3
+%global         __cmake_in_source_build 1
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.39.1
-Release:        1%{?dist}
+Version:        1.39.3
+Release:        2%{?dist}
 License:        GPLv2+
-URL:            https://www.lesbonscomptes.com/recoll/
-Source0:        https://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
-Source1:        https://www.lesbonscomptes.com/recoll/downloads/gssp-recoll-%{gsspver}.tar.gz
+URL:            https://www.recoll.org
+Source0:        https://www.recoll.org/recoll-%{version}.tar.gz
+Source1:        https://www.recoll.org/downloads/gssp-recoll-%{gsspver}.tar.gz
 Source10:       qmake-qt5.sh
-#Patch01:        recoll-1.25.11-appdata.patch
-BuildRequires:  meson
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  chmlib-devel
-BuildRequires:  file-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  extra-cmake-modules
+BuildRequires:  file-devel
 BuildRequires:  gcc-c++
 # kio
 BuildRequires:  kdelibs4-devel
@@ -28,14 +27,14 @@ BuildRequires:  kf5-knotifications-devel
 BuildRequires:  kf5-kpackage-devel
 
 BuildRequires:  libxslt-devel
-BuildRequires:  file-libs
 BuildRequires:  make
+BuildRequires:  meson
 BuildRequires:  python-rpm-macros
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  qt5-linguist
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtwebkit-devel
-BuildRequires:  qt5-linguist
 BuildRequires:  xapian-core-devel
 BuildRequires:  zlib-devel
 Requires:       xdg-utils
@@ -45,6 +44,18 @@ Recoll is a personal full text search package for Linux, FreeBSD and
 other Unix systems. It is based on a very strong back end (Xapian), for
 which it provides an easy to use, feature-rich, easy administration
 interface.
+
+%package       libs
+Summary:       Libraries for Recoll applications
+%description   libs
+Shared libraries required to run Recoll applications.
+
+%package       devel
+Summary:       Libraries and header files to develop Recoll enabled applications
+Requires:      %{name}-libs = %{version}-%{release}
+%description   devel
+Libraries and header files required to develop Recoll enabled
+applications.
 
 %package       kio
 Summary:       KIO support for recoll
@@ -72,9 +83,8 @@ This package contains the Recoll GNOME Shell search provider
 
 %prep
 %setup -q -D -a 1
-%autopatch -p1
 sed -i -e '1{\,^#!/usr/bin/env,d}' python/recoll/recoll/rclconfig.py
-if test ! -e gssp ;then ln -s gssp-recoll-%{gsspver} gssp;fi
+ln -s gssp-recoll-%{gsspver} gssp
 
 %build
 CFLAGS="%{optflags}"; export CFLAGS
@@ -83,8 +93,7 @@ LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 
 # force use of custom/local qmake, to inject proper build flags (above)
 install -m755 -D %{SOURCE10} qmake-qt5.sh
-export QMAKE=qmake-qt5
-
+export QMAKE=$(pwd)/qmake-qt5.sh
 %meson -Drecollq=true -Dsystemd=true
 %meson_build
 
@@ -103,13 +112,20 @@ desktop-file-install --delete-original \
 # use /usr/bin/xdg-open
 rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
 rm -f %{buildroot}%{_libdir}/recoll/librecoll.la
-rm -f %{buildroot}/usr/lib/debug/usr/lib64/librecoll*
 
-RECOLL_LIB_DIR=%{_builddir}/%{name}-%{version}/redhat-linux-build/; export RECOLL_LIB_DIR
+export RECOLL_LIB_DIR=%{_builddir}/%{name}-%{version}/redhat-linux-build/
 
 # kio_recoll -kde5
 pushd kde/kioslave/kio_recoll
 %cmake -DRECOLL_PUBLIC_LIB=1
+%cmake_build
+%cmake_install
+popd
+
+# kio_recoll -kde4
+export QMAKE=qmake-qt4
+pushd kde/kioslave/kio_recoll-kde4
+%cmake_kde4 -DRECOLL_PUBLIC_LIB=1
 %cmake_build
 %cmake_install
 popd
@@ -126,6 +142,9 @@ pushd gssp
 make install DESTDIR=%{buildroot}
 popd
 
+mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
+echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/recoll-%{_arch}.conf
+
 %py_byte_compile %{__python3} %{buildroot}%{_datadir}/%{name}/filters/
 
 %post -p /sbin/ldconfig
@@ -134,6 +153,7 @@ popd
 %files
 %license COPYING
 %doc ChangeLog README
+%{_sysconfdir}/ld.so.conf.d/recoll-%{_arch}.conf
 %{_bindir}/recoll
 %{_bindir}/recollindex
 %{_bindir}/recollq
@@ -141,8 +161,6 @@ popd
 %{_datadir}/metainfo/org.recoll.recoll.appdata.xml
 %{_datadir}/applications/recoll-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/recoll.png
-%{_includedir}/
-%{_libdir}/librecoll.so*
 %{_datadir}/pixmaps/recoll.png
 %{python3_sitearch}/recoll
 %{python3_sitearch}/recollchm
@@ -155,9 +173,20 @@ popd
 %{_unitdir}/recollindex@.service
 %{_userunitdir}/recollindex.service
 
+%files libs
+%{_libdir}/librecoll.so.*
+
+%files devel
+%{_libdir}/librecoll.so
+%{_includedir}/recoll
+
 %files kio
 %license COPYING
+%{_libdir}/kde4/kio_recoll.so
 %{_libdir}/qt5/plugins/kf5/kio/kio_recoll.so
+%{_datadir}/kde4/apps/kio_recoll/
+%{_datadir}/kde4/services/recoll.protocol
+%{_datadir}/kde4/services/recollf.protocol
 %{_datadir}/kio_recoll/help.html
 %{_datadir}/kio_recoll/welcome.html
 
@@ -172,8 +201,57 @@ popd
 %{_datadir}/applications/org.recoll.Recoll.SearchProvider.desktop
 
 %changelog
-* Tue Apr 11 2023 Jean-Francois Dockes <jfd@recoll.org> - 1.35.0-1
-- 1.35.0 with option for installing librecoll in the system directory.
+* Sun Jun 30 2024 Terje Rosten <terje.rosten@ntnu.no> - 1.39.1-2
+- Add patch from upstream to fix parallel build
+
+* Thu Jun 27 2024 Terje Rosten <terje.rosten@ntnu.no> - 1.39.1-1
+- 1.39.1
+
+* Fri Jun 07 2024 Python Maint <python-maint@redhat.com> - 1.37.5-2
+- Rebuilt for Python 3.13
+
+* Sun May 05 2024 Terje Rosten <terje.rosten@ntnu.no> - 1.37.5-1
+- 1.37.5
+
+* Sun Feb 04 2024 Terje Rosten <terje.rosten@ntnu.no> - 1.37.4-1
+- 1.37.4
+
+* Sun Jan 28 2024 Terje Rosten <terje.rosten@ntnu.no> - 1.37.0-1
+- 1.37.0
+
+* Fri Jan 26 2024 Fedora Release Engineering <releng@fedoraproject.org> - 1.36.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
+* Mon Jan 22 2024 Fedora Release Engineering <releng@fedoraproject.org> - 1.36.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
+* Sat Nov 04 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.36.1-1
+- 1.36.1
+
+* Mon Oct 30 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.36.0-1
+- 1.36.0
+- Ship public lib in -libs package
+- Ship headers in -devel package
+
+* Sun Oct 15 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.35.0-2
+- Add explicit buildreq on qt5-linguist
+- Use kde4 macros for kde4 parts
+
+* Thu Aug 17 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.35.0-1
+- 1.35.0
+
+* Fri Jul 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 1.34.7-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
+
+* Mon Jun 26 2023 Python Maint <python-maint@redhat.com> - 1.34.7-2
+- Rebuilt for Python 3.12
+
+* Sun Jun 25 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.34.7-1
+- 1.34.7
+- Add patch from upstream to fix bz#2213017 and bz#2203626
+
+* Tue Jun 13 2023 Python Maint <python-maint@redhat.com> - 1.34.6-2
+- Rebuilt for Python 3.12
 
 * Sun Mar 26 2023 Terje Rosten <terje.rosten@ntnu.no> - 1.34.6-1
 - 1.34.6
