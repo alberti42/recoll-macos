@@ -149,7 +149,7 @@ class joplin_indexer:
         
     # Index one note record
     def _index_note(self, rcldb, note):
-        doc = recoll.Doc()
+        doc = rcldb.doc()
 
         # Misc standard recoll fields
         # it appears that the joplin updated_time is in mS, we want secs

@@ -3964,7 +3964,7 @@ xt/html
    Windows, MacOS).
 
    The search interface is used in a number of active projects: the
-   [240]Recoll Gnome Shell Search Provider , the [241]Recoll Web UI, and
+   [240]Recoll Gnome Shell Search Provider, the [241]Recoll Web UI, and
    the [242]upmpdcli UPnP Media Server, in addition to many small scripts.
 
    The index updating part of the API can be used to create and update
@@ -3986,7 +3986,7 @@ xt/html
 
    There is a good chance that your system repository has packages for the
    Recoll Python API, sometimes in a package separate from the main one
-   (maybe named something like python-recoll). Else refer to the
+   (maybe named something like python3-recoll). Else refer to the
    [243]Building from source chapter.
 
    As an introduction sample, the following small program will run a query
@@ -4007,7 +4007,7 @@ for doc in results:
 
    You can also take a look at the source for (in order of complexity) the
    Recoll [244]Gnome Shell Search Provider or [245]WebUI, and the
-   [246]upmpdcli local media server .
+   [246]upmpdcli local media server.
 
 4.3.2. Interface elements
 
@@ -4147,7 +4147,8 @@ The Db class
 
    Db.close()
           Closes the connection. You can't do anything with the Db object
-          after this.
+          after this. If the index was opened as writable, this commits
+          any pending change.
 
 The Query class
 
@@ -4258,10 +4259,16 @@ The Doc class
 
    A Doc object contains index data for a given document. The data is
    extracted from the index when searching, or set by the indexer program
-   when updating. The Doc object has many attributes to be read or set by
-   its user. It mostly matches the Rcl::Doc C++ object. Some of the
-   attributes are predefined, but, especially when indexing, others can be
-   set, the name of which will be processed as field names by the indexing
+   when updating.
+
+   Please note that a Doc should never be instanciated by its constructor
+   but instead by calling db.doc() or some other API method returning a
+   doc object. Otherwise, the object will lack some necessary references.
+
+   The Doc object has many attributes to be read or set by its user. It
+   mostly matches the Rcl::Doc C++ object. Some of the attributes are
+   predefined, but, especially when indexing, others can be set, the name
+   of which will be processed as field names by the indexing
    configuration. Inputs can be specified as Unicode or strings. Outputs
    are Unicode objects. All dates are specified as Unix timestamps,
    printed as strings. Please refer to the rcldb/rcldoc.cpp C++ file for a
@@ -4397,6 +4404,18 @@ for i in range(nres):
         print("%s : %s" % (k, getattr(doc, k)))
     print("%s\n" % db.makeDocAbstract(doc, query))
 
+The fsudi module
+
+   The fsudi module contains a single method, which duplicates the code
+   used by the main filesystem indexer to derive an UDI from a filesystem
+   path. In turn, this allows external code to call the getDoc() method to
+   retrieve the Doc object. This can be useful, for example, for updating
+   the metadata without fully reindexing the document.
+
+   fsudi.fs_udi(path, ipath='')
+          Obtain the UDI value for the given path and ipath. The returned
+          value can be used with the db.getDoc() method.
+
 4.3.5. Python indexing interface
 
 Recoll external indexers
@@ -4405,7 +4424,7 @@ Recoll external indexers
    formats. However, some forms of data storage do not lend themselves
    easily to standard processing because of their great variability. A
    canonical example would be data in an SQL database. While it might be
-   possible to create a configurable filter to process data from a
+   possible to create a configurable handler to process data from a
    database, the many variations in storage organisation and SQL dialects
    make this difficult.
 
@@ -4455,20 +4474,36 @@ Python indexing interface methods
    is used with a writable=true parameter to obtain a writable Db object.
    The following Db object methods are then available.
 
-   addOrUpdate(udi, doc, parent_udi=None)
-          Add or update index data for a given document. The [250]udi
-          string must define a unique id for the document. It is an opaque
-          interface element and not interpreted inside Recoll. doc is a
-          [251]Doc object, created from the data to be indexed (the main
-          text should be in doc.text). If [252]parent_udi is set, this is
-          a unique identifier for the top-level container, the document
-          for which needUpdate() would be called (e.g. for the filesystem
-          indexer, this would be the one which is an actual file). The doc
-          url and possibly ipath fields should also be set to allow access
-          to the actual document after a query. Other fields should also
-          be set to allow further access to the data, see the description
-          further down: rclbes, sig, mimetype. Of course, any standard or
-          custom Recoll field can also be added.
+   Note that the changes are only guaranteed to be flushed to the index
+   when db.close() is called. This normally occurs when the program exits,
+   but it is much safer to use an explicit call after making the changes.
+
+   addOrUpdate(udi, doc, parent_udi=None, metaonly=False)
+          Add or update index data for a given document.
+
+          The [250]udi string must define a unique id for the document. It
+          is an opaque interface element and not interpreted inside the
+          lower level Recoll code.
+
+          doc is a [251]Doc object, containing the data to be indexed.
+
+          If [252]parent_udi is set, this is a unique identifier for the
+          top-level container, the document for which needUpdate() would
+          be called (e.g. for the filesystem indexer, this would be the
+          one which is an actual file).
+
+          If metaonly is set, the main document text (in the doc.text
+          attribute) will be ignored and only the other metadata fields
+          present in the doc object will be processed. This can be useful
+          for updating the metadata apart from the main text.
+
+          Document attributes: doc.text should have the main text. It is
+          ignored if metaonly is set. For actual indexing (metaonly not
+          set), the url and possibly ipath fields should also be set to
+          allow access to the actual document after a query. Other fields
+          may also need to be set by an external indexer see the
+          description further down: rclbes, sig, mimetype. Of course, any
+          standard or custom Recoll field can also be added.
 
    delete(udi)
           Purge the index from all data for udi, and all documents (if
@@ -4496,13 +4531,13 @@ Python indexing interface methods
           delete stale entries.
 
    preparePurge(backend_name)
-          Mark all documents which do *not* belong to backend_name.
-          backend_name is the value chosen for the rclbes field for the
-          indexer documents (e.g. "MBOX", "JOPLIN"... for the samples).
-          This is a mandatory call before starting an update if the index
-          is shared with other backends and you are going to call purge()
-          after the update, else all documents for other backends will be
-          deleted from the index by the purge.
+          Mark all documents which do *not* belong to backend_name as
+          existing. backend_name is the value chosen for the rclbes field
+          for the indexer documents (e.g. "MBOX", "JOPLIN"... for the
+          samples). This is a mandatory call before starting an update if
+          the index is shared with other backends and you are going to
+          call purge() after the update, else all documents for other
+          backends will be deleted from the index by the purge.
 
    purge()
           Delete all documents that were not touched during the just

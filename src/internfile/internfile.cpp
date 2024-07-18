@@ -965,7 +965,7 @@ breakloop:
         }
         docFieldsFromMetaCmds(m_cfg, m_cmdFields, doc);
     }
-    // Remove spurious commas from metadata values
+    // Remove spurious commas added by addmeta() from metadata values
     trimmeta(doc.meta);
     trimstring(doc.dmtime, " ,");
 

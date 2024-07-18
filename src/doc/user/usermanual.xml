@@ -5346,23 +5346,17 @@ C: = Z:</programlisting></para></note>
           interpreter. It is available on all platforms (&LIN;, MS Windows, MacOS).</para>
 
         <para>The search interface is used in a number of active projects:
-        the <ulink 
-              url="https://www.recoll.org/pages/download.html#gssp">
-            &RCL; <application>Gnome Shell Search Provider</application>
-          </ulink>,
-        the <ulink url="https://framagit.org/medoc92/recollwebui">
-            &RCL; Web UI</ulink>, and the 
-          <ulink 
-       url="https://www.lesbonscomptes.com/upmpdcli/upmpdcli-manual.html#UPRCL">
-            upmpdcli UPnP Media Server</ulink>, in addition 
-          to many small scripts.</para>
+        the <ulink url="https://www.recoll.org/pages/download.html#gssp">
+        &RCL; <application>Gnome Shell Search Provider</application></ulink>,
+        the <ulink url="https://framagit.org/medoc92/recollwebui"> &RCL; Web UI</ulink>, and the 
+        <ulink url="https://www.lesbonscomptes.com/upmpdcli/upmpdcli-manual.html#UPRCL">
+        upmpdcli UPnP Media Server</ulink>, in addition to many small scripts.</para>
 
         <para>The index updating part of the API can be used to create and update &RCL; indexes.
           Up to &RCL; 1.37 these needed to use separate configurations (but could be queried in
           conjunction with the regular index). As of &RCL; 1.37, an external indexer based on the
           Python extension can update the main index. For example the &RCL; indexer for
-          the <application>Joplin</application> notes application is using this method.
-          </para>
+          the <application>Joplin</application> notes application is using this method.</para>
 
         <para>The search API is modeled along the Python database API
         version 2.0 specification (early versions used the version 1.0 spec).</para>
@@ -5378,9 +5372,9 @@ C: = Z:</programlisting></para></note>
         </itemizedlist>
 
         <para>There is a good chance that your system repository has packages for the Recoll Python
-          API, sometimes in a package separate from the main one (maybe named something like
-          python-recoll). Else refer to the <link linkend="RCL.INSTALL.BUILDING">Building from
-            source</link> chapter.</para>
+        API, sometimes in a package separate from the main one (maybe named something like
+        python3-recoll). Else refer to the <link linkend="RCL.INSTALL.BUILDING">Building from
+        source</link> chapter.</para>
 
         <para>As an introduction sample, the following small program will run a query and list the
           title and url for each of the results. The <filename>python/samples</filename> source
@@ -5401,17 +5395,11 @@ for doc in results:
 ]]></programlisting>
 
         <para>You can also take a look at the source for (in order of complexity) the Recoll
-        <ulink 
-          url="https://framagit.org/medoc92/recoll-gssp/-/blob/master/gssp-recoll.py">
-	  Gnome Shell Search Provider</ulink> 
-        or 
-        <ulink 
-	  url="https://framagit.org/medoc92/recollwebui/-/blob/master/webui.py">
-	  WebUI</ulink>, and the
-        <ulink
-          url="https://framagit.org/medoc92/upmpdcli/-/blob/master/src/mediaserver/cdplugins/uprcl/uprclfolders.py">
-	  upmpdcli local media server</ulink>
-        .</para>
+        <ulink url="https://framagit.org/medoc92/recoll-gssp/-/blob/master/gssp-recoll.py">
+	Gnome Shell Search Provider</ulink> or 
+        <ulink url="https://framagit.org/medoc92/recollwebui/-/blob/master/webui.py">WebUI</ulink>,
+        and the <ulink url="https://framagit.org/medoc92/upmpdcli/-/blob/master/src/mediaserver/cdplugins/uprcl/uprclfolders.py">
+	  upmpdcli local media server</ulink>.</para>
         
       </sect2>
       
@@ -5419,51 +5407,50 @@ for doc in results:
       <sect2 id="RCL.PROGRAM.PYTHONAPI.ELEMENTS">
         <title>Interface elements</title>
 
-        <para>A few elements in the interface are specific and and need
-          an explanation.</para>
+        <para>A few elements in the interface are specific and and need an explanation.</para>
 
         <variablelist>
 
           <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.IPATH"><term>ipath</term>
+          <listitem><para>An <literal>ipath</literal> identifies an embedded document inside a
+          standalone one (designated by an URL). The value, if needed, is stored along with the
+          URL, but not indexed. It is accessible or set as a field in the Doc object.</para>
 
-            <listitem><para>An <literal>ipath</literal> identifies an embedded document inside a
-                standalone one (designated by an URL). The value, if needed, is stored along with
-                the URL, but not indexed. It is accessible or set as a field in the Doc
-                object.</para>
-              <para><literal>ipath</literal>s are opaque values for the lower index layers (Doc
-                objects producers or consumers), and their use is up to the specific indexer. For
-                example, the &RCL; file system indexer uses the <literal>ipath</literal> to store
-                the part of the document access path internal to (possibly imbricated) container
-                documents. <literal>ipath</literal> in this case is a vector of access elements
-                (e.g, the first part could be a path inside a zip file to an archive member which
-                happens to be an mbox file, the second element would be the message sequential
-                number inside the mbox etc.). The index itself has no knowledge of this hierarchical
-                structure.</para>
-              <para>At the moment, only the filesystem indexer uses hierarchical
-                <literal>ipath</literal>s (neither the Web nor the Joplin one do), and there are
-                some assumptions in the upper software layers about their structure. For example,
-                the &RCL; GUI knows about using an FS indexer <literal>ipath</literal> for such
-                functions as opening the immediate parent of a given document.</para>
-              <para><literal>url</literal>
-                and <literal>ipath</literal> are returned in every search result and define the
-                access to the original document. <literal>ipath</literal> is empty for top-level
-                document/files (e.g. a PDF document which is a filesystem file).</para>
-            </listitem>
+          <para><literal>ipath</literal>s are opaque values for the lower index layers (Doc
+          objects producers or consumers), and their use is up to the specific indexer. For
+          example, the &RCL; file system indexer uses the <literal>ipath</literal> to store the
+          part of the document access path internal to (possibly imbricated) container
+          documents. <literal>ipath</literal> in this case is a vector of access elements (e.g,
+          the first part could be a path inside a zip file to an archive member which happens to
+          be an mbox file, the second element would be the message sequential number inside the
+          mbox etc.). The index itself has no knowledge of this hierarchical structure.</para>
+
+          <para>At the moment, only the filesystem indexer uses hierarchical
+          <literal>ipath</literal>s (neither the Web nor the Joplin one do), and there are
+          some assumptions in the upper software layers about their structure. For example,
+          the &RCL; GUI knows about using an FS indexer <literal>ipath</literal> for such
+          functions as opening the immediate parent of a given document.</para>
+
+          <para><literal>url</literal> and <literal>ipath</literal> are returned in every search
+          result and define the access to the original document. <literal>ipath</literal> is empty
+          for top-level document/files (e.g. a PDF document which is a filesystem file).</para>
+          </listitem>
           </varlistentry>
 
           <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">
             <term>udi</term> <listitem><para>An <literal>udi</literal> (unique document identifier)
-                identifies a document. Because of limitations inside the index engine, it is
-                restricted in length (to 200 bytes). The structure and contents of
-                the <literal>udi</literal> is defined by the application and opaque to the index
-                engine. For example, the internal file system indexer uses the complete document
-                path (file path + internal path), truncated to a maximum length, the suppressed part
-                being replaced by a hash value to retain practical unicity.</para>
-              <para>To rephrase, and hopefully clarify: the filesystem
-                indexer can't use the URL+ipath as a unique document-identifying term because this
-                may be too big: it derives a shorter <literal>udi</literal> from URL+ipath. Another
-                indexer could use a completely different method. For example,
-                the <application>Joplin</application> indexer uses the note ID.</para></listitem>
+            identifies a document. Because of limitations inside the index engine, it is restricted
+            in length (to 200 bytes). The structure and contents of the <literal>udi</literal> is
+            defined by the application and opaque to the index engine. For example, the internal
+            file system indexer uses the complete document path (file path + internal path),
+            truncated to a maximum length, the suppressed part being replaced by a hash value to
+            retain practical unicity.</para>
+
+            <para>To rephrase, and hopefully clarify: the filesystem indexer can't use the URL+ipath
+            as a unique document-identifying term because this may be too big: it derives a shorter
+            <literal>udi</literal> from URL+ipath. Another indexer could use a completely different
+            method. For example, the <application>Joplin</application> indexer uses the note
+            ID.</para></listitem>
           </varlistentry>
 
           <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">
@@ -5565,16 +5552,18 @@ db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/othercon
 
             <varlistentry>
               <term>Db.getdoc(udi, idxidx=0)</term>
+
               <listitem><para>Retrieve a document given its unique document identifier, and its
-                  index if external indexes are in use. The main index is always index
-                  0. The <parameter>udi</parameter> value could have been obtained from an earlier
-                  query as <property>doc.rcludi</property>, or would be known because the application
-                  is the indexer and generates the values.</para></listitem>
+              index if external indexes are in use. The main index is always index 0. The
+              <parameter>udi</parameter> value could have been obtained from an earlier 
+              query as <property>doc.rcludi</property>, or would be known because the application
+              is the indexer and generates the values.</para></listitem>
             </varlistentry>
             
             <varlistentry>
               <term>Db.termMatch(match_type, expr, field='', maxlen=-1, casesens=False,
                 diacsens=False, lang='english')</term> 
+
               <listitem><para>Expand an expression against the index term list. Performs the basic
                   function from the GUI term explorer tool. <parameter>match_type</parameter> can be
                   one of <literal>wildcard</literal>, <literal>regexp</literal>
@@ -5594,7 +5583,8 @@ db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/othercon
 
             <varlistentry>
               <term>Db.close()</term><listitem><para>Closes the connection. You can't do anything
-                  with the <classname>Db</classname> object after this.</para></listitem>
+                  with the <classname>Db</classname> object after this. If the index was opened as
+                  writable, this commits any pending change.</para></listitem>
             </varlistentry>
 
           </variablelist>
@@ -5724,17 +5714,17 @@ class MyHighlighter:
               </para></listitem></varlistentry>
             
             <varlistentry>
-             <term>Query.getsnippets(doc, maxoccs = -1, ctxwords = -1,
-               sortbypage=False, methods=object)</term>
-             <listitem><para>Return a list of extracts from the result
-                 document by selecting text around the match terms. Each entry in the result list is
-                 a triple: page number, term, text. By default, the most relevants snippets appear
-                 first in the list. Set <parameter>sortbypage</parameter> to sort by page number
-                 instead. If <parameter>methods</parameter> is set, the fragments will be
-                 highlighted (see the <function>highlight()</function>
-                 method). If <parameter>maxoccs</parameter> is set, it defines the maximum result
-                 list length. <parameter>ctxwords</parameter> allows adjusting the individual
-                 snippet context size.</para></listitem>
+              <term>Query.getsnippets(doc, maxoccs = -1, ctxwords = -1,
+              sortbypage=False, methods=object)</term>
+              <listitem><para>Return a list of extracts from the result
+              document by selecting text around the match terms. Each entry in the result list is
+              a triple: page number, term, text. By default, the most relevants snippets appear
+              first in the list. Set <parameter>sortbypage</parameter> to sort by page number
+              instead. If <parameter>methods</parameter> is set, the fragments will be
+              highlighted (see the <function>highlight()</function>
+              method). If <parameter>maxoccs</parameter> is set, it defines the maximum result
+              list length. <parameter>ctxwords</parameter> allows adjusting the individual
+              snippet context size.</para></listitem>
             </varlistentry>
             
           </variablelist>
@@ -5767,17 +5757,23 @@ class MyHighlighter:
 
           <para>A <classname>Doc</classname> object contains index data for a given document. The
           data is extracted from the index when searching, or set by the indexer program when
-          updating. The Doc object has many attributes to be read or set by its user. It mostly
+          updating.</para>
+
+          <para>Please note that a <classname>Doc</classname> should never be instanciated by its
+          constructor but instead by calling <literal>db.doc()</literal> or some other API method
+          returning a doc object. Otherwise, the object will lack some necessary references.</para>
+
+          <para>The Doc object has many attributes to be read or set by its user. It mostly
           matches the Rcl::Doc C++ object. Some of the attributes are predefined, but, especially
           when indexing, others can be set, the name of which will be processed as field names by
-          the indexing configuration.  Inputs can be specified as Unicode or strings. Outputs are
+          the indexing configuration. Inputs can be specified as Unicode or strings. Outputs are
           Unicode objects. All dates are specified as Unix timestamps, printed as strings. Please
           refer to the <filename>rcldb/rcldoc.cpp</filename> C++ file for a full description of the
           predefined attributes. Here follows a short list.</para>
 
           <para><itemizedlist>
-            <listitem><para><literal>url</literal> the document URL but see
-            also <literal>getbinurl()</literal></para></listitem>
+            <listitem><para><literal>url</literal> the document URL but see also
+            <literal>getbinurl()</literal></para></listitem> 
             
             <listitem><para><literal>ipath</literal> the document <literal>ipath</literal> for
             embedded documents.</para></listitem>
@@ -5793,52 +5789,46 @@ class MyHighlighter:
             <listitem><para><literal>mtype</literal> the document MIME type.</para></listitem>
 
             <listitem><para><literal>text</literal> holds the document processed text, if the index
-                itself is configured to store it (true by default) and if
-                the <literal>fetchtext</literal> query <literal>execute() </literal> option was
-                true. See also the <literal>rclextract</literal> module for accessing document
-                contents.</para></listitem>
+            itself is configured to store it (true by default) and if the
+            <literal>fetchtext</literal> query <literal>execute() </literal> option was true. See
+            also the <literal>rclextract</literal> module for accessing document
+            contents.</para></listitem>
 
-            <listitem><para>Other fields stored by default:
-                <literal>author</literal>, <literal>filename</literal>,
-                <literal>keywords</literal>, <literal>recipient</literal></para></listitem> 
+            <listitem><para>Other fields stored by default: <literal>author</literal>,
+            <literal>filename</literal>, <literal>keywords</literal>,
+            <literal>recipient</literal></para></listitem>
 
           </itemizedlist>                
           </para>
           
           <para>At query time, only the fields that are defined as <literal>stored</literal> either
           by default or in the <filename>fields</filename> configuration file will be meaningful in
-            the <literal>Doc</literal> object.</para>
+          the <literal>Doc</literal> object.</para>
 
           <variablelist>
 
             <varlistentry>
               <term>get(key), [] operator</term>
-
-              <listitem><para>Retrieve the named document attribute. You can also
-              use <literal>getattr(doc, key)</literal>
-              or <literal>doc.key</literal>.</para></listitem>
+              <listitem><para>Retrieve the named document attribute. You can also use
+              <literal>getattr(doc, key)</literal> or <literal>doc.key</literal>.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>doc.key = value</term>
-
-              <listitem><para>Set the the named document attribute. You can also
-              use <literal>setattr(doc, key, value)</literal>.</para>
-              </listitem>
+              <listitem><para>Set the the named document attribute. You can also use
+              <literal>setattr(doc, key, value)</literal>.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>getbinurl()</term>
-
               <listitem><para>Retrieve the URL in byte array format (no transcoding), for use as
-                  parameter to a system call. This is useful for the filesystem
-                  indexer <literal>file://</literal> URLs which are stored unencoded, as binary
-                  data.</para></listitem>
+              parameter to a system call. This is useful for the filesystem indexer
+              <literal>file://</literal> URLs which are stored unencoded, as binary
+              data.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>setbinurl(url)</term>
-
               <listitem><para>Set the URL in byte array format (no transcoding).</para></listitem>
             </varlistentry>
 
@@ -5858,19 +5848,16 @@ class MyHighlighter:
         <simplesect id="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.SEARCHDATA">
           <title>The SearchData class</title>
 
-          <para>A <literal>SearchData</literal> object allows building
-          a query by combining clauses, for execution
-          by <literal>Query.executesd()</literal>. It can be used
-          in replacement of the query language approach. The
-          interface is going to change a little, so no detailed doc
+          <para>A <literal>SearchData</literal> object allows building a query by combining clauses,
+          for execution by <literal>Query.executesd()</literal>. It can be used in replacement of
+          the query language approach. The interface is going to change a little, so no detailed doc
           for now...</para>
 
           <variablelist>
 
             <varlistentry>
               <term>addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',
-              qstring=string, slack=0, field='', stemming=1,
-              subSearch=SearchData)</term>
+              qstring=string, slack=0, field='', stemming=1, subSearch=SearchData)</term>
               <listitem><para></para></listitem>
             </varlistentry>
           </variablelist>
@@ -5879,42 +5866,38 @@ class MyHighlighter:
 
       </sect3> <!-- Recoll module -->
 
-        <sect3 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT">
-          <title>The rclextract module</title>
+      <sect3 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT">
+        <title>The rclextract module</title>
 
-          <para>Prior to &RCL; 1.25, index queries could not provide document content because it was
-            never stored. &RCL; 1.25 and later usually store the document text, which can be
-            optionally retrieved when running a query (see <literal>query.execute()</literal> above
-            - the result is always plain text).</para>
+        <para>Prior to &RCL; 1.25, index queries could not provide document content because it was
+        never stored. &RCL; 1.25 and later usually store the document text, which can be
+        optionally retrieved when running a query (see <literal>query.execute()</literal> above
+        - the result is always plain text).</para>
 
-          <para>Independantly, the <literal>rclextract</literal> module can give access to the
-            original document and to the document text content, possibly as an HTML version.
-            Accessing the original document is particularly useful if it is embedded (e.g. an email
-            attachment).</para>
+        <para>Independantly, the <literal>rclextract</literal> module can give access to the
+        original document and to the document text content, possibly as an HTML version.
+        Accessing the original document is particularly useful if it is embedded (e.g. an email
+        attachment).</para>
 
-          <para>You need to import the <literal>recoll</literal> module
-            before the <literal>rclextract</literal> module.</para>
-          
-          <simplesect id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR">
-            <title>The Extractor class</title>
+        <para>You need to import the <literal>recoll</literal> module before the
+        <literal>rclextract</literal> module.</para>
+        
+        <simplesect id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR">
+          <title>The Extractor class</title>
 
-            <variablelist>
+          <variablelist>
 
-              <varlistentry>
-                <term>Extractor(doc)</term>
-                <listitem><para>An <literal>Extractor</literal> object is
-                built from a <literal>Doc</literal> object, output
-                from a query.</para></listitem>
-              </varlistentry>
-              <varlistentry>
-                <term>Extractor.textextract(ipath)</term>
-                <listitem><para>Extract document defined by
-                <replaceable>ipath</replaceable> and return a
-                <literal>Doc</literal> object. The
-                <literal>doc.text</literal> field has the document text
-                converted to either text/plain or text/html according to
-                <literal>doc.mimetype</literal>. The typical use would be
-                as follows:</para>
+            <varlistentry>
+              <term>Extractor(doc)</term>
+              <listitem><para>An <literal>Extractor</literal> object is built from a
+              <literal>Doc</literal> object, output from a query.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Extractor.textextract(ipath)</term>
+              <listitem><para>Extract document defined by <replaceable>ipath</replaceable> and
+              return a <literal>Doc</literal> object. The <literal>doc.text</literal> field has the
+              document text converted to either text/plain or text/html according to
+              <literal>doc.mimetype</literal>. The typical use would be as follows:</para>
 <programlisting>
 from recoll import recoll, rclextract
 
@@ -5923,19 +5906,17 @@ extractor = rclextract.Extractor(qdoc)
 doc = extractor.textextract(qdoc.ipath)
 # use doc.text, e.g. for previewing</programlisting>
 
-                <para>Passing <literal>qdoc.ipath</literal> to
-                  <literal>textextract()</literal> is redundant, but
-                  reflects the fact that the <literal>Extractor</literal>
-                  object actually has the capability to access the other
-                  entries in a compound document.</para>
-                </listitem>
+                <para>Passing <literal>qdoc.ipath</literal> to <literal>textextract()</literal> is
+                redundant, but reflects the fact that the <literal>Extractor</literal> object
+                actually has the capability to access the other entries in a compound
+                document.</para>
+              </listitem>
               </varlistentry>
               <varlistentry>
                 <term>Extractor.idoctofile(ipath, targetmtype, outfile='')</term>
-                <listitem><para>Extracts document into an output file,
-                    which can be given explicitly or will be created as a
-                    temporary file to be deleted by the caller. Typical
-                    use:</para> 
+                <listitem><para>Extracts document into an output file, which can be given explicitly
+                or will be created as a temporary file to be deleted by the caller. Typical
+                use:</para>
 <programlisting>
 from recoll import recoll, rclextract
 
@@ -5943,10 +5924,9 @@ qdoc = query.fetchone()
 extractor = rclextract.Extractor(qdoc)
 filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</programlisting>
  
-                  <para>In all cases the output is a copy, even if the
-                  requested document is a regular system file, which may be
-                  wasteful in some cases. If you want to avoid this, you
-                  can test for a simple file document as follows:
+                  <para>In all cases the output is a copy, even if the requested document is a
+                  regular system file, which may be wasteful in some cases. If you want to avoid
+                  this, you can test for a simple file document as follows:
 <programlisting>
 not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
 </programlisting>
@@ -5962,12 +5942,10 @@ not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
         <sect3 id="RCL.PROGRAM.PYTHONAPI.SEARCH.EXAMPLE">
           <title>Search API usage example</title>
 
-          <para>The following sample would query the index with a user
-          language string. See the <filename>python/samples</filename>
-          directory inside the &RCL; source for other
-          examples. The <filename>recollgui</filename> subdirectory
-          has a very embryonic GUI which demonstrates the
-          highlighting and data extraction functions.</para>
+          <para>The following sample would query the index with a user language string. See the
+          <filename>python/samples</filename> directory inside the &RCL; source for other
+          examples. The <filename>recollgui</filename> subdirectory has a very embryonic GUI which
+          demonstrates the highlighting and data extraction functions.</para>
 
 <programlisting><![CDATA[
 #!/usr/bin/python3
@@ -5991,6 +5969,26 @@ for i in range(nres):
 ]]></programlisting>
 
         </sect3>
+        <sect3 id="RCL.PROGRAM.PYTHONAPI.FSUDI">
+          <title>The fsudi module</title>
+
+          <para>The <filename>fsudi</filename> module contains a single method, which duplicates the
+          code used by the main filesystem indexer to derive an UDI from a filesystem path. In turn,
+          this allows external code to call the <literal>getDoc()</literal> method to retrieve the
+          <literal>Doc</literal> object. This can be useful, for example, for updating the metadata
+          without fully reindexing the document.</para>
+          <variablelist>
+            <varlistentry>
+              <term>fsudi.fs_udi(path, ipath='')</term>
+              <listitem><para>Obtain the UDI value for the given <parameter>path</parameter> and
+              <parameter>ipath</parameter>. The returned value can be used with the
+              <literal>db.getDoc()</literal> method.</para></listitem>
+            </varlistentry>
+
+          </variablelist>
+
+        </sect3>
+
       </sect2>
 
 
@@ -6000,38 +5998,36 @@ for i in range(nres):
         <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.EXTINDEXER">
           <title>Recoll external indexers</title>
 
-          <para>The &RCL; indexer is capable of processing many different document
-            formats. However, some forms of data storage do not lend themselves easily to standard
-            processing because of their great variability. A canonical example would be data in an
-            SQL database. While it might be possible to create a configurable filter to process
-            data from a database, the many variations in storage organisation and SQL dialects make
-            this difficult.</para>
-
+          <para>The &RCL; indexer is capable of processing many different document formats. However,
+          some forms of data storage do not lend themselves easily to standard processing because of
+          their great variability. A canonical example would be data in an SQL database. While it
+          might be possible to create a configurable handler to process data from a database, the
+          many variations in storage organisation and SQL dialects make this difficult.
+          </para>
           <para>&RCL; can instead support external indexers where all the responsibility to handle
-            the data format is delegated to an external script. The script language has to be
-            Python 3 at the moment, because this is the only language for which an API binding
-            exists.</para> 
+          the data format is delegated to an external script. The script language has to be Python 3
+          at the moment, because this is the only language for which an API binding exists.
+          </para>
 
           <para>Up to &RCL; 1.35, such an indexer had to work on a separate &RCL; index, which would
-            be added as an external index for querying from the main one, and for which a separate
-            indexing schedule had to be managed.  The reason was that the main document indexer
-            purge pass (removal of deleted documents) would also remove all the documents belonging
-            to the external indexer, as they were not seen during the filesystem walk (and
-            conversely, the external indexer purge pass would delete all the regular document
-            entries).</para>
+          be added as an external index for querying from the main one, and for which a separate
+          indexing schedule had to be managed.  The reason was that the main document indexer purge
+          pass (removal of deleted documents) would also remove all the documents belonging to the
+          external indexer, as they were not seen during the filesystem walk (and conversely, the
+          external indexer purge pass would delete all the regular document entries).</para>
 
           <para>As of &RCL; 1.36, an improvement and new API call allows external indexers to be
-            fully integrated, and work on the main index, with updates triggered from the
-            normal <command>recollindex</command> program.</para>
+          fully integrated, and work on the main index, with updates triggered from the normal
+          <command>recollindex</command> program.</para>
           
-          <para>An external indexer has to do the same work as the &RCL; file system indexer:
-            look for modified documents, extract their text, call the API for indexing them, and the
-            one for purging the data for deleted documents.</para>
+          <para>An external indexer has to do the same work as the &RCL; file system indexer: look
+          for modified documents, extract their text, call the API for indexing them, and the one
+          for purging the data for deleted documents.</para>
 
-          <para>A description of the API method follows, but you can also
-            <link linkend="RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES">jump ahead</link> for a look at
-            some sample pseudo-code and a pair of actual implementations, one of which does
-            something useful.</para>
+          <para>A description of the API method follows, but you can also <link
+          linkend="RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES">jump ahead</link> for a look at some sample
+          pseudo-code and a pair of actual implementations, one of which does something
+          useful.</para>
         </sect3>
 
         <sect3>
@@ -6040,113 +6036,136 @@ for i in range(nres):
           <para>There are two parts in the indexing interface:
             <itemizedlist>
               <listitem><para>Methods inside the <filename>recoll</filename> module allow the foreign
-                  indexer to update the index.</para></listitem>
+              indexer to update the index.</para></listitem>
+
               <listitem><para>An interface based on scripts execution is defined for executing the
-                  indexer (from <command>recollindex</command>) and to allow either the GUI or
-                  the <filename>rclextract</filename> module to access original document data for
-                  previewing or editing.</para></listitem>
+              indexer (from <command>recollindex</command>) and to allow either the GUI or the
+              <filename>rclextract</filename> module to access original document data for previewing
+              or editing.</para></listitem>
             </itemizedlist>
           </para>
+
           <para>Two sample scripts are included with the &RCL; source and described in more detail a
             <link linkend="RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES">bit further</link>.</para>
           
        <sect4 id="RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE">
           <title>Python indexing interface methods</title>
 
-          <para>The update methods are part of the <filename>recoll</filename> module.
-            The connect() method is used with a <literal>writable=true</literal> parameter to
-            obtain a writable <literal>Db</literal> object. The following <literal>Db</literal>
-            object methods are then available.</para>
+          <para>The update methods are part of the <filename>recoll</filename> module.  The
+          connect() method is used with a <literal>writable=true</literal> parameter to obtain a
+          writable <literal>Db</literal> object. The following <literal>Db</literal> object methods
+          are then available.</para>
 
+          <para>Note that the changes are only guaranteed to be flushed to the index when
+          <literal>db.close()</literal> is called. This normally occurs when the program exits, but
+          it is much safer to use an explicit call after making the changes.</para>
+          
           <variablelist>
 
             <varlistentry>
-              <term>addOrUpdate(udi, doc, parent_udi=None)</term>
-              <listitem><para>Add or update index data for a given document. The
-                  <literal><link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">udi</link></literal>
-                  string must define a unique id for the document. It is an opaque interface element
-                  and not interpreted inside &RCL;. <literal>doc</literal> is
-                  a <literal><link linkend="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC">Doc</link>
-                  </literal> object, created from the data to be indexed (the main text should be in
-                  <literal>doc.text</literal>). If
-                  <literal><link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">parent_udi</link>
-                  </literal>
-                  is set, this is a unique identifier for the top-level container, the document for
-                  which <literal>needUpdate()</literal> would be called (e.g. for the filesystem
-                  indexer, this would be the one which is an actual
-                  file). The <literal>doc</literal> <literal>url</literal> and
-                  possibly <literal>ipath</literal> fields should also be set to allow access to the
-                  actual document after a query. Other fields should also be set to allow further
-                  access to the data, see the description further
-                  down: <literal>rclbes</literal>, <literal>sig</literal>,
-                  <literal>mimetype</literal>. Of
-                  course, any standard or custom &RCL; field can also be added.</para>
+              <term>addOrUpdate(udi, doc, parent_udi=None, metaonly=False)</term>
+
+              <listitem><para>Add or update index data for a given document.</para>
+
+              <para>The <literal><link
+              linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">udi</link></literal> string must define a
+              unique id for the document. It is an opaque interface element and not interpreted
+              inside the lower level &RCL; code.</para>
+
+              <para><parameter>doc</parameter> is a <literal><link
+              linkend="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC">Doc</link> </literal> object,
+              containing the data to be indexed.</para>
+
+              <para>If <parameter><link
+              linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">parent_udi</link> </parameter> is
+              set, this is a unique identifier for the top-level container, the document for which
+              <literal>needUpdate()</literal> would be called (e.g. for the filesystem indexer, this
+              would be the one which is an actual file).</para>
+
+              <para>If <parameter>metaonly</parameter> is set, the main document text (in the
+              <literal>doc.text</literal> attribute) will be ignored and only the other metadata
+              fields present in the <parameter>doc</parameter> object will be processed. This can be
+              useful for updating the metadata apart from the main text.</para>
+              
+              <para>Document attributes: <literal>doc.text</literal> should have the main text. It
+              is ignored if <parameter>metaonly</parameter> is set.  For actual indexing
+              (<parameter>metaonly</parameter> not set), the <literal>url</literal> and possibly
+              <literal>ipath</literal> fields should also be set to allow access to the actual
+              document after a query. Other fields may also need to be set by an external indexer
+              see the description further down: <literal>rclbes</literal>, <literal>sig</literal>,
+              <literal>mimetype</literal>. Of course, any standard or custom &RCL; field can also be
+              added.</para>
               </listitem>
             </varlistentry>
 
             <varlistentry>
               <term>delete(udi)</term>
-              <listitem><para>Purge the index from all data for <literal>udi</literal>, and all
-                  documents (if any) which have <literal>udi</literal>
-                  as <literal>parent_udi</literal>.</para></listitem> 
+
+              <listitem><para>Purge the index from all data for <parameter>udi</parameter>, and all
+              documents (if any) which have <parameter>udi</parameter> as
+              <literal>parent_udi</literal>.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>needUpdate(udi, sig)</term>
-              <listitem><para>Test if the index needs to be updated for the document identified
-                  by <literal>udi</literal>. If this call is to be used,
-                  the <literal>doc.sig</literal> field should contain a signature value when calling
-                  <literal>addOrUpdate()</literal>. The
-                  <literal>needUpdate()</literal> call then compares its
-                  parameter value with the stored <literal>sig</literal> for
-                  <literal>udi</literal>. <literal>sig</literal> is an opaque value, compared as a
-                  string.</para>
-                <para>The filesystem indexer uses a concatenation of the decimal string values for
-                  file size and update time, but a hash of the contents could also be used.</para>
-                <para>As a side effect, if the return value is false (the index is up to date), the
-                  call will set the existence flag for the document (and any subdocument defined by
-                  its <literal>parent_udi</literal>), so that a later
-                  <literal>purge()</literal> call will preserve them.</para>
-                <para>The use of <literal>needUpdate()</literal> and
-                  <literal>purge()</literal> is optional, and the indexer may use another method for
-                  checking the need to reindex or to delete stale entries.</para></listitem>
+
+              <listitem><para>Test if the index needs to be updated for the document identified by
+              <parameter>udi</parameter>. If this call is to be used, the <literal>doc.sig</literal>
+              field should contain a signature value when calling
+              <literal>addOrUpdate()</literal>. The <literal>needUpdate()</literal> call then
+              compares its parameter value with the stored <parameter>sig</parameter> for
+              <parameter>udi</parameter>. <parameter>sig</parameter> is an opaque value, compared as
+              a string.</para>
+
+              <para>The filesystem indexer uses a concatenation of the decimal string values for
+              file size and update time, but a hash of the contents could also be used.</para>
+
+              <para>As a side effect, if the return value is false (the index is up to date), the
+              call will set the existence flag for the document (and any subdocument defined by its
+              <literal>parent_udi</literal>), so that a later <literal>purge()</literal> call will
+              preserve them.</para>
+
+              <para>The use of <literal>needUpdate()</literal> and <literal>purge()</literal> is
+              optional, and the indexer may use another method for checking the need to reindex or
+              to delete stale entries.</para></listitem>
             </varlistentry>
             
             <varlistentry>
-              <term>preparePurge(backend_name)</term> <listitem><para>Mark all documents which do
-                  *not* belong
-                  to <replaceable>backend_name</replaceable>. <replaceable>backend_name</replaceable>
-                  is the value chosen for the <literal>rclbes</literal> field for the indexer
-                  documents (e.g. "MBOX", "JOPLIN"... for the samples). This is a mandatory call
-                  before starting an update if the index is shared with other backends and you are
-                  going to call purge() after the update, else all documents for other backends will
-                  be deleted from the index by the purge.
-              </para></listitem>
+              <term>preparePurge(backend_name)</term>
+
+              <listitem><para>Mark all documents which do *not* belong to
+              <replaceable>backend_name</replaceable> as
+              existing. <replaceable>backend_name</replaceable> is the value chosen for the
+              <literal>rclbes</literal> field for the indexer documents (e.g. "MBOX",
+              "JOPLIN"... for the samples). This is a mandatory call before starting an update if
+              the index is shared with other backends and you are going to call purge() after the
+              update, else all documents for other backends will be deleted from the index by the
+              purge.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>purge()</term>
+
               <listitem><para>Delete all documents that were not touched during the just finished
-                  indexing pass (since <literal>preparePurge()</literal>). These are the documents
-                  for which the <literal>needUpdate()</literal> call was not performed, indicating
-                  that they no longer exist in the storage system.</para></listitem>
+              indexing pass (since <literal>preparePurge()</literal>). These are the documents for
+              which the <literal>needUpdate()</literal> call was not performed, indicating that they
+              no longer exist in the storage system.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>createStemDbs(lang|sequence of langs)</term>
+
               <listitem><para>Create stemming dictionaries for query stemming expansion. Note that
-                  this is not needed at all if the indexing is done from
-                  the <command>recollindex</command> program, as it will perform this action after
-                  calling all the external indexers. Should be called when done updating the
-                  index. Available only after &RCL; 1.34.3. As an alternative, you can close the
-                  index and execute:
-
-                  <programlisting>recollindex -c &lt;confdir> -s &lt;lang(s)></programlisting> 
-
-                  The Python module currently has no interface to the Aspell speller functions, so
-                  the same approach can be used for creating the spelling dictionary (with
-                  option <literal>-S</literal>) (again, not needed if <command>recollindex</command>
-                  is driving the indexing).</para></listitem>
+              this is not needed at all if the indexing is done from
+              the <command>recollindex</command> program, as it will perform this action after
+              calling all the external indexers. Should be called when done updating the
+              index. Available only after &RCL; 1.34.3. As an alternative, you can close the
+              index and execute:
+              <programlisting>recollindex -c &lt;confdir> -s &lt;lang(s)></programlisting> 
+              The Python module currently has no interface to the Aspell speller functions, so
+              the same approach can be used for creating the spelling dictionary (with
+              option <literal>-S</literal>) (again, not needed if <command>recollindex</command>
+              is driving the indexing).</para></listitem>
             </varlistentry>
             
           </variablelist>

@@ -59,8 +59,7 @@ static PyObject *
 Extractor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     LOGDEB("Extractor_new\n" );
-    rclx_ExtractorObject *self = 
-        (rclx_ExtractorObject *)type->tp_alloc(type, 0);
+    rclx_ExtractorObject *self = (rclx_ExtractorObject *)type->tp_alloc(type, 0);
     if (self == 0) 
         return 0;
     self->xtr = 0;
@@ -75,8 +74,7 @@ Extractor_init(rclx_ExtractorObject *self, PyObject *args, PyObject *kwargs)
     static const char* kwlist[] = {"doc", NULL};
     recoll_DocObject *dobj = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:Extractor_init",
-                                     (char**)kwlist, 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:Extractor_init", (char**)kwlist,
                                      &recoll_DocType, &dobj))
         return -1;
     if (dobj->doc == 0) {
@@ -87,8 +85,7 @@ Extractor_init(rclx_ExtractorObject *self, PyObject *args, PyObject *kwargs)
     Py_INCREF(dobj);
 
     self->rclconfig = dobj->rclconfig;
-    self->xtr = new FileInterner(*dobj->doc, self->rclconfig.get(), 
-                                 FileInterner::FIF_forPreview);
+    self->xtr = new FileInterner(*dobj->doc, self->rclconfig.get(), FileInterner::FIF_forPreview);
     return 0;
 }
 
@@ -100,15 +97,13 @@ PyDoc_STRVAR(doc_Extractor_textextract,
     );
 
 static PyObject *
-Extractor_textextract(rclx_ExtractorObject* self, PyObject *args, 
-                      PyObject *kwargs)
+Extractor_textextract(rclx_ExtractorObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB("Extractor_textextract\n" );
     static const char* kwlist[] = {"ipath", NULL};
     char *sipath = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es:Extractor_textextract",
-                                     (char**)kwlist, 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es:Extractor_textextract", (char**)kwlist,
                                      "utf-8", &sipath))
         return 0;
 
@@ -120,12 +115,14 @@ Extractor_textextract(rclx_ExtractorObject* self, PyObject *args,
         return 0;
     }
     /* Call the doc class object to create a new doc. */
-    recoll_DocObject *result = 
+    recoll_DocObject *result =
         (recoll_DocObject *)PyObject_CallObject((PyObject *)&recoll_DocType, 0);
     if (!result) {
         PyErr_SetString(PyExc_AttributeError, "extract: doc create failed");
         return 0;
     }
+    result->rclconfig = self->rclconfig;
+
     FileInterner::Status status = self->xtr->internfile(*(result->doc), ipath);
     if (status != FileInterner::FIDone && status != FileInterner::FIAgain) {
         PyErr_SetString(PyExc_AttributeError, "internfile failure");
@@ -140,8 +137,7 @@ Extractor_textextract(rclx_ExtractorObject* self, PyObject *args,
 
     // Is this actually needed ? Useful for url which is also formatted .
     Rcl::Doc *doc = result->doc;
-    printableUrl(self->rclconfig->getDefCharset(), doc->url, 
-                 doc->meta[Rcl::Doc::keyurl]);
+    printableUrl(self->rclconfig->getDefCharset(), doc->url, doc->meta[Rcl::Doc::keyurl]);
     doc->meta[Rcl::Doc::keytp] = doc->mimetype;
     doc->meta[Rcl::Doc::keyipt] = doc->ipath;
     doc->meta[Rcl::Doc::keyfs] = doc->fbytes;
@@ -154,19 +150,15 @@ PyDoc_STRVAR(doc_Extractor_idoctofile,
              "Extract document defined by ipath into a file, in its native format.\n"
     );
 static PyObject *
-Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args, 
-                     PyObject *kwargs)
+Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB("Extractor_idoctofile\n" );
     static const char* kwlist[] = {"ipath", "mimetype", "ofilename", NULL};
     char *sipath = 0;
     char *smt = 0;
     char *soutfile = 0; // no freeing
-    if (!PyArg_ParseTupleAndKeywords(args,kwargs, "eses|s:Extractor_idoctofile",
-                                     (char**)kwlist, 
-                                     "utf-8", &sipath,
-                                     "utf-8", &smt,
-                                     &soutfile))
+    if (!PyArg_ParseTupleAndKeywords(args,kwargs, "eses|s:Extractor_idoctofile", (char**)kwlist,
+                                     "utf-8", &sipath, "utf-8", &smt, &soutfile))
         return 0;
 
     string ipath(sipath);
@@ -182,18 +174,15 @@ Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args,
         return 0;
     }
 
-    // If ipath is empty and we want the original mimetype, we can't
-    // use FileInterner::internToFile() because the first conversion
-    // was performed by the FileInterner constructor, so that we can't
-    // reach the original object this way. Instead, if the data comes
-    // from a file (m_fn set), we just copy it, else, we call
-    // idoctofile, which will call topdoctofile (and re-fetch the
-    // data, yes, wastefull)
+    // If ipath is empty and we want the original mimetype, we can't use
+    // FileInterner::internToFile() because the first conversion was performed by the FileInterner
+    // constructor, so that we can't reach the original object this way. Instead, if the data comes
+    // from a file (m_fn set), we just copy it, else, we call idoctofile, which will call
+    // topdoctofile (and re-fetch the data, yes, wastefull)
     TempFile temp;
     bool status = false;
-    LOGDEB("Extractor_idoctofile: ipath [" << ipath << "] mimetype [" <<
-           mimetype << "] doc mimetype [" << self->docobject->doc->mimetype <<
-           "\n");
+    LOGDEB("Extractor_idoctofile: ipath [" << ipath << "] mimetype [" << mimetype <<
+           "] doc mimetype [" << self->docobject->doc->mimetype << "\n");
     if (ipath.empty() && !mimetype.compare(self->docobject->doc->mimetype)) {
         status = FileInterner::idocToFile(temp, outfile, self->rclconfig.get(),
                                           *self->docobject->doc);

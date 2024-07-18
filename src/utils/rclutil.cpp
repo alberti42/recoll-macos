@@ -108,7 +108,7 @@ template <class T> void addmeta(T& store, const string& nm, const string& value)
     }
     std::string& pval = it->second;
     if (pval.empty()) {
-        maybecommas(pval , value);
+        maybecommas(pval, value);
     } else {
         std::string nval;
         maybecommas(nval, value);
@@ -125,7 +125,12 @@ template <class T> void addmeta(T& store, const string& nm, const string& value)
 template <class T> void trimmeta(T& store)
 {
     for (auto& [_,value] : store) {
-        trimstring(value, " ,");
+        if (value.empty())
+            continue;
+        if (value.back() == ',')
+            value.pop_back();
+        if (!value.empty() && value[0] == ',')
+            value.erase(0, 1);
     }
 }
 template void addmeta<map<string, string>>(map<string, string>&, const string&, const string&);

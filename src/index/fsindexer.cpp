@@ -789,14 +789,14 @@ FsTreeWalker::Status FsIndexer::processonefile(
 
 #ifdef EXT4_BIRTH_TIME
             if (!brdate.empty() && !doc.hasmetavalue(Rcl::Doc::keybrt) ) {
-                doc.addmeta(Rcl::Doc::keybrt, brdate);
+                doc.meta[Rcl::Doc::keybrt] = brdate;
             }
  #endif   
             if (doc.url.empty())
                 doc.url = path_pathtofileurl(fn);
 
             if (doc.ipath.empty() && !doc.hasmetavalue(Rcl::Doc::keyfn)) {
-                doc.addmeta(Rcl::Doc::keyfn, utf8fn);
+                doc.meta[Rcl::Doc::keyfn] = utf8fn;
             } 
             // Set container file name for all docs, top or subdoc
             doc.meta[Rcl::Doc::keyctfn] = utf8fn;
@@ -893,7 +893,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
             fileDoc.fmtime = ascdate;
 #ifdef EXT4_BIRTH_TIME
             if (!brdate.empty()) 
-                fileDoc.addmeta(Rcl::Doc::keybrt, brdate);
+                fileDoc.meta[Rcl::Doc::keybrt] = brdate;
 #endif
             fileDoc.meta[Rcl::Doc::keyfn] = fileDoc.meta[Rcl::Doc::keyctfn] = utf8fn;
             fileDoc.haschildren = true;

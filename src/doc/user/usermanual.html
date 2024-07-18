@@ -7554,7 +7554,7 @@ C: = Z:</pre>
           "https://www.recoll.org/pages/download.html#gssp" target=
           "_top"><span class="application">Recoll</span>
           <span class="application">Gnome Shell Search
-          Provider</span></a> , the <a class="ulink" href=
+          Provider</span></a>, the <a class="ulink" href=
           "https://framagit.org/medoc92/recollwebui" target=
           "_top"><span class="application">Recoll</span> Web
           UI</a>, and the <a class="ulink" href=
@@ -7597,7 +7597,7 @@ C: = Z:</pre>
           <p>There is a good chance that your system repository has
           packages for the Recoll Python API, sometimes in a
           package separate from the main one (maybe named something
-          like python-recoll). Else refer to the <a class="link"
+          like python3-recoll). Else refer to the <a class="link"
           href="#RCL.INSTALL.BUILDING" title=
           "5.3.&nbsp;Building from source">Building from source</a>
           chapter.</p>
@@ -7629,7 +7629,7 @@ for doc in results:
           "https://framagit.org/medoc92/recollwebui/-/blob/master/webui.py"
           target="_top">WebUI</a>, and the <a class="ulink" href=
           "https://framagit.org/medoc92/upmpdcli/-/blob/master/src/mediaserver/cdplugins/uprcl/uprclfolders.py"
-          target="_top">upmpdcli local media server</a> .</p>
+          target="_top">upmpdcli local media server</a>.</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -7930,7 +7930,8 @@ db = recoll.connect(extra_dbs=["/home/me/.someconfdir/xapiandb", "/data/othercon
                   <dd>
                     <p>Closes the connection. You can't do anything
                     with the <code class="classname">Db</code>
-                    object after this.</p>
+                    object after this. If the index was opened as
+                    writable, this commits any pending change.</p>
                   </dd>
                 </dl>
               </div>
@@ -8162,16 +8163,22 @@ class MyHighlighter:
               <p>A <code class="classname">Doc</code> object
               contains index data for a given document. The data is
               extracted from the index when searching, or set by
-              the indexer program when updating. The Doc object has
-              many attributes to be read or set by its user. It
-              mostly matches the Rcl::Doc C++ object. Some of the
-              attributes are predefined, but, especially when
-              indexing, others can be set, the name of which will
-              be processed as field names by the indexing
-              configuration. Inputs can be specified as Unicode or
-              strings. Outputs are Unicode objects. All dates are
-              specified as Unix timestamps, printed as strings.
-              Please refer to the <code class=
+              the indexer program when updating.</p>
+              <p>Please note that a <code class=
+              "classname">Doc</code> should never be instanciated
+              by its constructor but instead by calling
+              <code class="literal">db.doc()</code> or some other
+              API method returning a doc object. Otherwise, the
+              object will lack some necessary references.</p>
+              <p>The Doc object has many attributes to be read or
+              set by its user. It mostly matches the Rcl::Doc C++
+              object. Some of the attributes are predefined, but,
+              especially when indexing, others can be set, the name
+              of which will be processed as field names by the
+              indexing configuration. Inputs can be specified as
+              Unicode or strings. Outputs are Unicode objects. All
+              dates are specified as Unix timestamps, printed as
+              strings. Please refer to the <code class=
               "filename">rcldb/rcldoc.cpp</code> C++ file for a
               full description of the predefined attributes. Here
               follows a short list.</p>
@@ -8446,6 +8453,39 @@ for i in range(nres):
     print("%s\n" % db.makeDocAbstract(doc, query))
 </pre>
           </div>
+          <div class="sect3">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h4 class="title"><a name=
+                  "RCL.PROGRAM.PYTHONAPI.FSUDI" id=
+                  "RCL.PROGRAM.PYTHONAPI.FSUDI"></a>The fsudi
+                  module</h4>
+                </div>
+              </div>
+            </div>
+            <p>The <code class="filename">fsudi</code> module
+            contains a single method, which duplicates the code
+            used by the main filesystem indexer to derive an UDI
+            from a filesystem path. In turn, this allows external
+            code to call the <code class="literal">getDoc()</code>
+            method to retrieve the <code class="literal">Doc</code>
+            object. This can be useful, for example, for updating
+            the metadata without fully reindexing the document.</p>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><span class="term">fsudi.fs_udi(path,
+                ipath='')</span></dt>
+                <dd>
+                  <p>Obtain the UDI value for the given <em class=
+                  "parameter"><code>path</code></em> and <em class=
+                  "parameter"><code>ipath</code></em>. The returned
+                  value can be used with the <code class=
+                  "literal">db.getDoc()</code> method.</p>
+                </dd>
+              </dl>
+            </div>
+          </div>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -8475,7 +8515,7 @@ for i in range(nres):
             lend themselves easily to standard processing because
             of their great variability. A canonical example would
             be data in an SQL database. While it might be possible
-            to create a configurable filter to process data from a
+            to create a configurable handler to process data from a
             database, the many variations in storage organisation
             and SQL dialects make this difficult.</p>
             <p><span class="application">Recoll</span> can instead
@@ -8568,42 +8608,63 @@ for i in range(nres):
               writable <code class="literal">Db</code> object. The
               following <code class="literal">Db</code> object
               methods are then available.</p>
+              <p>Note that the changes are only guaranteed to be
+              flushed to the index when <code class=
+              "literal">db.close()</code> is called. This normally
+              occurs when the program exits, but it is much safer
+              to use an explicit call after making the changes.</p>
               <div class="variablelist">
                 <dl class="variablelist">
                   <dt><span class="term">addOrUpdate(udi, doc,
-                  parent_udi=None)</span></dt>
+                  parent_udi=None, metaonly=False)</span></dt>
                   <dd>
                     <p>Add or update index data for a given
-                    document. The <code class="literal"><a class=
-                    "link" href=
+                    document.</p>
+                    <p>The <code class="literal"><a class="link"
+                    href=
                     "#RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">udi</a></code>
                     string must define a unique id for the
                     document. It is an opaque interface element and
-                    not interpreted inside <span class=
-                    "application">Recoll</span>. <code class=
-                    "literal">doc</code> is a <code class=
-                    "literal"><a class="link" href=
-                    "#RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC"
+                    not interpreted inside the lower level
+                    <span class="application">Recoll</span>
+                    code.</p>
+                    <p><em class="parameter"><code>doc</code></em>
+                    is a <code class="literal"><a class="link"
+                    href="#RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC"
                     title="The Doc class">Doc</a></code> object,
-                    created from the data to be indexed (the main
-                    text should be in <code class=
-                    "literal">doc.text</code>). If <code class=
-                    "literal"><a class="link" href=
-                    "#RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">parent_udi</a></code>
+                    containing the data to be indexed.</p>
+                    <p>If <em class="parameter"><code><a class=
+                    "link" href=
+                    "#RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">parent_udi</a></code></em>
                     is set, this is a unique identifier for the
                     top-level container, the document for which
                     <code class="literal">needUpdate()</code> would
                     be called (e.g. for the filesystem indexer,
-                    this would be the one which is an actual file).
-                    The <code class="literal">doc</code>
-                    <code class="literal">url</code> and possibly
-                    <code class="literal">ipath</code> fields
-                    should also be set to allow access to the
-                    actual document after a query. Other fields
-                    should also be set to allow further access to
-                    the data, see the description further down:
-                    <code class="literal">rclbes</code>,
-                    <code class="literal">sig</code>, <code class=
+                    this would be the one which is an actual
+                    file).</p>
+                    <p>If <em class=
+                    "parameter"><code>metaonly</code></em> is set,
+                    the main document text (in the <code class=
+                    "literal">doc.text</code> attribute) will be
+                    ignored and only the other metadata fields
+                    present in the <em class=
+                    "parameter"><code>doc</code></em> object will
+                    be processed. This can be useful for updating
+                    the metadata apart from the main text.</p>
+                    <p>Document attributes: <code class=
+                    "literal">doc.text</code> should have the main
+                    text. It is ignored if <em class=
+                    "parameter"><code>metaonly</code></em> is set.
+                    For actual indexing (<em class=
+                    "parameter"><code>metaonly</code></em> not
+                    set), the <code class="literal">url</code> and
+                    possibly <code class="literal">ipath</code>
+                    fields should also be set to allow access to
+                    the actual document after a query. Other fields
+                    may also need to be set by an external indexer
+                    see the description further down: <code class=
+                    "literal">rclbes</code>, <code class=
+                    "literal">sig</code>, <code class=
                     "literal">mimetype</code>. Of course, any
                     standard or custom <span class=
                     "application">Recoll</span> field can also be
@@ -8611,28 +8672,29 @@ for i in range(nres):
                   </dd>
                   <dt><span class="term">delete(udi)</span></dt>
                   <dd>
-                    <p>Purge the index from all data for
-                    <code class="literal">udi</code>, and all
-                    documents (if any) which have <code class=
-                    "literal">udi</code> as <code class=
-                    "literal">parent_udi</code>.</p>
+                    <p>Purge the index from all data for <em class=
+                    "parameter"><code>udi</code></em>, and all
+                    documents (if any) which have <em class=
+                    "parameter"><code>udi</code></em> as
+                    <code class="literal">parent_udi</code>.</p>
                   </dd>
                   <dt><span class="term">needUpdate(udi,
                   sig)</span></dt>
                   <dd>
                     <p>Test if the index needs to be updated for
-                    the document identified by <code class=
-                    "literal">udi</code>. If this call is to be
-                    used, the <code class="literal">doc.sig</code>
-                    field should contain a signature value when
-                    calling <code class=
+                    the document identified by <em class=
+                    "parameter"><code>udi</code></em>. If this call
+                    is to be used, the <code class=
+                    "literal">doc.sig</code> field should contain a
+                    signature value when calling <code class=
                     "literal">addOrUpdate()</code>. The
                     <code class="literal">needUpdate()</code> call
                     then compares its parameter value with the
-                    stored <code class="literal">sig</code> for
-                    <code class="literal">udi</code>. <code class=
-                    "literal">sig</code> is an opaque value,
-                    compared as a string.</p>
+                    stored <em class=
+                    "parameter"><code>sig</code></em> for
+                    <em class="parameter"><code>udi</code></em>.
+                    <em class="parameter"><code>sig</code></em> is
+                    an opaque value, compared as a string.</p>
                     <p>The filesystem indexer uses a concatenation
                     of the decimal string values for file size and
                     update time, but a hash of the contents could
@@ -8655,8 +8717,8 @@ for i in range(nres):
                   <dd>
                     <p>Mark all documents which do *not* belong to
                     <em class=
-                    "replaceable"><code>backend_name</code></em>.
-                    <em class=
+                    "replaceable"><code>backend_name</code></em> as
+                    existing. <em class=
                     "replaceable"><code>backend_name</code></em> is
                     the value chosen for the <code class=
                     "literal">rclbes</code> field for the indexer

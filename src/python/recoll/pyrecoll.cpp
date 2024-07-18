@@ -48,12 +48,22 @@ using namespace std;
 #define PyLong_FromLong PyInt_FromLong 
 #endif
 
-// To keep old code going after we moved the static rclconfig to the
-// db object (to fix multiple dbs issues), we keep a copy of the last
-// created rclconfig in RCLCONFIG. This is set into the doc objec by
-// doc_init, then reset to the db's by db::doc() or query::iter_next,
-// the proper Doc creators.
-static shared_ptr<RclConfig> RCLCONFIG;
+static std::string stringfromobject(PyObject *pyobj)
+{
+    std::string out;
+    if (PyUnicode_Check(pyobj)) {
+        Py_ssize_t sz;
+        const char *bytes = PyUnicode_AsUTF8AndSize(pyobj, &sz);
+        out = std::string(bytes, sz);
+    } else {
+        if (!PyBytes_Check(pyobj)) {
+            PyErr_SetString(PyExc_AttributeError, "Input must be str or bytes");
+            return 0;
+        }
+        out = std::string(PyBytes_AsString(pyobj), PyBytes_Size(pyobj));
+    }
+    return out;
+}
 
 //////////////////////////////////////////////////////////////////////
 /// SEARCHDATA SearchData code
@@ -320,9 +330,6 @@ Doc_init(recoll_DocObject *self, PyObject *, PyObject *)
     LOGDEB("Doc_init\n");
     delete self->doc;
     self->doc = new Rcl::Doc;
-    if (self->doc == 0)
-        return -1;
-    self->rclconfig = RCLCONFIG;
     return 0;
 }
 
@@ -342,8 +349,7 @@ Doc_getbinurl(recoll_DocObject *self)
         PyErr_SetString(PyExc_AttributeError, "doc is NULL");
         Py_RETURN_NONE;
     }
-    return PyBytes_FromStringAndSize(self->doc->url.c_str(), 
-                                            self->doc->url.size());
+    return PyBytes_FromStringAndSize(self->doc->url.c_str(), self->doc->url.size());
 }
 
 PyDoc_STRVAR(
@@ -361,6 +367,10 @@ Doc_setbinurl(recoll_DocObject *self, PyObject *value)
         PyErr_SetString(PyExc_AttributeError, "doc??");
         return 0;
     }
+    if (!self->rclconfig || !self->rclconfig->ok()) {
+        PyErr_SetString(PyExc_AttributeError, "Configuration not initialized");
+        return 0;
+    }
     if (PyByteArray_Check(value)) {
         self->doc->url = string(PyByteArray_AsString(value), PyByteArray_Size(value));
     } else if (PyBytes_Check(value)) {
@@ -370,7 +380,7 @@ Doc_setbinurl(recoll_DocObject *self, PyObject *value)
         return 0;
     }        
 
-    printableUrl(self->rclconfig->getDefCharset(), self->doc->url, self->doc->meta[Rcl::Doc::keyurl]);
+    printableUrl(self->rclconfig->getDefCharset(),self->doc->url, self->doc->meta[Rcl::Doc::keyurl]);
     Py_RETURN_NONE;
 }
 
@@ -978,12 +988,12 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     } else {
         self->query->setCollapseDuplicates(false);
     }
-        
-    // SearchData defaults to stemming in english
-    // Use default for now but need to add way to specify language
+
+    // The searchdata does not keep a ref to the rclconfig, it's just used during the call. So ok to
+    // use the raw pointer.
     string reason;
     std::shared_ptr<Rcl::SearchData> rq = wasaStringToRcl(
-        self->connection->rclconfig.get(),dostem ? stemlang : "", utf8, reason);
+        self->connection->rclconfig.get(), dostem ? stemlang : "", utf8, reason);
 
     if (!rq) {
         PyErr_SetString(PyExc_ValueError, reason.c_str());
@@ -1046,7 +1056,7 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 // array when enumerating keys. Also for url which is also formatted.
 // But note that some fields are not copied, and are only reachable if
 // one knows their name (e.g. xdocid).
-static void movedocfields(const RclConfig* rclconfig, Rcl::Doc *doc)
+static void movedocfields(std::shared_ptr<RclConfig> rclconfig, Rcl::Doc *doc)
 {
     printableUrl(rclconfig->getDefCharset(), doc->url, doc->meta[Rcl::Doc::keyurl]);
     doc->meta[Rcl::Doc::keytp] = doc->mimetype;
@@ -1085,7 +1095,7 @@ Query_iternext(PyObject *_self)
     }
     self->next++;
 
-    movedocfields(self->connection->rclconfig.get(), result->doc);
+    movedocfields(self->connection->rclconfig, result->doc);
     return (PyObject *)result;
 }
 
@@ -1602,10 +1612,8 @@ static PyObject *
 Db_close(recoll_DbObject *self)
 {
     LOGDEB("Db_close. self " << self << "\n");
-    if (self->db) {
-        delete self->db;
-        self->db = 0;
-    }
+    delete self->db;
+    self->db = 0;
     self->rclconfig.reset();
     Py_RETURN_NONE;
 }
@@ -1650,13 +1658,10 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
     string reason;
     if (confdir) {
         string cfd = confdir;
-        self->rclconfig = std::shared_ptr<RclConfig>(
-            recollinit(RCLINIT_PYTHON, 0, 0, reason, &cfd));
+        self->rclconfig = std::shared_ptr<RclConfig>(recollinit(RCLINIT_PYTHON,0,0, reason, &cfd));
     } else {
-        self->rclconfig = std::shared_ptr<RclConfig>(
-            recollinit(RCLINIT_PYTHON, 0, 0, reason, 0));
+        self->rclconfig = std::shared_ptr<RclConfig>(recollinit(RCLINIT_PYTHON, 0, 0, reason, 0));
     }
-    RCLCONFIG = self->rclconfig;
     LOGDEB("Db_init\n");
 
     if (!self->rclconfig) {
@@ -1757,7 +1762,6 @@ Db_doc(recoll_DbObject* self)
     if (!result)
         return 0;
     result->rclconfig = self->rclconfig;
-    Py_INCREF(self);
 
     return (PyObject *)result;
 }
@@ -1765,19 +1769,19 @@ Db_doc(recoll_DbObject* self)
 static PyObject *
 Db_getDoc(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
 {
-    LOGDEB("Db_doc\n");
+    LOGDEB("Db_getDoc\n");
     if (self->db == 0) {
-        LOGERR("Db_doc: db not found " << self->db << "\n");
+        LOGERR("Db_getDoc: db not found " << self->db << "\n");
         PyErr_SetString(PyExc_AttributeError, "db");
         return 0;
     }
     int idxidx = 0;
-    char *cudi = 0;
+    PyObject *pyudi = 0;
     static const char *kwlist[] = {"idxidx", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", (char**)kwlist, &cudi, &idxidx)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|i", (char**)kwlist, &pyudi, &idxidx)) {
         return 0;
     }
-    std::string udi(cudi);
+    std::string udi = stringfromobject(pyudi);
 
     recoll_DocObject *pydoc =
         (recoll_DocObject *)PyObject_CallObject((PyObject *)&recoll_DocType, 0);
@@ -1788,7 +1792,6 @@ Db_getDoc(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "Doc not found: bad UDI or idx index");
         return 0;
     }
-    Py_INCREF(self);
     return (PyObject *)pydoc;
 }
 
@@ -2060,21 +2063,17 @@ static PyObject *
 Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Db_addOrUpdate\n");
-    static const char *kwlist[] = {"udi", "doc", "parent_udi", NULL};
-    char *sudi = 0; // needs freeing
-    char *sparent_udi = 0; // needs freeing
+    static const char *kwlist[] = {"udi", "doc", "parent_udi", "metaonly", NULL};
+    PyObject *pyudi = nullptr;
+    PyObject *pyparent_udi = nullptr;
     recoll_DocObject *pydoc;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "esO!|es:Db_addOrUpdate",
-                                     (char **)kwlist,
-                                     "utf-8", &sudi, &recoll_DocType, &pydoc,
-                                     "utf-8", &sparent_udi)) {
+    int metaonly = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO!|Op:Db_addOrUpdate", (char **)kwlist,
+                                     &pyudi, &recoll_DocType, &pydoc,  &pyparent_udi, &metaonly)) {
         return 0;
     }
-    string udi(sudi);
-    string parent_udi(sparent_udi ? sparent_udi : "");
-    PyMem_Free(sudi);
-    PyMem_Free(sparent_udi);
+    string udi = stringfromobject(pyudi);
+    string parent_udi = pyparent_udi ? stringfromobject(pyparent_udi) : std::string();
 
     if (self->db == 0) {
         LOGERR("Db_addOrUpdate: db not found " << self->db << "\n");
@@ -2085,6 +2084,9 @@ Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
         LOGERR("Db_addOrUpdate: doc not found " << pydoc->doc << "\n");
         PyErr_SetString(PyExc_AttributeError, "doc");
         return 0;
+    }
+    if (metaonly) {
+        pydoc->doc->metaonly = 1;
     }
     if (!self->db->addOrUpdate(udi, parent_udi, *pydoc->doc)) {
         LOGERR("Db_addOrUpdate: rcldb error\n");
