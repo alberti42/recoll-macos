@@ -121,14 +121,13 @@ inline std::string wrap_prefix(const std::string& pfx)
 }
 
 #ifdef IDX_THREADS
-// Task for the index update thread. This can be 
+// Task for the index update thread. This can be:
 //  - add/update for a new / update document
 //  - delete for a deleted document
-//  - purgeOrphans when a multidoc file is updated during a partial pass (no 
-//    general purge). We want to remove subDocs that possibly don't
-//    exist anymore. We find them by their different sig
-// txtlen and doc are only valid for add/update else, len is (size_t)-1 and doc
-// is empty
+//  - purgeOrphans when a multidoc file is updated during a partial pass (no  general purge).
+//    We want to remove the subDocs that possibly don't exist anymore. We find them by their
+//    different sig.
+// txtlen and doc are only valid for add/update else, len is (size_t)-1 and doc is empty
 class DbUpdTask {
 public:
     enum Op {AddOrUpdate, Delete, PurgeOrphans, Flush};
@@ -157,9 +156,8 @@ public:
 
 class TextSplitDb;
 
-// A class for data and methods that would have to expose
-// Xapian-specific stuff if they were in Rcl::Db. There could actually be
-// 2 different ones for indexing or query as there is not much in
+// A class for data and methods that would have to expose Xapian-specific stuff if they were in
+// Rcl::Db. There could actually be 2 different ones for indexing or query as there is not much in
 // common.
 class Db::Native {
  public:
@@ -209,14 +207,12 @@ class Db::Native {
                           std::unique_ptr<Xapian::Document> doc, size_t txtlen,
                           std::string& rawztext);
 
-    /** Delete all documents which are contained in the input document, 
-     * which must be a file-level one.
+    /** Delete all documents which are contained in the input document, which must be a file-level
+     * one.
      * 
-     * @param onlyOrphans if true, only delete documents which have
-     * not the same signature as the input. This is used to delete docs
-     * which do not exist any more in the file after an update, for
-     * example the tail messages after a folder truncation). If false,
-     * delete all.
+     * @param onlyOrphans if true, only delete documents which have not the same signature as the
+     * input. This is used to delete docs which do not exist any more in the file after an update,
+     * for example the tail messages after a folder truncation). If false, delete all.
      * @param udi the parent document identifier.
      * @param uniterm equivalent to udi, passed just to avoid recomputing.
      */
@@ -230,20 +226,18 @@ class Db::Native {
     size_t whatDbIdx(Xapian::docid id);
     Xapian::docid whatDbDocid(Xapian::docid);
 
-    /** Retrieve Xapian::docid, given unique document identifier, 
-     * using the posting list for the derived term.
+    /** Retrieve a Xapian::Document and Xapian::docid, given the external Unique Document
+     * Identifier, using the posting list for the UDI-derived term.
      * 
-     * @param udi the unique document identifier (opaque hashed path+ipath).
-     * @param idxi the database index, at query time, when using external
-     *     databases.
+     * @param udi the unique document identifier (e.g. for fsindexer, opaque hashed path+ipath).
+     * @param idxi the database index, at query time, when using external databases.
      * @param[out] xdoc the xapian document.
      * @return 0 if not found
      */
     Xapian::docid getDoc(const std::string& udi, int idxi, Xapian::Document& xdoc);
 
-    /** Retrieve unique document identifier for given Xapian document, 
-     * using the document termlist 
-     */
+    /** Retrieve the unique document identifier for a given Xapian document, using the document
+     * termlist */
     bool xdocToUdi(Xapian::Document& xdoc, std::string &udi);
 
     /** Check if doc is indexed by term */
@@ -253,25 +247,22 @@ class Db::Native {
     bool docToXdocMetaOnly(TextSplitDb *splitter, const std::string &udi, 
                            Doc &doc, Xapian::Document& xdoc);
     /** Remove all terms currently indexed for field defined by idx prefix */
-    bool clearField(Xapian::Document& xdoc, const std::string& pfx, 
-                    Xapian::termcount wdfdec);
+    bool clearField(Xapian::Document& xdoc, const std::string& pfx, Xapian::termcount wdfdec);
 
     /** Check if term wdf is 0 and remove term if so */
     bool clearDocTermIfWdf0(Xapian::Document& xdoc, const std::string& term);
 
-    /** Compute list of subdocuments for a given udi. We look for documents 
-     * indexed by a parent term matching the udi, the posting list for the 
-     * parentterm(udi)  (As suggested by James Aylett)
+    /** Compute the list of subdocuments for a given udi. We look for documents indexed by a parent
+     * term matching the udi, the posting list for the parentterm(udi) (As suggested by James
+     * Aylett)
      *
-     * Note that this is not currently recursive: all subdocs are supposed 
-     * to be children of the file doc.
-     * Ie: in a mail folder, all messages, attachments, attachments of
-     * attached messages etc. must have the folder file document as
-     * parent. 
+     * Note that this is not currently recursive: all subdocs are supposed to be children of the
+     * standalone file doc.
+     * I.e.: in a mail folder, all messages, attachments, attachments of attached messages etc. must
+     * have the folder file document as parent.
      *
-     * Finer grain parent-child relationships are defined by the
-     * indexer (rcldb user), using the ipath.
-     * 
+     * Finer grain parent-child relationships are defined by the indexer (rcldb user), using the
+     * ipath.
      */
     bool subDocs(const std::string &udi, int idxi, std::vector<Xapian::docid>& docids);
 
@@ -291,12 +282,10 @@ class Db::Native {
     bool hasPages(Xapian::docid id);
 
     std::string rawtextMetaKey(Xapian::docid did) {
-        // Xapian's Olly Betts avises to use a key which will
-        // sort the same as the docid (which we do), and to
-        // use Xapian's pack.h:pack_uint_preserving_sort() which is
-        // efficient but hard to read. I'd wager that this
-        // does not make much of a difference. 10 ascii bytes
-        // gives us 10 billion docs, which is enough (says I).
+        // Xapian's Olly Betts advises to use a key which will sort the same as the docid (which we
+        // do), and to use Xapian's pack.h:pack_uint_preserving_sort() which is efficient but hard
+        // to read. I'd wager that this does not make much of a difference. 10 ascii bytes gives us
+        // 10 billion docs, which is enough (says I).
         char buf[30];
         sprintf(buf, "%010d", did);
         return buf;
@@ -315,8 +304,8 @@ class Db::Native {
     }
 };
 
-// This is the word position offset at which we index the body text
-// (abstract, keywords, etc.. are stored before this)
+// This is the term position offset at which we index the body text. Abstract, keywords, etc.. are
+// stored before this.
 static const unsigned int baseTextPosition = 100000;
 
 }
