@@ -1,4 +1,11 @@
-recoll (1.39.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.40.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Python API: added module to compute an UDI for the filesystem
+    indexer. Added an addOrUpdate() option for updating only the metadata.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 29 Jul 2024 15:00:00 +0200
+
+recoll (1.40.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Fix problem with setting document date from attributes in some cases.
   * GUI: filter some garbage values from the MIME list in adv. search.

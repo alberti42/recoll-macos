@@ -301,7 +301,6 @@ python/pychm/recollchm/chmlib.py
 python/pychm/recollchm/swig_chm.c
 python/pychm/recollchm/swig_chm.i
 python/pychm/setup.cfg
-python/pychm/setup.cfg.in
 python/pychm/setup.py.in
 python/recoll/
 python/recoll/meson.build
@@ -312,12 +311,13 @@ python/recoll/pyresultstore.cpp
 python/recoll/recoll/
 python/recoll/recoll/__init__.py
 python/recoll/recoll/conftree.py
+python/recoll/recoll/fsudi.py
 python/recoll/recoll/qresultstore.py
 python/recoll/recoll/rclconfig.py
 python/recoll/recoll/rclextract.py
 python/recoll/recoll/recoll.py
+python/recoll/setup-macports.py
 python/recoll/setup.cfg
-python/recoll/setup.py
 python/samples/
 python/samples/README.txt
 python/samples/docdups.py
@@ -325,7 +325,6 @@ python/samples/doctexts.py
 python/samples/mutt-recoll.py
 python/samples/rcldlkp.py
 python/samples/rcldocsig.py
-python/samples/rclfileudi.py
 python/samples/rclmbox.py
 python/samples/rclnotindexed.py
 python/samples/recoll-space-hogs.py
