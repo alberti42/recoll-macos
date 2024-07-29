@@ -1,3 +1,17 @@
+recoll (1.39.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Fix problem with setting document date from attributes in some cases.
+  * GUI: filter some garbage values from the MIME list in adv. search.
+  * GUI: fix setting the restrict file types checkbox from saved search.
+  * Fix groff option (-man -> -mandoc) for indexing man pages.
+  * Fix testing lyx version
+  * Fix gnumeric indexing (bad order of templates in xsl sheet).
+  * Fix syntax warnings in powerpoint Python handler.
+  * Update simdutf version to 5.3.0. The previous one crashed on some cpus.
+  * Fix meson build ordering issues (trying GUI build before lib done).
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 29 Jul 2024 15:00:00 +0200
+
 recoll (1.39.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * GUI: add capability to switch light/dark mode according to desktop

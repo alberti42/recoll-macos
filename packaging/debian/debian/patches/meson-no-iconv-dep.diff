@@ -1,0 +1,13 @@
+diff --git a/meson.build b/meson.build
+index 5feb904e..6d560ee5 100644
+--- a/meson.build
++++ b/meson.build
+@@ -58,7 +58,7 @@
+     # Searching for iconv is a meson 0.60 feature. Hopefully, for now all the systems where the
+     # meson build is used have iconv in libc. Otherwise look at glib search for iconv for how to do
+     # it.
+-    librecolldeps += dependency('iconv', method : 'auto')
++    #librecolldeps += dependency('iconv', method : 'auto')
+ else
+     librecoll_needed = false
+ endif
