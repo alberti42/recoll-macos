@@ -185,6 +185,14 @@ public:
     // Scale font-sizes inside css or qss input and return changed sheet. The font-size statements
     // need to be on their own line.
     static std::string scaleFonts(const std::string& style, float multiplier);
+
+    // Application font settings. To be used for the HTML header if no specific preferences is set
+    // Stored here, because we use it from a separate thread, which can't create an app widget when
+    // running under wayland. This gets set in main() by a call to checkAppFont() after reading the
+    // prefs and setting the app qss.
+    int appFontSize{12};
+    std::string appFontFamily;
+    void checkAppFont();
 };
 
 /** Global preferences record */

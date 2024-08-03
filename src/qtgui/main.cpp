@@ -187,6 +187,7 @@ void applyStyleSheet(const QString& qssfn)
     }
     qss = prefs.scaleFonts(qss, prefs.wholeuiscale);
     qApp->setStyleSheet(u8s2qs(qss));
+    prefs.checkAppFont();
 }
 
 extern void qInitImages_recoll();
