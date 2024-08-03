@@ -737,7 +737,7 @@ void Preview::displayLoadError(
     if (canGetRawText) {
         msg += tr("<br>Attempting to display from stored text.");
     }
-    QMessageBox::warning(0, "Recoll", msg);
+    QMessageBox::warning(this, "Recoll", msg);
 }
 
 bool Preview::runLoadThread(LoadThread& lthr, QTimer& tT, QEventLoop& loop,

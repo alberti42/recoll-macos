@@ -415,12 +415,28 @@ void rwSettings(bool writing)
         for (const auto& dbd: tl) {
             prefs.asearchSubdirHist.push_back(u8s2qs(dbd));
         }
-    }
-    if (!writing) {
         prefs.setupDarkCSS();
-    }
-    if (!writing)
         havereadsettings = true;
+    }
+}
+
+void PrefsPack::checkAppFont()
+{
+#ifdef BUILDING_RECOLLGUI
+    // If the reslist font is not set, use the default font family and size from the app. By
+    // default, the family comes from the platform and the size comes from the scaled
+    // recoll-common.qss style sheet (except if the latter was edited to suppress the size
+    // setting in which case the size also comes from the platform).
+    QWidget w;
+    w.ensurePolished();
+    QFont font = w.font();
+    LOGDEB0("PrefsPack: app family from QWidget: " << qs2utf8s(font.family()) << " size" <<
+            font.pointSize() << "\n");
+    appFontFamily = qs2utf8s(font.family());
+    appFontSize = font.pointSize();
+    LOGDEB0("PrefsPack::checkAppFont: app font size " << appFontSize << " family [" <<
+            appFontFamily << "]\n");
+#endif
 }
 
 /* font-size: 10px; */
@@ -500,13 +516,8 @@ std::string PrefsPack::htmlHeaderContents(bool nouser)
         // default, the family comes from the platform and the size comes from the scaled
         // recoll-common.qss style sheet (except if the latter was edited to suppress the size
         // setting in which case the size also comes from the platform).
-        QWidget w;
-        w.ensurePolished();
-        QFont font = w.font();
-        LOGDEB0("PrefsPack::htmlHeaderContents: using family " << qs2utf8s(font.family()) <<
-               " size " << font.pointSize() << " from QWidget\n");
-        oss << "font-family: \"" << qs2utf8s(font.family()) << "\";\n";
-        fontsize = font.pointSize();
+        oss << "font-family: \"" << appFontFamily << "\";\n";
+        fontsize = appFontSize;
         // The QWidget font is already scaled by the applied scaled qss style sheet
         noscale = true;
 #endif
