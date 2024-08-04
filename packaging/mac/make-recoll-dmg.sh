@@ -13,15 +13,14 @@ usage()
 #### Adjustable things
 top=~/Recoll
 # The possibly bogus version we have in paths (may be harcoded in the .pro)
-#qcbuildloc=Desktop_Qt_5_15_2_clang_64bit;deploy=~/Qt/5.15.2/clang_64bit/macdeployqt
-qcbuildloc=Qt_6_4_2_for_macOS
-deploy=~/Qt/6.4.2/macos/bin/macdeployqt
+qcbuildloc=Qt_6_6_3_for_macOS
+deploy=~/Qt/6.6.3/macos/bin/macdeployqt
 
 #### Locations depending on the above, should not change much
 toprecoll=$top/recoll/src
-appdir=$toprecoll/build-recoll-${qcbuildloc}-Release/recoll.app
-rclindexdir=$toprecoll/build-recollindex-${qcbuildloc}-Release
-rclqdir=$toprecoll/build-recollq-${qcbuildloc}-Release
+appdir=$toprecoll/qtgui/build/${qcbuildloc}-Release/recoll.app
+rclindexdir=$toprecoll/qmake/build/recollindex/${qcbuildloc}-Release
+rclqdir=$toprecoll/qmake/build/recollq/${qcbuildloc}-Release
 bindir=$appdir/Contents/MacOS
 datadir=$appdir/Contents/Resources
 # Target
