@@ -18,6 +18,7 @@
 
 #include <QMessageBox>
 #include <QShortcut>
+#include <QTimer>
 
 #include "log.h"
 #include "internfile.h"
@@ -166,14 +167,6 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
         m_source->getTerms(hdata);
         curPreview = new Preview(this, reslist->listId(), hdata);
         connect(this, SIGNAL(uiPrefsChanged()), curPreview, SLOT(onUiPrefsChanged()));
-
-        if (curPreview == 0) {
-            QMessageBox::warning(0, tr("Warning"), 
-                                 tr("Can't create preview window"),
-                                 QMessageBox::Ok, 
-                                 QMessageBox::NoButton);
-            return;
-        }
         connect(new QShortcut(quitKeySeq, curPreview), SIGNAL (activated()), 
                 this, SLOT (fileExit()));
         connect(curPreview, SIGNAL(previewClosed(Preview *)), 
@@ -191,9 +184,9 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
         connect(curPreview, SIGNAL(editRequested(Rcl::Doc)), 
                 this, SLOT(startNativeViewer(Rcl::Doc)));
         curPreview->setWindowTitle(getQueryDescription());
-        curPreview->show();
     } 
-    curPreview->makeDocCurrent(doc, docnum);
+    curPreview->show();
+    QTimer::singleShot(0, this, [=]() { curPreview->makeDocCurrent(doc, docnum); });
 }
 
 /** 
