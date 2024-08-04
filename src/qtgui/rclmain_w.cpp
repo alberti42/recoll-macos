@@ -1188,12 +1188,11 @@ void RclMain::setUIPrefs()
         u8s2qs(path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-dark.qss"));
     LOGDEB1("RclMain::setUIPrefs: qssfile [" << qs2utf8s(prefs.qssFile) << "]\n");
     // Only do something if no custom qss file is set.
-    if (prefs.qssFile.isEmpty() || prefs.qssFile == normaldarkfn) {
+    if (prefs.qssFile.isEmpty()) {
         if (qApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark) {
             LOGDEB1("RclMain::setUIPrefs: qApp colorScheme is DARK\n");
             prefs.qssFile = normaldarkfn;
             prefs.darkMode = true;
-            prefs.setupDarkCSS();
         } else {
             // Note: doing things this way means that there is no way to set dark on light system,
             // except by coipying recoll-dark.qss somewhere else, and also importing the dark css
@@ -1201,8 +1200,8 @@ void RclMain::setUIPrefs()
             LOGDEB1("RclMain::setUIPrefs: qApp colorScheme is LIGHT\n");
             prefs.qssFile.clear();
             prefs.darkMode = false;
-            prefs.setupDarkCSS();
         }
+        prefs.setupDarkCSS();
     }
 #endif
     ::applyStyleSheet(prefs.qssFile);
