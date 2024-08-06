@@ -6,11 +6,11 @@ project(
     'recoll',
     ['cpp', 'c'],
     license: 'GPL 2+',
-    # We'd like to use version: files('RECOLL-VERSION.txt') but this is a 0.56 feature. Buster has
-    # 0.49 and focal 0.53. let's support at least focal backports for now.
+    # We'd like to use version: files('RECOLL-VERSION.txt') but this is a 0.56 feature. 
+    # Ubuntu focal has 0.53 and is supported until 2025-04.
     version: '1.40.0', # VERSIONCOMMENT keep this here, used by setversion.sh
     default_options: ['cpp_std=c++17', 'buildtype=debugoptimized'],
-    meson_version: '>=0.49',
+    meson_version: '>=0.53',
 )
 # Note: 1.38.0 had 1.38.0 for soversion, which was a mistake, because the SONAME was xxx.1 For now
 # this is not very important because we don't really package the lib users (python, kde stuff)

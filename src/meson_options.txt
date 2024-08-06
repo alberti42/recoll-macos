@@ -41,15 +41,15 @@ option('x11mon', type: 'boolean', value: true,
        description: 'recollindex support for X11 session monitoring (needs Xlib)')
 option('file-command', type: 'string', value: 'file',
        description: 'file type identification command to use by default. This is normally defined in the config')
-option('aspell', type: 'boolean', value: 'true',
+option('aspell', type: 'boolean', value: true,
        description: 'Use the aspell program and/or library for spelling approximations')
-option('inotify', type: 'boolean', value: 'true',
+option('inotify', type: 'boolean', value: true,
        description: 'Use inotify for monitoring file changes')
-option('fam', type: 'boolean', value: 'false',
+option('fam', type: 'boolean', value: false,
        description: 'Use fam for monitoring file changes')
-option('qtzeitgeist', type: 'boolean', value: 'false',
+option('qtzeitgeist', type: 'boolean', value: false,
        description: 'Use the qt zeitgeist library for generating zeitgeist events')
-option('systemd', type: 'boolean', value: 'true',
+option('systemd', type: 'boolean', value: true,
        description: 'Install the systemd unit files')
 # Was supplied in configure.ac 'pkg-config --variable systemd_system_unit_dir systemd'
 option('systemd-system-unit-dir', type: 'string', value:'/usr/lib/systemd/system',
