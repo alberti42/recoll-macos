@@ -382,7 +382,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString qterm, int li
     // If we are not called with a page number (which would happen for a call from the snippets
     // window), see if we can compute a page number anyway. 
     if (m_source &&
-        ((pagenum == -1 && pagenumNeeded(cmd)) || termNeeded(cmd)|| linenumNeeded(cmd))) {
+        ((pagenum == -1 && pagenumNeeded(cmd)) || (term.empty() && termNeeded(cmd)))) {
         pagenum = m_source->getFirstMatchPage(doc, term);
     }
     if (pagenum < 0)
