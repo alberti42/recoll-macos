@@ -35,18 +35,26 @@ find_package(PkgConfig)
 pkg_search_module(PC_systemd systemd)
 
 if (PC_systemd_FOUND)
-    # Append arguments to allow prefix substitution
-    set(PKG_CONFIG_ARGN_old "$CACHE{PKG_CONFIG_ARGN}")
-    set(PKG_CONFIG_ARGN "${PKG_CONFIG_ARGN_old}")
-    list(APPEND PKG_CONFIG_ARGN "--define-variable=prefix='%%PREFIX%%'")
-    list(APPEND PKG_CONFIG_ARGN "--define-variable=root_prefix='%%PREFIX%%'")
-    set(PKG_CONFIG_ARGN "${PKG_CONFIG_ARGN}"
-        CACHE STRING "Arguments to supply to pkg-config" FORCE)
+    if(CMAKE_VERSION VERSION_LESS "3.28")
+        # Append arguments to allow prefix substitution
+        set(PKG_CONFIG_ARGN_old "$CACHE{PKG_CONFIG_ARGN}")
+        set(PKG_CONFIG_ARGN "${PKG_CONFIG_ARGN_old}")
+        list(APPEND PKG_CONFIG_ARGN "--define-variable=prefix='%%PREFIX%%'")
+        list(APPEND PKG_CONFIG_ARGN "--define-variable=root_prefix='%%PREFIX%%'")
+        set(PKG_CONFIG_ARGN "${PKG_CONFIG_ARGN}"
+            CACHE STRING "Arguments to supply to pkg-config" FORCE)
+        set(_define_args)
+    else()
+        # Just supply prefix definition directly
+        set(_define_args DEFINE_VARIABLES "prefix=%%PREFIX%%")
+    endif()
 
     pkg_get_variable(SystemdPaths_SYSTEM_UNIT_DIR
-        ${PC_systemd_MODULE_NAME} "systemd_system_unit_dir")
+        ${PC_systemd_MODULE_NAME} "systemd_system_unit_dir"
+        ${_define_args})
     pkg_get_variable(SystemdPaths_USER_UNIT_DIR
-        ${PC_systemd_MODULE_NAME} "systemd_user_unit_dir")
+            ${PC_systemd_MODULE_NAME} "systemd_user_unit_dir"
+        ${_define_args})
 
     message(DEBUG "pkg-config variables retrieved:")
     message(DEBUG "  systemd_system_unit_dir=${SystemdPaths_SYSTEM_UNIT_DIR}")
@@ -66,11 +74,13 @@ if (PC_systemd_FOUND)
     set(SystemdPaths_SYSTEM_UNIT_DIR "$CACHE{SYSTEMD_SYSTEM_UNIT_DIR}")
     set(SystemdPaths_USER_UNIT_DIR "$CACHE{SYSTEMD_USER_UNIT_DIR}")
 
-    # Restore previous PKG_CONFIG_ARGN
-    set(PKG_CONFIG_ARGN "${PKG_CONFIG_ARGN_old}"
-        CACHE STRING "Arguments to supply to pkg-config" FORCE)
-    unset(PKG_CONFIG_ARGN_old)
-    unset(PKG_CONFIG_ARGN)
+    if(CMAKE_VERSION VERSION_LESS "3.28")
+        # Restore previous PKG_CONFIG_ARGN
+        set(PKG_CONFIG_ARGN "${PKG_CONFIG_ARGN_old}"
+            CACHE STRING "Arguments to supply to pkg-config" FORCE)
+        unset(PKG_CONFIG_ARGN_old)
+        unset(PKG_CONFIG_ARGN)
+    endif()
 endif()
 
 include(FindPackageHandleStandardArgs)
