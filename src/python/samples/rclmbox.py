@@ -115,7 +115,7 @@ class mbox_indexer:
             self.msgnum += 1
         # Finally create and add the top doc (must be done after indexing the subdocs because, else,
         # the up to date tests would succeed...
-        doc = recoll.Doc()
+        doc = self.db.doc()
         doc.mimetype = "text/x-mail"
         doc.rclbes = "MBOX"
         doc.url = "file://" + self.mbfile
@@ -136,7 +136,7 @@ class mbox_indexer:
         return ""
         
     def index_message(self, msg):
-        doc = recoll.Doc()
+        doc = self.db.doc()
 
         # Misc standard recoll fields
         doc.author = header_value(msg, "From")

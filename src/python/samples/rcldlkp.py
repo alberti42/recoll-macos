@@ -26,7 +26,7 @@ def udi(docfile, numrec):
 
 ###############################################################
 def index_rec(db, numrec, rec):
-    doc = recoll.Doc()
+    doc = db.doc()
     # url
     doc.url = "file://" + docfile
     # utf8fn
