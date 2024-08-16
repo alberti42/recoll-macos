@@ -82,18 +82,6 @@ SearchData_dealloc(recoll_SearchDataObject *self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-static PyObject *
-SearchData_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    LOGDEB("SearchData_new\n");
-    recoll_SearchDataObject *self;
-
-    self = (recoll_SearchDataObject *)type->tp_alloc(type, 0);
-    if (self == 0) 
-        return 0;
-    return (PyObject *)self;
-}
-
 PyDoc_STRVAR(doc_SearchDataObject,
              "SearchData([type=AND|OR], [stemlang=somelanguage|null])\n"
              "\n"
@@ -144,50 +132,20 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
                      PyObject *kwargs);
 
 static PyMethodDef SearchData_methods[] = {
-    {"addclause", (PyCFunction)SearchData_addclause, METH_VARARGS|METH_KEYWORDS,
-     doc_addclause},
+    {"addclause", (PyCFunction)SearchData_addclause, METH_VARARGS|METH_KEYWORDS, doc_addclause},
     {NULL}  /* Sentinel */
 };
 
 static PyTypeObject recoll_SearchDataType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "_recoll.SearchData",             /*tp_name*/
-    sizeof(recoll_SearchDataObject), /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    (destructor)SearchData_dealloc,    /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
-    0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
-    0,                         /*tp_as_mapping*/
-    0,                         /*tp_hash */
-    0,                         /*tp_call*/
-    0,                         /*tp_str*/
-    0,                         /*tp_getattro*/
-    0,                         /*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,  /*tp_flags*/
-    doc_SearchDataObject,      /* tp_doc */
-    0,                       /* tp_traverse */
-    0,                       /* tp_clear */
-    0,                       /* tp_richcompare */
-    0,                       /* tp_weaklistoffset */
-    0,                       /* tp_iter */
-    0,                       /* tp_iternext */
-    SearchData_methods,        /* tp_methods */
-    0,                         /* tp_members */
-    0,                         /* tp_getset */
-    0,                         /* tp_base */
-    0,                         /* tp_dict */
-    0,                         /* tp_descr_get */
-    0,                         /* tp_descr_set */
-    0,                         /* tp_dictoffset */
-    (initproc)SearchData_init, /* tp_init */
-    0,                         /* tp_alloc */
-    SearchData_new,            /* tp_new */
+    .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "_recoll.SearchData",
+    .tp_basicsize = sizeof(recoll_SearchDataObject),
+    .tp_dealloc = (destructor)SearchData_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+    .tp_doc = doc_SearchDataObject,
+    .tp_methods = SearchData_methods,
+    .tp_init = (initproc)SearchData_init,
+    .tp_new = PyType_GenericNew,
 };
 
 static PyObject *
@@ -306,29 +264,15 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
 static void 
 Doc_dealloc(recoll_DocObject *self)
 {
-    LOGDEB("Doc_dealloc\n");
+    LOGDEB0("Doc_dealloc\n");
     deleteZ(self->doc);
     Py_TYPE(self)->tp_free((PyObject*)self);
-}
-
-static PyObject *
-Doc_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    LOGDEB("Doc_new\n");
-    recoll_DocObject *self;
-
-    self = (recoll_DocObject *)type->tp_alloc(type, 0);
-    if (self == 0) 
-        return 0;
-    self->doc = 0;
-    return (PyObject *)self;
 }
 
 static int
 Doc_init(recoll_DocObject *self, PyObject *, PyObject *)
 {
-    LOGDEB("Doc_init\n");
-    delete self->doc;
+    LOGDEB0("Doc_init\n");
     self->doc = new Rcl::Doc;
     return 0;
 }
@@ -780,44 +724,19 @@ PyDoc_STRVAR(
     );
 
 PyTypeObject recoll_DocType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "_recoll.Doc",             /*tp_name*/
-    sizeof(recoll_DocObject), /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    (destructor)Doc_dealloc,    /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,  /*tp_setattr*/
-    0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
-    &doc_as_mapping,          /*tp_as_mapping */
-    0,                         /*tp_hash */
-    0,                         /*tp_call*/
-    0,                         /*tp_str*/
-    (getattrofunc)Doc_getattro,/*tp_getattro*/
-    (setattrofunc)Doc_setattro,/*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT,        /*tp_flags*/
-    doc_DocObject,             /* tp_doc */
-    0,                       /* tp_traverse */
-    0,                       /* tp_clear */
-    0,                       /* tp_richcompare */
-    0,                       /* tp_weaklistoffset */
-    0,                       /* tp_iter */
-    0,                       /* tp_iternext */
-    Doc_methods,               /* tp_methods */
-    0,                         /* tp_members */
-    0,                         /* tp_getset */
-    0,                         /* tp_base */
-    0,                         /* tp_dict */
-    0,                         /* tp_descr_get */
-    0,                         /* tp_descr_set */
-    0,                         /* tp_dictoffset */
-    (initproc)Doc_init,        /* tp_init */
-    0,                         /* tp_alloc */
-    Doc_new,                   /* tp_new */
+    .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "_recoll.Doc",
+    .tp_basicsize = sizeof(recoll_DocObject),
+    .tp_itemsize = 0,
+    .tp_dealloc = (destructor)Doc_dealloc,
+    .tp_as_mapping = &doc_as_mapping,
+    .tp_getattro = (getattrofunc)Doc_getattro,
+    .tp_setattro = (setattrofunc)Doc_setattro,
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_doc = doc_DocObject,
+    .tp_methods = Doc_methods,
+    .tp_init = (initproc)Doc_init,
+    .tp_new = PyType_GenericNew,
 };
 
 
@@ -858,15 +777,12 @@ Query_dealloc(recoll_QueryObject *self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-static PyObject *
-Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
+// Query_init creates an unusable object. The only way to create a valid Query Object is through
+// db_query(). (or we'd need to add a Db parameter to the Query object creation method)
+static int
+Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
 {
-    LOGDEB("Query_new\n");
-    recoll_QueryObject *self;
-
-    self = (recoll_QueryObject *)type->tp_alloc(type, 0);
-    if (self == 0) 
-        return 0;
+    LOGDEB0("Query_init\n");
     self->query = 0;
     self->next = -1;
     self->rowcount = -1;
@@ -875,21 +791,6 @@ Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
     self->arraysize = 1;
     self->connection = 0;
     self->fetchtext = false;
-    return (PyObject *)self;
-}
-
-// Query_init creates an unusable object. The only way to create a
-// valid Query Object is through db_query(). (or we'd need to add a Db
-// parameter to the Query object creation method)
-static int
-Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
-{
-    LOGDEB("Query_init\n");
-
-    delete self->query;
-    self->query = 0;
-    self->next = -1;
-    self->ascending = true;
     return 0;
 }
 
@@ -1051,11 +952,10 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     return Py_BuildValue("i", cnt);
 }
 
-// Move some data from the dedicated fields to the meta array to make
-// fetching attributes easier. Needed because we only use the meta
-// array when enumerating keys. Also for url which is also formatted.
-// But note that some fields are not copied, and are only reachable if
-// one knows their name (e.g. xdocid).
+// Move some data from the dedicated fields to the meta array to make fetching attributes
+// easier. Needed because we only use the meta array when enumerating keys. Also for url which is
+// also formatted.  But note that some fields are not copied, and are only reachable (through
+// doc_Get, as doc[fldname]) if one knows their name (e.g. xdocid).
 static void movedocfields(std::shared_ptr<RclConfig> rclconfig, Rcl::Doc *doc)
 {
     printableUrl(rclconfig->getDefCharset(), doc->url, doc->meta[Rcl::Doc::keyurl]);
@@ -1087,9 +987,8 @@ Query_iternext(PyObject *_self)
         return 0;
     }
     result->rclconfig = self->connection->rclconfig;
-    // We used to check against rowcount here, but this was wrong:
-    // xapian result count estimate are sometimes wrong, we must go on
-    // fetching until we fail
+    // We used to check against rowcount here, but this was wrong: xapian result count estimate are
+    // sometimes wrong, we must go on fetching until we fail
     if (!self->query->getDoc(self->next, *result->doc, self->fetchtext)) {
         return 0;
     }
@@ -1563,45 +1462,20 @@ PyDoc_STRVAR(doc_QueryObject,
              "Recoll Query objects are used to execute index searches. \n"
              "They must be created by the Db.query() method.\n"
     );
+
 PyTypeObject recoll_QueryType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "_recoll.Query",             /*tp_name*/
-    sizeof(recoll_QueryObject), /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    (destructor)Query_dealloc, /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
-    0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
-    0,                         /*tp_as_mapping*/
-    0,                         /*tp_hash */
-    0,                         /*tp_call*/
-    0,                         /*tp_str*/
-    0,                         /*tp_getattro*/
-    0,                         /*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_ITER, /*tp_flags*/
-    doc_QueryObject,           /* tp_doc */
-    0,                       /* tp_traverse */
-    0,                       /* tp_clear */
-    0,                       /* tp_richcompare */
-    0,                       /* tp_weaklistoffset */
-    Query_iter,                   /* tp_iter */
-    Query_iternext,            /* tp_iternext */
-    Query_methods,             /* tp_methods */
-    Query_members,             /* tp_members */
-    0,                         /* tp_getset */
-    0,                         /* tp_base */
-    0,                         /* tp_dict */
-    0,                         /* tp_descr_get */
-    0,                         /* tp_descr_set */
-    0,                         /* tp_dictoffset */
-    (initproc)Query_init,      /* tp_init */
-    0,                         /* tp_alloc */
-    Query_new,                 /* tp_new */
+    .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "_recoll.Query",
+    .tp_basicsize = sizeof(recoll_QueryObject),
+    .tp_dealloc = (destructor)Query_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_ITER,
+    .tp_doc = doc_QueryObject,
+    .tp_iter = Query_iter,
+    .tp_iternext = Query_iternext,
+    .tp_methods = Query_methods,
+    .tp_members = Query_members,
+    .tp_init = (initproc)Query_init,
+    .tp_new = PyType_GenericNew,
 };
 
 
@@ -1625,19 +1499,6 @@ Db_dealloc(recoll_DbObject *self)
     PyObject *ret = Db_close(self);
     Py_DECREF(ret);
     Py_TYPE(self)->tp_free((PyObject*)self);
-}
-
-static PyObject *
-Db_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    LOGDEB2("Db_new\n");
-    recoll_DbObject *self;
-
-    self = (recoll_DbObject *)type->tp_alloc(type, 0);
-    if (self == 0) 
-        return 0;
-    self->db = 0;
-    return (PyObject *)self;
 }
 
 static int
@@ -2176,45 +2037,17 @@ PyDoc_STRVAR(doc_DbObject,
              "extra_dbs is a list of external databases (xapian directories)\n"
              "writable decides if we can index new data through this connection\n"
     );
+
 static PyTypeObject recoll_DbType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "_recoll.Db",             /*tp_name*/
-    sizeof(recoll_DbObject), /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    (destructor)Db_dealloc,    /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
-    0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
-    0,                         /*tp_as_mapping*/
-    0,                         /*tp_hash */
-    0,                         /*tp_call*/
-    0,                         /*tp_str*/
-    0,                         /*tp_getattro*/
-    0,                         /*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    doc_DbObject,              /* tp_doc */
-    0,                       /* tp_traverse */
-    0,                       /* tp_clear */
-    0,                       /* tp_richcompare */
-    0,                       /* tp_weaklistoffset */
-    0,                       /* tp_iter */
-    0,                       /* tp_iternext */
-    Db_methods,                /* tp_methods */
-    0,                         /* tp_members */
-    0,                         /* tp_getset */
-    0,                         /* tp_base */
-    0,                         /* tp_dict */
-    0,                         /* tp_descr_get */
-    0,                         /* tp_descr_set */
-    0,                         /* tp_dictoffset */
-    (initproc)Db_init,         /* tp_init */
-    0,                         /* tp_alloc */
-    Db_new,                    /* tp_new */
+    .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "_recoll.Db",
+    .tp_basicsize = sizeof(recoll_DbObject),
+    .tp_dealloc = (destructor)Db_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+    .tp_doc = doc_DbObject,
+    .tp_methods = Db_methods,
+    .tp_init = (initproc)Db_init,
+    .tp_new = PyType_GenericNew,
 };
 
 

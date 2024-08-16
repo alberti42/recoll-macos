@@ -53,29 +53,16 @@ QResultStore_dealloc(recoll_QResultStoreObject *self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-static PyObject *
-QResultStore_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    LOGDEB1("QResultStore_new\n");
-    recoll_QResultStoreObject *self =
-        (recoll_QResultStoreObject *)type->tp_alloc(type, 0);
-    if (self == 0) 
-        return 0;
-    self->store = new Rcl::QResultStore();
-    return (PyObject *)self;
-}
-
 PyDoc_STRVAR(qrs_doc_QResultStoreObject,
              "QResultStore()\n"
              "\n"
              "A QResultStore can efficiently store query result documents.\n"
     );
 
-static int
-QResultStore_init(
-    recoll_QResultStoreObject *self, PyObject *args, PyObject *kwargs)
+static int QResultStore_init(recoll_QResultStoreObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB("QResultStore_init\n");
+    self->store = new Rcl::QResultStore();
     return 0;
 }
 
@@ -88,8 +75,7 @@ PyDoc_STRVAR(
     );
 
 static PyObject *
-QResultStore_storeQuery(recoll_QResultStoreObject* self, PyObject *args, 
-                        PyObject *kwargs)
+QResultStore_storeQuery(recoll_QResultStoreObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("QResultStore_storeQuery\n");
     static const char* kwlist[] = {"query", "fieldspec", "isinc", NULL};
@@ -149,11 +135,10 @@ PyDoc_STRVAR(
     qrs_doc_getField,
     "getField(index, fieldname)\n"
     "\n"
-    "Retrieve tha value of field <fieldname> from result at index <index>.\n"
+    "Retrieve the value of field <fieldname> from result at index <index>.\n"
     );
 
-static PyObject *
-QResultStore_getField(recoll_QResultStoreObject* self, PyObject *args)
+static PyObject *QResultStore_getField(recoll_QResultStoreObject* self, PyObject *args)
 {
     int index;
     const char *fieldname;
@@ -207,44 +192,16 @@ static PySequenceMethods resultstore_as_sequence = {
 };
         
 PyTypeObject recoll_QResultStoreType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "_recoll.QResultStore",             /*tp_name*/
-    sizeof(recoll_QResultStoreObject), /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    (destructor)QResultStore_dealloc,    /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
-    0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    &resultstore_as_sequence,   /*tp_as_sequence*/
-    0,                         /*tp_as_mapping*/
-    0,                         /*tp_hash */
-    0,                         /*tp_call*/
-    0,                         /*tp_str*/
-    0,                         /*tp_getattro*/
-    0,                         /*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,  /*tp_flags*/
-    qrs_doc_QResultStoreObject,      /* tp_doc */
-    0,                       /* tp_traverse */
-    0,                       /* tp_clear */
-    0,                       /* tp_richcompare */
-    0,                       /* tp_weaklistoffset */
-    0,                       /* tp_iter */
-    0,                       /* tp_iternext */
-    QResultStore_methods,        /* tp_methods */
-    0,                         /* tp_members */
-    0,                         /* tp_getset */
-    0,                         /* tp_base */
-    0,                         /* tp_dict */
-    0,                         /* tp_descr_get */
-    0,                         /* tp_descr_set */
-    0,                         /* tp_dictoffset */
-    (initproc)QResultStore_init, /* tp_init */
-    0,                         /* tp_alloc */
-    QResultStore_new,            /* tp_new */
+    .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "_recoll.QResultStore",
+    .tp_basicsize = sizeof(recoll_QResultStoreObject),
+    .tp_dealloc = (destructor)QResultStore_dealloc,
+    .tp_as_sequence = &resultstore_as_sequence,
+    .tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+    .tp_doc = qrs_doc_QResultStoreObject,
+    .tp_methods = QResultStore_methods,
+    .tp_init = (initproc)QResultStore_init,
+    .tp_new = PyType_GenericNew,
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -264,29 +221,17 @@ QRSDoc_dealloc(recoll_QRSDocObject *self)
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-static PyObject *
-QRSDoc_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    recoll_QRSDocObject *self = (recoll_QRSDocObject *)type->tp_alloc(type, 0);
-    if (self == 0) 
-        return 0;
-    return (PyObject *)self;
-}
-
 PyDoc_STRVAR(qrs_doc_QRSDocObject,
              "QRSDoc(resultstore, index)\n"
              "\n"
              "A QRSDoc gives access to one result from a qresultstore.\n"
     );
 
-static int
-QRSDoc_init(
-    recoll_QRSDocObject *self, PyObject *args, PyObject *kwargs)
+static int QRSDoc_init(recoll_QRSDocObject *self, PyObject *args, PyObject *kwargs)
 {
     recoll_QResultStoreObject *pystore;
     int index;
-    if (!PyArg_ParseTuple(args, "O!i",
-                          &recoll_QResultStoreType, &pystore, &index)) {
+    if (!PyArg_ParseTuple(args, "O!i", &recoll_QResultStoreType, &pystore, &index)) {
         return -1;
     }
 
@@ -296,8 +241,7 @@ QRSDoc_init(
     return 0;
 }
 
-static PyObject *
-QRSDoc_subscript(recoll_QRSDocObject *self, PyObject *key)
+static PyObject *QRSDoc_subscript(recoll_QRSDocObject *self, PyObject *key)
 {
     if (self->pystore == 0) {
         PyErr_SetString(PyExc_AttributeError, "store??");
@@ -331,48 +275,14 @@ static PyMappingMethods qrsdoc_as_mapping = {
     (objobjargproc)0, /*mp_ass_subscript*/
 };
 
-static PyMethodDef QRSDoc_methods[] = {
-    {NULL}  /* Sentinel */
-};
-
-
 PyTypeObject recoll_QRSDocType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "_recoll.QRSDoc",             /*tp_name*/
-    sizeof(recoll_QRSDocObject), /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    (destructor)QRSDoc_dealloc,    /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
-    0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
-    &qrsdoc_as_mapping,         /*tp_as_mapping*/
-    0,                         /*tp_hash */
-    0,                         /*tp_call*/
-    0,                         /*tp_str*/
-    0,                         /*tp_getattro*/
-    0,                         /*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,  /*tp_flags*/
-    qrs_doc_QRSDocObject,      /* tp_doc */
-    0,                       /* tp_traverse */
-    0,                       /* tp_clear */
-    0,                       /* tp_richcompare */
-    0,                       /* tp_weaklistoffset */
-    0,                       /* tp_iter */
-    0,                       /* tp_iternext */
-    QRSDoc_methods,        /* tp_methods */
-    0,                         /* tp_members */
-    0,                         /* tp_getset */
-    0,                         /* tp_base */
-    0,                         /* tp_dict */
-    0,                         /* tp_descr_get */
-    0,                         /* tp_descr_set */
-    0,                         /* tp_dictoffset */
-    (initproc)QRSDoc_init, /* tp_init */
-    0,                         /* tp_alloc */
-    QRSDoc_new,            /* tp_new */
+    .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "_recoll.QRSDoc",
+    .tp_basicsize = sizeof(recoll_QRSDocObject),
+    .tp_dealloc = (destructor)QRSDoc_dealloc,
+    .tp_as_mapping = &qrsdoc_as_mapping,
+    .tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+    .tp_doc = qrs_doc_QRSDocObject,
+    .tp_init = (initproc)QRSDoc_init,
+    .tp_new = PyType_GenericNew,
 };
