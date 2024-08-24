@@ -1,9 +1,9 @@
-recoll (1.40.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.40.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * Python API: added module to compute an UDI for the filesystem
-    indexer. Added an addOrUpdate() option for updating only the metadata.
+  * PDF: fix issue with opening snippets at the right page.
+  * Fix preview issues under wayland.
   
- -- Jean-Francois Dockes <jf@dockes.org>  Mon, 29 Jul 2024 15:00:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 24 Aug 2024 07:44:00 +0200
 
 recoll (1.40.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
@@ -16,6 +16,8 @@ recoll (1.40.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Fix syntax warnings in powerpoint Python handler.
   * Update simdutf version to 5.3.0. The previous one crashed on some cpus.
   * Fix meson build ordering issues (trying GUI build before lib done).
+  * Python API: added module to compute an UDI for the filesystem
+    indexer. Added an addOrUpdate() option for updating only the metadata.
   
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 29 Jul 2024 15:00:00 +0200
 

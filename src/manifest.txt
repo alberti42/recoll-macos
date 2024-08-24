@@ -336,6 +336,7 @@ python/samples/recollq.py
 python/samples/recollqsd.py
 python/samples/snippets.py
 python/samples/trconfig.py
+python/samples/update_doc_meta.py
 qtgui/
 qtgui/CMakeLists.txt
 qtgui/actsearch.ui
