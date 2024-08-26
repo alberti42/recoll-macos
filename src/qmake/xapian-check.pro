@@ -21,7 +21,7 @@ windows {
   DEFINES += UNICODE
   contains(QMAKE_CC, cl){
     # msvc
-    QCBUILDLOC = Desktop_Qt_6_6_3_MSVC2019_64bit
+    QCBUILDLOC = Desktop_Qt_6_7_2_MSVC2019_64bit
     DEFINES += USING_STATIC_LIBICONV
     INCLUDEPATH += \
       ../../../recolldeps/msvc/zlib-1.2.11/ \

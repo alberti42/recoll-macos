@@ -21,7 +21,7 @@ VERSION = open(os.path.join(top, "RECOLL-VERSION.txt")).read().strip()
 # generated .h files, e.g. autoconfig.h)
 localtop = os.path.join(os.path.dirname(__file__), '..', '..')
 
-extra_compile_args = ['-std=c++17']
+extra_compile_args = ['/std:c++20']
 define_macros = [
         ('RECOLL_DATADIR', RECOLL_DATADIR),
         ('__WIN32__', '1')
@@ -38,15 +38,15 @@ include_dirs = [
 ]
 
 library_dirs = [
-        os.path.join(top, "build-librecoll-Desktop_Qt_6_6_3_MSVC2019_64bit-Release/release/"),
+        os.path.join(top, "build-librecoll-Desktop_Qt_6_7_2_MSVC2019_64bit-Release/release/"),
         os.path.join(recolldeps, "libxml2/libxml2-2.9.4+dfsg1/win32/bin.msvc"),
         os.path.join(recolldeps, "libxslt/libxslt-1.1.29/win32/bin.msvc"),
-        os.path.join(top, "build-libxapian-Desktop_Qt_6_6_3_MSVC2019_64bit-Release/release"),
+        os.path.join(top, "build-libxapian-Desktop_Qt_6_7_2_MSVC2019_64bit-Release/release"),
         os.path.join(recolldeps, "zlib-1.2.11"),
         os.path.join(recolldeps, "libmagic/src/lib"),
         os.path.join(recolldeps, "regex"),
         os.path.join(recolldeps, "wlibiconv",
-                     "build-libiconv-Desktop_Qt_6_6_3_MSVC2019_64bit-Release/release")
+                     "build-libiconv-Desktop_Qt_6_7_2_MSVC2019_64bit-Release/release")
         ]
 
 libraries =  ["recoll", "libmagic", "libregex", "libxml2_a", "libxslt_a",

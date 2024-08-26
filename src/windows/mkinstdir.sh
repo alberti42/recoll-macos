@@ -38,8 +38,8 @@ if test $BUILD = MSVC ; then
     ZLIB=${RCLDEPS}/msvc/zlib-1.2.11
     LIBMAGIC=${RCLDEPS}/msvc/libmagic
     # Qt
-    QTA=Desktop_Qt_6_6_3_MSVC2019_64bit-Release/release
-    QTBIN=C:/Qt/6.6.3/msvc2019_64/bin
+    QTA=Desktop_Qt_6_7_2_MSVC2019_64bit-Release/release
+    QTBIN=C:/Qt/6.7.2/msvc2019_64/bin
     MINGWBIN=${RCLDEPS}/gcclibs
     LIBS32=${RCLDEPS}/libs32
 else
