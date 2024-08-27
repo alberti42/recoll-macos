@@ -18,15 +18,15 @@ GSSPVERS=1.1.3
 PPAVERS=1
 
 PPANAME=recoll15-ppa
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 
 # recoll 
-series_rcl="focal jammy noble oracular"
+series_rcl=
 # KIO
 series_kio=
 # krunner: does not build on focal and bionic because of the 5.90 min version requested in the
 # CMakeLists.txt. Did not try to work around.
-series_krunner=
+series_krunner="jammy noble oracular"
 # gssp
 series_gssp=
 
