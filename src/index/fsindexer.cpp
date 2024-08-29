@@ -455,7 +455,7 @@ bool FsIndexer::purgeFiles(list<string>& files)
 
     for (list<string>::iterator it = files.begin(); it != files.end(); ) {
         string udi;
-        make_udi(*it, cstr_null, udi);
+        fileUdi::make_udi(*it, cstr_null, udi);
         // rcldb::purgefile returns true if the udi was either not
         // found or deleted, false only in case of actual error
         bool existed;
@@ -659,7 +659,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
     string sig;
     fsmakesig(stp, sig);
     string udi;
-    make_udi(fn, cstr_null, udi);
+    fileUdi::make_udi(fn, cstr_null, udi);
     unsigned int existingDoc;
     string oldsig;
     bool needupdate;
@@ -776,7 +776,7 @@ FsTreeWalker::Status FsIndexer::processonefile(
             } else {
                 hadNonNullIpath = true;
             }
-            make_udi(fn, doc.ipath, udi);
+            fileUdi::make_udi(fn, doc.ipath, udi);
 
             // Set file name, mod time and url if not done by
             // filter. We used to set the top-level container file

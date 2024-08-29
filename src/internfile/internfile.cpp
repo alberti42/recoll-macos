@@ -101,7 +101,7 @@ bool FileInterner::getEnclosingUDI(const Rcl::Doc &doc, string& udi)
         eipath.erase();
     }
     
-    make_udi(url_gpath(doc.idxurl.empty() ? doc.url : doc.idxurl), eipath, udi);
+    fileUdi::make_udi(url_gpath(doc.idxurl.empty() ? doc.url : doc.idxurl), eipath, udi);
     return true;
 }
 
@@ -161,7 +161,7 @@ void FileInterner::init(const string &f, const struct PathStat& stp,
     // manage some kind of cache.  Indexing by udi makes things easier
     // because they sometimes get a temp as actual input.
     string udi;
-    make_udi(f, cstr_null, udi);
+    fileUdi::make_udi(f, cstr_null, udi);
 
     cnf->setKeyDir(path_getfather(m_fn));
 

@@ -71,7 +71,7 @@ bool checkindexed(RclConfig *conf, const std::vector<std::string>& filepaths)
             break;
         }
         std::string udi;
-        make_udi(path, std::string(), udi);
+        fileUdi::make_udi(path, std::string(), udi);
         Rcl::Doc doc;
         if (!db.getDoc(udi, "", doc)) {
             std::cerr << "Unexpected error from getdoc\n";

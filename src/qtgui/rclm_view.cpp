@@ -65,7 +65,7 @@ void RclMain::viewUrl()
        inside internfile and have some url magic to indicate the
        appropriate indexer/identification scheme */
     string udi;
-    make_udi(qs2path(qurl.path()), qs2path(qurl.fragment()), udi);
+    fileUdi::make_udi(qs2path(qurl.path()), qs2path(qurl.fragment()), udi);
     
     Rcl::Doc doc;
     Rcl::Doc idxdoc; // idxdoc.idxi == 0 -> works with base index only

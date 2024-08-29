@@ -25,6 +25,8 @@
 
 using std::string;
 
+namespace fileUdi {
+
 // Size of the hashed result (base64 of 16 bytes of md5, minus 2 pad chars)
 #define HASHLEN 22
 
@@ -71,7 +73,11 @@ void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
 // like 30). The xapian max key length is 245.
 // The value for PATHHASHLEN includes the length of the hash part.
 #define PATHHASHLEN 150
-
+int hashed_udi_size()
+{
+    return PATHHASHLEN;
+}
+    
 // Compute the unique term used to link documents to their file-system source:
 // Hashed path + possible internal path
 void make_udi(const string& fn, const string& ipath, string &udi)
@@ -83,3 +89,5 @@ void make_udi(const string& fn, const string& ipath, string &udi)
     pathHash(s, udi, PATHHASHLEN);
     return;
 }
+
+} // namespace

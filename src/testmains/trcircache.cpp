@@ -236,7 +236,7 @@ bool storeFile(CirCache& cc, const std::string fn)
         return false;
     }
     string udi;
-    make_udi(fn, "", udi);
+    fileUdi::make_udi(fn, "", udi);
     string cmd("xdg-mime query filetype ");
     // Should do more quoting here...
     cmd += "'" + fn + "'";

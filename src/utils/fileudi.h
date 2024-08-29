@@ -19,6 +19,7 @@
 
 #include <string>
 
+namespace fileUdi {
 // Unique Document Ids for the file-based indexer (main Recoll
 // indexer).  Document Ids are built from a concatenation of the file
 // path and the internal path (ie: email number inside
@@ -26,6 +27,13 @@
 // limited, the Id path is truncated to a maximum length, and completed
 // by a hash of the remainder (including the ipath)
 
-extern void make_udi(const std::string& fn, const std::string& ipath, std::string &udi);
+void make_udi(const std::string& fn, const std::string& ipath, std::string &udi);
 
+// Return the length of an UDI obtained from a path shortened by hashing. No UDI can be longer. An
+// UDI with this size may have been hashed, or not, if the original path size was exactly this
+// size (aargh this was a mistake !). The only way to be sure is to retrieve the actual URL from
+// the data record. The current value is 150.
+int hashed_udi_size();
+
+}
 #endif /* _FILEUDI_H_INCLUDED_ */

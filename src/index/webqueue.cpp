@@ -429,7 +429,7 @@ WebQueueIndexer::processone(
     }
 
     LOGDEB("WebQueueIndexer::processone: UDI: " << udipath << "\n");
-    make_udi(udipath, cstr_null, udi);
+    fileUdi::make_udi(udipath, cstr_null, udi);
 
     LOGDEB("WebQueueIndexer::processone: udi [" << udi << "]\n");
     ascdate = lltodecstr(stp.pst_mtime);

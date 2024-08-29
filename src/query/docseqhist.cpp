@@ -88,7 +88,7 @@ bool RclDHistoryEntry::decode(const string &value)
 
     if (!fn.empty()) {
         // Old style entry found, make an udi, using the fs udi maker
-        make_udi(fn, ipath, udi);
+        fileUdi::make_udi(fn, ipath, udi);
     }
     LOGDEB1("RclDHistoryEntry::decode: udi ["  << udi << "] dbdir [" <<
             dbdir << "]\n");

@@ -39,7 +39,7 @@ int main(int argc, char **argv)
         char buffer[2048];
         while (fgets(buffer, 2048, stdin)) {
             std::string path(buffer, strlen(buffer)-1);
-            make_udi(path, "", udi);
+            fileUdi::make_udi(path, "", udi);
             std::cout << udi << "\n";
         }
         return 0;
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
         if (argc == 3) {
             ipath = argv[2];
         }
-        make_udi(path, ipath, udi);
+        fileUdi::make_udi(path, ipath, udi);
         std::cout << udi << "\n";
         return 0;
     }
