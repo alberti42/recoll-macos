@@ -32,6 +32,7 @@
 #include "pathut.h"
 #include "rcldoc.h"
 #include "syngroups.h"
+#include "fileudi.h"
 
 using namespace std;
 
@@ -588,6 +589,16 @@ bool Db::dirlist(int depth, std::string& root, std::vector<std::string>& dirs)
                 auto pos = ixterm.find_first_of('|');
                 if (pos < ixterm.size() - 1)
                     continue;
+
+                // Have to check for a hashed UDI, and fetch the data record and its URL then.
+                if ((int)ixterm.size() == fileUdi::hashed_udi_size()) {
+                    Rcl::Doc doc;
+                    if (!getDoc(ixterm, -1, doc, false) || doc.pc == -1) {
+                        continue;
+                    }
+                    ixterm = fileurltolocalpath(doc.url);
+                }
+
                 listall.push_back(ixterm);
             }
             break;

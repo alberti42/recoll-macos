@@ -561,7 +561,7 @@ bool Db::Native::hasTerm(const string& udi, int idxi, const string& term)
 }
 
 // Retrieve Xapian document, given udi. There may be several identical udis
-// if we are using multiple indexes.
+// if we are using multiple indexes. If idxi is -1 we don't care (looking for the path).
 Xapian::docid Db::Native::getDoc(const string& udi, int idxi, Xapian::Document& xdoc)
 {
     string uniterm = make_uniterm(udi);
@@ -571,7 +571,7 @@ Xapian::docid Db::Native::getDoc(const string& udi, int idxi, Xapian::Document& 
             for (docid = xrdb.postlist_begin(uniterm);
                  docid != xrdb.postlist_end(uniterm); docid++) {
                 xdoc = xrdb.get_document(*docid);
-                if (whatDbIdx(*docid) == (size_t)idxi)
+                if (idxi == -1 || whatDbIdx(*docid) == (size_t)idxi)
                     return *docid;
             }
             // Udi not in Db.
@@ -2679,8 +2679,8 @@ bool Db::getDoc(const string& udi, int idxi, Doc& doc, bool fetchtext)
     doc.meta[Rcl::Doc::keyrr] = "100%";
     doc.pc = 100;
     Xapian::Document xdoc;
-    Xapian::docid docid;
-    if (idxi >= 0 && (docid = m_ndb->getDoc(udi, idxi, xdoc))) {
+    Xapian::docid docid = m_ndb->getDoc(udi, idxi, xdoc);
+    if (docid) {
         string data = xdoc.get_data();
         doc.meta[Rcl::Doc::keyudi] = udi;
         return m_ndb->dbDataToRclDoc(docid, data, doc, fetchtext);
