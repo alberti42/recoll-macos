@@ -33,10 +33,11 @@ public:
     class AppDef {
     public:
         AppDef(const std::string& nm, const std::string& cmd)
-            : name(nm), command(cmd)
-            {}
+            : name(nm), command(cmd) {}
         AppDef() {}
-
+        bool operator<(const AppDef& other) const {
+            return this->name < other.name;
+        }
         std::string name;
         std::string command;
     };
@@ -47,9 +48,12 @@ public:
     /** Constructor for a db based on a non-standard location */
     DesktopDb(const std::string& dir);
 
-    /** In case of error: what happened ? */
-    const std::string& getReason();
+    DesktopDb(const DesktopDb &) = delete;
+    DesktopDb& operator=(const DesktopDb &) = delete;
 
+    /** In case of build error: what happened ? */
+    const std::string& getReason();
+    
     /**
      * Get a list of applications able to process a given MIME type.
      * @param mime MIME type we want the apps for
@@ -79,8 +83,6 @@ private:
     /** This is used by getDb() and builds a db for the standard location */
     DesktopDb();
     void build(const std::string& dir);
-    DesktopDb(const DesktopDb &);
-    DesktopDb& operator=(const DesktopDb &);
 
     AppMap m_appMap;
     std::string m_reason;
