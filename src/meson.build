@@ -171,6 +171,8 @@ if cpp.has_function(
        #include <sys/time.h>''',
 )
     recoll_conf.set('HAVE_KQUEUE', true)
+    recoll_conf.set('RCL_USE_KQUEUE', true)
+    recoll_conf.set('RCL_MONITOR', true)
 endif
 
 recoll_conf.set('HAVE_VSNPRINTF', cpp.has_function('vsnprintf'))
