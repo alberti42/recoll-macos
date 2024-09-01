@@ -47,7 +47,7 @@
 #include "qresultstore.h"
 
 //const std::string confdir{"/home/dockes/.recoll-prod"};
-const std::string confdir{"/var/cache/upmpdcli/uprcl"};
+std::string confdir{"/var/cache/upmpdcli/uprcl"};
 const int MB = 1024 *1024;
 
 // Docs as docs
@@ -89,6 +89,9 @@ static inline bool testentry(const std::pair<std::string,std::string>& entry)
 int main(int argc, char *argv[])
 {
     std::string reason;
+    auto cp = getenv("RECOLL_CONFDIR");
+    if (cp)
+        confdir = cp;
     RclConfig *rclconfig = recollinit(0, 0, 0, reason, &confdir);
     if (!rclconfig || !rclconfig->ok()) {
         std::cerr << "Recoll init failed: " << reason << "\n";

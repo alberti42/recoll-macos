@@ -29,20 +29,31 @@
 
 #include "rcldoc.h"
 #include "rclquery.h"
+#include "log.h"
+#include "smallut.h"
 
 namespace Rcl {
 
 class QResultStore::Internal {
 public:
-    bool testentry(const std::pair<std::string,std::string>& entry) {
+    static bool fieldneeded(const std::set<std::string>& fieldspec, bool isinc, 
+                          const std::pair<std::string, std::string>& entry) {
         return !entry.second.empty() &&
             (isinc ? fieldspec.find(entry.first) != fieldspec.end() :
              fieldspec.find(entry.first) == fieldspec.end());
     }
-    
-    std::map<std::string, size_t> keyidx;
-    // Notes: offsets[0] is always 0, not really useful, simpler this
-    // way. Also could use simple C array instead of c++ vector...
+
+    // Store correspondance between field name and index in offsets array.
+    std::map<std::string, int> keyidx;
+
+    // Storage for one doc. Uses a char array (base) for the data and an std::vector for the field
+    // offsets. Notes:
+    // - offsets[0] is always 0, not really useful, simpler this way.
+    // - This could be made more efficient by going C: make the storage more linear: one big char
+    //   array for all the docs data and one big vector of Nxm offsets with a bit of index
+    //   computations. Or, not:
+    //     *** Actually tried it, but not significantly better. See resultstore_bigarrays branch for
+    //         more details. ***
     struct docoffs {
         ~docoffs() {
             free(base);
@@ -50,9 +61,9 @@ public:
         char *base{nullptr};
         std::vector<int> offsets;
     };
+
+    // One entry with data and offsets for each result doc.
     std::vector<struct docoffs> docs;
-    std::set<std::string> fieldspec;
-    bool isinc{false};
 };
 
 QResultStore::QResultStore()
@@ -64,21 +75,16 @@ QResultStore::~QResultStore()
     delete m;
 }
 
-// For reference : Fields normally excluded by uprcl:         
-// {"author", "ipath", "rcludi", "relevancyrating", "sig", "abstract", "caption",
-//  "filename",  "origcharset", "sig"};
-
-
-bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
-    bool isinc)
+bool QResultStore::storeQuery(Rcl::Query& query, const std::set<std::string>& fldspec, bool isinc)
 {
-    m->fieldspec = fldspec;
-    m->isinc = isinc;
-    
+    LOGDEB1("QResultStore::storeQuery: fldspec " << stringsToString(fldspec)  << " isinc " <<
+           isinc << '\n');
     /////////////
-    // Enumerate all existing keys and assign array indexes for
-    // them. Count documents while we are at it.
-    m->keyidx = {{"url",0},
+    // Enumerate all existing keys and assign array indexes for them. Count documents while we are
+    // at it.
+
+    // The fields we always include
+    m->keyidx = {{"url", 0},
                  {"mimetype", 1},
                  {"fmtime", 2},
                  {"dmtime", 3},
@@ -86,6 +92,8 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
                  {"dbytes", 5}
     };
 
+    // Walk the docs and assign a keyidx slot to any field which both is included by fldspec and
+    // exists in at least one doc.
     int count = 0;
     for (;;count++) {
         Rcl::Doc doc;
@@ -93,16 +101,12 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
             break;
         }
         for (const auto& entry : doc.meta) {
-            if (m->testentry(entry)) {
-                auto it = m->keyidx.find(entry.first);
-                if (it == m->keyidx.end()) {
-                    auto idx = m->keyidx.size();
-                    m->keyidx.insert({entry.first, idx});
-                };
+            if (Internal::fieldneeded(fldspec, isinc, entry)) {
+                m->keyidx.try_emplace(entry.first, (int)m->keyidx.size());
             }
         }
     }
-
+    
     ///////
     // Populate the main array with doc-equivalent structures.
     
@@ -123,10 +127,7 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
             doc.fbytes.size() + 1 +
             doc.dbytes.size() + 1;
         for (const auto& entry : doc.meta) {
-            if (m->testentry(entry)) {
-                if (m->keyidx.find(entry.first) == m->keyidx.end()) {
-                    continue;
-                }
+            if (Internal::fieldneeded(fldspec, isinc, entry)) {
                 nbytes += entry.second.size() + 1;
             }
         }
@@ -141,10 +142,12 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
             CHARP += S.size()+1; \
         } while (false);
 
+        // Copy to storage and take note of offsets for all static (5 first) fields.
         vdoc.base = cp;
         vdoc.offsets[0] = static_cast<int>(cp - vdoc.base);
         STRINGCPCOPY(cp, doc.url);
         vdoc.offsets[1] = static_cast<int>(cp - vdoc.base);
+        auto firstzero = vdoc.offsets[1] - 1;
         STRINGCPCOPY(cp, doc.mimetype);
         vdoc.offsets[2] = static_cast<int>(cp - vdoc.base);
         STRINGCPCOPY(cp, doc.fmtime);
@@ -154,25 +157,18 @@ bool QResultStore::storeQuery(Rcl::Query& query, std::set<std::string> fldspec,
         STRINGCPCOPY(cp, doc.fbytes);
         vdoc.offsets[5] = static_cast<int>(cp - vdoc.base);
         STRINGCPCOPY(cp, doc.dbytes);
-        for (const auto& entry : doc.meta) {
-            if (m->testentry(entry)) {
-                auto it = m->keyidx.find(entry.first);
-                if (it == m->keyidx.end()) {
-                    std::cerr << "Unknown key: " << entry.first << "\n";
-                }
-                if (it->second <= 5) {
-                    // Already done ! Storing another address would be
-                    // wasteful and crash when freeing...
-                    continue;
-                }
-                vdoc.offsets[it->second] = static_cast<int>(cp - vdoc.base);
-                STRINGCPCOPY(cp, entry.second);
-            }
-        }
-        // Point all empty entries to the final null byte
-        for (unsigned int i = 1; i < vdoc.offsets.size(); i++) {
-            if (vdoc.offsets[i] == 0) {
-                vdoc.offsets[i] = static_cast<int>(cp - 1 - vdoc.base);
+        // Walk our variable field list. If doc.meta[fld] is absent or empty, store a pointer to a
+        // zero byte, else copy the data and store a pointer to it. Walking the field list and not
+        // the doc meta allows setting all the needed empty pointers while we are at it.
+        for (auto& entry : m->keyidx) {
+            if (entry.second <= 5)
+                continue;
+            auto it = doc.meta.find(entry.first);
+            if (it == doc.meta.end() || it->second.empty()) {
+                vdoc.offsets[entry.second] = firstzero;
+            } else {
+                vdoc.offsets[entry.second] = static_cast<int>(cp - vdoc.base);
+                STRINGCPCOPY(cp, it->second);
             }
         }
     }
@@ -192,8 +188,7 @@ const char *QResultStore::fieldValue(int docindex, const std::string& fldname)
     auto& vdoc = m->docs[docindex];
 
     auto it = m->keyidx.find(fldname);
-    if (it == m->keyidx.end() ||
-        it->second < 0 || it->second >= vdoc.offsets.size()) {
+    if (it == m->keyidx.end() || it->second < 0 || it->second >= (int)vdoc.offsets.size()) {
         return nullptr;
     }
     return vdoc.base + vdoc.offsets[it->second];
