@@ -42,88 +42,37 @@
  * http://code.google.com/p/simplefilewatcher/ also MIT licensed.
  */
 
-#include "autoconfig.h"
-
-#ifdef RCL_MONITOR
-
-// Set the FSWATCH to the chosen library.
-#ifdef _WIN32
-    #define FSWATCH_WIN32
-#else // ! _WIN32
-    #ifdef RCL_USE_FSEVENTS // darwin (i.e., MACOS)
-        #define FSWATCH_FSEVENTS
-    #else // ! RCL_USE_FSEVENTS
-        // We dont compile both the inotify and the fam interface and inotify has preference
-        #ifdef RCL_USE_INOTIFY
-            #define FSWATCH_INOTIFY
-        #else // ! RCL_USE_INOTIFY
-            #ifdef RCL_USE_FAM
-                #define FSWATCH_FAM
-            #endif // RCL_USE_FAM
-        #endif // INOTIFY
-    #endif // RCL_USE_FSEVENTS
-
-    #ifndef FSWATCH_WIN32
-        #ifndef FSWATCH_FSEVENTS
-            #ifndef FSWATCH_INOTIFY
-                #ifndef FSWATCH_FAM
-                    #error "Something went wrong. RCL_MONITOR is true, but all _WIN32, RCL_USE_INOTIFY, RCL_USE_FAM, and RCL_USE_FSEVENTS are undefined."
-                #endif // FSWATCH_FAM
-            #endif // FSWATCH_INOTIFY
-        #endif // FSWATCH_FSEVENTS
-    #endif // FSWATCH_WIN32
-#endif // _WIN32
-
-#include "autoconfig.h"
-
-#include <string>
-#include <vector>
-#include <map>
-
-#include <errno.h>
-#include <cstdio>
-#include <cstring>
-#include "safeunistd.h"
-
-#include "log.h"
-#include "rclmon.h"
-#include "rclinit.h"
-#include "fstreewalk.h"
-#include "pathut.h"
-#include "smallut.h"
-
-using std::string;
-using std::vector;
-using std::map;
-
 /**
  * Recoll real time monitor event receiver. This file has code to interface 
  * to FAM, inotify, etc. and place events on the event queue.
  */
 
-/** Virtual interface for the actual filesystem monitoring module. */
-class RclMonitor {
-public:
-    RclMonitor() {}
-    virtual ~RclMonitor() {}
+#include "autoconfig.h"
 
-    virtual bool addWatch(const string& path, bool isDir, bool follow = false) = 0;
-    #ifdef FSWATCH_FSEVENTS
-        virtual void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) = 0;
-    #else
-        virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
-    #endif
-    virtual bool ok() const = 0;
-    // Does this monitor generate 'exist' events at startup?
-    virtual bool generatesExist() const {
-        return false;
-    }
-    virtual bool isRecursive() const {
-        return false;
-    }
-    // Save significant errno after monitor calls
-    int saved_errno{0};
-};
+#ifdef RCL_MONITOR
+
+#include "rclmonrcv.h"
+
+
+/* ==== CLASS RclMonitor: definition of member functions ==== */
+
+RclMonitor::RclMonitor() {}
+RclMonitor::~RclMonitor() {}
+
+#ifdef FSWATCH_FSEVENTS
+#else
+    bool RclMonitor::getEvent(RclMonEvent& ev, int msecs = -1) = 0;
+#endif
+// Does this monitor generate 'exist' events at startup?
+bool RclMonitor::generatesExist() {
+    return false;
+}
+bool RclMonitor::isRecursive() {
+    return false;
+}
+// Save significant errno after monitor calls
+int saved_errno{0};
+
 
 // Monitor factory. We only have one compiled-in kind at a time, no
 // need for a 'kind' parameter
@@ -932,188 +881,282 @@ void startRunLoop() {
 }
 
 
-class RclFSEvents : public RclMonitor {
-public:
-    RclFSEvents() : lconfigPtr(nullptr), walkerPtr(nullptr), m_ok(true) {
-        // Initialize FSEvents stream
+RclFSEvents::RclFSEvents() : lconfigPtr(nullptr), walkerPtr(nullptr), m_ok(true) {
+    // Initialize FSEvents stream
+}
+
+RclFSEvents::~RclFSEvents() {
+    if (m_stream) {
+        FSEventStreamStop(m_stream);
+        FSEventStreamInvalidate(m_stream);
+        FSEventStreamRelease(m_stream);
     }
+}
 
-    virtual ~RclFSEvents() {
-        if (m_stream) {
-            FSEventStreamStop(m_stream);
-            FSEventStreamInvalidate(m_stream);
-            FSEventStreamRelease(m_stream);
-        }
-    }
+/* Description of events listed at https://developer.apple.com/documentation/coreservices/1455361-fseventstreameventflags
 
-    static void fsevents_callback(
-        ConstFSEventStreamRef streamRef,
-        void *clientCallBackInfo,
-        size_t numEvents,
-        void *eventPaths,
-        const FSEventStreamEventFlags eventFlags[],
-        const FSEventStreamEventId eventIds[]) {
-        
-        RclFSEvents *self = static_cast<RclFSEvents *>(clientCallBackInfo);
-        char **paths = (char **)eventPaths;
-        
-        for (size_t i = 0; i < numEvents; ++i) {
-            std::string path = paths[i];
-            std::cout << "Changed path: " << path << std::endl;
+1. **`kFSEventStreamEventFlagNone`**:
+   - Indicates that there is no special event or condition associated with this event. It represents a standard file system change event.
 
-            if (rclMonShouldSkip(path, *self->lconfigPtr, *self->walkerPtr))
-                continue;
-            
-            RclMonEvent ev;
-            ev.m_path = path;
+2. **`kFSEventStreamEventFlagMustScanSubDirs`**:
+   - This flag indicates that the directory contents changed, and the system cannot determine which files or subdirectories changed. As a result, the entire directory and its contents must be scanned.
 
-            if (eventFlags[i] & kFSEventStreamEventFlagItemCreated) {
-                ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
-                std::cout << "    - Event type: CREATE" << std::endl;
+3. **`kFSEventStreamEventFlagUserDropped`**:
+   - This flag indicates that the event queue overflowed, and the user-space process dropped events. You should scan the directory again to determine what has changed.
+
+4. **`kFSEventStreamEventFlagKernelDropped`**:
+   - This flag indicates that the kernel event queue overflowed, and the kernel dropped events. Similar to `kFSEventStreamEventFlagUserDropped`, you should scan the directory to determine changes.
+
+5. **`kFSEventStreamEventFlagEventIdsWrapped`**:
+   - Indicates that the event ID counter has wrapped around. This typically occurs if the event queue has been running for a very long time or if there is an issue with the event ID generation.
+
+6. **`kFSEventStreamEventFlagHistoryDone`**:
+   - Indicates that the historical event replay is complete. This flag is sent when you request historical events (e.g., from a specific time) and the system has finished sending all past events.
+
+7. **`kFSEventStreamEventFlagRootChanged`**:
+   - Indicates that the monitored volume or directory’s root path has changed, such as due to a volume being renamed or unmounted and remounted.
+
+8. **`kFSEventStreamEventFlagMount`**:
+   - Indicates that a volume has been mounted on the system. This event is useful for detecting when a new volume becomes available.
+
+9. **`kFSEventStreamEventFlagUnmount`**:
+   - Indicates that a volume has been unmounted from the system. It is the counterpart to `kFSEventStreamEventFlagMount`.
+
+10. **`kFSEventStreamEventFlagItemChangeOwner`**:
+    - Indicates that the ownership of an item has changed. This could happen if the file or directory’s owner is modified.
+
+11. **`kFSEventStreamEventFlagItemCreated`**:
+    - Indicates that an item (file or directory) was created.
+
+12. **`kFSEventStreamEventFlagItemFinderInfoMod`**:
+    - Indicates that the Finder information (metadata such as labels) of an item has been modified.
+
+13. **`kFSEventStreamEventFlagItemInodeMetaMod`**:
+    - Indicates that the inode metadata of an item has been modified. This could include changes to permissions, timestamps, or other inode-level information. This flag is triggered when there are changes to the inode metadata of a file or directory. Inode metadata includes attributes such as file permissions, ownership, timestamps (e.g., creation, modification, and access times), and link counts. It does not indicate changes to the actual content of the file. Instead, it focuses on changes at the file system level, such as when you change the permissions (chmod), ownership (chown), or other metadata of a file or directory.
+
+14. **`kFSEventStreamEventFlagItemIsDir`**:
+    - Indicates that the event is associated with a directory.
+
+15. **`kFSEventStreamEventFlagItemIsFile`**:
+    - Indicates that the event is associated with a file.
+
+16. **`kFSEventStreamEventFlagItemIsHardlink`**:
+    - Indicates that the item is a hard link.
+
+17. **`kFSEventStreamEventFlagItemIsLastHardlink`**:
+    - Indicates that this event is associated with the last hard link to a file being removed.
+
+18. **`kFSEventStreamEventFlagItemIsSymlink`**:
+    - Indicates that the item is a symbolic link.
+
+19. **`kFSEventStreamEventFlagItemModified`**:
+    - Indicates that an item has been modified. This includes content changes in a file. This flag is triggered when the actual content of the file is modified. It indicates that the data within the file has changed, which typically happens when the file is opened for writing and then closed. It focuses on the contents of the file rather than its metadata.
+
+20. **`kFSEventStreamEventFlagItemRemoved`**:
+    - Indicates that an item (file or directory) was removed.
+
+21. **`kFSEventStreamEventFlagItemRenamed`**:
+    - Indicates that an item was renamed.
+
+22. **`kFSEventStreamEventFlagItemXattrMod`**:
+    - Indicates that the extended attributes of an item were modified.
+
+23. **`kFSEventStreamEventFlagOwnEvent`**:
+    - Indicates that the event was triggered by the current process. This is useful for ignoring changes your own application made.
+
+24. **`kFSEventStreamEventFlagItemCloned`**:
+    - Indicates that the item was cloned, often associated with features like APFS's copy-on-write cloning.
+
+*/
+
+void RclFSEvents::fsevents_callback(
+    ConstFSEventStreamRef streamRef,
+    void *clientCallBackInfo,
+    size_t numEvents,
+    void *eventPaths,
+    const FSEventStreamEventFlags eventFlags[],
+    const FSEventStreamEventId eventIds[]) {
+    
+    RclFSEvents *self = static_cast<RclFSEvents *>(clientCallBackInfo);
+    char **paths = (char **)eventPaths;
+    
+    for (size_t i = 0; i < numEvents; ++i) {
+        std::string path = paths[i];
+        std::cout << "Changed path: " << path << std::endl;
+
+        if (rclMonShouldSkip(path, *self->lconfigPtr, *self->walkerPtr))
+            continue;
+
+        RclMonEvent ev;
+        ev.m_path = path;
+        ev.m_etyp = RclMonEvent::RCLEVT_NONE;
+
+        bool isDir = eventFlags[i] & kFSEventStreamEventFlagItemIsDir;
+
+        // Handle file creation
+        if (eventFlags[i] & kFSEventStreamEventFlagItemCreated) {
+            if (isDir) {
+                ev.m_etyp |= RclMonEvent::RCLEVT_DIRCREATE;
+                std::cout << "    - Event type: DIRECTORY CREATED" << std::endl;
+            } else {
+                ev.m_etyp |= RclMonEvent::RCLEVT_MODIFY;
+                std::cout << "    - Event type: FILE CREATED" << std::endl;
             }
-            if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved) {
-                ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
-                std::cout << "    - Event type: DELETE" << std::endl;
-            }
-            if (eventFlags[i] & kFSEventStreamEventFlagItemInodeMetaMod) {
-                ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
-                std::cout << "    - Event type: METADATA MODIFY" << std::endl;
-            }
-            if (eventFlags[i] & kFSEventStreamEventFlagItemRenamed) {
-                ev.m_etyp = RclMonEvent::RCLEVT_MODIFY; // Handle renames as modify for now
-                std::cout << "    - Event type: RENAME (handled as MODIFY)" << std::endl;
-            }
-            if (eventFlags[i] & kFSEventStreamEventFlagItemModified) {
-                ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
-                std::cout << "    - Event type: MODIFY" << std::endl;
-            }
+        }
 
-            if (ev.m_etyp != RclMonEvent::RCLEVT_NONE) {
-                self->m_eventQueue.push_back(ev); // Store the event for later processing
+        // Handle file removal
+        if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved) {
+            ev.m_etyp |= RclMonEvent::RCLEVT_DELETE;
+            if (isDir) {
+                ev.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
+                std::cout << "    - Event type: DIRECTORY REMOVED" << std::endl;
+            } else {
+                std::cout << "    - Event type: FILE REMOVED" << std::endl;
             }
         }
-    }
 
-    bool getEvent(RclMonEvent& ev, int msecs = -1) {
-        if (m_eventQueue.empty()) {
-            return false; // No events available
+        // Handle inode metadata modification
+        if (eventFlags[i] & kFSEventStreamEventFlagItemInodeMetaMod) {
+            ev.m_etyp |= RclMonEvent::RCLEVT_MODIFY;
+            std::cout << "    - Event type: METADATA MODIFIED" << std::endl;
         }
 
-        ev = m_eventQueue.front();
-        m_eventQueue.erase(m_eventQueue.begin());
-        return true;
-    }
-
-    virtual bool ok() const override {
-        return m_ok;
-    }
-
-    void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) override {
-        
-        this->queue = queue;
-        this->lconfigPtr = &lconfig;
-        this->walkerPtr = &walker;
-
-        setupAndStartStream();  // Initial setup and start
-
-        // Create a custom run loop source to keep the run loop running
-        RunLoopSourceContext runLoopContext;
-        runLoopContext.shouldKeepRunning = true;
-
-        CFRunLoopSourceRef runLoopSource = CreateCustomRunLoopSource(&runLoopContext);
-        CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopDefaultMode);
-
-        std::cout << "ABOUT TO START CFRUNLOOP" << std::endl;
-        CFRunLoopRun(); // Start the run loop
-
-        std::cout << "Run loop has exited." << std::endl;
-
-        // Clean up
-        CFRelease(runLoopSource);
-        std::cout << "FINISHED CFRUNLOOP" << std::endl;
-    }
-
-    void setupAndStartStream() {
-        if (m_stream) {
-            // Stop and release the existing stream if it's already running
-            FSEventStreamStop(m_stream);
-            FSEventStreamInvalidate(m_stream);
-            FSEventStreamRelease(m_stream);
-            m_stream = nullptr;
+        // Handle content modification
+        if (eventFlags[i] & kFSEventStreamEventFlagItemModified) {
+            ev.m_etyp |= RclMonEvent::RCLEVT_MODIFY;
+            std::cout << "    - Event type: FILE MODIFIED" << std::endl;
         }
 
-        // Ensure there are paths to monitor
-        if (m_pathsToWatch.empty()) {
-            LOGSYSERR("RclFSEvents::setupAndStartStream", "m_pathsToWatch.empty()", "No paths to watch!")
-            return;
+        // Handle file renaming
+        if (eventFlags[i] & kFSEventStreamEventFlagItemRenamed) {
+            ev.m_etyp |= RclMonEvent::RCLEVT_MODIFY; // Handle renames as modify
+            std::cout << "    - Event type: FILE RENAMED" << std::endl;
         }
 
-        CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)m_pathsToWatch.data(), m_pathsToWatch.size(), &kCFTypeArrayCallBacks);
-
-        FSEventStreamContext context = { 0, this, NULL, NULL, NULL };
-        m_stream = FSEventStreamCreate(NULL,
-                                       &fsevents_callback,
-                                       &context,
-                                       pathsToWatch,
-                                       kFSEventStreamEventIdSinceNow,
-                                       1.0,
-                                       kFSEventStreamCreateFlagFileEvents);
-
-        CFRelease(pathsToWatch);
-
-        if (!m_stream) {
-            LOGSYSERR("RclFSEvents::setupAndStartStream", "FSEventStreamCreate", "Failed to create FSEventStream");
-            return;
-        }
-
-        dispatch_queue_t event_queue = dispatch_queue_create("org.recoll.fswatch", NULL);
-        FSEventStreamSetDispatchQueue(m_stream, event_queue);
-        FSEventStreamStart(m_stream);
-    }
-
-    virtual bool addWatch(const std::string& path, bool /*isDir*/, bool /*follow*/) override {
-        CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
-        if (cfPath) {
-            m_pathsToWatch.push_back(cfPath);
-            setupAndStartStream();  // Restart stream with updated paths
-            return true;
-        } else {
-            std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
-            return false;
+        // Push the event to the queue if it has a valid event type
+        if (ev.m_etyp != RclMonEvent::RCLEVT_NONE) {
+            self->m_eventQueue.push_back(ev); // Store the event for later processing
         }
     }
+}
 
-    void removePathFromMonitor(const std::string &path) {
-        CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
-        if (!cfPath) {
-            std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
-            return;
-        }
 
-        auto it = std::remove_if(m_pathsToWatch.begin(), m_pathsToWatch.end(),
-                                 [cfPath](CFStringRef existingPath) {
-                                     bool match = CFStringCompare(existingPath, cfPath, 0) == kCFCompareEqualTo;
-                                     if (match) {
-                                         CFRelease(existingPath);  // Release the CFStringRef if removing
-                                     }
-                                     return match;
-                                 });
-        
-        m_pathsToWatch.erase(it, m_pathsToWatch.end());
-        CFRelease(cfPath);
+bool RclFSEvents::getEvent(RclMonEvent& ev, int msecs) {
+    if (m_eventQueue.empty()) {
+        return false; // No events available
+    }
 
+    ev = m_eventQueue.front();
+    m_eventQueue.erase(m_eventQueue.begin());
+    return true;
+}
+
+bool RclFSEvents::ok() const {
+    return m_ok;
+}
+
+void RclFSEvents::startMonitoring(
+            RclMonEventQueue *queue,
+            RclConfig& lconfig,
+            FsTreeWalker& walker
+        ){
+    
+    this->queue = queue;
+    this->lconfigPtr = &lconfig;
+    this->walkerPtr = &walker;
+
+    setupAndStartStream();  // Initial setup and start
+
+    // Create a custom run loop source to keep the run loop running
+    RunLoopSourceContext runLoopContext;
+    runLoopContext.shouldKeepRunning = true;
+
+    CFRunLoopSourceRef runLoopSource = CreateCustomRunLoopSource(&runLoopContext);
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopDefaultMode);
+
+    std::cout << "ABOUT TO START CFRUNLOOP" << std::endl;
+    CFRunLoopRun(); // Start the run loop
+
+    std::cout << "Run loop has exited." << std::endl;
+
+    // Clean up
+    CFRelease(runLoopSource);
+    std::cout << "FINISHED CFRUNLOOP" << std::endl;
+}
+
+void RclFSEvents::setupAndStartStream() {
+    if (m_stream) {
+        // Stop and release the existing stream if it's already running
+        FSEventStreamStop(m_stream);
+        FSEventStreamInvalidate(m_stream);
+        FSEventStreamRelease(m_stream);
+        m_stream = nullptr;
+    }
+
+    // Ensure there are paths to monitor
+    if (m_pathsToWatch.empty()) {
+        LOGSYSERR("RclFSEvents::setupAndStartStream", "m_pathsToWatch.empty()", "No paths to watch!")
+        return;
+    }
+
+    CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)m_pathsToWatch.data(), m_pathsToWatch.size(), &kCFTypeArrayCallBacks);
+
+    FSEventStreamContext context = { 0, this, NULL, NULL, NULL };
+    m_stream = FSEventStreamCreate(NULL,
+                                   &fsevents_callback,
+                                   &context,
+                                   pathsToWatch,
+                                   kFSEventStreamEventIdSinceNow,
+                                   1.0,
+                                   kFSEventStreamCreateFlagFileEvents);
+
+    CFRelease(pathsToWatch);
+
+    if (!m_stream) {
+        LOGSYSERR("RclFSEvents::setupAndStartStream", "FSEventStreamCreate", "Failed to create FSEventStream");
+        return;
+    }
+
+    dispatch_queue_t event_queue = dispatch_queue_create("org.recoll.fswatch", NULL);
+    FSEventStreamSetDispatchQueue(m_stream, event_queue);
+    FSEventStreamStart(m_stream);
+}
+
+bool RclFSEvents::addWatch(const std::string& path, bool /*isDir*/, bool /*follow*/) {
+    CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
+    if (cfPath) {
+        m_pathsToWatch.push_back(cfPath);
         setupAndStartStream();  // Restart stream with updated paths
+        return true;
+    } else {
+        std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
+        return false;
+    }
+}
+
+void RclFSEvents::removePathFromMonitor(const std::string &path) {
+    CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
+    if (!cfPath) {
+        std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
+        return;
     }
 
-private:
-    RclConfig* lconfigPtr;
-    FsTreeWalker* walkerPtr;
-    bool m_ok;
-    RclMonEventQueue *queue;
-    FSEventStreamRef m_stream;
-    std::vector<CFStringRef> m_pathsToWatch;
-    std::vector<RclMonEvent> m_eventQueue;
-};
+    auto it = std::remove_if(m_pathsToWatch.begin(), m_pathsToWatch.end(),
+                             [cfPath](CFStringRef existingPath) {
+                                 bool match = CFStringCompare(existingPath, cfPath, 0) == kCFCompareEqualTo;
+                                 if (match) {
+                                     CFRelease(existingPath);  // Release the CFStringRef if removing
+                                 }
+                                 return match;
+                             });
+    
+    m_pathsToWatch.erase(it, m_pathsToWatch.end());
+    CFRelease(cfPath);
+
+    setupAndStartStream();  // Restart stream with updated paths
+}
+
+
 
 #endif // FSWATCH_FSEVENTS
 
