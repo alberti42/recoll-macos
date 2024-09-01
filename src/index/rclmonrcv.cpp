@@ -1,34 +1,3 @@
-#include "autoconfig.h"
-
-#ifdef RCL_MONITOR
-
-// Set the FSWATCH to the chosen library.
-#ifdef _WIN32
-    #define FSWATCH_WIN32
-#else // ! _WIN32
-    #ifdef RCL_USE_FSEVENTS
-        #define FSWATCH_FSEVENTS
-    #else // ! RCL_USE_FSEVENTS
-        #ifdef RCL_USE_INOTIFY
-            #define FSWATCH_INOTIFY
-        #else // ! RCL_USE_INOTIFY
-            #ifdef RCL_USE_FAM
-                #define FSWATCH_FAM
-            #endif // RCL_USE_FAM
-        #endif // INOTIFY
-    #endif // RCL_USE_FSEVENTS
-
-    #ifndef FSWATCH_WIN32
-        #ifndef FSWATCH_FSEVENTS
-            #ifndef FSWATCH_INOTIFY
-                #ifndef FSWATCH_FAM
-                    #error "Something went wrong. RCL_MONITOR is true, but all _WIN32, RCL_USE_INOTIFY, RCL_USE_FAM, and RCL_USE_FSEVENTS are undefined."
-                #endif // FSWATCH_FAM
-            #endif // FSWATCH_INOTIFY
-        #endif // FSWATCH_FSEVENTS
-    #endif // FSWATCH_WIN32
-#endif // _WIN32
-
 /* Copyright (C) 2006-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -75,6 +44,38 @@
 
 #include "autoconfig.h"
 
+#ifdef RCL_MONITOR
+
+// Set the FSWATCH to the chosen library.
+#ifdef _WIN32
+    #define FSWATCH_WIN32
+#else // ! _WIN32
+    #ifdef RCL_USE_FSEVENTS // darwin (i.e., MACOS)
+        #define FSWATCH_FSEVENTS
+    #else // ! RCL_USE_FSEVENTS
+        // We dont compile both the inotify and the fam interface and inotify has preference
+        #ifdef RCL_USE_INOTIFY
+            #define FSWATCH_INOTIFY
+        #else // ! RCL_USE_INOTIFY
+            #ifdef RCL_USE_FAM
+                #define FSWATCH_FAM
+            #endif // RCL_USE_FAM
+        #endif // INOTIFY
+    #endif // RCL_USE_FSEVENTS
+
+    #ifndef FSWATCH_WIN32
+        #ifndef FSWATCH_FSEVENTS
+            #ifndef FSWATCH_INOTIFY
+                #ifndef FSWATCH_FAM
+                    #error "Something went wrong. RCL_MONITOR is true, but all _WIN32, RCL_USE_INOTIFY, RCL_USE_FAM, and RCL_USE_FSEVENTS are undefined."
+                #endif // FSWATCH_FAM
+            #endif // FSWATCH_INOTIFY
+        #endif // FSWATCH_FSEVENTS
+    #endif // FSWATCH_WIN32
+#endif // _WIN32
+
+#include "autoconfig.h"
+
 #include <string>
 #include <vector>
 #include <map>
@@ -108,7 +109,7 @@ public:
 
     virtual bool addWatch(const string& path, bool isDir, bool follow = false) = 0;
     #ifdef FSWATCH_FSEVENTS
-        virtual void startMonitoring(RclMonEventQueue *queue) = 0;
+        virtual void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) = 0;
     #else
         virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
     #endif
@@ -297,6 +298,8 @@ static bool rclMonAddSubWatches(
     return true;
 }
 
+#endif // ! FSWATCH_FSEVENTS
+
 // Don't push events for skipped files. This would get filtered on the processing side
 // anyway, but causes unnecessary wakeups and messages. Do not test skippedPaths here,
 // this would be incorrect (because a topdir can be under a skippedPath and this was
@@ -309,7 +312,6 @@ static bool rclMonShouldSkip(const std::string& path, RclConfig& lconfig, FsTree
         return true;
     return false;
 }
-#endif // ! FSWATCH_FSEVENTS
 
 // Main thread routine: create watches, then forever wait for and queue events
 void *rclMonRcvRun(void *q)
@@ -345,7 +347,7 @@ void *rclMonRcvRun(void *q)
 
 #ifdef FSWATCH_FSEVENTS
     std::cout << "STARTING MONITORING: " << mon->ok() << std::endl;
-    mon->startMonitoring(queue);
+    mon->startMonitoring(queue,lconfig,walker);
     std::cout << "EXIT MONITORING" << std::endl;
 #else // ! FSWATCH_FSEVENTS
     while (queue->ok() && mon->ok()) {
@@ -354,9 +356,6 @@ void *rclMonRcvRun(void *q)
         // the process (it goes to the main thread, from which I tried to close or write to the
         // select fd, with no effect). So set a timeout so that an intr will be detected
         if (mon->getEvent(ev, 2000)) {
-            std::cout << "INSIDE" << std::endl;
-            std::cout << "PATH: " << ev.m_path << std::endl;
-            std::cout << "TYPE: " << ev.m_etyp << std::endl;
             if (rclMonShouldSkip(ev.m_path, lconfig, walker))
                 continue;
 
@@ -401,8 +400,6 @@ bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
     return found;
 }
 
-// We dont compile both the inotify and the fam interface and inotify
-// has preference
 #ifdef FSWATCH_FAM
 //////////////////////////////////////////////////////////////////////////
 /** Fam/gamin -based monitor class */
@@ -907,9 +904,8 @@ void startRunLoop() {
 
 class RclFSEvents : public RclMonitor {
 public:
-    RclFSEvents() {
+    RclFSEvents() : lconfigPtr(nullptr), walkerPtr(nullptr), m_ok(true) {
         // Initialize FSEvents stream
-        m_ok = true;
     }
 
     virtual ~RclFSEvents() {
@@ -935,6 +931,9 @@ public:
             std::string path = paths[i];
             std::cout << "Changed path: " << path << std::endl;
 
+            if (rclMonShouldSkip(path, *self->lconfigPtr, *self->walkerPtr))
+                continue;
+            
             RclMonEvent ev;
             ev.m_path = path;
 
@@ -979,8 +978,12 @@ public:
         return m_ok;
     }
 
-    void startMonitoring(RclMonEventQueue *queue) override {
+    void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) override {
+        
         this->queue = queue;
+        this->lconfigPtr = &lconfig;
+        this->walkerPtr = &walker;
+
         setupAndStartStream();  // Initial setup and start
 
         // Create a custom run loop source to keep the run loop running
@@ -1073,6 +1076,8 @@ public:
     }
 
 private:
+    RclConfig* lconfigPtr;
+    FsTreeWalker* walkerPtr;
     bool m_ok;
     RclMonEventQueue *queue;
     FSEventStreamRef m_stream;
