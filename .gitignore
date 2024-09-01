@@ -112,8 +112,6 @@ tests/indexedmimetypes/missing
 tests/indexedmimetypes/recoll.conf
 tests/indexedmimetypes/xapiandb
 tests/xattr/mimeview
-<<<<<<< HEAD
-=======
 unac/autom4te.cache
 website/faqsandhowtos/*.html
 website/idxthreads/forkingRecoll.html
@@ -123,4 +121,4 @@ website/pages/recoll-webui-install-wsgi.html
 website/pages/recoll-windows-faq.html
 website/pages/recoll-windows.html
 website/usermanual/*
->>>>>>> b85702d5 (Implement experimental feature to expand query terms not found in the index to spelling neighbours)
+*.sublime-workspace
