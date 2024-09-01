@@ -701,6 +701,8 @@ bool RclIntf::addWatch(const string& path, bool, bool follow)
         return false;
     }
     MONDEB("RclIntf::addWatch: adding " << path << " follow " << follow << "\n");
+    
+    // Define the set of events we are interested in.
     // CLOSE_WRITE is covered through MODIFY. CREATE is needed for mkdirs
     uint32_t mask = IN_MODIFY | IN_CREATE
         | IN_MOVED_FROM | IN_MOVED_TO | IN_DELETE
@@ -709,12 +711,14 @@ bool RclIntf::addWatch(const string& path, bool, bool follow)
         // set, and now it is...
         | IN_ATTRIB
 #ifdef IN_DONT_FOLLOW
-        | (follow ? 0 : IN_DONT_FOLLOW)
+        | (follow ? 0 : IN_DONT_FOLLOW)  // Optionally don't follow symlinks
 #endif
 #ifdef IN_EXCL_UNLINK
-        | IN_EXCL_UNLINK
+        | IN_EXCL_UNLINK   // Watch should be removed when the file is unlinked
 #endif
         ;
+
+    // Add the path to the inotify watch list
     int wd;
     if ((wd = inotify_add_watch(m_fd, path.c_str(), mask)) < 0) {
         saved_errno = errno;
@@ -725,20 +729,25 @@ bool RclIntf::addWatch(const string& path, bool, bool follow)
         }
         return false;
     }
+
+    // Map the watch descriptor (wd) to the path
     m_idtopath[wd] = path;
     return true;
 }
 
+// Retrieves and processes an event from the inotify queue
 // Note: return false only for queue empty or error 
 // Return EVT_NONE for bad event to keep queue processing going
 bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 {
     if (!ok())
         return false;
+
     ev.m_etyp = RclMonEvent::RCLEVT_NONE;
     MONDEB("RclIntf::getEvent:\n");
 
     if (nullptr == m_evp) {
+        // If no event is currently being processed, wait for an event
         fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(m_fd, &readfds);
@@ -747,8 +756,11 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
             timeout.tv_sec = msecs / 1000;
             timeout.tv_usec = (msecs % 1000) * 1000;
         }
+
         int ret;
         MONDEB("RclIntf::getEvent: select\n");
+
+        // Use select to wait for an event to be available on the inotify file descriptor
         if ((ret = select(m_fd + 1, &readfds, nullptr, nullptr,
                           msecs >= 0 ? &timeout : nullptr)) < 0) {
             LOGSYSERR("RclIntf::getEvent", "select", "");
@@ -756,30 +768,40 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
             return false;
         } else if (ret == 0) {
             MONDEB("RclIntf::getEvent: select timeout\n");
-            // timeout
+            // No event received within the timeout
             return false;
         }
         MONDEB("RclIntf::getEvent: select returned\n");
 
         if (!FD_ISSET(m_fd, &readfds))
             return false;
+        
+        // Read the event from the inotify file descriptor
         int rret;
         if ((rret=read(m_fd, m_evbuf, sizeof(m_evbuf))) <= 0) {
             LOGSYSERR("RclIntf::getEvent", "read", sizeof(m_evbuf));
             close();
             return false;
         }
+
+        // Set up pointers for processing the event
         m_evp = m_evbuf;
         m_ep = m_evbuf + rret;
     }
 
+    // Cast the buffer to an inotify_event structure
     struct inotify_event *evp = (struct inotify_event *)m_evp;
     m_evp += sizeof(struct inotify_event);
+    
+    // If the event has additional data, move the pointer forward
     if (evp->len > 0)
         m_evp += evp->len;
+    
+    // If all events have been processed, reset the pointers
     if (m_evp >= m_ep)
         m_evp = m_ep = nullptr;
     
+    // Find the path corresponding to the watch descriptor
     map<int,string>::const_iterator it;
     if ((it = m_idtopath.find(evp->wd)) == m_idtopath.end()) {
         LOGERR("RclIntf::getEvent: unknown wd " << evp->wd << "\n");
@@ -787,13 +809,17 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
     }
     ev.m_path = it->second;
 
+    // If the event includes a file name, append it to the path
     if (evp->len > 0) {
         ev.m_path = path_cat(ev.m_path, evp->name);
     }
 
+    // Handle the event type and set the appropriate event type for the monitor
     MONDEB("RclIntf::getEvent: " << event_name(evp->mask) << " " << ev.m_path << "\n");
 
     if ((evp->mask & IN_MOVED_FROM) && (evp->mask & IN_ISDIR)) {
+        // Directory was moved; remove the subtree entries in the map
+        // 
         // We get this when a directory is renamed. Erase the subtree
         // entries in the map. The subsequent MOVED_TO will recreate
         // them. This is probably not needed because the watches
@@ -803,7 +829,8 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
         eraseWatchSubTree(m_idtopath, ev.m_path);
     }
 
-    // IN_ATTRIB used to be not needed, but now it is
+    // Set the event type for the monitor based on the inotify event
+    // Note that IN_ATTRIB used to be not needed, but now it is
     if (evp->mask & (IN_MODIFY|IN_ATTRIB)) {
         ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
     } else if (evp->mask & (IN_DELETE | IN_MOVED_FROM)) {
@@ -814,18 +841,21 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
         if (evp->mask & IN_ISDIR) {
             ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
         } else {
+            // Treat file creation or move as a modify event
             // We used to return null event because we would get a
             // modify event later, but it seems not to be the case any
             // more (10-2011). So generate MODIFY event
             ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
         }
     } else if (evp->mask & (IN_IGNORED)) {
+        // The watch was removed; handle cleanup
         if (!m_idtopath.erase(evp->wd)) {
             LOGDEB0("Got IGNORE event for unknown watch\n");
         } else {
             eraseWatchSubTree(m_idtopath, ev.m_path);
         }
     } else {
+        // Unhandled event type
         LOGDEB("RclIntf::getEvent: unhandled event " << event_name(evp->mask) <<
                " " << evp->mask << " " << ev.m_path << "\n");
         return true;
