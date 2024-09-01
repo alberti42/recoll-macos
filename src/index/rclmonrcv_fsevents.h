@@ -41,7 +41,10 @@ public:
     bool addWatch(const std::string& path, bool isDir, bool follow = false);
     void removeWatch(const std::string &path);
 
+    CFRunLoopRef m_runLoop;
+
 private:
+    static void signalHandler(int signum);
     void removeFSEventStream();
 
     RclConfig* lconfigPtr;
@@ -50,17 +53,29 @@ private:
     RclMonEventQueue *queue;
     FSEventStreamRef m_stream;
     std::vector<CFStringRef> m_pathsToWatch;
-    CFRunLoopSourceRef m_runLoopSource;
-    CFRunLoopRef m_runLoop;
     
 #ifdef MANAGE_SEPARATE_QUEUE
-    void removeSeparateQueueLoop();
     std::vector<RclMonEvent> m_eventQueue;
     std::mutex m_queueMutex; // Mutex to protect the event queue
 #endif // MANAGE_SEPARATE_QUEUE
 };
 
 typedef RclFSEvents RclMonitorDerived;
+
+
+// Custom context for the run loop
+#ifdef MANAGE_SEPARATE_QUEUE
+typedef struct {
+    bool shouldExit;
+    RclFSEvents *monitor;
+} RunLoopSourceContext;
+#else
+// Define a structure to hold the context, including an exit flag
+typedef struct  {
+    bool shouldExit;
+} DummyTimerContext;
+#endif // MANAGE_SEPARATE_QUEUE
+
 
 #endif // FSWATCH_FSEVENTS
 

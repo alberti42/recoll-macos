@@ -301,9 +301,11 @@ void *rclMonRcvRun(void *q)
     MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() << "\n");
 
 #ifdef FSWATCH_FSEVENTS
-    std::cout << "STARTING MONITORING" << std::endl;
+    LOGINFO("rclMonRcvRun: started monitoring\n");
     mon->startMonitoring(queue,lconfig,walker);
-    std::cout << "EXIT MONITORING" << std::endl;
+    LOGINFO("rclMonRcvRun: gracefully stopped monitoring\n");
+    LOGINFO("rclMonRcvRun: signalling queue to gracefully terminate\n");
+    goto terminate;    
 #else // ! FSWATCH_FSEVENTS
     while (queue->ok() && mon->ok()) {
         RclMonEvent ev;
