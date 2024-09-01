@@ -1,5 +1,34 @@
 #include "autoconfig.h"
+
 #ifdef RCL_MONITOR
+
+// Set the FSWATCH to the chosen library.
+#ifdef _WIN32
+    #define FSWATCH_WIN32
+#else // ! _WIN32
+    #ifdef RCL_USE_FSEVENTS
+        #define FSWATCH_FSEVENTS
+    #else // ! RCL_USE_FSEVENTS
+        #ifdef RCL_USE_INOTIFY
+            #define FSWATCH_INOTIFY
+        #else // ! RCL_USE_INOTIFY
+            #ifdef RCL_USE_FAM
+                #define FSWATCH_FAM
+            #endif // RCL_USE_FAM
+        #endif // INOTIFY
+    #endif // RCL_USE_FSEVENTS
+
+    #ifndef FSWATCH_WIN32
+        #ifndef FSWATCH_FSEVENTS
+            #ifndef FSWATCH_INOTIFY
+                #ifndef FSWATCH_FAM
+                    #error "Something went wrong. RCL_MONITOR is true, but all _WIN32, RCL_USE_INOTIFY, RCL_USE_FAM, and RCL_USE_FSEVENTS are undefined."
+                #endif // FSWATCH_FAM
+            #endif // FSWATCH_INOTIFY
+        #endif // FSWATCH_FSEVENTS
+    #endif // FSWATCH_WIN32
+#endif // _WIN32
+
 /* Copyright (C) 2006-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -296,14 +325,22 @@ void *rclMonRcvRun(void *q)
         goto terminate;
     }
 
+
     // Forever wait for monitoring events and add them to queue:
     MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() << "\n");
+
+#ifdef FSWATCH_FSEVENTS
+
+#else // ! FSWATCH_FSEVENTS
     while (queue->ok() && mon->ok()) {
         RclMonEvent ev;
         // Note: I could find no way to get the select call to return when a signal is delivered to
         // the process (it goes to the main thread, from which I tried to close or write to the
         // select fd, with no effect). So set a timeout so that an intr will be detected
         if (mon->getEvent(ev, 2000)) {
+            std::cout << "INSIDE" << std::endl;
+            std::cout << "PATH: " << ev.m_path << std::endl;
+            std::cout << "TYPE: " << ev.m_etyp << std::endl;
             if (rclMonShouldSkip(ev.m_path, lconfig, walker))
                 continue;
 
@@ -322,6 +359,7 @@ void *rclMonRcvRun(void *q)
                 queue->pushEvent(ev);
         }
     }
+#endif // FSWATCH_FSEVENTS 
 
 terminate:
     queue->setTerminate();
@@ -349,8 +387,7 @@ bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
 
 // We dont compile both the inotify and the fam interface and inotify
 // has preference
-#ifndef RCL_USE_INOTIFY
-#ifdef RCL_USE_FAM
+#ifdef FSWATCH_FAM
 //////////////////////////////////////////////////////////////////////////
 /** Fam/gamin -based monitor class */
 #include <fam.h>
@@ -572,10 +609,9 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
     }
     return true;
 }
-#endif // RCL_USE_FAM
-#endif // ! INOTIFY
+#endif // FSWATCH_FAM
 
-#ifdef RCL_USE_INOTIFY
+#ifdef FSWATCH_INOTIFY
 //////////////////////////////////////////////////////////////////////////
 /** Inotify-based monitor class */
 #include <sys/inotify.h>
@@ -784,11 +820,135 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
     return true;
 }
 
-#endif // RCL_USE_INOTIFY
+#endif // FSWATCH_INOTIFY
 
+#ifdef FSWATCH_FSEVENTS
 
+#include <CoreServices/CoreServices.h>
+#include <iostream>
+#include <map>
+#include <vector>
 
-#ifdef _WIN32
+class RclFSEvents : public RclMonitor {
+public:
+    RclFSEvents() : m_ok(false) {
+        // Initialize FSEvents stream
+        m_ok = true;
+    }
+
+    virtual ~RclFSEvents() {
+        if (m_stream) {
+            FSEventStreamStop(m_stream);
+            FSEventStreamInvalidate(m_stream);
+            FSEventStreamRelease(m_stream);
+        }
+    }
+
+    static void fsevents_callback(
+        ConstFSEventStreamRef streamRef,
+        void *clientCallBackInfo,
+        size_t numEvents,
+        void *eventPaths,
+        const FSEventStreamEventFlags eventFlags[],
+        const FSEventStreamEventId eventIds[]) {
+        
+        RclFSEvents *self = static_cast<RclFSEvents *>(clientCallBackInfo);
+        char **paths = (char **)eventPaths;
+        
+        for (size_t i = 0; i < numEvents; ++i) {
+            std::string path = paths[i];
+            std::cout << "Changed path: " << path << std::endl;
+
+            RclMonEvent ev;
+            ev.m_path = path;
+
+            if (eventFlags[i] & kFSEventStreamEventFlagItemCreated) {
+                ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
+                std::cout << "    - Event type: CREATE" << std::endl;
+            }
+            if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved) {
+                ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
+                std::cout << "    - Event type: DELETE" << std::endl;
+            }
+            if (eventFlags[i] & kFSEventStreamEventFlagItemInodeMetaMod) {
+                ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+                std::cout << "    - Event type: METADATA MODIFY" << std::endl;
+            }
+            if (eventFlags[i] & kFSEventStreamEventFlagItemRenamed) {
+                ev.m_etyp = RclMonEvent::RCLEVT_MODIFY; // Handle renames as modify for now
+                std::cout << "    - Event type: RENAME (handled as MODIFY)" << std::endl;
+            }
+            if (eventFlags[i] & kFSEventStreamEventFlagItemModified) {
+                ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+                std::cout << "    - Event type: MODIFY" << std::endl;
+            }
+
+            if (ev.m_etyp != RclMonEvent::RCLEVT_NONE) {
+                self->m_eventQueue.push_back(ev); // Store the event for later processing
+            }
+        }
+    }
+
+    virtual bool addWatch(const std::string& path, bool isDir, bool follow) override {
+        std::cout << "addWatch called for path: " << path 
+                  << ", isDir: " << (isDir ? "true" : "false") 
+                  << ", follow: " << (follow ? "true" : "false") 
+                  << std::endl;
+
+        if (!ok()) return false;
+
+        m_pathsToWatch.push_back(path);
+        return true;
+    }
+
+    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) override {
+        if (m_eventQueue.empty()) {
+            return false; // No events available
+        }
+
+        ev = m_eventQueue.front();
+        m_eventQueue.erase(m_eventQueue.begin());
+        return true;
+    }
+
+    virtual bool ok() const override {
+        return m_ok;
+    }
+
+    void startMonitoring() {
+        CFStringRef mypath = CFStringCreateWithCString(NULL, m_pathsToWatch[0].c_str(), kCFStringEncodingUTF8);
+        CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)&mypath, m_pathsToWatch.size(), NULL);
+        FSEventStreamContext context = { 0, this, NULL, NULL, NULL };
+
+        m_stream = FSEventStreamCreate(NULL,
+                                       &fsevents_callback,
+                                       &context,
+                                       pathsToWatch,
+                                       kFSEventStreamEventIdSinceNow,
+                                       1.0,
+                                       kFSEventStreamCreateFlagFileEvents);
+
+        dispatch_queue_t event_queue = dispatch_queue_create("com.yourproject.fsevents", NULL);
+        FSEventStreamSetDispatchQueue(m_stream, event_queue);
+
+        FSEventStreamStart(m_stream);
+
+        CFRelease(pathsToWatch);
+        CFRelease(mypath);
+
+        CFRunLoopRun(); // Start the event loop
+    }
+
+private:
+    bool m_ok;
+    FSEventStreamRef m_stream;
+    std::vector<std::string> m_pathsToWatch;
+    std::vector<RclMonEvent> m_eventQueue;
+};
+
+#endif // FSWATCH_FSEVENTS
+
+#ifdef FSWATCH_WIN32
 
 /*
  * WIN32 VERSION NOTES: 
@@ -1236,24 +1396,28 @@ bool RclFSWatchWin32::pathInWatches(const std::string& path)
     return false;
 }
 
-#endif // _WIN32
+#endif // FSWATCH_WIN32
 
 
 ///////////////////////////////////////////////////////////////////////
 // The monitor 'factory'
 static RclMonitor *makeMonitor()
 {
-#ifdef _WIN32
+#ifdef FSWATCH_WIN32
     return new RclMonitorWin32;
-#else
-#  ifdef RCL_USE_INOTIFY
-    return new RclIntf;
-#  elif defined(RCL_USE_FAM)
-    return new RclFAM;
-#  endif
 #endif
-    LOGINFO("RclMonitor: neither Inotify nor Fam was compiled as file system "
-            "change notification interface\n");
+#ifdef FSWATCH_FSEVENTS
+    return new RclFSEvents;
+#endif
+#ifdef FSWATCH_INOTIFY
+    return new RclIntf;
+#endif
+#ifdef FSWATCH_FAM
+    return new RclFAM;
+#endif
+    // This part of the code will never be reached. However, to be safe, we can keep it.
+    LOGINFO("RclMonitor: none of the following, Inotify, Fam, fsevents was compiled as file system "
+                "change notification interface\n");
     return nullptr;
 }
 
