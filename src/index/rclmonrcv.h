@@ -56,19 +56,19 @@ using std::map;
 class RclMonitor {
 public:
     RclMonitor();
-    virtual ~RclMonitor();
+    ~RclMonitor();
 
-    virtual bool addWatch(const std::string& path, bool isDir, bool follow = false) = 0;
+    bool addWatch(const std::string& path, bool isDir, bool follow = false); // abstract function
 
     #ifdef FSWATCH_FSEVENTS
-        virtual void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) = 0;
+        void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker);
     #else
-        virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
+        bool getEvent(RclMonEvent& ev, int msecs = -1);
     #endif
 
-    virtual bool ok() const = 0;
-    virtual bool generatesExist();
-    virtual bool isRecursive();
+    bool ok() const;
+    bool generatesExist();
+    bool isRecursive();
 
     // Save significant errno after monitor calls
     int saved_errno{0};

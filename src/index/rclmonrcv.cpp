@@ -54,6 +54,8 @@
 #include "rclmonrcv.h"
 #include "rclmonrcv_fsevents.h"
 #include "rclmonrcv_inotify.h"
+#include "rclmonrcv_fam.h"
+#include "rclmonrcv_win32.h"
 
 /* ==== CLASS RclMonitor: definition of member functions ==== */
 
@@ -76,7 +78,7 @@ int saved_errno{0};
 
 // Monitor factory. We only have one compiled-in kind at a time, no
 // need for a 'kind' parameter
-static RclMonitor *makeMonitor();
+static RclMonitorDerived *makeMonitor();
 
 /** 
  * Create directory watches during the initial file system tree walk.
@@ -88,7 +90,7 @@ static RclMonitor *makeMonitor();
  */
 class WalkCB : public FsTreeWalkerCB {
 public:
-    WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue, FsTreeWalker& walker)
+    WalkCB(RclConfig *conf, RclMonitorDerived *mon, RclMonEventQueue *queue, FsTreeWalker& walker)
         : m_config(conf), m_mon(mon), m_queue(queue), m_walker(walker) {}
     virtual ~WalkCB() {}
 
@@ -158,14 +160,14 @@ public:
 
 private:
     RclConfig         *m_config;
-    RclMonitor        *m_mon;
+    RclMonitorDerived *m_mon;
     RclMonEventQueue  *m_queue;
     FsTreeWalker&      m_walker;
     bool m_initfollow{true};
 };
 
 static bool rclMonAddTopWatches(
-    FsTreeWalker& walker, RclConfig& lconfig, RclMonitor *mon, RclMonEventQueue *queue)
+    FsTreeWalker& walker, RclConfig& lconfig, RclMonitorDerived *mon, RclMonEventQueue *queue)
 {
     // Get top directories from config. Special monitor sublist if
     // set, else full list.
@@ -234,7 +236,7 @@ static bool rclMonAddTopWatches(
 // Fixme
 static bool rclMonAddSubWatches(
     const std::string& path, FsTreeWalker& walker, RclConfig& lconfig,
-    RclMonitor *mon, RclMonEventQueue *queue)
+    RclMonitorDerived *mon, RclMonEventQueue *queue)
 {
     WalkCB walkcb(&lconfig, mon, queue, walker);
     if (walker.walk(path, walkcb) != FsTreeWalker::FtwOk) {
@@ -275,7 +277,7 @@ void *rclMonRcvRun(void *q)
     RclConfig lconfig(*queue->getConfig());
 
     // Create the fam/whatever interface object
-    RclMonitor *mon;
+    RclMonitorDerived *mon;
     if ((mon = makeMonitor()) == nullptr) {
         LOGERR("rclMonRcvRun: makeMonitor failed\n");
         queue->setTerminate();
@@ -351,7 +353,7 @@ bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
 
 ///////////////////////////////////////////////////////////////////////
 // The monitor 'factory'
-static RclMonitor *makeMonitor()
+static RclMonitorDerived *makeMonitor()
 {
 #ifdef FSWATCH_WIN32
     return new RclMonitorWin32;

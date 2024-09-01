@@ -10,11 +10,11 @@
 class RclIntf : public RclMonitor {
 public:
     RclIntf();
-    virtual ~RclIntf();
+    ~RclIntf();
 
-    virtual bool addWatch(const string& path, bool isdir, bool follow) override;
-    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) override;
-    bool ok() const override;
+    bool addWatch(const string& path, bool isdir, bool follow);
+    bool getEvent(RclMonEvent& ev, int msecs = -1);
+    bool ok() const;
 
 private:
     bool m_ok;
@@ -26,6 +26,8 @@ private:
     const char *event_name(int code);
     void close();
 };
+
+typedef RclIntf RclMonitorDerived;
 
 #endif // FSWATCH_INOTIFY
 

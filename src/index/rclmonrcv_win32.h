@@ -8,18 +8,18 @@
 // Adapter for the rclmon interface
 class RclMonitorWin32 : public RclMonitor, public FileWatchListener {
 public:
-    virtual ~RclMonitorWin32() {}
-    virtual bool addWatch(const string& path, bool /*isDir*/, bool /*follow*/) override;
+    ~RclMonitorWin32() {}
+    bool addWatch(const string& path, bool /*isDir*/, bool /*follow*/);
 
-    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) override;
+    bool getEvent(RclMonEvent& ev, int msecs = -1);
 
-    virtual bool ok() const override;
+    bool ok() const;
 
     // Does this monitor generate 'exist' events at startup?
-    virtual bool generatesExist() const override;
+    virtual bool generatesExist() const;
 
     // Can the caller avoid setting watches on subdirs ?
-    virtual bool isRecursive() const override;
+    virtual bool isRecursive() const;
 
     virtual void handleFileAction(WatchID /*watchid*/, const std::string& dir, const std::string& fn,
                                   Action action, bool isdir, std::string oldfn = "");
@@ -31,6 +31,7 @@ private:
     RclFSWatchWin32 m_fswatcher;
 };
 
+typedef RclMonitorWin32 RclMonitorDerived;
 
 #endif // FSWATCH_WIN32
 

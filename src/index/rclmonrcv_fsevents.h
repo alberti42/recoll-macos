@@ -13,7 +13,7 @@
 class RclFSEvents : public RclMonitor {
 public:
     RclFSEvents();
-    virtual ~RclFSEvents();
+    ~RclFSEvents();
 
     static void fsevents_callback(
         ConstFSEventStreamRef streamRef,
@@ -25,12 +25,12 @@ public:
 
     bool getEvent(RclMonEvent& ev, int msecs = -1);
 
-    virtual bool ok() const override;
+    bool ok() const;
 
-    void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) override;
+    void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker);
     void setupAndStartStream();
 
-    virtual bool addWatch(const std::string& path, bool /*isDir*/, bool /*follow*/) override;
+    bool addWatch(const std::string& path, bool isDir, bool follow = false);
 
     void removePathFromMonitor(const std::string &path);
 
@@ -44,6 +44,8 @@ private:
     std::vector<RclMonEvent> m_eventQueue;
     CFRunLoopSourceRef runLoopSource;
 };
+
+typedef RclFSEvents RclMonitorDerived;
 
 #endif // FSWATCH_FSEVENTS
 

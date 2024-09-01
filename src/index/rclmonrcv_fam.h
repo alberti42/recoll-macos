@@ -11,11 +11,11 @@
 class RclFAM : public RclMonitor {
 public:
     RclFAM();
-    virtual ~RclFAM();
-    virtual bool addWatch(const string& path, bool isdir, bool follow) override;
-    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) override;
-    bool ok() override const {return m_ok;}
-    virtual bool generatesExist() override const {return true;}
+    ~RclFAM();
+    bool addWatch(const string& path, bool isdir, bool follow);
+    bool getEvent(RclMonEvent& ev, int msecs = -1);
+    bool ok() const {return m_ok;}
+    bool generatesExist() const {return true;}
 
 private:
     bool m_ok;
@@ -27,6 +27,8 @@ private:
     map<int,string> m_idtopath;
     const char *event_name(int code);
 };
+
+typedef RclFAM RclMonitorDerived;
 
 #endif // FSWATCH_FAM
 
