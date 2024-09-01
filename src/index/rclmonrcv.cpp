@@ -304,7 +304,7 @@ void *rclMonRcvRun(void *q)
     LOGINFO("rclMonRcvRun: started monitoring\n");
     mon->startMonitoring(queue,lconfig,walker);
     LOGINFO("rclMonRcvRun: gracefully stopped monitoring\n");
-    LOGINFO("rclMonRcvRun: signalling queue to gracefully terminate\n");
+    LOGINFO("rclMonRcvRun: signaling the queue to gracefully terminate\n");
     goto terminate;    
 #else // ! FSWATCH_FSEVENTS
     while (queue->ok() && mon->ok()) {

@@ -208,9 +208,9 @@ void RclFSEvents::startMonitoring(
         RclConfig& lconfig,
         FsTreeWalker& walker) {
 
-    this->queue = queue;
-    this->lconfigPtr = &lconfig;
-    this->walkerPtr = &walker;
+    this->m_queue = queue;
+    this->m_lconfigPtr = &lconfig;
+    this->m_walkerPtr = &walker;
 
     setupAndStartStream();  // Initial setup and start
 
@@ -254,7 +254,7 @@ void RclFSEvents::startMonitoring(
 
 }
 
-RclFSEvents::RclFSEvents() : lconfigPtr(nullptr), walkerPtr(nullptr), m_ok(true) {
+RclFSEvents::RclFSEvents() : m_lconfigPtr(nullptr), m_walkerPtr(nullptr), m_ok(true) {
     // Initialize FSEvents stream
 }
 
@@ -280,7 +280,7 @@ void RclFSEvents::fsevents_callback(
     for (size_t i = 0; i < numEvents; ++i) {
         string path = paths[i];
 
-        if (rclMonShouldSkip(path, *self->lconfigPtr, *self->walkerPtr))
+        if (rclMonShouldSkip(path, *self->m_lconfigPtr, *self->m_walkerPtr))
             continue;
 
         RclMonEvent event;
@@ -293,10 +293,10 @@ void RclFSEvents::fsevents_callback(
         if (eventFlags[i] & kFSEventStreamEventFlagItemCreated) {
             if (isDir) {
                 event.m_etyp |= RclMonEvent::RCLEVT_DIRCREATE;
-                LOGINFO("RclFSEvents::fsevents_callback:     - Event type: DIRECTORY CREATED" << std::endl);
+                LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY CREATED: " << path << std::endl);
             } else {
                 event.m_etyp |= RclMonEvent::RCLEVT_MODIFY;
-                LOGINFO("RclFSEvents::fsevents_callback:    - Event type: FILE CREATED" << std::endl);
+                LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE CREATED: " << path << std::endl);
             }
         }
 
@@ -305,28 +305,28 @@ void RclFSEvents::fsevents_callback(
             event.m_etyp |= RclMonEvent::RCLEVT_DELETE;
             if (isDir) {
                 event.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
-                LOGINFO("RclFSEvents::fsevents_callback:    - Event type: DIRECTORY REMOVED" << std::endl);
+                LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY REMOVED: " << path << std::endl);
             } else {
-                LOGINFO("RclFSEvents::fsevents_callback:    - Event type: FILE REMOVED" << std::endl);
+                LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE REMOVED: " << path << std::endl);
             }
         }
 
         // Handle inode metadata modification
         if (eventFlags[i] & kFSEventStreamEventFlagItemInodeMetaMod) {
             event.m_etyp |= RclMonEvent::RCLEVT_MODIFY;
-            LOGINFO("RclFSEvents::fsevents_callback:    - Event type: METADATA MODIFIED" << std::endl);
+            LOGINFO("RclFSEvents::fsevents_callback: Event type: METADATA MODIFIED: " << path << std::endl);
         }
 
         // Handle content modification
         if (eventFlags[i] & kFSEventStreamEventFlagItemModified) {
             event.m_etyp |= RclMonEvent::RCLEVT_MODIFY;
-            LOGINFO("RclFSEvents::fsevents_callback:    - Event type: FILE MODIFIED" << std::endl);
+            LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE MODIFIED: " << path << std::endl);
         }
 
         // Handle file renaming
         if (eventFlags[i] & kFSEventStreamEventFlagItemRenamed) {
             event.m_etyp |= RclMonEvent::RCLEVT_MODIFY; // Handle renames as modify
-            LOGINFO("RclFSEvents::fsevents_callback:    - Event type: FILE RENAMED" << std::endl);
+            LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE RENAMED: " << path << std::endl);
         }
 
         if (event.m_etyp != RclMonEvent::RCLEVT_NONE) {
@@ -340,6 +340,9 @@ void RclFSEvents::fsevents_callback(
             
             // Manually unlock the mutex before signaling the run loop
             lockInstance.unlock();  // Unlock the mutex
+#else
+            // We push the event on the queue; pushEvent handles the operation in a thread-safe manner mutex
+            self->m_queue->pushEvent(event);
 #endif // MANAGE_SEPARATE_QUEUE
         }
     }

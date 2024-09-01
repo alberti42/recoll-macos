@@ -7,7 +7,10 @@
 
 #ifdef FSWATCH_FSEVENTS
 
-#define MANAGE_SEPARATE_QUEUE
+// This macro is supposed to be commented out
+// This disable a whole part of code that was written but is at the moment
+// not useful. It is unclear whether it will be necessary in the future.
+// #define MANAGE_SEPARATE_QUEUE
 
 #include <CoreServices/CoreServices.h>
 #include <iostream>
@@ -47,10 +50,10 @@ private:
     static void signalHandler(int signum);
     void removeFSEventStream();
 
-    RclConfig* lconfigPtr;
-    FsTreeWalker* walkerPtr;
+    RclConfig* m_lconfigPtr;
+    FsTreeWalker* m_walkerPtr;
     bool m_ok;
-    RclMonEventQueue *queue;
+    RclMonEventQueue *m_queue;
     FSEventStreamRef m_stream;
     std::vector<CFStringRef> m_pathsToWatch;
     
@@ -61,7 +64,6 @@ private:
 };
 
 typedef RclFSEvents RclMonitorDerived;
-
 
 // Custom context for the run loop
 #ifdef MANAGE_SEPARATE_QUEUE
