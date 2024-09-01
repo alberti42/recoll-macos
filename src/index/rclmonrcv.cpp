@@ -107,7 +107,11 @@ public:
     virtual ~RclMonitor() {}
 
     virtual bool addWatch(const string& path, bool isDir, bool follow = false) = 0;
-    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
+    #ifdef FSWATCH_FSEVENTS
+        virtual void startMonitoring(RclMonEventQueue *queue) = 0;
+    #else
+        virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
+    #endif
     virtual bool ok() const = 0;
     // Does this monitor generate 'exist' events at startup?
     virtual bool generatesExist() const {
@@ -158,6 +162,11 @@ public:
             // whatever events we may already have on queue
             while (m_queue->ok() && m_mon->ok()) {
                 RclMonEvent ev;
+#ifdef FSWATCH_FSEVENTS
+                // FIXME
+                MONDEB("walkerCB: no event pending\n");
+                break;
+#else
                 if (m_mon->getEvent(ev, 0)) {
                     if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
                         m_queue->pushEvent(ev);
@@ -165,6 +174,7 @@ public:
                     MONDEB("walkerCB: no event pending\n");
                     break;
                 }
+#endif
             }
             if (!m_mon || !m_mon->ok())
                 return FsTreeWalker::FtwError;
@@ -269,6 +279,9 @@ static bool rclMonAddTopWatches(
     return true;
 }
 
+#ifndef FSWATCH_FSEVENTS
+// We do not need it when working with fsevents
+// Fixme
 static bool rclMonAddSubWatches(
     const std::string& path, FsTreeWalker& walker, RclConfig& lconfig,
     RclMonitor *mon, RclMonEventQueue *queue)
@@ -296,6 +309,7 @@ static bool rclMonShouldSkip(const std::string& path, RclConfig& lconfig, FsTree
         return true;
     return false;
 }
+#endif // ! FSWATCH_FSEVENTS
 
 // Main thread routine: create watches, then forever wait for and queue events
 void *rclMonRcvRun(void *q)
@@ -330,7 +344,9 @@ void *rclMonRcvRun(void *q)
     MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() << "\n");
 
 #ifdef FSWATCH_FSEVENTS
-
+    std::cout << "STARTING MONITORING: " << mon->ok() << std::endl;
+    mon->startMonitoring(queue);
+    std::cout << "EXIT MONITORING" << std::endl;
 #else // ! FSWATCH_FSEVENTS
     while (queue->ok() && mon->ok()) {
         RclMonEvent ev;
@@ -829,9 +845,69 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 #include <map>
 #include <vector>
 
+// Custom context for the run loop source
+typedef struct {
+    CFRunLoopSourceRef source;
+    bool shouldKeepRunning;
+} RunLoopSourceContext;
+
+void PerformCustomSourceAction(void *info) {
+    // This function would perform some action when the run loop source is triggered.
+    std::cout << "Custom run loop source action performed." << std::endl;
+}
+
+void RunLoopSourceScheduleRoutine(void *info, CFRunLoopRef rl, CFStringRef mode) {
+    // This function will be called when the source is added to the run loop
+    std::cout << "Custom source scheduled in run loop." << std::endl;
+}
+
+void RunLoopSourceCancelRoutine(void *info, CFRunLoopRef rl, CFStringRef mode) {
+    // This function will be called when the source is removed from the run loop
+    std::cout << "Custom source canceled in run loop." << std::endl;
+}
+
+CFRunLoopSourceRef CreateCustomRunLoopSource(RunLoopSourceContext *context) {
+    CFRunLoopSourceContext sourceContext = {
+        0,                      // Version (unused)
+        context,                // Info pointer (your custom context)
+        NULL,                   // Retain (unused)
+        NULL,                   // Release (unused)
+        NULL,                   // CopyDescription (unused)
+        NULL,                   // Equal (unused)
+        NULL,                   // Hash (unused)
+        RunLoopSourceScheduleRoutine,  // Schedule
+        RunLoopSourceCancelRoutine,    // Cancel
+        PerformCustomSourceAction      // Perform
+    };
+
+    // Create the run loop source
+    context->source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &sourceContext);
+    return context->source;
+}
+
+void startRunLoop() {
+    std::cout << "Starting the run loop..." << std::endl;
+
+    RunLoopSourceContext context;
+    context.shouldKeepRunning = true;
+
+    // Create and add the custom source to the run loop
+    CFRunLoopSourceRef source = CreateCustomRunLoopSource(&context);
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+
+    // Start the run loop (this should now block the thread)
+    CFRunLoopRun();
+
+    // Clean up after the run loop exits
+    CFRelease(source);
+
+    std::cout << "Run loop has exited." << std::endl;
+}
+
+
 class RclFSEvents : public RclMonitor {
 public:
-    RclFSEvents() : m_ok(false) {
+    RclFSEvents() {
         // Initialize FSEvents stream
         m_ok = true;
     }
@@ -889,19 +965,7 @@ public:
         }
     }
 
-    virtual bool addWatch(const std::string& path, bool isDir, bool follow) override {
-        std::cout << "addWatch called for path: " << path 
-                  << ", isDir: " << (isDir ? "true" : "false") 
-                  << ", follow: " << (follow ? "true" : "false") 
-                  << std::endl;
-
-        if (!ok()) return false;
-
-        m_pathsToWatch.push_back(path);
-        return true;
-    }
-
-    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) override {
+    bool getEvent(RclMonEvent& ev, int msecs = -1) {
         if (m_eventQueue.empty()) {
             return false; // No events available
         }
@@ -915,11 +979,45 @@ public:
         return m_ok;
     }
 
-    void startMonitoring() {
-        CFStringRef mypath = CFStringCreateWithCString(NULL, m_pathsToWatch[0].c_str(), kCFStringEncodingUTF8);
-        CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)&mypath, m_pathsToWatch.size(), NULL);
-        FSEventStreamContext context = { 0, this, NULL, NULL, NULL };
+    void startMonitoring(RclMonEventQueue *queue) override {
+        this->queue = queue;
+        setupAndStartStream();  // Initial setup and start
 
+        // Create a custom run loop source to keep the run loop running
+        RunLoopSourceContext runLoopContext;
+        runLoopContext.shouldKeepRunning = true;
+
+        CFRunLoopSourceRef runLoopSource = CreateCustomRunLoopSource(&runLoopContext);
+        CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopDefaultMode);
+
+        std::cout << "ABOUT TO START CFRUNLOOP" << std::endl;
+        CFRunLoopRun(); // Start the run loop
+
+        std::cout << "Run loop has exited." << std::endl;
+
+        // Clean up
+        CFRelease(runLoopSource);
+        std::cout << "FINISHED CFRUNLOOP" << std::endl;
+    }
+
+    void setupAndStartStream() {
+        if (m_stream) {
+            // Stop and release the existing stream if it's already running
+            FSEventStreamStop(m_stream);
+            FSEventStreamInvalidate(m_stream);
+            FSEventStreamRelease(m_stream);
+            m_stream = nullptr;
+        }
+
+        // Ensure there are paths to monitor
+        if (m_pathsToWatch.empty()) {
+            LOGSYSERR("RclFSEvents::setupAndStartStream", "m_pathsToWatch.empty()", "No paths to watch!")
+            return;
+        }
+
+        CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)m_pathsToWatch.data(), m_pathsToWatch.size(), &kCFTypeArrayCallBacks);
+
+        FSEventStreamContext context = { 0, this, NULL, NULL, NULL };
         m_stream = FSEventStreamCreate(NULL,
                                        &fsevents_callback,
                                        &context,
@@ -928,21 +1026,57 @@ public:
                                        1.0,
                                        kFSEventStreamCreateFlagFileEvents);
 
-        dispatch_queue_t event_queue = dispatch_queue_create("com.yourproject.fsevents", NULL);
-        FSEventStreamSetDispatchQueue(m_stream, event_queue);
-
-        FSEventStreamStart(m_stream);
-
         CFRelease(pathsToWatch);
-        CFRelease(mypath);
 
-        CFRunLoopRun(); // Start the event loop
+        if (!m_stream) {
+            LOGSYSERR("RclFSEvents::setupAndStartStream", "FSEventStreamCreate", "Failed to create FSEventStream");
+            return;
+        }
+
+        dispatch_queue_t event_queue = dispatch_queue_create("org.recoll.fswatch", NULL);
+        FSEventStreamSetDispatchQueue(m_stream, event_queue);
+        FSEventStreamStart(m_stream);
+    }
+
+    virtual bool addWatch(const std::string& path, bool /*isDir*/, bool /*follow*/) override {
+        CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
+        if (cfPath) {
+            m_pathsToWatch.push_back(cfPath);
+            setupAndStartStream();  // Restart stream with updated paths
+            return true;
+        } else {
+            std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
+            return false;
+        }
+    }
+
+    void removePathFromMonitor(const std::string &path) {
+        CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
+        if (!cfPath) {
+            std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
+            return;
+        }
+
+        auto it = std::remove_if(m_pathsToWatch.begin(), m_pathsToWatch.end(),
+                                 [cfPath](CFStringRef existingPath) {
+                                     bool match = CFStringCompare(existingPath, cfPath, 0) == kCFCompareEqualTo;
+                                     if (match) {
+                                         CFRelease(existingPath);  // Release the CFStringRef if removing
+                                     }
+                                     return match;
+                                 });
+        
+        m_pathsToWatch.erase(it, m_pathsToWatch.end());
+        CFRelease(cfPath);
+
+        setupAndStartStream();  // Restart stream with updated paths
     }
 
 private:
     bool m_ok;
+    RclMonEventQueue *queue;
     FSEventStreamRef m_stream;
-    std::vector<std::string> m_pathsToWatch;
+    std::vector<CFStringRef> m_pathsToWatch;
     std::vector<RclMonEvent> m_eventQueue;
 };
 
