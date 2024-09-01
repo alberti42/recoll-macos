@@ -1,3 +1,5 @@
+// rclmonrcv_fsevents.h
+
 #ifndef RCLMONRCV_FSEVENTS_H
 #define RCLMONRCV_FSEVENTS_H
 
@@ -35,6 +37,8 @@ public:
     void removePathFromMonitor(const std::string &path);
 
 private:
+    void removeFSEventStream();
+
     RclConfig* lconfigPtr;
     FsTreeWalker* walkerPtr;
     bool m_ok;
@@ -43,6 +47,7 @@ private:
     std::vector<CFStringRef> m_pathsToWatch;
     std::vector<RclMonEvent> m_eventQueue;
     CFRunLoopSourceRef runLoopSource;
+    CFRunLoopRef runLoop;
 };
 
 typedef RclFSEvents RclMonitorDerived;

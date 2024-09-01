@@ -1,3 +1,5 @@
+// rclmonrcv_fsevents.cpp
+
 /* Andrea Alberti, 2024 */
 
 #include "autoconfig.h"
@@ -22,19 +24,19 @@ typedef struct {
 void processEvent(const RclMonEvent& event) {
     switch (event.m_etyp) {
         case RclMonEvent::RCLEVT_MODIFY:
-            std::cout << "Processing MODIFY event for: " << event.m_path << std::endl;
+            // std::cout << "Processing MODIFY event for: " << event.m_path << std::endl;
             // Handle modify logic here
             break;
         case RclMonEvent::RCLEVT_DELETE:
-            std::cout << "Processing DELETE event for: " << event.m_path << std::endl;
+            // std::cout << "Processing DELETE event for: " << event.m_path << std::endl;
             // Handle delete logic here
             break;
         case RclMonEvent::RCLEVT_DIRCREATE:
-            std::cout << "Processing DIRECTORY CREATE event for: " << event.m_path << std::endl;
+            // std::cout << "Processing DIRECTORY CREATE event for: " << event.m_path << std::endl;
             // Handle directory create logic here
             break;
         case RclMonEvent::RCLEVT_ISDIR:
-            std::cout << "Processing DIRECTORY event for: " << event.m_path << std::endl;
+            // std::cout << "Processing DIRECTORY event for: " << event.m_path << std::endl;
             // Handle directory-specific logic here
             break;
         default:
@@ -43,16 +45,20 @@ void processEvent(const RclMonEvent& event) {
     }
 }
 
-// Callback function to process events
 void RunLoopSourcePerformRoutine(void *info) {
+    // std::cout << "RunLoopSourcePerformRoutine triggered." << std::endl; // std::endl forces a flush
+
     RunLoopSourceContext *context = static_cast<RunLoopSourceContext *>(info);
     RclFSEvents *monitor = context->monitor;
     RclMonEvent event;
 
     // Process all available events in the queue
     while (monitor->getEvent(event)) {
+        // std::cout << "Processing event in RunLoopSourcePerformRoutine." << std::endl; 
         processEvent(event);
     }
+
+    // std::cout << "Exiting RunLoopSourcePerformRoutine." << std::endl;
 }
 
 // Function to create the custom run loop source
@@ -61,15 +67,15 @@ CFRunLoopSourceRef CreateEventQueueRunLoopSource(RclFSEvents *monitor) {
     context->monitor = monitor;
 
     CFRunLoopSourceContext sourceContext = {
-        0,                  // Version (unused)
-        context,            // Info pointer (our custom context)
-        NULL,               // Retain (unused)
-        NULL,               // Release (unused)
-        NULL,               // CopyDescription (unused)
-        NULL,               // Equal (unused)
-        NULL,               // Hash (unused)
-        NULL,               // Schedule (unused)
-        NULL,               // Cancel (unused)
+        0,                           // Version (unused)
+        context,                     // Info pointer (our custom context)
+        NULL,                        // Retain (unused)
+        NULL,                        // Release (unused)
+        NULL,                        // CopyDescription (unused)
+        NULL,                        // Equal (unused)
+        NULL,                        // Hash (unused)
+        NULL,                        // Schedule (unused)
+        NULL,                        // Cancel (unused)
         RunLoopSourcePerformRoutine  // Perform routine
     };
 
@@ -87,15 +93,27 @@ void RclFSEvents::startMonitoring(
 
     setupAndStartStream();  // Initial setup and start
 
+    // Each thread in macOS has its own run loop, and CFRunLoopGetCurrent()
+    // returns the run loop for the calling thread. We need to store a reference
+    // to be used in the callback function, which runs in a separate thread.
+    runLoop = CFRunLoopGetCurrent();
+
     // Create and add the custom run loop source
     runLoopSource = CreateEventQueueRunLoopSource(this);
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopDefaultMode);
+    
+    // std::cout << "Run Loop Reference at startMonitoring: " << runLoop << std::endl;
+
+    CFRunLoopAddSource(runLoop, runLoopSource, kCFRunLoopDefaultMode);
 
     std::cout << "Starting CFRunLoop..." << std::endl;
     CFRunLoopRun(); // Start the run loop
 
     // Clean up
-    CFRelease(runLoopSource);
+    if (runLoopSource) {
+        CFRunLoopSourceInvalidate(runLoopSource);
+        CFRelease(runLoopSource);
+        runLoopSource = nullptr;
+    }
     std::cout << "CFRunLoop has exited." << std::endl;
 }
 
@@ -104,11 +122,14 @@ RclFSEvents::RclFSEvents() : lconfigPtr(nullptr), walkerPtr(nullptr), m_ok(true)
 }
 
 RclFSEvents::~RclFSEvents() {
-    if (m_stream) {
-        FSEventStreamStop(m_stream);
-        FSEventStreamInvalidate(m_stream);
-        FSEventStreamRelease(m_stream);
+
+    if (runLoopSource) {
+        CFRunLoopSourceInvalidate(runLoopSource);
+        CFRelease(runLoopSource);
+        runLoopSource = nullptr;
     }
+    
+    removeFSEventStream();
 }
 
 /* Description of events listed at https://developer.apple.com/documentation/coreservices/1455361-fseventstreameventflags
@@ -196,6 +217,22 @@ void RclFSEvents::fsevents_callback(
     const FSEventStreamEventId eventIds[]) {
     
     RclFSEvents *self = static_cast<RclFSEvents *>(clientCallBackInfo);
+    
+    CFRunLoopRef runLoop = self->runLoop;
+
+    // Log the current run loop mode
+    /*
+    CFStringRef currentMode = CFRunLoopCopyCurrentMode(runLoop);
+    if (currentMode) {
+        std::cout << "Current Run Loop Mode: " << CFStringGetCStringPtr(currentMode, kCFStringEncodingUTF8) << std::endl;
+        CFRelease(currentMode);
+    } else {
+        std::cout << "Run loop mode is unknown (no current mode)." << std::endl;
+    }
+    */
+    
+    std::cout << "Run Loop Reference in callback: " << runLoop << std::endl;
+
     char **paths = (char **)eventPaths;
     
     for (size_t i = 0; i < numEvents; ++i) {
@@ -258,8 +295,11 @@ void RclFSEvents::fsevents_callback(
 
         if (ev.m_etyp != RclMonEvent::RCLEVT_NONE) {
             self->m_eventQueue.push_back(ev); // Store the event
-            CFRunLoopSourceSignal(self->runLoopSource); // Signal the run loop source
-            CFRunLoopWakeUp(CFRunLoopGetCurrent()); // Wake up the run loop
+            std::cout << "Signaling the run loop source..." << std::endl;
+            CFRunLoopSourceSignal(self->runLoopSource); // Signal the stored run loop source
+            std::cout << "Waking up the run loop..." << std::endl;
+            CFRunLoopWakeUp(self->runLoop); // Wake up the stored run loop
+            std::cout << "Run loop signaled and woken up." << std::endl;
         }
     }
 }
@@ -279,7 +319,7 @@ bool RclFSEvents::ok() const {
     return m_ok;
 }
 
-void RclFSEvents::setupAndStartStream() {
+void RclFSEvents::removeFSEventStream() {
     if (m_stream) {
         // Stop and release the existing stream if it's already running
         FSEventStreamStop(m_stream);
@@ -287,6 +327,10 @@ void RclFSEvents::setupAndStartStream() {
         FSEventStreamRelease(m_stream);
         m_stream = nullptr;
     }
+}
+
+void RclFSEvents::setupAndStartStream() {
+    removeFSEventStream();
 
     // Ensure there are paths to monitor
     if (m_pathsToWatch.empty()) {

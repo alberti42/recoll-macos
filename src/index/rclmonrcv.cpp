@@ -1,3 +1,5 @@
+// rclmonrcv.cpp
+
 /* Copyright (C) 2006-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -79,6 +81,8 @@ int saved_errno{0};
 // Monitor factory. We only have one compiled-in kind at a time, no
 // need for a 'kind' parameter
 static RclMonitorDerived *makeMonitor();
+
+/* ==== CLASS WalkCB: definition of member functions ==== */
 
 /** 
  * Create directory watches during the initial file system tree walk.
@@ -297,7 +301,7 @@ void *rclMonRcvRun(void *q)
     MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() << "\n");
 
 #ifdef FSWATCH_FSEVENTS
-    std::cout << "STARTING MONITORING: " << mon->ok() << std::endl;
+    std::cout << "STARTING MONITORING" << std::endl;
     mon->startMonitoring(queue,lconfig,walker);
     std::cout << "EXIT MONITORING" << std::endl;
 #else // ! FSWATCH_FSEVENTS
