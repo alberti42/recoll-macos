@@ -11,6 +11,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <mutex>
 
 class RclFSEvents : public RclMonitor {
 public:
@@ -46,8 +47,9 @@ private:
     FSEventStreamRef m_stream;
     std::vector<CFStringRef> m_pathsToWatch;
     std::vector<RclMonEvent> m_eventQueue;
-    CFRunLoopSourceRef runLoopSource;
-    CFRunLoopRef runLoop;
+    CFRunLoopSourceRef m_runLoopSource;
+    CFRunLoopRef m_runLoop;
+    std::mutex m_queueMutex; // Mutex to protect the event queue
 };
 
 typedef RclFSEvents RclMonitorDerived;

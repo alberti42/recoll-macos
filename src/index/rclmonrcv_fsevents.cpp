@@ -96,23 +96,23 @@ void RclFSEvents::startMonitoring(
     // Each thread in macOS has its own run loop, and CFRunLoopGetCurrent()
     // returns the run loop for the calling thread. We need to store a reference
     // to be used in the callback function, which runs in a separate thread.
-    runLoop = CFRunLoopGetCurrent();
+    m_runLoop = CFRunLoopGetCurrent();
 
     // Create and add the custom run loop source
-    runLoopSource = CreateEventQueueRunLoopSource(this);
+    m_runLoopSource = CreateEventQueueRunLoopSource(this);
     
     // std::cout << "Run Loop Reference at startMonitoring: " << runLoop << std::endl;
 
-    CFRunLoopAddSource(runLoop, runLoopSource, kCFRunLoopDefaultMode);
+    CFRunLoopAddSource(m_runLoop, m_runLoopSource, kCFRunLoopDefaultMode);
 
     std::cout << "Starting CFRunLoop..." << std::endl;
     CFRunLoopRun(); // Start the run loop
 
     // Clean up
-    if (runLoopSource) {
-        CFRunLoopSourceInvalidate(runLoopSource);
-        CFRelease(runLoopSource);
-        runLoopSource = nullptr;
+    if (m_runLoopSource) {
+        CFRunLoopSourceInvalidate(m_runLoopSource);
+        CFRelease(m_runLoopSource);
+        m_runLoopSource = nullptr;
     }
     std::cout << "CFRunLoop has exited." << std::endl;
 }
@@ -123,10 +123,10 @@ RclFSEvents::RclFSEvents() : lconfigPtr(nullptr), walkerPtr(nullptr), m_ok(true)
 
 RclFSEvents::~RclFSEvents() {
 
-    if (runLoopSource) {
-        CFRunLoopSourceInvalidate(runLoopSource);
-        CFRelease(runLoopSource);
-        runLoopSource = nullptr;
+    if (m_runLoopSource) {
+        CFRunLoopSourceInvalidate(m_runLoopSource);
+        CFRelease(m_runLoopSource);
+        m_runLoopSource = nullptr;
     }
     
     removeFSEventStream();
@@ -218,10 +218,9 @@ void RclFSEvents::fsevents_callback(
     
     RclFSEvents *self = static_cast<RclFSEvents *>(clientCallBackInfo);
     
-    CFRunLoopRef runLoop = self->runLoop;
-
     // Log the current run loop mode
     /*
+    CFRunLoopRef runLoop = self->runLoop;
     CFStringRef currentMode = CFRunLoopCopyCurrentMode(runLoop);
     if (currentMode) {
         std::cout << "Current Run Loop Mode: " << CFStringGetCStringPtr(currentMode, kCFStringEncodingUTF8) << std::endl;
@@ -230,14 +229,14 @@ void RclFSEvents::fsevents_callback(
         std::cout << "Run loop mode is unknown (no current mode)." << std::endl;
     }
     */
-    
-    std::cout << "Run Loop Reference in callback: " << runLoop << std::endl;
+
+    // std::cout << "Run Loop Reference in callback: " << self->runLoop << std::endl;
 
     char **paths = (char **)eventPaths;
     
     for (size_t i = 0; i < numEvents; ++i) {
-        std::string path = paths[i];
-        std::cout << "Changed path: " << path << std::endl;
+        string path = paths[i];
+        // std::cout << "Path of modified file/directory: " << path << std::endl;
 
         if (rclMonShouldSkip(path, *self->lconfigPtr, *self->walkerPtr))
             continue;
@@ -288,30 +287,31 @@ void RclFSEvents::fsevents_callback(
             std::cout << "    - Event type: FILE RENAMED" << std::endl;
         }
 
-        // Push the event to the queue if it has a valid event type
         if (ev.m_etyp != RclMonEvent::RCLEVT_NONE) {
-            self->m_eventQueue.push_back(ev); // Store the event for later processing
-        }
-
-        if (ev.m_etyp != RclMonEvent::RCLEVT_NONE) {
+            std::unique_lock<std::mutex> lockInstance(self->m_queueMutex); // Mutex is locked here
             self->m_eventQueue.push_back(ev); // Store the event
-            std::cout << "Signaling the run loop source..." << std::endl;
-            CFRunLoopSourceSignal(self->runLoopSource); // Signal the stored run loop source
-            std::cout << "Waking up the run loop..." << std::endl;
-            CFRunLoopWakeUp(self->runLoop); // Wake up the stored run loop
-            std::cout << "Run loop signaled and woken up." << std::endl;
+            // Manually unlock the mutex before signaling the run loop
+            lockInstance.unlock();  // Unlock the mutex
+            
+            // std::cout << "Signaling the run loop source..." << std::endl;
+            CFRunLoopSourceSignal(self->m_runLoopSource); // Signal the stored run loop source
+            // std::cout << "Waking up the run loop..." << std::endl;
+            CFRunLoopWakeUp(self->m_runLoop); // Wake up the stored run loop
+            // std::cout << "Run loop signaled and woken up." << std::endl;
         }
     }
 }
 
 
 bool RclFSEvents::getEvent(RclMonEvent& ev, int msecs) {
+    std::unique_lock<std::mutex> lockInstance(m_queueMutex); // Mutex is locked here
     if (m_eventQueue.empty()) {
         return false; // No events available
     }
 
     ev = m_eventQueue.front();
-    m_eventQueue.erase(m_eventQueue.begin());
+    m_eventQueue.erase(m_eventQueue.begin());    
+    lockInstance.unlock();  // Unlock the mutex
     return true;
 }
 
@@ -361,7 +361,7 @@ void RclFSEvents::setupAndStartStream() {
     FSEventStreamStart(m_stream);
 }
 
-bool RclFSEvents::addWatch(const std::string& path, bool /*isDir*/, bool /*follow*/) {
+bool RclFSEvents::addWatch(const string& path, bool /*isDir*/, bool /*follow*/) {
     CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
     if (cfPath) {
         m_pathsToWatch.push_back(cfPath);
@@ -373,7 +373,7 @@ bool RclFSEvents::addWatch(const std::string& path, bool /*isDir*/, bool /*follo
     }
 }
 
-void RclFSEvents::removePathFromMonitor(const std::string &path) {
+void RclFSEvents::removePathFromMonitor(const string &path) {
     CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
     if (!cfPath) {
         std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
