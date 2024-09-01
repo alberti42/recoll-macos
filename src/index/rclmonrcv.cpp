@@ -670,23 +670,23 @@ const char *RclIntf::event_name(int code)
 {
     code &= ~(IN_ISDIR|IN_ONESHOT);
     switch (code) {
-    case IN_ACCESS: return "IN_ACCESS";
-    case IN_MODIFY: return "IN_MODIFY";
-    case IN_ATTRIB: return "IN_ATTRIB";
-    case IN_CLOSE_WRITE: return "IN_CLOSE_WRITE";
-    case IN_CLOSE_NOWRITE: return "IN_CLOSE_NOWRITE";
-    case IN_CLOSE: return "IN_CLOSE";
-    case IN_OPEN: return "IN_OPEN";
-    case IN_MOVED_FROM: return "IN_MOVED_FROM";
-    case IN_MOVED_TO: return "IN_MOVED_TO";
-    case IN_MOVE: return "IN_MOVE";
-    case IN_CREATE: return "IN_CREATE";
-    case IN_DELETE: return "IN_DELETE";
-    case IN_DELETE_SELF: return "IN_DELETE_SELF";
-    case IN_MOVE_SELF: return "IN_MOVE_SELF";
-    case IN_UNMOUNT: return "IN_UNMOUNT";
-    case IN_Q_OVERFLOW: return "IN_Q_OVERFLOW";
-    case IN_IGNORED: return "IN_IGNORED";
+    case IN_ACCESS: return "IN_ACCESS";  // File was accessed
+    case IN_MODIFY: return "IN_MODIFY";  // File was modified
+    case IN_ATTRIB: return "IN_ATTRIB";  // Metadata changed (e.g., permissions, timestamps)
+    case IN_CLOSE_WRITE: return "IN_CLOSE_WRITE";  // Writable file was closed
+    case IN_CLOSE_NOWRITE: return "IN_CLOSE_NOWRITE";  // Unwritable file was closed
+    case IN_CLOSE: return "IN_CLOSE";  // File was closed
+    case IN_OPEN: return "IN_OPEN";  // File was opened
+    case IN_MOVED_FROM: return "IN_MOVED_FROM";  // File or directory was moved from this location
+    case IN_MOVED_TO: return "IN_MOVED_TO";  // File or directory was moved to this location
+    case IN_MOVE: return "IN_MOVE";  // File was moved
+    case IN_CREATE: return "IN_CREATE";  // File or directory was created
+    case IN_DELETE: return "IN_DELETE";  // File or directory was deleted
+    case IN_DELETE_SELF: return "IN_DELETE_SELF";  // The monitored item itself was deleted
+    case IN_MOVE_SELF: return "IN_MOVE_SELF";  // The monitored item itself was moved
+    case IN_UNMOUNT: return "IN_UNMOUNT";  // Filesystem was unmounted
+    case IN_Q_OVERFLOW: return "IN_Q_OVERFLOW";  // Event queue overflowed
+    case IN_IGNORED: return "IN_IGNORED";  // Watch was removed
     default: {
         static char msg[50];
         sprintf(msg, "Unknown event 0x%x", code);
