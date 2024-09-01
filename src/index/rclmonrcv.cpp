@@ -282,52 +282,52 @@ void *rclMonRcvRun(void *q)
         return nullptr;
     }
 
-//     FsTreeWalker walker;
-//     walker.setSkippedPaths(lconfig.getDaemSkippedPaths());
+    FsTreeWalker walker;
+    walker.setSkippedPaths(lconfig.getDaemSkippedPaths());
 
-//     if (!rclMonAddTopWatches(walker, lconfig, mon, queue)) {
-//         LOGERR("rclMonRcvRun: addtopwatches failed\n");
-//         goto terminate;
-//     }
+    if (!rclMonAddTopWatches(walker, lconfig, mon, queue)) {
+        LOGERR("rclMonRcvRun: addtopwatches failed\n");
+        goto terminate;
+    }
 
 
-//     // Forever wait for monitoring events and add them to queue:
-//     MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() << "\n");
+    // Forever wait for monitoring events and add them to queue:
+    MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() << "\n");
 
-// #ifdef FSWATCH_FSEVENTS
-//     std::cout << "STARTING MONITORING: " << mon->ok() << std::endl;
-//     mon->startMonitoring(queue,lconfig,walker);
-//     std::cout << "EXIT MONITORING" << std::endl;
-// #else // ! FSWATCH_FSEVENTS
-//     while (queue->ok() && mon->ok()) {
-//         RclMonEvent ev;
-//         // Note: I could find no way to get the select call to return when a signal is delivered to
-//         // the process (it goes to the main thread, from which I tried to close or write to the
-//         // select fd, with no effect). So set a timeout so that an intr will be detected
-//         if (mon->getEvent(ev, 2000)) {
-//             if (rclMonShouldSkip(ev.m_path, lconfig, walker))
-//                 continue;
+#ifdef FSWATCH_FSEVENTS
+    std::cout << "STARTING MONITORING: " << mon->ok() << std::endl;
+    mon->startMonitoring(queue,lconfig,walker);
+    std::cout << "EXIT MONITORING" << std::endl;
+#else // ! FSWATCH_FSEVENTS
+    while (queue->ok() && mon->ok()) {
+        RclMonEvent ev;
+        // Note: I could find no way to get the select call to return when a signal is delivered to
+        // the process (it goes to the main thread, from which I tried to close or write to the
+        // select fd, with no effect). So set a timeout so that an intr will be detected
+        if (mon->getEvent(ev, 2000)) {
+            if (rclMonShouldSkip(ev.m_path, lconfig, walker))
+                continue;
 
-//             if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
-//                 // Recursive addwatch: there may already be stuff inside this directory. E.g.: files
-//                 // were quickly created, or this is actually the target of a directory move. This is
-//                 // necessary for inotify, but it seems that fam/gamin is doing the job for us so
-//                 // that we are generating double events here (no big deal as prc will sort/merge).
-//                 LOGDEB("rclMonRcvRun: walking new dir " << ev.m_path << "\n");
-//                 if (!rclMonAddSubWatches(ev.m_path, walker, lconfig, mon, queue)) {
-//                     goto terminate;
-//                 }
-//             }
+            if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
+                // Recursive addwatch: there may already be stuff inside this directory. E.g.: files
+                // were quickly created, or this is actually the target of a directory move. This is
+                // necessary for inotify, but it seems that fam/gamin is doing the job for us so
+                // that we are generating double events here (no big deal as prc will sort/merge).
+                LOGDEB("rclMonRcvRun: walking new dir " << ev.m_path << "\n");
+                if (!rclMonAddSubWatches(ev.m_path, walker, lconfig, mon, queue)) {
+                    goto terminate;
+                }
+            }
 
-//             if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
-//                 queue->pushEvent(ev);
-//         }
-//     }
-// #endif // FSWATCH_FSEVENTS 
+            if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
+                queue->pushEvent(ev);
+        }
+    }
+#endif // FSWATCH_FSEVENTS 
 
-// terminate:
-//     queue->setTerminate();
-//     LOGINFO("rclMonRcvRun: monrcv thread routine returning\n");
+terminate:
+    queue->setTerminate();
+    LOGINFO("rclMonRcvRun: monrcv thread routine returning\n");
     return nullptr;
 }
 
