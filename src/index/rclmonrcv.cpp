@@ -823,63 +823,90 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 
 // Custom context for the run loop source
 typedef struct {
-    CFRunLoopSourceRef source;
-    bool shouldKeepRunning;
+    RclFSEvents *monitor;
 } RunLoopSourceContext;
 
-void PerformCustomSourceAction(void *info) {
-    // This function would perform some action when the run loop source is triggered.
-    std::cout << "Custom run loop source action performed." << std::endl;
+
+// Function to process individual events
+void processEvent(const RclMonEvent& event) {
+    switch (event.m_etyp) {
+        case RclMonEvent::RCLEVT_MODIFY:
+            std::cout << "Processing MODIFY event for: " << event.m_path << std::endl;
+            // Handle modify logic here
+            break;
+        case RclMonEvent::RCLEVT_DELETE:
+            std::cout << "Processing DELETE event for: " << event.m_path << std::endl;
+            // Handle delete logic here
+            break;
+        case RclMonEvent::RCLEVT_DIRCREATE:
+            std::cout << "Processing DIRECTORY CREATE event for: " << event.m_path << std::endl;
+            // Handle directory create logic here
+            break;
+        case RclMonEvent::RCLEVT_ISDIR:
+            std::cout << "Processing DIRECTORY event for: " << event.m_path << std::endl;
+            // Handle directory-specific logic here
+            break;
+        default:
+            std::cout << "Unknown event type for: " << event.m_path << std::endl;
+            break;
+    }
 }
 
-void RunLoopSourceScheduleRoutine(void *info, CFRunLoopRef rl, CFStringRef mode) {
-    // This function will be called when the source is added to the run loop
-    std::cout << "Custom source scheduled in run loop." << std::endl;
+// Callback function to process events
+void RunLoopSourcePerformRoutine(void *info) {
+    RunLoopSourceContext *context = static_cast<RunLoopSourceContext *>(info);
+    RclFSEvents *monitor = context->monitor;
+    RclMonEvent event;
+
+    // Process all available events in the queue
+    while (monitor->getEvent(event)) {
+        processEvent(event);
+    }
 }
 
-void RunLoopSourceCancelRoutine(void *info, CFRunLoopRef rl, CFStringRef mode) {
-    // This function will be called when the source is removed from the run loop
-    std::cout << "Custom source canceled in run loop." << std::endl;
-}
+// Function to create the custom run loop source
+CFRunLoopSourceRef CreateEventQueueRunLoopSource(RclFSEvents *monitor) {
+    RunLoopSourceContext *context = new RunLoopSourceContext();
+    context->monitor = monitor;
 
-CFRunLoopSourceRef CreateCustomRunLoopSource(RunLoopSourceContext *context) {
     CFRunLoopSourceContext sourceContext = {
-        0,                      // Version (unused)
-        context,                // Info pointer (your custom context)
-        NULL,                   // Retain (unused)
-        NULL,                   // Release (unused)
-        NULL,                   // CopyDescription (unused)
-        NULL,                   // Equal (unused)
-        NULL,                   // Hash (unused)
-        RunLoopSourceScheduleRoutine,  // Schedule
-        RunLoopSourceCancelRoutine,    // Cancel
-        PerformCustomSourceAction      // Perform
+        0,                  // Version (unused)
+        context,            // Info pointer (our custom context)
+        NULL,               // Retain (unused)
+        NULL,               // Release (unused)
+        NULL,               // CopyDescription (unused)
+        NULL,               // Equal (unused)
+        NULL,               // Hash (unused)
+        NULL,               // Schedule (unused)
+        NULL,               // Cancel (unused)
+        RunLoopSourcePerformRoutine  // Perform routine
     };
 
-    // Create the run loop source
-    context->source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &sourceContext);
-    return context->source;
+    return CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &sourceContext);
 }
 
-void startRunLoop() {
-    std::cout << "Starting the run loop..." << std::endl;
+void RclFSEvents::startMonitoring(
+        RclMonEventQueue *queue,
+        RclConfig& lconfig,
+        FsTreeWalker& walker) {
 
-    RunLoopSourceContext context;
-    context.shouldKeepRunning = true;
+    this->queue = queue;
+    this->lconfigPtr = &lconfig;
+    this->walkerPtr = &walker;
 
-    // Create and add the custom source to the run loop
-    CFRunLoopSourceRef source = CreateCustomRunLoopSource(&context);
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+    setupAndStartStream();  // Initial setup and start
 
-    // Start the run loop (this should now block the thread)
-    CFRunLoopRun();
+    // Create and add the custom run loop source
+    runLoopSource = CreateEventQueueRunLoopSource(this);
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopDefaultMode);
 
-    // Clean up after the run loop exits
-    CFRelease(source);
+    std::cout << "Starting CFRunLoop..." << std::endl;
+    CFRunLoopRun(); // Start the run loop
 
-    std::cout << "Run loop has exited." << std::endl;
+    // Clean up
+    CFRelease(runLoopSource);
+    std::cout << "CFRunLoop has exited." << std::endl;
 }
-
 
 RclFSEvents::RclFSEvents() : lconfigPtr(nullptr), walkerPtr(nullptr), m_ok(true) {
     // Initialize FSEvents stream
@@ -1037,6 +1064,12 @@ void RclFSEvents::fsevents_callback(
         if (ev.m_etyp != RclMonEvent::RCLEVT_NONE) {
             self->m_eventQueue.push_back(ev); // Store the event for later processing
         }
+
+        if (ev.m_etyp != RclMonEvent::RCLEVT_NONE) {
+            self->m_eventQueue.push_back(ev); // Store the event
+            CFRunLoopSourceSignal(self->runLoopSource); // Signal the run loop source
+            CFRunLoopWakeUp(CFRunLoopGetCurrent()); // Wake up the run loop
+        }
     }
 }
 
@@ -1053,35 +1086,6 @@ bool RclFSEvents::getEvent(RclMonEvent& ev, int msecs) {
 
 bool RclFSEvents::ok() const {
     return m_ok;
-}
-
-void RclFSEvents::startMonitoring(
-            RclMonEventQueue *queue,
-            RclConfig& lconfig,
-            FsTreeWalker& walker
-        ){
-    
-    this->queue = queue;
-    this->lconfigPtr = &lconfig;
-    this->walkerPtr = &walker;
-
-    setupAndStartStream();  // Initial setup and start
-
-    // Create a custom run loop source to keep the run loop running
-    RunLoopSourceContext runLoopContext;
-    runLoopContext.shouldKeepRunning = true;
-
-    CFRunLoopSourceRef runLoopSource = CreateCustomRunLoopSource(&runLoopContext);
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopDefaultMode);
-
-    std::cout << "ABOUT TO START CFRUNLOOP" << std::endl;
-    CFRunLoopRun(); // Start the run loop
-
-    std::cout << "Run loop has exited." << std::endl;
-
-    // Clean up
-    CFRelease(runLoopSource);
-    std::cout << "FINISHED CFRUNLOOP" << std::endl;
 }
 
 void RclFSEvents::setupAndStartStream() {

@@ -114,6 +114,7 @@ private:
     FSEventStreamRef m_stream;
     std::vector<CFStringRef> m_pathsToWatch;
     std::vector<RclMonEvent> m_eventQueue;
+    CFRunLoopSourceRef runLoopSource;
 };
 
 #endif // FSWATCH_FSEVENTS
