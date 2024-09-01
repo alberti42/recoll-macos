@@ -1,7 +1,10 @@
 #include "autoconfig.h"
-#include "rclmonrcv_inotify.h"
+#include "rclmonrcv.h"
 
 #ifdef FSWATCH_INOTIFY
+
+#include "rclmonrcv_inotify.h"
+
 //////////////////////////////////////////////////////////////////////////
 /** Inotify-based monitor class */
 #include <sys/inotify.h>

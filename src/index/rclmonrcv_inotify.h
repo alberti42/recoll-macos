@@ -1,5 +1,5 @@
-#ifndef RCLMONRCV_INOTIFY_CPP
-#define RCLMONRCV_INOTIFY_CPP
+#ifndef RCLMONRCV_INOTIFY_H
+#define RCLMONRCV_INOTIFY_H
 
 #include "rclmonrcv.h"
 
@@ -29,4 +29,4 @@ private:
 
 #endif // FSWATCH_INOTIFY
 
-#endif
+#endif // RCLMONRCV_INOTIFY_H

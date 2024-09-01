@@ -398,6 +398,7 @@ if get_option('indexer')
         'index/rclmonrcv_fsevents.cpp',
         'index/rclmonrcv_inotify.cpp',
         'index/rclmonrcv_fam.cpp',
+        'index/rclmonrcv_win32.cpp',
         'index/recollindex.cpp',
         'index/webqueue.cpp',
     ]
