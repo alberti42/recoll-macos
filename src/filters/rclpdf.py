@@ -265,8 +265,7 @@ class PDFExtractor:
         try:
             fields = {}
             output = subprocess.check_output([self.pdfinfo, "-custom", self.filename],
-                                             stderr=subprocess.STDOUT)
-            output = output.decode("utf-8")
+                                             stderr=subprocess.STDOUT,encoding='utf-8')
             for line in output.split("\n"):
                 colon = line.find(":")
                 if colon > 0:
