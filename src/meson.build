@@ -171,8 +171,23 @@ if cpp.has_function(
        #include <sys/time.h>''',
 )
     recoll_conf.set('HAVE_KQUEUE', true)
-    recoll_conf.set('RCL_USE_KQUEUE', true)
-    recoll_conf.set('RCL_MONITOR', true)
+endif
+
+# Check for macOS (darwin)
+if host_machine.system() == 'darwin'
+    # Declare the Core Services framework dependency
+    core_services = dependency('CoreServices', required: true)
+
+    if core_services.found()
+        core_services_found = true
+        librecolldeps += core_services  # Add the CoreServices framework as a dependency
+        recoll_conf.set('RCL_USE_FSEVENTS', true)
+        recoll_conf.set('RCL_MONITOR', true)
+    else
+        core_services_found = false
+    endif
+
+    
 endif
 
 recoll_conf.set('HAVE_VSNPRINTF', cpp.has_function('vsnprintf'))
@@ -386,6 +401,9 @@ if get_option('indexer')
 
     recollindexdeps = []
     recollindexdeps += dependency('threads')
+    if(core_services_found)
+        recollindexdeps += core_services
+    endif
     recollindex = executable(
         'recollindex',
         recollindex_sources,
