@@ -28,7 +28,8 @@ foreach v : py3versions
         [
            'aspell.c',
         ],
-        dependencies: [py3_dep, cc.find_library('aspell'),],
+        dependencies: [py3_dep, cc.find_library('aspell', dirs: ['/opt/homebrew/lib','/usr/local/lib'], required: true),],
+        include_directories: include_directories('/opt/homebrew/include/'),
         install: true,
         subdir: '.',
     )
