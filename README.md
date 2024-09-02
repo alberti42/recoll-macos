@@ -1,5 +1,13 @@
 # Recoll
 
+This is a fork from of `recoll` from [https://framagit.org/medoc92/recoll](https://framagit.org/medoc92/recoll).
+
+- Implements real time indexing for macOS systems. Before, real-time indexing was reserved to Linux and Windows. The implementation for mac works very efficiently and makes use of native `fsevents` framework.
+- Improve several scripts for parsing documents including `rclpdf` for `pdf` documents, which used to crash due to some wrong handling of threads
+- Include `rclmd.py` handler for parsing MarkDown files; it parses the YAML frontmatter used in Obsidian.
+
+---
+
 Recoll is a desktop full-text search tool. It finds keywords inside
 documents as well as file names. 
 
