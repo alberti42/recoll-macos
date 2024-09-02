@@ -41,11 +41,11 @@
 class RclMonEvent {
 public: 
     enum EvType {
-        RCLEVT_NONE = 0,
-        RCLEVT_MODIFY = 1 << 0,     // 0x01
-        RCLEVT_DELETE = 1 << 1,     // 0x02
-        RCLEVT_DIRCREATE = 1 << 2,  // 0x04
-        RCLEVT_ISDIR = 1 << 3       // 0x08
+        RCLEVT_NONE       = 0,
+        RCLEVT_MODIFY     = 1,
+        RCLEVT_DELETE     = 2, 
+        RCLEVT_DIRCREATE  = 3,
+        RCLEVT_ISDIR      = 1 << 4  // Here flags start. For now only: 0x10  
     };
     std::string m_path;
     // Type and flags

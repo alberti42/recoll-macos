@@ -261,10 +261,14 @@ RclFSEvents::RclFSEvents() : m_lconfigPtr(nullptr), m_walkerPtr(nullptr), m_ok(t
 
 RclFSEvents::~RclFSEvents() {
     freeAllocatedResources();
-    removeFSEventStream();
+    releaseFSEventStream();
 #ifdef MANAGE_SEPARATE_QUEUE
     stopMonitoring();    
 #endif // MANAGE_SEPARATE_QUEUE
+}
+
+bool RclFSEvents::isRecursive() {
+    return false;
 }
 
 void RclFSEvents::freeAllocatedResources() {
@@ -338,7 +342,8 @@ void RclFSEvents::fsevents_callback(
             if (isDir) {
                 // We do not need to remove this folder individually
                 // because it will be handled by eraseWatchSubTree
-                event.m_etyp = RclMonEvent::RCLEVT_NONE;
+                // event.m_etyp = RclMonEvent::RCLEVT_NONE;
+                event.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
                 // Directory was moved; remove the subtree entries in the map
                 self->eraseWatchSubTree(pathRef);
                 LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY REMOVED:  " << path << std::endl);
@@ -365,7 +370,8 @@ void RclFSEvents::fsevents_callback(
                 if(isDir) {
                     // We do not need to remove this folder individually
                     // because it will be handled by eraseWatchSubTree
-                    event.m_etyp = RclMonEvent::RCLEVT_NONE;
+                    // event.m_etyp = RclMonEvent::RCLEVT_DELETE;
+                    event.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
                     // Directory was moved; remove the subtree entries in the map
                     self->eraseWatchSubTree(pathRef);
                     LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY MOVED FROM:  " << path << std::endl);
@@ -438,7 +444,7 @@ bool RclFSEvents::ok() const {
     return m_ok;
 }
 
-void RclFSEvents::removeFSEventStream() {
+void RclFSEvents::releaseFSEventStream() {
     if (m_stream) {
         // Stop and release the existing stream if it's already running
         FSEventStreamStop(m_stream);
@@ -449,7 +455,7 @@ void RclFSEvents::removeFSEventStream() {
 }
 
 void RclFSEvents::setupAndStartStream() {
-    removeFSEventStream();
+    releaseFSEventStream();
 
     // Ensure there are paths to monitor
     if (m_pathsToWatch.empty()) {
@@ -510,12 +516,11 @@ int RclFSEvents::eraseWatchSubTree(CFStringRef topDirectory)
             // convert the path to a c-string
             CFStringGetFileSystemRepresentation(*iter, path, sizeof(path));
             
-            // remove the path from the db
-            RclMonEvent event;
-            event.m_path = path;
-            event.m_etyp = RclMonEvent::RCLEVT_DELETE;
-            std::cout << "REMOVED: " << path << std::endl;
-            m_queue->pushEvent(event);
+            //// remove the path from the db
+            // RclMonEvent event;
+            // event.m_path = path;
+            // event.m_etyp = RclMonEvent::RCLEVT_DELETE;
+            // m_queue->pushEvent(event);
 
             CFRelease(*iter);  // Release the CFStringRef before erasing it
             iter = m_pathsToWatch.erase(iter);  // Remove the entry and get the next iterator

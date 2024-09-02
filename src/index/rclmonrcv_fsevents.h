@@ -48,10 +48,12 @@ public:
 
     CFRunLoopRef m_runLoop;
 
+    bool isRecursive();
+
 private:
     int eraseWatchSubTree(CFStringRef topDirectory);
     static void signalHandler(int signum);
-    void removeFSEventStream();
+    void releaseFSEventStream();
     void freeAllocatedResources();
     RclConfig* m_lconfigPtr;
     FsTreeWalker* m_walkerPtr;
