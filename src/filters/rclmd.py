@@ -49,10 +49,26 @@ class MDhandler(RclBaseHandler):
         return stripped_tags
 
     def html_text(self, filename):
+
+        basename = os.path.splitext(os.path.basename(filename))[0].decode('utf-8')
+
+        # Regular expression to match a date followed by a space and then the rest of the title
+        pattern = r"^\d{4}-\d{2}-\d{2}\s+(.*)"
+
+        # Search for the pattern in the filename
+        match = re.search(pattern, basename)
+
+        # Extract the title if the pattern matches
+        if match:
+            title = match.group(1)
+        else:
+            title = basename
+
         # self.em.log(f"Filename: {filename.decode('utf-8')}")
         # Read the file content
         with open(filename, 'rb') as file:
             content = file.read()
+
         # self.em.log(f"Content:\n{content}")
         # Convert content to string (assuming UTF-8 encoding)
         text_content = content.decode('utf-8')
@@ -68,6 +84,9 @@ class MDhandler(RclBaseHandler):
 
         # Start generating the HTML output
         output = _htmlprefix
+
+        output += b'<meta name="title" content="' + \
+                      rclexecm.htmlescape(rclexecm.makebytes(title)) + b'">\n'
 
         # Add meta tags for each extracted tag (using MDT as the prefix)
         # self.em.log(f"TAGS: {tags}")
@@ -87,6 +106,7 @@ class MDhandler(RclBaseHandler):
         output += _htmlsuffix
 
         self.outputmimetype = "text/html"
+        # self.em.log(f"{output.decode('utf-8')}")
 
         return output
 
