@@ -77,6 +77,7 @@ typedef struct {
 // Define a structure to hold the context, including an exit flag
 typedef struct  {
     bool shouldExit;
+    pid_t parentPid;
 } DummyTimerContext;
 #endif // MANAGE_SEPARATE_QUEUE
 

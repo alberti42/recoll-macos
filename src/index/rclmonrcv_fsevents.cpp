@@ -177,12 +177,23 @@ CFRunLoopSourceRef CreateEventQueueRunLoopSource(RclFSEvents *monitor) {
 }
 #else
 // Initialize the context with the exit condition
-DummyTimerContext contextLoop = {.shouldExit = false};
+DummyTimerContext contextLoop = {
+                .shouldExit = false,     // if course, it shouldn't exit at the beginning.
+                .parentPid = getppid(),  // store the initial parent process ID
+            };
 
 // Timer callback function
 void DummyTimerCallback(CFRunLoopTimerRef timer, void *info) {
     DummyTimerContext *context = static_cast<DummyTimerContext *>(info);
 
+
+    // Check if the parent process is still alive
+    pid_t currentParentPid = getppid();
+    if (currentParentPid != context->parentPid) {
+        std::cout << "Parent process has exited. Exiting..." << std::endl;
+        context->shouldExit = true;
+    }
+    
     // Check the exit condition
     if (context->shouldExit) {
         CFRunLoopStop(CFRunLoopGetCurrent());  // Stop the run loop
