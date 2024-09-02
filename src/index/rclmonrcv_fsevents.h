@@ -54,14 +54,12 @@ private:
     int eraseWatchSubTree(CFStringRef topDirectory);
     static void signalHandler(int signum);
     void releaseFSEventStream();
-    void freeAllocatedResources();
     RclConfig* m_lconfigPtr;
     FsTreeWalker* m_walkerPtr;
     bool m_ok;
     RclMonEventQueue *m_queue;
     FSEventStreamRef m_stream;
-    std::vector<CFStringRef> m_pathsToWatch;
-    
+    string m_rootPath;    
     
 #ifdef MANAGE_SEPARATE_QUEUE
     std::vector<RclMonEvent> m_eventQueue;

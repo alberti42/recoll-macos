@@ -260,7 +260,6 @@ RclFSEvents::RclFSEvents() : m_lconfigPtr(nullptr), m_walkerPtr(nullptr), m_ok(t
 }
 
 RclFSEvents::~RclFSEvents() {
-    freeAllocatedResources();
     releaseFSEventStream();
 #ifdef MANAGE_SEPARATE_QUEUE
     stopMonitoring();    
@@ -269,14 +268,6 @@ RclFSEvents::~RclFSEvents() {
 
 bool RclFSEvents::isRecursive() {
     return true;
-}
-
-void RclFSEvents::freeAllocatedResources() {
-    auto iter = m_pathsToWatch.begin();
-    while (iter != m_pathsToWatch.end()) {
-        CFRelease(*iter);  // Release the CFStringRef
-        iter++;            // Move to the next element
-    }
 }
 
 void RclFSEvents::fsevents_callback(
@@ -340,12 +331,7 @@ void RclFSEvents::fsevents_callback(
         else if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved) {
             event.m_etyp = RclMonEvent::RCLEVT_DELETE;
             if (isDir) {
-                // We do not need to remove this folder individually
-                // because it will be handled by eraseWatchSubTree
-                // event.m_etyp = RclMonEvent::RCLEVT_NONE;
                 event.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
-                // Directory was moved; remove the subtree entries in the map
-                self->eraseWatchSubTree(pathRef);
                 LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY REMOVED:  " << path << std::endl);
             } else {
                 LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE REMOVED:       " << path << std::endl);
@@ -368,12 +354,7 @@ void RclFSEvents::fsevents_callback(
                 // File does not exist, indicating it was renamed or moved
                 event.m_etyp = RclMonEvent::RCLEVT_DELETE; // Handle renames as modify    
                 if(isDir) {
-                    // We do not need to remove this folder individually
-                    // because it will be handled by eraseWatchSubTree
-                    // event.m_etyp = RclMonEvent::RCLEVT_DELETE;
                     event.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
-                    // Directory was moved; remove the subtree entries in the map
-                    self->eraseWatchSubTree(pathRef);
                     LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY MOVED FROM:  " << path << std::endl);
                 } else {
                     LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE MOVED FROM:       " << path << std::endl);
@@ -458,16 +439,20 @@ void RclFSEvents::setupAndStartStream() {
     releaseFSEventStream();
 
     // Ensure there are paths to monitor
-    if (m_pathsToWatch.empty()) {
+    if (m_rootPath.length()==0) {
         LOGSYSERR("RclFSEvents::setupAndStartStream", "m_pathsToWatch.empty()", "No paths to watch!")
         return;
     }
 
-    // CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)m_pathsToWatch.data(), m_pathsToWatch.size(), &kCFTypeArrayCallBacks);
+    // Convert std::string to CFStringRef
+    CFStringRef cf_rootPath = CFStringCreateWithCString(
+        NULL,                      // Allocator (NULL uses the default allocator)
+        m_rootPath.c_str(),        // C-style string
+        kCFStringEncodingUTF8      // Encoding
+    );
 
-    // Create a CFArray containing only the first path from m_pathsToWatch
-    CFStringRef firstPath = m_pathsToWatch[0];
-    CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)&firstPath, 1, &kCFTypeArrayCallBacks);
+    // We embed the root path in an array of length 1
+    CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)&cf_rootPath, 1, &kCFTypeArrayCallBacks);
 
     FSEventStreamContext context = { 0, this, NULL, NULL, NULL };
     m_stream = FSEventStreamCreate(NULL,
@@ -491,53 +476,8 @@ void RclFSEvents::setupAndStartStream() {
 }
 
 bool RclFSEvents::addWatch(const string& path, bool /*isDir*/, bool /*follow*/) {
-    std::cout << "ADD PATH: " << path << std::endl;
-    CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
-    if (cfPath) {
-        m_pathsToWatch.push_back(cfPath);
-        // setupAndStartStream();  // Restart stream with updated paths
-        return true;
-    } else {
-        std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
-        return false;
-    }
+    m_rootPath = path;
+    return true;
 }
-
-// Utility function to remove all entries from the list of CFStringRef that correspond 
-// to paths under a given top-level directory (including the directory itself).
-// This is used to clean up when a directory (or a subtree) is moved.
-int RclFSEvents::eraseWatchSubTree(CFStringRef topDirectory)
-{
-    int numFolderFound = 0;
-    char path[PATH_MAX];
-
-    MONDEB("Clearing entries in the list for directory: [" << topDirectory << "]\n");
-
-    // Iterate through the list of CFStringRef paths
-    auto iter = m_pathsToWatch.begin();
-    while (iter != m_pathsToWatch.end()) {
-        // Check if the current path starts with the topDirectory path
-        if (CFStringHasPrefix(*iter, topDirectory)) {
-            // convert the path to a c-string
-            CFStringGetFileSystemRepresentation(*iter, path, sizeof(path));
-            
-            //// remove the path from the db
-            // RclMonEvent event;
-            // event.m_path = path;
-            // event.m_etyp = RclMonEvent::RCLEVT_DELETE;
-            // m_queue->pushEvent(event);
-
-            CFRelease(*iter);  // Release the CFStringRef before erasing it
-            iter = m_pathsToWatch.erase(iter);  // Remove the entry and get the next iterator
-            numFolderFound++;
-        } else {
-            ++iter;  // Move to the next entry if no match is found
-        }
-    }
-    setupAndStartStream();
-    return numFolderFound;  // Return whether any entries were removed
-}
-
-
 
 #endif // FSWATCH_FSEVENTS
