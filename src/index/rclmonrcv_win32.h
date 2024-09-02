@@ -33,8 +33,6 @@ private:
     RclFSWatchWin32 m_fswatcher;
 };
 
-typedef RclMonitorWin32 RclMonitorDerived;
-
 #endif // FSWATCH_WIN32
 
 #endif // RCLMONRCV_WIN32_H

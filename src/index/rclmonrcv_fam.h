@@ -30,8 +30,6 @@ private:
     const char *event_name(int code);
 };
 
-typedef RclFAM RclMonitorDerived;
-
 #endif // FSWATCH_FAM
 
 #endif

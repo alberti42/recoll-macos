@@ -8,16 +8,24 @@
 // Set the FSWATCH to the chosen library.
 #ifdef _WIN32
     #define FSWATCH_WIN32
+    class RclMonitorWin32;
+    using RclMonitorDerived = RclMonitorWin32;
 #else // ! _WIN32
     #ifdef RCL_USE_FSEVENTS // darwin (i.e., MACOS)
         #define FSWATCH_FSEVENTS
+        class RclFSEvents;
+        using RclMonitorDerived = RclFSEvents;
     #else // ! RCL_USE_FSEVENTS
         // We dont compile both the inotify and the fam interface and inotify has preference
         #ifdef RCL_USE_INOTIFY
             #define FSWATCH_INOTIFY
+            class RclIntf;
+            using RclMonitorDerived = RclIntf;
         #else // ! RCL_USE_INOTIFY
             #ifdef RCL_USE_FAM
                 #define FSWATCH_FAM
+                class RclFAM;
+                using RclMonitorDerived = RclFAM;
             #endif // RCL_USE_FAM
         #endif // INOTIFY
     #endif // RCL_USE_FSEVENTS
@@ -75,9 +83,6 @@ public:
     // Save significant errno after monitor calls
     int saved_errno{0};
 };
-
-class RclFSEvents;
-typedef RclFSEvents RclMonitorDerived;
 
 bool rclMonShouldSkip(const std::string& path, RclConfig& lconfig, FsTreeWalker& walker);
 bool rclMonAddSubWatches(const std::string& path, FsTreeWalker& walker, RclConfig& lconfig,

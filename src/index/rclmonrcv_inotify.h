@@ -29,8 +29,6 @@ private:
     void close();
 };
 
-typedef RclIntf RclMonitorDerived;
-
 #endif // FSWATCH_INOTIFY
 
 #endif // RCLMONRCV_INOTIFY_H

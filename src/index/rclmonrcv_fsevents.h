@@ -65,8 +65,6 @@ private:
 #endif // MANAGE_SEPARATE_QUEUE
 };
 
-typedef RclFSEvents RclMonitorDerived;
-
 // Custom context for the run loop
 #ifdef MANAGE_SEPARATE_QUEUE
 typedef struct {
