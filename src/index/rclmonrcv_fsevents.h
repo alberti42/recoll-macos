@@ -49,15 +49,17 @@ public:
     CFRunLoopRef m_runLoop;
 
 private:
+    int eraseWatchSubTree(CFStringRef topDirectory);
     static void signalHandler(int signum);
     void removeFSEventStream();
-
+    void freeAllocatedResources();
     RclConfig* m_lconfigPtr;
     FsTreeWalker* m_walkerPtr;
     bool m_ok;
     RclMonEventQueue *m_queue;
     FSEventStreamRef m_stream;
     std::vector<CFStringRef> m_pathsToWatch;
+    
     
 #ifdef MANAGE_SEPARATE_QUEUE
     std::vector<RclMonEvent> m_eventQueue;

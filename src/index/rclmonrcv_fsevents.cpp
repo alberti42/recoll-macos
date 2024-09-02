@@ -260,11 +260,21 @@ RclFSEvents::RclFSEvents() : m_lconfigPtr(nullptr), m_walkerPtr(nullptr), m_ok(t
 }
 
 RclFSEvents::~RclFSEvents() {
+    freeAllocatedResources();
     removeFSEventStream();
 #ifdef MANAGE_SEPARATE_QUEUE
     stopMonitoring();    
 #endif // MANAGE_SEPARATE_QUEUE
 }
+
+void RclFSEvents::freeAllocatedResources() {
+    auto iter = m_pathsToWatch.begin();
+    while (iter != m_pathsToWatch.end()) {
+        CFRelease(*iter);  // Release the CFStringRef
+        iter++;            // Move to the next element
+    }
+}
+
 void RclFSEvents::fsevents_callback(
     ConstFSEventStreamRef streamRef,
     void *clientCallBackInfo,
@@ -326,7 +336,11 @@ void RclFSEvents::fsevents_callback(
         else if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved) {
             event.m_etyp = RclMonEvent::RCLEVT_DELETE;
             if (isDir) {
-                event.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
+                // We do not need to remove this folder individually
+                // because it will be handled by eraseWatchSubTree
+                event.m_etyp = RclMonEvent::RCLEVT_NONE;
+                // Directory was moved; remove the subtree entries in the map
+                self->eraseWatchSubTree(pathRef);
                 LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY REMOVED:  " << path << std::endl);
             } else {
                 LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE REMOVED:       " << path << std::endl);
@@ -349,7 +363,11 @@ void RclFSEvents::fsevents_callback(
                 // File does not exist, indicating it was renamed or moved
                 event.m_etyp = RclMonEvent::RCLEVT_DELETE; // Handle renames as modify    
                 if(isDir) {
-                    event.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
+                    // We do not need to remove this folder individually
+                    // because it will be handled by eraseWatchSubTree
+                    event.m_etyp = RclMonEvent::RCLEVT_NONE;
+                    // Directory was moved; remove the subtree entries in the map
+                    self->eraseWatchSubTree(pathRef);
                     LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY MOVED FROM:  " << path << std::endl);
                 } else {
                     LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE MOVED FROM:       " << path << std::endl);
@@ -365,6 +383,7 @@ void RclFSEvents::fsevents_callback(
             }
         }
 
+        // Filter relevant events to be processes
         if (event.m_etyp != RclMonEvent::RCLEVT_NONE) {
 #ifdef MANAGE_SEPARATE_QUEUE
             std::unique_lock<std::mutex> lockInstance(self->m_queueMutex); // Mutex is locked here
@@ -375,7 +394,10 @@ void RclFSEvents::fsevents_callback(
 
             // Manually unlock the mutex before signaling the run loop
             lockInstance.unlock();  // Unlock the mutex
-#else
+#endif // MANAGE_SEPARATE_QUEUE
+
+            // We push the event on the queue; pushEvent handles the operation in a thread-safe manner mutex
+            self->m_queue->pushEvent(event);
 
             if(event.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
                 // Recursive addwatch: there may already be stuff inside this directory. E.g.: files
@@ -393,10 +415,6 @@ void RclFSEvents::fsevents_callback(
                     return;
                 }
             }
-
-            // We push the event on the queue; pushEvent handles the operation in a thread-safe manner mutex
-            self->m_queue->pushEvent(event);
-#endif // MANAGE_SEPARATE_QUEUE
         }
     }
 }
@@ -474,27 +492,42 @@ bool RclFSEvents::addWatch(const string& path, bool /*isDir*/, bool /*follow*/) 
     }
 }
 
-void RclFSEvents::removeWatch(const string &path) {
-    CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
-    if (!cfPath) {
-        std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
-        return;
+// Utility function to remove all entries from the list of CFStringRef that correspond 
+// to paths under a given top-level directory (including the directory itself).
+// This is used to clean up when a directory (or a subtree) is moved.
+int RclFSEvents::eraseWatchSubTree(CFStringRef topDirectory)
+{
+    int numFolderFound = 0;
+    char path[PATH_MAX];
+
+    MONDEB("Clearing entries in the list for directory: [" << topDirectory << "]\n");
+
+    // Iterate through the list of CFStringRef paths
+    auto iter = m_pathsToWatch.begin();
+    while (iter != m_pathsToWatch.end()) {
+        // Check if the current path starts with the topDirectory path
+        if (CFStringHasPrefix(*iter, topDirectory)) {
+            // convert the path to a c-string
+            CFStringGetFileSystemRepresentation(*iter, path, sizeof(path));
+            
+            // remove the path from the db
+            RclMonEvent event;
+            event.m_path = path;
+            event.m_etyp = RclMonEvent::RCLEVT_DELETE;
+            std::cout << "REMOVED: " << path << std::endl;
+            m_queue->pushEvent(event);
+
+            CFRelease(*iter);  // Release the CFStringRef before erasing it
+            iter = m_pathsToWatch.erase(iter);  // Remove the entry and get the next iterator
+            numFolderFound++;
+        } else {
+            ++iter;  // Move to the next entry if no match is found
+        }
     }
-
-    auto it = std::remove_if(m_pathsToWatch.begin(), m_pathsToWatch.end(),
-                             [cfPath](CFStringRef existingPath) {
-                                 bool match = CFStringCompare(existingPath, cfPath, 0) == kCFCompareEqualTo;
-                                 if (match) {
-                                     CFRelease(existingPath);  // Release the CFStringRef if removing
-                                 }
-                                 return match;
-                             });
-    
-    m_pathsToWatch.erase(it, m_pathsToWatch.end());
-    CFRelease(cfPath);
-
-    setupAndStartStream();  // Restart stream with updated paths
+    setupAndStartStream();
+    return numFolderFound;  // Return whether any entries were removed
 }
+
 
 
 #endif // FSWATCH_FSEVENTS
