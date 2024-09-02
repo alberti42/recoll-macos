@@ -235,10 +235,7 @@ static bool rclMonAddTopWatches(
     return true;
 }
 
-#ifndef FSWATCH_FSEVENTS
-// We do not need it when working with fsevents
-// Fixme
-static bool rclMonAddSubWatches(
+bool rclMonAddSubWatches(
     const std::string& path, FsTreeWalker& walker, RclConfig& lconfig,
     RclMonitorDerived *mon, RclMonEventQueue *queue)
 {
@@ -252,8 +249,6 @@ static bool rclMonAddSubWatches(
     }
     return true;
 }
-
-#endif // ! FSWATCH_FSEVENTS
 
 // Don't push events for skipped files. This would get filtered on the processing side
 // anyway, but causes unnecessary wakeups and messages. Do not test skippedPaths here,

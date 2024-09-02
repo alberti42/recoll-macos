@@ -76,7 +76,12 @@ public:
     int saved_errno{0};
 };
 
+class RclFSEvents;
+typedef RclFSEvents RclMonitorDerived;
+
 bool rclMonShouldSkip(const std::string& path, RclConfig& lconfig, FsTreeWalker& walker);
+bool rclMonAddSubWatches(const std::string& path, FsTreeWalker& walker, RclConfig& lconfig,
+            RclMonitorDerived *mon, RclMonEventQueue *queue);
 
 #endif // RCL_MONITOR
 

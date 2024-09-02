@@ -16,6 +16,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #ifdef MANAGE_SEPARATE_QUEUE
 #include <mutex>

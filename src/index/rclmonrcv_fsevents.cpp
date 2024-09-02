@@ -79,6 +79,7 @@
 */
 
 #include "autoconfig.h"
+#include "log.h"
 #include "rclmonrcv.h"
 
 #ifdef FSWATCH_FSEVENTS
@@ -264,21 +265,43 @@ RclFSEvents::~RclFSEvents() {
     stopMonitoring();    
 #endif // MANAGE_SEPARATE_QUEUE
 }
-
 void RclFSEvents::fsevents_callback(
     ConstFSEventStreamRef streamRef,
     void *clientCallBackInfo,
     size_t numEvents,
-    void *eventPaths,
+    void *eventPaths,  // now a CFArrayRef of CFDictionaryRef
     const FSEventStreamEventFlags eventFlags[],
     const FSEventStreamEventId eventIds[]) {
-    
+
     RclFSEvents *self = static_cast<RclFSEvents *>(clientCallBackInfo);
-    
-    char **paths = (char **)eventPaths;
-    
+
+    CFArrayRef pathsArray = (CFArrayRef)eventPaths;
+
+    // std::cout << "Number of events: " << numEvents << std::endl;
+
     for (size_t i = 0; i < numEvents; ++i) {
-        string path = paths[i];
+        // Get the dictionary for this event
+        CFDictionaryRef eventDict = (CFDictionaryRef)CFArrayGetValueAtIndex(pathsArray, i);
+
+        // Extract the path from the dictionary
+        CFStringRef pathRef = (CFStringRef)CFDictionaryGetValue(eventDict, kFSEventStreamEventExtendedDataPathKey);
+        char path[PATH_MAX];
+        CFStringGetFileSystemRepresentation(pathRef, path, sizeof(path));
+
+        /*
+        std::cout << "Path         : " << path << std::endl;
+        std::cout << "Event ID     : " << eventIds[i] << std::endl;
+        // Extract the inode from the dictionary
+        CFNumberRef inodeRef = (CFNumberRef)CFDictionaryGetValue(eventDict, kFSEventStreamEventExtendedFileIDKey);
+        ino_t inode;
+        if (inodeRef) {
+            CFNumberGetValue(inodeRef, kCFNumberLongLongType, &inode);
+            std::cout << "Inode        : " << inode << std::endl;
+        } else {
+            std::cout << "Inode        : not available" << std::endl;
+        }
+        std::cout << "Event flags  : " << eventFlags[i] << std::endl;
+        */
 
         if (rclMonShouldSkip(path, *self->m_lconfigPtr, *self->m_walkerPtr))
             continue;
@@ -292,61 +315,92 @@ void RclFSEvents::fsevents_callback(
         // Handle file creation
         if (eventFlags[i] & kFSEventStreamEventFlagItemCreated) {
             if (isDir) {
-                event.m_etyp |= RclMonEvent::RCLEVT_DIRCREATE;
-                LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY CREATED: " << path << std::endl);
+                event.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
+                LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY CREATED:  " << path << std::endl);
             } else {
-                event.m_etyp |= RclMonEvent::RCLEVT_MODIFY;
-                LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE CREATED: " << path << std::endl);
+                event.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+                LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE CREATED:       " << path << std::endl);
             }
         }
-
         // Handle file removal
-        if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved) {
-            event.m_etyp |= RclMonEvent::RCLEVT_DELETE;
+        else if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved) {
+            event.m_etyp = RclMonEvent::RCLEVT_DELETE;
             if (isDir) {
                 event.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
-                LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY REMOVED: " << path << std::endl);
+                LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY REMOVED:  " << path << std::endl);
             } else {
-                LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE REMOVED: " << path << std::endl);
+                LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE REMOVED:       " << path << std::endl);
             }
         }
-
         // Handle inode metadata modification
-        if (eventFlags[i] & kFSEventStreamEventFlagItemInodeMetaMod) {
-            event.m_etyp |= RclMonEvent::RCLEVT_MODIFY;
-            LOGINFO("RclFSEvents::fsevents_callback: Event type: METADATA MODIFIED: " << path << std::endl);
+        else if (eventFlags[i] & kFSEventStreamEventFlagItemInodeMetaMod) {
+            event.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+            LOGINFO("RclFSEvents::fsevents_callback: Event type: METADATA MODIFIED:  " << path << std::endl);
         }
-
         // Handle content modification
-        if (eventFlags[i] & kFSEventStreamEventFlagItemModified) {
-            event.m_etyp |= RclMonEvent::RCLEVT_MODIFY;
-            LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE MODIFIED: " << path << std::endl);
+        else if (eventFlags[i] & kFSEventStreamEventFlagItemModified) {
+            event.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+            LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE MODIFIED:      " << path << std::endl);
         }
-
         // Handle file renaming
-        if (eventFlags[i] & kFSEventStreamEventFlagItemRenamed) {
-            event.m_etyp |= RclMonEvent::RCLEVT_MODIFY; // Handle renames as modify
-            LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE RENAMED: " << path << std::endl);
+        else if (eventFlags[i] & kFSEventStreamEventFlagItemRenamed) {
+            struct stat buffer;
+            if (stat(path, &buffer) != 0) {
+                // File does not exist, indicating it was renamed or moved
+                event.m_etyp = RclMonEvent::RCLEVT_DELETE; // Handle renames as modify    
+                if(isDir) {
+                    event.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
+                    LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY MOVED FROM:  " << path << std::endl);
+                } else {
+                    LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE MOVED FROM:       " << path << std::endl);
+                }
+            } else {
+                if (isDir) {
+                    event.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
+                    LOGINFO("RclFSEvents::fsevents_callback: Event type: DIRECTORY MOVE TO:     " << path << std::endl);
+                } else {
+                    event.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+                    LOGINFO("RclFSEvents::fsevents_callback: Event type: FILE MOVE TO:          " << path << std::endl);
+                }
+            }
         }
 
         if (event.m_etyp != RclMonEvent::RCLEVT_NONE) {
-            
 #ifdef MANAGE_SEPARATE_QUEUE
             std::unique_lock<std::mutex> lockInstance(self->m_queueMutex); // Mutex is locked here
             self->m_eventQueue.push_back(event); // Store the event
-            
+
             CFRunLoopSourceSignal(runLoopSource); // Signal the stored run loop source
             CFRunLoopWakeUp(self->m_runLoop); // Wake up the stored run loop
-            
+
             // Manually unlock the mutex before signaling the run loop
             lockInstance.unlock();  // Unlock the mutex
 #else
+
+            if(event.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
+                // Recursive addwatch: there may already be stuff inside this directory. E.g.: files
+                // were quickly created, or this is actually the target of a directory move. This is
+                // necessary for inotify, but it seems that fam/gamin is doing the job for us so
+                // that we are generating double events here (no big deal as prc will sort/merge).
+                LOGINFO("RclFSEvents::fsevents_callback: Event type: WALKING NEW DIRECTORY: " << event.m_path << "\n");
+                if (!rclMonAddSubWatches(event.m_path, *self->m_walkerPtr, *self->m_lconfigPtr, self, self->m_queue)) {
+                    LOGERR("RclFSEvents::fsevents_callback: error in walking dir" << std::endl);
+#ifdef MANAGE_SEPARATE_QUEUE
+                            stopMonitoring();
+#else
+                            contextLoop.shouldExit = true; // Set the exit flag to true
+#endif
+                    return;
+                }
+            }
+
             // We push the event on the queue; pushEvent handles the operation in a thread-safe manner mutex
             self->m_queue->pushEvent(event);
 #endif // MANAGE_SEPARATE_QUEUE
         }
     }
 }
+
 
 #ifdef MANAGE_SEPARATE_QUEUE
 bool RclFSEvents::getEvent(RclMonEvent& ev, int msecs) {
@@ -394,7 +448,7 @@ void RclFSEvents::setupAndStartStream() {
                                    pathsToWatch,
                                    kFSEventStreamEventIdSinceNow,
                                    1.0,
-                                   kFSEventStreamCreateFlagFileEvents);
+                                   kFSEventStreamCreateFlagFileEvents | kFSEventStreamCreateFlagUseExtendedData | kFSEventStreamCreateFlagUseCFTypes);
 
     CFRelease(pathsToWatch);
 
