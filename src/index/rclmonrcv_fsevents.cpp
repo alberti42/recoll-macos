@@ -194,13 +194,16 @@ void DummyTimerCallback(CFRunLoopTimerRef timer, void *info) {
 
 // Signal handler for SIGINT
 void RclFSEvents::signalHandler(int signum) {
-    if(signum == SIGINT) {
+    switch(signum){    
+    case SIGINT:
+    case SIGTERM:
         LOGINFO("RclFSEvents::signalHandler: Interrupt signal (" << signum << ") received." << std::endl);
 #ifdef MANAGE_SEPARATE_QUEUE
         stopMonitoring();
 #else
         contextLoop.shouldExit = true; // Set the exit flag to true
 #endif
+        break;
     }
 }
 
@@ -246,6 +249,7 @@ void RclFSEvents::startMonitoring(
 
     // Register signal handler for SIGINT (CTRL-C)
     signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
 
     CFRunLoopRun(); // Start the run loop
 
