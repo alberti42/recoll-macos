@@ -268,7 +268,7 @@ RclFSEvents::~RclFSEvents() {
 }
 
 bool RclFSEvents::isRecursive() {
-    return false;
+    return true;
 }
 
 void RclFSEvents::freeAllocatedResources() {
@@ -463,7 +463,11 @@ void RclFSEvents::setupAndStartStream() {
         return;
     }
 
-    CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)m_pathsToWatch.data(), m_pathsToWatch.size(), &kCFTypeArrayCallBacks);
+    // CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)m_pathsToWatch.data(), m_pathsToWatch.size(), &kCFTypeArrayCallBacks);
+
+    // Create a CFArray containing only the first path from m_pathsToWatch
+    CFStringRef firstPath = m_pathsToWatch[0];
+    CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)&firstPath, 1, &kCFTypeArrayCallBacks);
 
     FSEventStreamContext context = { 0, this, NULL, NULL, NULL };
     m_stream = FSEventStreamCreate(NULL,
@@ -487,10 +491,11 @@ void RclFSEvents::setupAndStartStream() {
 }
 
 bool RclFSEvents::addWatch(const string& path, bool /*isDir*/, bool /*follow*/) {
+    std::cout << "ADD PATH: " << path << std::endl;
     CFStringRef cfPath = CFStringCreateWithCString(NULL, path.c_str(), kCFStringEncodingUTF8);
     if (cfPath) {
         m_pathsToWatch.push_back(cfPath);
-        setupAndStartStream();  // Restart stream with updated paths
+        // setupAndStartStream();  // Restart stream with updated paths
         return true;
     } else {
         std::cerr << "Failed to convert path to CFStringRef: " << path << std::endl;
