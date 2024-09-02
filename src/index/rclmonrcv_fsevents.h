@@ -50,6 +50,9 @@ public:
 
     bool isRecursive();
 
+public:
+    RclMonEventQueue *m_queue{NULL};
+
 private:
     int eraseWatchSubTree(CFStringRef topDirectory);
     static void signalHandler(int signum);
@@ -57,7 +60,6 @@ private:
     RclConfig* m_lconfigPtr;
     FsTreeWalker* m_walkerPtr;
     bool m_ok;
-    RclMonEventQueue *m_queue;
     FSEventStreamRef m_stream;
     string m_rootPath;    
     
@@ -67,20 +69,12 @@ private:
 #endif // MANAGE_SEPARATE_QUEUE
 };
 
-// Custom context for the run loop
-#ifdef MANAGE_SEPARATE_QUEUE
-typedef struct {
-    bool shouldExit;
-    RclFSEvents *monitor;
-} RunLoopSourceContext;
-#else
-// Define a structure to hold the context, including an exit flag
+// Custom context for the idle loop
 typedef struct  {
     bool shouldExit;
     pid_t parentPid;
-} DummyTimerContext;
-#endif // MANAGE_SEPARATE_QUEUE
-
+    RclFSEvents *monitor;
+} IdleLoopContext;
 
 #endif // FSWATCH_FSEVENTS
 

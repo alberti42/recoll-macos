@@ -66,7 +66,7 @@ public:
 };
 
 enum RclMonitorOption {RCLMON_NONE=0, RCLMON_NOFORK=1, RCLMON_NOX11=2,
-                       RCLMON_NOCONFCHECK=4};
+                       RCLMON_NOCONFCHECK=4, RCLMON_NOORPHAN=8};
 
 /**
  * Monitoring event queue. This is the shared object between the main thread 
@@ -90,6 +90,8 @@ public:
     bool empty();
     RclMonEvent pop();
     void setopts(int opts);
+    bool getopt(int mask);
+    int m_opts{0};
 
     // Convenience function for initially communicating config to mon thr
     void setConfig(RclConfig *conf);

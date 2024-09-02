@@ -81,15 +81,22 @@
 #include "autoconfig.h"
 #include "log.h"
 #include "rclmonrcv.h"
+#include <cstdio>
 
 #ifdef FSWATCH_FSEVENTS
 
 #include "rclmonrcv_fsevents.h"
 
+// Initialize the context with the exit condition
+IdleLoopContext contextLoop = {
+        .shouldExit = false,     // if course, it shouldn't exit at the beginning.
+        .parentPid = getppid(),  // store the initial parent process ID
+        .monitor = NULL,
+};
+
 #ifdef MANAGE_SEPARATE_QUEUE
 
 CFRunLoopSourceRef runLoopSource;
-RunLoopSourceContext contextLoop = {.shouldExit = false, .monitor = NULL};
 
 void stopMonitoring() {
     if (runLoopSource) {
@@ -132,13 +139,13 @@ void processEvent(const RclMonEvent& event) {
 
 // Function to cancel the run loop source
 void RunLoopSourceCancelRoutine(void *info, CFRunLoopRef rl, CFStringRef mode) {
-    RunLoopSourceContext *context = static_cast<RunLoopSourceContext *>(info);
+    IdleLoopContext *context = static_cast<IdleLoopContext *>(info);
     LOGINFO("RunLoopSourceCancelRoutine: RunLoopSourceCancelRoutine triggered.\n");
     context->shouldExit = true;  // Set the exit flag
 }
 
 void RunLoopSourcePerformRoutine(void *info) {
-    RunLoopSourceContext *context = static_cast<RunLoopSourceContext *>(info);
+    IdleLoopContext *context = static_cast<IdleLoopContext *>(info);
     RclFSEvents *monitor = context->monitor;
     RclMonEvent event;
 
@@ -158,7 +165,6 @@ void RunLoopSourcePerformRoutine(void *info) {
 
 // Function to create the custom run loop source
 CFRunLoopSourceRef CreateEventQueueRunLoopSource(RclFSEvents *monitor) {
-    contextLoop.monitor = monitor;
     
     CFRunLoopSourceContext sourceContext = {
         0,                           // Version (unused)
@@ -176,23 +182,22 @@ CFRunLoopSourceRef CreateEventQueueRunLoopSource(RclFSEvents *monitor) {
     return CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &sourceContext);
 }
 #else
-// Initialize the context with the exit condition
-DummyTimerContext contextLoop = {
-                .shouldExit = false,     // if course, it shouldn't exit at the beginning.
-                .parentPid = getppid(),  // store the initial parent process ID
-            };
-
 // Timer callback function
 void DummyTimerCallback(CFRunLoopTimerRef timer, void *info) {
-    DummyTimerContext *context = static_cast<DummyTimerContext *>(info);
-
+    IdleLoopContext *context = static_cast<IdleLoopContext *>(info);
 
     // Check if the parent process is still alive
-    pid_t currentParentPid = getppid();
-    if (currentParentPid != context->parentPid) {
-        std::cout << "Parent process has exited. Exiting..." << std::endl;
-        context->shouldExit = true;
+    if(
+        context->monitor->m_queue && 
+        context->monitor->m_queue ->getopt(RCLMON_NOORPHAN)
+    ) {
+        pid_t currentParentPid = getppid();
+        if (currentParentPid != context->parentPid) {
+            std::cout << "Parent process has exited. Exiting..." << std::endl;
+            context->shouldExit = true;
+        }
     }
+    
     
     // Check the exit condition
     if (context->shouldExit) {
@@ -226,6 +231,8 @@ void RclFSEvents::startMonitoring(
     this->m_queue = queue;
     this->m_lconfigPtr = &lconfig;
     this->m_walkerPtr = &walker;
+
+    contextLoop.monitor = this;
 
     setupAndStartStream();  // Initial setup and start
 
