@@ -8,7 +8,7 @@
 #ifdef FSWATCH_WIN32
 
 // Adapter for the rclmon interface
-class RclMonitorWin32 : public RclMonitor, public FileWatchListener {
+class RclMonitorWin32 : public RclMonitorFactory<RclMonitorWin32>, public FileWatchListener {
 public:
     ~RclMonitorWin32() {}
     bool addWatch(const string& path, bool /*isDir*/, bool /*follow*/);

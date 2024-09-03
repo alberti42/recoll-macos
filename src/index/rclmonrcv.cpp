@@ -59,31 +59,29 @@
 #include "rclmonrcv_fam.h"
 #include "rclmonrcv_win32.h"
 
-/* ==== CLASS RclMonitor: definition of member functions ==== */
+// ///////////////////////////////////////////////////////////////////////
+// // The monitor 'factory'
+// static RclMonitor *makeMonitor()
+// {
+// #ifdef FSWATCH_WIN32
+//     return new RclMonitorWin32;
+// #endif
+// #ifdef FSWATCH_FSEVENTS
+//     return new RclFSEvents;
+// #endif
+// #ifdef FSWATCH_INOTIFY
+//     return new RclIntf;
+// #endif
+// #ifdef FSWATCH_FAM
+//     return new RclFAM;
+// #endif
+//     // This part of the code will never be reached. However, to be safe, we can keep it.
+//     LOGINFO("RclMonitor: none of the following, Inotify, Fam, fsevents was compiled as file system "
+//                 "change notification interface\n");
+//     return nullptr;
+// }
+// ///////////////////////////////////////////////////////////////////////
 
-RclMonitor::RclMonitor() {}
-RclMonitor::~RclMonitor() {}
-
-#ifdef FSWATCH_FSEVENTS
-#else
-    bool RclMonitor::getEvent(RclMonEvent& ev, int msecs)
-    {
-        return false;
-    }
-#endif
-// Does this monitor generate 'exist' events at startup?
-bool RclMonitor::generatesExist() {
-    return false;
-}
-bool RclMonitor::isRecursive() {
-    return false;
-}
-// Save significant errno after monitor calls
-int saved_errno{0};
-
-// Monitor factory. We only have one compiled-in kind at a time, no
-// need for a 'kind' parameter
-static RclMonitorDerived *makeMonitor();
 
 /* ==== CLASS WalkCB: definition of member functions ==== */
 
@@ -97,7 +95,7 @@ static RclMonitorDerived *makeMonitor();
  */
 class WalkCB : public FsTreeWalkerCB {
 public:
-    WalkCB(RclConfig *conf, RclMonitorDerived *mon, RclMonEventQueue *queue, FsTreeWalker& walker)
+    WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue, FsTreeWalker& walker)
         : m_config(conf), m_mon(mon), m_queue(queue), m_walker(walker) {}
     virtual ~WalkCB() {}
 
@@ -167,14 +165,14 @@ public:
 
 private:
     RclConfig         *m_config;
-    RclMonitorDerived *m_mon;
+    RclMonitor        *m_mon;
     RclMonEventQueue  *m_queue;
     FsTreeWalker&      m_walker;
     bool m_initfollow{true};
 };
 
 static bool rclMonAddTopWatches(
-    FsTreeWalker& walker, RclConfig& lconfig, RclMonitorDerived *mon, RclMonEventQueue *queue)
+    FsTreeWalker& walker, RclConfig& lconfig, RclMonitor *mon, RclMonEventQueue *queue)
 {
     // Get top directories from config. Special monitor sublist if
     // set, else full list.
@@ -240,7 +238,7 @@ static bool rclMonAddTopWatches(
 
 bool rclMonAddSubWatches(
     const std::string& path, FsTreeWalker& walker, RclConfig& lconfig,
-    RclMonitorDerived *mon, RclMonEventQueue *queue)
+    RclMonitor *mon, RclMonEventQueue *queue)
 {
     WalkCB walkcb(&lconfig, mon, queue, walker);
     if (walker.walk(path, walkcb) != FsTreeWalker::FtwOk) {
@@ -279,12 +277,17 @@ void *rclMonRcvRun(void *q)
     RclConfig lconfig(*queue->getConfig());
 
     // Create the fam/whatever interface object
-    RclMonitorDerived *mon;
-    if ((mon = makeMonitor()) == nullptr) {
-        LOGERR("rclMonRcvRun: makeMonitor failed\n");
-        queue->setTerminate();
-        return nullptr;
-    }
+    RclMonitor *mon = new RclMonitor;
+
+    // There is no way that this condition fails. I find it confusing to have this check here.
+    // You can leave it because it does not bother, but I suggest to remove it.
+    // If we fail here it is because we are doing some thing very wrong allowing RCL_MONITOR
+    // without proper FS watch mechanism.
+    // if (mon == nullptr) {
+    //     LOGERR("rclMonRcvRun: makeMonitor failed\n");
+    //     queue->setTerminate();
+    //     return nullptr;
+    // }
 
     FsTreeWalker walker;
     walker.setSkippedPaths(lconfig.getDaemSkippedPaths());
@@ -293,7 +296,6 @@ void *rclMonRcvRun(void *q)
         LOGERR("rclMonRcvRun: addtopwatches failed\n");
         goto terminate;
     }
-
 
     // Forever wait for monitoring events and add them to queue:
     MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() << "\n");
@@ -355,26 +357,5 @@ bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
     return found;
 }
 
-///////////////////////////////////////////////////////////////////////
-// The monitor 'factory'
-static RclMonitorDerived *makeMonitor()
-{
-#ifdef FSWATCH_WIN32
-    return new RclMonitorWin32;
-#endif
-#ifdef FSWATCH_FSEVENTS
-    return new RclFSEvents;
-#endif
-#ifdef FSWATCH_INOTIFY
-    return new RclIntf;
-#endif
-#ifdef FSWATCH_FAM
-    return new RclFAM;
-#endif
-    // This part of the code will never be reached. However, to be safe, we can keep it.
-    LOGINFO("RclMonitor: none of the following, Inotify, Fam, fsevents was compiled as file system "
-                "change notification interface\n");
-    return nullptr;
-}
 
 #endif // RCL_MONITOR

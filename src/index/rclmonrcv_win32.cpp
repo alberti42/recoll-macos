@@ -124,7 +124,7 @@ bool RclMonitorWin32::getEvent(RclMonEvent& ev, int msecs) {
     return false;
 }
 
-RclMonitorWin32::bool ok() const {
+bool RclMonitorWin32::ok() const {
     return m_fswatcher.ok();
 }
 

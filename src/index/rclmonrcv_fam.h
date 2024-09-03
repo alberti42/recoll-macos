@@ -10,7 +10,7 @@
 /** FAM based monitor class. We have to keep a record of FAM watch
     request numbers to directory names as the event only contain the
     request number and file name, not the full path */
-class RclFAM : public RclMonitor {
+class RclFAM : public RclMonitorFactory<RclFAM> {
 public:
     RclFAM();
     ~RclFAM();

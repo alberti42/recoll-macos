@@ -23,7 +23,7 @@
 #include <mutex>
 #endif // MANAGE_SEPARATE_QUEUE
 
-class RclFSEvents : public RclMonitor {
+class RclFSEvents : public RclMonitorFactory<RclFSEvents> {
 public:
     RclFSEvents();
     ~RclFSEvents();

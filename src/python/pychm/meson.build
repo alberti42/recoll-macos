@@ -29,8 +29,8 @@ foreach v : py3versions
             'recollchm/swig_chm.c',
         ],
         c_args: ['-DSWIG_COBJECT_TYPES'],
-        dependencies: [py3_dep, cc.find_library('chm', dirs: '/opt/homebrew/lib', required: true),],
-        include_directories: include_directories('/opt/homebrew/include'),
+        dependencies: [py3_dep, cc.find_library('chm', dirs: '/usr/local/lib', required: true),],
+        include_directories: include_directories('/usr/local/include'),
         install: true,
         subdir: 'recollchm',
     )

@@ -9,7 +9,7 @@
 
 #define EVBUFSIZE (32*1024)
 
-class RclIntf : public RclMonitor {
+class RclIntf : public RclMonitorFactory<RclIntf> {
 public:
     RclIntf();
     ~RclIntf();

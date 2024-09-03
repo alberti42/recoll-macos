@@ -9,23 +9,23 @@
 #ifdef _WIN32
     #define FSWATCH_WIN32
     class RclMonitorWin32;
-    using RclMonitorDerived = RclMonitorWin32;
+    using RclMonitor = RclMonitorWin32; // Create an alias for RclMonitorWin32
 #else // ! _WIN32
     #ifdef RCL_USE_FSEVENTS // darwin (i.e., MACOS)
         #define FSWATCH_FSEVENTS
         class RclFSEvents;
-        using RclMonitorDerived = RclFSEvents;
+        using RclMonitor = RclFSEvents; // Create an alias for RclFSEvents
     #else // ! RCL_USE_FSEVENTS
         // We dont compile both the inotify and the fam interface and inotify has preference
         #ifdef RCL_USE_INOTIFY
             #define FSWATCH_INOTIFY
             class RclIntf;
-            using RclMonitorDerived = RclIntf;
+            using RclMonitor = RclIntf; // Create an alias for RclIntf
         #else // ! RCL_USE_INOTIFY
             #ifdef RCL_USE_FAM
                 #define FSWATCH_FAM
                 class RclFAM;
-                using RclMonitorDerived = RclFAM;
+                using RclMonitor = RclFAM; // Create an alias for RclFAM
             #endif // RCL_USE_FAM
         #endif // INOTIFY
     #endif // RCL_USE_FSEVENTS
@@ -61,24 +61,30 @@ using std::string;
 using std::vector;
 using std::map;
 
-/** Virtual interface for the actual filesystem monitoring module. */
-
-class RclMonitor {
+/** Template for the actual filesystem monitoring module.**/
+template <typename T>
+class RclMonitorFactory {
 public:
-    RclMonitor();
-    ~RclMonitor();
+    // The functions below must be defined in the class constructed from the template
+    // or else an error at compile time will be generated. Unfortunately, C++ does not
+    // provide a keyword as `abstract` to state that a function is pure and hsa to be provided
+    // in the derived class. Pure functions in C++ exist but always come with dynamical dispatching,
+    // which bring a slight overhead. The current implementation is safe, uses less code, and
+    // could be more efficient as it does not rely on dynamical dispatching. The only downside is the
+    // need of this clarificatory message here.
 
-    bool addWatch(const std::string& path, bool isDir, bool follow = false); // abstract function
-
-    #ifdef FSWATCH_FSEVENTS
-        void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker);
-    #else
-        bool getEvent(RclMonEvent& ev, int msecs = -1);
-    #endif
-
-    bool ok() const;
-    bool generatesExist();
-    bool isRecursive();
+    // bool addWatch(const std::string& path, bool isDir, bool follow = false);
+    // bool ok() const;
+    // #ifdef FSWATCH_FSEVENTS
+    //     void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker);
+    // #else
+    //     bool getEvent(RclMonEvent& ev, int msecs = -1);
+    // #endif
+    
+    // Does this monitor generate 'exist' events at startup?
+    bool generatesExist() { return false; }
+    // Is fs watch mechanism recursive and only the root directory needs to be provided?
+    bool isRecursive() { return false; }
 
     // Save significant errno after monitor calls
     int saved_errno{0};
@@ -86,7 +92,7 @@ public:
 
 bool rclMonShouldSkip(const std::string& path, RclConfig& lconfig, FsTreeWalker& walker);
 bool rclMonAddSubWatches(const std::string& path, FsTreeWalker& walker, RclConfig& lconfig,
-            RclMonitorDerived *mon, RclMonEventQueue *queue);
+            RclMonitor *mon, RclMonEventQueue *queue);
 bool eraseWatchSubTree(std::map<int, std::string>& idtopath, const std::string& top);
 
 #endif // RCL_MONITOR
