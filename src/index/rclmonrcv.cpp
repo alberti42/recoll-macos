@@ -66,7 +66,10 @@ RclMonitor::~RclMonitor() {}
 
 #ifdef FSWATCH_FSEVENTS
 #else
-    bool RclMonitor::getEvent(RclMonEvent& ev, int msecs = -1) = 0;
+    bool RclMonitor::getEvent(RclMonEvent& ev, int msecs)
+    {
+        return false;
+    }
 #endif
 // Does this monitor generate 'exist' events at startup?
 bool RclMonitor::generatesExist() {

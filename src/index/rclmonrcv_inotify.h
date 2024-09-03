@@ -14,7 +14,7 @@ public:
     RclIntf();
     ~RclIntf();
 
-    bool addWatch(const string& path, bool isdir, bool follow);
+    bool addWatch(const string& path, bool isdir, bool follow=false);
     bool getEvent(RclMonEvent& ev, int msecs = -1);
     bool ok() const;
 

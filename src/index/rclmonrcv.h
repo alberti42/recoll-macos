@@ -87,6 +87,7 @@ public:
 bool rclMonShouldSkip(const std::string& path, RclConfig& lconfig, FsTreeWalker& walker);
 bool rclMonAddSubWatches(const std::string& path, FsTreeWalker& walker, RclConfig& lconfig,
             RclMonitorDerived *mon, RclMonEventQueue *queue);
+bool eraseWatchSubTree(std::map<int, std::string>& idtopath, const std::string& top);
 
 #endif // RCL_MONITOR
 
