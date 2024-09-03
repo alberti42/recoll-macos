@@ -7,21 +7,12 @@
 
 #ifdef FSWATCH_FSEVENTS
 
-// This macro is supposed to be commented out
-// This disable a whole part of code that was written but is at the moment
-// not useful. It is unclear whether it will be necessary in the future.
-// #define MANAGE_SEPARATE_QUEUE
-
 #include <CoreServices/CoreServices.h>
 #include <iostream>
 #include <map>
 #include <vector>
 #include <sys/stat.h>
 #include <unistd.h>
-
-#ifdef MANAGE_SEPARATE_QUEUE
-#include <mutex>
-#endif // MANAGE_SEPARATE_QUEUE
 
 class RclFSEvents : public RclMonitorFactory<RclFSEvents> {
 public:
@@ -62,11 +53,6 @@ private:
     bool m_ok;
     FSEventStreamRef m_stream;
     string m_rootPath;    
-    
-#ifdef MANAGE_SEPARATE_QUEUE
-    std::vector<RclMonEvent> m_eventQueue;
-    std::mutex m_queueMutex; // Mutex to protect the event queue
-#endif // MANAGE_SEPARATE_QUEUE
 };
 
 // Custom context for the idle loop

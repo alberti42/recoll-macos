@@ -94,94 +94,6 @@ IdleLoopContext contextLoop = {
         .monitor = NULL,
 };
 
-#ifdef MANAGE_SEPARATE_QUEUE
-
-CFRunLoopSourceRef runLoopSource;
-
-void stopMonitoring() {
-    if (runLoopSource) {
-        CFRunLoopSourceInvalidate(runLoopSource);
-        CFRelease(runLoopSource);
-        runLoopSource = nullptr;
-    }
-
-    // Signal to exit gracefully (optional: can be done within the cancel routine)
-    if (contextLoop.monitor->m_runLoop) {
-        contextLoop.shouldExit = true;
-        CFRunLoopWakeUp(contextLoop.monitor->m_runLoop); // Wake up the run loop if needed to process the exit
-    }
-}
-
-// Function to process individual events
-void processEvent(const RclMonEvent& event) {
-    switch (event.m_etyp) {
-        case RclMonEvent::RCLEVT_MODIFY:
-            LOGINFO("processEvent: Processing MODIFY event for: " + event.m_path + '\n');
-            // Handle modify logic here
-            break;
-        case RclMonEvent::RCLEVT_DELETE:
-            LOGINFO("processEvent: Processing DELETE event for: " + event.m_path + '\n');
-            // Handle delete logic here
-            break;
-        case RclMonEvent::RCLEVT_DIRCREATE:
-            LOGINFO("processEvent: Processing DIRECTORY CREATE event for: " + event.m_path + '\n');
-            // Handle directory create logic here
-            break;
-        case RclMonEvent::RCLEVT_ISDIR:
-            LOGINFO("processEvent: Processing DIRECTORY event for: " + event.m_path + '\n');
-            // Handle directory-specific logic here
-            break;
-        default:
-            LOGINFO("processEvent: Unknown event type for: " + event.m_path + '\n');
-            break;
-    }
-}
-
-// Function to cancel the run loop source
-void RunLoopSourceCancelRoutine(void *info, CFRunLoopRef rl, CFStringRef mode) {
-    IdleLoopContext *context = static_cast<IdleLoopContext *>(info);
-    LOGINFO("RunLoopSourceCancelRoutine: RunLoopSourceCancelRoutine triggered.\n");
-    context->shouldExit = true;  // Set the exit flag
-}
-
-void RunLoopSourcePerformRoutine(void *info) {
-    IdleLoopContext *context = static_cast<IdleLoopContext *>(info);
-    RclFSEvents *monitor = context->monitor;
-    RclMonEvent event;
-
-    // Process all available events in the queue
-    while (monitor->getEvent(event)) {
-        LOGINFO("RunLoopSourcePerformRoutine:  Processing event in RunLoopSourcePerformRoutine.\n");
-        processEvent(event);
-    }
-
-    if (context->shouldExit) {
-        LOGINFO("RunLoopSourcePerformRoutine: Gracefully exiting run loop based on shouldExit flag.\n");
-        CFRunLoopStop(CFRunLoopGetCurrent());  // Stop the run loop
-    }
-
-    LOGINFO("RunLoopSourcePerformRoutine: Exiting RunLoopSourcePerformRoutine.\n");
-}
-
-// Function to create the custom run loop source
-CFRunLoopSourceRef CreateEventQueueRunLoopSource(RclFSEvents *monitor) {
-    
-    CFRunLoopSourceContext sourceContext = {
-        0,                           // Version (unused)
-        &contextLoop,                    // Info pointer (our custom context)
-        NULL,                        // Retain (unused)
-        NULL,                        // Release (unused)
-        NULL,                        // CopyDescription (unused)
-        NULL,                        // Equal (unused)
-        NULL,                        // Hash (unused)
-        NULL,                        // Schedule (unused)
-        RunLoopSourceCancelRoutine,  // Cancel
-        RunLoopSourcePerformRoutine  // Perform routine
-    };
-
-    return CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &sourceContext);
-}
-#else
 // Timer callback function
 void DummyTimerCallback(CFRunLoopTimerRef timer, void *info) {
     IdleLoopContext *context = static_cast<IdleLoopContext *>(info);
@@ -206,7 +118,6 @@ void DummyTimerCallback(CFRunLoopTimerRef timer, void *info) {
         // Run loop is still running...
     }
 }
-#endif // MANAGE_SEPARATE_QUEUE
 
 // Signal handler for SIGINT
 void RclFSEvents::signalHandler(int signum) {
@@ -214,11 +125,7 @@ void RclFSEvents::signalHandler(int signum) {
     case SIGINT:
     case SIGTERM:
         LOGINFO("RclFSEvents::signalHandler: Interrupt signal (" << signum << ") received." << std::endl);
-#ifdef MANAGE_SEPARATE_QUEUE
-        stopMonitoring();
-#else
         contextLoop.shouldExit = true; // Set the exit flag to true
-#endif
         break;
     }
 }
@@ -241,13 +148,6 @@ void RclFSEvents::startMonitoring(
     // to be used in the callback function, which runs in a separate thread.
     m_runLoop = CFRunLoopGetCurrent();
 
-#ifdef MANAGE_SEPARATE_QUEUE
-    // Create and add the custom run loop source
-    runLoopSource = CreateEventQueueRunLoopSource(this);
-    
-    CFRunLoopAddSource(m_runLoop, runLoopSource, kCFRunLoopDefaultMode);
-
-#else
     // Define the CFRunLoopTimerContext
     CFRunLoopTimerContext timerContext = {0, &contextLoop, NULL, NULL, NULL};
 
@@ -263,18 +163,12 @@ void RclFSEvents::startMonitoring(
     );
 
     CFRunLoopAddTimer(m_runLoop, dummyTimer, kCFRunLoopDefaultMode);
-#endif // MANAGE_SEPARATE_QUEUE
 
     // Register signal handler for SIGINT (CTRL-C)
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
 
     CFRunLoopRun(); // Start the run loop
-
-#ifdef MANAGE_SEPARATE_QUEUE
-    stopMonitoring();    
-#endif // MANAGE_SEPARATE_QUEUE
-
 }
 
 RclFSEvents::RclFSEvents() : m_lconfigPtr(nullptr), m_walkerPtr(nullptr), m_ok(true) {
@@ -283,9 +177,6 @@ RclFSEvents::RclFSEvents() : m_lconfigPtr(nullptr), m_walkerPtr(nullptr), m_ok(t
 
 RclFSEvents::~RclFSEvents() {
     releaseFSEventStream();
-#ifdef MANAGE_SEPARATE_QUEUE
-    stopMonitoring();    
-#endif // MANAGE_SEPARATE_QUEUE
 }
 
 bool RclFSEvents::isRecursive() {
@@ -394,16 +285,6 @@ void RclFSEvents::fsevents_callback(
 
         // Filter relevant events to be processes
         if (event.m_etyp != RclMonEvent::RCLEVT_NONE) {
-#ifdef MANAGE_SEPARATE_QUEUE
-            std::unique_lock<std::mutex> lockInstance(self->m_queueMutex); // Mutex is locked here
-            self->m_eventQueue.push_back(event); // Store the event
-
-            CFRunLoopSourceSignal(runLoopSource); // Signal the stored run loop source
-            CFRunLoopWakeUp(self->m_runLoop); // Wake up the stored run loop
-
-            // Manually unlock the mutex before signaling the run loop
-            lockInstance.unlock();  // Unlock the mutex
-#endif // MANAGE_SEPARATE_QUEUE
 
             // We push the event on the queue; pushEvent handles the operation in a thread-safe manner mutex
             self->m_queue->pushEvent(event);
@@ -416,32 +297,13 @@ void RclFSEvents::fsevents_callback(
                 LOGINFO("RclFSEvents::fsevents_callback: Event type: WALKING NEW DIRECTORY: " << event.m_path << "\n");
                 if (!rclMonAddSubWatches(event.m_path, *self->m_walkerPtr, *self->m_lconfigPtr, self, self->m_queue)) {
                     LOGERR("RclFSEvents::fsevents_callback: error in walking dir" << std::endl);
-#ifdef MANAGE_SEPARATE_QUEUE
-                            stopMonitoring();
-#else
-                            contextLoop.shouldExit = true; // Set the exit flag to true
-#endif
+                    contextLoop.shouldExit = true; // Set the exit flag to true
                     return;
                 }
             }
         }
     }
 }
-
-
-#ifdef MANAGE_SEPARATE_QUEUE
-bool RclFSEvents::getEvent(RclMonEvent& ev, int msecs) {
-    std::unique_lock<std::mutex> lockInstance(m_queueMutex); // Mutex is locked here
-    if (m_eventQueue.empty()) {
-        return false; // No events available
-    }
-
-    ev = m_eventQueue.front();
-    m_eventQueue.erase(m_eventQueue.begin());    
-    lockInstance.unlock();  // Unlock the mutex
-    return true;
-}
-#endif // MANAGE_SEPARATE_QUEUE
 
 bool RclFSEvents::ok() const {
     return m_ok;
