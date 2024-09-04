@@ -61,17 +61,13 @@ using std::string;
 using std::vector;
 using std::map;
 
-/** Template for the actual filesystem monitoring module.**/
-template <typename T>
-class RclMonitorFactory {
+/** Base class for the actual filesystem monitoring module.**/
+class RclMonitorBase {
 public:
     // The functions below must be defined in the class constructed from the template
     // or else an error at compile time will be generated. Unfortunately, C++ does not
-    // provide a keyword as `abstract` to state that a function is pure and hsa to be provided
-    // in the derived class. Pure functions in C++ exist but always come with dynamical dispatching,
-    // which bring a slight overhead. The current implementation is safe, uses less code, and
-    // could be more efficient as it does not rely on dynamical dispatching. The only downside is the
-    // need of this clarificatory message here.
+    // provide a keyword as `abstract` to state that a function is pure and has to be provided
+    // in the derived class.
 
     // bool addWatch(const std::string& path, bool isDir, bool follow = false);
     // bool ok() const;

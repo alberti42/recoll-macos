@@ -14,7 +14,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-class RclFSEvents : public RclMonitorFactory<RclFSEvents> {
+class RclFSEvents : public RclMonitorBase {
 public:
     RclFSEvents();
     ~RclFSEvents();

@@ -59,30 +59,6 @@
 #include "rclmonrcv_fam.h"
 #include "rclmonrcv_win32.h"
 
-// ///////////////////////////////////////////////////////////////////////
-// // The monitor 'factory'
-// static RclMonitor *makeMonitor()
-// {
-// #ifdef FSWATCH_WIN32
-//     return new RclMonitorWin32;
-// #endif
-// #ifdef FSWATCH_FSEVENTS
-//     return new RclFSEvents;
-// #endif
-// #ifdef FSWATCH_INOTIFY
-//     return new RclIntf;
-// #endif
-// #ifdef FSWATCH_FAM
-//     return new RclFAM;
-// #endif
-//     // This part of the code will never be reached. However, to be safe, we can keep it.
-//     LOGINFO("RclMonitor: none of the following, Inotify, Fam, fsevents was compiled as file system "
-//                 "change notification interface\n");
-//     return nullptr;
-// }
-// ///////////////////////////////////////////////////////////////////////
-
-
 /* ==== CLASS WalkCB: definition of member functions ==== */
 
 /** 
