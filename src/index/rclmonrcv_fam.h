@@ -7,6 +7,8 @@
 
 #ifdef FSWATCH_FAM
 
+#include <fam.h>
+
 /** FAM based monitor class. We have to keep a record of FAM watch
     request numbers to directory names as the event only contain the
     request number and file name, not the full path */
@@ -14,7 +16,7 @@ class RclFAM : public RclMonitorFactory<RclFAM> {
 public:
     RclFAM();
     ~RclFAM();
-    bool addWatch(const string& path, bool isdir, bool follow);
+    bool addWatch(const string& path, bool isdir, bool follow=false);
     bool getEvent(RclMonEvent& ev, int msecs = -1);
     bool ok() const {return m_ok;}
     bool generatesExist() const {return true;}
