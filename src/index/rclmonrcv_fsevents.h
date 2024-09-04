@@ -58,7 +58,6 @@ private:
 // Custom context for the idle loop
 typedef struct  {
     bool shouldExit;
-    pid_t parentPid;
     RclFSEvents *monitor;
 } IdleLoopContext;
 

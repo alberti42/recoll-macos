@@ -306,6 +306,10 @@ void *rclMonRcvRun(void *q)
             if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
                 queue->pushEvent(ev);
         }
+
+        if(mon->isOrphaned()) {
+            goto terminate;
+        } 
     }
 #endif // FSWATCH_FSEVENTS 
 

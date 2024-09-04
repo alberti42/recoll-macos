@@ -69,6 +69,10 @@ public:
     // provide a keyword as `abstract` to state that a function is pure and has to be provided
     // in the derived class.
 
+    RclMonitorBase() {
+        originalParentPid = getppid();  // store the initial parent process ID
+    }
+
     // bool addWatch(const std::string& path, bool isDir, bool follow = false);
     // bool ok() const;
     // #ifdef FSWATCH_FSEVENTS
@@ -82,8 +86,17 @@ public:
     // Is fs watch mechanism recursive and only the root directory needs to be provided?
     bool isRecursive() { return false; }
 
+    bool isOrphaned() {
+        pid_t currentParentPid = getppid();
+        return currentParentPid!=originalParentPid;
+    }
+
     // Save significant errno after monitor calls
     int saved_errno{0};
+
+private:
+    // Store the pid of the parent process. It is used when the daemon is started with -O option
+    pid_t originalParentPid;
 };
 
 bool rclMonShouldSkip(const std::string& path, RclConfig& lconfig, FsTreeWalker& walker);

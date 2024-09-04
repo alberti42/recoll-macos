@@ -90,7 +90,6 @@
 // Initialize the context with the exit condition
 IdleLoopContext contextLoop = {
         .shouldExit = false,     // if course, it shouldn't exit at the beginning.
-        .parentPid = getppid(),  // store the initial parent process ID
         .monitor = NULL,
 };
 
@@ -103,8 +102,7 @@ void DummyTimerCallback(CFRunLoopTimerRef timer, void *info) {
         context->monitor->m_queue && 
         context->monitor->m_queue ->getopt(RCLMON_NOORPHAN)
     ) {
-        pid_t currentParentPid = getppid();
-        if (currentParentPid != context->parentPid) {
+        if (context->monitor->isOrphaned()) {
             std::cout << "Parent process has exited. Exiting..." << std::endl;
             context->shouldExit = true;
         }
