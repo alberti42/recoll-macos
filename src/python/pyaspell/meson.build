@@ -41,7 +41,7 @@ foreach v : py3versions
             # was correctly detected in py3_dep by the python module. 
             cc.find_library('aspell',required: false)
         ],
-        include_directories: aspell_include_dir,
+        include_directories: include_directories(aspell_include_dir),
         install: true,
         subdir: '.',
     )
