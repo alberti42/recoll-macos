@@ -72,6 +72,7 @@ public:
     RclMonitor() {
         originalParentPid = getppid();  // store the initial parent process ID
     }
+    virtual ~RclMonitor() {};
 
     bool virtual addWatch(const std::string& path, bool isDir, bool follow = false) = 0;
     bool virtual ok() const = 0;
@@ -82,11 +83,11 @@ public:
 #endif
     
     // Does this monitor generate 'exist' events at startup?
-    bool generatesExist() { return false; }
+    bool virtual generatesExist() { return false; }
     // Is fs watch mechanism recursive and only the root directory needs to be provided?
-    bool isRecursive() { return false; }
+    bool virtual isRecursive() { return false; }
 
-    bool isOrphaned() {
+    bool virtual isOrphaned() {
         pid_t currentParentPid = getppid();
         return currentParentPid!=originalParentPid;
     }

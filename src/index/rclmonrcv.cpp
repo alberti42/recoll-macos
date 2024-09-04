@@ -276,8 +276,7 @@ void *rclMonRcvRun(void *q)
     RclConfig lconfig(*queue->getConfig());
 
     // Create the fam/whatever interface object
-    RclFSEvents *monDerived = new RclFSEvents;
-    RclMonitor *mon = monDerived; //makeMonitor();
+    RclMonitor *mon = makeMonitor();
 
     // There is no way that this condition fails. I find it confusing to have this check here.
     // You can leave it because it does not bother, but I suggest to remove it.
@@ -302,7 +301,7 @@ void *rclMonRcvRun(void *q)
 
 #ifdef FSWATCH_FSEVENTS
     LOGINFO("rclMonRcvRun: started monitoring\n");
-    monDerived->startMonitoring(queue,lconfig,walker);
+    mon->startMonitoring(queue,lconfig,walker);
     LOGINFO("rclMonRcvRun: gracefully stopped monitoring\n");
     LOGINFO("rclMonRcvRun: signaling the queue to gracefully terminate\n");
     goto terminate;    
@@ -338,6 +337,7 @@ void *rclMonRcvRun(void *q)
 #endif // FSWATCH_FSEVENTS 
 
 terminate:
+    delete mon;
     queue->setTerminate();
     LOGINFO("rclMonRcvRun: monrcv thread routine returning\n");
     return nullptr;

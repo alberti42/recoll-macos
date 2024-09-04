@@ -11,19 +11,19 @@
 class RclMonitorWin32 : public RclMonitor, public FileWatchListener {
 public:
     ~RclMonitorWin32() {}
-    bool addWatch(const string& path, bool /*isDir*/, bool /*follow*/);
+    bool virtual addWatch(const string& path, bool /*isDir*/, bool /*follow*/) override;
 
-    bool getEvent(RclMonEvent& ev, int msecs = -1);
+    bool virtual getEvent(RclMonEvent& ev, int msecs = -1) override;
 
-    bool ok() const;
+    bool virtual ok() const override;
 
     // Does this monitor generate 'exist' events at startup?
-    virtual bool generatesExist() const;
+    bool virtual generatesExist() const override;
 
     // Can the caller avoid setting watches on subdirs ?
-    virtual bool isRecursive() const;
+    bool virtual isRecursive() const override;
 
-    virtual void handleFileAction(WatchID /*watchid*/, const std::string& dir, const std::string& fn,
+    void handleFileAction(WatchID /*watchid*/, const std::string& dir, const std::string& fn,
                                   Action action, bool isdir, std::string oldfn = "");
 
     // Save significant errno after monitor calls

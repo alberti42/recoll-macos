@@ -17,7 +17,7 @@
 class RclFSEvents : public RclMonitor {
 public:
     RclFSEvents();
-    ~RclFSEvents();
+    virtual ~RclFSEvents() override;
 
     static void fsevents_callback(
         ConstFSEventStreamRef streamRef,
@@ -31,18 +31,14 @@ public:
         // we do not need this functio for RclFSEvents; it should return false
         return false;
     };
-
     bool virtual ok() const override;
-
-    void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) override;
-    void setupAndStartStream();
-
+#ifdef FSWATCH_FSEVENTS
+    void virtual startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) override;
+#endif
+    void virtual setupAndStartStream();
     bool virtual addWatch(const std::string& path, bool isDir, bool follow = false) override;
-    void removeWatch(const std::string &path);
 
-    CFRunLoopRef m_runLoop;
-
-    bool isRecursive();
+    bool virtual isRecursive() override;
 
 public:
     RclMonEventQueue *m_queue{NULL};

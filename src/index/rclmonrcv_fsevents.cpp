@@ -144,7 +144,7 @@ void RclFSEvents::startMonitoring(
     // Each thread in macOS has its own run loop, and CFRunLoopGetCurrent()
     // returns the run loop for the calling thread. We need to store a reference
     // to be used in the callback function, which runs in a separate thread.
-    m_runLoop = CFRunLoopGetCurrent();
+    CFRunLoopRef m_runLoop = CFRunLoopGetCurrent();
 
     // Define the CFRunLoopTimerContext
     CFRunLoopTimerContext timerContext = {0, &contextLoop, NULL, NULL, NULL};
@@ -166,9 +166,7 @@ void RclFSEvents::startMonitoring(
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
 
-    std::cout << "STARTING THE LOOP" << std::endl;
     CFRunLoopRun(); // Start the run loop
-    std::cout << "FINISHED THE LOOP" << std::endl;
 }
 
 RclFSEvents::RclFSEvents() : m_lconfigPtr(nullptr), m_walkerPtr(nullptr), m_ok(true) {
@@ -190,8 +188,6 @@ void RclFSEvents::fsevents_callback(
     void *eventPaths,  // now a CFArrayRef of CFDictionaryRef
     const FSEventStreamEventFlags eventFlags[],
     const FSEventStreamEventId eventIds[]) {
-
-    std::cout << "INSIDE HEREE" << std::endl;
 
     RclFSEvents *self = static_cast<RclFSEvents *>(clientCallBackInfo);
 
@@ -336,7 +332,7 @@ void RclFSEvents::setupAndStartStream() {
         m_rootPath.c_str(),        // C-style string
         kCFStringEncodingUTF8      // Encoding
     );
-
+    
     // We embed the root path in an array of length 1
     CFArrayRef pathsToWatch = CFArrayCreate(NULL, (const void **)&cf_rootPath, 1, &kCFTypeArrayCallBacks);
 

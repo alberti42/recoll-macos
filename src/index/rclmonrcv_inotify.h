@@ -12,11 +12,11 @@
 class RclIntf : public RclMonitor {
 public:
     RclIntf();
-    ~RclIntf();
+    virtual ~RclIntf() override;
 
-    bool addWatch(const string& path, bool isdir, bool follow=false);
-    bool getEvent(RclMonEvent& ev, int msecs = -1);
-    bool ok() const;
+    bool virtual addWatch(const string& path, bool isdir, bool follow=false) override;
+    bool virtual getEvent(RclMonEvent& ev, int msecs = -1) override;
+    bool virtual ok() const override;
 
 private:
     bool m_ok;
