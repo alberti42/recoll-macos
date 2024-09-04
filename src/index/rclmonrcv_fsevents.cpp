@@ -166,7 +166,9 @@ void RclFSEvents::startMonitoring(
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
 
+    std::cout << "STARTING THE LOOP" << std::endl;
     CFRunLoopRun(); // Start the run loop
+    std::cout << "FINISHED THE LOOP" << std::endl;
 }
 
 RclFSEvents::RclFSEvents() : m_lconfigPtr(nullptr), m_walkerPtr(nullptr), m_ok(true) {
@@ -188,6 +190,8 @@ void RclFSEvents::fsevents_callback(
     void *eventPaths,  // now a CFArrayRef of CFDictionaryRef
     const FSEventStreamEventFlags eventFlags[],
     const FSEventStreamEventId eventIds[]) {
+
+    std::cout << "INSIDE HEREE" << std::endl;
 
     RclFSEvents *self = static_cast<RclFSEvents *>(clientCallBackInfo);
 

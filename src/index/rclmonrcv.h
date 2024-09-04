@@ -9,23 +9,23 @@
 #ifdef _WIN32
     #define FSWATCH_WIN32
     class RclMonitorWin32;
-    using RclMonitor = RclMonitorWin32; // Create an alias for RclMonitorWin32
+    // using RclMonitor = RclMonitorWin32; // Create an alias for RclMonitorWin32
 #else // ! _WIN32
     #ifdef RCL_USE_FSEVENTS // darwin (i.e., MACOS)
         #define FSWATCH_FSEVENTS
         class RclFSEvents;
-        using RclMonitor = RclFSEvents; // Create an alias for RclFSEvents
+        // using RclMonitor = RclFSEvents; // Create an alias for RclFSEvents
     #else // ! RCL_USE_FSEVENTS
         // We dont compile both the inotify and the fam interface and inotify has preference
         #ifdef RCL_USE_INOTIFY
             #define FSWATCH_INOTIFY
             class RclIntf;
-            using RclMonitor = RclIntf; // Create an alias for RclIntf
+            // using RclMonitor = RclIntf; // Create an alias for RclIntf
         #else // ! RCL_USE_INOTIFY
             #ifdef RCL_USE_FAM
                 #define FSWATCH_FAM
                 class RclFAM;
-                using RclMonitor = RclFAM; // Create an alias for RclFAM
+                // using RclMonitor = RclFAM; // Create an alias for RclFAM
             #endif // RCL_USE_FAM
         #endif // INOTIFY
     #endif // RCL_USE_FSEVENTS
@@ -62,24 +62,24 @@ using std::vector;
 using std::map;
 
 /** Base class for the actual filesystem monitoring module.**/
-class RclMonitorBase {
+class RclMonitor {
 public:
     // The functions below must be defined in the class constructed from the template
     // or else an error at compile time will be generated. Unfortunately, C++ does not
     // provide a keyword as `abstract` to state that a function is pure and has to be provided
     // in the derived class.
 
-    RclMonitorBase() {
+    RclMonitor() {
         originalParentPid = getppid();  // store the initial parent process ID
     }
 
-    // bool addWatch(const std::string& path, bool isDir, bool follow = false);
-    // bool ok() const;
-    // #ifdef FSWATCH_FSEVENTS
-    //     void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker);
-    // #else
-    //     bool getEvent(RclMonEvent& ev, int msecs = -1);
-    // #endif
+    bool virtual addWatch(const std::string& path, bool isDir, bool follow = false) = 0;
+    bool virtual ok() const = 0;
+    bool virtual getEvent(RclMonEvent& ev, int msecs = -1) = 0;
+    
+#ifdef FSWATCH_FSEVENTS
+    void virtual startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) = 0;
+#endif
     
     // Does this monitor generate 'exist' events at startup?
     bool generatesExist() { return false; }

@@ -59,6 +59,29 @@
 #include "rclmonrcv_fam.h"
 #include "rclmonrcv_win32.h"
 
+///////////////////////////////////////////////////////////////////////
+// The monitor 'factory'
+static RclMonitor *makeMonitor()
+{
+#ifdef FSWATCH_WIN32
+    return new RclMonitorWin32;
+#endif
+#ifdef FSWATCH_FSEVENTS
+    return new RclFSEvents;
+#endif
+#ifdef FSWATCH_INOTIFY
+    return new RclIntf;
+#endif
+#ifdef FSWATCH_FAM
+    return new RclFAM;
+#endif
+    // This part of the code will never be reached. However, to be safe, we can keep it.
+    LOGINFO("RclMonitor: none of the following, Inotify, Fam, fsevents was compiled as file system "
+                "change notification interface\n");
+    return nullptr;
+}
+///////////////////////////////////////////////////////////////////////
+
 /* ==== CLASS WalkCB: definition of member functions ==== */
 
 /** 
@@ -253,17 +276,18 @@ void *rclMonRcvRun(void *q)
     RclConfig lconfig(*queue->getConfig());
 
     // Create the fam/whatever interface object
-    RclMonitor *mon = new RclMonitor;
+    RclFSEvents *monDerived = new RclFSEvents;
+    RclMonitor *mon = monDerived; //makeMonitor();
 
     // There is no way that this condition fails. I find it confusing to have this check here.
     // You can leave it because it does not bother, but I suggest to remove it.
     // If we fail here it is because we are doing some thing very wrong allowing RCL_MONITOR
     // without proper FS watch mechanism.
-    // if (mon == nullptr) {
-    //     LOGERR("rclMonRcvRun: makeMonitor failed\n");
-    //     queue->setTerminate();
-    //     return nullptr;
-    // }
+    if (mon == nullptr) {
+        LOGERR("rclMonRcvRun: makeMonitor failed\n");
+        queue->setTerminate();
+        return nullptr;
+    }
 
     FsTreeWalker walker;
     walker.setSkippedPaths(lconfig.getDaemSkippedPaths());
@@ -278,7 +302,7 @@ void *rclMonRcvRun(void *q)
 
 #ifdef FSWATCH_FSEVENTS
     LOGINFO("rclMonRcvRun: started monitoring\n");
-    mon->startMonitoring(queue,lconfig,walker);
+    monDerived->startMonitoring(queue,lconfig,walker);
     LOGINFO("rclMonRcvRun: gracefully stopped monitoring\n");
     LOGINFO("rclMonRcvRun: signaling the queue to gracefully terminate\n");
     goto terminate;    

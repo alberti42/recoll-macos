@@ -14,7 +14,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-class RclFSEvents : public RclMonitorBase {
+class RclFSEvents : public RclMonitor {
 public:
     RclFSEvents();
     ~RclFSEvents();
@@ -27,14 +27,17 @@ public:
         const FSEventStreamEventFlags eventFlags[],
         const FSEventStreamEventId eventIds[]);
 
-    bool getEvent(RclMonEvent& ev, int msecs = -1);
+    bool virtual getEvent(RclMonEvent& ev, int msecs = -1) override {
+        // we do not need this functio for RclFSEvents; it should return false
+        return false;
+    };
 
-    bool ok() const;
+    bool virtual ok() const override;
 
-    void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker);
+    void startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) override;
     void setupAndStartStream();
 
-    bool addWatch(const std::string& path, bool isDir, bool follow = false);
+    bool virtual addWatch(const std::string& path, bool isDir, bool follow = false) override;
     void removeWatch(const std::string &path);
 
     CFRunLoopRef m_runLoop;
