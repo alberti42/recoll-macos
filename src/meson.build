@@ -174,20 +174,17 @@ if cpp.has_function(
 endif
 
 # Check for macOS (darwin)
-if host_machine.system() == 'darwin'
+if host_machine.system() == 'darwin' and get_option('fsevents')
     # Declare the Core Services framework dependency
     core_services = dependency('CoreServices', required: true)
+    apple_core_services_found = true
 
-    if core_services.found()
-        core_services_found = true
-        librecolldeps += core_services  # Add the CoreServices framework as a dependency
-        recoll_conf.set('RCL_USE_FSEVENTS', true)
-        recoll_conf.set('RCL_MONITOR', true)
-    else
-        core_services_found = false
-    endif
-
+    librecolldeps += core_services  # Add the CoreServices framework as a dependency
     
+    recoll_conf.set('RCL_USE_FSEVENTS', true)
+    recoll_conf.set('RCL_MONITOR', true)
+else 
+    apple_core_services_found = false
 endif
 
 recoll_conf.set('HAVE_VSNPRINTF', cpp.has_function('vsnprintf'))
@@ -405,7 +402,7 @@ if get_option('indexer')
 
     recollindexdeps = []
     recollindexdeps += dependency('threads')
-    if(core_services_found)
+    if(apple_core_services_found)
         recollindexdeps += core_services
     endif
     recollindex = executable(
