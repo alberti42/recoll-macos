@@ -8,6 +8,7 @@ import re
 import rclexecm  # For communicating with recoll
 import yaml  # Import PyYAML for parsing YAML front matter
 from rclbasehandler import RclBaseHandler
+from datetime import datetime
 
 ####
 _htmlprefix =b'''<html><head>
@@ -22,6 +23,8 @@ _htmlsuffix = b'''
 ####
 
 class MDhandler(RclBaseHandler):
+    tags = []
+
     def __init__(self, em):
         super(MDhandler, self).__init__(em)
 
@@ -69,6 +72,12 @@ class MDhandler(RclBaseHandler):
         with open(filename, 'rb') as file:
             content = file.read()
 
+        # Start generating the HTML output
+        output = _htmlprefix
+
+        output += b'<meta name="title" content="' + \
+              rclexecm.htmlescape(rclexecm.makebytes(title)) + b'">\n'
+
         # self.em.log(f"Content:\n{content}")
         # Convert content to string (assuming UTF-8 encoding)
         text_content = content.decode('utf-8')
@@ -76,32 +85,35 @@ class MDhandler(RclBaseHandler):
         # Parse the front matter and get the body content
         frontmatter, body_content = self.parse_md_file(text_content)
 
-        # Extract tags from the front matter
-        tags = self.extract_tags(frontmatter)
+        # Include the Markdown content without the front matter
+        if frontmatter is not {}:
+            # if 'created' in frontmatter:
+            #     date_format = '%Y-%m-%d, %H:%M:%S'
+            #     date_obj = datetime.strptime(frontmatter['created'], date_format)
+            #     # self.em.log(date_obj.timestamp())
+            #     self.em.setfield("dctime", str(int(date_obj.timestamp())))
+        
+            if 'modified' in frontmatter:
+                date_format = '%Y-%m-%d, %H:%M:%S'
+                date_obj = datetime.strptime(frontmatter['modified'], date_format)
+                # self.em.log(date_obj.timestamp())
+                self.em.setfield("dmtime", str(int(date_obj.timestamp())))
+        
+            # Extract tags from the front matter
+            tags = self.extract_tags(frontmatter)
 
-        # Log the extracted tags (optional for debugging)
-        # self.em.log(f"Extracted tags: {tags}")
+            # Log the extracted tags (optional for debugging)
+            # self.em.log(f"Extracted tags: {tags}")
+            
+            # Add meta tags for each extracted tag (using MDT as the prefix)
+            # self.em.log(f"TAGS: {tags}")
+            for tag in tags:
+                output += b'<meta name="tags" content="' + \
+                          rclexecm.htmlescape(rclexecm.makebytes(tag)) + b'">\n'
 
-        # Start generating the HTML output
-        output = _htmlprefix
-
-        output += b'<meta name="title" content="' + \
-                      rclexecm.htmlescape(rclexecm.makebytes(title)) + b'">\n'
-
-        # Add meta tags for each extracted tag (using MDT as the prefix)
-        # self.em.log(f"TAGS: {tags}")
-        for tag in tags:
-            output += b'<meta name="tags" content="' + \
-                      rclexecm.htmlescape(rclexecm.makebytes(tag)) + b'">\n'
 
         output += _htmlmidfix
-
-        # Include the Markdown content without the front matter
-        if frontmatter:
-            content_start = text_content.find('---', 3) + 4
-            output += rclexecm.htmlescape(text_content[content_start:].encode('utf-8'))
-        else:
-            output += rclexecm.htmlescape(content)
+        output += rclexecm.htmlescape(body_content.encode('utf-8'))
 
         output += _htmlsuffix
 
