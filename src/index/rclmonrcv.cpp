@@ -118,11 +118,6 @@ public:
             // whatever events we may already have on queue
             while (m_queue->ok() && m_mon->ok()) {
                 RclMonEvent ev;
-#ifdef FSWATCH_FSEVENTS
-                // FIXME
-                MONDEB("walkerCB: no event pending\n");
-                break;
-#else
                 if (m_mon->getEvent(ev, 0)) {
                     if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
                         m_queue->pushEvent(ev);
@@ -130,7 +125,6 @@ public:
                     MONDEB("walkerCB: no event pending\n");
                     break;
                 }
-#endif
             }
             if (!m_mon || !m_mon->ok())
                 return FsTreeWalker::FtwError;

@@ -9,23 +9,19 @@
 #ifdef _WIN32
     #define FSWATCH_WIN32
     class RclMonitorWin32;
-    // using RclMonitor = RclMonitorWin32; // Create an alias for RclMonitorWin32
 #else // ! _WIN32
     #ifdef RCL_USE_FSEVENTS // darwin (i.e., MACOS)
         #define FSWATCH_FSEVENTS
         class RclFSEvents;
-        // using RclMonitor = RclFSEvents; // Create an alias for RclFSEvents
     #else // ! RCL_USE_FSEVENTS
         // We dont compile both the inotify and the fam interface and inotify has preference
         #ifdef RCL_USE_INOTIFY
             #define FSWATCH_INOTIFY
             class RclIntf;
-            // using RclMonitor = RclIntf; // Create an alias for RclIntf
         #else // ! RCL_USE_INOTIFY
             #ifdef RCL_USE_FAM
                 #define FSWATCH_FAM
                 class RclFAM;
-                // using RclMonitor = RclFAM; // Create an alias for RclFAM
             #endif // RCL_USE_FAM
         #endif // INOTIFY
     #endif // RCL_USE_FSEVENTS
