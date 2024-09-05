@@ -324,7 +324,7 @@ void *rclMonRcvRun(void *q)
                 queue->pushEvent(ev);
         }
 
-        if(mon->isOrphaned()) {
+        if(queue->getopt(RCLMON_NOORPHAN) && mon->isOrphaned()) {
             goto terminate;
         } 
     }

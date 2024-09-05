@@ -100,7 +100,7 @@ void DummyTimerCallback(CFRunLoopTimerRef timer, void *info) {
     // Check if the parent process is still alive
     if(
         context->monitor->m_queue && 
-        context->monitor->m_queue ->getopt(RCLMON_NOORPHAN)
+        context->monitor->m_queue->getopt(RCLMON_NOORPHAN)
     ) {
         if (context->monitor->isOrphaned()) {
             std::cout << "Parent process has exited. Exiting..." << std::endl;
