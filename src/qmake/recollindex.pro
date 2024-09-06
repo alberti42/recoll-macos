@@ -17,6 +17,10 @@ SOURCES += \
 ../index/fsindexer.h \
 ../index/rclmonprc.cpp \
 ../index/rclmonrcv.cpp \
+../index/rclmonrcv_fsevents.cpp \
+../index/rclmonrcv_inotify.cpp \
+../index/rclmonrcv_fam.cpp \
+../index/rclmonrcv_win32.cpp \
 ../index/recollindex.cpp \
 ../index/webqueue.cpp \
 ../index/webqueue.h
@@ -70,7 +74,8 @@ mac {
   QCBUILDLOC=Qt_6_6_3_for_macOS
   QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
   QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
-  DEFINES += RECOLL_AS_MAC_BUNDLE
+  DEFINES += RECOLL_AS_MAC_BUNDLE \
+     RCL_MONITOR RCL_USE_FSEVENTS DISABLE_X11MON
   SOURCES += \
     ../utils/execmd.cpp \
     ../utils/netcon.cpp \
@@ -79,6 +84,7 @@ mac {
   LIBS += \
      $$PWD/build/librecoll/$$QCBUILDLOC-Release/librecoll.a \
      $$PWD/build/libxapian/$$QCBUILDLOC-Release/liblibxapian.a \
+     -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -framework CoreServices \
      -lxslt -lxml2 -liconv -lz
 }
 

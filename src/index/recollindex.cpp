@@ -891,7 +891,7 @@ int main(int argc, char *argv[])
             LOGDEB("recollindex: sleeping " << sleepsecs << "\n");
             for (int i = 0; i < sleepsecs; i++) {
                 millisleep(1000);
-#ifndef _WIN32
+#ifndef DISABLE_X11MON
                 // Check that x11 did not go away while we were sleeping.
                 if (!(op_flags & OPT_x) && !x11IsAlive()) {
                     LOGDEB("X11 session went away during initial sleep period\n");

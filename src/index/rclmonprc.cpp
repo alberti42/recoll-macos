@@ -46,7 +46,7 @@
 #include "recollindex.h"
 #include "indexer.h"
 #include "pathut.h"
-#ifndef _WIN32
+#ifndef DISABLE_X11MON
 #include "x11mon.h"
 #endif
 #include "subtreelist.h"
@@ -490,7 +490,7 @@ bool startMonitor(RclConfig *conf, int opts)
 
             // x11IsAlive() can't be called from ok() because both
             // threads call it and Xlib is not multithreaded.
-#ifndef _WIN32
+#ifndef DISABLE_X11MON
             bool x11dead = !(opts & RCLMON_NOX11) && !x11IsAlive();
             if (x11dead)
                 LOGDEB("RclMonprc: x11 is dead\n");

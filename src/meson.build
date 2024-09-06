@@ -2,6 +2,10 @@
 # bump it. We would like to simply set it into a variable at the top to facilitate the sed job, but
 # meson wants the first statement to be "project". Also there are several "  version: " in the file,
 # hence the comment hack below.
+# - BSD: must use option -Db_lundef=false to meson setup, else will get undefined environ during lib
+#   build. Also needed to add libiconv explicitely to the ninja commands else undefined
+#   libiconv_open in recollindex etc.
+
 project(
     'recoll',
     ['cpp', 'c'],
@@ -173,6 +177,20 @@ if cpp.has_function(
     recoll_conf.set('HAVE_KQUEUE', true)
 endif
 
+# Check for macOS (darwin)
+if host_machine.system() == 'darwin' and get_option('fsevents')
+    # Declare the Core Services framework dependency
+    core_services = dependency('CoreServices', required: true)
+    apple_core_services_found = true
+
+    librecolldeps += core_services  # Add the CoreServices framework as a dependency
+    
+    recoll_conf.set('RCL_USE_FSEVENTS', true)
+    recoll_conf.set('RCL_MONITOR', true)
+else 
+    apple_core_services_found = false
+endif
+
 recoll_conf.set('HAVE_VSNPRINTF', cpp.has_function('vsnprintf'))
 recoll_conf.set(
     'HAVE_POSIX_FADVISE',
@@ -189,8 +207,8 @@ if (
     recoll_conf.set('RCL_USE_INOTIFY', true)
     recoll_conf.set('RCL_MONITOR', true)
 elif get_option('fam')
-    libfam = cpp.find_library('gamin')
-    if libfam
+    libfam = dependency('libgamin', required:false)
+    if libfam.found()
         recoll_conf.set('RCL_USE_FAM', true)
         recoll_conf.set('RCL_MONITOR', true)
         librecolldeps += libfam
@@ -378,12 +396,19 @@ if get_option('indexer')
         'index/indexer.cpp',
         'index/rclmonprc.cpp',
         'index/rclmonrcv.cpp',
+        'index/rclmonrcv_fsevents.cpp',
+        'index/rclmonrcv_inotify.cpp',
+        'index/rclmonrcv_fam.cpp',
+        'index/rclmonrcv_win32.cpp',
         'index/recollindex.cpp',
         'index/webqueue.cpp',
     ]
 
     recollindexdeps = []
     recollindexdeps += dependency('threads')
+    if(apple_core_services_found)
+        recollindexdeps += core_services
+    endif
     recollindex = executable(
         'recollindex',
         recollindex_sources,

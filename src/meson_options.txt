@@ -47,6 +47,8 @@ option('inotify', type: 'boolean', value: true,
        description: 'Use inotify for monitoring file changes')
 option('fam', type: 'boolean', value: false,
        description: 'Use fam for monitoring file changes')
+option('fsevents', type: 'boolean', value: true,
+       description: 'Use Apple fsevents API for monitoring file changes')
 option('qtzeitgeist', type: 'boolean', value: false,
        description: 'Use the qt zeitgeist library for generating zeitgeist events')
 option('systemd', type: 'boolean', value: true,
@@ -62,3 +64,7 @@ option('systemd-user-unit-dir', type: 'string', value:'/usr/lib/systemd/user',
 # Not sure it makes sense to fix this.
 #option('userdoc', type: 'boolean', value: true,
 #       description: 'Build the user manual (needs docbook xml/xsl files and TeX tools)')
+option('aspell_include_dir', type: 'string', value:'',
+                             description: 'Specify the aspell include directory (if not found in the system include directories).')
+option('chm_include_dir', type: 'string', value:'',
+                          description: 'Specify the chm include directory (if not found in the system include directories).')
