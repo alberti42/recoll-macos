@@ -216,6 +216,15 @@ void RclMonEventQueue::setopts(int opts)
 {
     if (m_data)
         m_data->m_opts = opts;
+
+    // added later: why not to store m_opts in the queue class as well?
+    // it is convenient and makes RclMonEventQueue::getopt cleaner
+    m_opts = opts;
+}
+
+bool RclMonEventQueue::getopt(int mask)
+{
+    return m_opts & mask;
 }
 
 /** Wait until there is something to process on the queue, or timeout.

@@ -40,8 +40,13 @@
  */
 class RclMonEvent {
 public: 
-    enum EvType {RCLEVT_NONE= 0, RCLEVT_MODIFY=1, RCLEVT_DELETE=2, 
-                 RCLEVT_DIRCREATE=3, RCLEVT_ISDIR=0x10};
+    enum EvType {
+        RCLEVT_NONE       = 0,
+        RCLEVT_MODIFY     = 1,
+        RCLEVT_DELETE     = 2, 
+        RCLEVT_DIRCREATE  = 3,
+        RCLEVT_ISDIR      = 1 << 4  // Here flags start. For now only: 0x10  
+    };
     std::string m_path;
     // Type and flags
     int  m_etyp;
@@ -61,7 +66,7 @@ public:
 };
 
 enum RclMonitorOption {RCLMON_NONE=0, RCLMON_NOFORK=1, RCLMON_NOX11=2,
-                       RCLMON_NOCONFCHECK=4};
+                       RCLMON_NOCONFCHECK=4, RCLMON_NOORPHAN=8};
 
 /**
  * Monitoring event queue. This is the shared object between the main thread 
@@ -85,6 +90,8 @@ public:
     bool empty();
     RclMonEvent pop();
     void setopts(int opts);
+    bool getopt(int mask);
+    int m_opts{0};
 
     // Convenience function for initially communicating config to mon thr
     void setConfig(RclConfig *conf);
