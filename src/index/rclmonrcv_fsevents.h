@@ -1,5 +1,22 @@
-// rclmonrcv_fsevents.h
-
+/* Copyright (C) 2024 Alberti, Andrea
+ *
+ * License: GPL 2.1
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 #ifndef RCLMONRCV_FSEVENTS_H
 #define RCLMONRCV_FSEVENTS_H
 
@@ -27,10 +44,6 @@ public:
         const FSEventStreamEventFlags eventFlags[],
         const FSEventStreamEventId eventIds[]);
 
-    bool virtual getEvent(RclMonEvent& ev, int msecs = -1) override {
-        // we do not need this functio for RclFSEvents; it should return false
-        return false;
-    };
     bool virtual ok() const override;
 #ifdef FSWATCH_FSEVENTS
     void virtual startMonitoring(RclMonEventQueue *queue, RclConfig& lconfig, FsTreeWalker& walker) override;
@@ -38,7 +51,7 @@ public:
     void virtual setupAndStartStream();
     bool virtual addWatch(const std::string& path, bool isDir, bool follow = false) override;
 
-    bool virtual isRecursive() override;
+    bool virtual isRecursive() const override;
 
 public:
     RclMonEventQueue *m_queue{NULL};
@@ -51,7 +64,7 @@ private:
     FsTreeWalker* m_walkerPtr;
     bool m_ok;
     FSEventStreamRef m_stream;
-    string m_rootPath;    
+    std::string m_rootPath;    
 };
 
 // Custom context for the idle loop

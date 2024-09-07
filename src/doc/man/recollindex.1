@@ -31,6 +31,9 @@ recollindex \- indexing command for the Recoll full text search system
 .B \-D
 ]
 [
+.B \-O
+]
+[
 .B \-x
 ]
 [
@@ -168,10 +171,10 @@ If option
 .B
 \-m 
 is given, recollindex is started for real time monitoring, using the
-file system monitoring package it was configured for (either fam, gamin, or
-inotify). This mode must have been explicitly configured when building the
-package, it is not available by default. The program will normally detach
-from the controlling terminal and become a daemon. If option
+file system monitoring package it was configured for (inotify on linux,
+gamin on xBSD, fsevents on MacOS and ReadDirectoryChanges on Windows).
+The program will normally detach from the controlling terminal and become a daemon.
+If option
 .B
 \-D 
 is given, it will stay in the foreground. Option
@@ -179,21 +182,24 @@ is given, it will stay in the foreground. Option
 \-w 
 <seconds> can be used to specify that the program should sleep for the
 specified time before indexing begins. The default value is 60. The daemon
-normally monitors the X11 session and exits when it is reset.
-Option 
+normally monitors the X11 session and exits when it is reset. This can be
+disabled with option 
 .B
 \-x
-disables this X11 session monitoring (daemon will stay alive even if it
-cannot connect to the X11 server). You need to use this too if you use the
-daemon without an X11 context. You can use option
+\ . You can use option
 .B
 \-n
 to skip the initial incrementing pass which is normally performed before
-monitoring starts. Once monitoring is started, the daemon normally monitors
+monitoring starts. Once monitoring is started, the daemon monitors
 the configuration and restarts from scratch if a change is made. You can
 disable this with option
 .B
 \-C
+\ . Option 
+.B
+\-O
+also keeps the process in foreground and in addition will have the
+process exit if its parent process disappears.
 .PP
 .B recollindex \-i
 will index individual files into the index. The stem expansion and

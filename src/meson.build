@@ -2,6 +2,10 @@
 # bump it. We would like to simply set it into a variable at the top to facilitate the sed job, but
 # meson wants the first statement to be "project". Also there are several "  version: " in the file,
 # hence the comment hack below.
+# - BSD: must use option -Db_lundef=false to meson setup, else will get undefined environ during lib
+#   build. Also needed to add libiconv explicitely to the ninja commands else undefined
+#   libiconv_open in recollindex etc.
+
 project(
     'recoll',
     ['cpp', 'c'],
@@ -203,8 +207,8 @@ if (
     recoll_conf.set('RCL_USE_INOTIFY', true)
     recoll_conf.set('RCL_MONITOR', true)
 elif get_option('fam')
-    libfam = cpp.find_library('gamin')
-    if libfam
+    libfam = dependency('libgamin', required:false)
+    if libfam.found()
         recoll_conf.set('RCL_USE_FAM', true)
         recoll_conf.set('RCL_MONITOR', true)
         librecolldeps += libfam

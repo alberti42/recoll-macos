@@ -1,6 +1,23 @@
-// rclmonrcv_fsevents.cpp
+/* Copyright (C) 2024 Alberti, Andrea
+ *
+ * License: GPL 2.1
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
-/* Andrea Alberti, 2024 */
 
 /* Description of events listed at https://developer.apple.com/documentation/coreservices/1455361-fseventstreameventflags
 
@@ -86,6 +103,23 @@
 #ifdef FSWATCH_FSEVENTS
 
 #include "rclmonrcv_fsevents.h"
+
+#include <string>
+
+#include <errno.h>
+#include <cstdio>
+#include <cstring>
+#include "safeunistd.h"
+
+#include "log.h"
+#include "rclmon.h"
+#include "rclinit.h"
+#include "fstreewalk.h"
+#include "pathut.h"
+#include "smallut.h"
+
+
+using std::string;
 
 // Initialize the context with the exit condition
 IdleLoopContext contextLoop = {
@@ -177,7 +211,7 @@ RclFSEvents::~RclFSEvents() {
     releaseFSEventStream();
 }
 
-bool RclFSEvents::isRecursive() {
+bool RclFSEvents::isRecursive() const {
     return true;
 }
 

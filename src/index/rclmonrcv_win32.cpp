@@ -1,12 +1,54 @@
-// rclmonrcv_win32.cpp
+/* Copyright (C) 2024 J.F.Dockes
+ *
+ * License: GPL 2.1
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/* The code for the Win32 version of the monitor was largely copied from efsw:
+ * https://github.com/SpartanJ/efsw
+ * LICENSE for the original WIN32 code:
+ * Copyright (c) 2020 Martin Lucas Golini
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * This software is a fork of the "simplefilewatcher" by James Wynn (james@jameswynn.com)
+ * http://code.google.com/p/simplefilewatcher/ also MIT licensed.
+ */
+
 
 #include "autoconfig.h"
 #include "rclmonrcv.h"
 
 #ifdef FSWATCH_WIN32
-
-#include "rclmonrcv_win32.h"
-
 /*
  * WIN32 VERSION NOTES: 
  *
@@ -16,30 +58,31 @@
  *   file in it is open. This is mostly why we use recursive watches 
  *   on the topdirs only.
  */
+
+#include "rclmonrcv_win32.h"
+
 #include <string>
 #include <vector>
 #include <thread>
 #include <queue>
+#include <errno.h>
+#include <cstdio>
+#include <cstring>
+
+#include "safeunistd.h"
+#include "log.h"
+#include "rclmon.h"
+#include "pathut.h"
+#include "smallut.h"
+
 
 #define WIN32_LEAN_AND_MEAN
 #define NOGDI
 #include <windows.h>
 
-typedef long WatchID;
 class WatcherWin32;
 class RclFSWatchWin32;
 
-enum class Action {Add = 1, Delete = 2, Modify = 3, Move = 4};
-
-// Virtual interface for the monitor callback. Note: this for compatibility with the efsw code, as
-// rclmon uses a pull, not push interface. The callback pushes the events to a local queue from
-// which they are then pulled by the upper level code.
-class FileWatchListener {
-public:
-    virtual ~FileWatchListener() {}
-    virtual void handleFileAction(WatchID watchid, const std::string& dir, const std::string& fn,
-                                  Action action, bool isdir, std::string oldfn = "" ) = 0;
-};
 
 // Internal watch data. This piggy-back our actual data pointer to the MS overlapped pointer. This
 // is a bit of a hack, and we could probably use event Ids instead.
@@ -66,7 +109,6 @@ public:
     bool StopNow{false};
     RclFSWatchWin32 *Watch{nullptr};
 };
-
 
 // The efsw top level file system watcher: manages all the directory watches.
 class RclFSWatchWin32 {
@@ -103,19 +145,31 @@ private:
     void removeAllWatches();
 };
 
-bool RclMonitorWin32::addWatch(const string& path, bool /*isDir*/, bool /*follow*/) {
-    MONDEB("RclMonitorWin32::addWatch: " << path << "\n");
-    return m_fswatcher.addWatch(path, this, true) != -1;
+RclMonitorWin32::RclMonitorWin32()
+    : m_fswatcher(new RclFSWatchWin32)
+{
 }
 
-bool RclMonitorWin32::getEvent(RclMonEvent& ev, int msecs) {
+RclMonitorWin32::~RclMonitorWin32()
+{
+    delete m_fswatcher;
+}
+
+bool RclMonitorWin32::addWatch(const std::string& path, bool /*isDir*/, bool /*follow*/)
+{
+    MONDEB("RclMonitorWin32::addWatch: " << path << "\n");
+    return m_fswatcher->addWatch(path, this, true) != -1;
+}
+
+bool RclMonitorWin32::getEvent(RclMonEvent& ev, int msecs)
+{
     PRETEND_USE(msecs);
     if (!m_events.empty()) {
         ev = m_events.front();
         m_events.pop();
         return true;
     }
-    m_fswatcher.run(msecs);
+    m_fswatcher->run(msecs);
     if (!m_events.empty()) {
         ev = m_events.front();
         m_events.pop();
@@ -125,7 +179,7 @@ bool RclMonitorWin32::getEvent(RclMonEvent& ev, int msecs) {
 }
 
 bool RclMonitorWin32::ok() const {
-    return m_fswatcher.ok();
+    return m_fswatcher->ok();
 }
 
 bool RclMonitorWin32::generatesExist() const {

@@ -48,7 +48,7 @@ public:
      * @param isinc if true, the field list defines the fields to be stored, 
      *   else, those to be excluded.
      */
-    bool storeQuery(Rcl::Query& q, std::set<std::string> fldspec = {}, bool isinc = false);
+    bool storeQuery(Rcl::Query& q, const std::set<std::string>& fldspec = {}, bool isinc = false);
 
     /**  Retrieve count of stored results */
     int getCount();

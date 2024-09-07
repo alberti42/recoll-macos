@@ -66,31 +66,31 @@ using namespace std;
 
 // Command line options
 static int     op_flags;
-#define OPT_C (1 << 0)     // 0x1
-#define OPT_c (1 << 1)     // 0x2
-#define OPT_d (1 << 2)     // 0x4
-#define OPT_D (1 << 3)     // 0x8
-#define OPT_E (1 << 4)     // 0x10
-#define OPT_e (1 << 5)     // 0x20
-#define OPT_f (1 << 6)     // 0x40
-#define OPT_h (1 << 7)     // 0x80
-#define OPT_i (1 << 9)     // 0x200
-#define OPT_K (1 << 10)    // 0x400
-#define OPT_k (1 << 11)    // 0x800
-#define OPT_l (1 << 12)    // 0x1000
-#define OPT_m (1 << 13)    // 0x2000
-#define OPT_n (1 << 14)    // 0x4000
-#define OPT_P (1 << 15)    // 0x8000
-#define OPT_p (1 << 16)    // 0x10000
-#define OPT_R (1 << 17)    // 0x20000
-#define OPT_r (1 << 18)    // 0x40000
-#define OPT_S (1 << 19)    // 0x80000
-#define OPT_s (1 << 20)    // 0x100000
-#define OPT_w (1 << 21)    // 0x200000
-#define OPT_x (1 << 22)    // 0x400000
-#define OPT_Z (1 << 23)    // 0x800000
-#define OPT_z (1 << 24)    // 0x1000000
-#define OPT_O (1 << 25)    // 0x2000000
+#define OPT_C 0x1     
+#define OPT_c 0x2
+#define OPT_d 0x4     
+#define OPT_D 0x8     
+#define OPT_E 0x10    
+#define OPT_e 0x20    
+#define OPT_f 0x40    
+#define OPT_h 0x80    
+#define OPT_i 0x200   
+#define OPT_K 0x400   
+#define OPT_k 0x800   
+#define OPT_l 0x1000  
+#define OPT_m 0x2000  
+#define OPT_n 0x4000  
+#define OPT_P 0x8000  
+#define OPT_p 0x10000 
+#define OPT_R 0x20000 
+#define OPT_r 0x40000 
+#define OPT_S 0x80000 
+#define OPT_s 0x100000
+#define OPT_w 0x200000
+#define OPT_x 0x400000
+#define OPT_Z 0x800000
+#define OPT_z 0x1000000
+#define OPT_O 0x2000000
 
 #define OPTVAL_WEBCACHE_COMPACT 1000
 #define OPTVAL_WEBCACHE_BURST 1001
@@ -891,7 +891,7 @@ int main(int argc, char *argv[])
             LOGDEB("recollindex: sleeping " << sleepsecs << "\n");
             for (int i = 0; i < sleepsecs; i++) {
                 millisleep(1000);
-#ifndef _WIN32
+#ifndef DISABLE_X11MON
                 // Check that x11 did not go away while we were sleeping.
                 if (!(op_flags & OPT_x) && !x11IsAlive()) {
                     LOGDEB("X11 session went away during initial sleep period\n");

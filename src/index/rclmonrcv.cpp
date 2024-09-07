@@ -1,6 +1,4 @@
-// rclmonrcv.cpp
-
-/* Copyright (C) 2006-2022 J.F.Dockes 
+/* Copyright (C) 2006-2024 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -17,33 +15,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* The code for the Win32 version of the monitor was largely copied from efsw:
- * https://github.com/SpartanJ/efsw
- * LICENSE for the original WIN32 code:
- * Copyright (c) 2020 Martin Lucas Golini
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * This software is a fork of the "simplefilewatcher" by James Wynn (james@jameswynn.com)
- * http://code.google.com/p/simplefilewatcher/ also MIT licensed.
- */
-
 /**
  * Recoll real time monitor event receiver. This file has code to interface 
  * to FAM, inotify, etc. and place events on the event queue.
@@ -54,33 +25,43 @@
 #ifdef RCL_MONITOR
 
 #include "rclmonrcv.h"
-#include "rclmonrcv_fsevents.h"
-#include "rclmonrcv_inotify.h"
-#include "rclmonrcv_fam.h"
-#include "rclmonrcv_win32.h"
 
-///////////////////////////////////////////////////////////////////////
-// The monitor 'factory'
-static RclMonitor *makeMonitor()
+#include <errno.h>
+#include <cstdio>
+#include <cstring>
+#include "safeunistd.h"
+
+#include "log.h"
+#include "rclmon.h"
+#include "rclinit.h"
+#include "fstreewalk.h"
+#include "pathut.h"
+#include "smallut.h"
+
+using std::string;
+using std::vector;
+using std::map;
+
+
+RclMonitor::RclMonitor()
+#ifndef _WIN32
+    : m_originalParentPid(getppid())
+#endif
 {
-#ifdef FSWATCH_WIN32
-    return new RclMonitorWin32;
-#endif
-#ifdef FSWATCH_FSEVENTS
-    return new RclFSEvents;
-#endif
-#ifdef FSWATCH_INOTIFY
-    return new RclIntf;
-#endif
-#ifdef FSWATCH_FAM
-    return new RclFAM;
-#endif
-    // This part of the code will never be reached. However, to be safe, we can keep it.
-    LOGINFO("RclMonitor: none of the following, Inotify, Fam, fsevents was compiled as file system "
-                "change notification interface\n");
-    return nullptr;
 }
-///////////////////////////////////////////////////////////////////////
+
+bool RclMonitor::isOrphaned() {
+#ifdef _WIN32
+    return false;
+#else
+    pid_t currentParentPid = getppid();
+    return currentParentPid != m_originalParentPid;
+#endif
+}
+
+// Monitor factory. We only have one compiled-in kind at a time, no
+// need for a 'kind' parameter
+static RclMonitor *makeMonitor();
 
 /* ==== CLASS WalkCB: definition of member functions ==== */
 
@@ -114,6 +95,8 @@ public:
         }
 
         if (flg == FsTreeWalker::FtwDirEnter) {
+#ifndef FSWATCH_FSEVENTS
+            
             // Create watch when entering directory, but first empty
             // whatever events we may already have on queue
             while (m_queue->ok() && m_mon->ok()) {
@@ -126,6 +109,7 @@ public:
                     break;
                 }
             }
+#endif
             if (!m_mon || !m_mon->ok())
                 return FsTreeWalker::FtwError;
             // We do nothing special if addWatch fails for a reasonable reason
@@ -271,11 +255,6 @@ void *rclMonRcvRun(void *q)
 
     // Create the fam/whatever interface object
     RclMonitor *mon = makeMonitor();
-
-    // There is no way that this condition fails. I find it confusing to have this check here.
-    // You can leave it because it does not bother, but I suggest to remove it.
-    // If we fail here it is because we are doing some thing very wrong allowing RCL_MONITOR
-    // without proper FS watch mechanism.
     if (mon == nullptr) {
         LOGERR("rclMonRcvRun: makeMonitor failed\n");
         queue->setTerminate();
@@ -355,5 +334,32 @@ bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
     return found;
 }
 
+
+///////////////////////////////////////////////////////////////////////
+// The monitor 'factory'
+#include "rclmonrcv_fsevents.h"
+#include "rclmonrcv_inotify.h"
+#include "rclmonrcv_fam.h"
+#include "rclmonrcv_win32.h"
+static RclMonitor *makeMonitor()
+{
+#ifdef FSWATCH_WIN32
+    return new RclMonitorWin32;
+#endif
+#ifdef FSWATCH_FSEVENTS
+    return new RclFSEvents;
+#endif
+#ifdef FSWATCH_INOTIFY
+    return new RclIntf;
+#endif
+#ifdef FSWATCH_FAM
+    return new RclFAM;
+#endif
+    // This part of the code will never be reached. However, to be safe, we can keep it.
+    LOGINFO("RclMonitor: none of the following, Inotify, Fam, fsevents was compiled as file system "
+                "change notification interface\n");
+    return nullptr;
+}
+///////////////////////////////////////////////////////////////////////
 
 #endif // RCL_MONITOR
