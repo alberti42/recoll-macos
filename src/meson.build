@@ -2,9 +2,22 @@
 # bump it. We would like to simply set it into a variable at the top to facilitate the sed job, but
 # meson wants the first statement to be "project". Also there are several "  version: " in the file,
 # hence the comment hack below.
-# - BSD: must use option -Db_lundef=false to meson setup, else will get undefined environ during lib
-#   build. Also needed to add libiconv explicitely to the ninja commands else undefined
-#   libiconv_open in recollindex etc.
+#
+# 
+# - BSD build:
+#   * Use "meson setup -Db_lundef=false" else will get undefined environ during the
+#     librecoll build.
+#   * recent FreeBSD with qt6:
+#       export QMAKE=qmake6
+#       export MAKE="gmake"
+#       meson setup -Db_lundef=false -Dwebengine=true -Dchm_include_dir=/usr/local/include -Daspell_include_dir=/usr/local/include build
+#     gmake is needed by the qmake-generated Makefile apparently
+#
+#    iconv: on FreeBSD, the default method
+#    improperly uses /usr/local/iconv/iconv.h but not /usr/local/lib/libiconv, which results in an
+#    undefined libiconv_open (defined by the local .h but does not exist in /usr libc).
+#    We use "libiconv = cc.find_library('libiconv', required:true,dirs:'/usr/local/lib')"
+#    instead, which works and results in actually using libiconv instead of the libc bundled iconv
 
 project(
     'recoll',
@@ -62,7 +75,12 @@ if get_option('testmains') or get_option('python-module') or get_option('indexer
     # Searching for iconv is a meson 0.60 feature. Hopefully, for now all the systems where the
     # meson build is used have iconv in libc. Otherwise look at glib search for iconv for how to do
     # it.
-    librecolldeps += dependency('iconv', method : 'auto')
+    if build_machine.system() == 'freebsd'
+        libiconv = cc.find_library('libiconv', required:true, dirs: '/usr/local/lib')
+        librecolldeps += libiconv
+    else 
+        librecolldeps += dependency('iconv', method : 'auto')
+    endif
 else
     librecoll_needed = false
 endif
