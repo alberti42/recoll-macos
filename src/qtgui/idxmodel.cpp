@@ -150,6 +150,8 @@ static void treelist(const std::string& top, const std::vector<std::string>& lst
 void IdxTreeModel::populate()
 {
     LOGDEB0("IdxTreeModel::populate\n");
+    if (m_depth == 0)
+        return;
     std::vector<std::string> thedirs;
     std::string prefix;
     rcldb->dirlist(m_depth, prefix, thedirs);
