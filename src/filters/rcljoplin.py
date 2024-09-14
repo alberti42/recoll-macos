@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """Using the Recoll Python API to index the notes table from a Joplin database"""
 
 # This is an external indexer, not a Recoll document handler. It manages the documents inside the

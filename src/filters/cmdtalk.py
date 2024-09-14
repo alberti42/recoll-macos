@@ -27,7 +27,6 @@ import shutil
 import getopt
 import traceback
 import signal
-import atexit
 
 def makebytes(data):
     if data is None:
@@ -59,9 +58,6 @@ class CmdTalk(object):
             msvcrt.setmode(self.outfile.fileno(), os.O_BINARY)
             msvcrt.setmode(self.infile.fileno(), os.O_BINARY)
         
-        # Register cleanup with atexit
-        atexit.register(self.cleanup)
-
         try:
             self.debugfile
         except:
@@ -102,27 +98,7 @@ class CmdTalk(object):
                 outfile.write(data[offset:offset+tow])
                 offset += tow
                 total -= tow
-       
-    def cleanup(self):
-        """Close all open file-like objects to ensure proper cleanup."""
-        try:
-            if self.outfile and not self.outfile.closed:
-                self.outfile.close()
-        except Exception as e:
-            self.log(f"Failed to close outfile: {e}", file=self.errfout)
-        
-        try:
-            if self.infile and not self.infile.closed:
-                self.infile.close()
-        except Exception as e:
-            self.log(f"Failed to close infile: {e}", file=self.errfout)
-        
-        try:
-            if self.errfout and not self.errfout.closed and self.errfout is not sys.stderr:
-                self.errfout.close()
-        except Exception as e:
-            self.log(f"Failed to close errfout: {e}", file=sys.stderr)
-
+                
     # Read single parameter from process input: line with param name and size
     # followed by data. The param name is returned as str/unicode, the data
     # as bytes
@@ -132,9 +108,14 @@ class CmdTalk(object):
         if s == b'':
             if self.exitfunc:
                 self.exitfunc(0)
-            # Send the message to exit to the main thread
-            # https://stackoverflow.com/a/7099229/4216175
-            os.kill(os.getpid(), signal.SIGINT)
+            # Our father process is probably going to send us a SIGTERM.  On some platforms (BSD,
+            # MacOS), an exception is sometimes generated during exit processing, probably randomly
+            # depending on where we are in the process when we receive the signal. Ignoring SIGTERM
+            # while we exit mostly fixes the problem (we very rarely get a message about a signal
+            # race condition). None of this affects the working of the program anyway, just an issue
+            # with error messages.
+            signal.signal(signal.SIGTERM, signal.SIG_IGN)
+            sys.exit(0)
 
         s = s.rstrip(b'\n')
 

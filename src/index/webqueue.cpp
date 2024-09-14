@@ -279,7 +279,6 @@ bool WebQueueIndexer::index()
             if (!eof)
                 return false;
         }
-        int nentries = 0;
         if (!eof) do {
                 string udi;
                 if (!cc->getCurrentUdi(udi)) {
@@ -302,7 +301,6 @@ bool WebQueueIndexer::index()
                         return false;
                     }
                 }
-                nentries++;
             } while (cc->next(eof));
     }
 

@@ -622,16 +622,12 @@ bool TextSplit::text_to_words(const string &in)
     bool nlpending = false;
     bool softhyphenpending = false;
 
-    // Running count of non-alphanum chars. Reset when we see one;
-    int nonalnumcnt = 0;
-
     Utf8Iter it(in);
 #if defined(KATAKANA_AS_WORDS) || defined(HANGUL_AS_WORDS) || defined(CHINESE_AS_WORDS)
     int prev_csc = -1;
 #endif
     for (; !it.eof() && !it.error(); it++) {
         unsigned int c = *it;
-        nonalnumcnt++;
 
         if (c == (unsigned int)-1) {
             LOGERR("Textsplit: error occurred while scanning UTF-8 string\n");
@@ -734,7 +730,6 @@ bool TextSplit::text_to_words(const string &in)
             continue;
 
         case DIGIT:
-            nonalnumcnt = 0;
             if (m_wordLen == 0)
                 m_inNumber = true;
             m_wordLen += it.appendchartostring(m_span);
@@ -742,7 +737,6 @@ bool TextSplit::text_to_words(const string &in)
             break;
 
         case SPACE:
-            nonalnumcnt = 0;
         SPACE:
             if (m_wordLen || m_span.length()) {
                 if (!doemit(true, it.getBpos()))
@@ -990,7 +984,6 @@ bool TextSplit::text_to_words(const string &in)
 
         default:
         NORMALCHAR:
-            nonalnumcnt = 0;
             if (m_inNumber && c != 'e' && c != 'E') {
                 m_inNumber = false;
             }

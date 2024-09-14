@@ -139,11 +139,9 @@ inline void MimeInputSource::seek(unsigned int seekToOffset)
         reset();
    
     char c;
-    int n = 0;
     while (seekToOffset > offset) {
         if (!getChar(&c))
             break;
-        ++n;
     }
 }
 
