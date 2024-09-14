@@ -106,17 +106,17 @@ class MDhandler(RclBaseHandler):
 
         # Include the Markdown content without the front matter
         if frontmatter is not {}:
-            # if 'created' in frontmatter:
-            #     date_format = '%Y-%m-%d, %H:%M:%S'
-            #     date_obj = datetime.strptime(frontmatter['created'], date_format)
-            #     # self.em.log(date_obj.timestamp())
-            #     self.em.setfield("dctime", str(int(date_obj.timestamp())))
+            if 'created' in frontmatter:
+                date_format = '%Y-%m-%d, %H:%M:%S'
+                date_obj = datetime.strptime(frontmatter['created'], date_format)
+                # self.em.log(date_obj.timestamp())
+                self.em.setfield("created", str(int(date_obj.timestamp())))
         
             if 'modified' in frontmatter:
                 date_format = '%Y-%m-%d, %H:%M:%S'
                 date_obj = datetime.strptime(frontmatter['modified'], date_format)
                 # self.em.log(date_obj.timestamp())
-                self.em.setfield("dmtime", str(int(date_obj.timestamp())))
+                self.em.setfield("modified", str(int(date_obj.timestamp())))
         
             # Extract tags from the front matter
             tags = self.extract_tags(frontmatter)
