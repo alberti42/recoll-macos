@@ -42,11 +42,13 @@ _htmlsuffix = b'''
 ####
 
 class MDhandler(RclBaseHandler):
-    tags = []
-
     def __init__(self, em):
         super(MDhandler, self).__init__(em)
 
+        self.RCLMD_CREATED = os.environ.get('RCLMD_CREATED',None);
+        self.RCLMD_MODIFIED = os.environ.get('RCLMD_CREATED',None);
+        self.RCLMD_DATEFORMAT = os.environ.get('RCLMD_DATEFORMAT',None);
+        
     def parse_md_file(self, text_content):
         """Extract YAML front matter and return it along with the body content."""
         frontmatter = {}
@@ -71,7 +73,6 @@ class MDhandler(RclBaseHandler):
         return stripped_tags
 
     def html_text(self, filename):
-
         basename = os.path.splitext(os.path.basename(filename))[0].decode('utf-8')
 
         # Regular expression to match a date followed by a space and then the rest of the title
@@ -104,20 +105,22 @@ class MDhandler(RclBaseHandler):
         # Parse the front matter and get the body content
         frontmatter, body_content = self.parse_md_file(text_content)
 
-        # Include the Markdown content without the front matter
+        # Process frontmatter
         if frontmatter is not {}:
-            if 'created' in frontmatter:
-                date_format = '%Y-%m-%d, %H:%M:%S'
-                date_obj = datetime.strptime(frontmatter['created'], date_format)
-                # self.em.log(date_obj.timestamp())
-                self.em.setfield("created", str(int(date_obj.timestamp())))
-        
-            if 'modified' in frontmatter:
-                date_format = '%Y-%m-%d, %H:%M:%S'
-                date_obj = datetime.strptime(frontmatter['modified'], date_format)
-                # self.em.log(date_obj.timestamp())
-                self.em.setfield("modified", str(int(date_obj.timestamp())))
-        
+            # If the datetime format is provided
+            if self.RCLMD_DATEFORMAT:
+                if self.RCLMD_CREATED and 'created' in frontmatter:
+                    date_format = '%Y-%m-%d, %H:%M:%S'
+                    date_obj = datetime.strptime(frontmatter[self.RCLMD_CREATED], date_format)
+                    self.em.setfield("created", str(int(date_obj.timestamp())))
+                    # self.em.log("Field 'created' set to: " + str(int(date_obj.timestamp())))
+            
+                if self.RCLMD_MODIFIED and 'modified' in frontmatter:
+                    date_format = '%Y-%m-%d, %H:%M:%S'
+                    date_obj = datetime.strptime(frontmatter[self.RCLMD_MODIFIED], date_format)
+                    self.em.setfield("modified", str(int(date_obj.timestamp())))
+                    # self.em.log("Field 'modified' set to: " + str(int(date_obj.timestamp())))
+                    
             # Extract tags from the front matter
             tags = self.extract_tags(frontmatter)
 
