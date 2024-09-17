@@ -16,7 +16,7 @@
 .txt = text/plain
 .text = text/plain
 .rst = text/plain
-.md = text/plain
+.md = text/markdown
 .gv = text/plain
 .desktop = text/plain
 .json = text/plain
@@ -186,6 +186,8 @@
 .xlsm = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 .xltm = application/vnd.ms-excel.template.macroEnabled.12
 .xltx = application/vnd.openxmlformats-officedocument.spreadsheetml.template
+
+.key = application/keynote
  
 .abw = application/x-abiword
 .lyx = application/x-lyx
