@@ -248,6 +248,7 @@ text/x-shellscript = internal text/plain
 text/x-srt = internal text/plain
 text/x-tcl = internal text/plain
 text/x-tex = exec rcltex
+text/markdown = execm rclmd.py
 video/mp4 = execm rclaudio.py
 video/x-msvideo = execm rclimg
 
@@ -392,6 +393,7 @@ text/x-srt = source
 text/x-tcl = source
 text/x-tex = wordprocessing
 text/xml = document
+text/markdown = txt
 video/3gpp = video
 video/mp2p = video
 video/mp2t = video
@@ -477,7 +479,8 @@ text = \
       text/x-ruby \
       text/x-shellscript \
       text/x-srt \
-      text/x-tcl
+      text/x-tcl \
+      text/markdown
       
 spreadsheet = \
    application/vnd.ms-excel \
