@@ -169,6 +169,7 @@ application/x-dia-diagram = execm rcldia.py;mimetype=text/plain
 application/x-dvi = exec rcldvi
 audio/flac =  execm rclaudio.py
 application/x-gnote = execm rclxml.py
+application/x-notability-note = execm rclnotability.py
 application/x-gnuinfo = execm rclinfo.py
 application/x-gnumeric = internal xsltproc gnumeric.xsl
 application/x-hwp = execm rclhwp.py
