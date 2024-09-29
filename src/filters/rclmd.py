@@ -27,10 +27,13 @@ import re
 import sys
 import rclexecm  # For communicating with recoll
 from rclbasehandler import RclBaseHandler
+
 from datetime import datetime
 
 try:
     import yaml
+    # Remove the resolver for dates (tag:yaml.org,2002:timestamp)
+    # yaml.add_constructor('tag:yaml.org,2002:timestamp', yaml.SafeLoader.construct_scalar, Loader=yaml.SafeLoader)
 except:
     print("RECFILTERROR HELPERNOTFOUND python3:PyYAML")
     sys.exit(1);
@@ -87,7 +90,7 @@ class MDhandler(RclBaseHandler):
 
         self.RCLMD_CREATED = os.environ.get('RCLMD_CREATED',None);
         self.RCLMD_MODIFIED = os.environ.get('RCLMD_CREATED',None);
-        self.RCLMD_DATEFORMAT = os.environ.get('RCLMD_DATEFORMAT',None);
+        # self.RCLMD_DATEFORMAT = os.environ.get('RCLMD_DATEFORMAT',None);
         
     def parse_md_file(self, text_content):
         """Extract YAML front matter and return it along with the body content."""
@@ -151,17 +154,16 @@ class MDhandler(RclBaseHandler):
         # Process frontmatter
         if frontmatter is not {}:
             # If the datetime format is provided
-            if self.RCLMD_DATEFORMAT:
-                if self.RCLMD_CREATED and 'created' in frontmatter:
-                    date_format = '%Y-%m-%d, %H:%M:%S'
-                    date_obj = datetime.strptime(frontmatter[self.RCLMD_CREATED], date_format)
+            if self.RCLMD_CREATED and 'created' in frontmatter:
+                if(isinstance(frontmatter[self.RCLMD_CREATED],datetime)):
+                    date_obj = frontmatter[self.RCLMD_CREATED]
                     created = str(round(date_obj.timestamp()))
-            
-                if self.RCLMD_MODIFIED and 'modified' in frontmatter:
-                    date_format = '%Y-%m-%d, %H:%M:%S'
-                    date_obj = datetime.strptime(frontmatter[self.RCLMD_MODIFIED], date_format)
-                    created = str(round(date_obj.timestamp()))
-                    
+        
+            if self.RCLMD_MODIFIED and 'modified' in frontmatter:
+                if(isinstance(frontmatter[self.RCLMD_MODIFIED],datetime)):
+                    date_obj = frontmatter[self.RCLMD_MODIFIED]
+                    modified = str(round(date_obj.timestamp()))
+                
             # Extract tags from the front matter
             tags = self.extract_tags(frontmatter)
 
