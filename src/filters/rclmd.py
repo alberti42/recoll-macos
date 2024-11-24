@@ -89,7 +89,7 @@ class MDhandler(RclBaseHandler):
         super(MDhandler, self).__init__(em)
 
         self.RCLMD_CREATED = os.environ.get('RCLMD_CREATED',None);
-        self.RCLMD_MODIFIED = os.environ.get('RCLMD_CREATED',None);
+        self.RCLMD_MODIFIED = os.environ.get('RCLMD_MODIFIED',None);
         # self.RCLMD_DATEFORMAT = os.environ.get('RCLMD_DATEFORMAT',None);
         
     def parse_md_file(self, text_content):
