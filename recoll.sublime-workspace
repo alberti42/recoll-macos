@@ -1,0 +1,303 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/andrea/Documents/Programming/Third party/recoll.nosync",
+		"/Users/andrea/Documents/Programming/Third party/recoll.nosync/src",
+		"/Users/andrea/Documents/Programming/Third party/recoll.nosync/src/index",
+		"/Users/andrea/Documents/Programming/Third party/recoll.nosync/src/utils"
+	],
+	"file_history":
+	[
+		"/Users/andrea/Documents/Programming/Third party/recoll.nosync/src/index/rclmonrcv_fsevents.cpp",
+		"/Users/andrea/Documents/Programming/Third party/recoll.nosync/src/index/rclmonrcv.cpp",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmonrcv.cpp",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/meson_options.txt",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmonrcv.h",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/meson.build",
+		"/Users/andrea/Documents/Programming/obsidian-recoll-search-plugin.nosync/src/recoll.ts",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmonrcv_fam.h",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmonrcv_fsevents.h",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmonrcv_fsevents.cpp",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmonrcv_inotify.h",
+		"/Users/andrea/Documents/Programming/obsidian-recoll-search-plugin.nosync/src/main.ts",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmonrcv_win32.h",
+		"/Users/andrea/Documents/Programming/obsidian-recoll-search-plugin.nosync/node_modules/@types/node/child_process.d.ts",
+		"/Users/andrea/Library/Mobile Documents/com~apple~CloudDocs/Mackup/.recoll/recoll.conf",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmon.h",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmonrcv_fam.cpp",
+		"/Users/andrea/Documents/Programming/Third party/recoll/src/index/rclmonprc.cpp"
+	],
+	"find":
+	{
+		"height": 43.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"parent",
+			"fseve",
+			"darw",
+			"geteve",
+			"spawn",
+			"uncaughtExceptionListener",
+			"spawn",
+			"lis",
+			"uncaught",
+			"error",
+			"excep",
+			"error",
+			"closeListener",
+			"parentpid",
+			"pid",
+			"template",
+			"RclMonitorBase",
+			"facto",
+			"factor",
+			"if (flg == FsTreeWalker::FtwDirEnter) {",
+			"start",
+			"runloop",
+			"using",
+			"make",
+			"get",
+			"CLALLLL",
+			"signalHandler",
+			"cfrunloop",
+			"setupMonitor",
+			"setupmoni",
+			"monitor",
+			"startmoni",
+			"makeMonitor",
+			"makemoni",
+			"make",
+			"shoulde",
+			"m_ok",
+			"root",
+			"loop",
+			"geteven",
+			"callback",
+			"geteve",
+			"callback",
+			"isre",
+			"monrecurs",
+			"isRecursive",
+			"addwa",
+			"called",
+			"CALLLEDDD",
+			"called",
+			"dummytimer",
+			"m_stream",
+			"_stream",
+			"event_queue",
+			"m_stream",
+			"fsevents_callback",
+			"addwatc",
+			"addwa",
+			"CFRunLoopAddSource",
+			"source",
+			"runloopsour",
+			"m_eventQueue",
+			"RclMonitor ",
+			"addwa",
+			"RclMonitor *mon = new RclMoni",
+			"RclMon",
+			"rclmon",
+			"m_mon",
+			"RClMoni",
+			"mon->",
+			"->addwatch",
+			"addwatch",
+			"rclMonRcvRun",
+			"addWatch",
+			"addWatch(const std::string& path, bool isDir, bool follow = false)",
+			"bool addWatch(const std::string& path, bool isDir, bool follow = false)",
+			"add",
+			"geteven",
+			"m_ok",
+			"monito",
+			"fav",
+			"m_ok",
+			"RclFSWatchWin32",
+			"mini",
+			"mInitOK",
+			"shouldexit",
+			"RclMonitor"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"->addwatch1"
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 31.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.LSP Log Panel":
+	{
+		"height": 0.0
+	},
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.diagnostics":
+	{
+		"height": 0.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"output.project_environment_log":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "recoll.sublime-project",
+	"replace":
+	{
+		"height": 58.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"fsevent",
+				"src/index/rclmonrcv_fsevents.cpp"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 282.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
